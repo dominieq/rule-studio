@@ -2,7 +2,7 @@
   "short_name": "RuLe Work",
   "name": "RuLe Work",
   "icons": [
-
+    "favicon.png"
   ],
   "start_url": ".",
   "display": "standalone",

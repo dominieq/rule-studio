@@ -35,9 +35,9 @@
     <dependencies>
         <!-- https://github.com/dominieq/rulelearn -->
         <dependency>
-            <groupId>com.github.dominieq</groupId>
+            <groupId>com.github.rulelearn</groupId>
             <artifactId>rulelearn</artifactId>
-            <version>0.15.0</version>
+            <version>0.17.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
         <dependency>
