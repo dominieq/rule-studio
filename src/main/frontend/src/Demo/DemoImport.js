@@ -5,22 +5,22 @@ class DemoImport extends Component {
         super(props);
 
         this.state = {
-            file1: '',
-            file2: '',
-            error: 'abcd',
+            metadata: '',
+            data: '',
+            error: '',
             msg: ''
         }
     }
 
-    onFile1Change = (event) => {
+    onMetadataChange = (event) => {
         this.setState({
-            file1: event.target.files[0]
+            metadata: event.target.files[0]
         })
     }
 
-    onFile2Change = (event) => {
+    onDataChange = (event) => {
         this.setState({
-            file2: event.target.files[0]
+            data: event.target.files[0]
         })
     }
 
@@ -32,10 +32,11 @@ class DemoImport extends Component {
         })
 
         let data = new FormData()
-        data.append('file', this.state.file1)
-        data.append('name', this.state.file1.name)
+        data.append('metadata', this.state.metadata)
+        data.append('data', this.state.data)
+        data.append('format', 'csv')
 
-        fetch('http://localhost:8080/import?content=metadata', {
+        fetch('http://localhost:8080/import', {
             method: 'POST',
             body: data,
         }).then(response => {
@@ -47,30 +48,6 @@ class DemoImport extends Component {
                 error: '',
                 msg: 'Sucessfully uploaded file'
             })
-
-            data = new FormData()
-            data.append('file', this.state.file2)
-            data.append('name', this.state.file2.name)
-
-            fetch('http://localhost:8080/import?content=data&format=csv', {
-                method: 'POST',
-                body: data,
-            }).then(response => {
-                console.log(response)
-                response.text().then(result => {
-                    console.log(result)
-                })
-                this.setState({
-                    error: '',
-                    msg: 'Sucessfully uploaded file'
-                })
-            }).catch(err => {
-                console.log(err)
-                this.setState({
-                    error: err
-                })
-            })
-
         }).catch(err => {
             console.log(err)
             this.setState({
@@ -79,19 +56,6 @@ class DemoImport extends Component {
         })
     }
 
-    clickHandler = () => {
-        console.log('Button clicked')
-        fetch('http://localhost:8080/import', {
-            method: 'GET'
-        }).then(response => {
-            console.log(response)
-            console.log(response.text().then( odp => console.log(odp)))
-        }).catch(error =>{
-            console.log(error)
-        })
-    }
-
-
     render() {
         return (
             <div>
@@ -99,12 +63,11 @@ class DemoImport extends Component {
                 <h4 style={{color: 'red'}}>{this.state.error}</h4>
                 <h4 style={{color: 'green'}}>{this.state.msg}</h4>
                 <p>metadata</p>
-                <input onChange={this.onFile1Change} type="file"></input>
+                <input onChange={this.onMetadataChange} type="file"></input>
                 <p>data</p>
-                <input onChange={this.onFile2Change} type="file"></input>
-                <button onClick={this.uploadFile}>Upload files</button>
+                <input onChange={this.onDataChange} type="file"></input>
                 <br />
-                <button onClick={this.clickHandler}>Create information table</button>
+                <button onClick={this.uploadFile}>Upload</button>
             </div>
         )
     }

@@ -19,23 +19,40 @@ import java.nio.file.Paths;
 @RestController
 public class ImportController {
 
-    //private static final Logger logger = LoggerFactory.getLogger(RuleLearnIndexController.class);
     private static final Logger logger = LoggerFactory.getLogger(ImportController.class);
-
-    public static String pathMetadata;
-
-    public static String pathData;
-
-    public static String formatData;
-
-    public static String pathRules;
 
     public static InformationTable informationTable;
 
+    @PostMapping
+    public String uploadFile(
+            @RequestParam("metadata") MultipartFile metadataFile,
+            @RequestParam("data") MultipartFile dataFile,
+            @RequestParam("format") String format) throws IOException {
 
+        logger.info("Current location: " + System.getProperty("user.dir"));
+        logger.info("File's format: " + format);
 
-    @GetMapping
-    public String getImportedData() {
+        String tmpDirName = "tmpDir/";
+        File tmpDir = new File(tmpDirName);
+        if(!tmpDir.exists()) {
+            tmpDir.mkdir();
+        }
+
+        String pathMetadata = tmpDirName + metadataFile.getOriginalFilename();
+        byte[] bytes = metadataFile.getBytes();
+        Path path = Paths.get(pathMetadata);
+        Files.write(path, bytes);
+
+        String pathData = tmpDirName + dataFile.getOriginalFilename();
+        bytes = dataFile.getBytes();
+        path = Paths.get(pathData);
+        Files.write(path, bytes);
+
+        String formatData = format;
+
+        logger.info("metadata:\t" + metadataFile.getContentType());
+        logger.info("data:\t" + dataFile.getContentType());
+
         informationTable = null;
         try {
             if(formatData.equals("csv")) {
@@ -57,54 +74,6 @@ public class ImportController {
             logger.info("Error reading information table from json file.");
         }
 
-        return "ImportController.importData";
-    }
-
-    @PostMapping
-    public String uploadFile(
-            @RequestParam("file") MultipartFile multipartFile,
-            @RequestParam("content") String content,
-            @RequestParam(value = "format", required = false) String format) throws IOException {
-
-        logger.info("Current location: " + System.getProperty("user.dir"));
-        logger.info("File's content: " + content);
-        logger.info("File's format: " + format);
-
-        String tmpDirName = "tmpDir/";
-        File tmpDir = new File(tmpDirName);
-        if(!tmpDir.exists()) {
-            tmpDir.mkdir();
-        }
-
-        String pathName = tmpDirName + multipartFile.getOriginalFilename();
-        byte[] bytes = multipartFile.getBytes();
-        Path path = Paths.get(pathName);
-        Files.write(path, bytes);
-
-        switch (content) {
-            case "metadata": {
-                pathMetadata = pathName;
-                break;
-            }
-            case "data": {
-                pathData = pathName;
-                break;
-            }
-            case "rules": {
-                pathRules = pathName;
-                break;
-            }
-        }
-
-        if(content.equals("data")) {
-            formatData = format;
-            logger.info("Format of data: " + formatData);
-        }
-
-        logger.info(multipartFile.getOriginalFilename());
-        logger.info(multipartFile.getContentType());
-        logger.info(multipartFile.getBytes().toString());
-
-        return "End of executing upload.";
+        return "End of uploadFile (POST)";
     }
 }
