@@ -1,18 +1,15 @@
 package pl.put.poznan.rulework.service;
 
-import org.rulelearn.data.InformationTable;
-import org.rulelearn.data.InformationTableBuilder;
+import org.rulelearn.data.*;
+import org.rulelearn.data.csv.ObjectParser;
+import org.rulelearn.data.json.AttributeParser;
+import org.rulelearn.types.EvaluationField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.*;
 
 @Service
 public class ImportService {
@@ -27,43 +24,27 @@ public class ImportService {
         logger.info("Data:\t" + dataFile.getOriginalFilename() + "\t" + dataFile.getContentType());
         logger.info("Data's format: " + format);
 
-        String tmpDirName = "tmpDir/";
-        File tmpDir = new File(tmpDirName);
-        if(!tmpDir.exists()) {
-            tmpDir.mkdir();
+        Attribute[] attributes;
+        AttributeParser attributeParser = new AttributeParser();
+        Reader reader = new InputStreamReader(metadataFile.getInputStream());
+        attributes = attributeParser.parseAttributes(reader);
+        for(int i = 0; i < attributes.length; i++) {
+            logger.info(i + ":\t" + attributes[i]);
         }
 
-        String pathMetadata = tmpDirName + metadataFile.getOriginalFilename();
-        byte[] bytes = metadataFile.getBytes();
-        Path path = Paths.get(pathMetadata);
-        Files.write(path, bytes);
-
-        String pathData = tmpDirName + dataFile.getOriginalFilename();
-        bytes = dataFile.getBytes();
-        path = Paths.get(pathData);
-        Files.write(path, bytes);
-
-        String formatData = format;
-
-        informationTable = null;
-        try {
-            if(formatData.equals("csv")) {
-                informationTable = InformationTableBuilder.safelyBuildFromCSVFile(pathMetadata, pathData, true, ',');
-            } else {
-                informationTable = InformationTableBuilder.safelyBuildFromJSONFile(pathMetadata, pathData);
+        ObjectParser objectParser = new ObjectParser.Builder(attributes).header(true).build();
+        reader = new InputStreamReader(dataFile.getInputStream());
+        informationTable = objectParser.parseObjects(reader);
+        Table<EvaluationAttribute, EvaluationField> table = informationTable.getActiveConditionAttributeFields();
+        for(int i = 0; i < table.getNumberOfObjects(); i++) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(i);
+            sb.append(":");
+            for(int j = 0; j < table.getNumberOfAttributes(); j++) {
+                sb.append("\t");
+                sb.append(table.getField(i, j));
             }
-        }
-        catch (FileNotFoundException e) {
-            logger.error(e.getMessage(), e);
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        if(informationTable != null) {
-            logger.info("Information table read from file.");
-            logger.info("# objects: " + informationTable.getNumberOfObjects());
-        } else {
-            logger.info("Error reading information table from json file.");
+            logger.info(sb.toString());
         }
 
         return "End of uploadFile (POST)";
