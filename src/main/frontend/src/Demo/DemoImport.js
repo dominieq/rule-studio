@@ -34,19 +34,30 @@ class DemoImport extends Component {
         let data = new FormData()
         data.append('metadata', this.state.metadata)
         data.append('data', this.state.data)
-        data.append('format', 'csv')
 
         fetch('http://localhost:8080/import', {
             method: 'POST',
             body: data,
         }).then(response => {
             console.log(response)
-            response.text().then(result => {
-                console.log(result)
-            })
             this.setState({
                 error: '',
                 msg: 'Sucessfully uploaded file'
+            })
+            return response.json()
+        }).then(result => {
+            console.log("Wynik dzialania response.json():")
+            console.log(result)
+            var [attributes, objects] = result
+
+            console.log("Atrybuty:")
+            attributes.forEach(element => {
+                console.log(element)
+            });
+
+            console.log("Obiekty:")
+            objects.forEach(element => {
+                console.log(element)
             })
         }).catch(err => {
             console.log(err)
