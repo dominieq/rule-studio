@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Box from "@material-ui/core/Box";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -39,17 +40,17 @@ class ProjectMenu extends Component {
     };
 
     render() {
+        const value = this.props.projects[this.state.selectedIndex];
+
         return (
-            <div>
+            <Box component={"div"} flexGrow={1}>
                 <List component={"nav"} >
                     <ListItem
                         button
                         aria-haspopup={"true"}
                         aria-controls={"lock-menu"}
                         onClick={this.handleClickListItem}>
-                        <ListItemText
-                            primary={"Active project: "}
-                            secondary={this.props.projects[this.state.selectedIndex]} />
+                        <ListItemText primary={"Active project: " + value}/>
                     </ListItem>
                 </List>
                 <Menu
@@ -66,7 +67,7 @@ class ProjectMenu extends Component {
                         </MenuItem>
                     ))}
                 </Menu>
-            </div>
+            </Box>
         )
     }
 }
