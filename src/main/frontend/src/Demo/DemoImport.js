@@ -8,7 +8,8 @@ class DemoImport extends Component {
             metadata: '',
             data: '',
             error: '',
-            msg: ''
+            msg: '',
+            id_projektu: '3e004b4d-fb9a-4413-84b5-4d3f26c06f70'
         }
     }
 
@@ -24,7 +25,7 @@ class DemoImport extends Component {
         })
     }
 
-    uploadFile = (event) => {
+    createProject = (event) => {
         event.preventDefault();
         this.setState({
             error: '',
@@ -32,6 +33,7 @@ class DemoImport extends Component {
         })
 
         let data = new FormData()
+        data.append('name', "Tymczasowa nazwa projektu")
         data.append('metadata', this.state.metadata)
         data.append('data', this.state.data)
 
@@ -48,17 +50,46 @@ class DemoImport extends Component {
         }).then(result => {
             console.log("Wynik dzialania response.json():")
             console.log(result)
-            var [attributes, objects] = result
 
             console.log("Atrybuty:")
-            attributes.forEach(element => {
+            result.attributes.forEach(element => {
                 console.log(element)
             });
 
             console.log("Obiekty:")
-            objects.forEach(element => {
+            result.objects.forEach(element => {
                 console.log(element)
             })
+        }).catch(err => {
+            console.log(err)
+            this.setState({
+                error: err
+            })
+        })
+    }
+
+    getData = (event) => {
+        event.preventDefault()
+        this.setState({
+            error: '',
+            msg: ''
+        })
+
+        let data = new FormData()
+        data.append('id', this.state.id_projektu)
+
+        fetch(`http://localhost:8080/import?id=${this.state.id_projektu}`, {
+            method: 'GET'
+        }).then(response => {
+            console.log(response)
+            this.setState({
+                error: '',
+                msg: 'Sucessfully send get'
+            })
+            return response.json()
+        }).then(result => {
+            console.log("Wynik dzialania response.json():")
+            console.log(result)
         }).catch(err => {
             console.log(err)
             this.setState({
@@ -78,7 +109,8 @@ class DemoImport extends Component {
                 <p>data</p>
                 <input onChange={this.onDataChange} type="file"></input>
                 <br />
-                <button onClick={this.uploadFile}>Upload</button>
+                <button onClick={this.createProject}>Upload</button>
+                <button onClick={this.getData}>import GET</button>
             </div>
         )
     }

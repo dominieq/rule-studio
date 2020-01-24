@@ -10,22 +10,28 @@ import org.rulelearn.data.json.InformationTableWriter;
 import org.rulelearn.types.EvaluationField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.model.Project;
+import pl.put.poznan.rulework.model.ProjectsContainer;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ImportService {
 
     private static final Logger logger = LoggerFactory.getLogger(ImportService.class);
 
-    public static InformationTable informationTable;
+    @Autowired
+    ProjectsContainer projectsContainer;
 
-    public String importData(MultipartFile metadataFile, MultipartFile dataFile) throws IOException {
+    public Project createProject(String name, MultipartFile metadataFile, MultipartFile dataFile) throws IOException {
 
+        logger.info("Name:\t" + name);
         logger.info("Metadata:\t" + metadataFile.getOriginalFilename() + "\t" + metadataFile.getContentType());
         logger.info("Data:\t" + dataFile.getOriginalFilename() + "\t" + dataFile.getContentType());
 
@@ -36,6 +42,8 @@ public class ImportService {
         for(int i = 0; i < attributes.length; i++) {
             logger.info(i + ":\t" + attributes[i]);
         }
+
+        InformationTable informationTable = null;
 
         if (dataFile.getContentType().equals("application/json")) {
             logger.info("Data type is json");
@@ -52,6 +60,10 @@ public class ImportService {
             logger.error("Unrecognized format of data file: " + dataFile.getContentType());
         }
 
+        Project project = new Project(name, informationTable);
+        projectsContainer.getProjectArray().add(project);
+        logger.info(project.toString());
+
 
         Table<EvaluationAttribute, EvaluationField> table = informationTable.getActiveConditionAttributeFields();
         for(int i = 0; i < table.getNumberOfObjects(); i++) {
@@ -65,27 +77,21 @@ public class ImportService {
             logger.info(sb.toString());
         }
 
-        StringWriter attributesWriter = new StringWriter();
-        StringWriter objectsWriter = new StringWriter();
-        InformationTableWriter itw = new InformationTableWriter(true);
-        itw.writeAttributes(informationTable, attributesWriter);
-        itw.writeObjects(informationTable, objectsWriter);
-        logger.info("attributesWriter:\n" + attributesWriter);
-        logger.info("objectsWriter:\n" + objectsWriter);
-
-        List<String> array = new ArrayList<>();
-        array.add(attributesWriter.toString());
-        array.add(objectsWriter.toString());
-
-        /*JsonArray attributesJson = (JsonArray) new JsonParser().parse(attributesWriter.toString());
-        JsonArray objectsJson = (JsonArray) new JsonParser().parse(objectsWriter.toString());
-        JsonArray jsonArray = new JsonArray();
-        jsonArray.add(attributesJson);
-        jsonArray.add(objectsJson);*/
-
-
-
-        return array.toString();
+        return project;
     }
 
+    public List<Project> getData(UUID id) {
+        StringBuilder sb = new StringBuilder();
+        projectsContainer.getProjectArray().forEach(project -> {
+            sb.append(project.toString());
+        });
+        logger.info(sb.toString());
+
+        return projectsContainer.getProjectArray();
+    }
+
+    public Project getProject() {
+
+        return projectsContainer.getProjectArray().get(0);
+    }
 }

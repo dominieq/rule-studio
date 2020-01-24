@@ -7,9 +7,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.service.ImportService;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 @CrossOrigin
 @RequestMapping("/import")
@@ -25,13 +28,31 @@ public class ImportController {
         this.importService = importService;
     }
 
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity< List<Project> > getData(
+            @RequestParam("id") UUID id) {
+
+        logger.info("Getting data");
+        List<Project> result = importService.getData(id);
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/project", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Project> getProject() {
+
+        logger.info("Getting first project");
+        Project result = importService.getProject();
+        return ResponseEntity.ok(result);
+    }
+
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> uploadFile(
+    public ResponseEntity<Project> createProject(
+            @RequestParam("name") String name,
             @RequestParam("metadata") MultipartFile metadataFile,
             @RequestParam("data") MultipartFile dataFile) throws IOException {
 
         logger.info("Importing data");
-        String result = importService.importData(metadataFile, dataFile);
+        Project result = importService.createProject(name, metadataFile, dataFile);
         return ResponseEntity.ok(result);
     }
 }
