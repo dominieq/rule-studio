@@ -1,22 +1,36 @@
 import React from 'react';
 import Header from "../Header/Header";
+import Body from "../Body/Body";
 import './App.css';
-import logo from "./resources/images/logo_transparent.png";
-import names from "./resources/demo/ProjectMenuNames";
+import names from "./ProjectMenuNames";
 
 class App extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            display: null,
             currentProject: 0,
             projects: names,
+            files: null
         };
+    }
+
+    selectHeaderPage(name) {
+        this.setState({
+            display: name
+        });
     }
 
     selectProject(index) {
         this.setState({
             currentProject: this.state.projects[index]
+        })
+    }
+
+    uploadFiles(files, setType) {
+        this.setState({
+            files: files
         })
     }
 
@@ -26,11 +40,13 @@ class App extends React.Component {
                 <Header
                     currentProject={this.state.currentProject}
                     projects={this.state.projects}
+                    selectHeaderPage={(n) => this.selectHeaderPage(n)}
                     selectProject={(i) => this.selectProject(i)}
                 />
-                <div className={"App-body"}>
-                    <img src={logo} className={"App-logo"} alt={"logo"} />
-                </div>
+                <Body
+                    display={this.state.display}
+                    uploadFiles={(f, t) => this.uploadFiles(f, t)}
+                />
             </div>
         );
     }
