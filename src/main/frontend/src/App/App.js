@@ -2,7 +2,6 @@ import React from 'react';
 import Header from "../Header/Header";
 import Body from "../Body/Body";
 import './App.css';
-import names from "./ProjectMenuNames";
 
 class App extends React.Component {
     constructor(props) {
@@ -11,7 +10,7 @@ class App extends React.Component {
         this.state = {
             display: null,
             currentProject: 0,
-            projects: names,
+            projects: null,
             files: null
         };
     }
