@@ -1,25 +1,39 @@
 import React, {Component} from "react";
 import Grid from "@material-ui/core/Grid";
 import "./TabBody.css";
+import DnDZone from "./DnDZone";
 
 
 class TabBody extends Component {
+    constructor(props) {
+        super(props);
+
+        this.parseJson = this.parseJson.bind(this);
+        this.parseXML = this.parseXML.bind(this);
+    }
+
+    parseJson(file) {
+        const jsonFile =  JSON.parse(file);
+        console.log(jsonFile);
+    }
+
+    parseXML(file) {
+        console.log(file)
+    }
 
     render() {
         return (
             <Grid container spacing={2} direction={"row"}>
                 <Grid item xs container spacing={2} direction={"column"}>
                     <Grid item>
-                        <div className={"input-wrapper"}>
-                            <input type={"file"} name={"file"} id={"file"} className={"file-input"}/>
-                            <label htmlFor={"file"}>{this.props.textValue}</label>
-                        </div>
+                        <DnDZone onChange={(f) => this.parseJson(f)}>
+                            {this.props.textValue}
+                        </DnDZone>
                     </Grid>
                     <Grid item>
-                        <div className={"input-wrapper"}>
-                            <input type={"file"} name={"file"} id={"file"} className={"file-input"}/>
-                            <label htmlFor={"file"}>Select metadata</label>
-                        </div>
+                        <DnDZone onChange={(f) => this.parseXML(f)}>
+                            Select metadata
+                        </DnDZone>
                     </Grid>
                 </Grid>
                 <Grid item xs>
