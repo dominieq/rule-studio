@@ -3,6 +3,7 @@ import Header from "../Header/Header";
 import './App.css';
 import logo from "./resources/images/logo_transparent.png";
 import names from "./resources/demo/ProjectMenuNames";
+import Demo from '../Demo/Demo';
 
 class App extends React.Component {
     constructor(props) {
@@ -31,6 +32,8 @@ class App extends React.Component {
                 <div className={"App-body"}>
                     <img src={logo} className={"App-logo"} alt={"logo"} />
                 </div>
+
+                <Demo></Demo>
             </div>
         );
     }

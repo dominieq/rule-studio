@@ -11,6 +11,7 @@ import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.service.ImportService;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,31 +29,31 @@ public class ImportController {
         this.importService = importService;
     }
 
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity< List<Project> > getData(
+    /*@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity< HashMap<UUID, Project> > getData(
             @RequestParam("id") UUID id) {
 
         logger.info("Getting data");
-        List<Project> result = importService.getData(id);
+        HashMap<UUID, Project> result = importService.getData(id);
         return ResponseEntity.ok(result);
-    }
+    }*/
 
-    @RequestMapping(value = "/project", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    /*@RequestMapping(value = "/project", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Project> getProject() {
 
         logger.info("Getting first project");
         Project result = importService.getProject();
         return ResponseEntity.ok(result);
-    }
+    }*/
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Project> createProject(
+    public ResponseEntity<Project> createProjectWithData(
             @RequestParam("name") String name,
             @RequestParam("metadata") MultipartFile metadataFile,
             @RequestParam("data") MultipartFile dataFile) throws IOException {
 
         logger.info("Importing data");
-        Project result = importService.createProject(name, metadataFile, dataFile);
+        Project result = importService.createProjectWithData(name, metadataFile, dataFile);
         return ResponseEntity.ok(result);
     }
 }

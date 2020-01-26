@@ -2,22 +2,22 @@ package pl.put.poznan.rulework.model;
 
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.UUID;
 
 @Component
 public class ProjectsContainer {
-    private List<Project> projectArray;
+    private HashMap<UUID, Project> projectHashMap;
 
     public ProjectsContainer() {
-        projectArray = new ArrayList<>();
+        projectHashMap = new HashMap<>();
     }
 
-    public List<Project> getProjectArray() {
-        return projectArray;
+    public HashMap<UUID, Project> getProjectHashMap() {
+        return projectHashMap;
     }
 
-    public void setProjectArray(List<Project> projectArray) {
-        this.projectArray = projectArray;
+    public void setProjectHashMap(HashMap<UUID, Project> projectHashMap) {
+        this.projectHashMap = projectHashMap;
     }
 }

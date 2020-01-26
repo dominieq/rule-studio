@@ -1,12 +1,8 @@
 package pl.put.poznan.rulework.service;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.rulelearn.data.*;
 import org.rulelearn.data.csv.ObjectParser;
 import org.rulelearn.data.json.AttributeParser;
-import org.rulelearn.data.json.InformationTableWriter;
 import org.rulelearn.types.EvaluationField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +13,7 @@ import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +25,7 @@ public class ImportService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    public Project createProject(String name, MultipartFile metadataFile, MultipartFile dataFile) throws IOException {
+    public Project createProjectWithData(String name, MultipartFile metadataFile, MultipartFile dataFile) throws IOException {
 
         logger.info("Name:\t" + name);
         logger.info("Metadata:\t" + metadataFile.getOriginalFilename() + "\t" + metadataFile.getContentType());
@@ -61,7 +57,7 @@ public class ImportService {
         }
 
         Project project = new Project(name, informationTable);
-        projectsContainer.getProjectArray().add(project);
+        projectsContainer.getProjectHashMap().put(project.getId(), project);
         logger.info(project.toString());
 
 
@@ -80,18 +76,18 @@ public class ImportService {
         return project;
     }
 
-    public List<Project> getData(UUID id) {
+    /*public HashMap<UUID, Project> getData(UUID id) {
         StringBuilder sb = new StringBuilder();
-        projectsContainer.getProjectArray().forEach(project -> {
+        projectsContainer.getProjectHashMap().forEach((key, project) -> {
             sb.append(project.toString());
         });
         logger.info(sb.toString());
 
-        return projectsContainer.getProjectArray();
-    }
+        return projectsContainer.getProjectHashMap();
+    }*/
 
-    public Project getProject() {
+    /*public Project getProject() {
 
-        return projectsContainer.getProjectArray().get(0);
-    }
+        return projectsContainer.getProjectHashMap().get(0);
+    }*/
 }
