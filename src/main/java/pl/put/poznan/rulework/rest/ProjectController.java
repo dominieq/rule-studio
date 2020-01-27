@@ -11,7 +11,6 @@ import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.service.ProjectService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 
 @CrossOrigin

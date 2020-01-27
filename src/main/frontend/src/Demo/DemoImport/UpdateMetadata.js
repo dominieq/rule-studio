@@ -1,13 +1,19 @@
 import React, { Component } from 'react'
 
-class CreateProjectWithData extends Component {
+class UpdateMetadata extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             metadata: '',
-            data: '',
+            id_projektu: '3e004b4d-fb9a-4413-84b5-4d3f26c06f70'
         }
+    }
+
+    handleIdChange = (event) => {
+        this.setState({
+            id_projektu: event.target.value
+        })
     }
 
     onMetadataChange = (event) => {
@@ -16,22 +22,15 @@ class CreateProjectWithData extends Component {
         })
     }
 
-    onDataChange = (event) => {
-        this.setState({
-            data: event.target.files[0]
-        })
-    }
-
-    createProjectWithData = (event) => {
+    updateMetadata = (event) => {
         event.preventDefault();
 
         let data = new FormData()
-        data.append('name', "Tymczasowa nazwa projektu")
+        data.append('id', this.state.id_projektu)
         data.append('metadata', this.state.metadata)
-        data.append('data', this.state.data)
 
-        fetch('http://localhost:8080/import/data/createProjectWithData', {
-            method: 'POST',
+        fetch('http://localhost:8080/import/data/updateMetadata', {
+            method: 'PATCH',
             body: data,
         }).then(response => {
             console.log(response)
@@ -57,16 +56,16 @@ class CreateProjectWithData extends Component {
     render() {
         return (
             <div>
-                <h3>Create project with data</h3>
+                <h3>Update metadata</h3>
                 <p>metadata</p>
                 <input onChange={this.onMetadataChange} type="file"></input>
-                <p>data</p>
-                <input onChange={this.onDataChange} type="file"></input>
                 <br />
-                <button onClick={this.createProjectWithData}>createProjectWithData</button>
+                id->
+                <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
+                <button onClick={this.updateMetadata}>updateMetadata</button>
             </div>
         )
     }
 }
 
-export default CreateProjectWithData
+export default UpdateMetadata

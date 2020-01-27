@@ -22,7 +22,7 @@ public class ProjectConverter {
 
             StringWriter attributesWriter = new StringWriter();
             StringWriter objectsWriter = new StringWriter();
-            InformationTableWriter itw = new InformationTableWriter(true);
+            InformationTableWriter itw = new InformationTableWriter(false);
             itw.writeAttributes(project.getInformationTable(), attributesWriter);
             itw.writeObjects(project.getInformationTable(), objectsWriter);
             jsonGenerator.writeFieldName("attributes");

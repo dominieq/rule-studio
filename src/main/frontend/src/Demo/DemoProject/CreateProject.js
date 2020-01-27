@@ -5,10 +5,14 @@ class CreateProject extends Component {
         super(props);
 
         this.state = {
-            error: '',
-            msg: '',
-            id_projektu: '3e004b4d-fb9a-4413-84b5-4d3f26c06f70'
+            name: 'newProject'
         }
+    }
+
+    handleNameChange = (event) => {
+        this.setState({
+            name: event.target.value
+        })
     }
 
     createProject = (event) => {
@@ -19,7 +23,7 @@ class CreateProject extends Component {
         })
 
         let data = new FormData()
-        data.append('name', 'newProject')
+        data.append('name', this.state.name)
 
         fetch('http://localhost:8080/project', {
             method: 'POST',
@@ -55,6 +59,8 @@ class CreateProject extends Component {
     render() {
         return (
             <div>
+                name->
+                <input type='text' value={this.state.name} onChange={this.handleNameChange} />
                 <button onClick={this.createProject}>createProject</button>
             </div>
         )

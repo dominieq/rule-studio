@@ -5,47 +5,51 @@ class RenameProject extends Component {
         super(props);
 
         this.state = {
-            error: '',
-            msg: '',
-            id_projektu: '3e004b4d-fb9a-4413-84b5-4d3f26c06f70'
+            id_projektu: '3e004b4d-fb9a-4413-84b5-4d3f26c06f70',
+            name: 'renamedProject'
         }
+    }
+
+    handleIdChange = (event) => {
+        this.setState({
+            id_projektu: event.target.value
+        })
+    }
+
+    handleNameChange = (event) => {
+        this.setState({
+            name: event.target.value
+        })
     }
 
     renameProject = (event) => {
         event.preventDefault()
-        this.setState({
-            error: '',
-            msg: ''
-        })
 
         let data = new FormData()
         data.append('id', this.state.id_projektu)
-        data.append('name', 'newProject')
+        data.append('name', this.state.name)
 
         fetch('http://localhost:8080/project', {
             method: 'PATCH',
             body: data
         }).then(response => {
             console.log(response)
-            this.setState({
-                error: '',
-                msg: 'Sucessfully send patch'
-            })
             return response.json()
         }).then(result => {
             console.log("Wynik dzialania response.json():")
             console.log(result)
         }).catch(err => {
             console.log(err)
-            this.setState({
-                error: err
-            })
         })
     }
 
     render() {
         return (
             <div>
+                id->
+                <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
+                name->
+                <input type='text' value={this.state.name} onChange={this.handleNameChange} />
                 <button onClick={this.renameProject}>renameProject</button>
             </div>
         )

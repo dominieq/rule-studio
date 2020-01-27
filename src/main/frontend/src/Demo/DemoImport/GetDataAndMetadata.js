@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 
-class GetProject extends Component {
+class GetDataAndMetadata extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f'
+            id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2'
         }
     }
 
@@ -15,10 +15,10 @@ class GetProject extends Component {
         })
     }
 
-    getProject = (event) => {
-        event.preventDefault()
+    getDataAndMetadata = (event) => {
+        event.preventDefault();
 
-        fetch(`http://localhost:8080/project?id=${this.state.id_projektu}`, {
+        fetch(`http://localhost:8080/import/data/getDataAndMetadata?id=${this.state.id_projektu}`, {
             method: 'GET'
         }).then(response => {
             console.log(response)
@@ -36,10 +36,10 @@ class GetProject extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                <button onClick={this.getProject}>getProject</button>
+                <button onClick={this.getDataAndMetadata}>getDataAndMetadata</button>
             </div>
         )
     }
 }
 
-export default GetProject
+export default GetDataAndMetadata
