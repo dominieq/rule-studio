@@ -192,7 +192,7 @@ class DisplayData extends React.Component {
                     }
                 break;
                 default: //at the end of rows array
-                    newRow.uniqueLP = nextRows.length+1;
+                    newRow.uniqueLP = nextRows[nextRows.length-1].uniqueLP + 1;
                     nextRows.push(newRow);
                 break;
             };
@@ -211,7 +211,7 @@ class DisplayData extends React.Component {
               <span>
               {this.state.selectedRows.length} {rowText} selected
               </span>
-              < DataButtons handleRemoveRow={this.handleRemoveRow}/>
+             
               
                 <ReactDataGrid
                     columns={kolumny.filter(c => c.visible !== false)}
