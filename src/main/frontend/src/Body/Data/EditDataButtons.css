@@ -1,0 +1,9 @@
+.left-aligned {
+    position: relative;
+    text-align: left;
+    float: left;
+}
+
+div.left-aligned {
+    overflow: hidden;
+}

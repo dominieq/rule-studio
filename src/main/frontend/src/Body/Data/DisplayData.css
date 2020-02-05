@@ -11,9 +11,113 @@
     border: solid 1px red;
 }
 
-div.react-grid-HeaderCell.color {
-    background-color: red;
+.react-grid-HeaderCell {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background: #FFFFFF;
+  color: #000000; /* 100%: FF, 87%: DE, 70%: B3, 54%: 8A, 50%: 80, 38%: 61, 12%: 1F */
+  padding: 8px;
+  font-weight: bold;
+  border-right: 1px solid #dddddd;
+  border-bottom: 1px solid #dddddd;
 }
+
+/* cell 
+.react-grid-Cell {
+  background-color: #212121;
+  color: #B3B3B3;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-right: 1px solid #eee;
+  border-bottom: 1px solid #dddddd;
+}
+/* core 
+.react-grid-Main {
+  background-color: #212121;
+  color: inherit;
+  padding: 0px;
+  outline: 1px solid #212121;
+  clear : both;
+}
+
+.react-grid-Grid {
+  background-color: #FF0000;
+  border: 1px solid #212121;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.react-grid-Canvas {
+  background-color: #212121;
+}
+
+/ rows 
+.react-grid-Row.row-context-menu .react-grid-Cell {
+  background-color: #FF0000;
+}
+
+
+/* header 
+.react-grid-HeaderCell {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background: #FFFFFF;
+  color: #000000; // 100%: FF, 87%: DE, 70%: B3, 54%: 8A, 50%: 80, 38%: 61, 12%: 1F 
+  padding: 8px;
+  font-weight: bold;
+  border-right: 1px solid #dddddd;
+  border-bottom: 1px solid #dddddd;
+}
+
+/* cell 
+.react-grid-Cell {
+  background-color: #212121;
+  color: #B3B3B3;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-right: 1px solid #eee;
+  border-bottom: 1px solid #dddddd;
+}
+/* core 
+.react-grid-Main {
+  background-color: #212121;
+  color: inherit;
+  padding: 0px;
+  outline: 1px solid #212121;
+  clear : both;
+}
+
+.react-grid-Grid {
+  background-color: #FF0000;
+  border: 1px solid #212121;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.react-grid-Canvas {
+  background-color: #212121;
+}
+
+/* rows 
+.react-grid-Row.row-context-menu .react-grid-Cell {
+  background-color: #FF0000;
+}
+*/
+
+
+
 /* Context-Menu */
 .react-contextmenu {
     min-width: 160px;
