@@ -20,14 +20,14 @@ class Header extends Component {
     }
 
     componentDidMount() {
-        if (this.props.projects !== null) {
+        if (this.props.projects.isEmpty) {
             this.setState({
-                projectLoaded: true,
+                projectLoaded: false,
             });
         } else {
             this.setState({
-                projectLoaded: false,
-            })
+                projectLoaded: true,
+            });
         }
     }
 
@@ -50,7 +50,7 @@ class Header extends Component {
                         </Button>
                     </Box>
                     {
-                        this.props.projects !== null ?
+                        this.state.projectLoaded ?
                             <ProjectMenu
                                 currentProject={this.props.currentProject}
                                 projects={this.props.projects}

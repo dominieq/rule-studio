@@ -11,7 +11,7 @@ class Body extends Component {
             case "Help":
                 return <Help />;
             case "Import":
-                return <Import uploadFiles={() => this.props.uploadFiles}/>;
+                return <Import />;
             case "Project":
                 return <ProjectTabs />;
             default:

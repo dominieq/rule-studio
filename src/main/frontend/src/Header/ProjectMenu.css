@@ -1,0 +1,9 @@
+.project-menu {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.project-list {
+    flex-grow: 1;
+}
