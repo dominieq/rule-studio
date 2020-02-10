@@ -11,6 +11,7 @@ class DemoProject extends Component {
         return (
             <div>
                 <hr></hr>
+                <h3>ProjectController</h3>
                 <GetProject></GetProject>
                 <GetProjects></GetProjects>
                 <CreateProject></CreateProject>

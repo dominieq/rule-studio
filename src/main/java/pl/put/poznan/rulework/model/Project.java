@@ -10,11 +10,13 @@ public class Project {
     private UUID id;
     private String name;
     private InformationTable informationTable;
+    private DominanceCones dominanceCones;
 
     public Project(String name) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.informationTable = new InformationTable(new Attribute[0], new ArrayList<>());
+        this.dominanceCones = new DominanceCones();
     }
 
     public Project(String name, InformationTable informationTable) {
@@ -45,6 +47,18 @@ public class Project {
 
     public void setInformationTable(InformationTable informationTable) {
         this.informationTable = informationTable;
+    }
+
+    public DominanceCones getDominanceCones() {
+        if(dominanceCones == null) {
+            dominanceCones = new DominanceCones();
+        }
+
+        return dominanceCones;
+    }
+
+    public void setDominanceCones(DominanceCones dominanceCones) {
+        this.dominanceCones = dominanceCones;
     }
 
     @Override
