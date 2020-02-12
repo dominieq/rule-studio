@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import Box from '@material-ui/core/Box';
 import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
@@ -20,6 +21,12 @@ function TabPanel(props) {
         </Box>
     )
 }
+
+TabPanel.propTypes = {
+    children: PropTypes.any,
+    index: PropTypes.any.isRequired,
+    value: PropTypes.any.isRequired,
+};
 
 class ProjectTabs extends Component {
     constructor(props) {

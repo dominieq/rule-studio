@@ -1,18 +1,19 @@
 import React from 'react';
 import Header from "../Header/Header";
 import Body from "../Body/Body";
+import Project from "./Project"
 import './App.css';
-import names from "./ProjectMenuNames";
 
 class App extends React.Component {
     constructor(props) {
         super(props);
 
+        const dummyProject = new Project('dummy', 'Select your project', []);
+
         this.state = {
             display: null,
-            currentProject: 0,
-            projects: names,
-            files: null
+            currentProject: 1,
+            projects: [dummyProject],
         };
     }
 
@@ -28,12 +29,6 @@ class App extends React.Component {
         })
     }
 
-    uploadFiles(files, setType) {
-        this.setState({
-            files: files
-        })
-    }
-
     render() {
         return (
             <div className="App">
@@ -45,7 +40,6 @@ class App extends React.Component {
                 />
                 <Body
                     display={this.state.display}
-                    uploadFiles={(f, t) => this.uploadFiles(f, t)}
                 />
             </div>
         );

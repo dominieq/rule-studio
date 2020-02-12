@@ -1,0 +1,12 @@
+.import-root {
+    display: flex;
+    justify-content: center;
+    align-items: center
+}
+.tabs-wrapper {
+    margin: 50px
+}
+.tab-body-wrapper {
+    margin: 20px;
+    width: 100%;
+}
