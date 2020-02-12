@@ -24,6 +24,18 @@ public class UnionsWithSingleLimitingDecisionService {
         return projectsContainer.getProjectHashMap().get(id);
     }
 
+    public UnionsWithSingleLimitingDecision getUnionsWithSingleLimitingDecision(UUID id) {
+        logger.info("Id:\t" + id);
+
+        Project project = getProjectFromProjectsContainer(id);
+        if(project == null) {
+            return null;
+        }
+
+        return project.getUnionsWithSingleLimitingDecision();
+    }
+
+
     public UnionsWithSingleLimitingDecision calculate(UUID id, double consistencyThreshold) {
         logger.info("Id:\t" + id);
         logger.info("ConsistencyThreshold:\t" + consistencyThreshold);

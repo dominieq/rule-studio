@@ -1,6 +1,7 @@
 package pl.put.poznan.rulework.rest;
 
 import org.rulelearn.approximations.Unions;
+import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import pl.put.poznan.rulework.service.UnionsWithSingleLimitingDecisionService;
 import java.util.UUID;
 
 @CrossOrigin
-@RequestMapping("/unions")
+@RequestMapping("/unionsWithSingleLimitingDecision")
 @RestController
 public class UnionsWithSingleLimitingDecisionController {
 
@@ -25,13 +26,23 @@ public class UnionsWithSingleLimitingDecisionController {
         this.unionsWithSingleLimitingDecisionService = unionsWithSingleLimitingDecisionService;
     }
 
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UnionsWithSingleLimitingDecision> getDominanceCones(
+            @RequestParam("id") UUID id) {
+        logger.info("Getting unions with single limiting decision...");
+
+        UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.getUnionsWithSingleLimitingDecision(id);
+
+        return ResponseEntity.ok(result);
+    }
+
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Unions> calculate(
+    public ResponseEntity<UnionsWithSingleLimitingDecision> calculate(
             @RequestParam("id")UUID id,
             @RequestParam("consistencyThreshold") double consistencyThreshold) {
         logger.info("Calculating unions with single limiting decision...");
 
-        Unions result = unionsWithSingleLimitingDecisionService.calculate(id, consistencyThreshold);
+        UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.calculate(id, consistencyThreshold);
 
         return ResponseEntity.ok(result);
     }

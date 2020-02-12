@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 
-class Calculate extends Component {
+class GetUnionsWithSingleLimitingDecision extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2',
-            consistencyThreshold: 0
+            id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2'
         }
     }
 
@@ -16,17 +15,11 @@ class Calculate extends Component {
         })
     }
 
-    handleConsistencyThresholdChange = (event) => {
-        this.setState({
-            consistencyThreshold: event.target.value
-        })
-    }
-
-    calculate = (event) => {
+    getUnionsWithSingleLimitingDecision = (event) => {
         event.preventDefault();
 
-        fetch(`http://localhost:8080/unions?id=${this.state.id_projektu}&consistencyThreshold=${this.state.consistencyThreshold}`, {
-            method: 'PUT'
+        fetch(`http://localhost:8080/unionsWithSingleLimitingDecision?id=${this.state.id_projektu}`, {
+            method: 'GET'
         }).then(response => {
             console.log(response)
             return response.json()
@@ -48,12 +41,10 @@ class Calculate extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                consistencyThreshold->
-                <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
-                <button onClick={this.calculate}>calculate</button>
+                <button onClick={this.getUnionsWithSingleLimitingDecision}>getUnionsWithSingleLimitingDecision</button>
             </div>
         )
     }
 }
 
-export default Calculate
+export default GetUnionsWithSingleLimitingDecision

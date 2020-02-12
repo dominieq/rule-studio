@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import DemoProject from './DemoProject'
 import DemoImport from './DemoImport'
 import DemoDominanceCones from './DemoDominanceCones'
-import DemoUnions from './DemoUnions'
+import DemoUnionsWithSingleLimitingDecision from './DemoUnionsWithSingleLimitingDecision'
 
 class Demo extends Component {
 
@@ -12,7 +12,7 @@ class Demo extends Component {
                 <DemoProject></DemoProject>
                 <DemoImport></DemoImport>
                 <DemoDominanceCones></DemoDominanceCones>
-                <DemoUnions></DemoUnions>
+                <DemoUnionsWithSingleLimitingDecision></DemoUnionsWithSingleLimitingDecision>
             </div>
         )
     }
