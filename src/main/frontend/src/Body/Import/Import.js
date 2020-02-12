@@ -36,9 +36,9 @@ class Import extends Component{
         this.setChecked = this.setChecked.bind(this);
     }
 
-    setProjectName(newValue) {
+    setProjectName(event) {
         this.setState({
-            projectName: newValue,
+            projectName: event.target.value,
         });
     }
 
