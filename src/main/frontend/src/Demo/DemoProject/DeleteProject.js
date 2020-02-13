@@ -18,12 +18,8 @@ class DeleteProject extends Component {
     deleteProject = (event) => {
         event.preventDefault()
 
-        let data = new FormData()
-        data.append('id', this.state.id_projektu)
-
-        fetch('http://localhost:8080/project', {
-            method: 'DELETE',
-            body: data
+        fetch(`http://localhost:8080/projects/${this.state.id_projektu}`, {
+            method: 'DELETE'
         }).then(response => {
             console.log(response)
             return response.json()

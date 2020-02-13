@@ -18,7 +18,7 @@ class GetProject extends Component {
     getProject = (event) => {
         event.preventDefault()
 
-        fetch(`http://localhost:8080/project?id=${this.state.id_projektu}`, {
+        fetch(`http://localhost:8080/projects/${this.state.id_projektu}`, {
             method: 'GET'
         }).then(response => {
             console.log(response)

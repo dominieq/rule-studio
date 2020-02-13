@@ -26,10 +26,9 @@ class RenameProject extends Component {
         event.preventDefault()
 
         let data = new FormData()
-        data.append('id', this.state.id_projektu)
         data.append('name', this.state.name)
 
-        fetch('http://localhost:8080/project', {
+        fetch(`http://localhost:8080/projects/${this.state.id_projektu}`, {
             method: 'PATCH',
             body: data
         }).then(response => {

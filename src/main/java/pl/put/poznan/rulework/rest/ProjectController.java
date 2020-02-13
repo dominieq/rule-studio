@@ -7,14 +7,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.service.ProjectService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
 @CrossOrigin
-@RequestMapping("/project")
+@RequestMapping("/projects/{id}")
 @RestController
 public class ProjectController {
 
@@ -29,7 +31,7 @@ public class ProjectController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Project> getProject(
-            @RequestParam("id") UUID id) {
+            @PathVariable("id") UUID id) {
 
         logger.info("Getting project");
         Project result = projectService.getProject(id);
@@ -43,33 +45,21 @@ public class ProjectController {
         return ResponseEntity.ok(result);
     }
 
-    @RequestMapping(value = "/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity< ArrayList<Project> > getProjects() {
-
-        logger.info("Getting projects");
-        ArrayList<Project> result = projectService.getProjects();
-
-        if(result == null) {
-            logger.info("There is no projects");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-        }
-
-        logger.info(result.toString());
-        return ResponseEntity.ok(result);
-    }
-
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Project> createProject(
-            @RequestParam("name") String name) {
+    public ResponseEntity<Project> setProject(
+            @PathVariable(name = "id") UUID id,
+            @RequestParam(name = "metadata", required = false) MultipartFile metadataFile,
+            @RequestParam(name = "data", required = false) MultipartFile dataFle,
+            @RequestParam(name = "rules", required = false) MultipartFile rulesFiles) throws IOException {
 
-        logger.info("Createing project");
-        Project result = projectService.createProject(name);
+        logger.info("Creating project");
+        Project result = projectService.setProject(id, metadataFile, dataFle, rulesFiles);
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Project> renameProject(
-            @RequestParam("id") UUID id,
+            @PathVariable("id") UUID id,
             @RequestParam("name") String name) {
 
         logger.info("Renaming project");
@@ -85,7 +75,7 @@ public class ProjectController {
 
     @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deleteProject(
-            @RequestParam("id") UUID id) {
+            @PathVariable("id") UUID id) {
 
         logger.info("Deleting project");
         String result = projectService.deleteProject(id);

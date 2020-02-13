@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import GetProject from './DemoProject/GetProject'
-import CreateProject from './DemoProject/CreateProject'
-import GetProjects from './DemoProject/GetProjects'
 import RenameProject from './DemoProject/RenameProject'
 import DeleteProject from './DemoProject/DeleteProject'
+import SetProject from './DemoProject/SetProject'
 
 class DemoProject extends Component {
 
@@ -11,9 +10,9 @@ class DemoProject extends Component {
         return (
             <div>
                 <hr></hr>
+                <h2>DemoProject</h2>
                 <GetProject></GetProject>
-                <GetProjects></GetProjects>
-                <CreateProject></CreateProject>
+                <SetProject></SetProject>
                 <RenameProject></RenameProject>
                 <DeleteProject></DeleteProject>
             </div>
