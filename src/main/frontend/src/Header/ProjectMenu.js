@@ -12,8 +12,8 @@ class ProjectMenu extends Component {
 
         this.state = {
             anchorE1: null,
-            numberOfProjects: this.props.projects.size,
-            selectedIndex: this.props.currentProject,
+            primaryText: "No active projects",
+            selectedIndex: this.props.selectedProject,
         };
 
         this.handleClickListItem = this.handleClickListItem.bind(this);
@@ -28,9 +28,13 @@ class ProjectMenu extends Component {
     };
 
     handleMenuItemClick(event, index) {
+        this.props.selectProject(index);
+        this.props.selectBody("Project");
+
         this.setState({
-            selectedIndex: index,
             anchorE1: null,
+            primaryText: "Active project: " + this.props.projects[index].name,
+            selectedIndex: index,
         });
     };
 
@@ -40,13 +44,14 @@ class ProjectMenu extends Component {
         });
     };
 
+    updateNewProject(projects, index) {
+        this.setState({
+            primaryText: "Active project: " + projects[index].name,
+            selectedIndex: index,
+        })
+    }
+
     render() {
-        let value = this.props.projects[0];
-
-        if (this.state.numberOfProjects > 1) {
-            value = this.props.projects[this.state.selectedIndex];
-        }
-
         return (
             <Box component={"div"} flexGrow={1}>
                 <List component={"nav"} >
@@ -55,7 +60,7 @@ class ProjectMenu extends Component {
                         aria-haspopup={"true"}
                         aria-controls={"lock-menu"}
                         onClick={this.handleClickListItem}>
-                        <ListItemText primary={"Active project: " + value.name}/>
+                        <ListItemText primary={this.state.primaryText}/>
                     </ListItem>
                 </List>
                 <Menu
@@ -65,7 +70,7 @@ class ProjectMenu extends Component {
                     onClose={this.handleClose}>
                     {this.props.projects.map((option, index) => (
                         <MenuItem
-                            key={option.name}
+                            key={option.id}
                             disabled={index === 0}
                             selected={index === this.state.selectedIndex}
                             onClick={event => this.handleMenuItemClick(event, index)}>

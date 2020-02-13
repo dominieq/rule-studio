@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import HomeIcon from "@material-ui/icons/Home";
@@ -12,27 +11,22 @@ class Header extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            projectLoaded: false,
-        };
+        this.projectMenu = React.createRef();
 
-        this.selectHeaderPage = this.selectHeaderPage.bind(this);
+        this.changeBody = this.changeBody.bind(this);
+        this.changeProject = this.changeProject.bind(this);
     }
 
-    componentDidMount() {
-        if (this.props.projects.isEmpty) {
-            this.setState({
-                projectLoaded: false,
-            });
-        } else {
-            this.setState({
-                projectLoaded: true,
-            });
-        }
+    changeBody(name) {
+        this.props.setBody(name);
     }
 
-    selectHeaderPage(name) {
-        this.props.selectHeaderPage(name);
+    changeProject(index) {
+        this.props.setCurrentProject(index);
+    }
+
+    updateHeader(projects, index) {
+        this.projectMenu.current.updateNewProject(projects, index);
     }
 
     render() {
@@ -40,24 +34,22 @@ class Header extends Component {
             <AppBar position={"static"} >
                 <Toolbar>
                     <IconButton
-                        onClick={() => this.selectHeaderPage(null)}>
+                        onClick={() => this.changeBody(null)}>
                         <HomeIcon />
                     </IconButton>
-                    <Box className={this.state.projectLoaded ? null : "import-button-wrapper"}>
-                        <Button
-                            onClick={() => this.selectHeaderPage("Import")}>
-                            Import
-                        </Button>
-                    </Box>
-                    {
-                        this.state.projectLoaded ?
-                            <ProjectMenu
-                                currentProject={this.props.currentProject}
-                                projects={this.props.projects}
-                            /> : null
-                    }
                     <Button
-                        onClick={() => this.selectHeaderPage("Help")}>
+                        onClick={() => this.changeBody("Import")}>
+                        Import
+                    </Button>
+                    <ProjectMenu
+                        ref={this.projectMenu}
+                        selectBody={(n) => this.changeBody(n)}
+                        selectProject={(i) => this.changeProject(i)}
+                        selectedProject={this.props.currentProject}
+                        projects={this.props.projects}
+                    />
+                    <Button
+                        onClick={() => this.changeBody("Help")}>
                         Help
                     </Button>
                 </Toolbar>

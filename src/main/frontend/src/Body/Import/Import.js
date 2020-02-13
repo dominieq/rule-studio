@@ -8,6 +8,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import Button from "@material-ui/core/Button";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import FileSelectZone from "./FileSelectZone";
 import "./Import.css";
@@ -34,6 +35,7 @@ class Import extends Component{
 
         this.setProjectName = this.setProjectName.bind(this);
         this.setChecked = this.setChecked.bind(this);
+        this.acceptProject = this.acceptProject.bind(this);
     }
 
     setProjectName(event) {
@@ -49,6 +51,18 @@ class Import extends Component{
             checked: event.target.checked,
             optionalStyling: event.target.checked ? styleClass[0] : styleClass[1]
         });
+    }
+
+    acceptProject() {
+        console.log("Sending project name and files");
+        const finalProjectName = this.state.projectName;
+        let finalProjectFiles = [];
+        if (this.state.checked) {
+            finalProjectFiles = this.state.projectFiles;
+        }
+
+        this.props.sendProject(finalProjectName, finalProjectFiles);
+        console.log("Project name and files sent");
     }
 
     render() {
@@ -113,6 +127,9 @@ class Import extends Component{
                                     </FileSelectZone>
                                 </ExpansionPanelDetails>
                             </ExpansionPanel>
+                        </Grid>
+                        <Grid>
+                            <Button onClick={this.acceptProject}>Accept</Button>
                         </Grid>
                     </Grid>
                 </Paper>
