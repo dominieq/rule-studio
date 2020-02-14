@@ -1,0 +1,16 @@
+.file-select-zone {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.file-select-zone > div {
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
+.file-select-zone > input {
+    display: none;
+}
