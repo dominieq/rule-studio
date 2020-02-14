@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import DemoProject from './DemoProject'
 import DemoImport from './DemoImport'
 import DemoProjects from './DemoPorjects'
+import DemoDominanceCones from './DemoDominanceCones'
 
 class Demo extends Component {
 
@@ -11,6 +12,7 @@ class Demo extends Component {
                 <DemoProjects></DemoProjects>
                 <DemoProject></DemoProject>
                 <DemoImport></DemoImport>
+                <DemoDominanceCones></DemoDominanceCones>
             </div>
         )
     }
