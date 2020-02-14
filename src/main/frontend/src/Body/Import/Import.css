@@ -1,0 +1,34 @@
+.import-root {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    padding: 50px;
+}
+
+.import-panel {
+    height: 100%;
+    margin: 0;
+    padding: 20px;
+}
+
+.import-project-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.import-project-row > form {
+    margin-left: 15px;
+}
+
+.import-project-files-optional-visible {
+    display: flex;
+    flex-direction: column;
+}
+
+.import-project-files-optional-invisible {
+    display: none;
+}
