@@ -1,47 +1,61 @@
-import React from 'react';
-import {makeStyles} from "@material-ui/core";
+import React, {Component} from 'react';
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import HomeIcon from "@material-ui/icons/Home";
-import ProjectMenu from "./ProjectMenu/ProjectMenu";
+import ProjectMenu from "./ProjectMenu";
+import "./Header.css";
 
+class Header extends Component {
+    constructor(props) {
+        super(props);
 
-const useStyles = makeStyles(() => ({
-    root: {
-        flexGrow: 1
-    },
-    projectMenu: {
-        flexGrow: 1
+        this.projectMenu = React.createRef();
+
+        this.changeBody = this.changeBody.bind(this);
+        this.changeProject = this.changeProject.bind(this);
     }
-}));
 
-function Header(props) {
-    const classes = useStyles();
+    changeBody(name) {
+        this.props.setBody(name);
+    }
 
-    return (
-        <div className={classes.root}>
+    changeProject(index) {
+        this.props.setCurrentProject(index);
+    }
+
+    updateHeader(projects, index) {
+        this.projectMenu.current.updateNewProject(projects, index);
+    }
+
+    render() {
+        return (
             <AppBar position={"static"} >
                 <Toolbar>
-                    <IconButton edge={"start"}>
+                    <IconButton
+                        onClick={() => this.changeBody(null)}>
                         <HomeIcon />
                     </IconButton>
-                    <Button >
+                    <Button
+                        onClick={() => this.changeBody("Import")}>
                         Import
                     </Button>
                     <ProjectMenu
-                        currentProject={props.currentProject}
-                        projects={props.projects}
-                        className={classes.projectMenu}
+                        ref={this.projectMenu}
+                        selectBody={(n) => this.changeBody(n)}
+                        selectProject={(i) => this.changeProject(i)}
+                        selectedProject={this.props.currentProject}
+                        projects={this.props.projects}
                     />
-                    <Button edge={"end"}>
+                    <Button
+                        onClick={() => this.changeBody("Help")}>
                         Help
                     </Button>
                 </Toolbar>
             </AppBar>
-        </div>
-    )
+        )
+    }
 }
 
 export default Header;
