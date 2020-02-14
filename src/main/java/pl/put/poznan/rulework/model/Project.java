@@ -1,5 +1,6 @@
 package pl.put.poznan.rulework.model;
 
+import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 
@@ -11,12 +12,12 @@ public class Project {
     private String name;
     private InformationTable informationTable;
     private DominanceCones dominanceCones;
+    private UnionsWithSingleLimitingDecision unions;
 
     public Project(String name) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.informationTable = new InformationTable(new Attribute[0], new ArrayList<>());
-        this.dominanceCones = new DominanceCones();
     }
 
     public Project(String name, InformationTable informationTable) {
@@ -59,6 +60,14 @@ public class Project {
 
     public void setDominanceCones(DominanceCones dominanceCones) {
         this.dominanceCones = dominanceCones;
+    }
+
+    public UnionsWithSingleLimitingDecision getUnionsWithSingleLimitingDecision() {
+        return unions;
+    }
+
+    public void setUnionsWithSingleLimitingDecision(UnionsWithSingleLimitingDecision unions) {
+        this.unions = unions;
     }
 
     @Override
