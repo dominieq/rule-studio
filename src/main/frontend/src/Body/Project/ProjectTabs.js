@@ -4,6 +4,7 @@ import Box from '@material-ui/core/Box';
 import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
+import DisplayData from "./Data/DisplayData";
 
 function TabPanel(props) {
     const { children, value, index, ...other} = props;
@@ -72,7 +73,7 @@ class ProjectTabs extends Component {
                         <Tab label={"Cross-validation"} {...this.setTabProps(5)} />
                     </Tabs>
                     <TabPanel value={this.state.value} index={0}>
-                        Data
+                        <DisplayData/>
                     </TabPanel>
                     <TabPanel value={this.state.value} index={1}>
                         Dominance cones
