@@ -1,90 +1,139 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import Paper from "@material-ui/core/Paper";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Box from "@material-ui/core/Box";
-import TabBody from "./TabBody";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+import FormControl from "@material-ui/core/FormControl";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
+import Checkbox from "@material-ui/core/Checkbox";
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import Button from "@material-ui/core/Button";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import FileSelectZone from "./FileSelectZone";
 import "./Import.css";
 
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-
-    return (
-        <Box
-            component={"div"}
-            className={"tab-body-wrapper"}
-            role={"tabpanel"}
-            hidden={value !== index}
-            id={`import-tabpanel-${index}`}
-            aria-labelledby={`import-tab-${index}`}
-            {...other}
-            >
-            {value === index && children}
-        </Box>
-    )
+function getOptionalStyleClasses() {
+    return [
+        "import-project-files-optional-visible",
+        "import-project-files-optional-invisible",
+    ]
 }
-
-TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.any.isRequired,
-    value: PropTypes.any.isRequired,
-};
 
 class Import extends Component{
     constructor(props) {
         super(props);
 
+        const styleClass = getOptionalStyleClasses();
+
         this.state = {
-            value: 0,
+            checked: false,
+            optionalStyling: styleClass[1],
+            projectName: "new project",
+            projectFiles: [],
         };
 
-        this.handleChange = this.handleChange.bind(this);
-        this.setTabProps = this.setTabProps.bind(this);
+        this.setProjectName = this.setProjectName.bind(this);
+        this.setChecked = this.setChecked.bind(this);
+        this.acceptProject = this.acceptProject.bind(this);
     }
 
-    handleChange(event, newValue) {
+    setProjectName(event) {
         this.setState({
-            value: newValue,
+            projectName: event.target.value,
         });
-    };
+    }
 
-    setTabProps(index) {
-        return ({
-            id: `import-tab-${index}`,
-            'aria-controls': `import-tabpanel-${index}`,
+    setChecked(event) {
+        const styleClass = getOptionalStyleClasses();
+
+        this.setState({
+            checked: event.target.checked,
+            optionalStyling: event.target.checked ? styleClass[0] : styleClass[1]
         });
+    }
+
+    acceptProject() {
+        console.log("Sending project name and files");
+        const finalProjectName = this.state.projectName;
+        let finalProjectFiles = [];
+        if (this.state.checked) {
+            finalProjectFiles = this.state.projectFiles;
+        }
+
+        this.props.sendProject(finalProjectName, finalProjectFiles);
+        console.log("Project name and files sent");
     }
 
     render() {
         return (
-            <Box component={"div"} className={"import-root"}>
-                <Paper square={true} className={"tabs-wrapper"}>
-                    <Paper elevation={3}>
-                        <Tabs
-                            value={this.state.value}
-                            onChange={this.handleChange}
-                            indicatorColor={"primary"}
-                            textColor={"primary"}
-                            aria-label={"import tabs"}
-                            centered={true}>
+            <div className={"import-root"}>
+                <Paper square={true} className={"import-panel"}>
+                    <Grid container direction={"column"} spacing={2}>
+                        <Grid item component={"div"}
+                              className={"import-project-row"}>
 
-                            <Tab label={"Import data"} {...this.setTabProps(0)} />
-                            <Tab label={"Import rules"} {...this.setTabProps(1)} />
-                        </Tabs>
-                    </Paper>
-                    <TabPanel value={this.state.value} index={0} >
-                        <TabBody textValue={"Select data file"}>
-                            Data
-                        </TabBody>
-                    </TabPanel>
-                    <TabPanel value={this.state.value} index={1} >
-                        <TabBody textValue={"Select rules file"}>
-                            Rules
-                        </TabBody>
-                    </TabPanel>
+                            <Typography component={"div"}>
+                                Project name:
+                            </Typography>
+                            <form noValidate={true} autoComplete={"off"}>
+                                <FormControl variant={"outlined"}>
+                                    <OutlinedInput
+                                        id={"component-outlined"}
+                                        defaultValue={this.state.projectName}
+                                        onChange={this.setProjectName}
+                                        labelWidth={0}/>
+                                </FormControl>
+                            </form>
+                        </Grid>
+                        <Grid item component={"div"}
+                              className={"import-project-row"}>
+
+                            <Checkbox
+                                checked={this.state.checked}
+                                onChange={this.setChecked}
+                                value={"primary"}
+                                color={"primary"}
+                            />
+                            <Typography component={"div"}>
+                                Create project with metadata.
+                            </Typography>
+                        </Grid>
+                        <Grid item component={"div"}
+                              className={this.state.optionalStyling} hidden={!this.state.checked}>
+
+                            <FileSelectZone
+                                textField={"standard-read-only-metadata-input"}
+                                input={"icon-button-metadata"}>
+                                Choose metadata file:
+                            </FileSelectZone>
+                            <ExpansionPanel>
+                                <ExpansionPanelSummary
+                                    expandIcon={<ExpandMoreIcon/>}
+                                    aria-controls={"optional-panel-content"}
+                                >
+                                    <Typography component={"p"}>Choose optional files</Typography>
+                                </ExpansionPanelSummary>
+                                <ExpansionPanelDetails className={this.state.optionalStyling}>
+                                    <FileSelectZone
+                                        textField={"standard-read-only-data-input"}
+                                        input={"icon-button-data"}>
+                                        Choose data file:
+                                    </FileSelectZone>
+                                    <FileSelectZone
+                                        textField={"standard-read-only-rules-input"}
+                                        input={"icon-button-rules"}>
+                                        Choose rules file:
+                                    </FileSelectZone>
+                                </ExpansionPanelDetails>
+                            </ExpansionPanel>
+                        </Grid>
+                        <Grid>
+                            <Button onClick={this.acceptProject}>Accept</Button>
+                        </Grid>
+                    </Grid>
                 </Paper>
-            </Box>
+            </div>
         );
     }
 }

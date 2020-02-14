@@ -8,38 +8,57 @@ class App extends React.Component {
     constructor(props) {
         super(props);
 
-        const dummyProject = new Project('dummy', 'Select your project', []);
+        this.header = React.createRef();
+        const placeholder = new Project(0, 'Select your project', []);
 
         this.state = {
-            display: null,
-            currentProject: 1,
-            projects: [dummyProject],
+            body: null,
+            currentProject: 0,
+            projects: [placeholder],
         };
+
+        this.setBody = this.setBody.bind(this);
+        this.setCurrentProject = this.setCurrentProject.bind(this);
+        this.createProject = this.createProject.bind(this);
     }
 
-    selectHeaderPage(name) {
+    setBody(name) {
         this.setState({
-            display: name
+            body: name
         });
     }
 
-    selectProject(index) {
+    setCurrentProject(index) {
         this.setState({
-            currentProject: this.state.projects[index]
-        })
+            currentProject: index,
+        });
+    }
+
+    createProject(project) {
+        const newProjects = [...this.state.projects, project];
+
+        this.setState({
+            body: "Project",
+            currentProject: newProjects.indexOf(project),
+            projects: newProjects,
+        });
+
+        this.header.current.updateHeader(newProjects, newProjects.indexOf(project));
     }
 
     render() {
         return (
             <div className="App">
                 <Header
+                    ref={this.header}
                     currentProject={this.state.currentProject}
                     projects={this.state.projects}
-                    selectHeaderPage={(n) => this.selectHeaderPage(n)}
-                    selectProject={(i) => this.selectProject(i)}
+                    setBody={(n) => this.setBody(n)}
+                    setCurrentProject={(i) => this.setCurrentProject(i)}
                 />
                 <Body
-                    display={this.state.display}
+                    display={this.state.body}
+                    createProject={(p) => this.createProject(p)}
                 />
             </div>
         );
