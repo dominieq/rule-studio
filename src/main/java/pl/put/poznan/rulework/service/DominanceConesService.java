@@ -37,20 +37,10 @@ public class DominanceConesService {
             return null;
         }
 
-        logger.info(project.getDominanceCones().toString());
-
-        return project.getDominanceCones();
-    }
-
-    public DominanceCones calculate(UUID id) {
-        logger.info("Id:\t" + id);
-
-        Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
+        if(!project.isCalculatedDominanceCones()) {
+            project.getDominanceCones().calculateDCones(project.getInformationTable());
+            project.setCalculatedDominanceCones(true);
         }
-
-        project.getDominanceCones().calculateDCones(project.getInformationTable());
 
         logger.info(project.getDominanceCones().toString());
 
