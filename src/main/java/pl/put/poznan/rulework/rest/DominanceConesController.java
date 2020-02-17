@@ -36,14 +36,4 @@ public class DominanceConesController {
 
         return ResponseEntity.ok(result);
     }
-
-    @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DominanceCones> calculate(
-            @RequestParam("id") UUID id) {
-        logger.info("Calculating cones...");
-
-        DominanceCones result = dominanceConesService.calculate(id);
-
-        return ResponseEntity.ok(result);
-    }
 }

@@ -14,16 +14,20 @@ public class Project {
     private DominanceCones dominanceCones;
     private UnionsWithSingleLimitingDecision unions;
 
+    private boolean calculatedDominanceCones;
+
     public Project(String name) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.informationTable = new InformationTable(new Attribute[0], new ArrayList<>());
+        this.calculatedDominanceCones = false;
     }
 
     public Project(String name, InformationTable informationTable) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.informationTable = informationTable;
+        this.calculatedDominanceCones = false;
     }
 
     public UUID getId() {
@@ -48,6 +52,7 @@ public class Project {
 
     public void setInformationTable(InformationTable informationTable) {
         this.informationTable = informationTable;
+        this.setCalculatedDominanceCones(false);
     }
 
     public DominanceCones getDominanceCones() {
@@ -70,12 +75,21 @@ public class Project {
         this.unions = unions;
     }
 
+    public boolean isCalculatedDominanceCones() {
+        return calculatedDominanceCones;
+    }
+
+    public void setCalculatedDominanceCones(boolean calculatedDominanceCones) {
+        this.calculatedDominanceCones = calculatedDominanceCones;
+    }
+
     @Override
     public String toString() {
         return "Project{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", informationTable=" + informationTable +
-                '}';
+                ", calculatedDominanceCones=" + calculatedDominanceCones +
+                "}";
     }
 }
