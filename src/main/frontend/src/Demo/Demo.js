@@ -3,6 +3,7 @@ import DemoProject from './DemoProject'
 import DemoProjects from './DemoPorjects'
 import DemoDominanceCones from './DemoDominanceCones'
 import DemoUnionsWithSingleLimitingDecision from './DemoUnionsWithSingleLimitingDecision'
+import DemoData from './DemoData'
 
 class Demo extends Component {
 
@@ -11,6 +12,7 @@ class Demo extends Component {
             <div>
                 <DemoProjects></DemoProjects>
                 <DemoProject></DemoProject>
+                <DemoData></DemoData>
                 <DemoDominanceCones></DemoDominanceCones>
                 <DemoUnionsWithSingleLimitingDecision></DemoUnionsWithSingleLimitingDecision>
             </div>
