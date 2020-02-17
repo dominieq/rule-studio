@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import Home from './Home/Home';
+// import Home from './Home/Home';
 import Import from './Import/Import';
 import Help from './Help/Help';
 import ProjectTabs from "./Project/ProjectTabs";
 import Project from "../App/Project";
+import Cones from "./Project/Cones/Cones";
 
 class Body extends Component {
     constructor(props) {
@@ -27,7 +28,7 @@ class Body extends Component {
             case "Project":
                 return <ProjectTabs />;
             default:
-                return <Home />;
+                return <Cones/>;
         }
     }
 }
