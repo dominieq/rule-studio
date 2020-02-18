@@ -58,7 +58,7 @@ class ConesBar extends Component {
         for (let i = 0; i < this.props.variants.length; i++) {
             const variant = this.props.variants[i];
 
-            if (variant.id.includes(searchText)) {
+            if (variant.id.toString().includes(searchText)) {
                 variants = [...variants, variant];
             }
         }

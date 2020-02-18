@@ -9,10 +9,9 @@ class Cones extends Component {
     constructor(props) {
         super(props);
 
-        this.allVariants = [];
+        this.variants = [];
 
         this.state = {
-            cones: dominanceCones,
             displayedVariants: [],
             displayedDominance: "",
             displayedComparison: "",
@@ -20,9 +19,10 @@ class Cones extends Component {
     }
 
     componentDidMount() {
-        this.allVariants = this.getVariants();
+        this.variants = this.getVariants();
+
         this.setState({
-            displayedVariants: this.allVariants,
+            displayedVariants: this.variants,
         });
     }
 
@@ -45,16 +45,16 @@ class Cones extends Component {
     };
 
     conesPerVariant = (index) => {
-        const positives = this.state.cones.positiveDCones[index];
-        const negatives = this.state.cones.negativeDCones[index];
-        const positivesInv = this.state.cones.positiveInvDCones[index];
-        const negativesInv = this.state.cones.negativeInvDCones[index];
-        return new Variant("variant-" + index, positives, negatives, positivesInv, negativesInv);
+        const positives = dominanceCones.positiveDCones[index];
+        const negatives = dominanceCones.negativeDCones[index];
+        const positivesInv = dominanceCones.positiveInvDCones[index];
+        const negativesInv = dominanceCones.negativeInvDCones[index];
+        return new Variant(index, positives, negatives, positivesInv, negativesInv);
     };
 
     getVariants = () => {
         let variants = [];
-        for (let i =0; i < this.state.cones.numberOfObjects; i++) {
+        for (let i =0; i < dominanceCones.numberOfObjects; i++) {
             variants = [...variants, this.conesPerVariant(i)];
         }
         return variants;
@@ -65,7 +65,7 @@ class Cones extends Component {
         return (
             <div>
                 <ConesBar
-                    variants={this.allVariants}
+                    variants={this.variants}
                     dominance={this.state.displayedDominance}
                     setVariants={(v) => this.setDisplayedVariants(v)}
                     setDominance={(d) => this.setDisplayedDominance(d)}

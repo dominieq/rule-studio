@@ -30,7 +30,7 @@ class VariantList extends Component {
                     id={this.props.variant.id + "-header"}
                 >
                     <Typography>
-                        {this.props.variant.id}
+                        Variant {this.props.variant.id}
                     </Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
@@ -38,7 +38,7 @@ class VariantList extends Component {
                         defaultExpandIcon={<ChevronRightIcon/>}
                         defaultCollapseIcon={<ExpandMoreIcon />}
                     >
-                        <TreeItem nodeId={"positiveDCones"} label={"positiveDCones"}>
+                        <TreeItem nodeId={"positiveDCones"} label={"Positive dominance cone:"}>
                             {this.props.variant.positives.map((element) => (
                                 <TreeItem
                                     key={element}
@@ -48,7 +48,7 @@ class VariantList extends Component {
                                 />
                             ))}
                         </TreeItem>
-                        <TreeItem nodeId={"negativeDCones"} label={"negativeDCones"}>
+                        <TreeItem nodeId={"negativeDCones"} label={"Negative dominance cone:"}>
                             {this.props.variant.negatives.map((element) => (
                                 <TreeItem
                                     key={element}
@@ -58,7 +58,7 @@ class VariantList extends Component {
                                 />
                             ))}
                         </TreeItem>
-                        <TreeItem nodeId={"positiveInvDCones"} label={"positiveInvDCones"}>
+                        <TreeItem nodeId={"positiveInvDCones"} label={"Positive inverted dominance cone:"}>
                             {this.props.variant.postivesInv.map((element) => (
                                 <TreeItem
                                     key={element}
@@ -68,7 +68,7 @@ class VariantList extends Component {
                                 />
                             ))}
                         </TreeItem>
-                        <TreeItem nodeId={"negativeInvDCones"} label={"negativeInvDCones"}>
+                        <TreeItem nodeId={"negativeInvDCones"} label={"Negative inverted dominance cone:"}>
                             {this.props.variant.negativesInv.map((element) => (
                                 <TreeItem
                                     key={element}
