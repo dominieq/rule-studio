@@ -15,12 +15,14 @@ public class Project {
     private UnionsWithSingleLimitingDecision unions;
 
     private boolean calculatedDominanceCones;
+    private boolean calculatedUnionsWithSingleLimitingDecision;
 
     public Project(String name) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.informationTable = new InformationTable(new Attribute[0], new ArrayList<>());
         this.calculatedDominanceCones = false;
+        this.calculatedUnionsWithSingleLimitingDecision = false;
     }
 
     public Project(String name, InformationTable informationTable) {
@@ -28,6 +30,7 @@ public class Project {
         this.name = name;
         this.informationTable = informationTable;
         this.calculatedDominanceCones = false;
+        this.calculatedUnionsWithSingleLimitingDecision = false;
     }
 
     public UUID getId() {
@@ -53,6 +56,7 @@ public class Project {
     public void setInformationTable(InformationTable informationTable) {
         this.informationTable = informationTable;
         this.setCalculatedDominanceCones(false);
+        this.setCalculatedUnionsWithSingleLimitingDecision(false);
     }
 
     public DominanceCones getDominanceCones() {
@@ -83,6 +87,14 @@ public class Project {
         this.calculatedDominanceCones = calculatedDominanceCones;
     }
 
+    public boolean isCalculatedUnionsWithSingleLimitingDecision() {
+        return calculatedUnionsWithSingleLimitingDecision;
+    }
+
+    public void setCalculatedUnionsWithSingleLimitingDecision(boolean calculatedUnionsWithSingleLimitingDecision) {
+        this.calculatedUnionsWithSingleLimitingDecision = calculatedUnionsWithSingleLimitingDecision;
+    }
+
     @Override
     public String toString() {
         return "Project{" +
@@ -90,6 +102,7 @@ public class Project {
                 ", name='" + name + '\'' +
                 ", informationTable=" + informationTable +
                 ", calculatedDominanceCones=" + calculatedDominanceCones +
+                ", calculatedUnionsWithSingleLimitingDecision=" + calculatedUnionsWithSingleLimitingDecision +
                 "}";
     }
 }

@@ -28,21 +28,11 @@ public class UnionsWithSingleLimitingDecisionController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UnionsWithSingleLimitingDecision> getDominanceCones(
-            @RequestParam("id") UUID id) {
+            @RequestParam("id") UUID id,
+            @RequestParam(name = "consistencyThreshold", required = false) Double consistencyThreshold) {
         logger.info("Getting unions with single limiting decision...");
 
-        UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.getUnionsWithSingleLimitingDecision(id);
-
-        return ResponseEntity.ok(result);
-    }
-
-    @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UnionsWithSingleLimitingDecision> calculate(
-            @RequestParam("id")UUID id,
-            @RequestParam("consistencyThreshold") double consistencyThreshold) {
-        logger.info("Calculating unions with single limiting decision...");
-
-        UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.calculate(id, consistencyThreshold);
+        UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.getUnionsWithSingleLimitingDecision(id, consistencyThreshold);
 
         return ResponseEntity.ok(result);
     }
