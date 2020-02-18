@@ -5,10 +5,8 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import Button from "@material-ui/core/Button";
-import Drawer from "@material-ui/core/Drawer";
-import VariantDrawer from "./VariantDrawer";
-import "./UpperPanel.css";
+import TextField from "@material-ui/core/TextField";
+import "./ConesBar.css";
 
 function getDominanceTypes() {
     return [
@@ -19,16 +17,14 @@ function getDominanceTypes() {
     ]
 }
 
-class UpperPanel extends Component {
+class ConesBar extends Component {
     constructor(props) {
         super(props);
 
         this.label = React.createRef();
 
         this.state = {
-            dominance: "",
             labelWidth: 0,
-            openDrawer: false,
         };
     }
 
@@ -40,26 +36,34 @@ class UpperPanel extends Component {
         this.setLabelWidth(this.label.current.offsetWidth);
     }
 
-    setDominance = (event) => {
-        this.setState({
-            dominance: event.target.value,
-        });
-    };
-
     setLabelWidth = (value) => {
         this.setState({
             labelWidth: value,
         })
     };
 
-    setOpenDrawer = (open) => {
-        this.setState({
-            openDrawer: open
-        })
+    setDominance = (event) => {
+        this.props.setDominance(event.target.value);
     };
 
-    selectVariant = (index) => {
-        this.props.setSelectedIndex(index);
+    searchText = (event) => {
+        const searchText = event.target.value;
+
+        if (searchText === "") {
+            this.props.setVariants(this.props.variants)
+        }
+
+        let variants = [];
+
+        for (let i = 0; i < this.props.variants.length; i++) {
+            const variant = this.props.variants[i];
+
+            if (variant.id.includes(searchText)) {
+                variants = [...variants, variant];
+            }
+        }
+
+        this.props.setVariants(variants);
     };
 
     render() {
@@ -81,7 +85,7 @@ class UpperPanel extends Component {
                             id={"dominance-type-selector"}
                             labelId={"dominance-type-selector-label"}
                             labelWidth={this.state.labelWidth}
-                            value={this.state.dominance}
+                            value={this.props.dominance}
                             onChange={this.setDominance}
                         >
                             <MenuItem value={""}>
@@ -95,24 +99,17 @@ class UpperPanel extends Component {
                         </Select>
                     </FormControl>
                 </div>
-                <span/>
-                <Button onClick={() => this.setOpenDrawer(true)}>
-                    Choose variant
-                </Button>
-                <Drawer
-                    anchor={"right"}
-                    open={this.state.openDrawer}
-                    onClose={() => this.setOpenDrawer(false)}
-                >
-                    <VariantDrawer
-                        variants={this.props.variants}
-                        close={(o) => this.setOpenDrawer(o)}
-                        select={(i) => this.selectVariant(i)}
-                    />
-                </Drawer>
+                <span />
+                <TextField
+                    id={"variant-search"}
+                    label={"Search variant"}
+                    type={"search"}
+                    variant={"outlined"}
+                    onChange={this.searchText}
+                />
             </Paper>
         )
     }
 }
 
-export default UpperPanel;
+export default ConesBar;

@@ -1,25 +1,48 @@
 import React, {Component} from 'react';
-import UpperPanel from "./UpperPanel";
+import ConesBar from "./ConesBar";
+import VariantList from "./VariantList";
 import Variant from "./Variant";
+import "./Cones.css";
 import dominanceCones from "./resources/DominanceCones";
 
 class Cones extends Component {
     constructor(props) {
         super(props);
 
+        this.allVariants = [];
+
         this.state = {
             cones: dominanceCones,
-            selectedIndex: 0,
+            displayedVariants: [],
+            displayedDominance: "",
+            displayedComparison: "",
         };
-
-        this.setSelectedIndex = this.setSelectedIndex.bind(this);
     }
 
-    setSelectedIndex(index) {
+    componentDidMount() {
+        this.allVariants = this.getVariants();
         this.setState({
-            selectedIndex: index,
+            displayedVariants: this.allVariants,
         });
     }
+
+    setDisplayedVariants = (variants) => {
+        this.setState({
+            displayedVariants: variants,
+        });
+    };
+
+    setDisplayedDominance = (dominance) => {
+        this.setState({
+            displayedDominance: dominance,
+        });
+    };
+
+    setDisplayedComparison = (comparison) => {
+        this.setState({
+            displayedComparison: comparison,
+        });
+    };
 
     conesPerVariant = (index) => {
         const positives = this.state.cones.positiveDCones[index];
@@ -38,13 +61,29 @@ class Cones extends Component {
     };
 
     render() {
-        const variants = this.getVariants();
+
         return (
             <div>
-                <UpperPanel
-                    variants={variants}
-                    setSelectedIndex={(i) => this.setSelectedIndex(i)}
+                <ConesBar
+                    variants={this.allVariants}
+                    dominance={this.state.displayedDominance}
+                    setVariants={(v) => this.setDisplayedVariants(v)}
+                    setDominance={(d) => this.setDisplayedDominance(d)}
                 />
+                <div className={"variants-display"}>
+                    <div className={"variants-list"}>
+                        {this.state.displayedVariants.map((variant) => (
+                            <VariantList
+                                key={variant.id}
+                                variant={variant}
+                                setComparison={(v) => this.setDisplayedComparison(v)}
+                            />
+                        ))}
+                    </div>
+                    <div className={"variants-description"}>
+
+                    </div>
+                </div>
             </div>
         );
     }
