@@ -41,4 +41,13 @@ public class DataController {
 
         return ResponseEntity.ok(result);
     }
+
+    @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Project> putData(
+            @PathVariable("id") UUID id,
+            @RequestBody String data) throws IOException {
+        logger.info("Putting metadata");
+        Project result = dataService.putData(id, data);
+        return ResponseEntity.ok(result);
+    }
 }
