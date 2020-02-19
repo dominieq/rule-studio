@@ -8,8 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.service.MetadataService;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @CrossOrigin
@@ -27,9 +29,9 @@ public class MetadataController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Attribute[]> getData(
+    public ResponseEntity<Attribute[]> getMetadata(
             @PathVariable("id") UUID id) {
-        logger.info("Getting data");
+        logger.info("Getting metadata");
         Attribute[] result = metadataService.getMetadata(id);
 
         if(result == null) {
@@ -38,6 +40,15 @@ public class MetadataController {
         }
 
         logger.info(result.toString());
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Project> putMetadata(
+            @PathVariable("id") UUID id,
+            @RequestBody String metadata) throws IOException {
+        logger.info("Putting metadata");
+        Project result = metadataService.putMetadata(id, metadata);
         return ResponseEntity.ok(result);
     }
 }
