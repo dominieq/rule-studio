@@ -1,6 +1,8 @@
 package pl.put.poznan.rulework.service;
 
 import org.rulelearn.data.Attribute;
+import org.rulelearn.data.InformationTable;
+import org.rulelearn.data.json.AttributeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,8 @@ import org.springframework.stereotype.Service;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
+import java.io.*;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -31,5 +35,32 @@ public class MetadataService {
         }
 
         return project.getInformationTable().getAttributes();
+    }
+
+    public Project putMetadata(UUID id, String metadata) throws IOException {
+        logger.info("Id:\t" + id);
+        logger.info("Metadata:\t" + metadata);
+
+
+        Project project = getProjectFromProjectsContainer(id);
+        if(project == null) {
+            return null;
+        }
+
+        Attribute[] attributes;
+        AttributeParser attributeParser = new AttributeParser();
+        InputStream targetStream = new ByteArrayInputStream(metadata.getBytes());
+        Reader reader = new InputStreamReader(targetStream);
+        attributes = attributeParser.parseAttributes(reader);
+        for(int i = 0; i < attributes.length; i++) {
+            logger.info(i + ":\t" + attributes[i]);
+        }
+
+        InformationTable informationTable = new InformationTable(attributes, new ArrayList<>());
+
+        project.setInformationTable(informationTable);
+        logger.info(project.toString());
+
+        return project;
     }
 }
