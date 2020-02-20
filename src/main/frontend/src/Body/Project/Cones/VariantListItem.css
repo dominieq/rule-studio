@@ -1,0 +1,17 @@
+.MuiTreeItem-label {
+    max-width: fit-content;
+}
+
+.MuiExpansionPanelSummary-content {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.MuiExpansionPanelSummary-content > .MuiTypography-root {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
