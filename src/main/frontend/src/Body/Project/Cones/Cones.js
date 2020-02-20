@@ -1,46 +1,44 @@
-import React, {Component} from 'react';
+import React, {Component, Suspense} from 'react';
+import CircularProgress from "@material-ui/core/CircularProgress";
 import ConesBar from "./ConesBar";
-import VariantList from "./VariantList";
-import Variant from "./Variant";
+import VariantComparison from "./VariantComparison";
+import Variant from "./api/Variant";
+import Comparison from "./api/Comparison";
 import "./Cones.css";
-import dominanceCones from "./resources/DominanceCones";
+import dominanceCones from "./resources/demo/DominanceCones";
+import exampleComparison from "./resources/demo/ExampleComparison";
+
+const VariantListItem = React.lazy(() => import("./VariantListItem")) ;
 
 class Cones extends Component {
     constructor(props) {
         super(props);
 
-        this.variants = [];
+        this.variants = this.getVariants();
+        this.exampleComparison = new Comparison(
+            exampleComparison[0],
+            exampleComparison[1],
+            "relation"
+        );
+
+        this.conesBar = React.createRef();
 
         this.state = {
-            displayedVariants: [],
-            displayedDominance: "",
-            displayedComparison: "",
+            variants: this.variants,
+            dominance: "",
+            comparison: "",
         };
     }
 
-    componentDidMount() {
-        this.variants = this.getVariants();
-
-        this.setState({
-            displayedVariants: this.variants,
-        });
-    }
-
-    setDisplayedVariants = (variants) => {
-        this.setState({
-            displayedVariants: variants,
-        });
-    };
-
     setDisplayedDominance = (dominance) => {
         this.setState({
-            displayedDominance: dominance,
+            dominance: dominance,
         });
     };
 
     setDisplayedComparison = (comparison) => {
         this.setState({
-            displayedComparison: comparison,
+            comparison: comparison,
         });
     };
 
@@ -60,28 +58,58 @@ class Cones extends Component {
         return variants;
     };
 
+    filterVariants = (filterText) => {
+        if (filterText === "") {
+            this.setState({
+                variants: this.variants,
+            });
+            return;
+        }
+
+        let variants = [];
+
+        for (let i = 0; i < this.variants.length; i++) {
+            const variant = this.variants[i];
+
+            if (variant.id.toString().includes(filterText)) {
+                variants = [...variants, variant];
+            }
+        }
+
+        this.setState({
+            variants: variants,
+        });
+    };
+
     render() {
+        const {variants, dominance, comparison} = this.state;
 
         return (
             <div>
                 <ConesBar
-                    variants={this.variants}
-                    dominance={this.state.displayedDominance}
-                    setVariants={(v) => this.setDisplayedVariants(v)}
+                    ref={this.conesBar}
+                    dominance={dominance}
+                    filterText={(f) => this.filterVariants(f)}
                     setDominance={(d) => this.setDisplayedDominance(d)}
                 />
                 <div className={"variants-display"}>
                     <div className={"variants-list"}>
-                        {this.state.displayedVariants.map((variant) => (
-                            <VariantList
-                                key={variant.id}
-                                variant={variant}
-                                setComparison={(v) => this.setDisplayedComparison(v)}
-                            />
-                        ))}
+                        <Suspense fallback={<CircularProgress disableShrink/>}>
+                            <section>
+                                {variants.map((variant) => (
+                                    <VariantListItem
+                                        key={variant.id}
+                                        variant={variant}
+                                        dominance={dominance}
+                                        cancelDominance={() => this.setDisplayedDominance("")}
+                                        setComparison={(v) => this.setDisplayedComparison(v)}
+                                    />
+                                ))}
+                            </section>
+                        </Suspense>
                     </div>
-                    <div className={"variants-description"}>
-
+                    <div hidden={comparison === ""} className={"variants-description"}>
+                        <VariantComparison comparison={this.exampleComparison} />
                     </div>
                 </div>
             </div>

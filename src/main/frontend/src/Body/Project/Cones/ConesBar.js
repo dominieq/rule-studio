@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import PropTypes from "prop-types";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
@@ -6,16 +7,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
+import {getDominanceTypes} from "./api/DominanceTypes";
 import "./ConesBar.css";
-
-function getDominanceTypes() {
-    return [
-        "positive",
-        "negative",
-        "positive inverted",
-        "negative inverted",
-    ]
-}
 
 class ConesBar extends Component {
     constructor(props) {
@@ -46,24 +39,8 @@ class ConesBar extends Component {
         this.props.setDominance(event.target.value);
     };
 
-    searchText = (event) => {
-        const searchText = event.target.value;
-
-        if (searchText === "") {
-            this.props.setVariants(this.props.variants)
-        }
-
-        let variants = [];
-
-        for (let i = 0; i < this.props.variants.length; i++) {
-            const variant = this.props.variants[i];
-
-            if (variant.id.toString().includes(searchText)) {
-                variants = [...variants, variant];
-            }
-        }
-
-        this.props.setVariants(variants);
+    filterText = (event) => {
+        this.props.filterText(event.target.value);
     };
 
     render() {
@@ -78,7 +55,7 @@ class ConesBar extends Component {
                 <div className={"dominance-type-wrapper"}>
                     <FormControl variant={"outlined"} fullWidth={true}>
 
-                        <InputLabel ref={this.label}>
+                        <InputLabel ref={this.label} id={"dominance-type-selector-label"}>
                             Dominance
                         </InputLabel>
                         <Select
@@ -89,11 +66,11 @@ class ConesBar extends Component {
                             onChange={this.setDominance}
                         >
                             <MenuItem value={""}>
-                                <em>None</em>
+                                <em>All</em>
                             </MenuItem>
-                            {dominanceTypes.map((option, index) => (
-                                <MenuItem key={dominanceTypes[index]} value={index}>
-                                    {dominanceTypes[index]}
+                            {dominanceTypes.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -105,11 +82,17 @@ class ConesBar extends Component {
                     label={"Search variant"}
                     type={"search"}
                     variant={"outlined"}
-                    onChange={this.searchText}
+                    onChange={this.filterText}
                 />
             </Paper>
         )
     }
 }
+
+ConesBar.propTypes = {
+    dominance: PropTypes.any.isRequired,
+    filterText: PropTypes.func.isRequired,
+    setDominance: PropTypes.func.isRequired,
+};
 
 export default ConesBar;
