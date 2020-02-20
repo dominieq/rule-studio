@@ -5,6 +5,7 @@ import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import DisplayData from "./Data/DisplayData";
+import Unions from "./Unions/Unions";
 
 function TabPanel(props) {
     const { children, value, index, ...other} = props;
@@ -79,7 +80,7 @@ class ProjectTabs extends Component {
                         Dominance cones
                     </TabPanel>
                     <TabPanel value={this.state.value} index={2}>
-                        Class unions
+                        <Unions />
                     </TabPanel>
                     <TabPanel value={this.state.value} index={3}>
                         Rules
