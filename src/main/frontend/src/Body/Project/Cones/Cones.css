@@ -1,3 +1,9 @@
+.cones {
+    position: relative;
+    width: 100%;
+    height: fit-content;
+}
+
 .variants-display {
     position: relative;
     width: 100%;

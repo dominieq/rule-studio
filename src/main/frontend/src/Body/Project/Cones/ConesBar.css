@@ -1,4 +1,4 @@
-.upper-panel {
+.cones-bar {
     position: relative;
     display: flex;
     flex-direction: row;
@@ -8,12 +8,12 @@
     padding: 8px 15px 4px;
 }
 
-.dominance-type-wrapper {
+.cones-bar > .dominance-selector-wrapper {
     margin-left: 15px;
     min-width: 125px;
 }
 
-span {
+.cones-bar > span {
     flex-grow: 1;
 }
 

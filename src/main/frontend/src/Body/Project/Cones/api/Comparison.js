@@ -1,7 +1,7 @@
 class Comparison {
-    constructor(variantMain, variantOptional, relation) {
-        this.variantMain = variantMain;
-        this.variantOptional = variantOptional;
+    constructor(objectMain, objectOptional, relation) {
+        this.objectMain = objectMain;
+        this.objectOptional = objectOptional;
         this.relation = relation;
     };
 }

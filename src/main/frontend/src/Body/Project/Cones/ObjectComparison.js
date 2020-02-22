@@ -9,7 +9,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import Comparison from "./api/Comparison";
 
-class VariantComparison extends Component {
+class ObjectComparison extends Component {
     constructor(props) {
         super(props);
 
@@ -17,8 +17,8 @@ class VariantComparison extends Component {
     }
 
     componentDidMount() {
-        const variantMain = this.props.comparison.variantMain;
-        const variantOptional = this.props.comparison.variantOptional;
+        const variantMain = this.props.comparison.objectMain;
+        const variantOptional = this.props.comparison.objectOptional;
         const keys = Object.keys(variantMain);
         const valuesVariantMain = Object.values(variantMain);
         const valuesVariantOptional = Object.values(variantOptional);
@@ -64,8 +64,8 @@ class VariantComparison extends Component {
     }
 }
 
-VariantComparison.propTypes = {
+ObjectComparison.propTypes = {
     comparison: PropTypes.instanceOf(Comparison).isRequired,
 };
 
-export default VariantComparison;
+export default ObjectComparison;

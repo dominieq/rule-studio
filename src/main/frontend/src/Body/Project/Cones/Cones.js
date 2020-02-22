@@ -1,38 +1,39 @@
 import React, {Component, Suspense} from 'react';
+import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ConesBar from "./ConesBar";
-import VariantComparison from "./VariantComparison";
-import Variant from "./api/Variant";
+import DominanceSelector from "./DominanceSelector";
+import ObjectComparison from "./ObjectComparison";
+import ObjectDS from "./api/ObjectDS";
 import Comparison from "./api/Comparison";
 import "./Cones.css";
 import dominanceCones from "./resources/demo/DominanceCones";
 import exampleComparison from "./resources/demo/ExampleComparison";
 
-const VariantListItem = React.lazy(() => import("./VariantListItem")) ;
+const VariantListItem = React.lazy(() => import("./ObjectListItem")) ;
 
 class Cones extends Component {
     constructor(props) {
         super(props);
 
-        this.variants = this.getVariants();
+        this.objects = this.getObjects();
         this.exampleComparison = new Comparison(
             exampleComparison[0],
             exampleComparison[1],
             "relation"
         );
 
-        this.conesBar = React.createRef();
-
         this.state = {
-            variants: this.variants,
-            dominance: "",
+            objects: this.objects,
+            dominance: "All",
             comparison: "",
         };
     }
 
-    setDisplayedDominance = (dominance) => {
+    setDominance = (event) => {
         this.setState({
-            dominance: dominance,
+            dominance: event.target.value.toString(),
         });
     };
 
@@ -42,74 +43,89 @@ class Cones extends Component {
         });
     };
 
-    conesPerVariant = (index) => {
+    conesPerObject = (index) => {
         const positives = dominanceCones.positiveDCones[index];
         const negatives = dominanceCones.negativeDCones[index];
         const positivesInv = dominanceCones.positiveInvDCones[index];
         const negativesInv = dominanceCones.negativeInvDCones[index];
-        return new Variant(index, positives, negatives, positivesInv, negativesInv);
+        return new ObjectDS(index, positives, negatives, positivesInv, negativesInv);
     };
 
-    getVariants = () => {
+    getObjects = () => {
         let variants = [];
         for (let i =0; i < dominanceCones.numberOfObjects; i++) {
-            variants = [...variants, this.conesPerVariant(i)];
+            variants = [...variants, this.conesPerObject(i)];
         }
         return variants;
     };
 
-    filterVariants = (filterText) => {
+    onFilterChange = (event) => {
+        const filterText = event.target.value.toString();
+
         if (filterText === "") {
             this.setState({
-                variants: this.variants,
+                objects: this.objects,
             });
             return;
         }
 
-        let variants = [];
+        let objects = [];
 
-        for (let i = 0; i < this.variants.length; i++) {
-            const variant = this.variants[i];
+        for (let i = 0; i < this.objects.length; i++) {
+            const object = this.objects[i];
 
-            if (variant.id.toString().includes(filterText)) {
-                variants = [...variants, variant];
+            if (object.id.toString().includes(filterText)) {
+                objects = [...objects, object];
             }
         }
 
-        this.setState({
-            variants: variants,
-        });
+        if (objects.length > 0) {
+            this.setState({
+                objects: objects,
+            });
+        }
     };
 
     render() {
-        const {variants, dominance, comparison} = this.state;
+        const {objects, dominance, comparison} = this.state;
 
         return (
-            <div>
-                <ConesBar
-                    ref={this.conesBar}
-                    dominance={dominance}
-                    filterText={(f) => this.filterVariants(f)}
-                    setDominance={(d) => this.setDisplayedDominance(d)}
-                />
+            <div className={"cones"}>
+                <ConesBar>
+                    <Typography color={"primary"} variant={"h6"} component={"div"}>
+                        Choose dominance cones:
+                    </Typography>
+                    <DominanceSelector
+                        dominance={dominance}
+                        setDominance={(e) => this.setDominance(e)}
+                    />
+                    <span />
+                    <TextField
+                        id={"variant-search"}
+                        label={"Search variant"}
+                        type={"search"}
+                        variant={"outlined"}
+                        onChange={this.onFilterChange}
+                    />
+                </ConesBar>
                 <div className={"variants-display"}>
                     <div className={"variants-list"}>
                         <Suspense fallback={<CircularProgress disableShrink/>}>
                             <section>
-                                {variants.map((variant) => (
+                                {objects.map((object) => (
                                     <VariantListItem
-                                        key={variant.id}
-                                        variant={variant}
+                                        key={object.id}
+                                        variant={object}
                                         dominance={dominance}
-                                        cancelDominance={() => this.setDisplayedDominance("")}
-                                        setComparison={(v) => this.setDisplayedComparison(v)}
+                                        cancelDominance={() => this.setDominance("")}
+                                        setComparison={(o) => this.setDisplayedComparison(o)}
                                     />
                                 ))}
                             </section>
                         </Suspense>
                     </div>
                     <div hidden={comparison === ""} className={"variants-description"}>
-                        <VariantComparison comparison={this.exampleComparison} />
+                        <ObjectComparison comparison={this.exampleComparison} />
                     </div>
                 </div>
             </div>

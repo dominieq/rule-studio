@@ -11,11 +11,11 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import TreeView from "@material-ui/lab/TreeView";
 import TreeItem from "@material-ui/lab/TreeItem";
-import Variant from "./api/Variant";
+import ObjectDS from "./api/ObjectDS";
 import {getDominanceTypes} from "./api/DominanceTypes";
-import "./VariantListItem.css";
+import "./ObjectListItem.css";
 
-class VariantListItem extends Component {
+class ObjectListItem extends Component {
     constructor(props) {
         super(props);
 
@@ -185,11 +185,11 @@ class VariantListItem extends Component {
     }
 }
 
-VariantListItem.propTypes = {
-    variant: PropTypes.instanceOf(Variant).isRequired,
+ObjectListItem.propTypes = {
+    variant: PropTypes.instanceOf(ObjectDS).isRequired,
     dominance: PropTypes.string.isRequired,
     cancelDominance: PropTypes.func.isRequired,
     setComparison: PropTypes.func.isRequired,
 };
 
-export default VariantListItem;
+export default ObjectListItem;
