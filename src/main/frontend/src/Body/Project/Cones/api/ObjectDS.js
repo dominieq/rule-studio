@@ -1,4 +1,4 @@
-class Variant {
+class ObjectDS {
     constructor(id, positives, negatives, positivesInv, negativesInv) {
         this.id = id;
         this.positives = positives;
@@ -8,4 +8,4 @@ class Variant {
     }
 }
 
-export default Variant;
+export default ObjectDS;
