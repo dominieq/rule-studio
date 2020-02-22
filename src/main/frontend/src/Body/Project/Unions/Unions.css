@@ -2,3 +2,13 @@
     width: 100%;
     height: fit-content;
 }
+
+.unions-list {
+    max-width: 100%;
+    height: fit-content;
+    margin: 25px 25px 0;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+
+}

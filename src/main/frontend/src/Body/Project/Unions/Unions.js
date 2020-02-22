@@ -3,6 +3,11 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import UnionsBar from "./UnionsBar";
 import ConsistencySelector from "./ConsistencySelector";
+import UnionListItem from "./UnionListItem";
+import Union from "./api/Union";
+import unions from "./resources/demo/example-unions";
+import "./Unions.css";
+import UnionListItemContent from "./UnionListItemContent";
 
 class Unions extends Component {
     constructor(props) {
@@ -10,7 +15,8 @@ class Unions extends Component {
 
         this.state = {
             consistency: 1.0,
-            unions: [],
+            downwardUnions: [],
+            upwardUnions: [],
         };
     }
 
@@ -20,13 +26,50 @@ class Unions extends Component {
         });
     };
 
+    getUnions = () => {
+        const downwardUnions = unions.downwardUnions;
+        const upwardUnions = unions.upwardUnions;
+
+        let downward = [];
+        let upward = [];
+
+        for (let i = 0; i < downwardUnions.length; i++) {
+            let union = this.unionByIndex(
+                "down-" + i,
+                "At most",
+                downwardUnions[i]
+            );
+            downward = [...downward, union];
+        }
+
+        for (let i = 0; i < upwardUnions.length; i++) {
+            let union = this.unionByIndex(
+                "up-" + i,
+                "At least",
+                upwardUnions[i]
+            );
+            upward = [...upward, union];
+        }
+
+        this.setState({
+            downwardUnions: downward,
+            upwardUnions: upward,
+        });
+    };
+
+    unionByIndex = (index, name, union) => {
+        return new Union(index, name, union);
+    };
+
     countUnions = () => {
-        // TODO count unions
+        this.getUnions();
     };
 
     render() {
+        const {downwardUnions, upwardUnions} = this.state;
+
         return (
-            <div>
+            <div className={"unions"}>
                 <UnionsBar>
                     <Typography color={"primary"} variant={"h6"} component={"div"}>
                         Choose consistency:
@@ -48,6 +91,18 @@ class Unions extends Component {
                         Count unions
                     </Button>
                 </UnionsBar>
+                <div className={"unions-list"}>
+                    {downwardUnions.map(union => (
+                        <UnionListItem key={union.id} union={union}>
+                            <UnionListItemContent union={union} />
+                        </UnionListItem>
+                    ))}
+                    {upwardUnions.map(union => (
+                        <UnionListItem key={union.id} union={union}>
+                            <UnionListItemContent union={union} />
+                        </UnionListItem>
+                    ))}
+                </div>
             </div>
         )
     }
