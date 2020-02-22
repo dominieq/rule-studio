@@ -14,6 +14,10 @@ class ConsistencySelector extends Component {
         };
     }
 
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return !(this.state.consistency === nextState.consistency);
+    }
+
     onInputChange = (event) => {
         let value = event.target.value.toString();
         if (value.includes(",")) {
@@ -49,6 +53,8 @@ class ConsistencySelector extends Component {
             }, () => {
                 this.onInputBlurGlobal();
             });
+        } else {
+            this.onInputBlurGlobal();
         }
     };
 
