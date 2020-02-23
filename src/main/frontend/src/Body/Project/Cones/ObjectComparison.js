@@ -1,5 +1,4 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import React, {PureComponent} from 'react';
 import Paper from "@material-ui/core/Paper";
 import TableContainer from "@material-ui/core/TableContainer";
 import Table from "@material-ui/core/Table";
@@ -7,65 +6,77 @@ import TableBody from "@material-ui/core/TableBody";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
-import Comparison from "./api/Comparison";
 
-class ObjectComparison extends Component {
+class ObjectComparison extends PureComponent {
     constructor(props) {
         super(props);
 
-        this.rows = [];
+        this.state = {
+            comparison: null
+        };
     }
 
-    componentDidMount() {
-        const variantMain = this.props.comparison.objectMain;
-        const variantOptional = this.props.comparison.objectOptional;
-        const keys = Object.keys(variantMain);
-        const valuesVariantMain = Object.values(variantMain);
-        const valuesVariantOptional = Object.values(variantOptional);
+    updateComparison = (comparison) => {
+        this.setState({
+            comparison: comparison,
+        });
+    };
+
+    createRows = (comparison) => {
+        const objectMain = comparison.objectMain;
+        const objectOptional = comparison.objectOptional;
+        const keys = Object.keys(objectMain);
+        const valuesObjectMain = Object.values(objectMain);
+        const valuesObjectOptional = Object.values(objectOptional);
 
         let rows = [];
 
         for (let i = 0; i < keys.length; i++) {
-            let row = this.createRow(keys[i], valuesVariantMain[i], valuesVariantOptional[i]);
+            let row = this.createRow(keys[i], valuesObjectMain[i], valuesObjectOptional[i]);
             rows = [...rows, row];
         }
-        this.rows = rows;
-    }
+        return rows;
+    };
 
-    createRow = (attribute, variant1, variant2) => {
-        return { attribute, variant1, variant2 };
+    createRow = (attribute, object1, object2) => {
+        return { attribute, object1, object2 };
     };
 
     render() {
-        return (
-            <TableContainer component={Paper} square elevation={2}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Attribute</TableCell>
-                            <TableCell align={"right"}>Variant 1</TableCell>
-                            <TableCell align={"right"}>Relation</TableCell>
-                            <TableCell align={"right"}>Variant 2</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {this.rows.map((row) => (
-                            <TableRow key={row.attribute}>
-                                <TableCell component={"th"} scope={"row"}>{row.attribute}</TableCell>
-                                <TableCell align={"right"}>{row.variant1}</TableCell>
-                                <TableCell align={"right"}>{this.props.comparison.relation}</TableCell>
-                                <TableCell align={"right"}>{row.variant2}</TableCell>
+        const comparison = this.state.comparison;
+
+        if (comparison === null) {
+            return null;
+        }
+        else {
+            const rows = this.createRows(comparison);
+
+            return (
+                <TableContainer component={Paper} square elevation={2}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Attribute</TableCell>
+                                <TableCell align={"right"}>{"Object 1"}</TableCell>
+                                <TableCell align={"right"}>Relation</TableCell>
+                                <TableCell align={"right"}>{"Object 2"}</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        )
+                        </TableHead>
+                        <TableBody>
+                            {rows.map((row) => (
+                                <TableRow key={row.attribute}>
+                                    <TableCell component={"th"} scope={"row"}>{row.attribute}</TableCell>
+                                    <TableCell align={"right"}>{row.object1}</TableCell>
+                                    <TableCell align={"right"}>{comparison.relation}</TableCell>
+                                    <TableCell align={"right"}>{row.object2}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            )
+        }
     }
 }
-
-ObjectComparison.propTypes = {
-    comparison: PropTypes.instanceOf(Comparison).isRequired,
-};
 
 export default ObjectComparison;

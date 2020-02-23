@@ -4,7 +4,7 @@
     height: fit-content;
 }
 
-.variants-display {
+.objects-display {
     position: relative;
     width: 100%;
     padding: 25px 25px 0;
@@ -13,13 +13,13 @@
     align-items: flex-start;
 }
 
-.variants-list {
+.objects-list {
     max-width: 40%;
     flex-grow: 1;
     margin-right: 25px;
 }
 
-.variants-description {
+.objects-description {
     position: sticky;
     width: 50%;
     height: fit-content;

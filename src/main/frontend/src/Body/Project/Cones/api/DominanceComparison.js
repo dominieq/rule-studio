@@ -1,4 +1,4 @@
-class Comparison {
+class DominanceComparison {
     constructor(objectMain, objectOptional, relation) {
         this.objectMain = objectMain;
         this.objectOptional = objectOptional;
@@ -6,4 +6,4 @@ class Comparison {
     };
 }
 
-export default Comparison;
+export default DominanceComparison;

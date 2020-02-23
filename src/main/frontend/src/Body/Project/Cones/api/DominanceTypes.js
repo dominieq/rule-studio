@@ -1,8 +1,8 @@
 export function getDominanceTypes() {
     return [
-        "positive",
-        "negative",
-        "positive inverted",
-        "negative inverted",
+        "Positive",
+        "Negative",
+        "Positive inverted",
+        "Negative inverted",
     ]
 }
