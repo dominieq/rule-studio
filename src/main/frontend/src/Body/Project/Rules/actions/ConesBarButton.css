@@ -1,0 +1,7 @@
+.MuiPaper-root input {
+    display: none;
+}
+
+.MuiPaper-root label {
+    margin: 0;
+}
