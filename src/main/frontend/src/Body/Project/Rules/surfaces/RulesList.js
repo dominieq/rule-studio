@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from "@material-ui/core/Paper";
 import List from "@material-ui/core/List";
-import "./RuleList.css";
+import "./RulesList.css";
 
 function RulesList(props) {
     const children = props.children;

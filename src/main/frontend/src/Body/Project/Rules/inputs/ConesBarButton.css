@@ -1,7 +1,7 @@
-.MuiPaper-root input {
+.rules-bar input {
     display: none;
 }
 
-.MuiPaper-root label {
+.rules-bar label {
     margin: 0;
 }
