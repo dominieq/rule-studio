@@ -1,11 +1,11 @@
 import React from 'react';
-import './EditDataButtons.css';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import AddIcon from '@material-ui/icons/Add';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
+import EditIcon from '@material-ui/icons/Edit';
 
 const useStyles = makeStyles(theme => ({
     button: {
@@ -17,7 +17,7 @@ export default function IconLabelButtons(props) {
     const classes = useStyles();
 
     return (
-      <div className="left-aligned">
+      <div>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 
         <Button
@@ -44,8 +44,28 @@ export default function IconLabelButtons(props) {
           variant="contained"
           color="primary"
           className={classes.button}
+          startIcon={<AddIcon />}
+          onClick={() => props.onAddAttribute()}
+        >
+          Add attribute
+        </Button>
+
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          startIcon={<EditIcon />}
+          onClick={() => props.onEditAttributes()}
+        >
+          Edit attributes
+        </Button>
+
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
           startIcon={<SaveIcon />}
-          onClick={() => props.sendModifiedDataToServer()}
+          onClick={() => props.sendFilesToServer()}
         >
           Save changes
         </Button>
@@ -55,11 +75,12 @@ export default function IconLabelButtons(props) {
           color="primary"
           className={classes.button}
           startIcon={<SaveAltIcon />}
-          onClick={() => props.saveFileLocally()}
+          onClick={() => props.saveToFile()}
         >
-          Save file locally
-        </Button>
-       
+          Save to file
+        </Button><div className="data-modified" key={props.modified}> 
+        {props.modified ? "Data has been modified! Don't forget to save it" : null}
+       </div>
       </div>
     );
 }

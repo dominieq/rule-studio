@@ -2,6 +2,7 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import SearchIcon from '@material-ui/icons/Search';
 import { createMuiTheme } from '@material-ui/core/styles';
+import './EditDataButtons.css';
 
 class EditDataFilterButton extends React.Component {
     constructor(props) {
@@ -23,7 +24,7 @@ class EditDataFilterButton extends React.Component {
             variant="contained"
             color="primary"
             style={{margin: this.theme.spacing(8)}}
-            className={"left-aligned"}
+            className={"left-align-filter-button"}
             startIcon={<SearchIcon />}
             onClick={this.props.onToggleFilter}
             >
