@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import Divider from "@material-ui/core/Divider";
 import RulesBar from "./surfaces/RulesBar";
-import RulesBody from "./surfaces/RulesBody";
+import RulesList from "./surfaces/RulesList";
+import RuleItem from "./data-display/RuleItem";
+import RuleDescription from "./data-display/RuleDescription";
 import ConesBarButton from "./inputs/ConesBarButton";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
@@ -12,9 +14,7 @@ class Rules extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            rules: [],
-        };
+        this.ruleDesc = React.createRef();
     }
 
     componentDidMount() {
@@ -34,7 +34,22 @@ class Rules extends Component {
         console.log("Creating new file...");
     };
 
+    onRuleAction = (hidden, rule) => {
+        this.ruleDesc.current.onRuleAction(hidden, rule);
+    };
+
     render() {
+        const rules = [
+            {
+                name: "rule 1",
+                description: "I am rule number 1",
+            },
+            {
+                name: "rule 2",
+                description: "I am rule number 2",
+            },
+        ];
+
         return (
             <div className={"rules"}>
                 <RulesBar>
@@ -60,9 +75,19 @@ class Rules extends Component {
                         onButtonClick={() => this.onNewFileClick()}
                     />
                 </RulesBar>
-                <RulesBody>
-                    Rules
-                </RulesBody>
+                <div className={"rules-body"}>
+                    <RulesList>
+                        {rules.map((rule, index) => (
+                            <RuleItem
+                                key={index}
+                                rule={rule}
+                                onRuleClick={(h, r) => this.onRuleAction(h, r)}
+                                onRuleBlur={(h, r) => this.onRuleAction(h, r)}
+                            />
+                        ))}
+                    </RulesList>
+                    <RuleDescription ref={this.ruleDesc}/>
+                </div>
             </div>
         )
     }
