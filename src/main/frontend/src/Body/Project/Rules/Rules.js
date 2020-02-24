@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Divider from "@material-ui/core/Divider";
 import RulesBar from "./surfaces/RulesBar";
 import RulesBody from "./surfaces/RulesBody";
-import ConesBarButton from "./actions/ConesBarButton";
+import ConesBarButton from "./inputs/ConesBarButton";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
 import FilePlus from "mdi-material-ui/FilePlus";
