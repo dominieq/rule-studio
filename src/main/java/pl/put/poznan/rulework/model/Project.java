@@ -3,6 +3,8 @@ package pl.put.poznan.rulework.model;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.rules.RuleSet;
+import org.rulelearn.rules.RuleSetWithCharacteristics;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -13,6 +15,7 @@ public class Project {
     private InformationTable informationTable;
     private DominanceCones dominanceCones;
     private UnionsWithSingleLimitingDecision unions;
+    private RuleSetWithCharacteristics ruleSetWithCharacteristics;
 
     private boolean calculatedDominanceCones;
     private boolean calculatedUnionsWithSingleLimitingDecision;
@@ -23,6 +26,7 @@ public class Project {
         this.informationTable = new InformationTable(new Attribute[0], new ArrayList<>());
         this.calculatedDominanceCones = false;
         this.calculatedUnionsWithSingleLimitingDecision = false;
+        this.ruleSetWithCharacteristics = null;
     }
 
     public Project(String name, InformationTable informationTable) {
@@ -31,6 +35,7 @@ public class Project {
         this.informationTable = informationTable;
         this.calculatedDominanceCones = false;
         this.calculatedUnionsWithSingleLimitingDecision = false;
+        this.ruleSetWithCharacteristics = null;
     }
 
     public UUID getId() {
@@ -95,14 +100,25 @@ public class Project {
         this.calculatedUnionsWithSingleLimitingDecision = calculatedUnionsWithSingleLimitingDecision;
     }
 
+    public RuleSet getRuleSetWithCharacteristics() {
+        return ruleSetWithCharacteristics;
+    }
+
+    public void setRuleSetWithCharacteristics(RuleSetWithCharacteristics ruleSetWithCharacteristics) {
+        this.ruleSetWithCharacteristics = ruleSetWithCharacteristics;
+    }
+
     @Override
     public String toString() {
         return "Project{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", informationTable=" + informationTable +
+                ", dominanceCones=" + dominanceCones +
+                ", unions=" + unions +
+                ", ruleSetWithCharacteristics=" + ruleSetWithCharacteristics +
                 ", calculatedDominanceCones=" + calculatedDominanceCones +
                 ", calculatedUnionsWithSingleLimitingDecision=" + calculatedUnionsWithSingleLimitingDecision +
-                "}";
+                '}';
     }
 }
