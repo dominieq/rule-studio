@@ -24,33 +24,24 @@ public class UnionsWithSingleLimitingDecisionService {
         return projectsContainer.getProjectHashMap().get(id);
     }
 
-    public UnionsWithSingleLimitingDecision getUnionsWithSingleLimitingDecision(UUID id) {
+    public UnionsWithSingleLimitingDecision getUnionsWithSingleLimitingDecision(UUID id, Double consistencyThreshold) {
         logger.info("Id:\t" + id);
+        if(consistencyThreshold != null) logger.info("ConsistencyThreshold:\t" + consistencyThreshold);
 
         Project project = getProjectFromProjectsContainer(id);
         if(project == null) {
             return null;
         }
 
-        return project.getUnionsWithSingleLimitingDecision();
-    }
-
-
-    public UnionsWithSingleLimitingDecision calculate(UUID id, double consistencyThreshold) {
-        logger.info("Id:\t" + id);
-        logger.info("ConsistencyThreshold:\t" + consistencyThreshold);
-
-        Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
-
-        UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = new UnionsWithSingleLimitingDecision(
+        if(consistencyThreshold != null) {
+            UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = new UnionsWithSingleLimitingDecision(
                 new InformationTableWithDecisionDistributions(project.getInformationTable()),
                 new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold)
-        );
+            );
 
-        project.setUnionsWithSingleLimitingDecision(unionsWithSingleLimitingDecision);
+            project.setUnionsWithSingleLimitingDecision(unionsWithSingleLimitingDecision);
+            project.setCalculatedUnionsWithSingleLimitingDecision(true);
+        }
 
         return project.getUnionsWithSingleLimitingDecision();
     }

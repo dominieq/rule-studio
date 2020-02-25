@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 
-class GetDataAndMetadata extends Component {
+class GetMetadata extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2'
+            id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f'
         }
     }
 
@@ -15,10 +15,10 @@ class GetDataAndMetadata extends Component {
         })
     }
 
-    getDataAndMetadata = (event) => {
-        event.preventDefault();
+    getMetadata = (event) => {
+        event.preventDefault()
 
-        fetch(`http://localhost:8080/import/data/getDataAndMetadata?id=${this.state.id_projektu}`, {
+        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/metadata`, {
             method: 'GET'
         }).then(response => {
             console.log(response)
@@ -36,10 +36,10 @@ class GetDataAndMetadata extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                <button onClick={this.getDataAndMetadata}>getDataAndMetadata</button>
+                <button onClick={this.getMetadata}>getMetadata</button>
             </div>
         )
     }
 }
 
-export default GetDataAndMetadata
+export default GetMetadata

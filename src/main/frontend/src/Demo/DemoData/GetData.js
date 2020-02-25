@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 
-class Calculate extends Component {
+class GetData extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2'
+            id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f'
         }
     }
 
@@ -15,22 +15,17 @@ class Calculate extends Component {
         })
     }
 
-    calculate = (event) => {
-        event.preventDefault();
+    getData = (event) => {
+        event.preventDefault()
 
-        fetch(`http://localhost:8080/cones?id=${this.state.id_projektu}`, {
-            method: 'PUT'
+        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/data`, {
+            method: 'GET'
         }).then(response => {
             console.log(response)
             return response.json()
         }).then(result => {
             console.log("Wynik dzialania response.json():")
             console.log(result)
-
-            console.log("Obiekty:")
-            result.forEach(element => {
-                console.log(element)
-            })
         }).catch(err => {
             console.log(err)
         })
@@ -41,10 +36,10 @@ class Calculate extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                <button onClick={this.calculate}>calculate</button>
+                <button onClick={this.getData}>getData</button>
             </div>
         )
     }
 }
 
-export default Calculate
+export default GetData

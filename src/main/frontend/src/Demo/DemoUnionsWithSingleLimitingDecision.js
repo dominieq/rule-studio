@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import Calculate from './DemoUnionsWithSingleLimitingDecision/Calculate'
 import GetUnionsWithSingleLimitingDecision from './DemoUnionsWithSingleLimitingDecision/GetUnionsWithSingleLimitingDecision'
 
 class DemoUnionsWithSingleLimitingDecision extends Component {
@@ -8,9 +7,8 @@ class DemoUnionsWithSingleLimitingDecision extends Component {
         return (
             <div>
                 <hr></hr>
-                <h3>UnionsController</h3>
+                <h2>UnionsController</h2>
                 <GetUnionsWithSingleLimitingDecision></GetUnionsWithSingleLimitingDecision>
-                <Calculate></Calculate>
             </div>
         )
     }
