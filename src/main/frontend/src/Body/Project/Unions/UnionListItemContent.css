@@ -1,0 +1,21 @@
+.union-list-item-label {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.union-list-item-label > p {
+    margin-right: 15px;
+}
+
+.MuiTreeView-root .MuiCollapse-wrapperInner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+li.MuiTreeItem-root {
+    margin: 5px;
+}

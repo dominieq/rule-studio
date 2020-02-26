@@ -1,0 +1,23 @@
+.unions-bar {
+    position: relative;
+    padding: 8px 25px 2px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.unions-bar > .MuiTypography-root {
+    margin-right: 15px;
+}
+
+.unions-bar > span {
+    flex-grow: 1;
+    padding-right: 15px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+}

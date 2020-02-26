@@ -27,7 +27,7 @@ class Body extends Component {
             case "Project":
                 return <ProjectTabs />;
             default:
-                return <Home />;
+                return <Home/>;
         }
     }
 }

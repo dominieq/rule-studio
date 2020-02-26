@@ -5,6 +5,9 @@ import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import DisplayData from "./Data/DisplayData";
+import Unions from "./Unions/Unions";
+import Cones from "./Cones/Cones";
+import Rules from "./Rules/Rules";
 
 function TabPanel(props) {
     const { children, value, index, ...other} = props;
@@ -76,13 +79,13 @@ class ProjectTabs extends Component {
                         <DisplayData/>
                     </TabPanel>
                     <TabPanel value={this.state.value} index={1}>
-                        Dominance cones
+                        <Cones />
                     </TabPanel>
                     <TabPanel value={this.state.value} index={2}>
-                        Class unions
+                        <Unions />
                     </TabPanel>
                     <TabPanel value={this.state.value} index={3}>
-                        Rules
+                        <Rules />
                     </TabPanel>
                     <TabPanel value={this.state.value} index={4}>
                         Classification
