@@ -2,8 +2,7 @@ import React from 'react';
 import ReactDataGrid from 'react-data-grid';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Editors,  Data, Menu, Filters} from 'react-data-grid-addons';
-import data from './resources/data-example.json';
-import metadata from './resources/metadata-example.json';
+
 import './DisplayData.css';
 import EditDataButtons from './EditDataButtons';
 import EditDataFilterButton from './EditDataFilterButton'
@@ -32,37 +31,6 @@ const selectors = Data.Selectors;
 const { NumericFilter } = Filters;
 const { DropDownEditor } = Editors;
 const { ContextMenu, MenuItem, ContextMenuTrigger } = Menu;
-
-let kolumny = [{key: "uniqueLP", name: "No.", sortable:true, resizable:true, filterable:true, sortDescendingFirst:true,  width:160, filterRenderer: NumericFilter, visible: true}]
-
-for(let el in metadata) {
-    //if(metadata[el].uniqueLP)  metadata[el].UniqueLP=== "uniqueLP") {
-    const attribute = {editable:true, sortable:true, resizable:true, filterable:true, visible: true}
-    attribute.key = metadata[el].name;
-    attribute.name = metadata[el].name;
-    attribute.active = metadata[el].active;
-    if(metadata[el].missingValueType !== undefined) attribute.missingValueType = metadata[el].missingValueType;
-    else if(metadata[el].identifierType === undefined) attribute.missingValueType = "mv2";
-    
-    if(metadata[el].identifierType !== undefined) { //identification attribute
-        attribute.identifierType = metadata[el].identifierType;
-    } else {
-        attribute.type = metadata[el].type;
-        attribute.preferenceType = metadata[el].preferenceType;
-        attribute.valueType = metadata[el].valueType;
-        if(attribute.valueType === "enumeration") {
-            attribute.domain = metadata[el].domain;
-            attribute.editor = <DropDownEditor options={attribute.domain} />;
-        } else if(attribute.valueType === "integer" || attribute.valueType === "real") {
-            attribute.filterRenderer = NumericFilter;
-        }
-    }
-    kolumny.push(attribute)
-}
-
-let wiersze = [...data]
-let maxUniqueLP = 1
-wiersze.forEach(x => { x.uniqueLP = maxUniqueLP++ })
 
 const heightOfRow = 50;
 const heightOfHeaderRow = 60;
@@ -110,10 +78,11 @@ function RightClickContextMenu({
 class DisplayData extends React.Component {
     constructor(props) {
         super(props);
+
         this.state = {
-            rows: wiersze, 
+            rows: this.prepareDataFromImport(this.props.data),
+            columns: this.prepareMetaDataFromImport(this.props.metadata),
             enableRowInsert: 0, //-1 no sort, 0-sort asc, 1-sort desc
-            columns: kolumny,
             selectedRows: [],
             filters: {},
             dataModified: false,
@@ -138,6 +107,45 @@ class DisplayData extends React.Component {
             columnKeyOfHeaderMenuOpened: -1,
             
         };
+    }
+
+    prepareDataFromImport = (data) => {
+        let tmp = [...data];
+        let maxUniqueLP = 1;
+        tmp.forEach(x => { x.uniqueLP = maxUniqueLP++ })
+        return tmp;
+    }
+
+    prepareMetaDataFromImport = (metadata) => {
+        const tmp = [{key: "uniqueLP", name: "No.", sortable: true, resizable: true, filterable: true, sortDescendingFirst: true, width: 160, filterRenderer: NumericFilter, visible: true}];
+        
+        for(let el in metadata) {
+            if(metadata[el].name === "uniqueLP") { //restricted name (brute force change the first letter to uppercase)
+                metadata[el].name = "UniqueLP";
+            }            
+            const attribute = {editable:true, sortable:true, resizable:true, filterable:true, visible: true};
+            attribute.key = metadata[el].name;
+            attribute.name = metadata[el].name;
+            attribute.active = metadata[el].active;
+            if(metadata[el].missingValueType !== undefined) attribute.missingValueType = metadata[el].missingValueType;
+            else if(metadata[el].identifierType === undefined) attribute.missingValueType = "mv2";
+            
+            if(metadata[el].identifierType !== undefined) { //identification attribute
+                attribute.identifierType = metadata[el].identifierType;
+            } else {
+                attribute.type = metadata[el].type;
+                attribute.preferenceType = metadata[el].preferenceType;
+                attribute.valueType = metadata[el].valueType;
+                if(attribute.valueType === "enumeration") {
+                    attribute.domain = metadata[el].domain;
+                    attribute.editor = <DropDownEditor options={attribute.domain} />;
+                } else if(attribute.valueType === "integer" || attribute.valueType === "real") {
+                    attribute.filterRenderer = NumericFilter;
+                }
+            }
+            tmp.push(attribute)
+        }
+        return tmp; 
     }
 
     componentDidMount() {
@@ -395,9 +403,7 @@ class DisplayData extends React.Component {
     }
     
     sendFilesToServer = () => {
-        const id_projektu = '2541bed3-63f3-4b88-88ba-543a2bb54f60';
-
-        fetch(`http://localhost:8080/projects/${id_projektu}/metadata`, {
+        fetch(`http://localhost:8080/projects/${this.props.project.id}/metadata`, {
             method: 'PUT',
             body: JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()),
         }).then(response => {
@@ -410,7 +416,7 @@ class DisplayData extends React.Component {
             console.log(err)
         }).then(() => {
 
-            fetch(`http://localhost:8080/projects/${id_projektu}/data`, {
+            fetch(`http://localhost:8080/projects/${this.props.project.id}/data`, {
                 method: 'PUT',
                 body: JSON.stringify(this.prepareDataFileBeforeSendingToServer())
             }).then(response => {
@@ -422,6 +428,10 @@ class DisplayData extends React.Component {
             }).catch(err => {
                 console.log(err)
             })
+        })
+
+        this.setState({
+            dataModified: false,
         })
         
     }
@@ -680,7 +690,7 @@ class DisplayData extends React.Component {
     setHeaderColorAndStyle = (column, idx) => {
         const tmp = document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes;
         if(column.type !== undefined && !(/<\/?[a-z][\s\S]*>/i.test(column.type))) { //make sure attribute type doesn't contain html tags
-            if(tmp.length == 2) {
+            if(tmp.length === 2) {
                 document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type +")");
             } else if(tmp.length > 2) {
                 document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "("+ column.type + ")";
@@ -1085,7 +1095,7 @@ class DisplayData extends React.Component {
                         Cancel
                     </Button>
                     <Button onClick={this.saveToFile} color="primary" autoFocus variant="outlined" 
-                            disabled={!(this.state.saveToFileWhichFormat!=='' && this.state.saveToFileWhichFile!='')}>
+                            disabled={!(this.state.saveToFileWhichFormat!=='' && this.state.saveToFileWhichFile!=='')}>
                         Ok
                     </Button>
                     </DialogActions>
@@ -1097,5 +1107,11 @@ class DisplayData extends React.Component {
         )
     }
 }
+
+DisplayData.defaultProps = {
+    data: [],
+    metadata: [],
+    project: {id: '2541bed3-63f3-4b88-88ba-543a2bb54f60', name: '', files: []},
+};
   
 export default DisplayData;
