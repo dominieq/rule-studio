@@ -24,10 +24,19 @@ const styles = theme => ({
 class AttributeDomain extends React.Component {
   constructor(props) {
     super(props);
+
+    this.max = 0;
+    if(props.defaultValue.length > 0) {
+      props.defaultValue.forEach(x => { if(x.id > this.max) this.max = x.id})
+      this.max++;
+    }
+
     this.state = {
-      domainElements: [],
-      id: 0
+      domainElements: props.defaultValue,
+      id: this.max,
     };
+    
+    this.props.setDomainElements(props.defaultValue);
   }
 
   textFieldOnChange = (e) => {
@@ -147,6 +156,7 @@ class AttributeDomain extends React.Component {
               id={x.id.toString()}
               label="Domain element"
               onChange={this.textFieldOnChange}
+              defaultValue={x.text}
             />
 
             <IconButton
@@ -205,4 +215,7 @@ class AttributeDomain extends React.Component {
   }
 }
 
+AttributeDomain.defaultProps = {
+  defaultValue: [],
+}
 export default withStyles(styles)(AttributeDomain);

@@ -75,7 +75,7 @@ export default function IconLabelButtons(props) {
           color="primary"
           className={classes.button}
           startIcon={<SaveAltIcon />}
-          onClick={() => props.saveToFile()}
+          onClick={() => props.saveToFileDialog()}
         >
           Save to file
         </Button><div className="data-modified" key={props.modified}> 

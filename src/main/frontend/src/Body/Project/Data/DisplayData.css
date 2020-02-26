@@ -56,12 +56,34 @@ div.react-grid-HeaderCell-sortable > .pull-right {
   border-bottom: 1px solid #dddddd;
 }
 
+.radio-button-group-save-file {
+  /*display: flex;*/
+  
+   flex-direction: row !important; 
+  
+   justify-content: center;
+}
+
+.MuiDialogContent-root{
+  
+}
+
 .nicelyInColumn {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  float: left;
+  margin-right: 16px;
 }
+
+.editAttributesValues {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;    
+}
+
 .attributeDomain {
   width: 350px;
   height: 300px;
@@ -69,7 +91,7 @@ div.react-grid-HeaderCell-sortable > .pull-right {
 }
 
 .attributeDomainWrapper {
-  width: 350px;
+  width: 346px;
   margin-top: 16px;
   overflow-y: auto;
   overflow-x: hidden;

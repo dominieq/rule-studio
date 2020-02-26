@@ -18,7 +18,7 @@ export default function SimpleSelect(props) {
 
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = React.useState(0);
-  React.useEffect(() => { setLabelWidth(inputLabel.current.offsetWidth); }, []);
+  React.useEffect(() => { setLabelWidth(inputLabel.current.offsetWidth); props.getSelected(props.defaultValue); }, []);
 
   const handleChange = event => {
     setSelectedOption(event.target.value);
