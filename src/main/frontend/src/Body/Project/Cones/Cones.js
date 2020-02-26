@@ -2,50 +2,64 @@ import React, {Component, Suspense} from 'react';
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import ConesBar from "./ConesBar";
-import {DominanceSelector} from "./DominanceSelector";
-import {ObjectListItemHeader} from "./ObjectListItemHeader";
-import {ObjectListItemContent, ObjectListItemArray} from "./ObjectListItemContent";
-import ObjectComparison from "./ObjectComparison";
+import ConesBar from "./surfaces/ConesBar";
+import DominanceSelector from "./inputs/DominanceSelector";
+import ObjectComparison from "./data-display/ObjectComparison";
 import DominanceObject from "./api/DominanceObject";
 import DominanceComparison from "./api/DominanceComparison";
-import {getDominanceTypes} from "./api/DominanceTypes";
 import "./Cones.css";
-import dominanceCones from "./resources/demo/DominanceCones";
-import exampleComparison from "./resources/demo/ExampleComparison";
+import dominanceCones from "./resources/demo-files/DominanceCones";
+import exampleComparison from "./resources/demo-files/ExampleComparison";
 
 
-const ObjectListItem = React.lazy(() => import("./ObjectListItem")) ;
+const ObjectPanel = React.lazy(() => import("./data-display/ObjectPanel")) ;
 
 class Cones extends Component {
     constructor(props) {
         super(props);
-
-        this.objectsComparison = React.createRef();
         this.objects = this.getObjects();
 
         this.state = {
             objects: this.objects,
-            dominance: "All",
         };
+
+        this.objectsComparison = React.createRef();
+        this.conesBar = React.createRef();
+        this.objectPanels = [];
     }
 
-    setDominance = (event) => {
-        this.setState({
-            dominance: event.target.value.toString(),
-        });
+    onGlobalDominanceChange = (dominanceSelected) => {
+        const {dominance, where} = dominanceSelected;
+
+        switch (where) {
+            case "bar": {
+
+                for (let i = 0; i < this.objectPanels.length; i++) {
+                    this.objectPanels[i].onDominanceUpdate(dominance)
+                }
+                return;
+            }
+            case "panel": {
+                this.conesBar.current.onDominanceUpdate("All");
+                return;
+            }
+            default: {
+                return;
+            }
+        }
     };
 
-    setDisplayedComparison = (comparison) => {
-        if (comparison !== null) {
-            const newComparison = new DominanceComparison(
-                exampleComparison[0],
-                exampleComparison[1],
-                comparison.relation
-            );
-            this.objectsComparison.current.updateComparison(newComparison);
+    onComparisonChange = (comparison) => {
+        if (comparison) {
+            let objectMain = exampleComparison[0];
+            objectMain.id = comparison.objectMain;
+            let objectOptional = exampleComparison[1];
+            objectOptional.id = comparison.objectOptional;
+
+            const newComparison = new DominanceComparison(objectMain, objectOptional, comparison.relation);
+            this.objectsComparison.current.updateComparison(false, newComparison);
         } else {
-            this.objectsComparison.current.updateComparison(comparison);
+            this.objectsComparison.current.updateComparison(true,  null);
         }
 
     };
@@ -55,7 +69,7 @@ class Cones extends Component {
         const negatives = dominanceCones.negativeDCones[index];
         const positivesInv = dominanceCones.positiveInvDCones[index];
         const negativesInv = dominanceCones.negativeInvDCones[index];
-        return new DominanceObject(index, positives, negatives, positivesInv, negativesInv);
+        return new DominanceObject(index,"", positives, negatives, positivesInv, negativesInv);
     };
 
     getObjects = () => {
@@ -94,8 +108,7 @@ class Cones extends Component {
     };
 
     render() {
-        const {objects, dominance} = this.state;
-        const dominanceTypes = getDominanceTypes();
+        const objects = this.state.objects;
 
         return (
             <div className={"cones"}>
@@ -104,10 +117,10 @@ class Cones extends Component {
                         Choose dominance cones:
                     </Typography>
                     <DominanceSelector
-                        dominance={dominance}
-                        setDominance={(e) => this.setDominance(e)}
+                        ref={this.conesBar}
+                        onDominanceChange={(d) => this.onGlobalDominanceChange(d)}
                     />
-                    <span />
+                    <span style={{flexGrow: 1}}/>
                     <TextField
                         id={"objects-filter"}
                         label={"Filter objects"}
@@ -120,40 +133,15 @@ class Cones extends Component {
                     <div className={"objects-list"}>
                         <Suspense fallback={<CircularProgress disableShrink/>}>
                             <section>
-                                {objects.map((object) => (
-                                    <ObjectListItem key={object.id} name={object.id}>
-                                        <ObjectListItemHeader
-                                            dominance={dominance}
-                                            name={object.id}
-                                            onDominanceChange={(event) => this.setDominance(event)}
-                                        />
-                                        <ObjectListItemContent dominance={dominance}>
-                                            <ObjectListItemArray
-                                                name={dominanceTypes[0]}
-                                                items={object.positives}
-                                                onItemClick={(c) => this.setDisplayedComparison(c)}
-                                                onItemBlur={() => this.setDisplayedComparison(null)}
-                                            />
-                                            <ObjectListItemArray
-                                                name={dominanceTypes[1]}
-                                                items={object.negatives}
-                                                onItemClick={(c) => this.setDisplayedComparison(c)}
-                                                onItemBlur={() => this.setDisplayedComparison(null)}
-                                            />
-                                            <ObjectListItemArray
-                                                name={dominanceTypes[2]}
-                                                items={object.positivesInv}
-                                                onItemClick={(c) => this.setDisplayedComparison(c)}
-                                                onItemBlur={() => this.setDisplayedComparison(null)}
-                                            />
-                                            <ObjectListItemArray
-                                                name={dominanceTypes[3]}
-                                                items={object.negativesInv}
-                                                onItemClick={(c) => this.setDisplayedComparison(c)}
-                                                onItemBlur={() => this.setDisplayedComparison(null)}
-                                            />
-                                        </ObjectListItemContent>
-                                    </ObjectListItem>
+                                {objects.map((object, index) => (
+                                    <ObjectPanel
+                                        key={index}
+                                        ref={(ref) => {this.objectPanels[index] = ref}}
+                                        object={object}
+                                        onDominanceChange={(d) => this.onGlobalDominanceChange(d)}
+                                        onItemClick={(c) => this.onComparisonChange(c)}
+                                        onItemBlur={() => this.onComparisonChange(null)}
+                                    />
                                 ))}
                             </section>
                         </Suspense>

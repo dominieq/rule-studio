@@ -1,19 +1,13 @@
 .cones-bar {
     position: relative;
+    width: 100%;
+    height: fit-content;
+    padding: 8px 15px 4px;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
     justify-content: flex-start;
-    padding: 8px 15px 4px;
-}
 
-.cones-bar > .dominance-selector-wrapper {
-    margin-left: 15px;
-    min-width: 125px;
-}
-
-.cones-bar > span {
-    flex-grow: 1;
 }
 

@@ -14,16 +14,15 @@
 }
 
 .objects-list {
-    max-width: 40%;
-    flex-grow: 1;
+    width: 45%;
+    max-width: 45%;
     margin-right: 25px;
 }
 
 .objects-description {
     position: sticky;
-    width: 50%;
+    width: 45%;
     height: fit-content;
     top: 0;
-    flex-grow: 1;
 }
 

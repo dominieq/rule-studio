@@ -4,20 +4,20 @@ import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import {getDominanceTypes} from "./api/DominanceTypes";
+import {getDominanceTypes} from "../api/DominanceTypes";
 
-export function ObjectListItemHeader(props) {
-    const {dominance, name} = props;
+function ObjectPanelHeader(props) {
+    const {dominance, index, name} = props;
     const dominanceTypes = getDominanceTypes();
 
     return (
         <div className={"object-list-item-header"}>
             <Typography variant={"button"} component={"span"}>
-                Object {name}
+                {name}
             </Typography>
             <FormControl
-                aria-label={"selector-for-object-" + name}
-                label={"selector-for-object-" + name}
+                aria-label={"selector-for-object-" + index}
+                label={"selector-for-object-" + index}
                 onClick={event => event.stopPropagation()}
                 onFocus={event => event.stopPropagation()}
                 variant={"outlined"}
@@ -41,8 +41,15 @@ export function ObjectListItemHeader(props) {
     );
 }
 
-ObjectListItemHeader.propTypes = {
-    dominance: PropTypes.string.isRequired,
+ObjectPanelHeader.propTypes = {
+    dominance: PropTypes.string,
+    index: PropTypes.any.isRequired,
     name: PropTypes.any.isRequired,
     onDominanceChange: PropTypes.func.isRequired,
 };
+
+ObjectPanelHeader.defaultProps = {
+    dominance: "All"
+};
+
+export default ObjectPanelHeader;
