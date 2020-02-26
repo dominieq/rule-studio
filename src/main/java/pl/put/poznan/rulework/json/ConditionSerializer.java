@@ -24,7 +24,7 @@ public class ConditionSerializer extends JsonSerializer<Condition> {
     public void serialize(Condition condition, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         ObjectMapper mapper = (ObjectMapper) jsonGenerator.getCodec();
 
-        logger.info("Serialization of Condition:\t" + condition.toString());
+        logger.debug("Serialization of Condition:\t{}", condition);
 
         jsonGenerator.writeStartObject();
 

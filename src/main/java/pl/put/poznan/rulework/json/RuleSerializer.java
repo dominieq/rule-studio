@@ -20,7 +20,7 @@ public class RuleSerializer extends JsonSerializer<Rule> {
     public void serialize(Rule rule, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         ObjectMapper mapper = (ObjectMapper) jsonGenerator.getCodec();
 
-        logger.info("Serialization of Rule:\t" + rule.toString());
+        logger.debug("Serialization of Rule:\t{}", rule);
 
         jsonGenerator.writeStartObject();
 

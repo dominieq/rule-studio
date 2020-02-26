@@ -5,6 +5,7 @@ import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.RuleSet;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
+import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -100,7 +101,7 @@ public class Project {
         this.calculatedUnionsWithSingleLimitingDecision = calculatedUnionsWithSingleLimitingDecision;
     }
 
-    public RuleSet getRuleSetWithCharacteristics() {
+    public RuleSetWithCharacteristics getRuleSetWithCharacteristics() {
         return ruleSetWithCharacteristics;
     }
 

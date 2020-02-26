@@ -97,7 +97,7 @@ public class ProjectService {
                 sb.append("\t");
                 sb.append(table.getField(i, j));
             }
-            logger.info(sb.toString());
+            logger.trace(sb.toString());
         }
 
         return project;
@@ -148,7 +148,7 @@ public class ProjectService {
                 sb.append("\t");
                 sb.append(table.getField(i, j));
             }
-            logger.info(sb.toString());
+            logger.trace(sb.toString());
         }
 
         return project;
