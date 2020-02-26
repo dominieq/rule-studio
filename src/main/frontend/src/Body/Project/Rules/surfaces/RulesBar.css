@@ -1,0 +1,12 @@
+.rules-bar {
+    position: relative;
+    width: 100%;
+    height: fit-content;
+    padding: 8px 15px 2px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+

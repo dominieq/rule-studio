@@ -7,6 +7,7 @@ import Tab from "@material-ui/core/Tab";
 import DisplayData from "./Data/DisplayData";
 import Unions from "./Unions/Unions";
 import Cones from "./Cones/Cones";
+import Rules from "./Rules/Rules";
 
 function TabPanel(props) {
     const { children, value, index, ...other} = props;
@@ -84,7 +85,7 @@ class ProjectTabs extends Component {
                         <Unions />
                     </TabPanel>
                     <TabPanel value={this.state.value} index={3}>
-                        Rules
+                        <Rules />
                     </TabPanel>
                     <TabPanel value={this.state.value} index={4}>
                         Classification
