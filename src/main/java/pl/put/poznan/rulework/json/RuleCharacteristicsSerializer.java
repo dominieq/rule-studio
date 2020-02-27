@@ -30,7 +30,7 @@ public class RuleCharacteristicsSerializer extends JsonSerializer<RuleCharacteri
             }
             jsonGenerator.writeRawValue(value.toString());
         } catch (UnknownValueException e) {
-            logger.info(e.getMessage());
+            logger.debug(e.getMessage());
         }
     }
 

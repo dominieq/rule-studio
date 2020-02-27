@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.service.RulesService;
 
 import java.util.UUID;

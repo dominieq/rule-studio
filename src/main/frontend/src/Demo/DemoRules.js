@@ -8,7 +8,7 @@ class DemoRules extends Component {
         return (
             <div>
                 <hr></hr>
-                <h2>DemoRules</h2>
+                <h2>RulesController</h2>
                 <GetRules></GetRules>
                 <PutRules></PutRules>
             </div>
