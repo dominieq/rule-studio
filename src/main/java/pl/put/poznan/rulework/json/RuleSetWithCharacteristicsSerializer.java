@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.rulelearn.core.UnknownValueException;
+import org.rulelearn.rules.ComputableRuleCharacteristics;
+import org.rulelearn.rules.RuleCharacteristics;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,22 +41,31 @@ public class RuleSetWithCharacteristicsSerializer extends JsonSerializer<RuleSet
     public void serialize(RuleSetWithCharacteristics ruleSetWithCharacteristics, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         ObjectMapper mapper = (ObjectMapper) jsonGenerator.getCodec();
 
-        jsonGenerator.writeStartObject();
-
-        jsonGenerator.writeFieldName("rulesCharacteristics");
         jsonGenerator.writeStartArray();
         for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
-            jsonGenerator.writeRawValue(mapper.writeValueAsString(ruleSetWithCharacteristics.getRuleCharacteristics(i)));
-        }
-        jsonGenerator.writeEndArray();
+            jsonGenerator.writeStartObject();
 
-        jsonGenerator.writeFieldName("rules");
-        jsonGenerator.writeStartArray();
-        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+            jsonGenerator.writeFieldName("rule");
             jsonGenerator.writeRawValue(mapper.writeValueAsString(ruleSetWithCharacteristics.getRule(i)));
-        }
-        jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeEndObject();
+
+            RuleCharacteristics ruleCharacteristics = ruleSetWithCharacteristics.getRuleCharacteristics(i);
+
+            jsonGenerator.writeFieldName("ruleCharacteristics");
+            jsonGenerator.writeRawValue(mapper.writeValueAsString(ruleCharacteristics));
+
+            if(ruleCharacteristics instanceof ComputableRuleCharacteristics) {
+                jsonGenerator.writeFieldName("ruleCoverageInformation");
+                jsonGenerator.writeRawValue(
+                        mapper.writeValueAsString(
+                                ((ComputableRuleCharacteristics) ruleCharacteristics).getRuleCoverageInformation()
+                        )
+                );
+            }
+
+            jsonGenerator.writeEndObject();
+        }
+
+        jsonGenerator.writeEndArray();
     }
 }
