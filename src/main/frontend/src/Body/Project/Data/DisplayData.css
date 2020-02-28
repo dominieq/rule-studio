@@ -1,14 +1,46 @@
-.form-group {
-    margin: -4px;
-    padding-bottom : 4px;
-}
-
 .nav {
     padding: 10px 10px 0;
     background: #333;
 }
 .is-visible {
     border: solid 1px red;
+}
+
+.data-modified {
+  display: inline-block;
+  background-color: black;
+  color: white;
+}
+
+div.react-grid-HeaderCell .input-sm {
+    height: 30px;
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+    max-width : 100%;
+    border : 1px solid #ddd;
+}
+
+div.react-grid-HeaderCell-sortable {
+  height: 100%;
+  /*display: flex;*/
+  align-items: center;
+  justify-content: center;
+}
+
+div.react-grid-HeaderCell-sortable > .pull-right {
+  margin-right: 10px;
+}
+
+.input-sm .badge{
+ background-color: grey;
+ display: inline-block;
+ width: 20px;
+ height: 20px;
+ vertical-align: top;
+ border-radius: 100%;
+ font-size: small;
 }
 
 .react-grid-HeaderCell {
@@ -23,6 +55,72 @@
   border-right: 1px solid #dddddd;
   border-bottom: 1px solid #dddddd;
 }
+
+.radio-button-group-save-file {
+  /*display: flex;*/
+  
+   flex-direction: row !important; 
+  
+   justify-content: center;
+}
+
+.MuiDialogContent-root{
+  
+}
+
+.nicelyInColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  float: left;
+  margin-right: 16px;
+}
+
+.editAttributesValues {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;    
+}
+
+.attributeDomain {
+  width: 350px;
+  height: 300px;
+  /*overflow-y: auto;*/
+}
+
+.attributeDomainWrapper {
+  width: 346px;
+  margin-top: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* width */
+.attributeDomainWrapper::-webkit-scrollbar {
+  width: 14px;
+}
+
+/* Track */
+.attributeDomainWrapper::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 14px;
+}
+
+/* Handle */
+.attributeDomainWrapper::-webkit-scrollbar-thumb {
+  background: #3f51b5;
+  border-radius: 14px;
+}
+/*
+.attributeDomain {
+  width: 350px;
+  height: 300px;
+  margin-top: 16px;
+  /* border: 1px solid red; 
+  overflow-y: auto;
+}*/
 
 /* cell 
 .react-grid-Cell {
