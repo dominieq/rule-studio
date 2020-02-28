@@ -1,9 +1,10 @@
 .left-aligned {
-    position: relative;
     text-align: left;
-    float: left;
+    overflow: hidden;
+    width: 100%;
 }
 
-div.left-aligned {
-    overflow: hidden;
+
+.left-align-filter-button {
+    float: left;
 }
