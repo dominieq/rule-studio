@@ -1,10 +1,14 @@
-import React, {Component} from 'react';
-import Box from"@material-ui/core/Box";
+import React, {Component, Fragment} from 'react';
+import PropTypes from 'prop-types';
+import RuleWorkButton from "../RuleWorkComponents/Inputs/RuleWorkButton";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
+import Typography from "@material-ui/core/Typography";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import DeleteIcon from "@material-ui/icons/Delete";
+import RenameBox from "mdi-material-ui/RenameBox";
+import "./ProjectMenu.css";
 
 class ProjectMenu extends Component {
     constructor(props) {
@@ -12,75 +16,101 @@ class ProjectMenu extends Component {
 
         this.state = {
             anchorE1: null,
-            primaryText: "No active projects",
-            selectedIndex: this.props.selectedProject,
         };
-
-        this.handleClickListItem = this.handleClickListItem.bind(this);
-        this.handleMenuItemClick = this.handleMenuItemClick.bind(this);
-        this.handleClose = this.handleClose.bind(this);
     }
 
-    handleClickListItem(event) {
+    onListItemClick = (event) => {
         this.setState({
             anchorE1: event.currentTarget,
         });
     };
 
-    handleMenuItemClick(event, index) {
-        this.props.selectProject(index);
-        this.props.selectBody("Project");
-
+    onMenuItemClick = (event, index) => {
         this.setState({
             anchorE1: null,
-            primaryText: "Active project: " + this.props.projects[index].name,
-            selectedIndex: index,
+        }, () => {
+            this.props.onProjectClick(index - 1);
         });
     };
 
-    handleClose() {
+    onMenuClose = () => {
         this.setState({
             anchorE1: null,
         });
     };
 
-    updateNewProject(projects, index) {
-        this.setState({
-            primaryText: "Active project: " + projects[index].name,
-            selectedIndex: index,
-        })
-    }
+    renderProjectButtons = () => {
+        if (this.props.currentProject > 0) {
+            return (
+                <Fragment>
+                    <RuleWorkButton
+                        tooltipTitle={"Rename project"}
+                        buttonLabel={"rename-project-button"}
+                        content={<RenameBox />}
+                        onButtonClick={this.props.onProjectRename}
+                    />
+                    <span />
+                    <RuleWorkButton
+                        tooltipTitle={"Delete project"}
+                        buttonLabel={"delete-project-button"}
+                        content={<DeleteIcon />}
+                        onButtonClick={this.props.onProjectDelete}
+                    />
+                </Fragment>
+            )
+        }  else {
+            return null;
+        }
+    };
 
     render() {
+        const anchorE1 = this.state.anchorE1;
+        const {currentProject, projects} = this.props;
+
+        let primaryText = "Select your project";
+        if (currentProject > 0) {
+            primaryText = "Active project: " + projects[currentProject].name;
+        }
+
         return (
-            <Box component={"div"} flexGrow={1}>
+            <div className={"rule-work-project-panel"}>
                 <List component={"nav"} >
                     <ListItem
                         button
                         aria-haspopup={"true"}
                         aria-controls={"lock-menu"}
-                        onClick={this.handleClickListItem}>
-                        <ListItemText primary={this.state.primaryText}/>
+                        onClick={this.onListItemClick}>
+                        <Typography color={"inherit"} variant={"button"}>{primaryText}</Typography>
                     </ListItem>
                 </List>
                 <Menu
-                    anchorEl={this.state.anchorE1}
+                    anchorEl={anchorE1}
                     keepMounted
-                    open={Boolean(this.state.anchorE1)}
-                    onClose={this.handleClose}>
-                    {this.props.projects.map((option, index) => (
+                    open={Boolean(anchorE1)}
+                    onClose={this.onMenuClose}
+                >
+                    {projects.map((project, index) => (
                         <MenuItem
-                            key={option.id}
+                            key={index}
                             disabled={index === 0}
-                            selected={index === this.state.selectedIndex}
-                            onClick={event => this.handleMenuItemClick(event, index)}>
-                            {option.name}
+                            selected={index === currentProject}
+                            onClick={event => this.onMenuItemClick(event, index)}>
+                            {typeof project === "string" ? project : project.name}
                         </MenuItem>
                     ))}
                 </Menu>
-            </Box>
+                {this.renderProjectButtons()}
+            </div>
         )
     }
 }
+
+ProjectMenu.propTypes = {
+    currentProject: PropTypes.number.isRequired,
+    projects: PropTypes.array.isRequired,
+    onProjectClick: PropTypes.func.isRequired,
+    onProjectDelete: PropTypes.func.isRequired,
+    onProjectRename: PropTypes.func.isRequired,
+};
 
 export default ProjectMenu;

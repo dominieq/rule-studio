@@ -11,3 +11,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#root {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: #2A3439;
+  text-align: center;
+}

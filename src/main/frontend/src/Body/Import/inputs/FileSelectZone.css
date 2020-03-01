@@ -1,0 +1,11 @@
+.file-select-zone {
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.file-select-zone > span {
+    padding: 0 5px;
+}
