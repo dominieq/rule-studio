@@ -2,17 +2,17 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import RuleWorkBody from "../../RuleWorkComponents/Surfaces/RuleWorkBody";
 import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledCollapsibleDivider from "./data-display/StyledCollapsibleDivider";
 import StyledContent from "./containers/StyledContent";
 import StyledDivider from "./data-display/StyledDivider";
 import StyledFooter from "./containers/StyledFooter";
+import StyledFooterButton from "./inputs/StyledFooterButton";
 import StyledHeader from "./containers/StyledHeader";
 import StyledPaper from "./surfaces/StyledPaper";
 import StyledSwitch from "./inputs/StyledSwitch";
-import Button from "@material-ui/core/Button";
 import Collapse from "@material-ui/core/Collapse";
 import FileSelectZone from "./inputs/FileSelectZone";
 import "./Import.css";
-import StyledCollapsibleDivider from "./data-display/StyledCollapsibleDivider";
 
 class Import extends Component{
     constructor(props) {
@@ -86,6 +86,15 @@ class Import extends Component{
         this.props.onFilesAccepted(projectName, projectFiles);
     };
 
+    onClearClick = () => {
+        this.setState({
+            checked: false,
+            expand: false,
+            name: "new project",
+            files: [],
+        })
+    };
+
     render() {
         const {checked, expand, name} = this.state;
 
@@ -137,19 +146,22 @@ class Import extends Component{
                     </Collapse>
                     <StyledDivider flexItem={true} hidden={!expand} />
                     <StyledFooter >
-                        <Button
+                        <StyledFooterButton
+                            type={"accept"}
                             variant={"outlined"}
-                            color={"inherit"}
                             onClick={this.onAcceptButtonClick}
+                            id={"footer-accept-button"}
                         >
                             Accept
-                        </Button>
-                        <Button
+                        </StyledFooterButton>
+                        <StyledFooterButton
+                            type={"cancel"}
                             variant={"outlined"}
-                            color={"secondary"}
+                            onClick={this.onClearClick}
+                            id={"footer-cancel-button"}
                         >
                             Clear
-                        </Button>
+                        </StyledFooterButton>
                     </StyledFooter>
                 </StyledPaper>
             </RuleWorkBody>

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {makeStyles} from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 import "./RuleWorkButton.css";
@@ -19,17 +20,29 @@ function UploadElement(props, ref)  {
 
 const UploadElementForwardRef = React.forwardRef(UploadElement);
 
+const useStylesButton = makeStyles({
+    root: {
+        minWidth: 0,
+    }
+});
+
 function RuleWorkButton(props) {
     const {tooltipTitle, variant, uploadAccept, buttonLabel, content, onButtonClick} = props;
+    const classesButton = useStylesButton();
 
     return (
-        <Tooltip id={"rule-work-button-tooltip"} title={tooltipTitle}>
+        <Tooltip
+            id={"rule-work-button-tooltip"}
+            title={tooltipTitle}
+            arrow={true}
+        >
             {variant === "upload" ?
                 <UploadElementForwardRef id={buttonLabel} accept={uploadAccept} onFileChanged={onButtonClick}>
                     <Button
                         aria-label={buttonLabel}
-                        component={"span"}
+                        classes={{root: classesButton.root}}
                         color={"inherit"}
+                        component={"span"}
                     >
                         {content}
                     </Button>
@@ -37,8 +50,9 @@ function RuleWorkButton(props) {
                 :
                 <Button
                     aria-label={buttonLabel}
-                    onClick={onButtonClick}
+                    classes={{root: classesButton.root}}
                     color={"inherit"}
+                    onClick={onButtonClick}
                 >
                     {content}
                 </Button>

@@ -6,6 +6,7 @@ import TextField from "@material-ui/core/TextField";
 
 const useStylesTypography = makeStyles({
     root: {
+        minWidth: "fit-content",
         marginRight: "15px",
     },
 });
@@ -18,17 +19,17 @@ const useStylesOutlinedInput = makeStyles({
                 borderColor: "#ABFAA9",
             },
             '&:hover fieldset': {
-                borderColor: "#6BD425"
+                borderColor: "#66FF66"
             },
             '&.Mui-focused fieldset': {
-                borderColor: "#6BD425",
+                borderColor: "#66FF66",
             },
             '&:hover': {
-                backgroundColor: "#66FF66"
+                backgroundColor: "#6BD425"
             },
             '&.Mui-focused': {
 
-                backgroundColor: "#66FF66"
+                backgroundColor: "#6BD425"
             },
         },
     },
@@ -48,6 +49,7 @@ function RuleWorkTextField(props) {
                 {label}
             </Typography>
             <TextField
+                fullWidth={true}
                 aria-labelledby={"rule-work-text-field"}
                 classes={{root: classesOutlinedInput.root}}
                 defaultValue={defaultValue}

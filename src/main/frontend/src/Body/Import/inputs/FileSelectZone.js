@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import RuleWorkButton from "../../../RuleWorkComponents/Inputs/RuleWorkButton";
+import StyledFileChip from "../data-display/StyledFileChip";
+import Skeleton from "@material-ui/lab/Skeleton";
 import Typography from "@material-ui/core/Typography";
-import Chip from "@material-ui/core/Chip";
 import DeleteCircle from "mdi-material-ui/DeleteCircle";
 import FileUpload from "mdi-material-ui/FileUpload";
 import "./FileSelectZone.css"
@@ -39,6 +40,24 @@ class FileSelectZone extends Component {
         })
     };
 
+    renderFile = (file) => {
+        if (file) {
+            return (
+                <StyledFileChip
+                    clickable={true}
+                    deleteIcon={<DeleteCircle />}
+                    label={file.name}
+                    onDelete={this.onInputDelete}
+                    size={"small"}
+                />
+            )
+        } else {
+            return (
+                <Skeleton animation={"wave"}/>
+            )
+        }
+    };
+
     render() {
         const {variant, accept} = this.props;
         const file = this.state.file;
@@ -48,22 +67,13 @@ class FileSelectZone extends Component {
                 <Typography component={"p"}>
                     {"Choose " + variant + " file: "}
                 </Typography>
-                <span>
-                    <Chip
-                        hidden={!file}
-                        label={file ? file.name : ""}
-                        color={"primary"}
-                        clickable={true}
-                        onDelete={this.onInputDelete}
-                        deleteIcon={<DeleteCircle />}
-                    />
-                </span>
+                {this.renderFile(file)}
                 <RuleWorkButton
                     variant={"upload"}
                     uploadAccept={accept}
                     tooltipTitle={"Upload " + variant}
                     buttonLabel={variant + "-upload-button"}
-                    content={<FileUpload color={"primary"}/>}
+                    content={<FileUpload/>}
                     onButtonClick={this.onInputChange}
                     id={"rule-work-upload-" + variant + "-button"}
                 />

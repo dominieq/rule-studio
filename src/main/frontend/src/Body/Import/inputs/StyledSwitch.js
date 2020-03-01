@@ -9,7 +9,7 @@ const useStylesSwitch = makeStyles(theme => ({
         width: 36,
         height: 20,
         padding: 0,
-        margin: theme.spacing(1),
+        margin: "8px 8px 8px 0",
     },
     switchBase: {
         padding: 1,
@@ -69,9 +69,9 @@ StyledSwitchElement.propTypes = {
 const useStylesLabel = makeStyles({
     root: {
         position: "relative",
-        left: -36,
         margin: "5px 0 0",
-    }
+        display: "flex",
+    },
 });
 
 function StyledSwitch(props) {
