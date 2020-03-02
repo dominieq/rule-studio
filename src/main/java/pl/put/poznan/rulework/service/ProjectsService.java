@@ -69,7 +69,7 @@ public class ProjectsService {
 
         RuleCoverageInformation[] ruleCoverageInformation = new RuleCoverageInformation[ruleSetWithCharacteristics.size()];
         for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
-            ruleCoverageInformation[i] = new RuleCoverageInformation(null, null, null, 0);
+            ruleCoverageInformation[i] = new RuleCoverageInformation(null, null, null, null, 0);
         }
 
         return new RuleSetWithComputableCharacteristics(

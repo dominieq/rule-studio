@@ -44,6 +44,14 @@ public class ProjectService {
         return getProjectFromProjectsContainer(id);
     }
 
+    public Project getProjectWithImposePreferenceOrder(UUID id, Boolean imposePreferenceOrder) {
+        logger.info("Id:\t" + id);
+        logger.info("ImposePreferenceOrder:\t" + imposePreferenceOrder);
+        Project p = getProjectFromProjectsContainer(id);
+        p.setInformationTable(p.getInformationTable().imposePreferenceOrders(imposePreferenceOrder));
+        return p;
+    }
+
     public Project setProject(UUID id, MultipartFile metadataFile, MultipartFile dataFile, MultipartFile rulesFile) throws IOException {
         logger.info("Id:\t" + id);
         if(metadataFile != null)    logger.info("Metadata:\t" + metadataFile.getOriginalFilename() + "\t" + metadataFile.getContentType());
