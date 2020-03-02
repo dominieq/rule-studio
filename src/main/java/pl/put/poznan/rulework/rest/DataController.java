@@ -46,7 +46,7 @@ public class DataController {
     public ResponseEntity<Project> putData(
             @PathVariable("id") UUID id,
             @RequestBody String data) throws IOException {
-        logger.info("Putting metadata");
+        logger.info("Putting data");
         Project result = dataService.putData(id, data);
         return ResponseEntity.ok(result);
     }
