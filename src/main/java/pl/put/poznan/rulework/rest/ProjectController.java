@@ -12,7 +12,6 @@ import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.service.ProjectService;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.UUID;
 
 @CrossOrigin
@@ -31,10 +30,16 @@ public class ProjectController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Project> getProject(
-            @PathVariable("id") UUID id) {
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "imposePreferenceOrder", required = false) Boolean imposePreferenceOrder) {
 
         logger.info("Getting project");
-        Project result = projectService.getProject(id);
+        Project result;
+        if(imposePreferenceOrder != null) {
+            result = projectService.getProjectWithImposePreferenceOrder(id, imposePreferenceOrder);
+        } else {
+            result = projectService.getProject(id);
+        }
 
         if(result == null) {
             logger.info("No project with given id");
@@ -52,7 +57,7 @@ public class ProjectController {
             @RequestParam(name = "data", required = false) MultipartFile dataFle,
             @RequestParam(name = "rules", required = false) MultipartFile rulesFiles) throws IOException {
 
-        logger.info("Creating project");
+        logger.info("Setting project");
         Project result = projectService.setProject(id, metadataFile, dataFle, rulesFiles);
         return ResponseEntity.ok(result);
     }
@@ -74,11 +79,11 @@ public class ProjectController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> deleteProject(
+    public ResponseEntity deleteProject(
             @PathVariable("id") UUID id) {
 
         logger.info("Deleting project");
-        String result = projectService.deleteProject(id);
-        return ResponseEntity.ok(result);
+        projectService.deleteProject(id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

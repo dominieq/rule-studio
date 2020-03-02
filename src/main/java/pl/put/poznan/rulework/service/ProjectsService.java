@@ -6,6 +6,8 @@ import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.Table;
 import org.rulelearn.data.csv.ObjectParser;
 import org.rulelearn.data.json.AttributeParser;
+import org.rulelearn.rules.*;
+import org.rulelearn.rules.ruleml.RuleParser;
 import org.rulelearn.types.EvaluationField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -28,10 +31,6 @@ public class ProjectsService {
 
     @Autowired
     ProjectsContainer projectsContainer;
-
-    private Project getProjectFromProjectsContainer(UUID id) {
-        return projectsContainer.getProjectHashMap().get(id);
-    }
 
     private void addProjectToProjectsContainer(Project project) {
         projectsContainer.getProjectHashMap().put(project.getId(), project);
@@ -47,83 +46,55 @@ public class ProjectsService {
         return project;
     }
 
-    public Project createProjectWithMetadata(String name, MultipartFile metadataFile) throws IOException {
+    private RuleSetWithComputableCharacteristics parseComputableRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
+        Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
+        RuleParser ruleParser = new RuleParser(attributes);
+        parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
 
-        Attribute[] attributes;
-        AttributeParser attributeParser = new AttributeParser();
-        Reader reader = new InputStreamReader(metadataFile.getInputStream());
-        attributes = attributeParser.parseAttributes(reader);
-        for(int i = 0; i < attributes.length; i++) {
-            logger.info(i + ":\t" + attributes[i]);
-        }
-
-        InformationTable informationTable = new InformationTable(attributes, new ArrayList<>());
-
-        Project project = new Project(name, informationTable);
-        projectsContainer.getProjectHashMap().put(project.getId(), project);
-        logger.info(project.toString());
-
-
-        Table<EvaluationAttribute, EvaluationField> table = informationTable.getActiveConditionAttributeFields();
-        for(int i = 0; i < table.getNumberOfObjects(); i++) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(i);
-            sb.append(":");
-            for(int j = 0; j < table.getNumberOfAttributes(); j++) {
-                sb.append("\t");
-                sb.append(table.getField(i, j));
+        for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
+            logger.info("ruleSet.size=" + rswc.size());
+            for(int i = 0; i < rswc.size(); i++) {
+                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                logger.info(i + ":\t" + ruleCharacteristics.toString());
             }
-            logger.info(sb.toString());
         }
 
-        return project;
+        Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
+
+        Rule[] rules = new Rule[ruleSetWithCharacteristics.size()];
+        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+            rules[i] = ruleSetWithCharacteristics.getRule(i);
+        }
+
+        RuleCoverageInformation[] ruleCoverageInformation = new RuleCoverageInformation[ruleSetWithCharacteristics.size()];
+        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+            ruleCoverageInformation[i] = new RuleCoverageInformation(null, null, null, null, 0);
+        }
+
+        return new RuleSetWithComputableCharacteristics(
+                rules,
+                ruleCoverageInformation
+        );
     }
 
-    public Project createProjectWithData(String name, MultipartFile metadataFile, MultipartFile dataFile) throws IOException {
+    private RuleSetWithCharacteristics parseRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
+        Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
+        RuleParser ruleParser = new RuleParser(attributes);
+        parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
 
-        Attribute[] attributes;
-        AttributeParser attributeParser = new AttributeParser();
-        Reader reader = new InputStreamReader(metadataFile.getInputStream());
-        attributes = attributeParser.parseAttributes(reader);
-        for(int i = 0; i < attributes.length; i++) {
-            logger.info(i + ":\t" + attributes[i]);
-        }
-
-        InformationTable informationTable = null;
-
-        if (dataFile.getContentType().equals("application/json")) {
-            logger.info("Data type is json");
-            org.rulelearn.data.json.ObjectParser objectParser = new org.rulelearn.data.json.ObjectParser.Builder(attributes).build();
-            reader = new InputStreamReader(dataFile.getInputStream());
-            informationTable = objectParser.parseObjects(reader);
-
-        } else if (dataFile.getContentType().equals("application/vnd.ms-excel")) {
-            logger.info("Data type is csv");
-            ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
-            reader = new InputStreamReader(dataFile.getInputStream());
-            informationTable = objectParser.parseObjects(reader);
-        } else {
-            logger.error("Unrecognized format of data file: " + dataFile.getContentType());
-        }
-
-        Project project = new Project(name, informationTable);
-        projectsContainer.getProjectHashMap().put(project.getId(), project);
-        logger.info(project.toString());
-
-
-        Table<EvaluationAttribute, EvaluationField> table = informationTable.getActiveConditionAttributeFields();
-        for(int i = 0; i < table.getNumberOfObjects(); i++) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(i);
-            sb.append(":");
-            for(int j = 0; j < table.getNumberOfAttributes(); j++) {
-                sb.append("\t");
-                sb.append(table.getField(i, j));
+        for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
+            logger.info("ruleSet.size=" + rswc.size());
+            for(int i = 0; i < rswc.size(); i++) {
+                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                logger.info(i + ":\t" + ruleCharacteristics.toString());
             }
-            logger.info(sb.toString());
         }
 
-        return project;
+        Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
+
+        return ruleSetWithCharacteristics;
     }
 
     public Project createProject(String name, MultipartFile metadataFile, MultipartFile dataFile, MultipartFile rulesFile) throws IOException {
@@ -134,12 +105,64 @@ public class ProjectsService {
 
         if(metadataFile == null) {
             return createEmptyProject(name);
-        } else {
-            if(dataFile != null) {
-                return createProjectWithData(name, metadataFile, dataFile);
-            } else {
-                return createProjectWithMetadata(name, metadataFile);
-            }
         }
+
+        Attribute[] attributes;
+        InformationTable informationTable = null;
+        Project project;
+
+        AttributeParser attributeParser = new AttributeParser();
+        Reader reader = new InputStreamReader(metadataFile.getInputStream());
+        attributes = attributeParser.parseAttributes(reader);
+        for(int i = 0; i < attributes.length; i++) {
+            logger.debug(i + ":\t" + attributes[i]);
+        }
+
+        if(dataFile != null) { //load data from file
+            if (dataFile.getContentType().equals("application/json")) {
+                logger.info("Data type is json");
+                org.rulelearn.data.json.ObjectParser objectParser = new org.rulelearn.data.json.ObjectParser.Builder(attributes).build();
+                reader = new InputStreamReader(dataFile.getInputStream());
+                informationTable = objectParser.parseObjects(reader);
+
+            } else if (dataFile.getContentType().equals("application/vnd.ms-excel")) {
+                logger.info("Data type is csv");
+                ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
+                reader = new InputStreamReader(dataFile.getInputStream());
+                informationTable = objectParser.parseObjects(reader);
+            } else {
+                logger.error("Unrecognized format of data file: " + dataFile.getContentType());
+            }
+
+            if(logger.isTraceEnabled()) {
+                Table<EvaluationAttribute, EvaluationField> table = informationTable.getActiveConditionAttributeFields();
+                for(int i = 0; i < table.getNumberOfObjects(); i++) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(i);
+                    sb.append(":");
+                    for(int j = 0; j < table.getNumberOfAttributes(); j++) {
+                        sb.append("\t");
+                        sb.append(table.getField(i, j));
+                    }
+                    logger.trace(sb.toString());
+                }
+            }
+
+        } else {
+            informationTable = new InformationTable(attributes, new ArrayList<>());
+        }
+
+        project = new Project(name, informationTable);
+
+
+        if(rulesFile != null) { //load rules from file
+            RuleSetWithCharacteristics ruleSetWithCharacteristics = parseRules(rulesFile, attributes);
+            project.setRuleSetWithCharacteristics(ruleSetWithCharacteristics);
+        }
+
+
+        projectsContainer.getProjectHashMap().put(project.getId(), project);
+        logger.info(project.toString());
+        return project;
     }
 }
