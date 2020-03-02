@@ -26,11 +26,13 @@ import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { withStyles } from '@material-ui/core/styles';
+import { DraggableHeader } from 'react-data-grid-addons';
 
 const selectors = Data.Selectors;
 const { NumericFilter } = Filters;
 const { DropDownEditor } = Editors;
 const { ContextMenu, MenuItem, ContextMenuTrigger } = Menu;
+const { DraggableContainer } = DraggableHeader;
 
 const heightOfRow = 50;
 const heightOfHeaderRow = 60;
@@ -117,13 +119,13 @@ class DisplayData extends React.Component {
     }
 
     prepareMetaDataFromImport = (metadata) => {
-        const tmp = [{key: "uniqueLP", name: "No.", sortable: true, resizable: true, filterable: true, sortDescendingFirst: true, width: 160, filterRenderer: NumericFilter, visible: true}];
+        const tmp = [{key: "uniqueLP", name: "No.", sortable: true, resizable: true, filterable: true, draggable: true, sortDescendingFirst: true, width: 160, filterRenderer: NumericFilter, visible: true}];
         
         for(let el in metadata) {
             if(metadata[el].name === "uniqueLP") { //restricted name (brute force change the first letter to uppercase)
                 metadata[el].name = "UniqueLP";
             }            
-            const attribute = {editable:true, sortable:true, resizable:true, filterable:true, visible: true};
+            const attribute = {editable:true, sortable:true, resizable:true, filterable:true, draggable: true, visible: true};
             attribute.key = metadata[el].name;
             attribute.name = metadata[el].name;
             attribute.active = metadata[el].active;
@@ -392,7 +394,7 @@ class DisplayData extends React.Component {
     }
 
     prepareMetadataFileBeforeSendingToServer() {
-        const newMetadata = [...this.state.columns].map(({editable,sortable,resizable,filterable,visible,editor,filterRenderer,sortDescendingFirst,key,...others}) => others);
+        const newMetadata = [...this.state.columns].map(({editable,sortable,resizable,filterable,visible,draggable,editor,filterRenderer,sortDescendingFirst,key,...others}) => others);
         if(newMetadata.length > 0) newMetadata.shift();
         return newMetadata;
     }
@@ -553,19 +555,22 @@ class DisplayData extends React.Component {
             for(let i=0; i<this.state.columns.length; i++) {
                 if(this.state.columns[i].key === this.state.columnKeyOfHeaderMenuOpened) {
                     let col = {...cols[i]};
-
+                    let didIRemoveColumn = false;
                     if(selected === "Mark attribute as: inactive" || selected === "Mark attribute as: active") {
                         col.active = !col.active;
                         cols[i] = col;
+                    } else if(selected === "Duplicate column") {
+                        //cols.splice(i+1,0,col);
                     } else if(selected === "Delete attribute") {
                         cols.splice(i,1);
+                        didIRemoveColumn = true;
                     }
 
                     this.setState({
                         columns: cols,
                         isColumnHeaderMenuOpened: null,
                         columnKeyOfHeaderMenuOpened: -1,
-                    })
+                    },() => {if(!didIRemoveColumn) this.setHeaderColorAndStyle(cols[i],i)});
                     
                     break;
                 }
@@ -663,7 +668,7 @@ class DisplayData extends React.Component {
     }
 
     createColumn = (name, active, type, mvType, identifierType, preferenceType, valueType, domain) => {
-        const attribute = {editable:true, sortable:true, resizable:true, filterable:true, visible: true}
+        const attribute = {editable:true, sortable:true, resizable:true, filterable:true, draggable: true, visible: true}
         attribute.key = name;
         attribute.name = name;
         attribute.active = active;
@@ -691,9 +696,11 @@ class DisplayData extends React.Component {
         const tmp = document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes;
         if(column.type !== undefined && !(/<\/?[a-z][\s\S]*>/i.test(column.type))) { //make sure attribute type doesn't contain html tags
             if(tmp.length === 2) {
-                document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type +")");
+                if(column.active) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",active)");
+                else document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",inactive)");
             } else if(tmp.length > 2) {
-                document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "("+ column.type + ")";
+                if(column.active) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",active)";
+                else document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",inactive)";
             }
         }
 
@@ -951,15 +958,18 @@ class DisplayData extends React.Component {
             const tmp = [];
             for(let i=0; i<this.state.columns.length; i++) {
                 if(this.state.columns[i].key === this.state.columnKeyOfHeaderMenuOpened) {
-                    if(this.state.columns[i].active)
-                        tmp.push("Mark attribute as: inactive");
-                    else if(this.state.columns[i].active === false)
-                        tmp.push("Mark attribute as: active");
+                    if(this.state.columns[i].identifierType === undefined) {
+                        if(this.state.columns[i].active)
+                            tmp.push("Mark attribute as: inactive");
+                        else if(this.state.columns[i].active === false)
+                            tmp.push("Mark attribute as: active");
+                    }
 
                     break;
                 }
             }
 
+            tmp.push("Duplicate column");
             tmp.push("Delete attribute");
 
             return <ColumnHeaderMenu items={tmp} handleClose={this.closeOpenedColumnHeaderMenu} anchorEl={this.state.isColumnHeaderMenuOpened} />
@@ -973,9 +983,24 @@ class DisplayData extends React.Component {
         });
     }
 
+    onColumnHeaderDragDrop = (source, target) => {
+        const newColumns = [...this.state.columns];
+        const columnSourceIndex = this.state.columns.findIndex((i) => i.key === source);
+        const columnTargetIndex = this.state.columns.findIndex((i) => i.key === target);
+        newColumns.splice(columnTargetIndex,0,newColumns.splice(columnSourceIndex, 1)[0]);
+           
+        const emptyColumns = [];
+        this.setState({ columns: emptyColumns });
+        this.setState({ 
+            columns: newColumns
+        }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx))
+        )        
+    };
+
     render() {        
         return (
-            <div >              
+            <div >      
+                <DraggableContainer onHeaderDrop={this.onColumnHeaderDragDrop}>   
                 <ReactDataGrid
                     ref={(node) => this.grid = node}
                     columns={this.getColumns()}
@@ -1020,6 +1045,7 @@ class DisplayData extends React.Component {
                       RowsContainer={ContextMenuTrigger}
                       //emptyRowsView={this.EmptyRowsView}
                 />
+                </DraggableContainer>     
                 
                 <Dialog open={this.state.isOpenedAddAttribute} onClose={this.closeOnAddAttribute} aria-labelledby="add-attribute-dialog">
                     <DialogTitle id="add-attribute-dialog">Add new attribute</DialogTitle>
