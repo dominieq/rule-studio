@@ -36,23 +36,27 @@ const useStylesOutlinedInput = makeStyles({
 });
 
 function RuleWorkTextField(props) {
-    const {label, defaultValue, onChange} = props;
+    const {label, value, onChange} = props;
     const classesTypography = useStylesTypography();
     const classesOutlinedInput = useStylesOutlinedInput();
 
     return (
         <Fragment>
-            <Typography
-                aria-label={"rule-work-text-field"}
-                classes={{root: classesTypography.root}}
-            >
-                {label}
-            </Typography>
+            {label ?
+                <Typography
+                    aria-label={"rule-work-text-field"}
+                    classes={{root: classesTypography.root}}
+                >
+                    {label}
+                </Typography>
+                :
+                null
+            }
             <TextField
                 fullWidth={true}
                 aria-labelledby={"rule-work-text-field"}
                 classes={{root: classesOutlinedInput.root}}
-                defaultValue={defaultValue}
+                value={value}
                 onChange={onChange}
                 variant={"outlined"}
                 margin={"dense"}
@@ -63,14 +67,8 @@ function RuleWorkTextField(props) {
 
 RuleWorkTextField.propTypes = {
     label: PropTypes.string,
-    defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     onChange: PropTypes.func,
-};
-
-RuleWorkTextField.defaultProps = {
-    label: "Rule work textfield",
-    defaultValue: "",
-    onChange: event => console.log(event.target.value),
 };
 
 export default RuleWorkTextField;

@@ -1,10 +1,12 @@
 import React, {Component, Fragment} from 'react';
-import RenameProjectDialog from "./feedback/RenameProjectDialog";
 import Header from "../Header/Header";
+import Help from "../Body/Help/Help";
 import Home from "../Body/Home/Home";
 import Import from "../Body/Import/Import";
 import ProjectTabs from "../Body/Project/ProjectTabs";
-import Help from "../Body/Help/Help";
+import RenameProjectDialog from "./feedback/RenameProjectDialog";
+import StyledSnackbar from "./feedback/StyledSnackbar";
+import DeleteProjectDialog from "./feedback/DeleteProjectDialog";
 
 class App extends Component {
     constructor(props) {
@@ -14,7 +16,15 @@ class App extends Component {
             body: "Home",
             currentProject: -1,
             projects: [],
-            open: false,
+            open: {
+                renameDialog: false,
+                deleteDialog: false,
+            },
+            snackbarProps: {
+                open: false,
+                variant: "info",
+                message: "",
+            },
         };
     }
 
@@ -28,9 +38,17 @@ class App extends Component {
                 projects: result,
             })
         }).catch(error => {
-            console.log(error);
-        })
-    }
+            this.setState({
+                snackbarProps: {
+                    open: true,
+                    variant: "error",
+                    message: "Server doesn't respond. Couldn't load files",
+                },
+            }, () => {
+                console.log(error);
+            });
+        });
+    };
 
     onBodyChange = (name) => {
         this.setState({
@@ -45,7 +63,32 @@ class App extends Component {
         });
     };
 
+    onSnackbarClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        this.setState({
+            snackbarProps: {
+                open: false,
+                variant: "info",
+                message: "",
+            }
+        })
+    };
+
     onFilesAccepted = (name, files) => {
+        if (!this.isNameUnique(name)) {
+            this.setState({
+                snackbarProps: {
+                    open: true,
+                    variant: "warning",
+                    message: "Project name already exists"
+                },
+            });
+            return
+        }
+
         let data = new FormData();
         data.append("name", name);
         for (let i = 0; i < files.length; i++) {
@@ -64,6 +107,11 @@ class App extends Component {
                 body: "Project",
                 currentProject: newProjects.indexOf(result),
                 projects: newProjects,
+                snackbarProps: {
+                    open: true,
+                    variant: "success",
+                    message: `${result.name} has been created!`,
+                },
             });
         }).catch(error => {
             console.log(error);
@@ -71,62 +119,143 @@ class App extends Component {
     };
 
     onProjectDelete = () => {
-        let projects = this.state.projects.slice(0);
-        const currentProject = this.state.currentProject;
+        let open = this.state.open;
+        open.deleteDialog = true;
 
-        if (currentProject === -1) return;
+        this.setState({
+            open: open,
+        });
+    };
 
-        const project = projects[currentProject];
+    onDeleteDialogClose = (action) => {
+        if (action) {
+            let projects = this.state.projects.slice(0);
+            const currentProject = this.state.currentProject;
 
-        fetch(`http://localhost:8080/projects/${project.id}`, {
-            method: 'DELETE',
-        }).then(response => {
-            return response.toString();
-        }).then(() => {
-            projects.splice(projects.indexOf(project), 1);
-            this.setState({
-                body: "Home",
-                currentProject: -1,
-                projects: projects,
-        })
-        }).catch(error => {
-            console.log(error);
+            if (currentProject === -1) return;
+
+            const project = projects[currentProject];
+
+            fetch(`http://localhost:8080/projects/${project.id}`, {
+                method: 'DELETE',
+            }).then(response => {
+                return response.toString();
+            }).then(() => {
+                const removedProject = projects.splice(projects.indexOf(project), 1);
+                console.log(removedProject);
+
+                this.setState({
+                    body: "Home",
+                    currentProject: -1,
+                    projects: projects,
+                    snackbarProps: {
+                        open: true,
+                        variant: "success",
+                        message: `${removedProject[0].name} has been successfully deleted!`,
+                    },
+                })
+            }).catch(error => {
+                console.log(error);
+            });
+        }
+        let open = this.state.open;
+        open.deleteDialog = false;
+
+        this.setState({
+            open: open,
         });
     };
 
     onProjectRename = () => {
-        if (this.state.currentProject < 0) return;
+        let open = this.state.open;
+        open.renameDialog = true;
 
         this.setState({
-            open: true,
+            open: open,
         });
     };
 
     onRenameDialogClose = (name) => {
-        if (name && this.isNameUnique(name)) {
-            const currentProject = this.state.currentProject;
-            let projects = this.state.projects.slice(0);
-            projects[currentProject].name = name;
+        if (name) {
+            if (this.isNameUnique(name)) {
+                const currentProject = this.state.currentProject;
+                let projects = this.state.projects.slice(0);
 
-            this.setState({
-                projects: projects,
-            });
+                let data = new FormData();
+                data.append("name", name);
+
+                fetch(`http://localhost:8080/projects/${projects[currentProject].id}`, {
+                    method: "PATCH",
+                    body: data,
+                }).then(response => {
+                    return response.json();
+                }).then(result => {
+                    projects[currentProject] = result;
+                    this.setState({
+                        projects: projects,
+                        snackbarProps: {
+                            open: true,
+                            variant: "success",
+                            message: "Project name changed successfully!",
+                        },
+                    });
+                }).catch(error => {
+                    this.setState({
+                        snackbarProps: {
+                            open: true,
+                            variant: "error",
+                            message: "Server error! Couldn't change project name"
+                        }
+                    }, () => {
+                        console.log(error)
+                    });
+                });
+            } else {
+                this.setState({
+                    snackbarProps: {
+                        open: true,
+                        variant: 'warning',
+                        message: "Project name already exists!"
+                    }
+                });
+                return;
+            }
         }
+        let open = this.state.open;
+        open.renameDialog = false;
 
         this.setState({
-            open: false,
+            open: open,
         });
     };
 
     isNameUnique = (name) => {
         const projects = this.state.projects.slice(0);
+        const currentProject = this.state.currentProject;
 
         for (let i = 0; i < projects.length; i++) {
-            if (projects[i].name === name) {
+            if (currentProject !== i && projects[i].name === name) {
                 return false;
             }
         }
         return true;
+    };
+
+    renderSnackbar = () => {
+        const {open, variant, message} = this.state.snackbarProps;
+
+        if (open) {
+            return (
+                <StyledSnackbar
+                    open={open}
+                    variant={variant}
+                    message={message}
+                    onClose={this.onSnackbarClose}
+                />
+            )
+        } else {
+            return null;
+        }
     };
 
     render() {
@@ -145,16 +274,27 @@ class App extends Component {
                 {
                     {
                         "Help": <Help />,
-                        "Import": <Import onFilesAccepted={(name, files) => this.onFilesAccepted(name, files)} />,
-                        "Project": <ProjectTabs />,
-                        "Home": <Home />
+                        "Home": <Home />,
+                        "Import": <Import
+                            onFilesAccepted={(name, files) => this.onFilesAccepted(name, files)}
+                        />,
+                        "Project": <ProjectTabs project={projects[currentProject]}/>,
+
                     }[body]
                 }
                 <RenameProjectDialog
                     currentName={currentProject >= 0 ? projects[currentProject].name : ""}
-                    open={open}
+                    open={open.renameDialog}
                     onClose={this.onRenameDialogClose}
+                >
+                    {open.renameDialog ? this.renderSnackbar() : null}
+                </RenameProjectDialog>
+                <DeleteProjectDialog
+                    currentName={currentProject >= 0 ? projects[currentProject].name : ""}
+                    open={open.deleteDialog}
+                    onClose={this.onDeleteDialogClose}
                 />
+                {!open.renameDialog || !open.deleteDialog ? this.renderSnackbar() : null}
             </Fragment>
         );
     }

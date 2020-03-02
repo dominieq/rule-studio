@@ -6,9 +6,9 @@ import Switch from "@material-ui/core/Switch";
 
 const useStylesSwitch = makeStyles(theme => ({
     root: {
-        width: 36,
+        width: 34,
         height: 20,
-        padding: 0,
+        padding: "0 0 2px",
         margin: "8px 8px 8px 0",
     },
     switchBase: {
@@ -26,8 +26,8 @@ const useStylesSwitch = makeStyles(theme => ({
         },
     },
     thumb: {
-        width: 18,
-        height: 18,
+        width: 17,
+        height: 17,
         color: '#ABFAA9',
     },
     track: {

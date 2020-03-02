@@ -5,7 +5,7 @@ import logo from "./logo_transparent.png";
 
 function Home() {
     return (
-        <RuleWorkBody id={"rule-work-home"}>
+        <RuleWorkBody id={"rule-work-home"} variant={"body"}>
             <img src={logo} className={"rule-work-logo"} alt={"logo"} />
         </RuleWorkBody>
     );

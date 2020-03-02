@@ -19,3 +19,7 @@ code {
   background-color: #2A3439;
   text-align: center;
 }
+
+#root button:focus {
+    outline: none;
+}

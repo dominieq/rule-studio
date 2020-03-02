@@ -1,102 +1,72 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
-import Box from '@material-ui/core/Box';
-import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import DisplayData from "./Data/DisplayData";
-import Unions from "./Unions/Unions";
 import Cones from "./Cones/Cones";
 import Rules from "./Rules/Rules";
-
-function TabPanel(props) {
-    const { children, value, index, ...other} = props;
-
-    return (
-        <Box
-            component={"div"}
-            role={"tabpanel"}
-            hidden={value !== index}
-            id={`project-tabpanel-${index}`}
-            aria-labelledby={`project-tab-${index}`}
-            {...other}>
-            {value === index && children}
-
-        </Box>
-    )
-}
-
-TabPanel.propTypes = {
-    children: PropTypes.any,
-    index: PropTypes.any.isRequired,
-    value: PropTypes.any.isRequired,
-};
+import Unions from "./Unions/Unions";
 
 class ProjectTabs extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            value: 0
+            value: 0,
         };
-
-        this.handleChange = this.handleChange.bind(this);
-        this.setTabProps = this.setTabProps.bind(this);
     }
 
-    handleChange(event, newValue) {
+    onTabChange = (event, newValue) => {
         this.setState({
             value: newValue
         })
-    }
+    };
 
-    setTabProps(index) {
+    setTabProps = (index) => {
         return ({
             id: `project-tab-${index}`,
             'aria-controls': `project-tabpanel-${index}`,
         })
-    }
+    };
 
     render() {
-        return (
-            <Box component={"div"}>
-                <Paper elevation={0}>
-                    <Tabs
-                        value={this.state.value}
-                        onChange={this.handleChange}
-                        indicatorColor={"primary"}
-                        textColor={"primary"}
-                        aria-label={"project tabs"}>
+        const value = this.state.value;
+        const project = this.props.project;
 
-                        <Tab label={"Data"} {...this.setTabProps(0)} />
-                        <Tab label={"Dominance cones"} {...this.setTabProps(1)} />
-                        <Tab label={"Class unions"} {...this.setTabProps(2)} />
-                        <Tab label={"Rules"} {...this.setTabProps(3)} />
-                        <Tab label={"Classification"} {...this.setTabProps(4)} />
-                        <Tab label={"Cross-validation"} {...this.setTabProps(5)} />
-                    </Tabs>
-                    <TabPanel value={this.state.value} index={0}>
-                        <DisplayData/>
-                    </TabPanel>
-                    <TabPanel value={this.state.value} index={1}>
-                        <Cones />
-                    </TabPanel>
-                    <TabPanel value={this.state.value} index={2}>
-                        <Unions />
-                    </TabPanel>
-                    <TabPanel value={this.state.value} index={3}>
-                        <Rules />
-                    </TabPanel>
-                    <TabPanel value={this.state.value} index={4}>
-                        Classification
-                    </TabPanel>
-                    <TabPanel value={this.state.value} index={5}>
-                        Cross-validation
-                    </TabPanel>
-                </Paper>
-            </Box>
+        return (
+            <Fragment>
+                <Tabs
+                    aria-label={"project tabs"}
+                    centered={true}
+                    indicatorColor={"primary"}
+                    onChange={this.onTabChange}
+                    textColor={"primary"}
+                    value={value}
+                >
+                    <Tab label={"Data"} {...this.setTabProps(0)} />
+                    <Tab label={"Dominance cones"} {...this.setTabProps(1)} />
+                    <Tab label={"Class unions"} {...this.setTabProps(2)} />
+                    <Tab label={"Rules"} {...this.setTabProps(3)} />
+                    <Tab label={"Classification"} {...this.setTabProps(4)} />
+                    <Tab label={"Cross-validation"} {...this.setTabProps(5)} />
+                </Tabs>
+                {
+                    {
+                        0: <DisplayData project={project} />,
+                        1: <Cones project={project} />,
+                        2: <Unions project={project} />,
+                        3: <Rules project={project} />,
+                        4: "Classification",
+                        5: "Cross-validation",
+                    }[value]
+                }
+            </Fragment>
         );
     }
 }
+
+ProjectTabs.propTypes = {
+    project: PropTypes.object,
+};
 
 export default ProjectTabs;

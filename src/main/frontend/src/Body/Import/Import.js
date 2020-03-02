@@ -99,12 +99,12 @@ class Import extends Component{
         const {checked, expand, name} = this.state;
 
         return (
-            <RuleWorkBody id={"rule-work-import"}>
+            <RuleWorkBody id={"rule-work-import"} variant={"body"}>
                 <StyledPaper elevation={6} square={true}>
                     <StyledHeader>
                         <RuleWorkTextField
-                            label={"Project name:"}
-                            defaultValue={name}
+                            label={"Project name"}
+                            value={name}
                             onChange={this.onProjectNameChange}
                         />
                     </StyledHeader>

@@ -16,7 +16,7 @@ class RenameProjectDialog extends Component {
         }
     }
 
-    onEntered = () => {
+    onEnter = () => {
        this.setState({
            name: this.props.currentName,
        });
@@ -45,12 +45,12 @@ class RenameProjectDialog extends Component {
 
     render() {
         const name = this.state.name;
-        const {currentName, open} = this.props;
+        const {children, open} = this.props;
 
         return (
             <StyledDialog
                 open={open}
-                onEnter={this.onEntered}
+                onEnter={this.onEnter}
                 onKeyPress={this.onEnterPress}
                 aria-labelledby={"rename-project-dialog"}
                 maxWidth={"sm"}
@@ -66,7 +66,7 @@ class RenameProjectDialog extends Component {
                 >
                     <RuleWorkTextField
                         label={"Type new name:"}
-                        defaultValue={currentName}
+                        value={name}
                         onChange={this.onTextFieldChange}
                     />
                 </StyledDialogContent>
@@ -84,20 +84,17 @@ class RenameProjectDialog extends Component {
                         Ok
                     </Button>
                 </DialogActions>
+                {children}
             </StyledDialog>
         )
     }
 }
 
 RenameProjectDialog.propTypes = {
+    children: PropTypes.any,
     currentName: PropTypes.string,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-
-};
-
-RenameProjectDialog.defaultProps = {
-    currentName: "",
 };
 
 export default RenameProjectDialog;
