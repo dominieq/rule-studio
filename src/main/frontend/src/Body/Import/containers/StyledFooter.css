@@ -1,0 +1,11 @@
+.rule-work-styled-footer {
+    position: relative;
+    bottom: -20px;
+    padding-bottom: 5px;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+#footer-cancel-button {
+    margin-right: 12px;
+}

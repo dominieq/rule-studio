@@ -1,0 +1,10 @@
+.rule-work-styled-header {
+    position: relative;
+    top: -5px;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-evenly;
+}
