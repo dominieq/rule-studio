@@ -5,7 +5,7 @@ import TreeItem from "@material-ui/lab/TreeItem";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import Typography from "@material-ui/core/Typography";
-import Union from "./api/Union";
+import Union from "../api/Union";
 import "./UnionListItemContent.css";
 
 class UnionListItemLabel extends Component {
@@ -72,14 +72,13 @@ class UnionListItemContent extends Component {
                 defaultCollapseIcon={<ExpandMoreIcon />}
                 defaultExpandIcon={<ChevronRightIcon />}
             >
+                <UnionListItemArray name={"Objects"} items={union.objects} />
                 <UnionListItemArray name={"Lower approximation"} items={union.lowerApproximation} />
                 <UnionListItemArray name={"Upper approximation"} items={union.upperApproximation} />
                 <UnionListItemArray name={"Boundary"} items={union.boundary} />
                 <UnionListItemArray name={"Positive region"} items={union.positiveRegion} />
                 <UnionListItemArray name={"Negative region"} items={union.negativeRegion} />
                 <UnionListItemArray name={"Boundary region"} items={union.boundaryRegion} />
-                <UnionListItemArray name={"Objects"} items={union.objects} />
-                <UnionListItemArray name={"Neutral objects"} items={union.neutralObjects} />
             </TreeView>
         )
     }

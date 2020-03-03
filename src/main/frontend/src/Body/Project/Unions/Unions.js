@@ -1,13 +1,17 @@
-import React, {Component} from 'react';
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import UnionsBar from "./UnionsBar";
-import ConsistencySelector from "./ConsistencySelector";
-import UnionListItem from "./UnionListItem";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
+import ConsistencySelector from "./inputs/ConsistencySelector";
+import RuleWorkSelect from "../../../RuleWorkComponents/Inputs/RuleWorkSelect";
+import StyledButton from "./inputs/StyledButton";
+import StyledHelper from "../../../RuleWorkComponents/Feedback/StyledHelper";
+import StyledRuleWorkBar from "../../../RuleWorkComponents/Surfaces/StyledRuleWorkBar";
 import Union from "./api/Union";
+import UnionListItem from "./data-display/UnionListItem";
+import UnionListItemContent from "./data-display/UnionListItemContent";
+import Divider from "@material-ui/core/Divider";
+import Typography from "@material-ui/core/Typography";
 import unions from "./resources/demo/example-unions";
 import "./Unions.css";
-import UnionListItemContent from "./UnionListItemContent";
 
 class Unions extends Component {
     constructor(props) {
@@ -15,6 +19,7 @@ class Unions extends Component {
 
         this.state = {
             consistency: 1.0,
+            measure: "epsilon",
             downwardUnions: [],
             upwardUnions: [],
         };
@@ -26,7 +31,13 @@ class Unions extends Component {
         });
     };
 
-    getUnions = () => {
+    onSelectChange = (event) => {
+        this.setState({
+            measure: event.target.value,
+        });
+    };
+
+    getUnions = (unions) => {
         const downwardUnions = unions.downwardUnions;
         const upwardUnions = unions.upwardUnions;
 
@@ -61,36 +72,60 @@ class Unions extends Component {
         return new Union(index, name, union);
     };
 
-    countUnions = () => {
-        this.getUnions();
+    onCountUnionsClick = () => {
+        this.getUnions(unions);
+
+        if (this.props.project) return;
+
+        const project = this.props.project;
+        const consistency = this.state.consistency;
+
+        fetch(`http://localhost:8080/projects/${project.id}/unions?consistencyThreshold=${consistency}`, {
+            method: "GET"
+        }).then(response => {
+            return response.json();
+        }).then(result => {
+            this.getUnions(result);
+        }).catch(error => {
+            console.log(error);
+        });
     };
 
     render() {
-        const {downwardUnions, upwardUnions} = this.state;
+        const {measure, downwardUnions, upwardUnions} = this.state;
 
         return (
             <div className={"unions"}>
-                <UnionsBar>
-                    <Typography color={"primary"} variant={"h6"} component={"div"}>
-                        Choose consistency:
-                    </Typography>
+                <StyledRuleWorkBar id={"unions-bar"}>
                     <ConsistencySelector
                         setGlobalConsistency={(c) => this.setConsistency(c)}
                     />
+                    <Divider flexItem={true} orientation={"vertical"} />
+                    <StyledHelper >
+                        {"Consistency helper"}
+                    </StyledHelper>
+                    <RuleWorkSelect
+                        disabledChildren={["rough membership"]}
+                        onChange={this.onSelectChange}
+                        value={measure}
+                    >
+                        {["epsilon", "rough membership"]}
+                    </RuleWorkSelect>
                     <span>
                         <Typography variant={"subtitle2"}>
                             Current consistency: {this.state.consistency}
                         </Typography>
                     </span>
-                    <Button
-                        variant={"contained"}
-                        color={"primary"}
+                    <Divider flexItem={true} orientation={"vertical"} />
+                    <StyledButton
+                        disabled={!this.props.project}
                         disableElevation
-                        onClick={this.countUnions}
+                        onClick={this.onCountUnionsClick}
+                        variant={"contained"}
                     >
-                        Count unions
-                    </Button>
-                </UnionsBar>
+                        Calculate
+                    </StyledButton>
+                </StyledRuleWorkBar>
                 <div className={"unions-list"}>
                     {downwardUnions.map(union => (
                         <UnionListItem key={union.id} union={union}>
@@ -107,5 +142,9 @@ class Unions extends Component {
         )
     }
 }
+
+Unions.propTypes = {
+    project: PropTypes.object,
+};
 
 export default Unions

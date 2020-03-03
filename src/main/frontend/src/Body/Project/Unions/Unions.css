@@ -10,5 +10,22 @@
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
+}
 
+#unions-bar > .MuiAvatar-root {
+    margin: 0 8px;
+}
+
+#unions-bar > span {
+    flex-grow: 1;
+    padding-right: 15px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+#unions-bar > hr + button {
+    margin-left: 8px;
 }

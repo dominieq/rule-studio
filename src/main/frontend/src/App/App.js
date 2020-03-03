@@ -7,6 +7,7 @@ import ProjectTabs from "../Body/Project/ProjectTabs";
 import RenameProjectDialog from "./feedback/RenameProjectDialog";
 import StyledSnackbar from "./feedback/StyledSnackbar";
 import DeleteProjectDialog from "./feedback/DeleteProjectDialog";
+import Unions from "../Body/Project/Unions/Unions";
 
 class App extends Component {
     constructor(props) {
@@ -274,7 +275,7 @@ class App extends Component {
                 {
                     {
                         "Help": <Help />,
-                        "Home": <Home />,
+                        "Home": <Unions project={projects[currentProject]} />,
                         "Import": <Import
                             onFilesAccepted={(name, files) => this.onFilesAccepted(name, files)}
                         />,

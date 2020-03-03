@@ -23,3 +23,8 @@ code {
 #root button:focus {
     outline: none;
 }
+
+.MuiPopover-root .MuiList-root {
+    background-color: #ABFAA9;
+    border: 1px solid #66FF66;
+}

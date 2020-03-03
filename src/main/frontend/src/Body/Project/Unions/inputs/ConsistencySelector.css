@@ -1,0 +1,21 @@
+#consistency-selector {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+#consistency-selector > .MuiTypography-root {
+    margin: 0 15px 0 8px;
+}
+
+#consistency-selector > .MuiFormControl-root {
+    margin-right: 5px;
+    max-width: 175px;
+}
+
+#consistency-selector > .MuiSlider-root {
+    margin: 0 20px 0 5px;
+    max-width: 175px;
+}

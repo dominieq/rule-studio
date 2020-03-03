@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import FormControl from "@material-ui/core/FormControl";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import Slider from "@material-ui/core/Slider";
+import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledHelper from "../../../../RuleWorkComponents/Feedback/StyledHelper";
+import StyledSlider from "./StyledSlider";
 import "./ConsistencySelector.css"
+
 
 class ConsistencySelector extends Component {
     constructor(props) {
@@ -76,23 +77,17 @@ class ConsistencySelector extends Component {
         const consistency = this.state.consistency;
 
         return (
-            <div className={"consistency-selector"}>
-                <FormControl
-                    id={"consistency-form"}
-                    component={"div"}
-                    variant={"outlined"}
-                    margin={"dense"}
-                >
-                    <OutlinedInput
-                        id={"consistency-input"}
-                        value={consistency}
-                        onChange={this.onInputChange}
-                        onBlur={this.onInputBlur}
-                    />
-                </FormControl>
-                <Slider
-                    id={"consistency-slider"}
-                    aria-labelledby={"consistency-form"}
+            <div id={"consistency-selector"}>
+                <StyledHelper>
+                    {"Consistency helper"}
+                </StyledHelper>
+                <RuleWorkTextField
+                    label={"Choose consistency"}
+                    value={consistency}
+                    onChange={this.onInputChange}
+                    onBlur={this.onInputBlurGlobal}
+                />
+                <StyledSlider
                     value={typeof consistency === "number" ? consistency : 0.0}
                     step={0.01}
                     min={0.0}
