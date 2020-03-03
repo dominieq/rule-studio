@@ -14,7 +14,7 @@ import pl.put.poznan.rulework.service.DominanceConesService;
 import java.util.UUID;
 
 @CrossOrigin
-@RequestMapping("/cones")
+@RequestMapping("projects/{id}/cones")
 @RestController
 public class DominanceConesController {
 
@@ -29,7 +29,7 @@ public class DominanceConesController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DominanceCones> getDominanceCones(
-            @RequestParam("id") UUID id) {
+            @PathVariable("id") UUID id) {
         logger.info("Getting dominance cones...");
 
         DominanceCones result = dominanceConesService.getDominanceCones(id);
