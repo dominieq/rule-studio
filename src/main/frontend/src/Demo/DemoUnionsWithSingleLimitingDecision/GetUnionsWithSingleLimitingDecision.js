@@ -25,9 +25,9 @@ class GetUnionsWithSingleLimitingDecision extends Component {
     getUnionsWithSingleLimitingDecision = (event) => {
         event.preventDefault();
 
-        var link = `http://localhost:8080/unionsWithSingleLimitingDecision?id=${this.state.id_projektu}`;
+        var link = `http://localhost:8080/projects/${this.state.id_projektu}/unions`;
         if(this.state.consistencyThreshold !== "") {
-            link += `&consistencyThreshold=${this.state.consistencyThreshold}`;
+            link += `?consistencyThreshold=${this.state.consistencyThreshold}`;
         }
 
         console.log(link)

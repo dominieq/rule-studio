@@ -18,7 +18,7 @@ class GetDominanceCones extends Component {
     getDominanceCones = (event) => {
         event.preventDefault();
 
-        fetch(`http://localhost:8080/cones?id=${this.state.id_projektu}`, {
+        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/cones`, {
             method: 'GET'
         }).then(response => {
             console.log(response)

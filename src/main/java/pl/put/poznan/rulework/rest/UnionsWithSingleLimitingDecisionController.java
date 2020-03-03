@@ -13,7 +13,7 @@ import pl.put.poznan.rulework.service.UnionsWithSingleLimitingDecisionService;
 import java.util.UUID;
 
 @CrossOrigin
-@RequestMapping("/unionsWithSingleLimitingDecision")
+@RequestMapping("projects/{id}/unions")
 @RestController
 public class UnionsWithSingleLimitingDecisionController {
 
@@ -28,7 +28,7 @@ public class UnionsWithSingleLimitingDecisionController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UnionsWithSingleLimitingDecision> getDominanceCones(
-            @RequestParam("id") UUID id,
+            @PathVariable("id") UUID id,
             @RequestParam(name = "consistencyThreshold", required = false) Double consistencyThreshold) {
         logger.info("Getting unions with single limiting decision...");
 
