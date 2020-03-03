@@ -1,9 +1,11 @@
 package pl.put.poznan.rulework.rest;
 
-import org.rulelearn.data.Attribute;
+import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +16,7 @@ import pl.put.poznan.rulework.service.DataService;
 import java.io.IOException;
 import java.util.UUID;
 
-@CrossOrigin
+@CrossOrigin(exposedHeaders = {"Content-Disposition"})
 @RequestMapping("projects/{id}/data")
 @RestController
 public class DataController {
@@ -30,7 +32,7 @@ public class DataController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getData(
-            @PathVariable("id")UUID id) throws IOException {
+            @PathVariable("id") UUID id) throws IOException {
         logger.info("Getting data");
         String result = dataService.getData(id);
 
@@ -49,5 +51,17 @@ public class DataController {
         logger.info("Putting data");
         Project result = dataService.putData(id, data);
         return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/download", method = RequestMethod.GET, produces = "text/csv")
+    public ResponseEntity<Resource> download(
+            @PathVariable("id") UUID id) throws IOException {
+        logger.info("Downloading file");
+        Pair<String, Resource> p = dataService.download(id);
+        String projectName = p.getKey();
+        Resource resource = p.getValue();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_data.csv")
+                .body(resource);
     }
 }
