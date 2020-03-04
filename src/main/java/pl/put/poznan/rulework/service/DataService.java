@@ -66,17 +66,27 @@ public class DataService {
         return project;
     }
 
-    public Pair<String, Resource> download(UUID id) throws IOException {
-        logger.info("Id:\t" + id);
+    public Pair<String, Resource> download(UUID id, String format) throws IOException {
+        logger.info("Id:\t{}", id);
+        logger.info("Format:\t{}", format);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = getProjectFromProjectsContainer(id);;
         if(project == null) {
             return null;
         }
 
-        org.rulelearn.data.csv.InformationTableWriter itw = new org.rulelearn.data.csv.InformationTableWriter();
         StringWriter sw = new StringWriter();
-        itw.writeObjects(project.getInformationTable(), sw, ",");
+
+        if(format.equals("json")) {
+            logger.info("Downloading data in json format");
+            InformationTableWriter itw = new InformationTableWriter();
+            itw.writeObjects(project.getInformationTable(), sw);
+        } else {
+            logger.info("Downloading data in csv format");
+            org.rulelearn.data.csv.InformationTableWriter itw = new org.rulelearn.data.csv.InformationTableWriter();
+            itw.writeObjects(project.getInformationTable(), sw, ",");
+        }
+
 
         byte[] barray = sw.toString().getBytes();
         InputStream is = new ByteArrayInputStream(barray);

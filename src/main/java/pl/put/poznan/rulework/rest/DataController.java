@@ -53,15 +53,24 @@ public class DataController {
         return ResponseEntity.ok(result);
     }
 
-    @RequestMapping(value = "/download", method = RequestMethod.GET, produces = "text/csv")
+    @RequestMapping(value = "/download", method = RequestMethod.GET)
     public ResponseEntity<Resource> download(
-            @PathVariable("id") UUID id) throws IOException {
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "format") String format) throws IOException {
         logger.info("Downloading file");
-        Pair<String, Resource> p = dataService.download(id);
+        Pair<String, Resource> p = dataService.download(id, format);
         String projectName = p.getKey();
         Resource resource = p.getValue();
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_data.csv")
-                .body(resource);
+        if(format.equals("csv")) {
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_data.json")
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .body(resource);
+        } else {
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_data.csv")
+                    .header(HttpHeaders.CONTENT_TYPE, "text/csv")
+                    .body(resource);
+        }
     }
 }
