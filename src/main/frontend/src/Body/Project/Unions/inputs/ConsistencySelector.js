@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import StyledHelper from "../../../../RuleWorkComponents/Feedback/StyledHelper";
+import RuleWorkHelper from "../../../../RuleWorkComponents/Feedback/RuleWorkHelper";
 import StyledSlider from "./StyledSlider";
 import "./ConsistencySelector.css"
 
@@ -11,7 +11,7 @@ class ConsistencySelector extends Component {
         super(props);
 
         this.state = {
-            consistency: 1.0,
+            consistency: 0.0,
         };
     }
 
@@ -60,7 +60,7 @@ class ConsistencySelector extends Component {
     };
 
     onInputBlurGlobal = () => {
-        this.props.setGlobalConsistency(this.state.consistency);
+        this.props.onConsistencyChange(this.state.consistency);
     };
 
     onSliderChange = (event, newValue) => {
@@ -70,7 +70,7 @@ class ConsistencySelector extends Component {
     };
 
     onSliderMouseUp = () => {
-        this.props.setGlobalConsistency(this.state.consistency);
+        this.props.onConsistencyChange(this.state.consistency);
     };
 
     render() {
@@ -78,9 +78,9 @@ class ConsistencySelector extends Component {
 
         return (
             <div id={"consistency-selector"}>
-                <StyledHelper>
+                <RuleWorkHelper>
                     {"Consistency helper"}
-                </StyledHelper>
+                </RuleWorkHelper>
                 <RuleWorkTextField
                     label={"Choose consistency"}
                     value={consistency}
@@ -101,7 +101,7 @@ class ConsistencySelector extends Component {
 }
 
 ConsistencySelector.propTypes = {
-    setGlobalConsistency: PropTypes.func.isRequired,
+    onConsistencyChange: PropTypes.func.isRequired,
 };
 
 export default ConsistencySelector

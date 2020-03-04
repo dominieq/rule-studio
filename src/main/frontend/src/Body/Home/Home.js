@@ -1,13 +1,13 @@
 import React from 'react';
-import RuleWorkBody from "../../RuleWorkComponents/Surfaces/RuleWorkBody";
-import "./Home.css";
+import RuleWorkBox from "../../RuleWorkComponents/Containers/RuleWorkBox";
 import logo from "./logo_transparent.png";
+import "./Home.css";
 
 function Home() {
     return (
-        <RuleWorkBody id={"rule-work-home"} variant={"body"}>
+        <RuleWorkBox id={"rule-work-home"} styleVariant={"body"}>
             <img src={logo} className={"rule-work-logo"} alt={"logo"} />
-        </RuleWorkBody>
+        </RuleWorkBox>
     );
 }
 

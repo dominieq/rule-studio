@@ -12,14 +12,14 @@ const useStyles = makeStyles({
         color: "#2A3439",
         backgroundColor: "#66FF66",
     }
-});
+}, {name: "MuiAppBar"});
 
 function Header(props) {
     const {onButtonClick, ...other} = props;
     const classes = useStyles();
 
     return (
-        <AppBar classes={{colorPrimary: classes.colorPrimary}} position={"static"}>
+        <AppBar classes={{colorPrimary: classes.colorPrimary}} position={"relative"}>
             <Toolbar>
                 <Button color={"inherit"} onClick={() => onButtonClick("Home")}>
                     <HomeIcon />

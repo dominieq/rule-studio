@@ -42,6 +42,7 @@ class UnionListItemArray extends Component {
             <TreeItem
                 label={label}
                 nodeId={id + "-list"}
+                TransitionProps={{unmountOnExit: true}}
             >
                 {items.map(item => (
                     <TreeItem

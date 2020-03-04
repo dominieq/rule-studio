@@ -9,7 +9,6 @@ class Union {
         this.negativeRegion = union.negativeRegion;
         this.boundaryRegion = union.boundaryRegion;
         this.objects = union.objects;
-        this.neutralObjects = union.neutralObjects;
         this.unionType = union.unionType;
         this.accuracyOfApproximation = union.accuracyOfApproximation;
         this.qualityOfApproximation = union.qualityOfApproximation;

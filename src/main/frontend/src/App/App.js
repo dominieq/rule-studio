@@ -5,9 +5,8 @@ import Home from "../Body/Home/Home";
 import Import from "../Body/Import/Import";
 import ProjectTabs from "../Body/Project/ProjectTabs";
 import RenameProjectDialog from "./feedback/RenameProjectDialog";
-import StyledSnackbar from "./feedback/StyledSnackbar";
+import RuleWorkSnackbar from "../RuleWorkComponents/Feedback/RuleWorkSnackbar";
 import DeleteProjectDialog from "./feedback/DeleteProjectDialog";
-import Unions from "../Body/Project/Unions/Unions";
 
 class App extends Component {
     constructor(props) {
@@ -242,25 +241,9 @@ class App extends Component {
         return true;
     };
 
-    renderSnackbar = () => {
-        const {open, variant, message} = this.state.snackbarProps;
-
-        if (open) {
-            return (
-                <StyledSnackbar
-                    open={open}
-                    variant={variant}
-                    message={message}
-                    onClose={this.onSnackbarClose}
-                />
-            )
-        } else {
-            return null;
-        }
-    };
-
     render() {
-        const {body, currentProject, projects, open} = this.state;
+        const {body, currentProject, projects, open, snackbarProps} = this.state;
+        const {renameDialog, deleteDialog} = open;
 
         return (
             <Fragment>
@@ -275,27 +258,32 @@ class App extends Component {
                 {
                     {
                         "Help": <Help />,
-                        "Home": <Unions project={projects[currentProject]} />,
-                        "Import": <Import
-                            onFilesAccepted={(name, files) => this.onFilesAccepted(name, files)}
-                        />,
-                        "Project": <ProjectTabs project={projects[currentProject]}/>,
-
+                        "Home": <Home />, // <Unions project={projects[currentProject]} />,
+                        "Import":
+                            <Import
+                                onFilesAccepted={(name, files) => this.onFilesAccepted(name, files)}
+                            />,
+                        "Project":
+                            <ProjectTabs
+                                project={projects[currentProject]}
+                            />,
                     }[body]
                 }
                 <RenameProjectDialog
                     currentName={currentProject >= 0 ? projects[currentProject].name : ""}
-                    open={open.renameDialog}
+                    open={renameDialog}
                     onClose={this.onRenameDialogClose}
                 >
-                    {open.renameDialog ? this.renderSnackbar() : null}
+                    {renameDialog ? <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} /> : null}
                 </RenameProjectDialog>
                 <DeleteProjectDialog
                     currentName={currentProject >= 0 ? projects[currentProject].name : ""}
-                    open={open.deleteDialog}
+                    open={deleteDialog}
                     onClose={this.onDeleteDialogClose}
                 />
-                {!open.renameDialog || !open.deleteDialog ? this.renderSnackbar() : null}
+                {!renameDialog || !deleteDialog ?
+                    <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose}/> : null
+                }
             </Fragment>
         );
     }

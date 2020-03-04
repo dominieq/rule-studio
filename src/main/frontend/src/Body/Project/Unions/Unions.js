@@ -1,16 +1,17 @@
-import React, {Component} from "react";
+import React, {Component, Fragment} from "react";
 import PropTypes from "prop-types";
 import ConsistencySelector from "./inputs/ConsistencySelector";
+import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkSelect from "../../../RuleWorkComponents/Inputs/RuleWorkSelect";
 import StyledButton from "./inputs/StyledButton";
-import StyledHelper from "../../../RuleWorkComponents/Feedback/StyledHelper";
-import StyledRuleWorkBar from "../../../RuleWorkComponents/Surfaces/StyledRuleWorkBar";
+import RuleWorkHelper from "../../../RuleWorkComponents/Feedback/RuleWorkHelper";
+import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import Union from "./api/Union";
 import UnionListItem from "./data-display/UnionListItem";
 import UnionListItemContent from "./data-display/UnionListItemContent";
 import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
-import unions from "./resources/demo/example-unions";
 import "./Unions.css";
 
 class Unions extends Component {
@@ -18,14 +19,44 @@ class Unions extends Component {
         super(props);
 
         this.state = {
-            consistency: 1.0,
+            loading: false,
+            data: "",
+            consistency: 0.0,
             measure: "epsilon",
-            downwardUnions: [],
-            upwardUnions: [],
+            snackbarProps: {
+                open: false,
+                message: "",
+                variant: "info"
+            },
         };
     }
 
-    setConsistency = (consistency) => {
+    componentDidMount() {
+        const project = this.props.project;
+        if (!project.unionsWithSingleLimitingDecision) return;
+
+        fetch(`http://localhost:8080/projects/${project.id}/unions`, {
+            method: "GET",
+        }).then(response => {
+            return response.json();
+        }).then(result => {
+            this.setState({
+                data: result,
+            });
+        }).catch(error => {
+            this.setState({
+                snackbarProps: {
+                    open: true,
+                    message: "Server error. Couldn't load unions!",
+                    variant: "error",
+                },
+            }, () => {
+                console.log(error);
+            });
+        });
+    }
+
+    onConsistencyChange = (consistency) => {
         this.setState({
             consistency: consistency,
         });
@@ -37,73 +68,100 @@ class Unions extends Component {
         });
     };
 
-    getUnions = (unions) => {
-        const downwardUnions = unions.downwardUnions;
-        const upwardUnions = unions.upwardUnions;
+    onCountUnionsClick = () => {
+        if (!this.props.project) return;
 
-        let downward = [];
-        let upward = [];
+        const project = this.props.project;
+        const consistency = this.state.consistency;
+        const link = `http://localhost:8080/projects/${project.id}/unions?consistencyThreshold=${consistency}`;
 
-        for (let i = 0; i < downwardUnions.length; i++) {
-            let union = this.unionByIndex(
-                "down-" + i,
-                "At most",
-                downwardUnions[i]
-            );
-            downward = [...downward, union];
-        }
+        this.setState({
+            loading: true,
+        }, () => {
+            fetch(link, {
+                method: "GET"
+            }).then(response => {
+                return response.json();
+            }).then(result => {
+                this.setState({
+                    loading: false,
+                    data: result,
+                });
+            }).catch(error => {
+                console.log(error);
+                this.setState({
+                    loading: false,
+                    snackbarProps: {
+                        open: true,
+                        message: "Server error. Couldn't calculate unions!",
+                        variant: "error",
+                    },
+                });
+            });
+        });
+    };
 
-        for (let i = 0; i < upwardUnions.length; i++) {
-            let union = this.unionByIndex(
-                "up-" + i,
-                "At least",
-                upwardUnions[i]
-            );
-            upward = [...upward, union];
+    onSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
         }
 
         this.setState({
-            downwardUnions: downward,
-            upwardUnions: upward,
-        });
+            snackbarProps: {
+                open: false,
+                message: "",
+                variant: "info",
+            }
+        })
+    };
+
+    getUnions = (unions) => {
+        let downward = [];
+        let upward = [];
+
+        if (unions) {
+            const downwardUnions = unions.downwardUnions;
+            const upwardUnions = unions.upwardUnions;
+
+            for (let i = 0; i < downwardUnions.length; i++) {
+                let union = this.unionByIndex(
+                    "down-" + i,
+                    "At most",
+                    downwardUnions[i]
+                );
+                downward = [...downward, union];
+            }
+
+            for (let i = 0; i < upwardUnions.length; i++) {
+                let union = this.unionByIndex(
+                    "up-" + i,
+                    "At least",
+                    upwardUnions[i]
+                );
+                upward = [...upward, union];
+            }
+        }
+        return {downwardUnions: downward, upwardUnions: upward};
     };
 
     unionByIndex = (index, name, union) => {
         return new Union(index, name, union);
     };
 
-    onCountUnionsClick = () => {
-        this.getUnions(unions);
-
-        if (this.props.project) return;
-
-        const project = this.props.project;
-        const consistency = this.state.consistency;
-
-        fetch(`http://localhost:8080/projects/${project.id}/unions?consistencyThreshold=${consistency}`, {
-            method: "GET"
-        }).then(response => {
-            return response.json();
-        }).then(result => {
-            this.getUnions(result);
-        }).catch(error => {
-            console.log(error);
-        });
-    };
-
     render() {
-        const {measure, downwardUnions, upwardUnions} = this.state;
+        const {loading, data, consistency, measure, } = this.state;
+        const {downwardUnions, upwardUnions} = this.getUnions(data);
 
         return (
-            <div className={"unions"}>
-                <StyledRuleWorkBar id={"unions-bar"}>
+            <RuleWorkBox id={"rule-work-unions"} styleVariant={"tab"}>
+                <StyledPaper id={"unions-bar"} styleVariant={"bar"} square={true} variant={"outlined"}>
                     <ConsistencySelector
-                        setGlobalConsistency={(c) => this.setConsistency(c)}
+                        onConsistencyChange={(c) => this.onConsistencyChange(c)}
                     />
                     <Divider flexItem={true} orientation={"vertical"} />
-                    <StyledHelper >
+                    <RuleWorkHelper >
                         {"Consistency helper"}
-                    </StyledHelper>
+                    </RuleWorkHelper>
                     <RuleWorkSelect
                         disabledChildren={["rough membership"]}
                         onChange={this.onSelectChange}
@@ -113,32 +171,38 @@ class Unions extends Component {
                     </RuleWorkSelect>
                     <span>
                         <Typography variant={"subtitle2"}>
-                            Current consistency: {this.state.consistency}
+                            Current consistency: {consistency}
                         </Typography>
                     </span>
                     <Divider flexItem={true} orientation={"vertical"} />
                     <StyledButton
-                        disabled={!this.props.project}
+                        disabled={!this.props.project || loading}
                         disableElevation
                         onClick={this.onCountUnionsClick}
                         variant={"contained"}
                     >
                         Calculate
                     </StyledButton>
-                </StyledRuleWorkBar>
-                <div className={"unions-list"}>
-                    {downwardUnions.map(union => (
-                        <UnionListItem key={union.id} union={union}>
-                            <UnionListItemContent union={union} />
-                        </UnionListItem>
-                    ))}
-                    {upwardUnions.map(union => (
-                        <UnionListItem key={union.id} union={union}>
-                            <UnionListItemContent union={union} />
-                        </UnionListItem>
-                    ))}
-                </div>
-            </div>
+                </StyledPaper>
+                <RuleWorkBox id={"unions-list"} styleVariant={"tab-body"}>
+                {loading ?
+                    <StyledCircularProgress/>
+                    :
+                    <Fragment>
+                        {downwardUnions.map(union => (
+                            <UnionListItem key={union.id} union={union}>
+                                <UnionListItemContent union={union} />
+                            </UnionListItem>
+                        ))}
+                        {upwardUnions.map(union => (
+                            <UnionListItem key={union.id} union={union}>
+                                <UnionListItemContent union={union} />
+                            </UnionListItem>
+                        ))}
+                    </Fragment>
+                }
+                </RuleWorkBox>
+            </RuleWorkBox>
         )
     }
 }
@@ -147,4 +211,4 @@ Unions.propTypes = {
     project: PropTypes.object,
 };
 
-export default Unions
+export default Unions;

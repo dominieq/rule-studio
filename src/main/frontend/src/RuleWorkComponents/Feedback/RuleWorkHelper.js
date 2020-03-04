@@ -37,7 +37,7 @@ const useStyles = makeStyles({
     }
 }, {name: "MuiAvatar"});
 
-function StyledHelper(props) {
+function RuleWorkHelper(props) {
     const {children, size, color} = props;
     const classes =  useStyles();
 
@@ -50,15 +50,15 @@ function StyledHelper(props) {
     )
 }
 
-StyledHelper.propTypes = {
+RuleWorkHelper.propTypes = {
     children: PropTypes.string.isRequired,
     size: PropTypes.oneOf(["small", "medium", "big"]),
     color: PropTypes.oneOf(["default"])
 };
 
-StyledHelper.defaultProps = {
+RuleWorkHelper.defaultProps = {
     size: "small",
     color: "default",
 };
 
-export default StyledHelper;
+export default RuleWorkHelper;

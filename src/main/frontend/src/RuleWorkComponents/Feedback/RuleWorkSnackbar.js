@@ -23,7 +23,7 @@ const useStylesSnackbar = makeStyles({
 
 });
 
-function StyledSnackbar(props) {
+function RuleWorkSnackbar(props) {
     const {open, variant, message, onClose} = props;
     const classes = useStylesSnackbar();
 
@@ -34,17 +34,17 @@ function StyledSnackbar(props) {
     )
 }
 
-StyledSnackbar.propTypes = {
+RuleWorkSnackbar.propTypes = {
     open: PropTypes.bool,
     variant: PropTypes.oneOf(["info", "success", "warning", "error"]),
     message: PropTypes.string,
     onClose: PropTypes.func,
 };
 
-StyledSnackbar.defaultProps = {
+RuleWorkSnackbar.defaultProps = {
     open: false,
     variant: "info",
     message: "This is custom RuleWork snackbar",
 };
 
-export default StyledSnackbar
+export default RuleWorkSnackbar

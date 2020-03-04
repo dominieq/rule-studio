@@ -12,7 +12,7 @@ class UnionListItem extends Component {
         const {children, union} = this.props;
 
         return (
-            <StyledExpansionPanel>
+            <StyledExpansionPanel TransitionProps={{unmountOnExit: true}}>
                 <ExpansionPanelSummary
                     id={union.id + "-header"}
                     aria-controls={union.id + "-content"}
@@ -31,7 +31,7 @@ class UnionListItem extends Component {
 }
 
 UnionListItem.propTypes = {
-    children: PropTypes.any.isRequired,
+    children: PropTypes.node.isRequired,
     union: PropTypes.instanceOf(Union).isRequired,
 };
 
