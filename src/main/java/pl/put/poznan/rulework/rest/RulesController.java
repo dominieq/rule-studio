@@ -1,17 +1,21 @@
 package pl.put.poznan.rulework.rest;
 
+import javafx.util.Pair;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulework.service.RulesService;
 
+import java.io.IOException;
 import java.util.UUID;
 
-@CrossOrigin
+@CrossOrigin(exposedHeaders = {"Content-Disposition"})
 @RequestMapping("/projects/{id}/rules")
 @RestController
 public class RulesController {
@@ -41,4 +45,15 @@ public class RulesController {
         return ResponseEntity.ok(result);
     }
 
+    @RequestMapping(value = "/download", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    public ResponseEntity<Resource> download(
+            @PathVariable("id") UUID id) throws IOException {
+        logger.info("Downloading file");
+        Pair<String, Resource> p = rulesService.download(id);
+        String projectName = p.getKey();
+        Resource resource = p.getValue();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_rules.xml")
+                .body(resource);
+    }
 }
