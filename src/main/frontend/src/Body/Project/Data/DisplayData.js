@@ -6,7 +6,7 @@ import { Editors,  Data, Menu, Filters} from 'react-data-grid-addons';
 import './DisplayData.css';
 import EditDataButtons from './EditDataButtons';
 import EditDataFilterButton from './EditDataFilterButton'
-
+import CircularProgress from '@material-ui/core/CircularProgress';
 import DropDownForAttributes from './DropDownForAttributes';
 import Notification from './Notification';
 import AttributeDomain from './AttributeDomain';
@@ -27,6 +27,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { withStyles } from '@material-ui/core/styles';
 import { DraggableHeader } from 'react-data-grid-addons';
+import PropTypes from 'prop-types';
+import RuleWorkLoadingIcon from './RuleWorkLoadingIcon';
 
 const selectors = Data.Selectors;
 const { NumericFilter } = Filters;
@@ -81,9 +83,16 @@ class DisplayData extends React.Component {
     constructor(props) {
         super(props);
 
+        console.log("Otrzymalem projekt:");
+        console.log(this.props.project);
+        console.log("A konkretniej atrybuty:");
+        console.log(this.props.project.informationTable.attributes);
+        console.log("A konkretniej obiekty:");
+        console.log(this.props.project.informationTable.objects);
+
         this.state = {
-            rows: this.prepareDataFromImport(this.props.data),
-            columns: this.prepareMetaDataFromImport(this.props.metadata),
+            rows: this.prepareDataFromImport(this.props.project.informationTable.objects),
+            columns: this.prepareMetaDataFromImport(this.props.project.informationTable.attributes),
             enableRowInsert: 0, //-1 no sort, 0-sort asc, 1-sort desc
             selectedRows: [],
             filters: {},
@@ -107,8 +116,39 @@ class DisplayData extends React.Component {
             isOpenedNotification: true,
             isColumnHeaderMenuOpened: null,
             columnKeyOfHeaderMenuOpened: -1,
-            
+
+            isLoading: false,
+            isOpenedTransformWarning: false,
         };
+    }
+
+    /*static getDerivedStateFromProps(nextProps, prevState) {  
+         
+        console.log("Get derived state from ")
+        console.log(nextProps.project)
+        console.log(prevState.project);
+        if(prevState.project !== undefined && nextProps.project.id !== prevState.project.id) {    
+            console.log("wszedlem do ifa z GET DERIVED STATEM");    
+        return {
+            columns: this.prepareMetaDataFromImport(nextProps.project.informationTable.attributes),
+            rows: this.prepareDataFromImport(nextProps.project.informationTable.objects),
+          //clickedCounter: nextProps.clickedCounter,
+        }}
+        return null;
+    }*/
+
+    static getDerivedStateFromError(error) {
+        console.log("ERROR!")
+        console.log(error);
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(prevProps.project.id !== this.props.project.id) {
+            this.setState({
+                columns: this.prepareMetaDataFromImport(this.props.project.informationTable.attributes),
+                rows: this.prepareDataFromImport(this.props.project.informationTable.objects),
+            }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
+        }
     }
 
     prepareDataFromImport = (data) => {
@@ -393,6 +433,54 @@ class DisplayData extends React.Component {
         });
     }
 
+    closeOnTransformWarning = () => {
+        this.setState({
+            isOpenedTransformWarning: false,
+        })
+    }
+
+    openOnTransformWarning = () => {
+        this.setState({
+            isOpenedTransformWarning: true,
+        })
+    }
+
+    onTransformAttributes = () => {
+        if(this.state.dataModified && !this.state.isOpenedTransformWarning) { //data has been modified and dialog is closed then open dialog
+                this.openOnTransformWarning();
+        } else { //dialog has been closed so user clicked "Yes"
+                this.setState({
+                    isLoading: true,
+                    isOpenedTransformWarning: false,
+                }, () => {
+        
+                fetch(`http://localhost:8080/projects/${this.props.project.id}?imposePreferenceOrder=true`, {
+                    method: 'GET'
+                }).then(response => {
+                    console.log(response)
+                    return response.json()
+                }).then(result => {
+                    console.log("Wynik dzialania response.json():")
+                    console.log(result)
+                    console.log("atrybuty:")
+                    console.log(result.informationTable.attributes);
+                    console.log("obiekty:")
+                    console.log(result.informationTable.objects);
+            
+                    this.setState({
+                        columns: this.prepareMetaDataFromImport(result.informationTable.attributes),
+                        rows: this.prepareDataFromImport(result.informationTable.objects),
+                        isLoading: false,
+                        dataModified: true,
+                    }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
+            
+                }).catch(err => {
+                    console.log(err)
+                })
+            })
+        }
+    }
+
     prepareMetadataFileBeforeSendingToServer() {
         const newMetadata = [...this.state.columns].map(({editable,sortable,resizable,filterable,visible,draggable,editor,filterRenderer,sortDescendingFirst,key,...others}) => others);
         if(newMetadata.length > 0) newMetadata.shift();
@@ -405,9 +493,14 @@ class DisplayData extends React.Component {
     }
     
     sendFilesToServer = () => {
+        const tmpMetaData = JSON.stringify(this.prepareMetadataFileBeforeSendingToServer());
+        const tmpData = JSON.stringify(this.prepareDataFileBeforeSendingToServer());
+        this.setState({
+            isLoading: true,
+        }, () => {
         fetch(`http://localhost:8080/projects/${this.props.project.id}/metadata`, {
             method: 'PUT',
-            body: JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()),
+            body: tmpMetaData,
         }).then(response => {
             console.log(response)
             return response.json()
@@ -420,22 +513,33 @@ class DisplayData extends React.Component {
 
             fetch(`http://localhost:8080/projects/${this.props.project.id}/data`, {
                 method: 'PUT',
-                body: JSON.stringify(this.prepareDataFileBeforeSendingToServer())
+                body: tmpData,
             }).then(response => {
                 console.log(response)
                 return response.json()
             }).then(result => {
                 console.log("Wynik dzialania response.json():")
                 console.log(result)
+                
+                const tmpProject = {...this.props.project}
+                tmpProject.informationTable.attributes = tmpMetaData;
+                tmpProject.informationTable.objects = tmpData;
+
+                this.props.updateProjectFiles(tmpProject);
+
+                this.setState({
+                    dataModified: false,
+                    isLoading: false,
+                })
             }).catch(err => {
                 console.log(err)
+                this.setState({
+                    isLoading: false,
+                })
             })
         })
-
-        this.setState({
-            dataModified: false,
         })
-        
+
     }
 
     handleChangeSaveToFileWhichFile = (e) => {
@@ -503,6 +607,7 @@ class DisplayData extends React.Component {
         a.style = "display: none";
         document.body.appendChild(a);
         a.click();
+
         document.body.removeChild(a);
     }
 
@@ -1011,9 +1116,9 @@ class DisplayData extends React.Component {
                     enableCellSelect={true}
                     getValidFilterValues={columnKey => this.getValidFilterValues(this.state.rows, columnKey)}
                     toolbar={<EditDataFilterButton enableFilter={true} > 
-                                < EditDataButtons deleteRow={this.deleteSelectedRows} insertRow={this.insertRow} 
-                                        sendFilesToServer={this.sendFilesToServer} saveToFileDialog={this.saveToFileDialog}
-                                        onAddAttribute={this.onAddAttribute} onEditAttributes={this.onEditAttributes} modified={this.state.dataModified} /> 
+                            < EditDataButtons deleteRow={this.deleteSelectedRows} insertRow={this.insertRow} 
+                                    sendFilesToServer={this.sendFilesToServer} saveToFileDialog={this.saveToFileDialog} onAddAttribute={this.onAddAttribute} 
+                                    onEditAttributes={this.onEditAttributes} onTransformAttributes={this.onTransformAttributes} modified={this.state.dataModified} /> 
                             </EditDataFilterButton> }
                     onAddFilter={this.handleFilterChange}
                     onClearFilters={this.onClearFilters}
@@ -1048,7 +1153,7 @@ class DisplayData extends React.Component {
                 </DraggableContainer>     
                 
                 <Dialog open={this.state.isOpenedAddAttribute} onClose={this.closeOnAddAttribute} aria-labelledby="add-attribute-dialog">
-                    <DialogTitle id="add-attribute-dialog">Add new attribute</DialogTitle>
+                    <DialogTitle id="add-attribute-dialog">{"Add new attribute"}</DialogTitle>
                     <form onSubmit={this.applyOnAddAttribute}>
                     <DialogContent>
                         <DialogContentText>
@@ -1070,7 +1175,7 @@ class DisplayData extends React.Component {
                 </Dialog>
 
                 <Dialog open={this.state.isOpenedEditAttributes} onClose={this.closeOnEditAttributes} aria-labelledby="edit-attributes-dialog">
-                    <DialogTitle id="edit-attributes-dialog">Edit attributes</DialogTitle>
+                    <DialogTitle id="edit-attributes-dialog">{"Edit attributes"}</DialogTitle>
                     <form onSubmit={this.applyOnEditAttributes}>
                     <DialogContent>
                         <DialogContentText>
@@ -1101,7 +1206,7 @@ class DisplayData extends React.Component {
 
 
                 <Dialog fullWidth={true} maxWidth={"sm"} open={this.state.isOpenedSaveToFile} onClose={this.closeOnSaveToFile} aria-labelledby="save-files-dialog">
-                    <DialogTitle id="alert-dialog-title">{"Choose type and format to be saved in."}</DialogTitle>
+                    <DialogTitle id="save-files-dialog">{"Choose type and format to be saved in."}</DialogTitle>
                     <DialogContent>
                         When selected "Both" the first downloaded file will be "Metadata" and then the second one "Data" 
                     
@@ -1129,15 +1234,37 @@ class DisplayData extends React.Component {
                 
                 {this.displayColumnHeaderMenu()}
 
+                <Dialog open={this.state.isOpenedTransformWarning} onClose={this.closeOnTransformWarning} aria-labelledby="transform-warning-dialog">
+                    <DialogTitle id="transform-warning-title">{"Are you sure you want to continue?"}</DialogTitle>
+                    <DialogContent>
+                    <DialogContentText id="transform-dialog-description">
+                        You haven't saved changes. All the calculations will be executed on the previously saved data.
+                    </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                    <Button onClick={this.closeOnTransformWarning} style={{color: "#F2545B", borderColor:"#4C061D"}} variant={"outlined"}>
+                        No
+                    </Button>
+                    <Button onClick={this.onTransformAttributes} style={{color:"#66FF66", borderColor:"#6BD425"}} variant={"outlined"}>
+                        Yes
+                    </Button>
+                    </DialogActions>
+                </Dialog>
+
+                {this.state.isLoading ? <RuleWorkLoadingIcon size={60}/> : null }
             </div>
         )
     }
 }
 
+DisplayData.propTypes = {
+    project: PropTypes.any.isRequired,
+    updateProjectFiles: PropTypes.func.isRequired,
+};
+
 DisplayData.defaultProps = {
-    data: [],
-    metadata: [],
-    project: {id: '2541bed3-63f3-4b88-88ba-543a2bb54f60', name: '', files: []},
+    
+    //project: {informationTable: '2541bed3-63f3-4b88-88ba-543a2bb54f60', name: '', files: []},
 };
   
 export default DisplayData;

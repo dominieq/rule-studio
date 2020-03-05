@@ -6,6 +6,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import AddIcon from '@material-ui/icons/Add';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import EditIcon from '@material-ui/icons/Edit';
+import TransformIcon from '@material-ui/icons/Transform';
 
 const useStyles = makeStyles(theme => ({
     button: {
@@ -78,9 +79,19 @@ export default function IconLabelButtons(props) {
           onClick={() => props.saveToFileDialog()}
         >
           Save to file
-        </Button><div className="data-modified" key={props.modified}> 
-        {props.modified ? "Data has been modified! Don't forget to save it" : null}
-       </div>
+        </Button>
+              
+      <Button
+        variant="contained"
+        color="primary"
+        className={classes.button}
+        startIcon={<TransformIcon />}
+        onClick={() => props.onTransformAttributes()}
+      >
+        Transform
+      </Button><div className="data-modified" key={props.modified}> 
+      {props.modified ? "Data has been modified! Save it" : null}
+      </div>
       </div>
     );
 }
