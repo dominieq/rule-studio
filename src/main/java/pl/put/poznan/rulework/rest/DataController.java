@@ -61,7 +61,7 @@ public class DataController {
         Pair<String, Resource> p = dataService.download(id, format);
         String projectName = p.getKey();
         Resource resource = p.getValue();
-        if(format.equals("csv")) {
+        if(format.equals("json")) {
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_data.json")
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
