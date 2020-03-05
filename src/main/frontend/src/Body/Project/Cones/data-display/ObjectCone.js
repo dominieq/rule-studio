@@ -37,9 +37,9 @@ function ObjectCone(props) {
             {items.map(item => (
                 <TreeItem
                     key={item}
-                    label={item}
+                    label={item + 1}
                     nodeId={id + "-dominance-item-" + item}
-                    onClick={() => props.onItemChangeSelection({optional: item, relation: id})}
+                    onClick={() => props.onItemChangeSelection({optional: item + 1, relation: id})}
                     onBlur={() => props.onItemChangeSelection(null)}
                 />
             ))}

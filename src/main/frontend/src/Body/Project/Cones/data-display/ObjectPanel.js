@@ -32,7 +32,7 @@ class ObjectPanel extends PureComponent {
     onItemChangeSelection = (tuple) => {
         if(tuple) {
             this.props.onItemClick({
-                objectMain: this.props.object.id,
+                objectMain: this.props.object.name,
                 objectOptional: tuple.optional,
                 relation: tuple.relation,
             });

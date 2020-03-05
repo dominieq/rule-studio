@@ -2,16 +2,10 @@
     margin: 0 16px;
 }
 
-.objects-list {
-    width: 45%;
-    max-width: 45%;
-    margin-right: 25px;
-}
-
-.objects-description {
+#objects-description {
     position: sticky;
-    width: 45%;
-    height: fit-content;
     top: 0;
+    height: fit-content;
+
 }
 

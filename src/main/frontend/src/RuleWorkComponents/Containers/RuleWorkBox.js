@@ -28,6 +28,12 @@ const useStyles = makeStyles({
         flexGrow: 1,
         display: "flex",
         flexDirection: "row",
+    },
+    "tab-column": {
+        margin: "2.5%",
+        width: "45%",
+        display: "flex",
+        flexDirection: "column"
     }
 }, {name: "rule-work"});
 

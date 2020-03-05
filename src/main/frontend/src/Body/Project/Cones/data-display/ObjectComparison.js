@@ -60,7 +60,7 @@ class ObjectComparison extends Component {
                     <TableHead>
                         <TableRow>
                             <TableCell>Attribute</TableCell>
-                            <TableCell align={"right"}>{"Object " + object1id}</TableCell>
+                            <TableCell align={"right"}>{object1id}</TableCell>
                             <TableCell align={"right"}>Relation</TableCell>
                             <TableCell align={"right"}>{"Object " + object2id}</TableCell>
                         </TableRow>

@@ -2,6 +2,7 @@ import React, {Component, Suspense} from 'react';
 import PropTypes from "prop-types";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import DominanceSelector from "./inputs/DominanceSelector";
@@ -14,6 +15,7 @@ import dominanceCones from "./resources/demo-files/DominanceCones";
 import exampleComparison from "./resources/demo-files/ExampleComparison";
 
 
+
 const ObjectPanel = React.lazy(() => import("./data-display/ObjectPanel")) ;
 
 class Cones extends Component {
@@ -22,13 +24,75 @@ class Cones extends Component {
         this.objects = this.getObjects();
 
         this.state = {
+            loading: false,
+            data: "",
             objects: this.objects,
+            snackbarProps: {
+                open: false,
+                message: "",
+                variant: "info",
+            },
         };
 
         this.objectsComparison = React.createRef();
         this.conesBar = React.createRef();
         this.objectPanels = [];
     }
+
+    componentDidMount() {
+        const project = this.props.project;
+        if (project.calculatedDominanceCones) {
+            fetch(`http://localhost:8080/projects/${project.id}/cones`, {
+                method: "GET"
+            }).then(response => {
+                return response.json();
+            }).then(result => {
+                this.setState({
+                    data: result,
+                });
+            }).catch(error => {
+                this.setState({
+                    snackbarProps: {
+                        open: true,
+                        message: "Server error. Couldn't load cones!",
+                        variant: "error",
+                    },
+                }, () => {
+                    console.log(error);
+                });
+            });
+        }
+    }
+
+    onCalculateClick = () => {
+        const project = this.props.project;
+
+        this.setState({
+            loading: true,
+        }, () => {
+            fetch(`http://localhost:8080/projects/${project.id}/cones`, {
+                method: "GET",
+            }).then(response => {
+                return response.json();
+            }).then(result => {
+                this.setState({
+                    loading: false,
+                    data: result,
+                });
+            }).catch(error => {
+                this.setState({
+                    loading: false,
+                    snackbarProps: {
+                        open: true,
+                        message: "Server error. Couldn't calculate cones!",
+                        variant: "error",
+                    },
+                }, () => {
+                    console.log(error);
+                });
+            });
+        });
+    };
 
     onGlobalDominanceChange = (dominanceSelected) => {
         const {dominance, where} = dominanceSelected;
@@ -110,7 +174,7 @@ class Cones extends Component {
     };
 
     render() {
-        const objects = this.state.objects;
+        const {loading, data, objects, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-cones"} styleVariant={"tab"}>
@@ -127,9 +191,16 @@ class Cones extends Component {
                         Filter objects
                     </RuleWorkTextField>
                     <span style={{flexGrow: 1}}/>
+                    <StyledButton
+                        buttonVariant={"contained"}
+                        onClick={this.onCalculateClick}
+                        styleVariant={"green"}
+                    >
+                        Calculate
+                    </StyledButton>
                 </StyledPaper>
                 <RuleWorkBox id={"cones-list"} styleVariant={"tab-body2"}>
-                    <div className={"objects-list"}>
+                    <RuleWorkBox id={"objects-list"} styleVariant={"tab-column"}>
                         <Suspense fallback={<StyledCircularProgress disableShrink/>}>
                             <section>
                                 {objects.map((object, index) => (
@@ -144,10 +215,10 @@ class Cones extends Component {
                                 ))}
                             </section>
                         </Suspense>
-                    </div>
-                    <div className={"objects-description"}>
+                    </RuleWorkBox>
+                    <RuleWorkBox id={"objects-description"} styleVariant={"tab-column"}>
                         <ObjectComparison ref={this.objectsComparison} />
-                    </div>
+                    </RuleWorkBox>
                 </RuleWorkBox>
             </RuleWorkBox>
         );
