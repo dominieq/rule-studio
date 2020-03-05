@@ -1,24 +1,47 @@
 import React, {Component} from 'react';
+import PropTypes from "prop-types";
 import Divider from "@material-ui/core/Divider";
-import RulesBar from "./surfaces/RulesBar";
+import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
+import RuleWorkButton from "../../../RuleWorkComponents/Inputs/RuleWorkButton";
 import RulesList from "./surfaces/RulesList";
 import RuleItem from "./data-display/RuleItem";
 import RuleDescription from "./data-display/RuleDescription";
-import ConesBarButton from "./inputs/ConesBarButton";
+import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
 import FilePlus from "mdi-material-ui/FilePlus";
 import "./Rules.css";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 
 class Rules extends Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            loading: false,
+            data: "",
+        };
+
         this.ruleDesc = React.createRef();
     }
 
     componentDidMount() {
-        // TODO fetch rules from server
+        const project = this.props.project;
+
+        fetch(`http://localhost:8080/projects/${project.id}/rules`, {
+            method: "GET",
+        }).then(response => {
+            console.log(response);
+            return response.json();
+        }).then(result => {
+            console.log(result);
+            this.setState({
+                data: result,
+            });
+        }).catch(error => {
+            console.log(error);
+            console.log(error.message)
+        })
     }
 
     onUploadFileChanged = (event) => {
@@ -33,6 +56,35 @@ class Rules extends Component {
     onNewFileClick = () => {
         console.log("Creating new file...");
     };
+
+    onCalculateClick = () => {
+        this.setState({
+            loading: true,
+        }, () => {
+            const project = this.props.project;
+
+            fetch(`http://localhost:8080/projects/${project.id}/rules`, {
+                method: "POST",
+            }).then(response => {
+                console.log(response);
+                return response.json();
+            }).then(result => {
+                console.log(result);
+                this.setState({
+                    loading: false,
+                    data: result,
+                });
+            }).catch(error => {
+                this.setState({
+                    loading: false,
+                }, () => {
+                    console.log(error);
+                    console.log(error.message)
+                });
+            });
+        });
+    };
+
 
     onRuleAction = (hidden, rule) => {
         this.ruleDesc.current.onRuleAction(hidden, rule);
@@ -51,31 +103,46 @@ class Rules extends Component {
         ];
 
         return (
-            <div className={"rules"}>
-                <RulesBar>
-                    <ConesBarButton
-                        variant={"upload"}
+            <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
+                <StyledPaper id={"rules-bar"} styleVariant={"bar"} square={true} variant={"outlined"}>
+                    <RuleWorkButton
+                        accept={".json"}
+                        ariaLabel={"rules-upload-button"}
+                        buttonVariant={"icon"}
+                        isUpload={true}
+                        onClick={this.onUploadFileChanged}
                         title={"Upload file"}
-                        label={"upload-file"}
-                        icon={<CloudUploadIcon />}
-                        onButtonClick={(e) => this.onUploadFileChanged(e)}
-                    />
+                    >
+                        <CloudUploadIcon />
+                    </RuleWorkButton>
                     <Divider orientation={"vertical"} flexItem={true}/>
-                    <ConesBarButton
+                    <RuleWorkButton
+                        ariaLabel={"rules-save-button"}
+                        buttonVariant={"icon"}
+                        onClick={this.onSaveFileClick}
                         title={"Save file"}
-                        label={"save-file"}
-                        icon={<SaveIcon />}
-                        onButtonClick={() => this.onSaveFileClick()}
-                    />
+                    >
+                        <SaveIcon />
+                    </RuleWorkButton>
                     <Divider orientation={"vertical"} flexItem={true}/>
-                    <ConesBarButton
+                    <RuleWorkButton
+                        ariaLabel={"rules-new-button"}
+                        buttonVariant={"icon"}
+                        onClick={this.onNewFileClick}
                         title={"New file"}
-                        label={"new-file"}
-                        icon={<FilePlus />}
-                        onButtonClick={() => this.onNewFileClick()}
-                    />
-                </RulesBar>
-                <div className={"rules-body"}>
+                    >
+                        <FilePlus />
+                    </RuleWorkButton>
+                    <span style={{flexGrow: 1}} />
+                    <StyledButton
+                        buttonVariant={"contained"}
+                        styleVariant={"green"}
+                        onClick={this.onCalculateClick}
+                    >
+                        Calculate
+                    </StyledButton>
+                </StyledPaper>
+                <RuleWorkBox id={"rules-body"} styleVariant={"tab-body2"}>
                     <RulesList>
                         {rules.map((rule, index) => (
                             <RuleItem
@@ -87,10 +154,14 @@ class Rules extends Component {
                         ))}
                     </RulesList>
                     <RuleDescription ref={this.ruleDesc}/>
-                </div>
-            </div>
+                </RuleWorkBox>
+            </RuleWorkBox>
         )
     }
+}
+
+Rules.propTypes = {
+    project: PropTypes.object.isRequired,
 }
 
 export default Rules;
