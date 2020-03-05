@@ -3,7 +3,9 @@ package pl.put.poznan.rulework.service;
 import javafx.util.Pair;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
+import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator;
+import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 import org.rulelearn.rules.*;
 import org.rulelearn.rules.ruleml.RuleMLBuilder;
@@ -53,6 +55,17 @@ public class RulesService {
         }
 
         Unions unions = project.getUnionsWithSingleLimitingDecision();
+        if(unions == null) {
+            UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = new UnionsWithSingleLimitingDecision(
+                    new InformationTableWithDecisionDistributions(project.getInformationTable()),
+                    new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), 0)
+            );
+
+            project.setUnionsWithSingleLimitingDecision(unionsWithSingleLimitingDecision);
+            project.setCalculatedUnionsWithSingleLimitingDecision(true);
+
+            unions = unionsWithSingleLimitingDecision;
+        }
 
         final RuleInductionStoppingConditionChecker stoppingConditionChecker =
                 new EvaluationAndCoverageStoppingConditionChecker(
