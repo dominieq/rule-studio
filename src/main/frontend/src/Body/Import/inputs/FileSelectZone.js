@@ -69,14 +69,15 @@ class FileSelectZone extends Component {
                 </Typography>
                 {this.renderFile(file)}
                 <RuleWorkButton
-                    variant={"upload"}
-                    uploadAccept={accept}
-                    tooltipTitle={"Upload " + variant}
-                    buttonLabel={variant + "-upload-button"}
-                    content={<FileUpload/>}
-                    onButtonClick={this.onInputChange}
-                    id={"rule-work-upload-" + variant + "-button"}
-                />
+                    accept={accept}
+                    ariaLabel={variant + "-upload-button"}
+                    buttonVariant={"icon"}
+                    isUpload={true}
+                    onClick={this.onInputChange}
+                    title={"Upload " + variant}
+                >
+                    <FileUpload/>
+                </RuleWorkButton>
             </div>
         );
     }

@@ -82,11 +82,13 @@ class ConsistencySelector extends Component {
                     {"Consistency helper"}
                 </RuleWorkHelper>
                 <RuleWorkTextField
-                    label={"Choose consistency"}
-                    value={consistency}
-                    onChange={this.onInputChange}
+                    fullWidth={true}
                     onBlur={this.onInputBlurGlobal}
-                />
+                    onChange={this.onInputChange}
+                    value={consistency}
+                >
+                    Choose consistency
+                </RuleWorkTextField>
                 <StyledSlider
                     value={typeof consistency === "number" ? consistency : 0.0}
                     step={0.01}

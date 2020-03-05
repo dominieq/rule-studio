@@ -1,12 +1,14 @@
 import React, {Component, Suspense} from 'react';
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import ConesBar from "./surfaces/ConesBar";
+import PropTypes from "prop-types";
+import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
+import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import DominanceSelector from "./inputs/DominanceSelector";
 import ObjectComparison from "./data-display/ObjectComparison";
 import DominanceObject from "./api/DominanceObject";
 import DominanceComparison from "./api/DominanceComparison";
+import Divider from "@material-ui/core/Divider";
 import "./Cones.css";
 import dominanceCones from "./resources/demo-files/DominanceCones";
 import exampleComparison from "./resources/demo-files/ExampleComparison";
@@ -111,27 +113,24 @@ class Cones extends Component {
         const objects = this.state.objects;
 
         return (
-            <div className={"cones"}>
-                <ConesBar>
-                    <Typography color={"primary"} variant={"h6"} component={"div"}>
-                        Choose dominance cones:
-                    </Typography>
+            <RuleWorkBox id={"rule-work-cones"} styleVariant={"tab"}>
+                <StyledPaper id={"cones-bar"} styleVariant={"bar"} square={true} variant={"outlined"}>
                     <DominanceSelector
                         ref={this.conesBar}
-                        onDominanceChange={(d) => this.onGlobalDominanceChange(d)}
+                        onDominanceChange={this.onGlobalDominanceChange}
                     />
-                    <span style={{flexGrow: 1}}/>
-                    <TextField
-                        id={"objects-filter"}
-                        label={"Filter objects"}
+                    <Divider flexItem={true} orientation={"vertical"} />
+                    <RuleWorkTextField
                         type={"search"}
-                        variant={"outlined"}
                         onChange={this.onFilterChange}
-                    />
-                </ConesBar>
-                <div className={"objects-display"}>
+                    >
+                        Filter objects
+                    </RuleWorkTextField>
+                    <span style={{flexGrow: 1}}/>
+                </StyledPaper>
+                <RuleWorkBox id={"cones-list"} styleVariant={"tab-body2"}>
                     <div className={"objects-list"}>
-                        <Suspense fallback={<CircularProgress disableShrink/>}>
+                        <Suspense fallback={<StyledCircularProgress disableShrink/>}>
                             <section>
                                 {objects.map((object, index) => (
                                     <ObjectPanel
@@ -149,10 +148,14 @@ class Cones extends Component {
                     <div className={"objects-description"}>
                         <ObjectComparison ref={this.objectsComparison} />
                     </div>
-                </div>
-            </div>
+                </RuleWorkBox>
+            </RuleWorkBox>
         );
     }
 }
+
+Cones.propTypes = {
+    project: PropTypes.object.isRequired,
+};
 
 export default Cones;

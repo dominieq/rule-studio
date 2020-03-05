@@ -44,18 +44,22 @@ class ProjectMenu extends Component {
             return (
                 <Fragment>
                     <RuleWorkButton
-                        tooltipTitle={"Rename project"}
-                        buttonLabel={"rename-project-button"}
-                        content={<RenameBox />}
-                        onButtonClick={this.props.onProjectRename}
-                    />
+                        ariaLabel={"rename-project-button"}
+                        buttonVariant={"icon"}
+                        onClick={this.props.onProjectRename}
+                        title={"Rename project"}
+                    >
+                        <RenameBox />
+                    </RuleWorkButton>
                     <span />
                     <RuleWorkButton
-                        tooltipTitle={"Delete project"}
-                        buttonLabel={"delete-project-button"}
-                        content={<DeleteIcon />}
-                        onButtonClick={this.props.onProjectDelete}
-                    />
+                        ariaLabel={"delete-project-button"}
+                        buttonVariant={"icon"}
+                        onClick={this.props.onProjectDelete}
+                        title={"Delete project"}
+                    >
+                        <DeleteIcon />
+                    </RuleWorkButton>
                 </Fragment>
             )
         }  else {

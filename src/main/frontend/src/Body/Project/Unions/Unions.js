@@ -2,9 +2,10 @@ import React, {Component, Fragment} from "react";
 import PropTypes from "prop-types";
 import ConsistencySelector from "./inputs/ConsistencySelector";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
+import RuleWorkButton from "../../../RuleWorkComponents/Inputs/RuleWorkButton";
 import RuleWorkSelect from "../../../RuleWorkComponents/Inputs/RuleWorkSelect";
-import StyledButton from "./inputs/StyledButton";
 import RuleWorkHelper from "../../../RuleWorkComponents/Feedback/RuleWorkHelper";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import Union from "./api/Union";
@@ -164,6 +165,7 @@ class Unions extends Component {
                     </RuleWorkHelper>
                     <RuleWorkSelect
                         disabledChildren={["rough membership"]}
+                        label={"Select measure"}
                         onChange={this.onSelectChange}
                         value={measure}
                     >
@@ -176,15 +178,16 @@ class Unions extends Component {
                     </span>
                     <Divider flexItem={true} orientation={"vertical"} />
                     <StyledButton
+                        buttonVariant={"contained"}
                         disabled={!this.props.project || loading}
                         disableElevation
                         onClick={this.onCountUnionsClick}
-                        variant={"contained"}
+                        styleVariant={"green"}
                     >
                         Calculate
                     </StyledButton>
                 </StyledPaper>
-                <RuleWorkBox id={"unions-list"} styleVariant={"tab-body"}>
+                <RuleWorkBox id={"unions-list"} styleVariant={"tab-body1"}>
                 {loading ?
                     <StyledCircularProgress/>
                     :

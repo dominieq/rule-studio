@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import PropTypes from 'prop-types';
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import StyledExpansionPanel from "../../../../RuleWorkComponents/Surfaces/StyledExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -8,7 +8,7 @@ import ObjectPanelHeader from "./ObjectPanelHeader";
 import ObjectPanelContent from "./ObjectPanelContent";
 import "./ObjectPanel.css";
 
-class ObjectPanel extends Component {
+class ObjectPanel extends PureComponent {
     constructor(props) {
         super(props);
 
@@ -52,7 +52,7 @@ class ObjectPanel extends Component {
         const dominance = this.state.dominance;
 
         return (
-            <ExpansionPanel TransitionProps={{unmountOnExit: true}}>
+            <StyledExpansionPanel TransitionProps={{unmountOnExit: true}}>
                 <ExpansionPanelSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-label={"expand-panel-" + object.id}
@@ -61,8 +61,7 @@ class ObjectPanel extends Component {
                 >
                     <ObjectPanelHeader
                         dominance={dominance}
-                        index={object.id}
-                        name={object.name}
+                        label={object.name}
                         onDominanceChange={this.onDominanceChange}
                     />
                 </ExpansionPanelSummary>
@@ -78,7 +77,7 @@ class ObjectPanel extends Component {
                         onItemChangeSelection={tuple => this.onItemChangeSelection(tuple)}
                     />
                 </ExpansionPanelDetails>
-            </ExpansionPanel>
+            </StyledExpansionPanel>
         )
     }
 }

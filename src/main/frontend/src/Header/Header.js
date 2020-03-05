@@ -1,11 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
+import ProjectMenu from "./ProjectMenu";
+import StyledButton from "../RuleWorkComponents/Inputs/StyledButton";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import Button from "@material-ui/core/Button";
 import HomeIcon from "@material-ui/icons/Home";
-import ProjectMenu from "./ProjectMenu";
 
 const useStyles = makeStyles({
     colorPrimary: {
@@ -21,16 +21,16 @@ function Header(props) {
     return (
         <AppBar classes={{colorPrimary: classes.colorPrimary}} position={"relative"}>
             <Toolbar>
-                <Button color={"inherit"} onClick={() => onButtonClick("Home")}>
+                <StyledButton buttonVariant={"icon"} onClick={() => onButtonClick("Home")}>
                     <HomeIcon />
-                </Button>
-                <Button  color={"inherit"} onClick={() => onButtonClick("Import")}>
+                </StyledButton>
+                <StyledButton onClick={() => onButtonClick("Import")}>
                     Import
-                </Button>
+                </StyledButton>
                 <ProjectMenu {...other}/>
-                <Button color={"inherit"} onClick={() => onButtonClick("Help")}>
+                <StyledButton onClick={() => onButtonClick("Help")}>
                     Help
-                </Button>
+                </StyledButton>
             </Toolbar>
         </AppBar>
     );

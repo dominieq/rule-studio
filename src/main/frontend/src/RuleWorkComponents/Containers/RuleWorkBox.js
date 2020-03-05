@@ -17,11 +17,17 @@ const useStyles = makeStyles({
         flexDirection: "column",
         justifyContent: "flex-start",
     },
-    "tab-body": {
+    "tab-body1": {
         margin: "2.5%",
         flexGrow: 1,
         display: "flex",
         flexDirection: "column",
+    },
+    "tab-body2": {
+        margin: "2.5%",
+        flexGrow: 1,
+        display: "flex",
+        flexDirection: "row",
     }
 }, {name: "rule-work"});
 
@@ -38,7 +44,7 @@ function RuleWorkBox(props) {
 
 RuleWorkBox.propTypes = {
     children: PropTypes.node,
-    styleVariant: PropTypes.oneOf(["body", "tab", "tab-body"]).isRequired,
+    styleVariant: PropTypes.oneOf(["body", "tab", "tab-body1", "tab-body2", "tab-column"]).isRequired,
 };
 
 export default RuleWorkBox;
