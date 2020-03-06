@@ -64,7 +64,7 @@ class Rules extends Component {
             const project = this.props.project;
 
             fetch(`http://localhost:8080/projects/${project.id}/rules`, {
-                method: "POST",
+                method: "PUT",
             }).then(response => {
                 console.log(response);
                 return response.json();
