@@ -6,7 +6,6 @@ import { Editors,  Data, Menu, Filters} from 'react-data-grid-addons';
 import './DisplayData.css';
 import EditDataButtons from './EditDataButtons';
 import EditDataFilterButton from './EditDataFilterButton'
-import CircularProgress from '@material-ui/core/CircularProgress';
 import DropDownForAttributes from './DropDownForAttributes';
 import Notification from './Notification';
 import AttributeDomain from './AttributeDomain';
@@ -79,6 +78,17 @@ function RightClickContextMenu({
     );
 }
 
+/**
+ * Component responsible for displaying data i.e. attributes and objects, which are received from
+ * the import tab via props (more specifically props.project.informationTable)
+ * @class
+ * @param {Object} props Arguments received from the parent component
+ * @param {Object} props.project Holds data about the current project like id, name and everything associated with the project e.g. information table, unions, cones etc.
+ * @param {Object} props.project.informationTable InformationTable received from the server, holds attributes and objects
+ * @param {Array} props.project.informationTable.attributes Attributes (metadata, might be empty)
+ * @param {Array} props.project.informationTable.objects Objects (data, might be empty)
+ * @param {Function} props.updateProjectFiles Method for updating project in the parent component (which is ProjectTabs.js)
+ */
 class DisplayData extends React.Component {
     constructor(props) {
         super(props);
@@ -122,35 +132,62 @@ class DisplayData extends React.Component {
         };
     }
 
-    /*static getDerivedStateFromProps(nextProps, prevState) {  
-         
-        console.log("Get derived state from ")
-        console.log(nextProps.project)
-        console.log(prevState.project);
-        if(prevState.project !== undefined && nextProps.project.id !== prevState.project.id) {    
-            console.log("wszedlem do ifa z GET DERIVED STATEM");    
-        return {
-            columns: this.prepareMetaDataFromImport(nextProps.project.informationTable.attributes),
-            rows: this.prepareDataFromImport(nextProps.project.informationTable.objects),
-          //clickedCounter: nextProps.clickedCounter,
-        }}
-        return null;
-    }*/
-
-    static getDerivedStateFromError(error) {
-        console.log("ERROR!")
+    /**
+     * Method responsible for catching errors
+     */
+    componentDidCatch(error, info) {
         console.log(error);
+        console.log(info);
     }
 
+    /**
+     * Method responsible for changing displayed data when project is changed. Runs after every [render()]{@link DisplayData#render} and holds the newest values of props and state.
+     * If the project has been changed then initialize all the values (overwrite) in the state.
+     * @param {Object} prevProps Props object containing all the props e.g. props.project.id or props.project.name
+     * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
+     */
     componentDidUpdate(prevProps, prevState) {
         if(prevProps.project.id !== this.props.project.id) {
             this.setState({
                 columns: this.prepareMetaDataFromImport(this.props.project.informationTable.attributes),
                 rows: this.prepareDataFromImport(this.props.project.informationTable.objects),
+
+                enableRowInsert: 0, //-1 no sort, 0-sort asc, 1-sort desc
+                selectedRows: [],
+                filters: {},
+                dataModified: false,
+
+                isOpenedAddAttribute: false,
+                isOpenedEditAttributes: false,
+                isOpenedSaveToFile: false,
+                saveToFileWhichFile: '',
+                saveToFileWhichFormat: '',
+                
+                editAttributeSelected: '', //name of selected attribute
+                addAttributeErrorNotification: '',
+                attributeTypeSelected: '',
+                attributePreferenceTypeSelected: '',
+                valueTypeSelected: '',
+                identifierTypeSelected: '',
+                missingValueTypeSelected: '',
+                attributesDomainElements: [],
+
+                isOpenedNotification: true,
+                isColumnHeaderMenuOpened: null,
+                columnKeyOfHeaderMenuOpened: -1,
+
+                isLoading: false,
+                isOpenedTransformWarning: false,
             }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
         }
     }
 
+    /** 
+     * Method responsible for preparing data i.e. objects to display them in rows. This is the place where No. property is added to each object.
+     * @method
+     * @param {Array} data Data i.e. objects received from the import. Each object consists of pairs key-value with name of the property as the key and value as the value. 
+     * @returns {Array}
+     */
     prepareDataFromImport = (data) => {
         let tmp = [...data];
         let maxUniqueLP = 1;
@@ -158,6 +195,13 @@ class DisplayData extends React.Component {
         return tmp;
     }
 
+    /** 
+     * Method responsible for preparing metadata i.e. attributes to display them in columns. This is the place where certain properties are added to each attribute
+     * e.g. sorting, filtering, resizing etc.
+     * @method
+     * @param {Array} metadata I.e. attributes received from the import. Each attribute consists of pairs key-value with name of the property as the key and value as the value. 
+     * @returns {Array}
+     */
     prepareMetaDataFromImport = (metadata) => {
         const tmp = [{key: "uniqueLP", name: "No.", sortable: true, resizable: true, filterable: true, draggable: true, sortDescendingFirst: true, width: 160, filterRenderer: NumericFilter, visible: true}];
         
@@ -190,6 +234,10 @@ class DisplayData extends React.Component {
         return tmp; 
     }
 
+    /** 
+     * Method responsible for setting the color of column headers accordingly to the attribute preference type during initialization of the component.
+     * Runs only once, after component is mounted (after first [render]{@link DisplayData#render} and before methods shouldComponentUpdate() and [componentDidUpdate]{@link DisplayData#componentDidUpdate}).
+     */
     componentDidMount() {
         const headers = document.getElementsByClassName("react-grid-HeaderCell-sortable");
         for(let i=0; i<headers.length; i++) {
@@ -203,21 +251,57 @@ class DisplayData extends React.Component {
         }
     }
 
+    /** 
+     * Method responsible for updating displayed data when the value in the cell changes (or multiple values when dragging). First row has index 0.
+     * @method
+     * @param {Number} fromRow Indicates which row have been changed (or when dragging - from which row dragging has began).
+     * @param {Number} toRow Indicates on which row dragging has ended (or if the number is the same as fromRow, then which row has been changed) inclusive.
+     * @param {Object} updated Indicates on which column and to which value changes happend. 
+     * It is a pair key - value, where the key is the column key and the value is the value of the cell to which the cell has been changed.
+     */
     onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-        this.setState(prevState => {
-            const rows = [...prevState.rows]
-            const filtered = this.filteredRows();
-            for (let i = fromRow; i <= toRow; i++) {
-                const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
-                rows[rows_index] = { ...filtered[i], ...updated };
-            }
-            return { 
-                rows: rows, 
-                dataModified: true
-            };
-        });
+        if(toRow - fromRow > 100) {
+            this.setState({
+                loading: true
+            });   
+
+            setTimeout(() => {
+                const rows = [...this.state.rows]
+                const filtered = this.filteredRows();
+                for (let i = fromRow; i <= toRow; i++) {
+                    const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                    rows[rows_index] = { ...filtered[i], ...updated };
+                }
+
+                this.setState({
+                    rows: rows, 
+                    dataModified: true,
+                    loading: false
+                })
+            })
+        } else {
+            this.setState(prevState => {
+                const rows = [...prevState.rows]
+                const filtered = this.filteredRows();
+                for (let i = fromRow; i <= toRow; i++) {
+                    const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                    rows[rows_index] = { ...filtered[i], ...updated };
+                }
+                return { 
+                    rows: rows, 
+                    dataModified: true
+                };
+            });            
+
+        }
     };
 
+    /** 
+     * Method responsible for sorting data. Runs when the header of the column is clicked.
+     * @method
+     * @param {String} sortColumn Indicates which column header has been clicked i.e. which column should be sorted. This is the column key.
+     * @param {Number} sortDirection Indicates which way sorting should take place. This is one of the values "ASC", "DESC", "NONE", which stand for ascending, descending and none.
+     */
     onGridSort = (sortColumn, sortDirection) => {
         let tmpEnableRowInsert = -1
         const comparer = (a, b) => {
@@ -238,13 +322,25 @@ class DisplayData extends React.Component {
         }));
     };
 
-    onRowsSelected = rows => {
+    /** 
+     * Method responsible for adding selected, i.e. the checkbox on the left of the row is marked, rows to the selectedRows array which is in the state.
+     * @method
+     * @param {Array} rows Indicates which row has been selected. It consists of two objects. The first one is rowIdx, which is the number of row from the top (indexing from 0).
+     * The second object is row object containg all the pairs key-value for the row.
+     */
+    onRowsSelected = (rows) => {
         this.setState( (prevState) => ({ 
             selectedRows: prevState.selectedRows.concat(rows.map(r => r.row.uniqueLP))
         }));
     };
 
-    onRowsDeselected = rows => {
+    /**
+     * Method responsible for removing deselected, i.e. the checkbox on the left of the row is unmarked, rows from the selectedRows array which is in the state.
+     * @method
+     * @param {Array} rows Indicates which row has been deselected. It consists of two objects. The first one is rowIdx, which is the number of row from the top (indexing from 0).
+     * The second object is row object containg all the pairs key-value for the row.
+     */
+    onRowsDeselected = (rows) => {
         let rowIndexes = rows.map(r => r.row.uniqueLP);
         
         this.setState( prevState => ({
@@ -254,6 +350,12 @@ class DisplayData extends React.Component {
         }));
     };
 
+    /**
+     * Method responsible for adding filter to filters array which is in the state.
+     * @method
+     * @param {Object} filter Consists of two objects. The first one is the column object containg all the pairs key-value for the column.
+     * The second object is flterTerm which has been written in the filter field.
+     */
     handleFilterChange = (filter) => {
         this.setState(prevState => {
             const newFilters = { ...prevState.filters };
@@ -262,19 +364,35 @@ class DisplayData extends React.Component {
             } else {
                 delete newFilters[filter.column.key];
             }
-            return { filters: newFilters,
-                selectedRows : []};
+            return { 
+                filters: newFilters,
+                selectedRows : []
+            };
         });
     };
 
+    /**
+     * Helper method to get all the filtered rows. This method uses [selectors]{@link https://adazzle.github.io/react-data-grid/docs/examples/column-filtering#using-rdg-dataselectors-to-filter-rows}
+     * @method
+     * @param {Array} rows All the rows i.e. this is the array containing all the rows where each row (object of the array) consists of key-value pairs
+     * @param {Array} filters All the filters i.e. this is the array containing [filter objects]{@link DisplayData#handleFilterChange}
+     */
     getRows(rows, filters) {
         return selectors.getRows({ rows, filters });
     }
 
+    /**
+     * Method responsible for getting all the filtered rows. Uses method [getRows]{@link DisplayData#getRows}.
+     * @method
+     */
     filteredRows = () => {
         return this.getRows(this.state.rows, this.state.filters);
     }
 
+    /**
+     * Method responsible for clearing filters.
+     * @method
+     */
     onClearFilters = () => {
         this.setState({
             filters: {},
@@ -282,6 +400,11 @@ class DisplayData extends React.Component {
         })
     }
 
+    /**
+     * Method responsible for removing certain row after choosing option "Delete example" from right click menu.
+     * @method
+     * @param {Number} rowIdx Indicates the row number from the top, to be removed.
+     */
     deleteRowByRowIdx = (rowIdx) => {
         this.setState(prevState => {
             const nextRows = [...prevState.rows];
@@ -296,6 +419,10 @@ class DisplayData extends React.Component {
         })
     };
 
+    /**
+     * Method responsible for removing selected rows (i.e. the checkbox on the left of the row is marked).
+     * @method
+     */
     deleteSelectedRows = () => {
         this.setState(prevState => {
             const nextRows = [...prevState.rows];
@@ -320,8 +447,11 @@ class DisplayData extends React.Component {
                 }                                             
             }
 
-            return {rows: nextRows,
-                selectedRows : [], dataModified: true};
+            return {
+                rows: nextRows,
+                selectedRows : [], 
+                dataModified: true
+            };
         }, () => { 
             if(this.state.rows.length > 0 && this.state.rows.length * heightOfRow < document.getElementsByClassName("react-grid-Canvas")[0].scrollTop) {
                 document.getElementsByClassName("react-grid-Canvas")[0].scrollTop = this.state.rows.length * heightOfRow;
@@ -330,6 +460,13 @@ class DisplayData extends React.Component {
         
     };
     
+    /**
+     * Method responsible for adding row. After right click menu one can add row above ("Add new example above") or below ("Add new example below") the clicked row.
+     * After "ADD NEW EXAMPLE" button click one can add row at the end of the rows array.
+     * @method
+     * @param {Number} rowIdx Indicates the row number from the top.
+     * @param {String} where Indicates where to add the row. The existing options are "above" or "below" (the clicked row) or any other name which means at the end of the rows array.
+     */
     insertRow = (rowIdx, where) => {       
         this.setState(prevState => {
             const nextRows = [...prevState.rows];
@@ -391,23 +528,34 @@ class DisplayData extends React.Component {
                 newRow.uniqueLP = 1;
                 nextRows.push(newRow);
                 return { 
-                    rows: nextRows, dataModified: true
+                    rows: nextRows, 
+                    dataModified: true
                 };
             }
         });
     
     };
 
+    /**
+     * Method responsible for opening the "Add attribute" dialog. It is executed on "ADD ATTRIBUTE" button click.
+     * @method
+     */
     onAddAttribute = () => {
         this.setState({isOpenedAddAttribute: true});
     }
 
+    /**
+     * Method responsible for opening the "Edit attributes" dialog. It is executed on "EDIT ATTRIBUTES" button click.
+     * @method
+     */
     onEditAttributes = () => {
         this.setState({isOpenedEditAttributes: true});
     }
 
-    /* TUTAJ TO WRZUC POZNIEJ !!! */
-
+    /**
+     * Method responsible for closing the "Add attribute" dialog.
+     * @method
+     */
     closeOnAddAttribute = () => {
         this.setState({
             isOpenedAddAttribute: false,
@@ -420,6 +568,10 @@ class DisplayData extends React.Component {
         });
     }
 
+    /**
+     * Method responsible for closing the "Edit attributes" dialog.
+     * @method
+     */
     closeOnEditAttributes = () => {
         this.setState({
             isOpenedEditAttributes: false,
@@ -433,18 +585,31 @@ class DisplayData extends React.Component {
         });
     }
 
+    /**
+     * Method responsible for closing the warning dialog, which may have been opened by clicking "TRANSFORM" button when modifications have not been saved.
+     * @method
+     */
     closeOnTransformWarning = () => {
         this.setState({
             isOpenedTransformWarning: false,
         })
     }
 
+    /**
+     * Method responsible for opening the warning dialog. It is executed on "TRANSFORM" button click, when modifications have not been saved.
+     * @method
+     */
     openOnTransformWarning = () => {
         this.setState({
             isOpenedTransformWarning: true,
         })
     }
 
+    /**
+     * Method responsible for imposing preference order when evaluation attribute doesn't have preference order. 
+     * For more information [click here]{@link https://github.com/ruleLearn/rulelearn/blob/develop/src/main/java/org/rulelearn/data/InformationTable.java#L922}.
+     * @method
+     */
     onTransformAttributes = () => {
         if(this.state.dataModified && !this.state.isOpenedTransformWarning) { //data has been modified and dialog is closed then open dialog
                 this.openOnTransformWarning();
@@ -481,17 +646,31 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method responsible for preparing metadata before sending it to the server. E.g. removing certain properties from all the columns like sorting, filtering, resizing etc.
+     * @method
+     * @returns {Array}
+     */
     prepareMetadataFileBeforeSendingToServer() {
         const newMetadata = [...this.state.columns].map(({editable,sortable,resizable,filterable,visible,draggable,editor,filterRenderer,sortDescendingFirst,key,...others}) => others);
         if(newMetadata.length > 0) newMetadata.shift();
         return newMetadata;
     }
 
+    /**
+     * Method responsible for preparing data before sending it to the server. I.e. removing "No." property from all the rows.
+     * @method
+     * @returns {Array}
+     */
     prepareDataFileBeforeSendingToServer() {
         const newData = [...this.state.rows].map( ({uniqueLP, ...others}) => others);
         return newData;
     }
     
+    /**
+     * Method responsible for sending changed files i.e. metadata and data files to the server.
+     * @method
+     */
     sendFilesToServer = () => {
         const tmpMetaData = JSON.stringify(this.prepareMetadataFileBeforeSendingToServer());
         const tmpData = JSON.stringify(this.prepareDataFileBeforeSendingToServer());
@@ -542,12 +721,28 @@ class DisplayData extends React.Component {
 
     }
 
+    /**
+     * Method responsible for setting value...  It is executed on "TRANSFORM" button click
+     * If the project has been changed then initialize all the values (overwrite) in the state.
+     * @method
+     * @param {Object} prevProps Props object containing all the props e.g. props.project.id or props.project.name
+     * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
+     * @returns {Array}
+     */
     handleChangeSaveToFileWhichFile = (e) => {
         this.setState({
             saveToFileWhichFile: e.target.value,
         })
     }
 
+    /**
+     * Method responsible for changing displayed data when project is changed. Runs after every [twojaNazwa]{@link DisplayData#render} and holds the newest values of props and state.
+     * If the project has been changed then initialize all the values (overwrite) in the state.
+     * @method
+     * @param {Object} prevProps Props object containing all the props e.g. props.project.id or props.project.name
+     * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
+     * @returns {Array}
+     */
     handleChangeSaveToFileWhichFormat = (e) => {
         this.setState({
             saveToFileWhichFormat: e.target.value,
@@ -578,10 +773,10 @@ class DisplayData extends React.Component {
             }
         } else if(this.state.saveToFileWhichFormat === "csv") {
             if(this.state.saveToFileWhichFile === "data") this.saveToCSVFile();
-            else if(this.state.saveToFileWhichFile === "metadata") this.saveToCSVFile();
+            else if(this.state.saveToFileWhichFile === "metadata") this.saveToJsonFile(this.prepareMetadataFileBeforeSendingToServer(), "metadata.json");
             else if(this.state.saveToFileWhichFile === "both") {
                 this.saveToCSVFile();
-                this.saveToCSVFile();
+                this.saveToJsonFile(this.prepareMetadataFileBeforeSendingToServer(), "metadata.json");
             }
         }
         this.setState({
@@ -1082,6 +1277,23 @@ class DisplayData extends React.Component {
         return null;
     }
 
+    displayRadioButtonsAccordinglyToChosenFile = () => {
+        if(this.state.saveToFileWhichFile === "data" || this.state.saveToFileWhichFile === "both") {
+            return(
+                <RadioGroup className={"radio-button-group-save-file"} aria-label="format" name="format" value={this.state.saveToFileWhichFormat} onChange={this.handleChangeSaveToFileWhichFormat}>
+                    <FormControlLabel value="csv" control={<Radio color="primary"/>} label="CSV" />
+                    <FormControlLabel value="json" control={<Radio color="primary" />} label="JSON" />
+                </RadioGroup>
+            )
+        } else if(this.state.saveToFileWhichFile === "metadata") {
+            return(
+                <RadioGroup className={"radio-button-group-save-file"} aria-label="format" name="format" value={this.state.saveToFileWhichFormat} onChange={this.handleChangeSaveToFileWhichFormat}>
+                    <FormControlLabel value="json" control={<Radio color="primary" />} label="JSON" />
+                </RadioGroup>
+            )
+        }
+    }
+
     getValidFilterValues(rows, columnId) {
         return rows.map(r => r[columnId]).filter((item, i, a) => {
             return i === a.indexOf(item);
@@ -1102,6 +1314,9 @@ class DisplayData extends React.Component {
         )        
     };
 
+    /**
+     * Method responsible for rendering everything
+     */
     render() {        
         return (
             <div >      
@@ -1215,11 +1430,8 @@ class DisplayData extends React.Component {
                         <FormControlLabel value="metadata" control={<Radio color="primary" />} label="Metadata" />
                         <FormControlLabel value="both" control={<Radio color="primary"/>} label="Both" />
                     </RadioGroup>
+                    {this.displayRadioButtonsAccordinglyToChosenFile()}
                     
-                    <RadioGroup className={"radio-button-group-save-file"} aria-label="format" name="format" value={this.state.saveToFileWhichFormat} onChange={this.handleChangeSaveToFileWhichFormat}>
-                        <FormControlLabel value="csv" control={<Radio color="primary"/>} label="CSV" />
-                        <FormControlLabel value="json" control={<Radio color="primary" />} label="JSON" />
-                    </RadioGroup>
                     </DialogContent>
                     <DialogActions>
                     <Button onClick={this.closeOnSaveToFile} color="primary" variant="outlined">
@@ -1251,6 +1463,7 @@ class DisplayData extends React.Component {
                     </DialogActions>
                 </Dialog>
 
+              
                 {this.state.isLoading ? <RuleWorkLoadingIcon size={60}/> : null }
             </div>
         )
@@ -1260,10 +1473,10 @@ class DisplayData extends React.Component {
 DisplayData.propTypes = {
     project: PropTypes.any.isRequired,
     updateProjectFiles: PropTypes.func.isRequired,
+    updateDataModified: PropTypes.func.isRequired,
 };
 
 DisplayData.defaultProps = {
-    
     //project: {informationTable: '2541bed3-63f3-4b88-88ba-543a2bb54f60', name: '', files: []},
 };
   
