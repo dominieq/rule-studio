@@ -73,7 +73,7 @@ class ProjectMenu extends Component {
 
         let primaryText = "Select your project";
         if (currentProject > 0) {
-            primaryText = "Active project: " + projects[currentProject].name;
+            primaryText = "Active project: " + projects[currentProject].result.name;
         }
 
         return (
@@ -99,7 +99,7 @@ class ProjectMenu extends Component {
                             disabled={index === 0}
                             selected={index === currentProject}
                             onClick={event => this.onMenuItemClick(event, index)}>
-                            {typeof project === "string" ? project : project.name}
+                            {typeof project === "string" ? project : project.result.name}
                         </MenuItem>
                     ))}
                 </Menu>

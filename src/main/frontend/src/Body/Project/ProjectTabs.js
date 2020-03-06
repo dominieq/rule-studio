@@ -59,7 +59,6 @@ class ProjectTabs extends Component {
 
     render() {
         const value = this.state.value;
-        const project = this.props.project;
 
         return (
             <Fragment>
@@ -78,10 +77,10 @@ class ProjectTabs extends Component {
                 </StyledTabs>
                 {
                     {
-                        0: <DisplayData project={project} />,
-                        1: <Cones project={project} />,
-                        2: <Unions project={project} />,
-                        3: <Rules project={project} />,
+                        0: <DisplayData {...this.props} />,
+                        1: <Cones {...this.props} />,
+                        2: <Unions {...this.props} />,
+                        3: <Rules {...this.props} />,
                         4: "Classification",
                         5: "Cross-validation",
                     }[value]
@@ -92,7 +91,9 @@ class ProjectTabs extends Component {
 }
 
 ProjectTabs.propTypes = {
+    changed: PropTypes.array,
     project: PropTypes.object,
+    updateProject: PropTypes.func,
 };
 
 export default ProjectTabs;
