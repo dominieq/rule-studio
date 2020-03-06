@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.exception.ProjectNotFoundException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
@@ -31,11 +32,14 @@ public class ProjectService {
     ProjectsContainer projectsContainer;
 
     private Project getProjectFromProjectsContainer(UUID id) {
-        return projectsContainer.getProjectHashMap().get(id);
-    }
+        Project project = projectsContainer.getProjectHashMap().get(id);
+        if(project == null) {
+            ProjectNotFoundException ex = new ProjectNotFoundException(id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
 
-    private void deleteProjectFromProjectsContainer(UUID id) {
-        projectsContainer.getProjectHashMap().remove(id);
+        return project;
     }
 
     public Project getProject(UUID id) {
@@ -59,9 +63,6 @@ public class ProjectService {
         if(rulesFile != null)       logger.info("Rules:\t" + rulesFile.getOriginalFilename() + "\t" + rulesFile.getContentType());
 
         Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
 
         if((metadataFile == null) && (dataFile == null) && (rulesFile == null)) {
             project.setInformationTable(new InformationTable(new Attribute[0], new ArrayList<>()));
@@ -139,9 +140,6 @@ public class ProjectService {
         logger.info("Name:\t" + name);
 
         Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
 
         project.setName(name);
 
@@ -151,6 +149,12 @@ public class ProjectService {
     public void deleteProject(UUID id) {
         logger.info("Id:\t" + id);
 
-        deleteProjectFromProjectsContainer(id);
+        Project project = projectsContainer.getProjectHashMap().remove(id);
+
+        if(project == null) {
+            ProjectNotFoundException ex = new ProjectNotFoundException(id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
     }
 }

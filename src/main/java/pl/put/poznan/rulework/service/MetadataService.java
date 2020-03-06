@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import pl.put.poznan.rulework.exception.ProjectNotFoundException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
@@ -27,16 +28,20 @@ public class MetadataService {
     ProjectsContainer projectsContainer;
 
     private Project getProjectFromProjectsContainer(UUID id) {
-        return projectsContainer.getProjectHashMap().get(id);
+        Project project = projectsContainer.getProjectHashMap().get(id);
+        if(project == null) {
+            ProjectNotFoundException ex = new ProjectNotFoundException(id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        return project;
     }
 
     public Attribute[] getMetadata(UUID id) {
         logger.info("Id:\t" + id);
 
         Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
 
         return project.getInformationTable().getAttributes();
     }
@@ -47,9 +52,6 @@ public class MetadataService {
 
 
         Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
 
         Attribute[] attributes;
         AttributeParser attributeParser = new AttributeParser();
@@ -72,9 +74,6 @@ public class MetadataService {
         logger.info("Id:\t" + id);
 
         Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
 
         InformationTableWriter itw = new InformationTableWriter();
         StringWriter sw = new StringWriter();

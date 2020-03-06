@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.put.poznan.rulework.exception.ProjectNotFoundException;
 import pl.put.poznan.rulework.model.DominanceCones;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
@@ -26,16 +27,20 @@ public class DominanceConesService {
     ProjectsContainer projectsContainer;
 
     private Project getProjectFromProjectsContainer(UUID id) {
-        return projectsContainer.getProjectHashMap().get(id);
+        Project project = projectsContainer.getProjectHashMap().get(id);
+        if(project == null) {
+            ProjectNotFoundException ex = new ProjectNotFoundException(id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        return project;
     }
 
     public DominanceCones getDominanceCones(UUID id) {
         logger.info("Id:\t" + id);
 
         Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
 
         if(!project.isCalculatedDominanceCones()) {
             project.getDominanceCones().calculateDCones(project.getInformationTable());

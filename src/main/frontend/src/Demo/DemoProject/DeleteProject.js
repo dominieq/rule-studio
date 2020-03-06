@@ -22,10 +22,16 @@ class DeleteProject extends Component {
             method: 'DELETE'
         }).then(response => {
             console.log(response)
-            return response.json()
-        }).then(result => {
-            console.log("Wynik dzialania response.json():")
-            console.log(result)
+            if(response.status === 204) {
+                console.log("Succesful delete");
+            } else {
+                response.json().then(result => {
+                    console.log("Wynik dzialania response.json():")
+                    console.log(result)
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
         }).catch(err => {
             console.log(err)
         })

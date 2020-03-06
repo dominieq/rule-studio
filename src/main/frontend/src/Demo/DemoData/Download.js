@@ -37,16 +37,27 @@ class Download extends Component {
             method: 'GET'
         }).then(response => {
             console.log(response)
-            filename =  response.headers.get('Content-Disposition').split('filename=')[1];
-            return response.blob()
-        }).then(result => {
-            console.log("Wynik dzialania response.blob():")
-            console.log(result)
-            let url = window.URL.createObjectURL(result);
-            let link = document.createElement('a');
-            link.href = url;
-            link.download = filename;
-            link.click();
+            if(response.status === 200) {
+                filename =  response.headers.get('Content-Disposition').split('filename=')[1];
+                response.blob().then(result => {
+                    console.log("Wynik dzialania response.blob():")
+                    console.log(result)
+                    let url = window.URL.createObjectURL(result);
+                    let link = document.createElement('a');
+                    link.href = url;
+                    link.download = filename;
+                    link.click();
+                }).catch(err => {
+                    console.log(err)
+                })
+            } else {
+                response.json().then(result => {
+                    console.log("Wynik dzialania response.json():")
+                    console.log(result)
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
         }).catch(err => {
             console.log(err)
         })

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.put.poznan.rulework.exception.ProjectNotFoundException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
@@ -21,7 +22,14 @@ public class UnionsWithSingleLimitingDecisionService {
     ProjectsContainer projectsContainer;
 
     private Project getProjectFromProjectsContainer(UUID id) {
-        return projectsContainer.getProjectHashMap().get(id);
+        Project project = projectsContainer.getProjectHashMap().get(id);
+        if(project == null) {
+            ProjectNotFoundException ex = new ProjectNotFoundException(id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        return project;
     }
 
     public UnionsWithSingleLimitingDecision getUnionsWithSingleLimitingDecision(UUID id, Double consistencyThreshold) {
@@ -29,9 +37,6 @@ public class UnionsWithSingleLimitingDecisionService {
         if(consistencyThreshold != null) logger.info("ConsistencyThreshold:\t" + consistencyThreshold);
 
         Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
 
         if(consistencyThreshold != null) {
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = new UnionsWithSingleLimitingDecision(
