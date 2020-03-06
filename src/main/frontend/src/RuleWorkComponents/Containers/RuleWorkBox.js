@@ -30,7 +30,7 @@ const useStyles = makeStyles({
         flexDirection: "row",
     },
     "tab-column": {
-        margin: "2.5%",
+        margin: "0 2.5%",
         width: "45%",
         display: "flex",
         flexDirection: "column"

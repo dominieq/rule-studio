@@ -42,7 +42,7 @@ class Cones extends Component {
     componentDidMount() {
         const project = this.props.project;
         if (project.calculatedDominanceCones) {
-            fetch(`http://localhost:8080/projects/${project.id}/cones`, {
+            fetch(`http://localhost:8080/projects/${project.result.id}/cones`, {
                 method: "GET"
             }).then(response => {
                 return response.json();
@@ -70,7 +70,7 @@ class Cones extends Component {
         this.setState({
             loading: true,
         }, () => {
-            fetch(`http://localhost:8080/projects/${project.id}/cones`, {
+            fetch(`http://localhost:8080/projects/${project.result.id}/cones`, {
                 method: "GET",
             }).then(response => {
                 return response.json();
@@ -226,7 +226,10 @@ class Cones extends Component {
 }
 
 Cones.propTypes = {
+    changed: PropTypes.array,
     project: PropTypes.object.isRequired,
+    updateProject: PropTypes.func,
+    value: PropTypes.number,
 };
 
 export default Cones;

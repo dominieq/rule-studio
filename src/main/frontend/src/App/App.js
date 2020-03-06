@@ -270,7 +270,7 @@ class App extends Component {
     };
 
     render() {
-        const {body, currentProject, projects, open, snackbarProps} = this.state;
+        const {body, currentProject, projects, open, snackbarProps, changed} = this.state;
         const {renameDialog, deleteDialog} = open;
 
         return (
@@ -293,7 +293,9 @@ class App extends Component {
                             />,
                         "Project":
                             <ProjectTabs
+                                changed={changed}
                                 project={projects[currentProject]}
+                                updateProject={this.updateProject}
                             />,
                     }[body]
                 }

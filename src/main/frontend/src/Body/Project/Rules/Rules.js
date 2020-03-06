@@ -28,7 +28,7 @@ class Rules extends Component {
     componentDidMount() {
         const project = this.props.project;
 
-        fetch(`http://localhost:8080/projects/${project.id}/rules`, {
+        fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
             method: "GET",
         }).then(response => {
             console.log(response);
@@ -63,7 +63,7 @@ class Rules extends Component {
         }, () => {
             const project = this.props.project;
 
-            fetch(`http://localhost:8080/projects/${project.id}/rules`, {
+            fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
                 method: "PUT",
             }).then(response => {
                 console.log(response);
@@ -161,7 +161,10 @@ class Rules extends Component {
 }
 
 Rules.propTypes = {
+    changed: PropTypes.array,
     project: PropTypes.object.isRequired,
-}
+    updateProject: PropTypes.func,
+    value: PropTypes.number,
+};
 
 export default Rules;

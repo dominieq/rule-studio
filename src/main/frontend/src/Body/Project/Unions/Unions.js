@@ -36,7 +36,7 @@ class Unions extends Component {
         const project = this.props.project;
         if (!project.unionsWithSingleLimitingDecision) return;
 
-        fetch(`http://localhost:8080/projects/${project.id}/unions`, {
+        fetch(`http://localhost:8080/projects/${project.result.id}/unions`, {
             method: "GET",
         }).then(response => {
             return response.json();
@@ -74,7 +74,7 @@ class Unions extends Component {
 
         const project = this.props.project;
         const consistency = this.state.consistency;
-        const link = `http://localhost:8080/projects/${project.id}/unions?consistencyThreshold=${consistency}`;
+        const link = `http://localhost:8080/projects/${project.result.id}/unions?consistencyThreshold=${consistency}`;
 
         this.setState({
             loading: true,
@@ -211,7 +211,10 @@ class Unions extends Component {
 }
 
 Unions.propTypes = {
-    project: PropTypes.object,
+    changed: PropTypes.array,
+    project: PropTypes.object.isRequired,
+    updateProject: PropTypes.func,
+    value: PropTypes.number,
 };
 
 export default Unions;

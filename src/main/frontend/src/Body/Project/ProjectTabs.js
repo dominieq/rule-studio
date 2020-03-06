@@ -77,10 +77,10 @@ class ProjectTabs extends Component {
                 </StyledTabs>
                 {
                     {
-                        0: <DisplayData {...this.props} />,
-                        1: <Cones {...this.props} />,
-                        2: <Unions {...this.props} />,
-                        3: <Rules {...this.props} />,
+                        0: <DisplayData {...this.props} value={0} />,
+                        1: <Cones {...this.props} value={1} />,
+                        2: <Unions {...this.props} value={2} />,
+                        3: <Rules {...this.props} value={3} />,
                         4: "Classification",
                         5: "Cross-validation",
                     }[value]
