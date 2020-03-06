@@ -17,6 +17,13 @@ class DeleteProjectDialog extends Component {
         };
     }
 
+    onEntering = () => {
+        this.setState({
+            name: "",
+            correct: false,
+        });
+    };
+
     onInputChange = (event) => {
         this.setState({
             name: event.target.value,
@@ -54,6 +61,7 @@ class DeleteProjectDialog extends Component {
                 disableBackdropClick={true}
                 disableEscapeKeyDown={true}
                 maxWidth={"sm"}
+                onEntering={this.onEntering}
                 onKeyPress={this.onEnterClick}
                 open={open}
             >

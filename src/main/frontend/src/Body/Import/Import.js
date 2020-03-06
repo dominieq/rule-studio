@@ -75,6 +75,13 @@ class Import extends Component{
         }
     };
 
+    onEnterClick = (event) => {
+        if (event.which === 13) {
+            event.preventDefault();
+            this.onAcceptButtonClick();
+        }
+    };
+
     onAcceptButtonClick = () => {
         const projectName = this.state.name;
         let projectFiles = [];
@@ -98,7 +105,7 @@ class Import extends Component{
         const {checked, expand, name} = this.state;
 
         return (
-            <RuleWorkBox id={"rule-work-import"} styleVariant={"body"}>
+            <RuleWorkBox id={"rule-work-import"} onKeyPress={this.onEnterClick} styleVariant={"body"}>
                 <StyledPaper id={"import-panel"} elevation={6} styleVariant={"panel"} square={true}>
                     <StyledHeader>
                         <RuleWorkTextField
