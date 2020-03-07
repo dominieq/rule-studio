@@ -68,7 +68,19 @@ public class MetadataService {
         return project;
     }
 
-    public Pair<String, Resource> download(UUID id) throws IOException {
+    private InputStreamResource produceJsonResource(InformationTable informationTable) throws IOException {
+        StringWriter sw = new StringWriter();
+
+        InformationTableWriter itw = new InformationTableWriter();
+        itw.writeAttributes(informationTable, sw);
+
+        byte[] barray = sw.toString().getBytes();
+        InputStream is = new ByteArrayInputStream(barray);
+
+        return new InputStreamResource(is);
+    }
+
+    public Pair<String, Resource> getDownload(UUID id) throws IOException {
         logger.info("Id:\t" + id);
 
         Project project = getProjectFromProjectsContainer(id);
@@ -76,14 +88,31 @@ public class MetadataService {
             return null;
         }
 
-        InformationTableWriter itw = new InformationTableWriter();
-        StringWriter sw = new StringWriter();
-        itw.writeAttributes(project.getInformationTable(), sw);
+        InputStreamResource resource = produceJsonResource(project.getInformationTable());
 
-        byte[] barray = sw.toString().getBytes();
-        InputStream is = new ByteArrayInputStream(barray);
+        return new Pair<>(project.getName(), resource);
+    }
 
-        InputStreamResource resource = new InputStreamResource(is);
+    public Pair<String, Resource> putDownload(UUID id, String metadata) throws IOException {
+        logger.info("Downloading metadata in json format");
+        logger.info("Id:\t{}", id);
+        logger.info("Metadata:\t{}", metadata);
+
+        Project project = getProjectFromProjectsContainer(id);
+        if(project == null) {
+            return null;
+        }
+
+        // prepare attributes from metadata
+        Attribute[] attributes;
+        AttributeParser attributeParser = new AttributeParser();
+        InputStream targetStream = new ByteArrayInputStream(metadata.getBytes());
+        Reader reader = new InputStreamReader(targetStream);
+        attributes = attributeParser.parseAttributes(reader);
+        InformationTable informationTable = new InformationTable(attributes, new ArrayList<>());
+
+        // serialize data from InformationTable object
+        InputStreamResource resource = produceJsonResource(informationTable);
 
         return new Pair<>(project.getName(), resource);
     }

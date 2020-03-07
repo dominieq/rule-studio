@@ -58,7 +58,7 @@ public class DataController {
     public ResponseEntity<Resource> getDownload(
             @PathVariable("id") UUID id,
             @RequestParam(name = "format") String format) throws IOException {
-        logger.info("Downloading file");
+        logger.info("Downloading server's data");
 
         Pair<String, Resource> p;
         String projectName;
@@ -91,7 +91,7 @@ public class DataController {
             @RequestParam(name = "format") String format,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
-        logger.info("Downloading file");
+        logger.info("Downloading client's data");
 
         Pair<String, Resource> p;
         String projectName;

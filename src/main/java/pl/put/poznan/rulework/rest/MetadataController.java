@@ -58,12 +58,25 @@ public class MetadataController {
     @RequestMapping(value = "/download", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Resource> download(
             @PathVariable("id") UUID id) throws IOException {
-        logger.info("Downloading file");
-        Pair<String, Resource> p = metadataService.download(id);
+        logger.info("Downloading server's metadata");
+        Pair<String, Resource> p = metadataService.getDownload(id);
         String projectName = p.getKey();
         Resource resource = p.getValue();
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_metadata.csv")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_metadata.json")
+                .body(resource);
+    }
+
+    @RequestMapping(value = "/download", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Resource> putDownload(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "metadata") String metadata) throws IOException {
+        logger.info("Downloading client's metadata");
+        Pair<String, Resource> p = metadataService.putDownload(id, metadata);
+        String projectName = p.getKey();
+        Resource resource = p.getValue();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_metadata.json")
                 .body(resource);
     }
 }
