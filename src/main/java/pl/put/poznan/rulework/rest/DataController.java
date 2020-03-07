@@ -1,5 +1,6 @@
 package pl.put.poznan.rulework.rest;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,19 +55,62 @@ public class DataController {
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)
-    public ResponseEntity<Resource> download(
+    public ResponseEntity<Resource> getDownload(
             @PathVariable("id") UUID id,
             @RequestParam(name = "format") String format) throws IOException {
-        logger.info("Downloading file");
-        Pair<String, Resource> p = dataService.download(id, format);
-        String projectName = p.getKey();
-        Resource resource = p.getValue();
+        logger.info("Downloading server's data");
+
+        Pair<String, Resource> p;
+        String projectName;
+        Resource resource;
+
         if(format.equals("json")) {
+            p = dataService.getDownloadJson(id);
+            projectName = p.getKey();
+            resource = p.getValue();
+
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_data.json")
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .body(resource);
         } else {
+            p = dataService.getDownloadCsv(id);
+            projectName = p.getKey();
+            resource = p.getValue();
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_data.csv")
+                    .header(HttpHeaders.CONTENT_TYPE, "text/csv")
+                    .body(resource);
+        }
+    }
+
+    @RequestMapping(value = "/download", method = RequestMethod.PUT)
+    public ResponseEntity<Resource> putDownload(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "format") String format,
+            @RequestParam(name = "metadata") String metadata,
+            @RequestParam(name = "data") String data) throws IOException {
+        logger.info("Downloading client's data");
+
+        Pair<String, Resource> p;
+        String projectName;
+        Resource resource;
+
+        if(format.equals("json")) {
+            p = dataService.putDownloadJson(id, metadata, data);
+            projectName = p.getKey();
+            resource = p.getValue();
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_data.json")
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .body(resource);
+        } else {
+            p = dataService.putDownloadCsv(id, metadata, data);
+            projectName = p.getKey();
+            resource = p.getValue();
+
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_data.csv")
                     .header(HttpHeaders.CONTENT_TYPE, "text/csv")

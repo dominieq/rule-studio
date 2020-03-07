@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import GetMetadata from './DemoMetadata/GetMetadata'
 import PutMetadata from './DemoMetadata/PutMetadata'
-import Download from './DemoMetadata/Download'
+import GetMetadataDownload from './DemoMetadata/GetMetadataDownload'
+import PutMetadataDownload from './DemoMetadata/PutMetadataDownload'
 
 class DemoMetadata extends Component {
 
@@ -12,7 +13,8 @@ class DemoMetadata extends Component {
                 <h2>MetadataController</h2>
                 <GetMetadata></GetMetadata>
                 <PutMetadata></PutMetadata>
-                <Download></Download>
+                <GetMetadataDownload></GetMetadataDownload>
+                <PutMetadataDownload></PutMetadataDownload>
             </div>
         )
     }

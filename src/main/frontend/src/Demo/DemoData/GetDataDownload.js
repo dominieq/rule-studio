@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-class Download extends Component {
+class GetDataDownload extends Component {
     constructor(props) {
         super(props);
 
@@ -22,7 +22,7 @@ class Download extends Component {
         })
     }
 
-    download = (event) => {
+    getDataDownload = (event) => {
         event.preventDefault()
         let filename = "filename";
 
@@ -59,10 +59,10 @@ class Download extends Component {
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
                 format->
                 <input type='text' value={this.state.format} onChange={this.handleFormatChange} />
-                <button onClick={this.download}>download</button>
+                <button onClick={this.getDataDownload}>getDataDownload</button>
             </div>
         )
     }
 }
 
-export default Download
+export default GetDataDownload
