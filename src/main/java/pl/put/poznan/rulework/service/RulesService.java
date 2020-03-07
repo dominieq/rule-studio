@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import pl.put.poznan.rulework.exception.EmptyResponseException;
 import pl.put.poznan.rulework.exception.ProjectNotFoundException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
@@ -47,6 +48,13 @@ public class RulesService {
         logger.info("Id:\t" + id);
 
         Project project = getProjectFromProjectsContainer(id);
+
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRuleSetWithCharacteristics();
+        if(ruleSetWithCharacteristics == null) {
+            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
 
         return project.getRuleSetWithCharacteristics();
     }

@@ -22,6 +22,6 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     public void emptyResponseException(
             EmptyResponseException ex,
             HttpServletResponse response) throws IOException {
-        response.sendError(HttpStatus.NO_CONTENT.value(), ex.getMessage());
+        response.sendError(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 }

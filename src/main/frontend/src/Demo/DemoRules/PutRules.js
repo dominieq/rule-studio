@@ -22,10 +22,29 @@ class PutRules extends Component {
             method: 'PUT'
         }).then(response => {
             console.log(response)
-            return response.json()
-        }).then(result => {
-            console.log("Wynik dzialania response.json():")
-            console.log(result)
+            console.log(response)
+            if(response.status === 200) {
+                response.json().then(result => {
+                    console.log("Otrzymane reguły:")
+                    console.log(result)
+                }).catch(err => {
+                    console.log(err)
+                })
+            } else if(response.status === 404) {
+                response.json().then(result => {
+                    console.log("Błąd 404.")
+                    console.log(result.message)
+                }).catch(err => {
+                    console.log(err)
+                })
+            } else {
+                response.json().then(result => {
+                    console.log("Wynik dzialania response.json():")
+                    console.log(result)
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
         }).catch(err => {
             console.log(err)
         })
