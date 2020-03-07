@@ -47,7 +47,7 @@ class CreateProject extends Component {
 
         fetch('http://localhost:8080/projects', {
             method: 'POST',
-            body: data,
+            body: data
         }).then(response => {
             console.log(response)
             return response.json()
