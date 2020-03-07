@@ -37,11 +37,6 @@ public class MetadataController {
         logger.info("Getting metadata");
         Attribute[] result = metadataService.getMetadata(id);
 
-        if(result == null) {
-            logger.info("No project with given id");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-        }
-
         logger.info(result.toString());
         return ResponseEntity.ok(result);
     }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import pl.put.poznan.rulework.exception.ProjectNotFoundException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
@@ -27,17 +28,20 @@ public class DataService {
     ProjectsContainer projectsContainer;
 
     private Project getProjectFromProjectsContainer(UUID id) {
-        return projectsContainer.getProjectHashMap().get(id);
+        Project project = projectsContainer.getProjectHashMap().get(id);
+        if(project == null) {
+            ProjectNotFoundException ex = new ProjectNotFoundException(id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        return project;
     }
 
     public String getData(UUID id) throws IOException {
         logger.info("Id:\t" + id);
 
         Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
-
 
         StringWriter objectsWriter = new StringWriter();
         InformationTableWriter itw = new InformationTableWriter(false);
@@ -52,9 +56,6 @@ public class DataService {
         logger.info("Data:\t" + data);
 
         Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
 
         InputStream targetStream = new ByteArrayInputStream(data.getBytes());
         Reader reader = new InputStreamReader(targetStream);
@@ -97,9 +98,6 @@ public class DataService {
         logger.info("Id:\t{}", id);
 
         Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
 
         InputStreamResource resource = produceJsonResource(project.getInformationTable());
 

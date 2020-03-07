@@ -34,11 +34,6 @@ public class ProjectsController {
         logger.info("Getting projects");
         ArrayList<Project> result = projectsService.getProjects();
 
-        if(result == null) {
-            logger.info("There is no projects");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-        }
-
         logger.info(result.toString());
         return ResponseEntity.ok(result);
     }

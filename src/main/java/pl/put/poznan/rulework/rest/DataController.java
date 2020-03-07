@@ -37,11 +37,6 @@ public class DataController {
         logger.info("Getting data");
         String result = dataService.getData(id);
 
-        if(result == null) {
-            logger.info("No project with given id");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-        }
-
         return ResponseEntity.ok(result);
     }
 

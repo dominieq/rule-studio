@@ -41,11 +41,6 @@ public class ProjectController {
             result = projectService.getProject(id);
         }
 
-        if(result == null) {
-            logger.info("No project with given id");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-        }
-
         logger.info(result.toString());
         return ResponseEntity.ok(result);
     }
@@ -69,11 +64,6 @@ public class ProjectController {
 
         logger.info("Renaming project");
         Project result = projectService.renameProject(id, name);
-
-        if(result == null) {
-            logger.info("No project with given id");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-        }
 
         return ResponseEntity.ok(result);
     }
