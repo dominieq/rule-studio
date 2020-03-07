@@ -1,12 +1,13 @@
 import React, {Component, Fragment} from 'react';
+import DeleteProjectDialog from "./feedback/DeleteProjectDialog";
 import Header from "../Header/Header";
 import Help from "../Body/Help/Help";
 import Home from "../Body/Home/Home";
 import Import from "../Body/Import/Import";
+import Project from "../RuleWorkComponents/API/Project";
 import ProjectTabs from "../Body/Project/ProjectTabs";
 import RenameProjectDialog from "./feedback/RenameProjectDialog";
-import StyledSnackbar from "./feedback/StyledSnackbar";
-import DeleteProjectDialog from "./feedback/DeleteProjectDialog";
+import RuleWorkSnackbar from "../RuleWorkComponents/Feedback/RuleWorkSnackbar";
 
 class App extends Component {
     constructor(props) {
@@ -25,6 +26,7 @@ class App extends Component {
                 variant: "info",
                 message: "",
             },
+            changed: Array(6).fill(false),
         };
     }
 
@@ -34,8 +36,16 @@ class App extends Component {
         }).then(response => {
             return response.json();
         }).then(result => {
+            let projects = [];
+
+            if (!result.isEmpty) {
+                for (let i = 0; i < result.length; i++) {
+                    projects = [...projects, new Project(result[i])]
+                }
+            }
+
             this.setState({
-                projects: result,
+                projects: projects,
             })
         }).catch(error => {
             this.setState({
@@ -47,6 +57,20 @@ class App extends Component {
             }, () => {
                 console.log(error);
             });
+        });
+    };
+
+    updateProject = (project, tabValue) => {
+        let projects = this.state.projects.slice(0);
+        let changed = this.state.changed.slice(0);
+        const currentProject = this.state.currentProject;
+
+        projects[currentProject] = project;
+        changed[tabValue] = true;
+
+        this.setState({
+            projects: projects,
+            changed: changed,
         });
     };
 
@@ -101,11 +125,14 @@ class App extends Component {
         }).then(response => {
             return response.json();
         }).then(result => {
+            const project = new Project(result);
+
             let newProjects = this.state.projects.slice(0);
-            newProjects = [...newProjects, result];
+            newProjects = [...newProjects, project];
+
             this.setState({
                 body: "Project",
-                currentProject: newProjects.indexOf(result),
+                currentProject: newProjects.indexOf(project),
                 projects: newProjects,
                 snackbarProps: {
                     open: true,
@@ -136,13 +163,12 @@ class App extends Component {
 
             const project = projects[currentProject];
 
-            fetch(`http://localhost:8080/projects/${project.id}`, {
+            fetch(`http://localhost:8080/projects/${project.result.id}`, {
                 method: 'DELETE',
             }).then(response => {
                 return response.toString();
             }).then(() => {
                 const removedProject = projects.splice(projects.indexOf(project), 1);
-                console.log(removedProject);
 
                 this.setState({
                     body: "Home",
@@ -151,7 +177,7 @@ class App extends Component {
                     snackbarProps: {
                         open: true,
                         variant: "success",
-                        message: `${removedProject[0].name} has been successfully deleted!`,
+                        message: `${removedProject[0].result.name} has been successfully deleted!`,
                     },
                 })
             }).catch(error => {
@@ -184,13 +210,14 @@ class App extends Component {
                 let data = new FormData();
                 data.append("name", name);
 
-                fetch(`http://localhost:8080/projects/${projects[currentProject].id}`, {
+                fetch(`http://localhost:8080/projects/${projects[currentProject].result.id}`, {
                     method: "PATCH",
                     body: data,
                 }).then(response => {
                     return response.json();
                 }).then(result => {
-                    projects[currentProject] = result;
+                    projects[currentProject].result.name = result.name;
+
                     this.setState({
                         projects: projects,
                         snackbarProps: {
@@ -231,35 +258,20 @@ class App extends Component {
 
     isNameUnique = (name) => {
         const projects = this.state.projects.slice(0);
+        const renameDialog = this.state.open.renameDialog;
         const currentProject = this.state.currentProject;
 
         for (let i = 0; i < projects.length; i++) {
-            if (currentProject !== i && projects[i].name === name) {
-                return false;
+            if (projects[i].result.name === name) {
+                return renameDialog && currentProject === i;
             }
         }
         return true;
     };
 
-    renderSnackbar = () => {
-        const {open, variant, message} = this.state.snackbarProps;
-
-        if (open) {
-            return (
-                <StyledSnackbar
-                    open={open}
-                    variant={variant}
-                    message={message}
-                    onClose={this.onSnackbarClose}
-                />
-            )
-        } else {
-            return null;
-        }
-    };
-
     render() {
-        const {body, currentProject, projects, open} = this.state;
+        const {body, currentProject, projects, open, snackbarProps, changed} = this.state;
+        const {renameDialog, deleteDialog} = open;
 
         return (
             <Fragment>
@@ -275,26 +287,33 @@ class App extends Component {
                     {
                         "Help": <Help />,
                         "Home": <Home />,
-                        "Import": <Import
-                            onFilesAccepted={(name, files) => this.onFilesAccepted(name, files)}
-                        />,
-                        "Project": <ProjectTabs project={projects[currentProject]}/>,
-
+                        "Import":
+                            <Import
+                                onFilesAccepted={(name, files) => this.onFilesAccepted(name, files)}
+                            />,
+                        "Project":
+                            <ProjectTabs
+                                changed={changed}
+                                project={projects[currentProject]}
+                                updateProject={this.updateProject}
+                            />,
                     }[body]
                 }
                 <RenameProjectDialog
-                    currentName={currentProject >= 0 ? projects[currentProject].name : ""}
-                    open={open.renameDialog}
+                    currentName={currentProject >= 0 ? projects[currentProject].result.name : ""}
+                    open={renameDialog}
                     onClose={this.onRenameDialogClose}
                 >
-                    {open.renameDialog ? this.renderSnackbar() : null}
+                    {renameDialog ? <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} /> : null}
                 </RenameProjectDialog>
                 <DeleteProjectDialog
-                    currentName={currentProject >= 0 ? projects[currentProject].name : ""}
-                    open={open.deleteDialog}
+                    currentName={currentProject >= 0 ? projects[currentProject].result.name : ""}
+                    open={deleteDialog}
                     onClose={this.onDeleteDialogClose}
                 />
-                {!open.renameDialog || !open.deleteDialog ? this.renderSnackbar() : null}
+                {!renameDialog || !deleteDialog ?
+                    <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose}/> : null
+                }
             </Fragment>
         );
     }

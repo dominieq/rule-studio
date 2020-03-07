@@ -1,10 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
+import RuleWorkSelect from "../../../../RuleWorkComponents/Inputs/RuleWorkSelect";
 import {getDominanceTypes} from "../api/DominanceTypes";
-import "./DominanceSelector.css";
 
 class DominanceSelector extends Component {
     constructor(props) {
@@ -35,34 +32,23 @@ class DominanceSelector extends Component {
     };
 
     render() {
-        let dominance = this.state.dominance;
+        const dominance = this.state.dominance;
         const dominanceTypes = getDominanceTypes();
 
         return (
-            <div className={"dominance-selector-wrapper"}>
-                <FormControl variant={"outlined"} fullWidth={true}>
-                    <Select
-                        id={"dominance-selector"}
-                        value={dominance}
-                        onChange={this.onDominanceChange}
-                    >
-                        <MenuItem value={"All"}>
-                            <em>All</em>
-                        </MenuItem>
-                        {dominanceTypes.map((option, index) => (
-                            <MenuItem key={index} value={option}>
-                                {option}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-            </div>
+            <RuleWorkSelect
+                label={"Select dominance"}
+                onChange={this.onDominanceChange}
+                value={dominance}
+            >
+                {["All",...dominanceTypes]}
+            </RuleWorkSelect>
         );
     }
 }
 
 DominanceSelector.propTypes = {
-    onDominanceChange: PropTypes.func.isRequired,
+    onDominanceChange: PropTypes.func,
 };
 
 export default DominanceSelector;

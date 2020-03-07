@@ -65,10 +65,12 @@ class RenameProjectDialog extends Component {
                     dividers={true}
                 >
                     <RuleWorkTextField
-                        label={"Type new name:"}
-                        value={name}
+                        fullWidth={true}
                         onChange={this.onTextFieldChange}
-                    />
+                        value={name}
+                    >
+                        Type new name
+                    </RuleWorkTextField>
                 </StyledDialogContent>
                 <DialogActions>
                     <Button

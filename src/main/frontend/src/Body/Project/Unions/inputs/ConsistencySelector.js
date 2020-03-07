@@ -1,16 +1,17 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import FormControl from "@material-ui/core/FormControl";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import Slider from "@material-ui/core/Slider";
+import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import RuleWorkHelper from "../../../../RuleWorkComponents/Feedback/RuleWorkHelper";
+import StyledSlider from "./StyledSlider";
 import "./ConsistencySelector.css"
+
 
 class ConsistencySelector extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            consistency: 1.0,
+            consistency: 0.0,
         };
     }
 
@@ -59,7 +60,7 @@ class ConsistencySelector extends Component {
     };
 
     onInputBlurGlobal = () => {
-        this.props.setGlobalConsistency(this.state.consistency);
+        this.props.onConsistencyChange(this.state.consistency);
     };
 
     onSliderChange = (event, newValue) => {
@@ -69,30 +70,26 @@ class ConsistencySelector extends Component {
     };
 
     onSliderMouseUp = () => {
-        this.props.setGlobalConsistency(this.state.consistency);
+        this.props.onConsistencyChange(this.state.consistency);
     };
 
     render() {
         const consistency = this.state.consistency;
 
         return (
-            <div className={"consistency-selector"}>
-                <FormControl
-                    id={"consistency-form"}
-                    component={"div"}
-                    variant={"outlined"}
-                    margin={"dense"}
+            <div id={"consistency-selector"}>
+                <RuleWorkHelper>
+                    {"Consistency helper"}
+                </RuleWorkHelper>
+                <RuleWorkTextField
+                    fullWidth={true}
+                    onBlur={this.onInputBlurGlobal}
+                    onChange={this.onInputChange}
+                    value={consistency}
                 >
-                    <OutlinedInput
-                        id={"consistency-input"}
-                        value={consistency}
-                        onChange={this.onInputChange}
-                        onBlur={this.onInputBlur}
-                    />
-                </FormControl>
-                <Slider
-                    id={"consistency-slider"}
-                    aria-labelledby={"consistency-form"}
+                    Choose consistency
+                </RuleWorkTextField>
+                <StyledSlider
                     value={typeof consistency === "number" ? consistency : 0.0}
                     step={0.01}
                     min={0.0}
@@ -106,7 +103,7 @@ class ConsistencySelector extends Component {
 }
 
 ConsistencySelector.propTypes = {
-    setGlobalConsistency: PropTypes.func.isRequired,
+    onConsistencyChange: PropTypes.func.isRequired,
 };
 
 export default ConsistencySelector

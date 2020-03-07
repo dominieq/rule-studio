@@ -1,18 +1,17 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import RuleWorkBody from "../../RuleWorkComponents/Surfaces/RuleWorkBody";
+import RuleWorkBox from "../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import StyledCollapsibleDivider from "./data-display/StyledCollapsibleDivider";
 import StyledContent from "./containers/StyledContent";
 import StyledDivider from "./data-display/StyledDivider";
 import StyledFooter from "./containers/StyledFooter";
-import StyledFooterButton from "./inputs/StyledFooterButton";
 import StyledHeader from "./containers/StyledHeader";
-import StyledPaper from "./surfaces/StyledPaper";
+import StyledPaper from "../../RuleWorkComponents/Surfaces/StyledPaper";
 import StyledSwitch from "./inputs/StyledSwitch";
 import Collapse from "@material-ui/core/Collapse";
 import FileSelectZone from "./inputs/FileSelectZone";
-import "./Import.css";
+import StyledButton from "../../RuleWorkComponents/Inputs/StyledButton";
 
 class Import extends Component{
     constructor(props) {
@@ -76,6 +75,13 @@ class Import extends Component{
         }
     };
 
+    onEnterClick = (event) => {
+        if (event.which === 13) {
+            event.preventDefault();
+            this.onAcceptButtonClick();
+        }
+    };
+
     onAcceptButtonClick = () => {
         const projectName = this.state.name;
         let projectFiles = [];
@@ -99,14 +105,16 @@ class Import extends Component{
         const {checked, expand, name} = this.state;
 
         return (
-            <RuleWorkBody id={"rule-work-import"} variant={"body"}>
-                <StyledPaper elevation={6} square={true}>
+            <RuleWorkBox id={"rule-work-import"} onKeyPress={this.onEnterClick} styleVariant={"body"}>
+                <StyledPaper id={"import-panel"} elevation={6} styleVariant={"panel"} square={true}>
                     <StyledHeader>
                         <RuleWorkTextField
-                            label={"Project name"}
-                            value={name}
+                            fullWidth={true}
                             onChange={this.onProjectNameChange}
-                        />
+                            value={name}
+                        >
+                            Project name
+                        </RuleWorkTextField>
                     </StyledHeader>
                     <StyledDivider flexItem={true} />
                     <StyledSwitch
@@ -146,25 +154,25 @@ class Import extends Component{
                     </Collapse>
                     <StyledDivider flexItem={true} hidden={!expand} />
                     <StyledFooter >
-                        <StyledFooterButton
-                            type={"accept"}
-                            variant={"outlined"}
-                            onClick={this.onAcceptButtonClick}
+                        <StyledButton
+                            buttonVariant={"outlined"}
                             id={"footer-accept-button"}
+                            onClick={this.onAcceptButtonClick}
+                            styleVariant={"green"}
                         >
                             Accept
-                        </StyledFooterButton>
-                        <StyledFooterButton
-                            type={"cancel"}
-                            variant={"outlined"}
-                            onClick={this.onClearClick}
+                        </StyledButton>
+                        <StyledButton
+                            buttonVariant={"outlined"}
                             id={"footer-cancel-button"}
+                            onClick={this.onClearClick}
+                            styleVariant={"red"}
                         >
                             Clear
-                        </StyledFooterButton>
+                        </StyledButton>
                     </StyledFooter>
                 </StyledPaper>
-            </RuleWorkBody>
+            </RuleWorkBox>
         );
     }
 }

@@ -1,16 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {makeStyles} from "@material-ui/core/styles";
+import StyledButton from "./StyledButton";
 import Tooltip from "@material-ui/core/Tooltip";
-import Button from "@material-ui/core/Button";
 import "./RuleWorkButton.css";
 
 function UploadElement(props, ref)  {
-    const {children, id, accept, onFileChanged, ...other} = props;
+    const {children, id, accept, onChange, ...other} = props;
 
     return (
-        <div ref={ref} id={"rule-work-upload-button"} {...other}>
-            <input id={id} accept={accept} type={"file"} value={""} onChange={event => onFileChanged(event)} />
+        <div id={"rule-work-upload-button"} ref={ref} {...other}>
+            <input accept={accept} id={id} onChange={onChange} type={"file"} value={""} />
             <label htmlFor={id}>
                 {children}
             </label>
@@ -18,61 +17,65 @@ function UploadElement(props, ref)  {
     )
 }
 
-const UploadElementForwardRef = React.forwardRef(UploadElement);
+const UploadForwardRef = React.forwardRef(UploadElement);
 
-const useStylesButton = makeStyles({
-    root: {
-        minWidth: 0,
-    }
-});
+function DefaultElement(props, ref) {
+    const {children, ...other} = props;
+    return (
+        <div ref={ref} {...other}>
+            {children}
+        </div>
+    )
+}
+
+const DefaultForwardRef = React.forwardRef(DefaultElement);
 
 function RuleWorkButton(props) {
-    const {tooltipTitle, variant, uploadAccept, buttonLabel, content, onButtonClick} = props;
-    const classesButton = useStylesButton();
+    const {children, accept, ariaLabel, isUpload, onClick, title, ...other} = props;
 
     return (
-        <Tooltip
-            id={"rule-work-button-tooltip"}
-            title={tooltipTitle}
-            arrow={true}
-        >
-            {variant === "upload" ?
-                <UploadElementForwardRef id={buttonLabel} accept={uploadAccept} onFileChanged={onButtonClick}>
-                    <Button
-                        aria-label={buttonLabel}
-                        classes={{root: classesButton.root}}
-                        color={"inherit"}
+        <Tooltip id={"rule-work-button-tooltip"} title={title} arrow={true}>
+            {isUpload ?
+                <UploadForwardRef id={ariaLabel} accept={accept} onChange={onClick}>
+                    <StyledButton
+                        {...ariaLabel ? {'aria-label': ariaLabel} : null}
                         component={"span"}
+                        {...other}
                     >
-                        {content}
-                    </Button>
-                </UploadElementForwardRef>
+                        {children}
+                    </StyledButton>
+                </UploadForwardRef>
                 :
-                <Button
-                    aria-label={buttonLabel}
-                    classes={{root: classesButton.root}}
-                    color={"inherit"}
-                    onClick={onButtonClick}
-                >
-                    {content}
-                </Button>
+                <DefaultForwardRef>
+                    <StyledButton
+                        {...ariaLabel ? {'aria-label': ariaLabel} : null}
+                        onClick={onClick}
+                        {...other}
+                    >
+                        {children}
+                    </StyledButton>
+                </DefaultForwardRef>
             }
         </Tooltip>
     )
 }
 
 RuleWorkButton.propTypes = {
-    tooltipTitle: PropTypes.string.isRequired,
-    variant: PropTypes.oneOf(["default", "upload"]),
-    uploadAccept: PropTypes.string,
-    buttonLabel: PropTypes.string.isRequired,
-    content: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired,
-    onButtonClick: PropTypes.func.isRequired,
+    children: PropTypes.node,
+    accept: PropTypes.string,
+    ariaLabel: PropTypes.string,
+    buttonVariant: PropTypes.oneOf(["text", "outlined", "contained", "icon"]),
+    isUpload: PropTypes.bool,
+    onClick: PropTypes.func.isRequired,
+    styleVariant: PropTypes.oneOf(["inherit", "green", "red"]),
+    title: PropTypes.string.isRequired,
 };
 
 RuleWorkButton.defaultProps = {
-    variant: "default",
-    uploadAccept: "*",
+    accept: "*",
+    buttonVariant: "text",
+    isUpload: false,
+    styleVariant: "inherit",
 };
 
 export default RuleWorkButton;

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDataGrid from 'react-data-grid';
-import 'bootstrap/dist/css/bootstrap.css';
+// import bootstrapStyles from 'bootstrap/dist/css/bootstrap.css';
 import { Editors,  Data, Menu, Filters} from 'react-data-grid-addons';
 
 import './DisplayData.css';

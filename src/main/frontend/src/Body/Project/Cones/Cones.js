@@ -1,15 +1,19 @@
 import React, {Component, Suspense} from 'react';
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import ConesBar from "./surfaces/ConesBar";
+import PropTypes from "prop-types";
+import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
+import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
+import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import DominanceSelector from "./inputs/DominanceSelector";
 import ObjectComparison from "./data-display/ObjectComparison";
 import DominanceObject from "./api/DominanceObject";
 import DominanceComparison from "./api/DominanceComparison";
+import Divider from "@material-ui/core/Divider";
 import "./Cones.css";
 import dominanceCones from "./resources/demo-files/DominanceCones";
 import exampleComparison from "./resources/demo-files/ExampleComparison";
+
 
 
 const ObjectPanel = React.lazy(() => import("./data-display/ObjectPanel")) ;
@@ -20,13 +24,75 @@ class Cones extends Component {
         this.objects = this.getObjects();
 
         this.state = {
+            loading: false,
+            data: "",
             objects: this.objects,
+            snackbarProps: {
+                open: false,
+                message: "",
+                variant: "info",
+            },
         };
 
         this.objectsComparison = React.createRef();
         this.conesBar = React.createRef();
         this.objectPanels = [];
     }
+
+    componentDidMount() {
+        const project = this.props.project;
+        if (project.calculatedDominanceCones) {
+            fetch(`http://localhost:8080/projects/${project.result.id}/cones`, {
+                method: "GET"
+            }).then(response => {
+                return response.json();
+            }).then(result => {
+                this.setState({
+                    data: result,
+                });
+            }).catch(error => {
+                this.setState({
+                    snackbarProps: {
+                        open: true,
+                        message: "Server error. Couldn't load cones!",
+                        variant: "error",
+                    },
+                }, () => {
+                    console.log(error);
+                });
+            });
+        }
+    }
+
+    onCalculateClick = () => {
+        const project = this.props.project;
+
+        this.setState({
+            loading: true,
+        }, () => {
+            fetch(`http://localhost:8080/projects/${project.result.id}/cones`, {
+                method: "GET",
+            }).then(response => {
+                return response.json();
+            }).then(result => {
+                this.setState({
+                    loading: false,
+                    data: result,
+                });
+            }).catch(error => {
+                this.setState({
+                    loading: false,
+                    snackbarProps: {
+                        open: true,
+                        message: "Server error. Couldn't calculate cones!",
+                        variant: "error",
+                    },
+                }, () => {
+                    console.log(error);
+                });
+            });
+        });
+    };
 
     onGlobalDominanceChange = (dominanceSelected) => {
         const {dominance, where} = dominanceSelected;
@@ -108,30 +174,34 @@ class Cones extends Component {
     };
 
     render() {
-        const objects = this.state.objects;
+        const {loading, data, objects, snackbarProps} = this.state;
 
         return (
-            <div className={"cones"}>
-                <ConesBar>
-                    <Typography color={"primary"} variant={"h6"} component={"div"}>
-                        Choose dominance cones:
-                    </Typography>
+            <RuleWorkBox id={"rule-work-cones"} styleVariant={"tab"}>
+                <StyledPaper id={"cones-bar"} styleVariant={"bar"} square={true} variant={"outlined"}>
                     <DominanceSelector
                         ref={this.conesBar}
-                        onDominanceChange={(d) => this.onGlobalDominanceChange(d)}
+                        onDominanceChange={this.onGlobalDominanceChange}
                     />
-                    <span style={{flexGrow: 1}}/>
-                    <TextField
-                        id={"objects-filter"}
-                        label={"Filter objects"}
+                    <Divider flexItem={true} orientation={"vertical"} />
+                    <RuleWorkTextField
                         type={"search"}
-                        variant={"outlined"}
                         onChange={this.onFilterChange}
-                    />
-                </ConesBar>
-                <div className={"objects-display"}>
-                    <div className={"objects-list"}>
-                        <Suspense fallback={<CircularProgress disableShrink/>}>
+                    >
+                        Filter objects
+                    </RuleWorkTextField>
+                    <span style={{flexGrow: 1}}/>
+                    <StyledButton
+                        buttonVariant={"contained"}
+                        onClick={this.onCalculateClick}
+                        styleVariant={"green"}
+                    >
+                        Calculate
+                    </StyledButton>
+                </StyledPaper>
+                <RuleWorkBox id={"cones-list"} styleVariant={"tab-body2"}>
+                    <RuleWorkBox id={"objects-list"} styleVariant={"tab-column"}>
+                        <Suspense fallback={<StyledCircularProgress disableShrink/>}>
                             <section>
                                 {objects.map((object, index) => (
                                     <ObjectPanel
@@ -145,14 +215,21 @@ class Cones extends Component {
                                 ))}
                             </section>
                         </Suspense>
-                    </div>
-                    <div className={"objects-description"}>
+                    </RuleWorkBox>
+                    <RuleWorkBox id={"objects-description"} styleVariant={"tab-column"}>
                         <ObjectComparison ref={this.objectsComparison} />
-                    </div>
-                </div>
-            </div>
+                    </RuleWorkBox>
+                </RuleWorkBox>
+            </RuleWorkBox>
         );
     }
 }
+
+Cones.propTypes = {
+    changed: PropTypes.array,
+    project: PropTypes.object.isRequired,
+    updateProject: PropTypes.func,
+    value: PropTypes.number,
+};
 
 export default Cones;

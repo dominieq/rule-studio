@@ -1,11 +1,39 @@
 import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
+import {withStyles} from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import DisplayData from "./Data/DisplayData";
 import Cones from "./Cones/Cones";
 import Rules from "./Rules/Rules";
 import Unions from "./Unions/Unions";
+
+const StyledTabs = withStyles({
+    indicator: {
+        backgroundColor: "#545F66",
+    },
+})(props => <Tabs {...props} />);
+
+const StyledTab = withStyles({
+    root: {
+        color: "rgb(171,250,169, 0.4)",
+        '&:hover': {
+            backgroundColor: "rgb(84,95,102, 0.8)",
+            color: "rgb(102,255,102, 0.8)",
+        },
+        '&:focus': {
+            backgroundColor: "rgb(84,95,102, 0.8)",
+            color: "rgb(102,255,102, 0.8)",
+        }
+    },
+    textColorInherit: {
+        '&.Mui-selected': {
+            backgroundColor: "#545F66",
+            color: "#66FF66",
+            opacity: 1,
+        },
+    }
+}, {name: "MuiTab"})(props => <Tab {...props} disableRipple={true} /> );
 
 class ProjectTabs extends Component {
     constructor(props) {
@@ -31,31 +59,28 @@ class ProjectTabs extends Component {
 
     render() {
         const value = this.state.value;
-        const project = this.props.project;
 
         return (
             <Fragment>
-                <Tabs
+                <StyledTabs
                     aria-label={"project tabs"}
                     centered={true}
-                    indicatorColor={"primary"}
                     onChange={this.onTabChange}
-                    textColor={"primary"}
                     value={value}
                 >
-                    <Tab label={"Data"} {...this.setTabProps(0)} />
-                    <Tab label={"Dominance cones"} {...this.setTabProps(1)} />
-                    <Tab label={"Class unions"} {...this.setTabProps(2)} />
-                    <Tab label={"Rules"} {...this.setTabProps(3)} />
-                    <Tab label={"Classification"} {...this.setTabProps(4)} />
-                    <Tab label={"Cross-validation"} {...this.setTabProps(5)} />
-                </Tabs>
+                    <StyledTab label={"Data"} {...this.setTabProps(0)} />
+                    <StyledTab label={"Dominance cones"} {...this.setTabProps(1)} />
+                    <StyledTab label={"Class unions"} {...this.setTabProps(2)} />
+                    <StyledTab label={"Rules"} {...this.setTabProps(3)} />
+                    <StyledTab label={"Classification"} {...this.setTabProps(4)} />
+                    <StyledTab label={"Cross-validation"} {...this.setTabProps(5)} />
+                </StyledTabs>
                 {
                     {
-                        0: <DisplayData project={project} />,
-                        1: <Cones project={project} />,
-                        2: <Unions project={project} />,
-                        3: <Rules project={project} />,
+                        0: <DisplayData {...this.props} value={0} />,
+                        1: <Cones {...this.props} value={1} />,
+                        2: <Unions {...this.props} value={2} />,
+                        3: <Rules {...this.props} value={3} />,
                         4: "Classification",
                         5: "Cross-validation",
                     }[value]
@@ -66,7 +91,9 @@ class ProjectTabs extends Component {
 }
 
 ProjectTabs.propTypes = {
+    changed: PropTypes.array,
     project: PropTypes.object,
+    updateProject: PropTypes.func,
 };
 
 export default ProjectTabs;

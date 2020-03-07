@@ -1,14 +1,17 @@
-.unions {
-    width: 100%;
-    height: fit-content;
+#unions-bar > .MuiAvatar-root {
+    margin: 0 8px;
 }
 
-.unions-list {
-    max-width: 100%;
-    height: fit-content;
-    margin: 25px 25px 0;
+#unions-bar > span {
+    flex-grow: 1;
+    padding-right: 15px;
     display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+}
 
+#unions-bar > hr + button {
+    margin-left: 8px;
 }

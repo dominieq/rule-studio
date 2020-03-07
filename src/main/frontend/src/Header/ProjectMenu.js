@@ -44,18 +44,22 @@ class ProjectMenu extends Component {
             return (
                 <Fragment>
                     <RuleWorkButton
-                        tooltipTitle={"Rename project"}
-                        buttonLabel={"rename-project-button"}
-                        content={<RenameBox />}
-                        onButtonClick={this.props.onProjectRename}
-                    />
+                        ariaLabel={"rename-project-button"}
+                        buttonVariant={"icon"}
+                        onClick={this.props.onProjectRename}
+                        title={"Rename project"}
+                    >
+                        <RenameBox />
+                    </RuleWorkButton>
                     <span />
                     <RuleWorkButton
-                        tooltipTitle={"Delete project"}
-                        buttonLabel={"delete-project-button"}
-                        content={<DeleteIcon />}
-                        onButtonClick={this.props.onProjectDelete}
-                    />
+                        ariaLabel={"delete-project-button"}
+                        buttonVariant={"icon"}
+                        onClick={this.props.onProjectDelete}
+                        title={"Delete project"}
+                    >
+                        <DeleteIcon />
+                    </RuleWorkButton>
                 </Fragment>
             )
         }  else {
@@ -69,7 +73,7 @@ class ProjectMenu extends Component {
 
         let primaryText = "Select your project";
         if (currentProject > 0) {
-            primaryText = "Active project: " + projects[currentProject].name;
+            primaryText = "Active project: " + projects[currentProject].result.name;
         }
 
         return (
@@ -95,7 +99,7 @@ class ProjectMenu extends Component {
                             disabled={index === 0}
                             selected={index === currentProject}
                             onClick={event => this.onMenuItemClick(event, index)}>
-                            {typeof project === "string" ? project : project.name}
+                            {typeof project === "string" ? project : project.result.name}
                         </MenuItem>
                     ))}
                 </Menu>
