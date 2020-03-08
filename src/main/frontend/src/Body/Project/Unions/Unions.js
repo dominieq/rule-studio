@@ -1,16 +1,15 @@
-import React, {Component, Fragment} from "react";
+import React, {Component} from "react";
 import PropTypes from "prop-types";
 import ConsistencySelector from "./inputs/ConsistencySelector";
+import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkButton from "../../../RuleWorkComponents/Inputs/RuleWorkButton";
-import RuleWorkSelect from "../../../RuleWorkComponents/Inputs/RuleWorkSelect";
 import RuleWorkHelper from "../../../RuleWorkComponents/Feedback/RuleWorkHelper";
+import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
+import RuleWorkSelect from "../../../RuleWorkComponents/Inputs/RuleWorkSelect";
+import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import Union from "./api/Union";
-import UnionListItem from "./data-display/UnionListItem";
-import UnionListItemContent from "./data-display/UnionListItemContent";
 import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 import "./Unions.css";
@@ -21,7 +20,8 @@ class Unions extends Component {
 
         this.state = {
             loading: false,
-            data: "",
+            data: [],
+            displayedData: [],
             consistency: 0.0,
             measure: "epsilon",
             snackbarProps: {
@@ -34,27 +34,39 @@ class Unions extends Component {
 
     componentDidMount() {
         const project = this.props.project;
-        if (!project.unionsWithSingleLimitingDecision) return;
 
-        fetch(`http://localhost:8080/projects/${project.result.id}/unions`, {
-            method: "GET",
-        }).then(response => {
-            return response.json();
-        }).then(result => {
+        if (project.result.calculatedUnionsWithSingleLimitingDecision) {
             this.setState({
-                data: result,
-            });
-        }).catch(error => {
-            this.setState({
-                snackbarProps: {
-                    open: true,
-                    message: "Server error. Couldn't load unions!",
-                    variant: "error",
-                },
+                loading: true,
             }, () => {
-                console.log(error);
+                fetch(`http://localhost:8080/projects/${project.result.id}/unions`, {
+                    method: "GET",
+                }).then(response => {
+                    return response.json();
+                }).then(result => {
+                    console.log(result);
+
+                    const unions = this.getUnions(result);
+
+                    this.setState({
+                        loading: false,
+                        data: unions,
+                        displayedData: unions,
+                    });
+                }).catch(error => {
+                    this.setState({
+                        loading: false,
+                        snackbarProps: {
+                            open: true,
+                            message: "Server error. Couldn't load unions!",
+                            variant: "error",
+                        },
+                    }, () => {
+                        console.log(error);
+                    });
+                });
             });
-        });
+        }
     }
 
     onConsistencyChange = (consistency) => {
@@ -84,9 +96,14 @@ class Unions extends Component {
             }).then(response => {
                 return response.json();
             }).then(result => {
+                console.log(result);
+
+                const unions = this.getUnions(result);
+
                 this.setState({
                     loading: false,
-                    data: result,
+                    data: unions,
+                    displayedUnions: unions,
                 });
             }).catch(error => {
                 console.log(error);
@@ -116,42 +133,41 @@ class Unions extends Component {
         })
     };
 
-    getUnions = (unions) => {
-        let downward = [];
-        let upward = [];
+    getUnions = (data) => {
+        let items = [];
 
-        if (unions) {
-            const downwardUnions = unions.downwardUnions;
-            const upwardUnions = unions.upwardUnions;
+        if (data) {
+            for (let type of ["downwardUnions", "upwardUnions"]) {
+                console.log(type);
+                console.log(data[type]);
+                for (let i = 0; i < data[type].length; i++) {
+                    const id = i.toString();
+                    const name = data[type][i].unionType.replace("_", " ").toLowerCase();
+                    const traits = {
+                        accuracyOfApproximation: data[type][i].accuracyOfApproximation,
+                        qualityOfApproximation: data[type][i].qualityOfApproximation,
+                    };
+                    const tables = {
+                        objects: data[type][i].objects,
+                        lowerApproximation: data[type][i].lowerApproximation,
+                        upperApproximation: data[type][i].upperApproximation,
+                        boundary: data[type][i].boundary,
+                        positiveRegion: data[type][i].positiveRegion,
+                        negativeRegion: data[type][i].negativeRegion,
+                        boundaryRegion: data[type][i].boundaryRegion,
+                    };
 
-            for (let i = 0; i < downwardUnions.length; i++) {
-                let union = this.unionByIndex(
-                    "down-" + i,
-                    "At most",
-                    downwardUnions[i]
-                );
-                downward = [...downward, union];
-            }
+                    const item = new Item(id, name, traits, null, tables);
 
-            for (let i = 0; i < upwardUnions.length; i++) {
-                let union = this.unionByIndex(
-                    "up-" + i,
-                    "At least",
-                    upwardUnions[i]
-                );
-                upward = [...upward, union];
+                    items = [...items, item];
+                }
             }
         }
-        return {downwardUnions: downward, upwardUnions: upward};
-    };
-
-    unionByIndex = (index, name, union) => {
-        return new Union(index, name, union);
+        return items;
     };
 
     render() {
-        const {loading, data, consistency, measure, } = this.state;
-        const {downwardUnions, upwardUnions} = this.getUnions(data);
+        const {loading, displayedData, consistency, measure, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-unions"} styleVariant={"tab"}>
@@ -191,20 +207,12 @@ class Unions extends Component {
                 {loading ?
                     <StyledCircularProgress/>
                     :
-                    <Fragment>
-                        {downwardUnions.map(union => (
-                            <UnionListItem key={union.id} union={union}>
-                                <UnionListItemContent union={union} />
-                            </UnionListItem>
-                        ))}
-                        {upwardUnions.map(union => (
-                            <UnionListItem key={union.id} union={union}>
-                                <UnionListItemContent union={union} />
-                            </UnionListItem>
-                        ))}
-                    </Fragment>
+                    <RuleWorkList>
+                        {displayedData}
+                    </RuleWorkList>
                 }
                 </RuleWorkBox>
+                <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )
     }
