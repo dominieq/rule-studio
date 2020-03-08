@@ -22,6 +22,7 @@ const useStyles = makeStyles({
         flexGrow: 1,
         display: "flex",
         flexDirection: "column",
+        alignItems: "center"
     },
     "tab-body2": {
         margin: "2.5%",
