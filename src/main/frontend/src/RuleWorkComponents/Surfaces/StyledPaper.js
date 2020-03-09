@@ -15,6 +15,7 @@ const useStylesDefault = makeStyles({
         flexWrap: "nowrap",
         alignItems: "center",
         justifyContent: "flex-start",
+        zIndex: 2,
     },
     panel: {
         position: "relative",
@@ -27,11 +28,15 @@ const useStylesDefault = makeStyles({
 }, {name: "rule-work"});
 
 function StyledPaper(props) {
-    const {children, styleVariant, ...other} = props;
+    const {children, styleVariant, paperRef, ...other} = props;
     const classesDefault = useStylesDefault();
 
     return (
-            <Paper {...other} className={clsx(classesDefault[styleVariant])}>
+            <Paper
+                className={clsx(classesDefault[styleVariant])}
+                {...paperRef ? {ref: paperRef} : null}
+                {...other}
+            >
                 {children}
             </Paper>
     )
@@ -39,7 +44,12 @@ function StyledPaper(props) {
 
 StyledPaper.propTypes = {
     children: PropTypes.node,
-    styleVariant: PropTypes.oneOf(["bar", "panel"]).isRequired,
+    paperRef: PropTypes.object,
+    styleVariant: PropTypes.oneOf(["bar", "panel"]),
+};
+
+StyledPaper.defaultProps = {
+    styleVariant: "bar"
 };
 
 export default StyledPaper;
