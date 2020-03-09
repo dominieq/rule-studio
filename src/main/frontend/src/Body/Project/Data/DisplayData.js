@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDataGrid from 'react-data-grid';
-import 'bootstrap/dist/css/bootstrap.css';
+
 import { Editors,  Data, Menu, Filters} from 'react-data-grid-addons';
 
 import './DisplayData.css';
@@ -23,6 +23,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
+import Tooltip from '@material-ui/core/Tooltip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { withStyles } from '@material-ui/core/styles';
 import { DraggableHeader } from 'react-data-grid-addons';
@@ -87,7 +88,7 @@ function RightClickContextMenu({
  * @param {Object} props.project.informationTable InformationTable received from the server, holds attributes and objects
  * @param {Array} props.project.informationTable.attributes Attributes (metadata, might be empty)
  * @param {Array} props.project.informationTable.objects Objects (data, might be empty)
- * @param {Function} props.updateProjectFiles Method for updating project in the parent component (which is ProjectTabs.js)
+ * @param {Function} props.updateProject Method for updating project in the parent component (which is ProjectTabs.js)
  */
 class DisplayData extends React.Component {
     constructor(props) {
@@ -128,8 +129,9 @@ class DisplayData extends React.Component {
             columnKeyOfHeaderMenuOpened: -1,
 
             isLoading: false,
-            isOpenedTransformWarning: false,
-        };
+            isOpenedTransform: false,
+            binarizeNominalAttributesWith3PlusValues: false,
+        };        
     }
 
     /**
@@ -177,7 +179,8 @@ class DisplayData extends React.Component {
                 columnKeyOfHeaderMenuOpened: -1,
 
                 isLoading: false,
-                isOpenedTransformWarning: false,
+                isOpenedTransform: false,
+                binarizeNominalAttributesWith3PlusValues: false
             }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
         }
     }
@@ -224,7 +227,17 @@ class DisplayData extends React.Component {
                 attribute.valueType = metadata[el].valueType;
                 if(attribute.valueType === "enumeration") {
                     attribute.domain = metadata[el].domain;
+                    attribute.domain.push("?");
                     attribute.editor = <DropDownEditor options={attribute.domain} />;
+                    attribute.events = {
+                        onClick: function(ev, args) {
+                            console.log("kliknalem")
+                            const { rowIdx, idx } = args;
+                            console.log("rowIdx:" + rowIdx + ",idx: " + idx)
+                            console.log(this.grid)
+                            this.grid && this.grid.openCellEditor(rowIdx, idx);
+                          }
+                    }
                 } else if(attribute.valueType === "integer" || attribute.valueType === "real") {
                     attribute.filterRenderer = NumericFilter;
                 }
@@ -249,6 +262,18 @@ class DisplayData extends React.Component {
                 }
             }                        
         }
+    }
+
+    componentWillUnmount() {
+        //if(this.state.dataModified) {
+            const tmpMetaData = JSON.stringify(this.prepareMetadataFileBeforeSendingToServer());
+            const tmpData = JSON.stringify(this.prepareDataFileBeforeSendingToServer());
+            const tmpProject = {...this.props.project}
+            tmpProject.informationTable.attributes = tmpMetaData;
+            tmpProject.informationTable.objects = tmpData;
+            this.props.updateProject(tmpProject, 0);
+            //do something with changed prop?
+        //}
     }
 
     /** 
@@ -425,27 +450,35 @@ class DisplayData extends React.Component {
      */
     deleteSelectedRows = () => {
         this.setState(prevState => {
-            const nextRows = [...prevState.rows];
-            const selected = [...prevState.selectedRows]
-            if(selected.length === nextRows.length) return {rows: [], selectedRows : []};
-            while(selected.length > 0) {
-                const LP = selected[0];
-                let i = nextRows.length;
-                while(i--)
-                {
-                    if(nextRows[i].uniqueLP === LP) {
-                        nextRows.splice(i, 1);
-                        nextRows.forEach(r => {
-                            if(r.uniqueLP >= LP) r.uniqueLP-=1;
-                        });
-                        selected.splice(0,1);
-                        selected.forEach((x, idx) => {
-                            return ((x > LP) ? selected[idx]-=1 : selected[idx]);
-                        })
-                        break;
-                    }
-                }                                             
+            const selected = [...prevState.selectedRows];
+            const tmpRows =  [...prevState.rows];
+
+            //if selected all rows
+            if(selected.length === tmpRows.length) {
+                this.grid.selectAllCheckbox.checked = false;
+                return {rows: [], selectedRows : [], dataModified: true};
             }
+
+            //add additional column (uniqueLPtmp)
+            tmpRows.forEach((r,idx) => r.uniqueLPtmp = idx);
+
+            //sort by No.
+            tmpRows.sort((a,b) => a["uniqueLP"] - b["uniqueLP"]);
+
+            //sort
+            selected.sort((a, b) => a - b); //default sorting is alphanumerical, sort numbers
+
+            //filter all elements from tmpRows array that are in selected array
+            const filteredRows = tmpRows.filter((r) => !selected.includes(r["uniqueLP"]))
+
+            //correct No. numbers after removing elements
+            filteredRows.forEach((r,idx) => r["uniqueLP"] = idx+1);
+
+            //sort back by uniqueLPtmp
+            filteredRows.sort((a,b) => a.uniqueLPtmp - b.uniqueLPtmp);
+
+            //remove additional column (uniqueLPtmp)
+            const nextRows = filteredRows.map( ({uniqueLPtmp, ...others}) => others);
 
             return {
                 rows: nextRows,
@@ -455,9 +488,8 @@ class DisplayData extends React.Component {
         }, () => { 
             if(this.state.rows.length > 0 && this.state.rows.length * heightOfRow < document.getElementsByClassName("react-grid-Canvas")[0].scrollTop) {
                 document.getElementsByClassName("react-grid-Canvas")[0].scrollTop = this.state.rows.length * heightOfRow;
-            }
-        })
-        
+            };
+        })        
     };
     
     /**
@@ -537,7 +569,7 @@ class DisplayData extends React.Component {
     };
 
     /**
-     * Method responsible for opening the "Add attribute" dialog. It is executed on "ADD ATTRIBUTE" button click.
+     * Method responsible for opening the "Add attribute" dialog. The dialog is accessible through the "ADD ATTRIBUTE" button.
      * @method
      */
     onAddAttribute = () => {
@@ -545,7 +577,7 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for opening the "Edit attributes" dialog. It is executed on "EDIT ATTRIBUTES" button click.
+     * Method responsible for opening the "Edit attributes" dialog. The dialog is accessible through the "EDIT ATTRIBUTES" button.
      * @method
      */
     onEditAttributes = () => {
@@ -553,7 +585,7 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for closing the "Add attribute" dialog.
+     * Method responsible for closing the "Add attribute" dialog. The dialog is accessible through the "ADD ATTRIBUTE" button.
      * @method
      */
     closeOnAddAttribute = () => {
@@ -569,7 +601,7 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for closing the "Edit attributes" dialog.
+     * Method responsible for closing the "Edit attributes" dialog. The dialog is accessible through the "EDIT ATTRIBUTES" button.
      * @method
      */
     closeOnEditAttributes = () => {
@@ -586,64 +618,63 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for closing the warning dialog, which may have been opened by clicking "TRANSFORM" button when modifications have not been saved.
+     * Method responsible for closing the warning dialog. The method is executed when the chosen option is "No" in the [warning dialog]{@link DisplayData#openOnTransformWarning}.
      * @method
      */
-    closeOnTransformWarning = () => {
+    closeOnTransform = () => {
         this.setState({
-            isOpenedTransformWarning: false,
+            isOpenedTransform: false,
         })
     }
 
     /**
-     * Method responsible for opening the warning dialog. It is executed on "TRANSFORM" button click, when modifications have not been saved.
+     * Method responsible for opening the warning dialog. The dialog is accessible through the "TRANSFORM" button, but only when modifications have not been saved.
      * @method
      */
-    openOnTransformWarning = () => {
+    openOnTransform = () => {
         this.setState({
-            isOpenedTransformWarning: true,
+            isOpenedTransform: true,
         })
     }
 
     /**
-     * Method responsible for imposing preference order when evaluation attribute doesn't have preference order. 
+     * Method responsible for imposing preference order when evaluation attribute doesn't have preference order.
+     * The method is executed when the chosen option is "Yes" in the [warning dialog]{@link DisplayData#openOnTransformWarning}.
      * For more information [click here]{@link https://github.com/ruleLearn/rulelearn/blob/develop/src/main/java/org/rulelearn/data/InformationTable.java#L922}.
      * @method
      */
     onTransformAttributes = () => {
-        if(this.state.dataModified && !this.state.isOpenedTransformWarning) { //data has been modified and dialog is closed then open dialog
-                this.openOnTransformWarning();
-        } else { //dialog has been closed so user clicked "Yes"
-                this.setState({
-                    isLoading: true,
-                    isOpenedTransformWarning: false,
-                }, () => {
+        console.log("Wykonuje transform, gdzie binaryzacja: " + this.state.binarizeNominalAttributesWith3PlusValues)
+        this.setState({
+                isLoading: true,
+                isOpenedTransform: false,
+            }, () => {
+    
+            fetch(`http://localhost:8080/projects/${this.props.project.id}?imposePreferenceOrder=${this.state.binarizeNominalAttributesWith3PlusValues}`, {
+                method: 'GET'
+            }).then(response => {
+                console.log(response)
+                return response.json()
+            }).then(result => {
+                console.log("Wynik dzialania response.json():")
+                console.log(result)
+                console.log("atrybuty:")
+                console.log(result.informationTable.attributes);
+                console.log("obiekty:")
+                console.log(result.informationTable.objects);
         
-                fetch(`http://localhost:8080/projects/${this.props.project.id}?imposePreferenceOrder=true`, {
-                    method: 'GET'
-                }).then(response => {
-                    console.log(response)
-                    return response.json()
-                }).then(result => {
-                    console.log("Wynik dzialania response.json():")
-                    console.log(result)
-                    console.log("atrybuty:")
-                    console.log(result.informationTable.attributes);
-                    console.log("obiekty:")
-                    console.log(result.informationTable.objects);
-            
-                    this.setState({
-                        columns: this.prepareMetaDataFromImport(result.informationTable.attributes),
-                        rows: this.prepareDataFromImport(result.informationTable.objects),
-                        isLoading: false,
-                        dataModified: true,
-                    }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
-            
-                }).catch(err => {
-                    console.log(err)
-                })
+                this.setState({
+                    columns: this.prepareMetaDataFromImport(result.informationTable.attributes),
+                    rows: this.prepareDataFromImport(result.informationTable.objects),
+                    isLoading: false,
+                    dataModified: true,
+                }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
+        
+            }).catch(err => {
+                console.log(err)
             })
-        }
+        })
+        
     }
 
     /**
@@ -668,7 +699,7 @@ class DisplayData extends React.Component {
     }
     
     /**
-     * Method responsible for sending changed files i.e. metadata and data files to the server.
+     * Method responsible for sending changed files i.e. metadata and data files to the server. The method is executed after "SAVE CHANGES" button click.
      * @method
      */
     sendFilesToServer = () => {
@@ -699,12 +730,6 @@ class DisplayData extends React.Component {
             }).then(result => {
                 console.log("Wynik dzialania response.json():")
                 console.log(result)
-                
-                const tmpProject = {...this.props.project}
-                tmpProject.informationTable.attributes = tmpMetaData;
-                tmpProject.informationTable.objects = tmpData;
-
-                this.props.updateProjectFiles(tmpProject);
 
                 this.setState({
                     dataModified: false,
@@ -722,12 +747,9 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for setting value...  It is executed on "TRANSFORM" button click
-     * If the project has been changed then initialize all the values (overwrite) in the state.
+     * Method responsible for setting the value of the chosen file type ("Data","Metadata","Both") in the save to file dialog. The dialog is accessible through the "SAVE TO FILE" button.
      * @method
-     * @param {Object} prevProps Props object containing all the props e.g. props.project.id or props.project.name
-     * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
-     * @returns {Array}
+     * @param {Event} e indicates the event on the radio button, from which the value of the chosen file type is selected. 
      */
     handleChangeSaveToFileWhichFile = (e) => {
         this.setState({
@@ -736,12 +758,9 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for changing displayed data when project is changed. Runs after every [twojaNazwa]{@link DisplayData#render} and holds the newest values of props and state.
-     * If the project has been changed then initialize all the values (overwrite) in the state.
+     * Method responsible for setting the value of the chosen file format ("JSON","CSV") in the save to file dialog. The dialog is accessible through the "SAVE TO FILE" button.
      * @method
-     * @param {Object} prevProps Props object containing all the props e.g. props.project.id or props.project.name
-     * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
-     * @returns {Array}
+     * @param {Event} e indicates the event on the radio button, from which the value of the chosen file format is selected. 
      */
     handleChangeSaveToFileWhichFormat = (e) => {
         this.setState({
@@ -749,6 +768,10 @@ class DisplayData extends React.Component {
         })
     }
 
+    /**
+     * Method responsible for closing the "Save to file" dialog. The dialog is accessible through the "SAVE TO FILE" button.
+     * @method
+     */
     closeOnSaveToFile = () => {
         this.setState({
             isOpenedSaveToFile: false,
@@ -757,12 +780,25 @@ class DisplayData extends React.Component {
         })
     }
 
-    saveToFileDialog = () => {
+    /**
+     * Method responsible for opening the "Save to file" dialog. The dialog is accessible through the "SAVE TO FILE" button.
+     * @method
+     * @returns {Array}
+     */
+    openOnSaveToFile = () => {
         this.setState({
             isOpenedSaveToFile: true,
         })
     }
 
+    /**
+     * Method responsible for saving metadata and data to files displayed data when project is changed. Runs after every [twojaNazwa]{@link DisplayData#render} and holds the latest values of props and state.
+     * If the project has been changed then initialize all the values (overwrite) in the state.
+     * @method
+     * @param {Object} prevProps Props object containing all the props e.g. props.project.id or props.project.name
+     * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
+     * @returns {Array}
+     */
     saveToFile = () => {
         if(this.state.saveToFileWhichFormat === "json") {
             if(this.state.saveToFileWhichFile === "data") this.saveToJsonFile(this.prepareDataFileBeforeSendingToServer(), "data.json");
@@ -820,6 +856,15 @@ class DisplayData extends React.Component {
         );
     };
 
+    /**
+     * Method responsible for opening the "Save to file" dialog. The dialog is accessible through the "SAVE TO FILE" button.
+     * Method responsible for changing displayed data when project is changed. Runs after every [twojaNazwa]{@link DisplayData#render} and holds the latest values of props and state.
+     * If the project has been changed then initialize all the values (overwrite) in the state.
+     * @method
+     * @param {Object} prevProps Props object containing all the props e.g. props.project.id or props.project.name
+     * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
+     * @returns {Array}
+     */
     getSelectedAttributeType = (selected) => {
         this.setState({attributeTypeSelected: selected});
     }
@@ -859,9 +904,9 @@ class DisplayData extends React.Component {
                     if(selected === "Mark attribute as: inactive" || selected === "Mark attribute as: active") {
                         col.active = !col.active;
                         cols[i] = col;
-                    } else if(selected === "Duplicate column") {
+                    } /* else if(selected === "Duplicate column") {
                         //cols.splice(i+1,0,col);
-                    } else if(selected === "Delete attribute") {
+                    }*/ else if(selected === "Delete attribute") {
                         cols.splice(i,1);
                         didIRemoveColumn = true;
                     }
@@ -1004,12 +1049,15 @@ class DisplayData extends React.Component {
             }
         }
 
+      //  if(column.type)
         if(column.preferenceType === "gain")
             document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#228B22";
         else if(column.preferenceType === "cost")
             document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#DC143C";
+        else if(column.preferenceType === "none")
+            document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#3F51B5";
         else {
-            document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "gray";
+            document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#A0A0A0";
         }
     }
 
@@ -1269,7 +1317,6 @@ class DisplayData extends React.Component {
                 }
             }
 
-            tmp.push("Duplicate column");
             tmp.push("Delete attribute");
 
             return <ColumnHeaderMenu items={tmp} handleClose={this.closeOpenedColumnHeaderMenu} anchorEl={this.state.isColumnHeaderMenuOpened} />
@@ -1292,6 +1339,17 @@ class DisplayData extends React.Component {
                 </RadioGroup>
             )
         }
+    }
+
+    onCellSelected = (coord) => {
+        const {rowIdx, Idx} = coord;
+
+    }
+
+    handleChangeBinarize = (e) => {
+        this.setState({
+            binarizeNominalAttributesWith3PlusValues: e.target.checked,
+        })
     }
 
     getValidFilterValues(rows, columnId) {
@@ -1319,7 +1377,7 @@ class DisplayData extends React.Component {
      */
     render() {        
         return (
-            <div >      
+            <div>      
                 <DraggableContainer onHeaderDrop={this.onColumnHeaderDragDrop}>   
                 <ReactDataGrid
                     ref={(node) => this.grid = node}
@@ -1329,11 +1387,13 @@ class DisplayData extends React.Component {
                     onGridRowsUpdated={this.onGridRowsUpdated}
                     onGridSort = {this.onGridSort}
                     enableCellSelect={true}
+                    onCellSelected={this.onCellSelected}
                     getValidFilterValues={columnKey => this.getValidFilterValues(this.state.rows, columnKey)}
                     toolbar={<EditDataFilterButton enableFilter={true} > 
                             < EditDataButtons deleteRow={this.deleteSelectedRows} insertRow={this.insertRow} 
-                                    sendFilesToServer={this.sendFilesToServer} saveToFileDialog={this.saveToFileDialog} onAddAttribute={this.onAddAttribute} 
-                                    onEditAttributes={this.onEditAttributes} onTransformAttributes={this.onTransformAttributes} modified={this.state.dataModified} /> 
+                                    sendFilesToServer={this.sendFilesToServer} saveToFileDialog={this.openOnSaveToFile} onAddAttribute={this.onAddAttribute} 
+                                    onEditAttributes={this.onEditAttributes} openOnTransform={this.openOnTransform} modified={this.state.dataModified} 
+                                    setProjectSettings={this.setProjectSettings}/> 
                             </EditDataFilterButton> }
                     onAddFilter={this.handleFilterChange}
                     onClearFilters={this.onClearFilters}
@@ -1350,7 +1410,6 @@ class DisplayData extends React.Component {
                             }
                         }
                     }}
-                    
                     minHeight={600}
                     rowHeight={heightOfRow}
                     rowScrollTimeout={200}
@@ -1446,19 +1505,28 @@ class DisplayData extends React.Component {
                 
                 {this.displayColumnHeaderMenu()}
 
-                <Dialog open={this.state.isOpenedTransformWarning} onClose={this.closeOnTransformWarning} aria-labelledby="transform-warning-dialog">
+                <Dialog open={this.state.isOpenedTransform} onClose={this.closeOnTransform} aria-labelledby="transform-warning-dialog">
                     <DialogTitle id="transform-warning-title">{"Are you sure you want to continue?"}</DialogTitle>
                     <DialogContent>
                     <DialogContentText id="transform-dialog-description">
-                        You haven't saved changes. All the calculations will be executed on the previously saved data.
+                        Impose Preference Orders (Please click "save changes" button before clicking "Submit")
                     </DialogContentText>
+                    <Tooltip title="binarizeNominalAttributesWith3PlusValues" placement="bottom" arrow>
+                    <FormControlLabel
+                        control={<Checkbox defaultChecked={false} color="primary" name="binarize" onChange={this.handleChangeBinarize}/>}
+                        label="Binarize"
+                        labelPlacement="start"
+                        key="attributeIsActive"
+                    />
+                    </Tooltip>
+                    
                     </DialogContent>
                     <DialogActions>
-                    <Button onClick={this.closeOnTransformWarning} style={{color: "#F2545B", borderColor:"#4C061D"}} variant={"outlined"}>
-                        No
+                    <Button onClick={this.closeOnTransform} style={{color: "#F2545B", borderColor:"#4C061D"}} variant={"outlined"}>
+                        Cancel
                     </Button>
                     <Button onClick={this.onTransformAttributes} style={{color:"#66FF66", borderColor:"#6BD425"}} variant={"outlined"}>
-                        Yes
+                        Submit
                     </Button>
                     </DialogActions>
                 </Dialog>
@@ -1472,8 +1540,7 @@ class DisplayData extends React.Component {
 
 DisplayData.propTypes = {
     project: PropTypes.any.isRequired,
-    updateProjectFiles: PropTypes.func.isRequired,
-    updateDataModified: PropTypes.func.isRequired,
+    updateProject: PropTypes.func.isRequired,
 };
 
 DisplayData.defaultProps = {
