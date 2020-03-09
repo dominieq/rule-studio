@@ -85,25 +85,18 @@ function RightClickContextMenu({
  * @class
  * @param {Object} props Arguments received from the parent component
  * @param {Object} props.project Holds data about the current project like id, name and everything associated with the project e.g. information table, unions, cones etc.
- * @param {Object} props.project.informationTable InformationTable received from the server, holds attributes and objects
- * @param {Array} props.project.informationTable.attributes Attributes (metadata, might be empty)
- * @param {Array} props.project.informationTable.objects Objects (data, might be empty)
+ * @param {Object} props.project.result.informationTable InformationTable received from the server, holds attributes and objects
+ * @param {Array} props.project.result.informationTable.attributes Attributes (metadata, might be empty)
+ * @param {Array} props.project.result.informationTable.objects Objects (data, might be empty)
  * @param {Function} props.updateProject Method for updating project in the parent component (which is ProjectTabs.js)
  */
 class DisplayData extends React.Component {
     constructor(props) {
         super(props);
 
-        console.log("Otrzymalem projekt:");
-        console.log(this.props.project);
-        console.log("A konkretniej atrybuty:");
-        console.log(this.props.project.informationTable.attributes);
-        console.log("A konkretniej obiekty:");
-        console.log(this.props.project.informationTable.objects);
-
         this.state = {
-            rows: this.prepareDataFromImport(this.props.project.informationTable.objects),
-            columns: this.prepareMetaDataFromImport(this.props.project.informationTable.attributes),
+            rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
+            columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
             enableRowInsert: 0, //-1 no sort, 0-sort asc, 1-sort desc
             selectedRows: [],
             filters: {},
@@ -149,10 +142,10 @@ class DisplayData extends React.Component {
      * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
      */
     componentDidUpdate(prevProps, prevState) {
-        if(prevProps.project.id !== this.props.project.id) {
+        if(prevProps.project.result.id !== this.props.project.result.id) {
             this.setState({
-                columns: this.prepareMetaDataFromImport(this.props.project.informationTable.attributes),
-                rows: this.prepareDataFromImport(this.props.project.informationTable.objects),
+                columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
+                rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
 
                 enableRowInsert: 0, //-1 no sort, 0-sort asc, 1-sort desc
                 selectedRows: [],
@@ -266,12 +259,12 @@ class DisplayData extends React.Component {
 
     componentWillUnmount() {
         //if(this.state.dataModified) {
-            const tmpMetaData = JSON.stringify(this.prepareMetadataFileBeforeSendingToServer());
-            const tmpData = JSON.stringify(this.prepareDataFileBeforeSendingToServer());
+            const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
+            const tmpData = this.prepareDataFileBeforeSendingToServer();
             const tmpProject = {...this.props.project}
-            tmpProject.informationTable.attributes = tmpMetaData;
-            tmpProject.informationTable.objects = tmpData;
-            this.props.updateProject(tmpProject, 0);
+            tmpProject.result.informationTable.attributes = tmpMetaData;
+            tmpProject.result.informationTable.objects = tmpData;
+            this.props.updateProject(tmpProject, this.props.value);
             //do something with changed prop?
         //}
     }
@@ -650,7 +643,7 @@ class DisplayData extends React.Component {
                 isOpenedTransform: false,
             }, () => {
     
-            fetch(`http://localhost:8080/projects/${this.props.project.id}?imposePreferenceOrder=${this.state.binarizeNominalAttributesWith3PlusValues}`, {
+            fetch(`http://localhost:8080/projects/${this.props.project.result.id}?imposePreferenceOrder=${this.state.binarizeNominalAttributesWith3PlusValues}`, {
                 method: 'GET'
             }).then(response => {
                 console.log(response)
@@ -708,7 +701,7 @@ class DisplayData extends React.Component {
         this.setState({
             isLoading: true,
         }, () => {
-        fetch(`http://localhost:8080/projects/${this.props.project.id}/metadata`, {
+        fetch(`http://localhost:8080/projects/${this.props.project.result.id}/metadata`, {
             method: 'PUT',
             body: tmpMetaData,
         }).then(response => {
@@ -721,7 +714,7 @@ class DisplayData extends React.Component {
             console.log(err)
         }).then(() => {
 
-            fetch(`http://localhost:8080/projects/${this.props.project.id}/data`, {
+            fetch(`http://localhost:8080/projects/${this.props.project.result.id}/data`, {
                 method: 'PUT',
                 body: tmpData,
             }).then(response => {
@@ -795,7 +788,7 @@ class DisplayData extends React.Component {
      * Method responsible for saving metadata and data to files displayed data when project is changed. Runs after every [twojaNazwa]{@link DisplayData#render} and holds the latest values of props and state.
      * If the project has been changed then initialize all the values (overwrite) in the state.
      * @method
-     * @param {Object} prevProps Props object containing all the props e.g. props.project.id or props.project.name
+     * @param {Object} prevProps Props object containing all the props e.g. props.project.result.id or props.project.result.name
      * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
      * @returns {Array}
      */
@@ -861,7 +854,7 @@ class DisplayData extends React.Component {
      * Method responsible for changing displayed data when project is changed. Runs after every [twojaNazwa]{@link DisplayData#render} and holds the latest values of props and state.
      * If the project has been changed then initialize all the values (overwrite) in the state.
      * @method
-     * @param {Object} prevProps Props object containing all the props e.g. props.project.id or props.project.name
+     * @param {Object} prevProps Props object containing all the props e.g. props.project.result.id or props.project.result.name
      * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
      * @returns {Array}
      */
@@ -904,9 +897,7 @@ class DisplayData extends React.Component {
                     if(selected === "Mark attribute as: inactive" || selected === "Mark attribute as: active") {
                         col.active = !col.active;
                         cols[i] = col;
-                    } /* else if(selected === "Duplicate column") {
-                        //cols.splice(i+1,0,col);
-                    }*/ else if(selected === "Delete attribute") {
+                    } else if(selected === "Delete attribute") {
                         cols.splice(i,1);
                         didIRemoveColumn = true;
                     }
