@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
 
@@ -20,5 +21,9 @@ function StyledDialog(props) {
         </Dialog>
     )
 }
+
+StyledDialog.propTypes = {
+    open: PropTypes.bool.isRequired,
+};
 
 export default StyledDialog;
