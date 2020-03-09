@@ -24,12 +24,6 @@ public class UnionsWithSingleLimitingDecisionSerializer extends JsonSerializer<U
         jsonGenerator.writeFieldName("upwardUnions");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionsWithSingleLimitingDecision.getUpwardUnions()));
 
-        jsonGenerator.writeFieldName("roughSetCalculator");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(unionsWithSingleLimitingDecision.getRoughSetCalculator()));
-
-        jsonGenerator.writeFieldName("limitingDecisions");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(unionsWithSingleLimitingDecision.getLimitingDecisions()));
-
         jsonGenerator.writeEndObject();
     }
 }

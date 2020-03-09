@@ -47,23 +47,13 @@ class CreateProject extends Component {
 
         fetch('http://localhost:8080/projects', {
             method: 'POST',
-            body: data,
+            body: data
         }).then(response => {
             console.log(response)
             return response.json()
         }).then(result => {
             console.log("Wynik dzialania response.json():")
             console.log(result)
-
-            console.log("Atrybuty:")
-            result.attributes.forEach(element => {
-                console.log(element)
-            });
-
-            console.log("Obiekty:")
-            result.objects.forEach(element => {
-                console.log(element)
-            })
         }).catch(err => {
             console.log(err)
         })

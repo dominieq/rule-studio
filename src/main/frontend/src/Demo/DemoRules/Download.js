@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-class PutRules extends Component {
+class Download extends Component {
     constructor(props) {
         super(props);
 
@@ -15,25 +15,24 @@ class PutRules extends Component {
         })
     }
 
-    putRules = (event) => {
+    download = (event) => {
         event.preventDefault()
+        let filename = "filename";
 
-        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/rules`, {
-            method: 'PUT'
+        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/rules/download`, {
+            method: 'GET'
         }).then(response => {
             console.log(response)
-            console.log(response)
             if(response.status === 200) {
-                response.json().then(result => {
-                    console.log("Otrzymane reguły:")
+                filename =  response.headers.get('Content-Disposition').split('filename=')[1];
+                response.blob().then(result => {
+                    console.log("Wynik dzialania response.blob():")
                     console.log(result)
-                }).catch(err => {
-                    console.log(err)
-                })
-            } else if(response.status === 404) {
-                response.json().then(result => {
-                    console.log("Błąd 404.")
-                    console.log(result.message)
+                    let url = window.URL.createObjectURL(result);
+                    let link = document.createElement('a');
+                    link.href = url;
+                    link.download = filename;
+                    link.click();
                 }).catch(err => {
                     console.log(err)
                 })
@@ -55,10 +54,10 @@ class PutRules extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                <button onClick={this.putRules}>putRules</button>
+                <button onClick={this.download}>download</button>
             </div>
         )
     }
 }
 
-export default PutRules
+export default Download
