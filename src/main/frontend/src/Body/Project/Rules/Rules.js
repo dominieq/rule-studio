@@ -1,17 +1,17 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
-import Divider from "@material-ui/core/Divider";
+import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkButton from "../../../RuleWorkComponents/Inputs/RuleWorkButton";
-import RulesList from "./surfaces/RulesList";
-import RuleItem from "./data-display/RuleItem";
-import RuleDescription from "./data-display/RuleDescription";
+import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
+import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar"
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
+import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
 import FilePlus from "mdi-material-ui/FilePlus";
-import "./Rules.css";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
+import Divider from "@material-ui/core/Divider";
 
 class Rules extends Component {
     constructor(props) {
@@ -19,29 +19,49 @@ class Rules extends Component {
 
         this.state = {
             loading: false,
-            data: "",
+            data: [],
+            displayedData: [],
+            snackbarProps: {
+                open: false,
+                message: "",
+                variant: "info",
+            },
         };
-
-        this.ruleDesc = React.createRef();
     }
 
     componentDidMount() {
         const project = this.props.project;
 
-        fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
-            method: "GET",
-        }).then(response => {
-            console.log(response);
-            return response.json();
-        }).then(result => {
-            console.log(result);
-            this.setState({
-                data: result,
+        this.setState({
+            loading: true,
+        }, () => {
+            fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
+                method: "GET",
+            }).then(response => {
+                return response.json();
+            }).then(result => {
+                console.log(result);
+
+                const items = this.getItems(result);
+
+                this.setState({
+                    loading: false,
+                    data: items,
+                    displayedData: items,
+                });
+            }).catch(error => {
+                this.setState({
+                    loading: false,
+                    snackbarProps: {
+                        open: true,
+                        message: "Server error. Couldn't load rules",
+                        variant: "error",
+                    },
+                }, () => {
+                    console.log(error);
+                });
             });
-        }).catch(error => {
-            console.log(error);
-            console.log(error.message)
-        })
+        });
     }
 
     onUploadFileChanged = (event) => {
@@ -66,41 +86,70 @@ class Rules extends Component {
             fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
                 method: "PUT",
             }).then(response => {
-                console.log(response);
                 return response.json();
             }).then(result => {
                 console.log(result);
+
+                const items = this.getItems(result);
+
                 this.setState({
                     loading: false,
-                    data: result,
+                    data: items,
+                    displayedData: items,
                 });
             }).catch(error => {
                 this.setState({
                     loading: false,
+                    snackbarProps: {
+                        open: true,
+                        message: "Server error. Couldn't calculate rules!",
+                        variant: "error",
+                    },
                 }, () => {
                     console.log(error);
-                    console.log(error.message)
                 });
             });
         });
     };
 
+    onSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
 
-    onRuleAction = (hidden, rule) => {
-        this.ruleDesc.current.onRuleAction(hidden, rule);
+        this.setState({
+            snackbarProps: {
+                open: false,
+                message: "",
+                variant: "info",
+            },
+        });
+    };
+
+
+    getItems = (data) => {
+        let items = [];
+        if (data) {
+            for (let i = 0; i < data.length; i++) {
+                const id = i.toString();
+                const name = data[i].rule.toString;
+                const traits = data[i].ruleCharacteristics;
+                const tables = {
+                    indicesOfPositiveObjects: data[i].ruleCoverageInformation.indicesOfPositiveObjects,
+                    indicesOfNeutralObjects: data[i].ruleCoverageInformation.indicesOfNeutralObjects,
+                    indicesOfCoveredObjects: data[i].ruleCoverageInformation.indicesOfCoveredObjects,
+                    decisionsOfCoveredObjects: data[i].ruleCoverageInformation.decisionsOfCoveredObjects,
+                };
+
+                const item = new Item(id, name, traits, null, tables);
+                items = [...items, item];
+            }
+        }
+        return items;
     };
 
     render() {
-        const rules = [
-            {
-                name: "rule 1",
-                description: "I am rule number 1",
-            },
-            {
-                name: "rule 2",
-                description: "I am rule number 2",
-            },
-        ];
+        const {loading, displayedData, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
@@ -142,19 +191,16 @@ class Rules extends Component {
                         Calculate
                     </StyledButton>
                 </StyledPaper>
-                <RuleWorkBox id={"rules-body"} styleVariant={"tab-body2"}>
-                    <RulesList>
-                        {rules.map((rule, index) => (
-                            <RuleItem
-                                key={index}
-                                rule={rule}
-                                onRuleClick={(h, r) => this.onRuleAction(h, r)}
-                                onRuleBlur={(h, r) => this.onRuleAction(h, r)}
-                            />
-                        ))}
-                    </RulesList>
-                    <RuleDescription ref={this.ruleDesc}/>
+                <RuleWorkBox id={"rules-body"} styleVariant={"tab-body1"}>
+                    {loading ?
+                        <StyledCircularProgress />
+                        :
+                        <RuleWorkList>
+                            {displayedData}
+                        </RuleWorkList>
+                    }
                 </RuleWorkBox>
+                <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )
     }
