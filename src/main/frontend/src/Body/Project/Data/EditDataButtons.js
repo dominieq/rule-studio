@@ -7,7 +7,7 @@ import AddIcon from '@material-ui/icons/Add';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import EditIcon from '@material-ui/icons/Edit';
 import TransformIcon from '@material-ui/icons/Transform';
-import RuleWorkButton from '../../../RuleWorkComponents/Inputs/RuleWorkButton';
+import RuleWorkTooltip from '../../../RuleWorkComponents/Inputs/RuleWorkTooltip';
 
 const useStyles = makeStyles(theme => ({
     button: {

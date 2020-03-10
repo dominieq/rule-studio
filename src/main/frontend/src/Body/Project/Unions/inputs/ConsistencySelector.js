@@ -1,10 +1,8 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
-import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import RuleWorkHelper from "../../../../RuleWorkComponents/Feedback/RuleWorkHelper";
-import StyledSlider from "./StyledSlider";
-import "./ConsistencySelector.css"
-
+import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledSlider from "../../../../RuleWorkComponents/Inputs/StyledSlider";
 
 class ConsistencySelector extends Component {
     constructor(props) {
@@ -77,7 +75,7 @@ class ConsistencySelector extends Component {
         const consistency = this.state.consistency;
 
         return (
-            <div id={"consistency-selector"}>
+            <Fragment>
                 <RuleWorkHelper>
                     {"Consistency helper"}
                 </RuleWorkHelper>
@@ -97,7 +95,7 @@ class ConsistencySelector extends Component {
                     onChange={this.onSliderChange}
                     onMouseUp={this.onSliderMouseUp}
                 />
-            </div>
+            </Fragment>
         );
     }
 }

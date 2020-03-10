@@ -12,7 +12,7 @@ const StyledTabs = withStyles({
     indicator: {
         backgroundColor: "#545F66",
     },
-})(props => <Tabs {...props} />);
+}, {name: "MuiTabs"})(props => <Tabs {...props} />);
 
 const StyledTab = withStyles({
     root: {
