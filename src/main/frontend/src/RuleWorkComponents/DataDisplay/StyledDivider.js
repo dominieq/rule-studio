@@ -10,7 +10,7 @@ const useStyles = makeStyles({
         backgroundColor: "#2A3439"
     },
     panel: {
-        margin: "16px 0",
+        margin: "12px 0",
         height: 1,
         backgroundColor: "#ABFAA9"
     }

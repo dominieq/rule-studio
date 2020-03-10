@@ -1,40 +1,45 @@
 import React from "react";
 import PropTypes from "prop-types";
-import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
     row: {
+        margin: "4px 0",
         display: "flex",
         flexDirection: "row",
         flexWrap: "nowrap",
         alignItems: "center",
+    },
+    'multi-row': {
+        margin: "4px 0",
+        display: "flex",
+        flexDirection: "column",
     },
     footer: {
         marginTop: 8,
         display: "flex",
         flexDirection: "row-reverse"
     }
-},{name: "rule-work-drawer-box"});
+},{name: "rule-work-box"});
 
-function RuleWorkDrawerBox(props) {
+function RuleWorkSmallBox(props) {
     const {children, styleVariant, ...other} = props;
     const classes = useStyles();
 
     return (
-        <div className={clsx(classes[styleVariant])} {...other}>
+        <div className={classes[styleVariant]} {...other}>
             {children}
         </div>
     )
 }
 
-RuleWorkDrawerBox.propTypes = {
+RuleWorkSmallBox.propTypes = {
     children: PropTypes.node,
-    styleVariant: PropTypes.oneOf(["header", "row", "footer"])
+    styleVariant: PropTypes.oneOf(["row", "multi-row", "footer"])
 };
 
-RuleWorkDrawerBox.defaultProps = {
+RuleWorkSmallBox.defaultProps = {
     styleVariant: "row",
 };
 
-export default RuleWorkDrawerBox;
+export default RuleWorkSmallBox;

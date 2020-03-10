@@ -21,7 +21,7 @@ const useStylesDefault = makeStyles({
         position: "relative",
         width: "fit-content",
         height: "fit-content",
-        padding: "20px",
+        padding: "8px 16px",
         color: "#ABFAA9",
         backgroundColor: "#545F66",
     }
