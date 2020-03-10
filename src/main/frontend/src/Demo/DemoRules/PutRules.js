@@ -22,7 +22,6 @@ class PutRules extends Component {
             method: 'PUT'
         }).then(response => {
             console.log(response)
-            console.log(response)
             if(response.status === 200) {
                 response.json().then(result => {
                     console.log("Otrzymane reguły:")

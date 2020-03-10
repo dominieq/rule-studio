@@ -44,22 +44,22 @@ public class RulesService {
         return project;
     }
 
-    public RuleSetWithCharacteristics getRules(UUID id) {
+    public RuleSetWithComputableCharacteristics getRules(UUID id) {
         logger.info("Id:\t" + id);
 
         Project project = getProjectFromProjectsContainer(id);
 
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRuleSetWithCharacteristics();
-        if(ruleSetWithCharacteristics == null) {
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        if(ruleSetWithComputableCharacteristics == null) {
             EmptyResponseException ex = new EmptyResponseException("Rules", id);
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        return project.getRuleSetWithCharacteristics();
+        return project.getRuleSetWithComputableCharacteristics();
     }
 
-    public RuleSetWithCharacteristics putRules(UUID id) {
+    public RuleSetWithComputableCharacteristics putRules(UUID id) {
         logger.info("Id:\t" + id);
 
         Project project = getProjectFromProjectsContainer(id);
@@ -106,11 +106,11 @@ public class RulesService {
         RuleSetWithComputableCharacteristics downwardPossibleRules = (new VCDomLEM(possibleRuleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
         downwardPossibleRules.calculateAllCharacteristics();
 
-        RuleSetWithCharacteristics tmpRuleSet1 = RuleSetWithCharacteristics.join(upwardCertainRules, downwardCertainRules);
-        RuleSetWithCharacteristics tmpRuleSet2 = RuleSetWithCharacteristics.join(upwardPossibleRules, downwardPossibleRules);
-        project.setRuleSetWithCharacteristics(RuleSetWithCharacteristics.join(tmpRuleSet1, tmpRuleSet2));
+        RuleSetWithComputableCharacteristics tmpRuleSet1 = RuleSetWithComputableCharacteristics.join(upwardCertainRules, downwardCertainRules);
+        RuleSetWithComputableCharacteristics tmpRuleSet2 = RuleSetWithComputableCharacteristics.join(upwardPossibleRules, downwardPossibleRules);
+        project.setRuleSetWithComputableCharacteristics(RuleSetWithComputableCharacteristics.join(tmpRuleSet1, tmpRuleSet2));
 
-        return project.getRuleSetWithCharacteristics();
+        return project.getRuleSetWithComputableCharacteristics();
     }
 
     public Pair<String, Resource> download(UUID id) throws IOException {
@@ -118,10 +118,8 @@ public class RulesService {
 
         Project project = getProjectFromProjectsContainer(id);
 
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRuleSetWithCharacteristics();
-
         RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
-        String ruleMLString = ruleMLBuilder.toRuleMLString(project.getRuleSetWithCharacteristics(), 1);
+        String ruleMLString = ruleMLBuilder.toRuleMLString(project.getRuleSetWithComputableCharacteristics(), 1);
 
         InputStream is = new ByteArrayInputStream(ruleMLString.getBytes());
 

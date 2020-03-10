@@ -1,5 +1,8 @@
 package pl.put.poznan.rulework.service;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
@@ -22,7 +25,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class ProjectsService {
@@ -69,7 +71,7 @@ public class ProjectsService {
 
         RuleCoverageInformation[] ruleCoverageInformation = new RuleCoverageInformation[ruleSetWithCharacteristics.size()];
         for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
-            ruleCoverageInformation[i] = new RuleCoverageInformation(null, null, null, null, 0);
+            ruleCoverageInformation[i] = new RuleCoverageInformation(new IntArraySet(), new IntArraySet(), new IntArrayList(), new Int2ObjectArrayMap<>(), 0);
         }
 
         return new RuleSetWithComputableCharacteristics(
@@ -156,8 +158,8 @@ public class ProjectsService {
 
 
         if(rulesFile != null) { //load rules from file
-            RuleSetWithCharacteristics ruleSetWithCharacteristics = parseRules(rulesFile, attributes);
-            project.setRuleSetWithCharacteristics(ruleSetWithCharacteristics);
+            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = parseComputableRules(rulesFile, attributes);
+            project.setRuleSetWithComputableCharacteristics(ruleSetWithComputableCharacteristics);
         }
 
 

@@ -4,8 +4,7 @@ import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.csv.ObjectParser;
 import org.rulelearn.data.json.AttributeParser;
-import org.rulelearn.rules.Rule;
-import org.rulelearn.rules.RuleSetWithCharacteristics;
+import org.rulelearn.rules.*;
 import org.rulelearn.rules.ruleml.RuleParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +55,57 @@ public class ProjectService {
         return p;
     }
 
+    private RuleSetWithComputableCharacteristics parseComputableRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
+        Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
+        RuleParser ruleParser = new RuleParser(attributes);
+        parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
+
+        for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
+            logger.info("ruleSet.size=" + rswc.size());
+            for(int i = 0; i < rswc.size(); i++) {
+                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                logger.info(i + ":\t" + ruleCharacteristics.toString());
+            }
+        }
+
+        Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
+
+        Rule[] rules = new Rule[ruleSetWithCharacteristics.size()];
+        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+            rules[i] = ruleSetWithCharacteristics.getRule(i);
+        }
+
+        RuleCoverageInformation[] ruleCoverageInformation = new RuleCoverageInformation[ruleSetWithCharacteristics.size()];
+        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+            ruleCoverageInformation[i] = new RuleCoverageInformation(null, null, null, null, 0);
+        }
+
+        return new RuleSetWithComputableCharacteristics(
+                rules,
+                ruleCoverageInformation
+        );
+    }
+
+    private RuleSetWithCharacteristics parseRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
+        Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
+        RuleParser ruleParser = new RuleParser(attributes);
+        parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
+
+        for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
+            logger.info("ruleSet.size=" + rswc.size());
+            for(int i = 0; i < rswc.size(); i++) {
+                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                logger.info(i + ":\t" + ruleCharacteristics.toString());
+            }
+        }
+
+        Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
+
+        return ruleSetWithCharacteristics;
+    }
+
     public Project setProject(UUID id, MultipartFile metadataFile, MultipartFile dataFile, MultipartFile rulesFile) throws IOException {
         logger.info("Id:\t" + id);
         if(metadataFile != null)    logger.info("Metadata:\t" + metadataFile.getOriginalFilename() + "\t" + metadataFile.getContentType());
@@ -66,7 +116,7 @@ public class ProjectService {
 
         if((metadataFile == null) && (dataFile == null) && (rulesFile == null)) {
             project.setInformationTable(new InformationTable(new Attribute[0], new ArrayList<>()));
-            project.setRuleSetWithCharacteristics(null);
+            project.setRuleSetWithComputableCharacteristics(null);
 
             return project;
         }
@@ -84,7 +134,7 @@ public class ProjectService {
             }
 
             informationTable = new InformationTable(attributes, new ArrayList<>());
-            project.setRuleSetWithCharacteristics(null);
+            project.setRuleSetWithComputableCharacteristics(null);
         }
 
         if(dataFile != null) { //load new data from file
@@ -111,25 +161,11 @@ public class ProjectService {
             project.setInformationTable(informationTable);
         }
 
-        if(rulesFile != null) { //load new rules from file
+
+        if(rulesFile != null) { //load rules from file
             attributes = informationTable.getAttributes();
-
-            Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
-            RuleParser ruleParser = new RuleParser(attributes);
-            parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
-
-            for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
-                logger.debug("ruleSet.size={}", rswc.size());
-                for(int i = 0; i < rswc.size(); i++) {
-                    Rule rule = rswc.getRule(i);
-                    logger.debug("{}:\t{}", i, rule);
-                }
-            }
-
-            Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
-            RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
-
-            project.setRuleSetWithCharacteristics(ruleSetWithCharacteristics);
+            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = parseComputableRules(rulesFile, attributes);
+            project.setRuleSetWithComputableCharacteristics(ruleSetWithComputableCharacteristics);
         }
 
         return project;

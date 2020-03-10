@@ -23,11 +23,19 @@ public class RuleCharacteristicsSerializer extends JsonSerializer<RuleCharacteri
         try {
             value = function.get();
             jsonGenerator.writeFieldName(fieldName);
+
             if((value instanceof Double) && (Double.isInfinite((Double)value))) {
                 logger.info("Value of " + fieldName + " is infinite:\t" + value);
                 jsonGenerator.writeString(value.toString());
                 return;
             }
+
+            if((value instanceof Double) && (Double.isNaN((Double)value))) {
+                logger.info("Value of " + fieldName + " is NaN:\t" + value);
+                jsonGenerator.writeString(value.toString());
+                return;
+            }
+
             jsonGenerator.writeRawValue(value.toString());
         } catch (UnknownValueException e) {
             logger.debug(e.getMessage());
