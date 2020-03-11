@@ -2,16 +2,17 @@ import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkButton from "../../../RuleWorkComponents/Inputs/RuleWorkButton";
+import RuleWorkTooltip from "../../../RuleWorkComponents/Inputs/RuleWorkTooltip";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar"
+import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
+import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
 import FilePlus from "mdi-material-ui/FilePlus";
-import Divider from "@material-ui/core/Divider";
 
 class Rules extends Component {
     constructor(props) {
@@ -154,44 +155,51 @@ class Rules extends Component {
         return (
             <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
                 <StyledPaper id={"rules-bar"} styleVariant={"bar"} square={true} variant={"outlined"}>
-                    <RuleWorkButton
-                        accept={".json"}
-                        ariaLabel={"rules-upload-button"}
-                        buttonVariant={"icon"}
-                        isUpload={true}
-                        onClick={this.onUploadFileChanged}
-                        title={"Upload file"}
-                    >
-                        <CloudUploadIcon />
-                    </RuleWorkButton>
-                    <Divider orientation={"vertical"} flexItem={true}/>
-                    <RuleWorkButton
-                        ariaLabel={"rules-save-button"}
-                        buttonVariant={"icon"}
-                        onClick={this.onSaveFileClick}
-                        title={"Save file"}
-                    >
-                        <SaveIcon />
-                    </RuleWorkButton>
-                    <Divider orientation={"vertical"} flexItem={true}/>
-                    <RuleWorkButton
-                        ariaLabel={"rules-new-button"}
-                        buttonVariant={"icon"}
-                        onClick={this.onNewFileClick}
-                        title={"New file"}
-                    >
-                        <FilePlus />
-                    </RuleWorkButton>
+                    <RuleWorkTooltip title={"Upload file"}>
+                        <RuleWorkUpload
+                            accept={".json"}
+                            id={"rules-upload-button"}
+                            onChange={this.onUploadFileChanged}
+                        >
+                            <StyledButton
+                                aria-label={"rules-upload-button"}
+                                isIcon={true}
+                                component={"span"}
+                            >
+                                <CloudUploadIcon />
+                            </StyledButton>
+                        </RuleWorkUpload>
+                    </RuleWorkTooltip>
+                    <StyledDivider />
+                    <RuleWorkTooltip title={"Save file"}>
+                        <StyledButton
+                            aria-label={"rules-save-button"}
+                            isIcon={true}
+                            onClick={this.onSaveFileClick}
+                        >
+                            <SaveIcon />
+                        </StyledButton>
+                    </RuleWorkTooltip>
+                    <StyledDivider />
+                    <RuleWorkTooltip title={"New file"}>
+                        <StyledButton
+                            aria-label={"rules-new-button"}
+                            isIcon={true}
+                            onClick={this.onNewFileClick}
+                        >
+                            <FilePlus />
+                        </StyledButton>
+                    </RuleWorkTooltip>
                     <span style={{flexGrow: 1}} />
                     <StyledButton
-                        buttonVariant={"contained"}
-                        styleVariant={"green"}
                         onClick={this.onCalculateClick}
+                        themeVariant={"primary"}
+                        variant={"contained"}
                     >
                         Calculate
                     </StyledButton>
                 </StyledPaper>
-                <RuleWorkBox id={"rules-body"} styleVariant={"tab-body1"}>
+                <RuleWorkBox id={"rules-body"} styleVariant={"tab-body"}>
                     {loading ?
                         <StyledCircularProgress />
                         :

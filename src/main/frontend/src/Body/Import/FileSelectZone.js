@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import RuleWorkButton from "../../../RuleWorkComponents/Inputs/RuleWorkButton";
-import StyledFileChip from "../data-display/StyledFileChip";
+import RuleWorkTooltip from "../../RuleWorkComponents/Inputs/RuleWorkTooltip";
+import RuleWorkUpload from "../../RuleWorkComponents/Inputs/RuleWorkUpload";
+import StyledButton from "../../RuleWorkComponents/Inputs/StyledButton";
+import StyledFileChip from "../../RuleWorkComponents/DataDisplay/StyledFileChip";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Typography from "@material-ui/core/Typography";
 import DeleteCircle from "mdi-material-ui/DeleteCircle";
@@ -68,16 +70,21 @@ class FileSelectZone extends Component {
                     {"Choose " + variant + " file: "}
                 </Typography>
                 {this.renderFile(file)}
-                <RuleWorkButton
-                    accept={accept}
-                    ariaLabel={variant + "-upload-button"}
-                    buttonVariant={"icon"}
-                    isUpload={true}
-                    onClick={this.onInputChange}
-                    title={"Upload " + variant}
-                >
-                    <FileUpload/>
-                </RuleWorkButton>
+                <RuleWorkTooltip title={"Upload " + variant}>
+                    <RuleWorkUpload
+                        accept={accept}
+                        id={"upload-" + variant}
+                        onChange={this.onInputChange}
+                    >
+                        <StyledButton
+                            aria-label={"upload-" + variant}
+                            isIcon={true}
+                            component={"span"}
+                        >
+                            <FileUpload/>
+                        </StyledButton>
+                    </RuleWorkUpload>
+                </RuleWorkTooltip>
             </div>
         );
     }

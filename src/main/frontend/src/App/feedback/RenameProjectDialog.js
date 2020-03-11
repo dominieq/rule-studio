@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import StyledButton from "../../RuleWorkComponents/Inputs/StyledButton";
 import StyledDialog from "../../RuleWorkComponents/Feedback/StyledDialog";
 import StyledDialogContent from "../../RuleWorkComponents/Feedback/StyledDialogContent";
 import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
 
 class RenameProjectDialog extends Component {
     constructor(props) {
@@ -73,18 +73,22 @@ class RenameProjectDialog extends Component {
                     </RuleWorkTextField>
                 </StyledDialogContent>
                 <DialogActions>
-                    <Button
+                    <StyledButton
                         autoFocus
                         onClick={this.onCancelClick}
+                        themeVariant={"secondary"}
+                        variant={"outlined"}
                     >
                         Cancel
-                    </Button>
-                    <Button
+                    </StyledButton>
+                    <StyledButton
                         disabled={!name}
                         onClick={this.onOkClick}
+                        themeVariant={"primary"}
+                        variant={"outlined"}
                     >
                         Ok
-                    </Button>
+                    </StyledButton>
                 </DialogActions>
                 {children}
             </StyledDialog>
