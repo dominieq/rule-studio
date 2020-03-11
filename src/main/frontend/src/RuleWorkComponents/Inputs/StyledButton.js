@@ -1,16 +1,16 @@
-import React from "react";
+import React, {Fragment} from "react";
 import PropTypes from "prop-types";
-import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles({
     text: {
         color: props => ({
             "inherit": "inherit",
-            "green": "#6BD425",
-            "red": "#4C061D"
-        }[props.styleVariant]),
+            "primary": "#ABFAA9",
+            "secondary": "#E8D963"
+        }[props.themeVariant]),
     },
     contained: {
         color: "#2A3439",
@@ -27,45 +27,62 @@ const useStyles = makeStyles({
     outlined: {
         color: props => ({
             "inherit": "inherit",
-            "green": "#66FF66",
-            "red": "#F2545B",
-        }[props.styleVariant]),
+            "primary": "#ABFAA9",
+            "secondary": "#E8D963",
+        }[props.themeVariant]),
         borderColor: props => ({
             "inherit": "inherit",
-            "green": "#6BD425",
-            "red": "#4C061D",
-        }[props.styleVariant]),
+            "primary": "#ABFAA9",
+            "secondary": "#E8D963",
+        }[props.themeVariant]),
     },
     icon: {
-        minWidth: 0,
+        padding: 6,
+        color: props => ({
+            "inherit": "inherit",
+            "primary": "#ABFAA9",
+            "secondary": "#E8D963"
+        })[props.themeVariant]
     },
 }, {name: "styled-button"});
 
 function StyledButton(props) {
-    const {children, buttonVariant, styleVariant, ...other} = props;
+    const {children, isIcon, themeVariant, variant, ...other} = props;
     const classes = useStyles(props);
 
     return (
-        <Button
-            {...other}
-            className={clsx(classes[buttonVariant])}
-            {...styleVariant === "inherit" ? {color: styleVariant} : null}
-            {...buttonVariant !== "icon" ? {variant: buttonVariant} : null}
-        >
-            {children}
-        </Button>
+        <Fragment>
+            {isIcon ?
+               <IconButton
+                   className={classes.icon}
+                   {...other}
+               >
+                   {children}
+               </IconButton>
+                :
+                <Button
+                    className={classes[variant]}
+                    variant={variant}
+                    {...other}
+                >
+                    {children}
+                </Button>
+            }
+        </Fragment>
     )
 }
 
 StyledButton.propTypes = {
     children: PropTypes.node,
-    buttonVariant: PropTypes.oneOf(["text", "outlined", "contained", "icon"]),
-    styleVariant: PropTypes.oneOf(["inherit", "green", "red"]),
+    isIcon: PropTypes.bool,
+    themeVariant: PropTypes.oneOf(["inherit", "primary", "secondary"]),
+    variant: PropTypes.oneOf(["text", "outlined", "contained"]),
 };
 
 StyledButton.defaultProps = {
-    buttonVariant: "text",
-    styleVariant: "inherit"
+    isIcon: false,
+    themeVariant: "inherit",
+    variant: "text",
 };
 
 export default StyledButton;

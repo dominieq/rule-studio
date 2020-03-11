@@ -1,17 +1,15 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import RuleWorkBox from "../../RuleWorkComponents/Containers/RuleWorkBox";
+import FileSelectZone from "./FileSelectZone";
+import RuleWorkBox  from "../../RuleWorkComponents/Containers/RuleWorkBox";
+import RuleWorkSmallBox from "../../RuleWorkComponents/Containers/RuleWorkSmallBox"
 import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import StyledCollapsibleDivider from "./data-display/StyledCollapsibleDivider";
-import StyledContent from "./containers/StyledContent";
-import StyledDivider from "./data-display/StyledDivider";
-import StyledFooter from "./containers/StyledFooter";
-import StyledHeader from "./containers/StyledHeader";
-import StyledPaper from "../../RuleWorkComponents/Surfaces/StyledPaper";
-import StyledSwitch from "./inputs/StyledSwitch";
-import Collapse from "@material-ui/core/Collapse";
-import FileSelectZone from "./inputs/FileSelectZone";
 import StyledButton from "../../RuleWorkComponents/Inputs/StyledButton";
+import RuleWorkCollapsibleDivider from "../../RuleWorkComponents/Inputs/RuleWorkCollapsibleDivider";
+import StyledDivider from "../../RuleWorkComponents/DataDisplay/StyledDivider";
+import StyledPaper from "../../RuleWorkComponents/Surfaces/StyledPaper";
+import StyledSwitch from "../../RuleWorkComponents/Inputs/StyledSwitch";
+import Collapse from "@material-ui/core/Collapse";
 
 class Import extends Component{
     constructor(props) {
@@ -107,7 +105,7 @@ class Import extends Component{
         return (
             <RuleWorkBox id={"rule-work-import"} onKeyPress={this.onEnterClick} styleVariant={"body"}>
                 <StyledPaper id={"import-panel"} elevation={6} styleVariant={"panel"} square={true}>
-                    <StyledHeader>
+                    <RuleWorkSmallBox>
                         <RuleWorkTextField
                             fullWidth={true}
                             onChange={this.onProjectNameChange}
@@ -115,27 +113,29 @@ class Import extends Component{
                         >
                             Project name
                         </RuleWorkTextField>
-                    </StyledHeader>
-                    <StyledDivider flexItem={true} />
-                    <StyledSwitch
-                        label={"Create project with metadata"}
-                        checked={checked}
-                        onChange={this.onCheckboxChange}
-                    />
+                    </RuleWorkSmallBox>
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <RuleWorkSmallBox>
+                        <StyledSwitch
+                            label={"Create project with metadata"}
+                            checked={checked}
+                            onChange={this.onCheckboxChange}
+                        />
+                    </RuleWorkSmallBox>
                     <Collapse in={checked} unmountOnExit={true}>
-                        <StyledContent>
+                        <RuleWorkSmallBox styleVariant={"multi-row"}>
                             <FileSelectZone
                                 variant={"metadata"}
                                 accept={".json"}
                                 onInputChange={this.onInputChange}
                                 onInputDelete={this.onInputDelete}
                             />
-                            <StyledCollapsibleDivider
+                            <RuleWorkCollapsibleDivider
                                 onClick={this.onExpandClick}
                                 expanded={expand}
                             />
                             <Collapse in={expand} unmountOnExit={true}>
-                                <StyledContent>
+                                <RuleWorkSmallBox styleVariant={"multi-row"}>
                                     <FileSelectZone
                                         variant={"data"}
                                         accept={".json,.csv"}
@@ -148,29 +148,30 @@ class Import extends Component{
                                         onInputChange={this.onInputChange}
                                         onInputDelete={this.onInputDelete}
                                     />
-                                </StyledContent>
+                                </RuleWorkSmallBox>
                             </Collapse>
-                        </StyledContent>
+                        </RuleWorkSmallBox>
                     </Collapse>
-                    <StyledDivider flexItem={true} hidden={!expand} />
-                    <StyledFooter >
+                    <StyledDivider hidden={!expand} orientation={"horizontal"} styleVariant={"panel"} />
+                    <RuleWorkSmallBox styleVariant={"footer"}>
                         <StyledButton
-                            buttonVariant={"outlined"}
                             id={"footer-accept-button"}
                             onClick={this.onAcceptButtonClick}
-                            styleVariant={"green"}
+                            themeVariant={"primary"}
+                            variant={"outlined"}
                         >
                             Accept
                         </StyledButton>
                         <StyledButton
-                            buttonVariant={"outlined"}
                             id={"footer-cancel-button"}
                             onClick={this.onClearClick}
-                            styleVariant={"red"}
+                            style={{marginRight: 12}}
+                            themeVariant={"secondary"}
+                            variant={"outlined"}
                         >
                             Clear
                         </StyledButton>
-                    </StyledFooter>
+                    </RuleWorkSmallBox>
                 </StyledPaper>
             </RuleWorkBox>
         );

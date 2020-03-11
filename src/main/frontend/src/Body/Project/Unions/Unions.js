@@ -3,15 +3,21 @@ import PropTypes from "prop-types";
 import ConsistencySelector from "./inputs/ConsistencySelector";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
+import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
+import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkHelper from "../../../RuleWorkComponents/Feedback/RuleWorkHelper";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import RuleWorkSelect from "../../../RuleWorkComponents/Inputs/RuleWorkSelect";
 import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
+import RuleWorkTooltip from "../../../RuleWorkComponents/Inputs/RuleWorkTooltip";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import Divider from "@material-ui/core/Divider";
-import Typography from "@material-ui/core/Typography";
+import Calculator from "mdi-material-ui/Calculator";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import SvgIcon from "@material-ui/core/SvgIcon";
+import {mdiCog} from "@mdi/js";
 import "./Unions.css";
 
 class Unions extends Component {
@@ -24,12 +30,15 @@ class Unions extends Component {
             displayedData: [],
             consistency: 0.0,
             measure: "epsilon",
+            openSettings: false,
             snackbarProps: {
                 open: false,
                 message: "",
                 variant: "info"
             },
         };
+
+        this.upperBar = React.createRef();
     }
 
     componentDidMount() {
@@ -68,6 +77,18 @@ class Unions extends Component {
             });
         }
     }
+
+    onSettingsClick = () => {
+        this.setState(prevState => ({
+            openSettings: !prevState.openSettings,
+        }));
+    };
+
+    onSettingsClose = () => {
+        this.setState({
+            openSettings: false,
+        });
+    };
 
     onConsistencyChange = (consistency) => {
         this.setState({
@@ -167,43 +188,68 @@ class Unions extends Component {
     };
 
     render() {
-        const {loading, displayedData, consistency, measure, snackbarProps} = this.state;
+        const {loading, displayedData, consistency, measure, openSettings, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-unions"} styleVariant={"tab"}>
-                <StyledPaper id={"unions-bar"} styleVariant={"bar"} square={true} variant={"outlined"}>
-                    <ConsistencySelector
-                        onConsistencyChange={(c) => this.onConsistencyChange(c)}
-                    />
-                    <Divider flexItem={true} orientation={"vertical"} />
-                    <RuleWorkHelper >
-                        {"Consistency helper"}
-                    </RuleWorkHelper>
-                    <RuleWorkSelect
-                        disabledChildren={["rough membership"]}
-                        label={"Select measure"}
-                        onChange={this.onSelectChange}
-                        value={measure}
-                    >
-                        {["epsilon", "rough membership"]}
-                    </RuleWorkSelect>
-                    <span>
-                        <Typography variant={"subtitle2"}>
-                            Current consistency: {consistency}
-                        </Typography>
-                    </span>
-                    <Divider flexItem={true} orientation={"vertical"} />
-                    <StyledButton
-                        buttonVariant={"contained"}
-                        disabled={!this.props.project || loading}
-                        disableElevation
-                        onClick={this.onCountUnionsClick}
-                        styleVariant={"green"}
-                    >
-                        Calculate
-                    </StyledButton>
+                <StyledPaper id={"unions-bar"} paperRef={this.upperBar} square={true} variant={"outlined"}>
+                    <RuleWorkTooltip title={"Click to choose consistency & measure"}>
+                        <StyledButton isIcon={true} onClick={this.onSettingsClick}>
+                            <SvgIcon><path d={mdiCog}/></SvgIcon>
+                        </StyledButton>
+                    </RuleWorkTooltip>
+                    <StyledDivider />
+                    <RuleWorkTooltip title={`Calculate with consistency ${consistency}`}>
+                        <StyledButton
+                            disabled={!this.props.project || loading}
+                            disableElevation
+                            onClick={this.onCountUnionsClick}
+                            startIcon={<Calculator />}
+                            themeVariant={"primary"}
+                            variant={"contained"}
+                        >
+                            Calculate
+                        </StyledButton>
+                    </RuleWorkTooltip>
+                    <span style={{flexGrow: 1}} />
+                    <StyledDivider />
                 </StyledPaper>
-                <RuleWorkBox id={"unions-list"} styleVariant={"tab-body1"}>
+                <RuleWorkDrawer
+                    height={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
+                    id={"unions-settings-drawer"}
+                    open={openSettings}
+                >
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <RuleWorkSmallBox id={"consistency-selector"}>
+                        <ConsistencySelector
+                            onConsistencyChange={this.onConsistencyChange}
+                        />
+                    </RuleWorkSmallBox>
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <RuleWorkSmallBox id={"measure-selector"}>
+                        <RuleWorkHelper>
+                            {"Consistency helper"}
+                        </RuleWorkHelper>
+                        <RuleWorkSelect
+                            disabledChildren={["rough membership"]}
+                            label={"Select measure"}
+                            onChange={this.onSelectChange}
+                            value={measure}
+                        >
+                            {["epsilon", "rough membership"]}
+                        </RuleWorkSelect>
+                    </RuleWorkSmallBox>
+                    <RuleWorkSmallBox styleVariant={"footer"}>
+                        <StyledButton
+                            isIcon={true}
+                            onClick={this.onSettingsClose}
+                            themeVariant={"secondary"}
+                        >
+                            <ChevronLeftIcon />
+                        </StyledButton>
+                    </RuleWorkSmallBox>
+                </RuleWorkDrawer>
+                <RuleWorkBox id={"unions-list"} styleVariant={"tab-body"}>
                 {loading ?
                     <StyledCircularProgress/>
                     :
