@@ -1,6 +1,8 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import RuleWorkButton from "./RuleWorkButton";
+import {makeStyles} from "@material-ui/core/styles";
+import StyledButton from "./StyledButton";
+import StyledPaper from "../Surfaces/StyledPaper";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Grow from "@material-ui/core/Grow";
@@ -8,6 +10,38 @@ import MenuList from "@material-ui/core/MenuList";
 import MenuItem from "@material-ui/core/MenuItem";
 import Popper from "@material-ui/core/Popper";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+
+const useStyles = makeStyles({
+    left: {
+        borderRight: "1px solid #545F66",
+        '& .MuiButton-root': {
+            borderRadius: "4px 0 0 4px",
+            minWidth: 36,
+            padding: "6px 0",
+        },
+    },
+    right: {
+        '& .MuiButton-root': {
+            borderRadius: "0 4px 4px 0",
+        },
+    },
+}, {name: "button-wrapper"});
+
+function ButtonWrapper(props) {
+    const {children, placement} = props;
+    const classes = useStyles();
+
+    return (
+        <div className={classes[placement]}>
+            {children}
+        </div>
+    )
+}
+
+ButtonWrapper.propTypes = {
+    children: PropTypes.element.isRequired,
+    placement: PropTypes.oneOf(["left", "right"]),
+};
 
 class RuleWorkButtonGroup extends Component {
     constructor(props) {
@@ -27,8 +61,14 @@ class RuleWorkButtonGroup extends Component {
         }));
     };
 
-    onPopperClose = () => {
+    onPopperClose = (event) => {
+        if (this.anchorRef.current && this.anchorRef.current.contains(event.target)) {
+            return;
+        }
 
+        this.setState({
+            open: false,
+        });
     };
 
     onMenuItemClick = (event, index) => {
@@ -45,19 +85,24 @@ class RuleWorkButtonGroup extends Component {
 
         return (
             <div {...other}>
-                <ButtonGroup aria-label={"split button"} ref={this.anchorRef} variant={"text"} >
-                    <RuleWorkButton
-                        aria-controls={open ? 'split-button-menu' : undefined}
-                        aria-expanded={open ? true : undefined}
-                        ariaLabel={"select classification method"}
-                        aria-haspopup={"menu"}
-                        buttonVariant={"icon"}
-                        onClick={this.onToggleButtonClick}
-                        title={"Choose method of performing classification"}
-                    >
-                        <ArrowDropDownIcon />
-                    </RuleWorkButton>
-                    {childrenArray[selected]}
+                <ButtonGroup aria-label={"split button"} ref={this.anchorRef}>
+                    <ButtonWrapper placement={"left"}>
+                        <StyledButton
+                            aria-controls={open ? 'split-button-menu' : undefined}
+                            aria-expanded={open ? true : undefined}
+                            aria-label={"select classification method"}
+                            aria-haspopup={"menu"}
+                            disableElevation={true}
+                            onClick={this.onToggleButtonClick}
+                            themeVariant={"primary"}
+                            variant={"contained"}
+                        >
+                            <ArrowDropDownIcon />
+                        </StyledButton>
+                    </ButtonWrapper>
+                    <ButtonWrapper placement={"right"}>
+                        {childrenArray[selected]}
+                    </ButtonWrapper>
                 </ButtonGroup>
                 <Popper
                     anchorEl={this.anchorRef.current}
@@ -73,7 +118,7 @@ class RuleWorkButtonGroup extends Component {
                                 transformOrigin: placement === 'bottom' ? 'center-top' : 'center-bottom',
                             }}
                         > 
-                            <div>
+                            <StyledPaper styleVariant={"popper"}>
                                 <ClickAwayListener onClickAway={this.onPopperClose}>
                                     <MenuList >
                                         {options.map((option, index) => (
@@ -87,7 +132,7 @@ class RuleWorkButtonGroup extends Component {
                                         ))}
                                     </MenuList>
                                 </ClickAwayListener>
-                            </div>
+                            </StyledPaper>
                         </Grow>
                     )}
                 </Popper>

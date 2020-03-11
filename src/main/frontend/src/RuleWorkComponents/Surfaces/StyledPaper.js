@@ -4,12 +4,14 @@ import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 
-const useStylesDefault = makeStyles({
+const useStyles = makeStyles({
+    paper: {
+        color: "#ABFAA9",
+        backgroundColor: "#545F66",
+    },
     bar: {
         position: "relative",
         padding: "2px 15px 2px",
-        color: "#ABFAA9",
-        backgroundColor: "#545F66",
         display: "flex",
         flexDirection: "row",
         flexWrap: "nowrap",
@@ -22,18 +24,22 @@ const useStylesDefault = makeStyles({
         width: "fit-content",
         height: "fit-content",
         padding: "8px 16px",
-        color: "#ABFAA9",
-        backgroundColor: "#545F66",
+    },
+    popper: {
+        backgroundColor: "#ABFAA9",
+        border: "1px solid #66FF66",
+        color: "#2A3439",
+        marginTop: "1px",
     }
 }, {name: "rule-work"});
 
 function StyledPaper(props) {
     const {children, styleVariant, paperRef, ...other} = props;
-    const classesDefault = useStylesDefault();
+    const classes = useStyles();
 
     return (
             <Paper
-                className={clsx(classesDefault[styleVariant])}
+                className={clsx(classes.paper, classes[styleVariant])}
                 {...paperRef ? {ref: paperRef} : null}
                 {...other}
             >
@@ -45,7 +51,7 @@ function StyledPaper(props) {
 StyledPaper.propTypes = {
     children: PropTypes.node,
     paperRef: PropTypes.object,
-    styleVariant: PropTypes.oneOf(["bar", "panel"]),
+    styleVariant: PropTypes.oneOf(["bar", "panel", "popper"]),
 };
 
 StyledPaper.defaultProps = {
