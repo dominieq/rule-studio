@@ -6,6 +6,7 @@ import StyledButton from "../RuleWorkComponents/Inputs/StyledButton";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import HomeIcon from "@material-ui/icons/Home";
+import RuleWorkTooltip from "../RuleWorkComponents/Inputs/RuleWorkTooltip";
 
 const useStyles = makeStyles({
     colorPrimary: {
@@ -21,12 +22,14 @@ function Header(props) {
     return (
         <AppBar classes={{colorPrimary: classes.colorPrimary}} position={"relative"}>
             <Toolbar>
-                <StyledButton buttonVariant={"icon"} onClick={() => onButtonClick("Home")}>
+                <StyledButton color={"inherit"} isIcon={true} onClick={() => onButtonClick("Home")}>
                     <HomeIcon />
                 </StyledButton>
-                <StyledButton onClick={() => onButtonClick("Import")}>
-                    Import
-                </StyledButton>
+                <RuleWorkTooltip title={"Import files and create new project"}>
+                    <StyledButton onClick={() => onButtonClick("Import")}>
+                        New
+                    </StyledButton>
+                </RuleWorkTooltip>
                 <ProjectMenu {...other}/>
                 <StyledButton onClick={() => onButtonClick("Help")}>
                     Help

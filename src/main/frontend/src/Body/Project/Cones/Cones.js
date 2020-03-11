@@ -8,6 +8,7 @@ import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextFi
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import Calculator from "mdi-material-ui/Calculator";
 
 class Cones extends Component {
     constructor(props) {
@@ -17,12 +18,15 @@ class Cones extends Component {
             loading: false,
             data: [],
             displayedData: [],
+            openSettings: false,
             snackbarProps: {
                 open: false,
                 message: "",
                 variant: "info",
             },
         };
+
+        this.upperBar = React.createRef();
     }
 
     componentDidMount() {
@@ -166,23 +170,26 @@ class Cones extends Component {
 
         return (
             <RuleWorkBox id={"rule-work-cones"} styleVariant={"tab"}>
-                <StyledPaper id={"cones-bar"} styleVariant={"bar"} square={true} variant={"outlined"}>
+                <StyledPaper id={"cones-bar"} paperRef={this.upperBar} square={true} variant={"outlined"}>
+                    <StyledButton
+                        disabled={!this.props.project || loading}
+                        disableElevation={true}
+                        onClick={this.onCalculateClick}
+                        startIcon={<Calculator />}
+                        themeVariant={"primary"}
+                        variant={"contained"}
+                    >
+                        Calculate
+                    </StyledButton>
+                    <span style={{flexGrow: 1}}/>
                     <RuleWorkTextField
                         type={"search"}
                         onChange={this.onFilterChange}
                     >
                         Filter objects
                     </RuleWorkTextField>
-                    <span style={{flexGrow: 1}}/>
-                    <StyledButton
-                        buttonVariant={"contained"}
-                        onClick={this.onCalculateClick}
-                        styleVariant={"green"}
-                    >
-                        Calculate
-                    </StyledButton>
                 </StyledPaper>
-                <RuleWorkBox id={"cones-list"} styleVariant={"tab-body1"}>
+                <RuleWorkBox id={"cones-list"} styleVariant={"tab-body"}>
                     {loading ?
                         <StyledCircularProgress />
                         :

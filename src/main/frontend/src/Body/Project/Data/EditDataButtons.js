@@ -6,6 +6,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import AddIcon from '@material-ui/icons/Add';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import EditIcon from '@material-ui/icons/Edit';
+import TransformIcon from '@material-ui/icons/Transform';
+import RuleWorkTooltip from '../../../RuleWorkComponents/Inputs/RuleWorkTooltip';
 
 const useStyles = makeStyles(theme => ({
     button: {
@@ -24,9 +26,10 @@ export default function IconLabelButtons(props) {
           variant="contained"
           color="primary"
           className={classes.button}
-          startIcon={<AddIcon />}
+          
           onClick={() => props.insertRow(0,0)}
         >
+          < AddIcon />
           Add new example
         </Button>
 
@@ -78,9 +81,19 @@ export default function IconLabelButtons(props) {
           onClick={() => props.saveToFileDialog()}
         >
           Save to file
-        </Button><div className="data-modified" key={props.modified}> 
-        {props.modified ? "Data has been modified! Don't forget to save it" : null}
-       </div>
+        </Button>
+              
+      <Button
+        variant="contained"
+        color="primary"
+        className={classes.button}
+        startIcon={<TransformIcon />}
+        onClick={() => props.openOnTransform()}
+      >
+        Transform
+      </Button><div className="data-modified" key={props.modified}> 
+      {props.modified ? "Data has been modified! Save it" : null}
+      </div>
       </div>
     );
 }

@@ -1,6 +1,7 @@
 import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
-import RuleWorkButton from "../RuleWorkComponents/Inputs/RuleWorkButton";
+import RuleWorkTooltip from "../RuleWorkComponents/Inputs/RuleWorkTooltip";
+import StyledButton from "../RuleWorkComponents/Inputs/StyledButton";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";
@@ -43,23 +44,24 @@ class ProjectMenu extends Component {
         if (this.props.currentProject > 0) {
             return (
                 <Fragment>
-                    <RuleWorkButton
-                        ariaLabel={"rename-project-button"}
-                        buttonVariant={"icon"}
-                        onClick={this.props.onProjectRename}
-                        title={"Rename project"}
-                    >
-                        <RenameBox />
-                    </RuleWorkButton>
+                    <RuleWorkTooltip title={"Rename project"}>
+                        <StyledButton
+                            aria-label={"rename-project-button"}
+                            isIcon={true}
+                            onClick={this.props.onProjectRename}
+                        >
+                            <RenameBox />
+                        </StyledButton>
+                    </RuleWorkTooltip>
                     <span />
-                    <RuleWorkButton
-                        ariaLabel={"delete-project-button"}
-                        buttonVariant={"icon"}
-                        onClick={this.props.onProjectDelete}
-                        title={"Delete project"}
-                    >
-                        <DeleteIcon />
-                    </RuleWorkButton>
+                    <RuleWorkTooltip title={"Delete project"}>
+                        <StyledButton
+                            aria-label={"delete-project-button"}
+                            isIcon={true}
+                            onClick={this.props.onProjectDelete}>
+                            <DeleteIcon />
+                        </StyledButton>
+                    </RuleWorkTooltip>
                 </Fragment>
             )
         }  else {

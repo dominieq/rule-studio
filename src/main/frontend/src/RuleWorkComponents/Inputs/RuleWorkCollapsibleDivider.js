@@ -4,9 +4,8 @@ import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import "./StyledCollapsibleDivider.css";
 
-const useStyles = makeStyles(theme => ({
+const useStylesButton = makeStyles(theme => ({
     root: {
         padding: 0,
     },
@@ -24,7 +23,7 @@ const useStyles = makeStyles(theme => ({
 
 function ExpandButton(props) {
     const expanded = props.expanded;
-    const classes =  useStyles();
+    const classes =  useStylesButton();
 
     return (
         <IconButton
@@ -40,23 +39,47 @@ function ExpandButton(props) {
     )
 }
 
-function StyledCollapsibleDivider(props) {
+const useStylesDivider = makeStyles({
+    root: {
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "nowrap",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        cursor: "pointer",
+    },
+    label: {
+        fontSize: "smaller",
+        color: "#2A3439",
+        minWidth: "fit-content",
+        marginRight: "1em",
+        marginTop: "-1px",
+    },
+    'horizontal-line': {
+        height: "1px",
+        width: "100%",
+        backgroundColor: "#2A3439",
+    },
+}, {name: "styled-collapsible-divider"});
+
+function RuleWorkCollapsibleDivider(props) {
     const {onClick, expanded} = props;
+    const classes = useStylesDivider();
 
     return (
-        <div onClick={onClick} className={"styled-collapsible-divider"}>
+        <div onClick={onClick} className={classes.root}>
             <ExpandButton expanded={expanded} />
-            <div className={"divider-label"}>
+            <div className={classes.label}>
                 Optional files
             </div>
-            <div className={"divider-horizontal-line"}/>
+            <div className={classes['horizontal-line']}/>
         </div>
     )
 }
 
-StyledCollapsibleDivider.propTypes = {
+RuleWorkCollapsibleDivider.propTypes = {
     onClick: PropTypes.func,
     expanded: PropTypes.bool,
 };
 
-export default StyledCollapsibleDivider
+export default RuleWorkCollapsibleDivider

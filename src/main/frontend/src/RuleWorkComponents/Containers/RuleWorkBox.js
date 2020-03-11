@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
@@ -17,25 +16,13 @@ const useStyles = makeStyles({
         flexDirection: "column",
         justifyContent: "flex-start",
     },
-    "tab-body1": {
+    "tab-body": {
         margin: "2.5%",
         flexGrow: 1,
         display: "flex",
         flexDirection: "column",
         alignItems: "center"
     },
-    "tab-body2": {
-        margin: "2.5%",
-        flexGrow: 1,
-        display: "flex",
-        flexDirection: "row",
-    },
-    "tab-column": {
-        margin: "0 2.5%",
-        width: "45%",
-        display: "flex",
-        flexDirection: "column"
-    }
 }, {name: "rule-work"});
 
 function RuleWorkBox(props) {
@@ -43,7 +30,7 @@ function RuleWorkBox(props) {
     const classes = useStyles();
 
     return (
-        <div {...other} className={clsx(classes[styleVariant])}>
+        <div className={classes[styleVariant]} {...other}>
             {children}
         </div>
     )
@@ -51,7 +38,11 @@ function RuleWorkBox(props) {
 
 RuleWorkBox.propTypes = {
     children: PropTypes.node,
-    styleVariant: PropTypes.oneOf(["body", "tab", "tab-body1", "tab-body2", "tab-column"]).isRequired,
+    styleVariant: PropTypes.oneOf(["body", "tab", "tab-body"]),
+};
+
+RuleWorkBox.defaultProps = {
+    styleVariant: "body",
 };
 
 export default RuleWorkBox;

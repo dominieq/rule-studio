@@ -1,17 +1,13 @@
-#unions-bar > .MuiAvatar-root {
-    margin: 0 8px;
-}
-
-#unions-bar > span {
-    flex-grow: 1;
-    padding-right: 15px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-#unions-bar > hr + button {
+#unions-settings-drawer .MuiTypography-root {
     margin-left: 8px;
+}
+
+#consistency-selector > .MuiFormControl-root {
+    margin-right: 6px;
+    max-width: 175px;
+}
+
+#consistency-selector > .MuiSlider-root {
+    margin-left: 6px;
+    max-width: 175px;
 }
