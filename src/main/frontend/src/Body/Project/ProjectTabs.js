@@ -7,6 +7,8 @@ import DisplayData from "./Data/DisplayData";
 import Cones from "./Cones/Cones";
 import Rules from "./Rules/Rules";
 import Unions from "./Unions/Unions";
+import CrossValidation from "./CrossValidation/CrossValidation";
+import Classification from "./Classification/Classification";
 
 const StyledTabs = withStyles({
     indicator: {
@@ -81,8 +83,8 @@ class ProjectTabs extends Component {
                         1: <Cones {...this.props} value={1} />,
                         2: <Unions {...this.props} value={2} />,
                         3: <Rules {...this.props} value={3} />,
-                        4: "Classification",
-                        5: "Cross-validation",
+                        4: <Classification {...this.props} value={4} />,
+                        5: <CrossValidation {...this.props} value={5} />,
                     }[value]
                 }
             </Fragment>
