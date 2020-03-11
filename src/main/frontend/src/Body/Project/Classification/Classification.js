@@ -1,15 +1,22 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkButton from "../../../RuleWorkComponents/Inputs/RuleWorkButton";
 import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
+import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import RuleWorkSelect from "../../../RuleWorkComponents/Inputs/RuleWorkSelect";
+import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
 import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import RuleWorkTooltip from "../../../RuleWorkComponents/Inputs/RuleWorkTooltip";
+import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import Divider from "@material-ui/core/Divider";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import SvgIcon from "@material-ui/core/SvgIcon";
+import {mdiCog} from "@mdi/js"
 import "./Classification.css";
 
 class Classification extends Component {
@@ -20,14 +27,29 @@ class Classification extends Component {
             loading: false,
             data: [],
             displayedData: [],
+            openSettings: false,
             ruleType: "certain",
             snackbarProps: undefined,
         };
+
+        this.upperBar = React.createRef();
     }
 
     componentDidMount() {
         console.log("Fetching classification from server...");
     }
+
+    onSettingsClick = () => {
+        this.setState(prevState => ({
+            openSettings: !prevState.openSettings,
+        }));
+    };
+
+    onSettingsClose = () => {
+        this.setState({
+            openSettings: false,
+        });
+    };
 
     onCalculateClick = () => {
         console.log("Fetching classification from server...");
@@ -54,54 +76,90 @@ class Classification extends Component {
     };
 
     render() {
-        const {loading, displayedData, ruleType, snackbarProps} = this.state;
+        const {loading, displayedData, openSettings, ruleType, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-classification"} styleVariant={"tab"}>
-                <StyledPaper id={"classification-bar"} styleVariant={"bar"} square={true} variant={"outlined"}>
+                <StyledPaper
+                    id={"classification-bar"}
+                    paperRef={this.upperBar}
+                    styleVariant={"bar"}
+                    square={true}
+                    variant={"outlined"}
+                >
+                    <RuleWorkTooltip title={"Click to choose rule type"}>
+                        <StyledButton
+                            isIcon={true}
+                            onClick={this.onSettingsClick}
+                        >
+                            <SvgIcon><path d={mdiCog}/></SvgIcon>
+                        </StyledButton>
+                    </RuleWorkTooltip>
+                    <StyledDivider />
+                    <RuleWorkButtonGroup
+                        id={"classification-button-group"}
+                        options={["Classify current data", "Choose new data & classify"]}
+                    >
+                        <StyledButton
+                            aria-label={"classify-current-file"}
+                            disableElevation={true}
+                            onClick={this.onCalculateClick}
+                            themeVariant={"primary"}
+                            variant={"contained"}
+                        >
+                            Classify current data
+                        </StyledButton>
+                        <RuleWorkUpload
+                            accept={".json,.csv"}
+                            id={"classify-new-file"}
+                            onChange={this.onCalculateClick}
+                        >
+                            <StyledButton
+                                aria-label={"classify-new-file"}
+                                disableElevation={true}
+                                component={"span"}
+                                themeVariant={"primary"}
+                                variant={"contained"}
+                            >
+                                Choose new data & classify
+                            </StyledButton>
+                        </RuleWorkUpload>
+                    </RuleWorkButtonGroup>
+                    <span style={{flexGrow: 1}} />
                     <RuleWorkTextField
                         type={"search"}
                         onChange={this.onFilterChange}
                     >
                         Filter objects
                     </RuleWorkTextField>
-                    <span style={{flexGrow: 1}} />
-                    <RuleWorkSelect
-                        disabledChildren={["possible"]}
-                        label={"Choose rule type"}
-                        onChange={this.onRuleTypeChange}
-                        value={ruleType}
-                    >
-                        {["certain", "possible"]}
-                    </RuleWorkSelect>
-                    <Divider flexItem={true} orientation={"vertical"} />
-                    <RuleWorkButtonGroup
-                        id={"classification-button-group"}
-                        options={["Classify current data", "Choose new data & classify"]}
-                    >
-                        <RuleWorkButton
-                            ariaLabel={"classify-current-file"}
-                            buttonVariant={"contained"}
-                            onClick={this.onCalculateClick}
-                            styleVariant={"green"}
-                            title={"Temporary tooltip"}
-                        >
-                            Classify current data
-                        </RuleWorkButton>
-                        <RuleWorkButton
-                            accept={".json,.csv"}
-                            ariaLabel={"classify-new-file"}
-                            buttonVariant={"contained"}
-                            isUpload={true}
-                            onClick={this.onCalculateClick}
-                            styleVariant={"green"}
-                            title={"Temporary tooltip"}
-                        >
-                            Choose new data & classify
-                        </RuleWorkButton>
-                    </RuleWorkButtonGroup>
                 </StyledPaper>
-                <RuleWorkBox id={"classification-body"} styleVariant={"tab-body1"} >
+                <RuleWorkDrawer
+                    height={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
+                    id={"classification-settings-drawer"}
+                    open={openSettings}
+                >
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <RuleWorkSmallBox id={"rule-type-selector"}>
+                        <RuleWorkSelect
+                            disabledChildren={["possible"]}
+                            label={"Choose rule type"}
+                            onChange={this.onRuleTypeChange}
+                            value={ruleType}
+                        >
+                            {["certain", "possible"]}
+                        </RuleWorkSelect>
+                    </RuleWorkSmallBox>
+                    <RuleWorkSmallBox id={"classification-settings-footer"} styleVariant={"footer"}>
+                        <StyledButton
+                            isIcon={true}
+                            onClick={this.onSettingsClose}
+                            themeVariant={"secondary"}
+                        >
+                            <ChevronLeftIcon />
+                        </StyledButton>
+                    </RuleWorkSmallBox>
+                </RuleWorkDrawer>
+                <RuleWorkBox id={"classification-body"} styleVariant={"tab-body"} >
                     {loading ?
                         <StyledCircularProgress />
                         :
