@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.model.Classification;
 import pl.put.poznan.rulework.service.ClassificationService;
 
@@ -30,7 +31,7 @@ public class ClassificationController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Classification> getClassification(
             @PathVariable("id") UUID id) throws IOException {
-        logger.info("Getting classification");
+        logger.info("Getting classification...");
         Classification result = classificationService.getClassification(id);
 
         return ResponseEntity.ok(result);
@@ -38,9 +39,16 @@ public class ClassificationController {
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Classification> putClassification(
-            @PathVariable("id") UUID id) throws IOException {
-        logger.info("Putting classification");
-        Classification result = classificationService.putClassification(id);
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "data", required = false) MultipartFile dataFle) throws IOException {
+        logger.info("Putting classification...");
+
+        Classification result = null;
+        if(dataFle != null) {
+            result = classificationService.putClassificationNewData(id, dataFle);
+        } else {
+            result = classificationService.putClassification(id);
+        }
 
         return ResponseEntity.ok(result);
     }

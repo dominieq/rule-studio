@@ -89,9 +89,6 @@ public class RulesService {
                 ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(stoppingConditionChecker)).
                 build();
 
-        RuleInducerComponents possibleRuleInducerComponents = new PossibleRuleInducerComponents.Builder().
-                build();
-
         ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
         ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
         ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
@@ -101,14 +98,7 @@ public class RulesService {
         RuleSetWithComputableCharacteristics downwardCertainRules = (new VCDomLEM(certainRuleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
         downwardCertainRules.calculateAllCharacteristics();
 
-        RuleSetWithComputableCharacteristics upwardPossibleRules = (new VCDomLEM(possibleRuleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider)).generateRules();
-        upwardPossibleRules.calculateAllCharacteristics();
-        RuleSetWithComputableCharacteristics downwardPossibleRules = (new VCDomLEM(possibleRuleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
-        downwardPossibleRules.calculateAllCharacteristics();
-
-        RuleSetWithComputableCharacteristics tmpRuleSet1 = RuleSetWithComputableCharacteristics.join(upwardCertainRules, downwardCertainRules);
-        RuleSetWithComputableCharacteristics tmpRuleSet2 = RuleSetWithComputableCharacteristics.join(upwardPossibleRules, downwardPossibleRules);
-        project.setRuleSetWithComputableCharacteristics(RuleSetWithComputableCharacteristics.join(tmpRuleSet1, tmpRuleSet2));
+        project.setRuleSetWithComputableCharacteristics(RuleSetWithComputableCharacteristics.join(upwardCertainRules, downwardCertainRules));
 
         return project.getRuleSetWithComputableCharacteristics();
     }
