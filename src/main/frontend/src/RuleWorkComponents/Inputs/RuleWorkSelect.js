@@ -7,15 +7,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 
 function RuleWorkSelect(props) {
-    const {children, disabledChildren, label, labelVariant, isPropagationStopped, ...other} = props;
+    const {children, disabledChildren, label, labelVariant, ...other} = props;
     const classes = useOutlinedInputStyles();
-
-    const propagationStoppedProps = () => {
-        return ({
-            onClick: event => event.stopPropagation(),
-            onFocus: event => event.stopPropagation(),
-        });
-    };
 
     return (
         <Fragment>
@@ -26,12 +19,7 @@ function RuleWorkSelect(props) {
                 :
                 null
             }
-            <FormControl
-                classes={{root: classes.root}}
-                {...isPropagationStopped ? propagationStoppedProps() : null}
-                margin={"dense"}
-                variant={"outlined"}
-            >
+            <FormControl classes={{root: classes.root}} margin={"dense"} variant={"outlined"}>
                 <Select {...other}>
                     {children.map((option, index) => (
                         <MenuItem
@@ -53,12 +41,10 @@ RuleWorkSelect.propTypes = {
     disabledChildren: PropTypes.array,
     label: PropTypes.string,
     labelVariant: PropTypes.string,
-    isPropagationStopped: PropTypes.bool,
 };
 
 RuleWorkSelect.defaultProps = {
     labelVariant: "body1",
-    isPropagationStopped: false,
 };
 
 export default RuleWorkSelect;
