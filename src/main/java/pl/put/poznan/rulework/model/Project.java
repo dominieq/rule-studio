@@ -3,8 +3,6 @@ package pl.put.poznan.rulework.model;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.rules.RuleSet;
-import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
 
 import java.util.ArrayList;
@@ -16,7 +14,8 @@ public class Project {
     private InformationTable informationTable;
     private DominanceCones dominanceCones;
     private UnionsWithSingleLimitingDecision unions;
-    private RuleSetWithCharacteristics ruleSetWithCharacteristics;
+    private RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics;
+    private Classification classification;
 
     private boolean calculatedDominanceCones;
     private boolean calculatedUnionsWithSingleLimitingDecision;
@@ -27,7 +26,8 @@ public class Project {
         this.informationTable = new InformationTable(new Attribute[0], new ArrayList<>());
         this.calculatedDominanceCones = false;
         this.calculatedUnionsWithSingleLimitingDecision = false;
-        this.ruleSetWithCharacteristics = null;
+        this.ruleSetWithComputableCharacteristics = null;
+        this.classification = null;
     }
 
     public Project(String name, InformationTable informationTable) {
@@ -36,7 +36,8 @@ public class Project {
         this.informationTable = informationTable;
         this.calculatedDominanceCones = false;
         this.calculatedUnionsWithSingleLimitingDecision = false;
-        this.ruleSetWithCharacteristics = null;
+        this.ruleSetWithComputableCharacteristics = null;
+        this.classification = null;
     }
 
     public UUID getId() {
@@ -101,12 +102,20 @@ public class Project {
         this.calculatedUnionsWithSingleLimitingDecision = calculatedUnionsWithSingleLimitingDecision;
     }
 
-    public RuleSetWithCharacteristics getRuleSetWithCharacteristics() {
-        return ruleSetWithCharacteristics;
+    public RuleSetWithComputableCharacteristics getRuleSetWithComputableCharacteristics() {
+        return ruleSetWithComputableCharacteristics;
     }
 
-    public void setRuleSetWithCharacteristics(RuleSetWithCharacteristics ruleSetWithCharacteristics) {
-        this.ruleSetWithCharacteristics = ruleSetWithCharacteristics;
+    public void setRuleSetWithComputableCharacteristics(RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
+        this.ruleSetWithComputableCharacteristics = ruleSetWithComputableCharacteristics;
+    }
+
+    public Classification getClassification() {
+        return classification;
+    }
+
+    public void setClassification(Classification classification) {
+        this.classification = classification;
     }
 
     @Override
@@ -117,7 +126,8 @@ public class Project {
                 ", informationTable=" + informationTable +
                 ", dominanceCones=" + dominanceCones +
                 ", unions=" + unions +
-                ", ruleSetWithCharacteristics=" + ruleSetWithCharacteristics +
+                ", ruleSetWithComputableCharacteristics=" + ruleSetWithComputableCharacteristics +
+                ", classification=" + classification +
                 ", calculatedDominanceCones=" + calculatedDominanceCones +
                 ", calculatedUnionsWithSingleLimitingDecision=" + calculatedUnionsWithSingleLimitingDecision +
                 '}';

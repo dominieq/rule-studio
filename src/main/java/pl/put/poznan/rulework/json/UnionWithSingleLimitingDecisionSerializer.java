@@ -21,7 +21,7 @@ public class UnionWithSingleLimitingDecisionSerializer extends JsonSerializer<Un
         int attributeIndex = unionWithSingleLimitingDecision.getLimitingDecision().getAttributeIndices().iterator().nextInt(); //assumption that there is only one decision attribute
         EvaluationField evaluationField = unionWithSingleLimitingDecision.getLimitingDecision().getEvaluation(attributeIndex);
         if(evaluationField instanceof EnumerationField) {
-            jsonGenerator.writeRawValue(((EnumerationField)evaluationField).getElement());
+            jsonGenerator.writeString(((EnumerationField)evaluationField).getElement());
         } else if (evaluationField instanceof IntegerField) {
             jsonGenerator.writeNumber(((IntegerField)evaluationField).getValue());
         } else if (evaluationField instanceof RealField) {

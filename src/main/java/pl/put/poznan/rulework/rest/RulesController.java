@@ -1,7 +1,7 @@
 package pl.put.poznan.rulework.rest;
 
 import javafx.util.Pair;
-import org.rulelearn.rules.RuleSetWithCharacteristics;
+import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,18 +30,18 @@ public class RulesController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RuleSetWithCharacteristics> getRules (
+    public ResponseEntity<RuleSetWithComputableCharacteristics> getRules (
             @PathVariable("id") UUID id) {
         logger.info("Getting rules...");
-        RuleSetWithCharacteristics result = rulesService.getRules(id);
+        RuleSetWithComputableCharacteristics result = rulesService.getRules(id);
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RuleSetWithCharacteristics> putRules (
+    public ResponseEntity<RuleSetWithComputableCharacteristics> putRules (
             @PathVariable("id") UUID id) {
         logger.info("Putting rules...");
-        RuleSetWithCharacteristics result = rulesService.putRules(id);
+        RuleSetWithComputableCharacteristics result = rulesService.putRules(id);
         return ResponseEntity.ok(result);
     }
 
