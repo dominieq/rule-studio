@@ -1,13 +1,12 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import ConsistencySelector from "./inputs/ConsistencySelector";
+import ThresholdSelector from "../ProjectTabsUtils/ThresholdSelector";
+import MeasureSelector from "../ProjectTabsUtils/MeasureSelector";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import RuleWorkHelper from "../../../RuleWorkComponents/Feedback/RuleWorkHelper";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import RuleWorkSelect from "../../../RuleWorkComponents/Inputs/RuleWorkSelect";
 import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
 import RuleWorkTooltip from "../../../RuleWorkComponents/Inputs/RuleWorkTooltip";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
@@ -15,10 +14,8 @@ import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledC
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import Calculator from "mdi-material-ui/Calculator";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import SvgIcon from "@material-ui/core/SvgIcon";
-import {mdiCog} from "@mdi/js";
-import "./Unions.css";
+import {mdiCloseThick, mdiCog} from "@mdi/js";
 
 class Unions extends Component {
     constructor(props) {
@@ -28,7 +25,7 @@ class Unions extends Component {
             loading: false,
             data: [],
             displayedData: [],
-            consistency: 0.0,
+            threshold: 0.0,
             measure: "epsilon",
             openSettings: false,
             snackbarProps: {
@@ -90,13 +87,13 @@ class Unions extends Component {
         });
     };
 
-    onConsistencyChange = (consistency) => {
+    onThresholdChange = (threshold) => {
         this.setState({
-            consistency: consistency,
+            threshold: threshold,
         });
     };
 
-    onSelectChange = (event) => {
+    onMeasureChange = (event) => {
         this.setState({
             measure: event.target.value,
         });
@@ -106,8 +103,8 @@ class Unions extends Component {
         if (!this.props.project) return;
 
         const project = this.props.project;
-        const consistency = this.state.consistency;
-        const link = `http://localhost:8080/projects/${project.result.id}/unions?consistencyThreshold=${consistency}`;
+        const threshold = this.state.threshold;
+        const link = `http://localhost:8080/projects/${project.result.id}/unions?consistencyThreshold=${threshold}`;
 
         this.setState({
             loading: true,
@@ -159,8 +156,6 @@ class Unions extends Component {
 
         if (data) {
             for (let type of ["downwardUnions", "upwardUnions"]) {
-                console.log(type);
-                console.log(data[type]);
                 for (let i = 0; i < data[type].length; i++) {
                     const id = i.toString();
                     const name = data[type][i].unionType.replace("_", " ").toLowerCase();
@@ -188,7 +183,7 @@ class Unions extends Component {
     };
 
     render() {
-        const {loading, displayedData, consistency, measure, openSettings, snackbarProps} = this.state;
+        const {loading, displayedData, threshold, measure, openSettings, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-unions"} styleVariant={"tab"}>
@@ -199,7 +194,7 @@ class Unions extends Component {
                         </StyledButton>
                     </RuleWorkTooltip>
                     <StyledDivider />
-                    <RuleWorkTooltip title={`Calculate with consistency ${consistency}`}>
+                    <RuleWorkTooltip title={`Calculate with consistency ${threshold}`}>
                         <StyledButton
                             disabled={!this.props.project || loading}
                             disableElevation
@@ -220,24 +215,17 @@ class Unions extends Component {
                     open={openSettings}
                 >
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
-                    <RuleWorkSmallBox id={"consistency-selector"}>
-                        <ConsistencySelector
-                            onConsistencyChange={this.onConsistencyChange}
+                    <RuleWorkSmallBox id={"unions-measure-selector"}>
+                        <MeasureSelector
+                            onChange={this.onMeasureChange}
+                            value={measure}
                         />
                     </RuleWorkSmallBox>
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
-                    <RuleWorkSmallBox id={"measure-selector"}>
-                        <RuleWorkHelper>
-                            {"Consistency helper"}
-                        </RuleWorkHelper>
-                        <RuleWorkSelect
-                            disabledChildren={["rough membership"]}
-                            label={"Select measure"}
-                            onChange={this.onSelectChange}
-                            value={measure}
-                        >
-                            {["epsilon", "rough membership"]}
-                        </RuleWorkSelect>
+                    <RuleWorkSmallBox id={"unions-threshold-selector"}>
+                        <ThresholdSelector
+                            onChange={this.onThresholdChange}
+                        />
                     </RuleWorkSmallBox>
                     <RuleWorkSmallBox styleVariant={"footer"}>
                         <StyledButton
@@ -245,7 +233,7 @@ class Unions extends Component {
                             onClick={this.onSettingsClose}
                             themeVariant={"secondary"}
                         >
-                            <ChevronLeftIcon />
+                            <SvgIcon><path d={mdiCloseThick} /></SvgIcon>
                         </StyledButton>
                     </RuleWorkSmallBox>
                 </RuleWorkDrawer>

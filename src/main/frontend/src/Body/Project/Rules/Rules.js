@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
+import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
+import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkTooltip from "../../../RuleWorkComponents/Inputs/RuleWorkTooltip";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
@@ -10,9 +12,14 @@ import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import SvgIcon from "@material-ui/core/SvgIcon";
+import Calculator from "mdi-material-ui/Calculator";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
 import FilePlus from "mdi-material-ui/FilePlus";
+import {mdiCloseThick, mdiCog} from "@mdi/js";
+import ThresholdSelector from "../ProjectTabsUtils/ThresholdSelector";
+import MeasureSelector from "../ProjectTabsUtils/MeasureSelector";
 
 class Rules extends Component {
     constructor(props) {
@@ -22,12 +29,17 @@ class Rules extends Component {
             loading: false,
             data: [],
             displayedData: [],
+            threshold: 0.0,
+            measure: "epsilon",
+            openSettings: false,
             snackbarProps: {
                 open: false,
                 message: "",
                 variant: "info",
             },
         };
+
+        this.upperBar = React.createRef();
     }
 
     componentDidMount() {
@@ -65,17 +77,28 @@ class Rules extends Component {
         });
     }
 
-    onUploadFileChanged = (event) => {
-        const file = event.target.files[0];
-        console.log("Uploading file..." + file.name);
+    onSettingsClick = () => {
+        this.setState(prevState => ({
+            openSettings: !prevState.openSettings,
+        }));
     };
 
-    onSaveFileClick = () => {
-        console.log("Saving file...");
+    onSettingsClose = () => {
+        this.setState({
+            openSettings: false,
+        });
     };
 
-    onNewFileClick = () => {
-        console.log("Creating new file...");
+    onThresholdChange = (threshold) => {
+        this.setState({
+            threshold: threshold,
+        });
+    };
+
+    onMeasureChange = (event) => {
+        this.setState({
+            measure: event.target.value,
+        });
     };
 
     onCalculateClick = () => {
@@ -111,6 +134,19 @@ class Rules extends Component {
                 });
             });
         });
+    };
+
+    onUploadFileChanged = (event) => {
+        const file = event.target.files[0];
+        console.log("Uploading file..." + file.name);
+    };
+
+    onSaveFileClick = () => {
+        console.log("Saving file...");
+    };
+
+    onNewFileClick = () => {
+        console.log("Creating new file...");
     };
 
     onSnackbarClose = (event, reason) => {
@@ -150,11 +186,41 @@ class Rules extends Component {
     };
 
     render() {
-        const {loading, displayedData, snackbarProps} = this.state;
+        const {loading, displayedData, measure, openSettings, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
-                <StyledPaper id={"rules-bar"} styleVariant={"bar"} square={true} variant={"outlined"}>
+                <StyledPaper
+                    id={"rules-bar"}
+                    paperRef={this.upperBar}
+                    styleVariant={"bar"}
+                    square={true}
+                    variant={"outlined"}
+                >
+                    <RuleWorkTooltip title={"Click to choose consistency & measure"}>
+                        <StyledButton
+                            aria-label={"rules-settings-button"}
+                            isIcon={true}
+                            onClick={this.onSettingsClick}
+                            themeVariant={"primary"}
+                            variant={"contained"}
+                        >
+                            <SvgIcon><path d={mdiCog} /></SvgIcon>
+                        </StyledButton>
+                    </RuleWorkTooltip>
+                    <StyledDivider />
+                    <StyledButton
+                        aria-label={"rules-calculate-button"}
+                        disabled={!this.props.project || loading}
+                        disableElevation={true}
+                        onClick={this.onCalculateClick}
+                        startIcon={<Calculator />}
+                        themeVariant={"primary"}
+                        variant={"contained"}
+                    >
+                        Calculate
+                    </StyledButton>
+                    <StyledDivider />
                     <RuleWorkTooltip title={"Upload file"}>
                         <RuleWorkUpload
                             accept={".json"}
@@ -191,14 +257,36 @@ class Rules extends Component {
                         </StyledButton>
                     </RuleWorkTooltip>
                     <span style={{flexGrow: 1}} />
-                    <StyledButton
-                        onClick={this.onCalculateClick}
-                        themeVariant={"primary"}
-                        variant={"contained"}
-                    >
-                        Calculate
-                    </StyledButton>
                 </StyledPaper>
+                <RuleWorkDrawer
+                    height={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
+                    id={"rules-settings-drawer"}
+                    open={openSettings}
+                >
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <RuleWorkSmallBox id={"rules-measure-selector"}>
+                        <MeasureSelector
+                            onChange={this.onMeasureChange}
+                            value={measure}
+                        />
+                    </RuleWorkSmallBox>
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <RuleWorkSmallBox id={"rules-threshold-selector"}>
+                        <ThresholdSelector
+                            onChange={this.onThresholdChange}
+                        />
+                    </RuleWorkSmallBox>
+                    <RuleWorkSmallBox id={"rules-settings-footer"} styleVariant={"footer"}>
+                        <StyledButton
+                            aria-label={"rules-close-settings-button"}
+                            isIcon={true}
+                            onClick={this.onSettingsClose}
+                            themeVariant={"secondary"}
+                        >
+                            <SvgIcon><path d={mdiCloseThick} /></SvgIcon>
+                        </StyledButton>
+                    </RuleWorkSmallBox>
+                </RuleWorkDrawer>
                 <RuleWorkBox id={"rules-body"} styleVariant={"tab-body"}>
                     {loading ?
                         <StyledCircularProgress />
