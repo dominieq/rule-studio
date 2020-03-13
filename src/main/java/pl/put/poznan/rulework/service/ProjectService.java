@@ -106,11 +106,19 @@ public class ProjectService {
         return ruleSetWithCharacteristics;
     }
 
-    public Project setProject(UUID id, MultipartFile metadataFile, MultipartFile dataFile, MultipartFile rulesFile) throws IOException {
+    public Project setProject(
+            UUID id,
+            MultipartFile metadataFile,
+            MultipartFile dataFile,
+            MultipartFile rulesFile,
+            Character separator,
+            Boolean header) throws IOException {
         logger.info("Id:\t" + id);
-        if(metadataFile != null)    logger.info("Metadata:\t" + metadataFile.getOriginalFilename() + "\t" + metadataFile.getContentType());
-        if(dataFile != null)        logger.info("Data:\t" + dataFile.getOriginalFilename() + "\t" + dataFile.getContentType());
-        if(rulesFile != null)       logger.info("Rules:\t" + rulesFile.getOriginalFilename() + "\t" + rulesFile.getContentType());
+        if(metadataFile != null)    logger.info("Metadata:\t{}\t{}", metadataFile.getOriginalFilename(), metadataFile.getContentType());
+        if(dataFile != null)        logger.info("Data:\t{}\t{}", dataFile.getOriginalFilename(), dataFile.getContentType());
+        if(rulesFile != null)       logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
+        logger.info("Separator:\t{}", separator);
+        logger.info("Header:\t{}", header);
 
         Project project = getProjectFromProjectsContainer(id);
 
@@ -148,7 +156,10 @@ public class ProjectService {
 
             } else if (dataFile.getContentType().equals("application/vnd.ms-excel")) {
                 logger.info("Data type is csv");
-                ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
+                ObjectParser objectParser = new ObjectParser.Builder(attributes).
+                        separator(separator).
+                        header(header).
+                        build();
                 reader = new InputStreamReader(dataFile.getInputStream());
                 informationTable = objectParser.parseObjects(reader);
 

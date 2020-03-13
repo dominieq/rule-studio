@@ -1,5 +1,6 @@
 package pl.put.poznan.rulework.service;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
@@ -99,11 +100,19 @@ public class ProjectsService {
         return ruleSetWithCharacteristics;
     }
 
-    public Project createProject(String name, MultipartFile metadataFile, MultipartFile dataFile, MultipartFile rulesFile) throws IOException {
-        logger.info("Name:\t" + name);
-        if(metadataFile != null)    logger.info("Metadata:\t" + metadataFile.getOriginalFilename() + "\t" + metadataFile.getContentType());
-        if(dataFile != null)        logger.info("Data:\t" + dataFile.getOriginalFilename() + "\t" + dataFile.getContentType());
-        if(rulesFile != null)       logger.info("Rules:\t" + rulesFile.getOriginalFilename() + "\t" + rulesFile.getContentType());
+    public Project createProject(
+            String name,
+            MultipartFile metadataFile,
+            MultipartFile dataFile,
+            MultipartFile rulesFile,
+            Character separator,
+            Boolean header) throws IOException {
+        logger.info("Name:\t{}", name);
+        if(metadataFile != null)    logger.info("Metadata:\t{}\t{}", metadataFile.getOriginalFilename(), metadataFile.getContentType());
+        if(dataFile != null)        logger.info("Data:\t{}\t{}", dataFile.getOriginalFilename(), dataFile.getContentType());
+        if(rulesFile != null)       logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
+        logger.info("Separator:\t{}", separator);
+        logger.info("Header:\t{}", header);
 
         if(metadataFile == null) {
             return createEmptyProject(name);
@@ -129,7 +138,10 @@ public class ProjectsService {
 
             } else if (dataFile.getContentType().equals("application/vnd.ms-excel")) {
                 logger.info("Data type is csv");
-                ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
+                ObjectParser objectParser = new ObjectParser.Builder(attributes).
+                        separator(separator).
+                        header(header).
+                        build();
                 reader = new InputStreamReader(dataFile.getInputStream());
                 informationTable = objectParser.parseObjects(reader);
             } else {

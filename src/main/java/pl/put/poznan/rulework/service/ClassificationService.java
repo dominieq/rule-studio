@@ -121,9 +121,15 @@ public class ClassificationService {
         return classification;
     }
 
-    public Classification putClassificationNewData(UUID id, MultipartFile dataFile) throws IOException {
+    public Classification putClassificationNewData(
+            UUID id,
+            MultipartFile dataFile,
+            Character separator,
+            Boolean header) throws IOException {
         logger.info("Id:\t{}", id);
-        logger.info("Data:\t" + dataFile.getOriginalFilename() + "\t" + dataFile.getContentType());
+        logger.info("Data:\t{}\t{}", dataFile.getOriginalFilename(), dataFile.getContentType());
+        logger.info("Separator:\t{}", separator);
+        logger.info("Header:\t{}", header);
 
         Project project = getProjectFromProjectsContainer(id);
 
@@ -139,7 +145,10 @@ public class ClassificationService {
 
         } else if (dataFile.getContentType().equals("application/vnd.ms-excel")) {
             logger.info("Data type is csv");
-            ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
+            ObjectParser objectParser = new ObjectParser.Builder(attributes).
+                    separator(separator).
+                    header(header).
+                    build();
             reader = new InputStreamReader(dataFile.getInputStream());
             informationTable = objectParser.parseObjects(reader);
         } else {

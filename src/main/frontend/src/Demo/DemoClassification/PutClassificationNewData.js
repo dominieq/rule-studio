@@ -7,12 +7,26 @@ class PutClassificationNewData extends Component {
         this.state = {
             id_projektu: '3e004b4d-fb9a-4413-84b5-4d3f26c06f70',
             data: '',
+            separator: ',',
+            header: false
         }
     }
 
     handleIdChange = (event) => {
         this.setState({
             id_projektu: event.target.value
+        })
+    }
+
+    handleSeparatorChange = (event) => {
+        this.setState({
+            separator: event.target.value
+        })
+    }
+
+    handleHeaderChange = (event) => {
+        this.setState({
+            header: event.target.checked
         })
     }
 
@@ -27,6 +41,8 @@ class PutClassificationNewData extends Component {
 
         let data = new FormData()
         data.append('data', this.state.data)
+        data.append('separator', this.state.separator)
+        data.append('header', this.state.header)
 
         fetch(`http://localhost:8080/projects/${this.state.id_projektu}/classification`, {
             method: 'PUT',
@@ -49,6 +65,11 @@ class PutClassificationNewData extends Component {
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
                 data->
                 <input onChange={this.onDataChange} type="file"></input>
+                separator(only csv)->
+                <input type='text' value={this.state.separator} onChange={this.handleSeparatorChange} />
+                <input type="checkbox" id="headerPutClassificationNewData" onChange={this.handleHeaderChange} />
+                <label for="headerPutClassificationNewData"> header </label>
+                <br />
                 <button onClick={this.putClassificationNewData}>putClassificationNewData</button>
             </div>
         )

@@ -40,12 +40,14 @@ public class ClassificationController {
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Classification> putClassification(
             @PathVariable("id") UUID id,
-            @RequestParam(name = "data", required = false) MultipartFile dataFle) throws IOException {
+            @RequestParam(name = "data", required = false) MultipartFile dataFile,
+            @RequestParam(name = "separator", defaultValue = ",") Character separator,
+            @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
         logger.info("Putting classification...");
 
         Classification result = null;
-        if(dataFle != null) {
-            result = classificationService.putClassificationNewData(id, dataFle);
+        if(dataFile != null) {
+            result = classificationService.putClassificationNewData(id, dataFile, separator, header);
         } else {
             result = classificationService.putClassification(id);
         }

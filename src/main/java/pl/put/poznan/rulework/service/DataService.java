@@ -81,11 +81,11 @@ public class DataService {
         return new InputStreamResource(is);
     }
 
-    private InputStreamResource produceCsvResource(InformationTable informationTable) throws IOException {
+    private InputStreamResource produceCsvResource(InformationTable informationTable, String separator) throws IOException {
         StringWriter sw = new StringWriter();
 
         org.rulelearn.data.csv.InformationTableWriter itw = new org.rulelearn.data.csv.InformationTableWriter();
-        itw.writeObjects(informationTable, sw, ",");
+        itw.writeObjects(informationTable, sw, separator);
 
         byte[] barray = sw.toString().getBytes();
         InputStream is = new ByteArrayInputStream(barray);
@@ -104,16 +104,14 @@ public class DataService {
         return new Pair<>(project.getName(), resource);
     }
 
-    public Pair<String, Resource> getDownloadCsv(UUID id) throws IOException {
+    public Pair<String, Resource> getDownloadCsv(UUID id, String separator) throws IOException {
         logger.info("Downloading data in csv format");
         logger.info("Id:\t{}", id);
+        logger.info("Separator:\t{}", separator);
 
         Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
 
-        InputStreamResource resource = produceCsvResource(project.getInformationTable());
+        InputStreamResource resource = produceCsvResource(project.getInformationTable(), separator);
 
         return new Pair<>(project.getName(), resource);
     }
@@ -125,9 +123,6 @@ public class DataService {
         logger.info("Data:\t{}", data);
 
         Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
 
         InputStream targetStream;
         Reader reader;
@@ -151,16 +146,14 @@ public class DataService {
         return new Pair<>(project.getName(), resource);
     }
 
-    public Pair<String, Resource> putDownloadCsv(UUID id, String metadata, String data) throws IOException {
+    public Pair<String, Resource> putDownloadCsv(UUID id, String metadata, String data, String separator) throws IOException {
         logger.info("Downloading data in csv format");
         logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data:\t{}", data);
+        logger.info("Separator:\t{}", separator);
 
         Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
 
         InputStream targetStream;
         Reader reader;
@@ -179,7 +172,7 @@ public class DataService {
         InformationTable informationTable = objectParser.parseObjects(reader);
 
         // serialize data from InformationTable object
-        InputStreamResource resource = produceCsvResource(informationTable);
+        InputStreamResource resource = produceCsvResource(informationTable, separator);
 
         return new Pair<>(project.getName(), resource);
     }

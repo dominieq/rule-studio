@@ -7,6 +7,7 @@ class PutDataDownload extends Component {
         this.state = {
             id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f',
             format: 'json',
+            separator: ',',
             metadata: JSON.stringify(
               [
                 {
@@ -133,6 +134,12 @@ class PutDataDownload extends Component {
         })
     }
 
+    handleSeparatorChange = (event) => {
+        this.setState({
+            separator: event.target.value
+        })
+    }
+
     putDataDownload = (event) => {
         event.preventDefault()
         let filename = "filename";
@@ -140,6 +147,9 @@ class PutDataDownload extends Component {
         var link = `http://localhost:8080/projects/${this.state.id_projektu}/data/download`;
         if(this.state.format !== "") {
             link += `?format=${this.state.format}`;
+        }
+        if(this.state.separator !== "") {
+            link += `&separator=${this.state.separator}`;
         }
 
         console.log(link)
@@ -153,16 +163,27 @@ class PutDataDownload extends Component {
             body: formData
         }).then(response => {
             console.log(response)
-            filename =  response.headers.get('Content-Disposition').split('filename=')[1];
-            return response.blob()
-        }).then(result => {
-            console.log("Wynik dzialania response.blob():")
-            console.log(result)
-            let url = window.URL.createObjectURL(result);
-            let link = document.createElement('a');
-            link.href = url;
-            link.download = filename;
-            link.click();
+            if(response.status === 200) {
+                filename =  response.headers.get('Content-Disposition').split('filename=')[1];
+                response.blob().then(result => {
+                    console.log("Wynik dzialania response.blob():")
+                    console.log(result)
+                    let url = window.URL.createObjectURL(result);
+                    let link = document.createElement('a');
+                    link.href = url;
+                    link.download = filename;
+                    link.click();
+                }).catch(err => {
+                    console.log(err)
+                })
+            } else {
+                response.json().then(result => {
+                    console.log("Wynik dzialania response.json():")
+                    console.log(result)
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
         }).catch(err => {
             console.log(err)
         })
@@ -175,6 +196,8 @@ class PutDataDownload extends Component {
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
                 format->
                 <input type='text' value={this.state.format} onChange={this.handleFormatChange} />
+                separator(only csv)->
+                <input type='text' value={this.state.separator} onChange={this.handleSeparatorChange} />
                 <button onClick={this.putDataDownload}>putDataDownload</button>
             </div>
         )
