@@ -30,7 +30,7 @@ public class ProjectService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private Project getProjectFromProjectsContainer(UUID id) {
+    public static Project getProjectFromProjectsContainer(ProjectsContainer projectsContainer, UUID id) {
         Project project = projectsContainer.getProjectHashMap().get(id);
         if(project == null) {
             ProjectNotFoundException ex = new ProjectNotFoundException(id);
@@ -44,13 +44,13 @@ public class ProjectService {
     public Project getProject(UUID id) {
         logger.info("Id:\t" + id);
 
-        return getProjectFromProjectsContainer(id);
+        return getProjectFromProjectsContainer(projectsContainer, id);
     }
 
     public Project getProjectWithImposePreferenceOrder(UUID id, Boolean imposePreferenceOrder) {
         logger.info("Id:\t" + id);
         logger.info("ImposePreferenceOrder:\t" + imposePreferenceOrder);
-        Project p = getProjectFromProjectsContainer(id);
+        Project p = getProjectFromProjectsContainer(projectsContainer, id);
         p.setInformationTable(p.getInformationTable().imposePreferenceOrders(imposePreferenceOrder));
         return p;
     }
@@ -120,7 +120,7 @@ public class ProjectService {
         logger.info("Separator:\t{}", separator);
         logger.info("Header:\t{}", header);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = getProjectFromProjectsContainer(projectsContainer, id);
 
         if((metadataFile == null) && (dataFile == null) && (rulesFile == null)) {
             project.setInformationTable(new InformationTable(new Attribute[0], new ArrayList<>()));
@@ -168,7 +168,7 @@ public class ProjectService {
         logger.info("Id:\t" + id);
         logger.info("Name:\t" + name);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = getProjectFromProjectsContainer(projectsContainer, id);
 
         project.setName(name);
 

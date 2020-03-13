@@ -71,21 +71,10 @@ public class DataService {
         return informationTable;
     }
 
-    private Project getProjectFromProjectsContainer(UUID id) {
-        Project project = projectsContainer.getProjectHashMap().get(id);
-        if(project == null) {
-            ProjectNotFoundException ex = new ProjectNotFoundException(id);
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-
-        return project;
-    }
-
     public String getData(UUID id) throws IOException {
         logger.info("Id:\t" + id);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         StringWriter objectsWriter = new StringWriter();
         InformationTableWriter itw = new InformationTableWriter(false);
@@ -99,7 +88,7 @@ public class DataService {
         logger.info("Id:\t" + id);
         logger.info("Data:\t" + data);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InputStream targetStream = new ByteArrayInputStream(data.getBytes());
         Reader reader = new InputStreamReader(targetStream);
@@ -141,7 +130,7 @@ public class DataService {
         logger.info("Downloading data in json format");
         logger.info("Id:\t{}", id);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InputStreamResource resource = produceJsonResource(project.getInformationTable());
 
@@ -153,7 +142,7 @@ public class DataService {
         logger.info("Id:\t{}", id);
         logger.info("Separator:\t{}", separator);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InputStreamResource resource = produceCsvResource(project.getInformationTable(), separator);
 
@@ -166,7 +155,7 @@ public class DataService {
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data:\t{}", data);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InputStream targetStream;
         Reader reader;
@@ -197,7 +186,7 @@ public class DataService {
         logger.info("Data:\t{}", data);
         logger.info("Separator:\t{}", separator);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InputStream targetStream;
         Reader reader;

@@ -30,17 +30,6 @@ public class ClassificationService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private Project getProjectFromProjectsContainer(UUID id) {
-        Project project = projectsContainer.getProjectHashMap().get(id);
-        if(project == null) {
-            ProjectNotFoundException ex = new ProjectNotFoundException(id);
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-
-        return project;
-    }
-
     private Classification makeClassification(InformationTable informationTable, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
         /*logger.info("RuleSet size = {}", ruleSetWithComputableCharacteristics.size());
         for(int i = 0; i < ruleSetWithComputableCharacteristics.size(); i++) {
@@ -104,7 +93,7 @@ public class ClassificationService {
     public Classification getClassification(UUID id) {
         logger.info("Id;\t{}", id);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         return project.getClassification();
     }
@@ -112,7 +101,7 @@ public class ClassificationService {
     public Classification putClassification(UUID id) {
         logger.info("Id:\t{}", id);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
         InformationTable informationTable = project.getInformationTable();
 
         Classification classification = makeClassification(informationTable, project.getRuleSetWithComputableCharacteristics());
@@ -131,7 +120,7 @@ public class ClassificationService {
         logger.info("Separator:\t{}", separator);
         logger.info("Header:\t{}", header);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         Attribute[] attributes = project.getInformationTable().getAttributes();
         InformationTable informationTable = DataService.readDataFile(dataFile, attributes, separator, header);

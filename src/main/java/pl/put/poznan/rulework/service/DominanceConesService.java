@@ -26,21 +26,10 @@ public class DominanceConesService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private Project getProjectFromProjectsContainer(UUID id) {
-        Project project = projectsContainer.getProjectHashMap().get(id);
-        if(project == null) {
-            ProjectNotFoundException ex = new ProjectNotFoundException(id);
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-
-        return project;
-    }
-
     public DominanceCones getDominanceCones(UUID id) {
         logger.info("Id:\t" + id);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         if(!project.isCalculatedDominanceCones()) {
             project.getDominanceCones().calculateDCones(project.getInformationTable());

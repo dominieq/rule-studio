@@ -27,21 +27,10 @@ public class MetadataService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private Project getProjectFromProjectsContainer(UUID id) {
-        Project project = projectsContainer.getProjectHashMap().get(id);
-        if(project == null) {
-            ProjectNotFoundException ex = new ProjectNotFoundException(id);
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-
-        return project;
-    }
-
     public Attribute[] getMetadata(UUID id) {
         logger.info("Id:\t" + id);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         return project.getInformationTable().getAttributes();
     }
@@ -51,7 +40,7 @@ public class MetadataService {
         logger.info("Metadata:\t" + metadata);
 
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         Attribute[] attributes;
         AttributeParser attributeParser = new AttributeParser();
@@ -85,7 +74,7 @@ public class MetadataService {
     public Pair<String, Resource> getDownload(UUID id) throws IOException {
         logger.info("Id:\t" + id);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InputStreamResource resource = produceJsonResource(project.getInformationTable());
 
@@ -97,7 +86,7 @@ public class MetadataService {
         logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
         if(project == null) {
             return null;
         }

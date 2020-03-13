@@ -22,22 +22,11 @@ public class UnionsWithSingleLimitingDecisionService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private Project getProjectFromProjectsContainer(UUID id) {
-        Project project = projectsContainer.getProjectHashMap().get(id);
-        if(project == null) {
-            ProjectNotFoundException ex = new ProjectNotFoundException(id);
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-
-        return project;
-    }
-
     public UnionsWithSingleLimitingDecision getUnionsWithSingleLimitingDecision(UUID id, Double consistencyThreshold) {
         logger.info("Id:\t" + id);
         if(consistencyThreshold != null) logger.info("ConsistencyThreshold:\t" + consistencyThreshold);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         if(consistencyThreshold != null) {
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = new UnionsWithSingleLimitingDecision(
