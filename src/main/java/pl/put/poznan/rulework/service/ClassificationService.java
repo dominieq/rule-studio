@@ -133,41 +133,8 @@ public class ClassificationService {
 
         Project project = getProjectFromProjectsContainer(id);
 
-        Reader reader;
-        InformationTable informationTable = project.getInformationTable();
         Attribute[] attributes = project.getInformationTable().getAttributes();
-
-        if (dataFile.getContentType().equals("application/json")) {
-            logger.info("Data type is json");
-            org.rulelearn.data.json.ObjectParser objectParser = new org.rulelearn.data.json.ObjectParser.Builder(attributes).build();
-            reader = new InputStreamReader(dataFile.getInputStream());
-            informationTable = objectParser.parseObjects(reader);
-
-        } else if (dataFile.getContentType().equals("application/vnd.ms-excel")) {
-            logger.info("Data type is csv");
-            ObjectParser objectParser = new ObjectParser.Builder(attributes).
-                    separator(separator).
-                    header(header).
-                    build();
-            reader = new InputStreamReader(dataFile.getInputStream());
-            informationTable = objectParser.parseObjects(reader);
-        } else {
-            logger.error("Unrecognized format of data file: " + dataFile.getContentType());
-        }
-
-        if(logger.isTraceEnabled()) {
-            Table<EvaluationAttribute, EvaluationField> table = informationTable.getActiveConditionAttributeFields();
-            for(int i = 0; i < table.getNumberOfObjects(); i++) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(i);
-                sb.append(":");
-                for(int j = 0; j < table.getNumberOfAttributes(); j++) {
-                    sb.append("\t");
-                    sb.append(table.getField(i, j));
-                }
-                logger.trace(sb.toString());
-            }
-        }
+        InformationTable informationTable = DataService.readDataFile(dataFile, attributes, separator, header);
 
         Classification classification = makeClassification(informationTable, project.getRuleSetWithComputableCharacteristics());
         project.setClassification(classification);

@@ -147,25 +147,7 @@ public class ProjectService {
 
         if(dataFile != null) { //load new data from file
             attributes = informationTable.getAttributes();
-
-            if (dataFile.getContentType().equals("application/json")) {
-                logger.info("Data type is json");
-                org.rulelearn.data.json.ObjectParser objectParser = new org.rulelearn.data.json.ObjectParser.Builder(attributes).build();
-                reader = new InputStreamReader(dataFile.getInputStream());
-                informationTable = objectParser.parseObjects(reader);
-
-            } else if (dataFile.getContentType().equals("application/vnd.ms-excel")) {
-                logger.info("Data type is csv");
-                ObjectParser objectParser = new ObjectParser.Builder(attributes).
-                        separator(separator).
-                        header(header).
-                        build();
-                reader = new InputStreamReader(dataFile.getInputStream());
-                informationTable = objectParser.parseObjects(reader);
-
-            } else {
-                logger.error("Unrecognized format of data file: " + dataFile.getContentType());
-            }
+            informationTable = DataService.readDataFile(dataFile, attributes, separator, header);
         }
 
         if((metadataFile != null) || (dataFile != null)) { //don't use setter, when only rulesFile is provided - informationTable doesn't change

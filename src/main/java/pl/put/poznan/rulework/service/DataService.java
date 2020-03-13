@@ -2,21 +2,26 @@ package pl.put.poznan.rulework.service;
 
 import javafx.util.Pair;
 import org.rulelearn.data.Attribute;
+import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.data.Table;
 import org.rulelearn.data.json.AttributeParser;
 import org.rulelearn.data.json.InformationTableWriter;
 import org.rulelearn.data.json.ObjectParser;
+import org.rulelearn.types.EvaluationField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.exception.ProjectNotFoundException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -26,6 +31,45 @@ public class DataService {
 
     @Autowired
     ProjectsContainer projectsContainer;
+
+    public static InformationTable readDataFile(MultipartFile dataFile, Attribute[] attributes, Character separator, Boolean header) throws IOException {
+        Reader reader;
+        InformationTable informationTable =  new InformationTable(new Attribute[0], new ArrayList<>());
+
+        if (dataFile.getContentType().equals("application/json")) {
+            logger.info("Data type is json");
+            org.rulelearn.data.json.ObjectParser objectParser = new org.rulelearn.data.json.ObjectParser.Builder(attributes).build();
+            reader = new InputStreamReader(dataFile.getInputStream());
+            informationTable = objectParser.parseObjects(reader);
+
+        } else if (dataFile.getContentType().equals("application/vnd.ms-excel")) {
+            logger.info("Data type is csv");
+            org.rulelearn.data.csv.ObjectParser objectParser = new org.rulelearn.data.csv.ObjectParser.Builder(attributes).
+                    separator(separator).
+                    header(header).
+                    build();
+            reader = new InputStreamReader(dataFile.getInputStream());
+            informationTable = objectParser.parseObjects(reader);
+        } else {
+            logger.error("Unrecognized format of data file: " + dataFile.getContentType());
+        }
+
+        if(logger.isTraceEnabled()) {
+            Table<EvaluationAttribute, EvaluationField> table = informationTable.getActiveConditionAttributeFields();
+            for(int i = 0; i < table.getNumberOfObjects(); i++) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(i);
+                sb.append(":");
+                for(int j = 0; j < table.getNumberOfAttributes(); j++) {
+                    sb.append("\t");
+                    sb.append(table.getField(i, j));
+                }
+                logger.trace(sb.toString());
+            }
+        }
+
+        return informationTable;
+    }
 
     private Project getProjectFromProjectsContainer(UUID id) {
         Project project = projectsContainer.getProjectHashMap().get(id);
