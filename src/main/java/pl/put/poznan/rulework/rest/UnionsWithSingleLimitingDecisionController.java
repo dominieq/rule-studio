@@ -1,6 +1,5 @@
 package pl.put.poznan.rulework.rest;
 
-import org.rulelearn.approximations.Unions;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,18 @@ public class UnionsWithSingleLimitingDecisionController {
             @RequestParam(name = "consistencyThreshold", required = false) Double consistencyThreshold) {
         logger.info("Getting unions with single limiting decision...");
 
-        UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.getUnionsWithSingleLimitingDecision(id, consistencyThreshold);
+        UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.getUnionsWithSingleLimitingDecision(id);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UnionsWithSingleLimitingDecision> putDominanceCones(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "consistencyThreshold") Double consistencyThreshold) {
+        logger.info("Putting unions with single limiting decision...");
+
+        UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.putUnionsWithSingleLimitingDecision(id, consistencyThreshold);
 
         return ResponseEntity.ok(result);
     }
