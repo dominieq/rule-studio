@@ -1,9 +1,14 @@
 div.ReactVirtualized__Table__headerColumn {
    width: 100% !important;
    flex: unset !important;
+   font-weight: bolder;
 }
 
 .ReactVirtualized__Table__rowColumn{
     width: 100% !important;
     flex: unset !important;
+}
+
+.MuiTableCell-head {
+    font-weight: 1000 !important;
 }

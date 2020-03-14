@@ -53,14 +53,7 @@ class RuleWorkDialog extends Component {
     }
 
     getChosenObject = (tables) => {
-        const tmp = this.getChosenTable(tables,this.state.tableIndex);
-        if(Array.isArray(tmp)) return tmp[this.state.objectIndex];
-
-        let counter = 0;
-        for(let i in tmp) {
-            if(counter === this.state.tableIndex) return parseInt(i,10);
-            counter++;
-        } 
+        return this.getChosenTable(tables,this.state.tableIndex)[this.state.objectIndex];
     }
    
     getObjectBeforeDialog = (id, tabName) => {
@@ -98,7 +91,7 @@ class RuleWorkDialog extends Component {
                     <div className="ruleWorkDialog-right">
                         { characteristicsExist === true //if charecteristics exist then display them on the half of the heigt of the screen
                             &&  <div className="ruleWorkDialog-right-up">
-                                    <RuleWorkCharacteristics traits={traits} />
+                                    <RuleWorkCharacteristics traits={traits} informationTable={result.informationTable} />
                                 </div>
                         }
                         {characteristicsExist === true //and also display object comparison
@@ -165,5 +158,16 @@ class RuleWorkDialog extends Component {
     open={this.state.isOpen}
 }
 */
+
+RuleWorkDialog.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.object]),
+    name: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    traits: PropTypes.object,
+    tables: PropTypes.object,
+    result: PropTypes.object,
+    tabName: PropTypes.oneOf(["unions","cones","rules"]),
+    onClose: PropTypes.func,
+    open: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+};
 
 export default RuleWorkDialog;

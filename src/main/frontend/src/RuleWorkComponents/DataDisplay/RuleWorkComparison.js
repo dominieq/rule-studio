@@ -8,7 +8,10 @@ class RuleWorkComparison extends Component {
     constructor(props) {
         super(props);
         this.state = {
+
         };
+
+        this.setRowsStyle = this.setRowsStyle.bind(this);
     }
 
     getColumns() {
@@ -19,19 +22,19 @@ class RuleWorkComparison extends Component {
                     {width: 50, label: `Object ${this.props.objectInDialog+1}`, dataKey: "o2"}];       
         
         return [{width: 50, label: 'Attribute name:', dataKey: 'name'},
-                {width: 50, label: `Value of the Object ${this.props.objectInDialog+1}`, dataKey: "o1", }];
+                {width: 50, label: `Value of Object ${this.props.objectInDialog+1}`, dataKey: "o1", }];
     }
 
     getAppropriateSign(o1,o2, attributeName) {
         const column = this.props.informationTable.attributes.find(x => x.name === attributeName);
         switch(column.preferenceType) {
             case "gain":
-                if(o1[attributeName] > o2[attributeName]) return ">";
-                else if (o1[attributeName] < o2[attributeName]) return "<";
+                if(o1[attributeName] > o2[attributeName]) return "\u2ab0"; // >=
+                else if (o1[attributeName] < o2[attributeName]) return "\u2aaf"; // <=
                 else return "=";
             case "cost":
-                if(o1[attributeName] > o2[attributeName]) return "<";
-                else if (o1[attributeName] < o2[attributeName]) return ">";
+                if(o1[attributeName] > o2[attributeName]) return "\u2aaf";
+                else if (o1[attributeName] < o2[attributeName]) return "\u2ab0";
                 else return "=";
             
             default:
@@ -70,7 +73,22 @@ class RuleWorkComparison extends Component {
         return Object.keys(this.props.informationTable.objects[this.props.objectInDialog]).length;
     }
 
-    render() {        
+    setRowsStyle(row) {
+        const attributes = [...this.props.informationTable.attributes];
+
+        const attribute = attributes[row.index];
+        if(row.index >= 0) { //row index = -1 for header column
+            if(attribute.active === false || attribute.identifierType !== undefined || attribute.type === "description" ) return { backgroundColor: "#A0A0A0" }
+            else {
+                if(attribute.preferenceType === "gain") return { backgroundColor: "#228B22" }
+                else if(attribute.preferenceType === "cost") return { backgroundColor: "#DC143C" }
+                else if(attribute.preferenceType === "none") return { backgroundColor: "#3F51B5" }
+                else return { backgroundColor: "#A0A0A0" }
+            }
+        }
+    }
+
+    render() {
         const {objectBeforeDialog, objectInDialog, informationTable, ...other} = this.props;
         return (
             <Paper style={{ height: '100%', width: '100%' }} {...other}>
@@ -78,6 +96,7 @@ class RuleWorkComparison extends Component {
                     rowCount={this.rowCount()}
                     rowGetter={({ index }) => this.getRows()[index]}
                     columns={this.getColumns()}
+                    rowStyle={this.setRowsStyle}
                 />
             </Paper>
         )

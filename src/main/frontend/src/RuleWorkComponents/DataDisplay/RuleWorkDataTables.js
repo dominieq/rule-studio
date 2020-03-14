@@ -25,9 +25,15 @@ class RuleWorkDataTables extends Component {
     }
 
     onListItemClick = (event, index) => {
-        this.setState({
-            selectedItem: index,
-        }, () => this.props.setChosenTable(this.state.selectedItem))
+        if(this.props.tabName === 'rules') {
+            this.setState({
+                selectedItem: Object.keys(this.props.tables).findIndex(x => x === "indicesOfCoveredObjects"),
+            }, () => this.props.setChosenTable(this.state.selectedItem))
+        } else {
+            this.setState({
+                selectedItem: index,
+            }, () => this.props.setChosenTable(this.state.selectedItem))
+        }
     };
 
     onPageChange = (event, value) => {
@@ -41,11 +47,21 @@ class RuleWorkDataTables extends Component {
         const keys = Object.keys(objectWithArrays);
         for(let i in keys) {
             if(tabName !== 'rules') tmp.push({name: keys[i] + " (" + objectWithArrays[keys[i]].length + ")"}); //name of the array with number of elements
-            else if(i !== 3) { //"decisionsOfCoveredObjects" is an object of objects instead of array
-                tmp.push({name: keys[i] + " (" + Object.keys(objectWithArrays[keys[i]]).length + ")"});
+            else {
+                if(keys[i] === "indicesOfCoveredObjects") {
+                    tmp.push({name: keys[i] + " (" + objectWithArrays[keys[i]].length + ")"});
+                }
             }
         }
         return tmp;
+    }
+
+    componentDidMount() {
+        if(this.props.tabName === 'rules') {
+            this.setState({
+                selectedItem: Object.keys(this.props.tables).findIndex(x => x === "indicesOfCoveredObjects"),
+            }, () => this.props.setChosenTable(this.state.selectedItem))
+        }
     }
 
     render() {

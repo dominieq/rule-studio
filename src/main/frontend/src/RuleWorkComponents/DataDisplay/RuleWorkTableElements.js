@@ -67,7 +67,7 @@ class RuleWorkTableElements extends Component {
     render() {
         const {selectedItem, selectedPage, itemsPerPage} = this.state;
         const {chosenTableWithIndex, setChosenObject, tabName, ...other} = this.props;
-console.log(chosenTableWithIndex);
+
         const chosenTable = chosenTableWithIndex.chosenTable;
 
         const count = Math.ceil(chosenTable.length / itemsPerPage);
