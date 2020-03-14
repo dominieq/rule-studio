@@ -21,12 +21,9 @@ class App extends Component {
                 renameDialog: false,
                 deleteDialog: false,
             },
-            snackbarProps: {
-                open: false,
-                variant: "info",
-                message: "",
-            },
-            changed: Array(6).fill(false),
+            snackbarProps: undefined,
+            dataUpToDate: true,
+            tabsUpToDate: Array(5).fill(true),
         };
     }
 
@@ -60,17 +57,33 @@ class App extends Component {
         });
     };
 
-    updateProject = (project, tabValue) => {
+    onDataChanges = (project) => {
         let projects = this.state.projects.slice(0);
-        let changed = this.state.changed.slice(0);
-        const currentProject = this.state.currentProject;
+        let tabsUpToDate = this.state.tabsUpToDate.slice(0);
 
-        projects[currentProject] = project;
-        changed[tabValue] = true;
+        projects[this.state.currentProject] = project;
+        for (let i = 0; i < tabsUpToDate.length; i++) {
+            tabsUpToDate[i] = false;
+        }
 
         this.setState({
             projects: projects,
-            changed: changed,
+            informationTableUpdated: false,
+            upToDate: tabsUpToDate,
+        });
+    };
+
+    onTabChanges = (project, tabValue, updated) => {
+        let projects = this.state.projects.slice(0);
+        let upToDate = this.state.upToDate.slice(0);
+
+        projects[this.state.currentProject] = project;
+        upToDate[tabValue] = updated;
+
+        this.setState({
+            projects: projects,
+            informationTableUpdated: updated,
+            upToDate: upToDate,
         });
     };
 
@@ -270,7 +283,7 @@ class App extends Component {
     };
 
     render() {
-        const {body, currentProject, projects, open, snackbarProps, changed} = this.state;
+        const {currentProject, projects, open, snackbarProps} = this.state;
         const {renameDialog, deleteDialog} = open;
 
         return (
@@ -293,11 +306,13 @@ class App extends Component {
                             />,
                         "Project":
                             <ProjectTabs
-                                changed={changed}
+                                dataUpToDate={this.state.dataUpToDate}
                                 project={projects[currentProject]}
-                                updateProject={this.updateProject}
+                                onDataChange={this.onDataChanges}
+                                onTabChange={this.onTabChanges}
+                                tabsUpToDate={this.state.tabsUpToDate}
                             />,
-                    }[body]
+                    }[this.state.body]
                 }
                 <RenameProjectDialog
                     currentName={currentProject >= 0 ? projects[currentProject].result.name : ""}

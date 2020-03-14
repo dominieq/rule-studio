@@ -21,47 +21,78 @@ class Unions extends Component {
     constructor(props) {
         super(props);
 
+        this._data = [];
+        this._items = [];
+
         this.state = {
+            changes: false,
             loading: false,
-            data: [],
-            displayedData: [],
-            threshold: 0.0,
+            displayedItems: [],
+            threshold: 0,
             measure: "epsilon",
             openSettings: false,
-            snackbarProps: {
-                open: false,
-                message: "",
-                variant: "info"
-            },
+            snackbarProps: undefined,
         };
 
         this.upperBar = React.createRef();
     }
 
     componentDidMount() {
-        const project = this.props.project;
+        this._isMounted = true;
+        const project = {...this.props.project};
 
-        if (project.result.calculatedUnionsWithSingleLimitingDecision) {
-            this.setState({
-                loading: true,
-            }, () => {
-                fetch(`http://localhost:8080/projects/${project.result.id}/unions`, {
-                    method: "GET",
-                }).then(response => {
-                    return response.json();
-                }).then(result => {
-                    console.log(result);
+        this.setState({
+            loading: true,
+        }, () => {
+            fetch(`http://localhost:8080/projects/${project.result.id}/unions`, {
+                method: "GET",
+            }).then(response => {
 
-                    const unions = this.getUnions(result);
+                if (response.status === 200) {
+                    response.json().then(result => {
+                        console.log(result);
+                        const items = this.getItems(result);
 
-                    this.setState({
-                        loading: false,
-                        data: unions,
-                        displayedData: unions,
+                        if (this._isMounted) {
+                            this.setState({
+                                loading: false,
+                                displayedItems: items,
+                                threshold: this.props.project.threshold,
+                                measure: this.props.project.measure,
+                            }, () => {
+                                this._data = result;
+                                this._items = items;
+                            });
+                        }
+                    }).catch(error => {
+                        if (this._isMounted) {
+                            this.setState({
+                                loading: false,
+                                threshold: this.props.project.threshold,
+                                measure: this.props.project.measure,
+                                snackbarProps: {
+                                    open: true,
+                                    message: "Rules loaded but couldn't parse!",
+                                    variant: "error",
+                                },
+                            }, () => {
+                                console.log(error);
+                            });
+                        }
                     });
-                }).catch(error => {
+                } else {
                     this.setState({
                         loading: false,
+                        threshold: this.props.project.threshold,
+                        measure: this.props.project.measure,
+                    });
+                }
+            }).catch(error => {
+                if (this._isMounted) {
+                    this.setState({
+                        loading: false,
+                        threshold: this.props.project.threshold,
+                        measure: this.props.project.measure,
                         snackbarProps: {
                             open: true,
                             message: "Server error. Couldn't load unions!",
@@ -70,8 +101,21 @@ class Unions extends Component {
                     }, () => {
                         console.log(error);
                     });
-                });
+                }
             });
+        });
+    }
+
+    componentWillUnmount() {
+        if (this.state.changes) {
+            let project = {...this.props.project};
+            if (Object.keys(this._data).length) {
+                project.result.unionsWithSingleLimitingDecision = this._data;
+                project.result.calculatedUnionsWithSingleLimitingDecision = true;
+            }
+            project.threshold = this.state.threshold;
+            project.measure = this.state.measure;
+            this.props.onTabChange(project, this.props.value, false);
         }
     }
 
@@ -89,19 +133,19 @@ class Unions extends Component {
 
     onThresholdChange = (threshold) => {
         this.setState({
+            changes: Boolean(threshold),
             threshold: threshold,
         });
     };
 
     onMeasureChange = (event) => {
         this.setState({
+            changes: event.target.value !== "epsilon",
             measure: event.target.value,
         });
     };
 
     onCountUnionsClick = () => {
-        if (!this.props.project) return;
-
         const project = this.props.project;
         const threshold = this.state.threshold;
         const link = `http://localhost:8080/projects/${project.result.id}/unions?consistencyThreshold=${threshold}`;
@@ -112,27 +156,75 @@ class Unions extends Component {
             fetch(link, {
                 method: "GET"
             }).then(response => {
-                return response.json();
-            }).then(result => {
-                console.log(result);
+                if (response.status === 200) {
+                    response.json().then(result => {
+                        console.log(result);
+                        const items = this.getItems(result);
 
-                const unions = this.getUnions(result);
-
-                this.setState({
-                    loading: false,
-                    data: unions,
-                    displayedUnions: unions,
-                });
+                        if (this._isMounted) {
+                            this.setState({
+                                changes: true,
+                                loading: false,
+                                displayedItems: items,
+                            }, () => {
+                                this._data = result;
+                                this._items = items;
+                            });
+                        }
+                    }).catch(error => {
+                        if (this._isMounted) {
+                            this.setState({
+                                loading: false,
+                                snackbarProps: {
+                                    open: true,
+                                    message: "Error. Unions calculated but couldn't parse!",
+                                    variant: "error",
+                                },
+                            }, () => {
+                                console.log(error);
+                            });
+                        }
+                    });
+                } else if (response.status === 404) {
+                    if (this._isMounted) {
+                        this.setState({
+                            loading: false,
+                            snackbarProps: {
+                                open: true,
+                                message: "Couldn't calculate unions. Perhaps you didn't calculate cones :)",
+                                variant: "info",
+                            }
+                        }, () => {
+                            console.log(response);
+                        });
+                    }
+                } else {
+                    if (this._isMounted) {
+                        this.setState({
+                            loading: false,
+                            snackbarProps: {
+                                open: true,
+                                message: "Something went wrong. Couldn't calculate unions :(",
+                                variant: "warning",
+                            }
+                        }, () => {
+                            console.log(response);
+                        });
+                    }
+                }
             }).catch(error => {
-                console.log(error);
-                this.setState({
-                    loading: false,
-                    snackbarProps: {
-                        open: true,
-                        message: "Server error. Couldn't calculate unions!",
-                        variant: "error",
-                    },
-                });
+                if (this._isMounted) {
+                    this.setState({
+                        loading: false,
+                        snackbarProps: {
+                            open: true,
+                            message: "Server error. Couldn't calculate unions!",
+                            variant: "error",
+                        },
+                    }, () => {
+                        console.log(error);
+                    });
+                }
             });
         });
     };
@@ -151,7 +243,7 @@ class Unions extends Component {
         })
     };
 
-    getUnions = (data) => {
+    getItems = (data) => {
         let items = [];
 
         if (data) {
@@ -183,7 +275,7 @@ class Unions extends Component {
     };
 
     render() {
-        const {loading, displayedData, threshold, measure, openSettings, snackbarProps} = this.state;
+        const {loading, displayedItems, threshold, measure, openSettings, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-unions"} styleVariant={"tab"}>
@@ -194,7 +286,7 @@ class Unions extends Component {
                         </StyledButton>
                     </RuleWorkTooltip>
                     <StyledDivider />
-                    <RuleWorkTooltip title={`Calculate with consistency ${threshold}`}>
+                    <RuleWorkTooltip title={`Calculate with threshold ${threshold}`}>
                         <StyledButton
                             disabled={!this.props.project || loading}
                             disableElevation
@@ -225,6 +317,7 @@ class Unions extends Component {
                     <RuleWorkSmallBox id={"unions-threshold-selector"}>
                         <ThresholdSelector
                             onChange={this.onThresholdChange}
+                            value={threshold}
                         />
                     </RuleWorkSmallBox>
                     <RuleWorkSmallBox styleVariant={"footer"}>
@@ -242,7 +335,7 @@ class Unions extends Component {
                     <StyledCircularProgress/>
                     :
                     <RuleWorkList>
-                        {displayedData}
+                        {displayedItems}
                     </RuleWorkList>
                 }
                 </RuleWorkBox>
@@ -253,9 +346,10 @@ class Unions extends Component {
 }
 
 Unions.propTypes = {
-    changed: PropTypes.array,
-    project: PropTypes.object.isRequired,
-    updateProject: PropTypes.func,
+    dataUpToDate: PropTypes.bool,
+    onTabChange: PropTypes.func,
+    project: PropTypes.object,
+    upToDate: PropTypes.bool,
     value: PropTypes.number,
 };
 

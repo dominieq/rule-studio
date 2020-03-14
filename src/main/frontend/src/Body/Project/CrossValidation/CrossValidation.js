@@ -15,21 +15,23 @@ import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import StyledToggleButton from "../../../RuleWorkComponents/Inputs/StyledToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import Calculator from "mdi-material-ui/Calculator";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import SvgIcon from "@material-ui/core/SvgIcon";
-import {mdiCog} from "@mdi/js";
+import {mdiCloseThick, mdiCog} from "@mdi/js";
 
 class CrossValidation extends Component {
     constructor(props) {
         super(props);
 
+        this._data = {};
+        this._items = [];
+
         this.state = {
+            changes: false,
             loading: false,
-            data: [],
-            displayedData: [],
-            display: 0,
-            foldNumber: 1,
+            displayedItems: [],
+            foldDisplay: 0,
             foldIndex: 0,
+            foldNumber: 1,
             folds: [],
             openSettings: false,
             snackbarProps: undefined,
@@ -39,7 +41,26 @@ class CrossValidation extends Component {
     }
 
     componentDidMount() {
+        this._isMounted = true;
         console.log("Fetching cross-validation from server...");
+        this.setState({
+            foldDisplay: this.props.project.foldDisplay,
+            foldIndex: this.props.project.foldIndex,
+            foldNumber: this.props.project.foldNumber,
+        })
+    }
+
+    componentWillUnmount() {
+        if (this.state.changes) {
+            let project = {...this.props.project};
+            if (Object.keys(this._data).length) {
+                //TODO DO SOMETHING
+            }
+            project.foldDisplay = this.state.foldDisplay;
+            project.foldIndex = this.state.foldIndex;
+            project.foldNumber = this.state.foldNumber;
+            this.props.onTabChange(project, this.props.value, false);
+        }
     }
 
     onSettingsClick = () => {
@@ -59,6 +80,7 @@ class CrossValidation extends Component {
 
         if (!isNaN(input)) {
             this.setState({
+                changes: Number(input) !== 1,
                 foldNumber: Number(input),
             });
         }
@@ -66,19 +88,28 @@ class CrossValidation extends Component {
 
     onCalculateClick = () => {
         console.log("Calculating cross-validation on server...");
+        const array = Array(this.state.foldNumber).fill(1);
+        for (let i = 0; i < array.length; i++) {
+            array[i] = i + 1;
+        }
+        this.setState({
+            folds: array,
+        });
     };
 
-    onFoldChange = (event) => {
+    onFoldIndexChange = (event) => {
         this.setState({
+            changes: Boolean(event.target.value),
             foldIndex: event.target.value,
         })
     };
 
-    onDisplayChange = (event, newDisplay) => {
+    onFoldDisplayChange = (event, newDisplay) => {
         if (typeof newDisplay !== 'number') return;
 
         this.setState({
-            display: newDisplay,
+            changes: Boolean(newDisplay),
+            foldDisplay: newDisplay,
         });
     };
 
@@ -93,14 +124,14 @@ class CrossValidation extends Component {
     };
 
     renderResultsActions = () => {
-        const {display, folds, foldIndex} = this.state;
+        const {foldDisplay, folds, foldIndex} = this.state;
 
         if (Array.isArray(folds) && folds.length) {
             return (
                 <Fragment>
                     <RuleWorkSelect
                         label={"Choose fold"}
-                        onChange={this.onFoldChange}
+                        onChange={this.onFoldIndexChange}
                         value={foldIndex}
                     >
                         {folds}
@@ -109,8 +140,8 @@ class CrossValidation extends Component {
                     <ToggleButtonGroup
                         aria-label={"display-toggle-button-group"}
                         exclusive={true}
-                        onChange={this.onDisplayChange}
-                        value={display}
+                        onChange={this.onFoldDisplayChange}
+                        value={foldDisplay}
                     >
                         <StyledToggleButton value={0}>
                             Details of training set
@@ -130,7 +161,7 @@ class CrossValidation extends Component {
     };
 
     render() {
-        const {loading, displayedData, foldNumber, openSettings, snackbarProps} = this.state;
+        const {loading, displayedItems, foldNumber, openSettings, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-cross-validation"} styleVariant={"tab"}>
@@ -188,7 +219,7 @@ class CrossValidation extends Component {
                             onClick={this.onSettingsClose}
                             themeVariant={"secondary"}
                         >
-                            <ChevronLeftIcon />
+                            <SvgIcon><path d={mdiCloseThick} /></SvgIcon>
                         </StyledButton>
                     </RuleWorkSmallBox>
                 </RuleWorkDrawer>
@@ -197,7 +228,7 @@ class CrossValidation extends Component {
                         <StyledCircularProgress />
                         :
                         <RuleWorkList>
-                            {displayedData}
+                            {displayedItems}
                         </RuleWorkList>
                     }
                 </RuleWorkBox>
@@ -208,9 +239,10 @@ class CrossValidation extends Component {
 }
 
 CrossValidation.propTypes = {
-    changed: PropTypes.arrayOf(PropTypes.bool),
+    dataUpToDate: PropTypes.bool,
+    onTabChange: PropTypes.func,
     project: PropTypes.object,
-    updateProject: PropTypes.func,
+    upToDate: PropTypes.bool,
     value: PropTypes.number,
 };
 

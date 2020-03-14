@@ -9,8 +9,20 @@ class ThresholdSelector extends Component {
         super(props);
 
         this.state = {
-            consistency: 0.0,
+            threshold: 0,
         };
+    }
+
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return nextState.threshold !== this.state.threshold || nextProps.value !== this.props.value;
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.value !== this.props.value) {
+            this.setState({
+                threshold: this.props.value,
+            });
+        }
     }
 
     onInputChange = (event) => {
@@ -23,37 +35,39 @@ class ThresholdSelector extends Component {
             const regEx = new RegExp(/^[01]\.\D*$/);
             const typingInProgress = input === "" || regEx.test(input);
             this.setState({
-                consistency: typingInProgress ? input : Number(input),
+                threshold: typingInProgress ? input : Number(input),
             });
         }
     };
 
     onInputBlur = () => {
         this.setState(prevState => ({
-            consistency: Number(prevState.consistency),
+            threshold: Number(prevState.threshold),
         }), () => {
-            if (this.state.consistency > 1) {
+            if (this.state.threshold > 1) {
                 this.setState({
-                    consistency: 1,
+                    threshold: 1,
                 }, () => {
-                    this.props.onChange(this.state.consistency);
+                    this.props.onChange(this.state.threshold);
                 });
+            } else {
+                this.props.onChange(this.state.threshold);
             }
         });
     };
 
     onSliderChange = (event, newValue) => {
         this.setState({
-            consistency: newValue,
+            threshold: newValue,
         });
     };
 
     onSliderMouseUp = () => {
-        this.props.onChange(this.state.consistency);
+        this.props.onChange(this.state.threshold);
     };
 
     render() {
-        const consistency = this.state.consistency;
+        const threshold = this.state.threshold;
 
         return (
             <Fragment>
@@ -67,7 +81,7 @@ class ThresholdSelector extends Component {
                     onBlur={this.onInputBlur}
                     onChange={this.onInputChange}
                     style={{marginRight: 6, maxWidth: 72}}
-                    value={consistency}
+                    value={threshold}
                 >
                     Choose threshold
                 </RuleWorkTextField>
@@ -78,7 +92,7 @@ class ThresholdSelector extends Component {
                     onMouseUp={this.onSliderMouseUp}
                     step={0.01}
                     style={{marginLeft: 6, marginRight: 24, maxWidth: 72}}
-                    value={typeof consistency === "number" ? consistency : 0.0}
+                    value={typeof threshold === "number" ? threshold : 0.0}
                 />
             </Fragment>
         );
@@ -87,6 +101,7 @@ class ThresholdSelector extends Component {
 
 ThresholdSelector.propTypes = {
     onChange: PropTypes.func,
+    value: PropTypes.any,
 };
 
 export default ThresholdSelector

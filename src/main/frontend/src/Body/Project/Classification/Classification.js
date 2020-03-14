@@ -14,19 +14,20 @@ import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import SvgIcon from "@material-ui/core/SvgIcon";
-import {mdiCog} from "@mdi/js"
-import "./Classification.css";
+import {mdiCloseThick, mdiCog} from "@mdi/js"
 
 class Classification extends Component {
     constructor(props) {
         super(props);
 
+        this._data = {};
+        this._items = [];
+
         this.state = {
+            changes: false,
             loading: false,
-            data: [],
-            displayedData: [],
+            displayedItems: [],
             openSettings: false,
             ruleType: "certain",
             snackbarProps: undefined,
@@ -36,7 +37,22 @@ class Classification extends Component {
     }
 
     componentDidMount() {
+        this._isMounted = true;
         console.log("Fetching classification from server...");
+        this.setState({
+            ruleType: this.props.project.ruleType,
+        })
+    }
+
+    componentWillUnmount() {
+        if (this.state.changes) {
+            let project = {...this.props.project};
+            if (Object.keys(this._data).length) {
+                // TODO DO SOMETHING
+            }
+            project.ruleType = this.state.ruleType;
+            this.props.onTabChange(project, this.props.value, false);
+        }
     }
 
     onSettingsClick = () => {
@@ -57,6 +73,7 @@ class Classification extends Component {
 
     onRuleTypeChange = (event) => {
         this.setState({
+            changes: event.target.value !== "certain",
             ruleType: event.target.value,
         });
     };
@@ -76,7 +93,7 @@ class Classification extends Component {
     };
 
     render() {
-        const {loading, displayedData, openSettings, ruleType, snackbarProps} = this.state;
+        const {loading, displayedItems, openSettings, ruleType, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-classification"} styleVariant={"tab"}>
@@ -155,7 +172,7 @@ class Classification extends Component {
                             onClick={this.onSettingsClose}
                             themeVariant={"secondary"}
                         >
-                            <ChevronLeftIcon />
+                            <SvgIcon><path d={mdiCloseThick} /></SvgIcon>
                         </StyledButton>
                     </RuleWorkSmallBox>
                 </RuleWorkDrawer>
@@ -164,7 +181,7 @@ class Classification extends Component {
                         <StyledCircularProgress />
                         :
                         <RuleWorkList>
-                            {displayedData}
+                            {displayedItems}
                         </RuleWorkList>
                     }
                 </RuleWorkBox>
@@ -175,9 +192,10 @@ class Classification extends Component {
 }
 
 Classification.propTypes = {
-    changed: PropTypes.arrayOf(PropTypes.bool),
+    dataUpToDate: PropTypes.bool,
+    onTabChange: PropTypes.func,
     project: PropTypes.object,
-    updateProject: PropTypes.func,
+    upToDate: PropTypes.bool,
     value: PropTypes.number,
 };
 
