@@ -2,8 +2,6 @@ package pl.put.poznan.rulework.service;
 
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.data.csv.ObjectParser;
-import org.rulelearn.data.json.AttributeParser;
 import org.rulelearn.rules.*;
 import org.rulelearn.rules.ruleml.RuleParser;
 import org.slf4j.Logger;
@@ -16,7 +14,6 @@ import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Map;
@@ -134,12 +131,7 @@ public class ProjectService {
         InformationTable informationTable = project.getInformationTable();
 
         if(metadataFile != null) { //load new metadata from file
-            AttributeParser attributeParser = new AttributeParser();
-            reader = new InputStreamReader(metadataFile.getInputStream());
-            attributes = attributeParser.parseAttributes(reader);
-            for(int i = 0; i < attributes.length; i++) {
-                logger.debug("{}:\t{}", i, attributes[i]);
-            }
+            attributes = MetadataService.attributesFromMultipartFileMetadata(metadataFile);
 
             informationTable = new InformationTable(attributes, new ArrayList<>());
             project.setRuleSetWithComputableCharacteristics(null);
@@ -147,7 +139,7 @@ public class ProjectService {
 
         if(dataFile != null) { //load new data from file
             attributes = informationTable.getAttributes();
-            informationTable = DataService.readDataFile(dataFile, attributes, separator, header);
+            informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
         }
 
         if((metadataFile != null) || (dataFile != null)) { //don't use setter, when only rulesFile is provided - informationTable doesn't change

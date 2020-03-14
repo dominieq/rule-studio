@@ -1,5 +1,7 @@
 package pl.put.poznan.rulework.service;
 
+import org.rulelearn.data.Attribute;
+import org.rulelearn.data.InformationTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import pl.put.poznan.rulework.model.DominanceCones;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
+import java.io.*;
 import java.util.UUID;
 
 @Service
@@ -18,6 +21,13 @@ public class DominanceConesService {
 
     @Autowired
     ProjectsContainer projectsContainer;
+
+    private void calculateDominanceCones(Project project, InformationTable informationTable) {
+        DominanceCones dominanceCones = new DominanceCones();
+        dominanceCones.calculateDCones(informationTable);
+        project.setDominanceCones(dominanceCones);
+        project.setCalculatedDominanceCones(true);
+    }
 
     public DominanceCones getDominanceCones(UUID id) {
         logger.info("Id:\t" + id);
@@ -40,10 +50,25 @@ public class DominanceConesService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        DominanceCones dominanceCones = new DominanceCones();
-        dominanceCones.calculateDCones(project.getInformationTable());
-        project.setDominanceCones(dominanceCones);
-        project.setCalculatedDominanceCones(true);
+        calculateDominanceCones(project, project.getInformationTable());
+
+        logger.info(project.getDominanceCones().toString());
+
+        return project.getDominanceCones();
+    }
+
+    public DominanceCones postDominanceCones(UUID id, String metadata, String data) throws IOException {
+        logger.info("Id:\t" + id);
+        logger.info("Metadata:\t{}", metadata);
+        logger.info("Data:\t{}", data);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        Attribute[] attributes = MetadataService.attributesFromStringMetadata(metadata);
+        InformationTable informationTable = DataService.informationTableFromStringData(data, attributes);
+        project.setInformationTable(informationTable);
+
+        calculateDominanceCones(project, informationTable);
 
         logger.info(project.getDominanceCones().toString());
 

@@ -5,7 +5,6 @@ import org.rulelearn.data.Attribute;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.Table;
-import org.rulelearn.data.json.AttributeParser;
 import org.rulelearn.data.json.InformationTableWriter;
 import org.rulelearn.data.json.ObjectParser;
 import org.rulelearn.types.EvaluationField;
@@ -16,7 +15,6 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.put.poznan.rulework.exception.ProjectNotFoundException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
@@ -32,7 +30,7 @@ public class DataService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    public static InformationTable readDataFile(MultipartFile dataFile, Attribute[] attributes, Character separator, Boolean header) throws IOException {
+    public static InformationTable informationTableFromMultipartFileData(MultipartFile dataFile, Attribute[] attributes, Character separator, Boolean header) throws IOException {
         Reader reader;
         InformationTable informationTable =  new InformationTable(new Attribute[0], new ArrayList<>());
 
@@ -71,6 +69,29 @@ public class DataService {
         return informationTable;
     }
 
+    public static InformationTable informationTableFromStringData(String data, Attribute[] attributes) throws IOException {
+        InputStream targetStream = new ByteArrayInputStream(data.getBytes());
+        Reader reader = new InputStreamReader(targetStream);
+        ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
+        InformationTable informationTable = objectParser.parseObjects(reader);
+
+        if(logger.isTraceEnabled()) {
+            Table<EvaluationAttribute, EvaluationField> table = informationTable.getActiveConditionAttributeFields();
+            for(int i = 0; i < table.getNumberOfObjects(); i++) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(i);
+                sb.append(":");
+                for(int j = 0; j < table.getNumberOfAttributes(); j++) {
+                    sb.append("\t");
+                    sb.append(table.getField(i, j));
+                }
+                logger.trace(sb.toString());
+            }
+        }
+
+        return informationTable;
+    }
+
     public String getData(UUID id) throws IOException {
         logger.info("Id:\t" + id);
 
@@ -90,13 +111,10 @@ public class DataService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InputStream targetStream = new ByteArrayInputStream(data.getBytes());
-        Reader reader = new InputStreamReader(targetStream);
-
         Attribute[] attributes = project.getInformationTable().getAttributes();
-        ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
+        InformationTable informationTable = informationTableFromStringData(data, attributes);
 
-        project.setInformationTable(objectParser.parseObjects(reader));
+        project.setInformationTable(informationTable);
         logger.info(project.toString());
 
         return project;
@@ -161,17 +179,10 @@ public class DataService {
         Reader reader;
 
         // prepare attributes from metadata
-        Attribute[] attributes;
-        AttributeParser attributeParser = new AttributeParser();
-        targetStream = new ByteArrayInputStream(metadata.getBytes());
-        reader = new InputStreamReader(targetStream);
-        attributes = attributeParser.parseAttributes(reader);
+        Attribute[] attributes = MetadataService.attributesFromStringMetadata(metadata);
 
         // create InformationTable object
-        targetStream = new ByteArrayInputStream(data.getBytes());
-        reader = new InputStreamReader(targetStream);
-        ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
-        InformationTable informationTable = objectParser.parseObjects(reader);
+        InformationTable informationTable = informationTableFromStringData(data, attributes);
 
         // serialize data from InformationTable object
         InputStreamResource resource = produceJsonResource(informationTable);
@@ -192,17 +203,10 @@ public class DataService {
         Reader reader;
 
         // prepare attributes from metadata
-        Attribute[] attributes;
-        AttributeParser attributeParser = new AttributeParser();
-        targetStream = new ByteArrayInputStream(metadata.getBytes());
-        reader = new InputStreamReader(targetStream);
-        attributes = attributeParser.parseAttributes(reader);
+        Attribute[] attributes = MetadataService.attributesFromStringMetadata(metadata);
 
         // create InformationTable object
-        targetStream = new ByteArrayInputStream(data.getBytes());
-        reader = new InputStreamReader(targetStream);
-        ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
-        InformationTable informationTable = objectParser.parseObjects(reader);
+        InformationTable informationTable = informationTableFromStringData(data, attributes);
 
         // serialize data from InformationTable object
         InputStreamResource resource = produceCsvResource(informationTable, separator);
