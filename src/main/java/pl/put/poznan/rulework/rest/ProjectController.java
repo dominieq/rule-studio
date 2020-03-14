@@ -50,10 +50,12 @@ public class ProjectController {
             @PathVariable(name = "id") UUID id,
             @RequestParam(name = "metadata", required = false) MultipartFile metadataFile,
             @RequestParam(name = "data", required = false) MultipartFile dataFle,
-            @RequestParam(name = "rules", required = false) MultipartFile rulesFiles) throws IOException {
+            @RequestParam(name = "rules", required = false) MultipartFile rulesFiles,
+            @RequestParam(name = "separator", defaultValue = ",") Character separator,
+            @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
 
         logger.info("Setting project");
-        Project result = projectService.setProject(id, metadataFile, dataFle, rulesFiles);
+        Project result = projectService.setProject(id, metadataFile, dataFle, rulesFiles, separator, header);
         return ResponseEntity.ok(result);
     }
 
