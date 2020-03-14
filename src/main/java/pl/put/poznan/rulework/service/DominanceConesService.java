@@ -1,6 +1,5 @@
 package pl.put.poznan.rulework.service;
 
-import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,8 +63,7 @@ public class DominanceConesService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        Attribute[] attributes = MetadataService.attributesFromStringMetadata(metadata);
-        InformationTable informationTable = DataService.informationTableFromStringData(data, attributes);
+        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
         calculateDominanceCones(project, informationTable);

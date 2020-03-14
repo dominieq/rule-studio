@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 
-class PostDominanceCones extends Component {
+class PostUnionsWithSingleLimitingDecision extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f',
+            consistencyThreshold: 0,
             metadata: JSON.stringify(
               [
                 {
@@ -126,14 +127,21 @@ class PostDominanceCones extends Component {
         })
     }
 
-    postDominanceCones = (event) => {
+    handleConsistencyThresholdChange = (event) => {
+        this.setState({
+            consistencyThreshold: event.target.value
+        })
+    }
+
+    postUnionsWithSingleLimitingDecision = (event) => {
         event.preventDefault()
 
         let formData = new FormData()
+        formData.append('consistencyThreshold', this.state.consistencyThreshold)
         formData.append('metadata', this.state.metadata)
         formData.append('data', this.state.data)
 
-        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/cones`, {
+        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/unions`, {
             method: 'POST',
             body: formData
         }).then(response => {
@@ -170,10 +178,12 @@ class PostDominanceCones extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                <button onClick={this.postDominanceCones}>postDominanceCones</button>
+                consistencyThreshold->
+                <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
+                <button onClick={this.postUnionsWithSingleLimitingDecision}>postUnionsWithSingleLimitingDecision</button>
             </div>
         )
     }
 }
 
-export default PostDominanceCones
+export default PostUnionsWithSingleLimitingDecision

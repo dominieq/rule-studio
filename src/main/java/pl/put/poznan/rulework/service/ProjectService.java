@@ -38,6 +38,12 @@ public class ProjectService {
         return project;
     }
 
+    public static InformationTable createInformationTableFromString(String metadata, String data) throws IOException {
+        Attribute[] attributes = MetadataService.attributesFromStringMetadata(metadata);
+        InformationTable informationTable = DataService.informationTableFromStringData(data, attributes);
+        return informationTable;
+    }
+
     public Project getProject(UUID id) {
         logger.info("Id:\t" + id);
 

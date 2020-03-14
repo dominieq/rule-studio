@@ -175,16 +175,10 @@ public class DataService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InputStream targetStream;
-        Reader reader;
+        // create InformationTable from json strings
+        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
 
-        // prepare attributes from metadata
-        Attribute[] attributes = MetadataService.attributesFromStringMetadata(metadata);
-
-        // create InformationTable object
-        InformationTable informationTable = informationTableFromStringData(data, attributes);
-
-        // serialize data from InformationTable object
+        // serialize data from InformationTable
         InputStreamResource resource = produceJsonResource(informationTable);
 
         return new Pair<>(project.getName(), resource);
@@ -199,14 +193,8 @@ public class DataService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InputStream targetStream;
-        Reader reader;
-
-        // prepare attributes from metadata
-        Attribute[] attributes = MetadataService.attributesFromStringMetadata(metadata);
-
-        // create InformationTable object
-        InformationTable informationTable = informationTableFromStringData(data, attributes);
+        // create InformationTable from json strings
+        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
 
         // serialize data from InformationTable object
         InputStreamResource resource = produceCsvResource(informationTable, separator);
