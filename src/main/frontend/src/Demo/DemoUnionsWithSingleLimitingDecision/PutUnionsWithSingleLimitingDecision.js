@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 
-class GetDominanceCones extends Component {
+class PutUnionsWithSingleLimitingDecision extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2'
+            id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2',
+            consistencyThreshold: 0
         }
     }
 
@@ -15,11 +16,21 @@ class GetDominanceCones extends Component {
         })
     }
 
-    getDominanceCones = (event) => {
+    handleConsistencyThresholdChange = (event) => {
+        this.setState({
+            consistencyThreshold: event.target.value
+        })
+    }
+
+    putUnionsWithSingleLimitingDecision = (event) => {
         event.preventDefault();
 
-        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/cones`, {
-            method: 'GET'
+        var link = `http://localhost:8080/projects/${this.state.id_projektu}/unions?consistencyThreshold=${this.state.consistencyThreshold}`;
+
+        console.log(link)
+
+        fetch(link, {
+            method: 'PUT'
         }).then(response => {
             console.log(response)
             if(response.status === 200) {
@@ -54,10 +65,12 @@ class GetDominanceCones extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                <button onClick={this.getDominanceCones}>getDominanceCones</button>
+                consistencyThreshold->
+                <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
+                <button onClick={this.putUnionsWithSingleLimitingDecision}>putUnionsWithSingleLimitingDecision</button>
             </div>
         )
     }
 }
 
-export default GetDominanceCones
+export default PutUnionsWithSingleLimitingDecision

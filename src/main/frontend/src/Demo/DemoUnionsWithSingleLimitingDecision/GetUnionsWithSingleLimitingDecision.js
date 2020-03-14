@@ -5,8 +5,7 @@ class GetUnionsWithSingleLimitingDecision extends Component {
         super(props);
 
         this.state = {
-            id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2',
-            consistencyThreshold: 0
+            id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2'
         }
     }
 
@@ -16,19 +15,10 @@ class GetUnionsWithSingleLimitingDecision extends Component {
         })
     }
 
-    handleConsistencyThresholdChange = (event) => {
-        this.setState({
-            consistencyThreshold: event.target.value
-        })
-    }
-
     getUnionsWithSingleLimitingDecision = (event) => {
         event.preventDefault();
 
         var link = `http://localhost:8080/projects/${this.state.id_projektu}/unions`;
-        if(this.state.consistencyThreshold !== "") {
-            link += `?consistencyThreshold=${this.state.consistencyThreshold}`;
-        }
 
         console.log(link)
 
@@ -68,8 +58,6 @@ class GetUnionsWithSingleLimitingDecision extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                consistencyThreshold->
-                <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
                 <button onClick={this.getUnionsWithSingleLimitingDecision}>getUnionsWithSingleLimitingDecision</button>
             </div>
         )

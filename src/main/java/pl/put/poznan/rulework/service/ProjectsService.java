@@ -1,18 +1,12 @@
 package pl.put.poznan.rulework.service;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import org.rulelearn.data.Attribute;
-import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.data.Table;
-import org.rulelearn.data.csv.ObjectParser;
-import org.rulelearn.data.json.AttributeParser;
 import org.rulelearn.rules.*;
 import org.rulelearn.rules.ruleml.RuleParser;
-import org.rulelearn.types.EvaluationField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +16,6 @@ import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -118,19 +110,12 @@ public class ProjectsService {
             return createEmptyProject(name);
         }
 
-        Attribute[] attributes;
         InformationTable informationTable = null;
         Project project;
-
-        AttributeParser attributeParser = new AttributeParser();
-        Reader reader = new InputStreamReader(metadataFile.getInputStream());
-        attributes = attributeParser.parseAttributes(reader);
-        for(int i = 0; i < attributes.length; i++) {
-            logger.debug(i + ":\t" + attributes[i]);
-        }
+        Attribute[] attributes = MetadataService.attributesFromMultipartFileMetadata(metadataFile);
 
         if(dataFile != null) { //load data from file
-            informationTable = DataService.readDataFile(dataFile, attributes, separator, header);
+            informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
         } else { //there is no objects
             informationTable = new InformationTable(attributes, new ArrayList<>());
         }

@@ -67,10 +67,6 @@ public class Project {
     }
 
     public DominanceCones getDominanceCones() {
-        if(dominanceCones == null) {
-            dominanceCones = new DominanceCones();
-        }
-
         return dominanceCones;
     }
 

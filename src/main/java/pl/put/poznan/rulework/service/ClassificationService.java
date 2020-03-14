@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import org.rulelearn.classification.*;
 import org.rulelearn.data.*;
-import org.rulelearn.data.csv.ObjectParser;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
 import org.rulelearn.types.EvaluationField;
 import org.slf4j.Logger;
@@ -12,14 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.put.poznan.rulework.exception.ProjectNotFoundException;
 import pl.put.poznan.rulework.model.Classification;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.UUID;
 
 @Service
@@ -123,7 +119,7 @@ public class ClassificationService {
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         Attribute[] attributes = project.getInformationTable().getAttributes();
-        InformationTable informationTable = DataService.readDataFile(dataFile, attributes, separator, header);
+        InformationTable informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
 
         Classification classification = makeClassification(informationTable, project.getRuleSetWithComputableCharacteristics());
         project.setClassification(classification);
