@@ -38,12 +38,12 @@ const useStyles = makeStyles({
 }, {name: "MuiAvatar"});
 
 function RuleWorkHelper(props) {
-    const {children, size, color} = props;
+    const {children, size, color, ...other} = props;
     const classes =  useStyles();
 
     return (
         <Tooltip title={children}>
-            <Avatar className={clsx(classes[size], classes[color])}>
+            <Avatar className={clsx(classes[size], classes[color])} {...other}>
                 <HelpCircle className={classes[size + "Icon"]} color={"inherit"}/>
             </Avatar>
         </Tooltip>

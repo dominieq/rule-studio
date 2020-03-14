@@ -1,14 +1,14 @@
 import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from "@material-ui/core/styles";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import DisplayData from "./Data/DisplayData";
+import Classification from "./Classification/Classification";
+import CrossValidation from "./CrossValidation/CrossValidation";
 import Cones from "./Cones/Cones";
+import Data from "./Data/DisplayData";
 import Rules from "./Rules/Rules";
 import Unions from "./Unions/Unions";
-import CrossValidation from "./CrossValidation/CrossValidation";
-import Classification from "./Classification/Classification";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
 
 const StyledTabs = withStyles({
     indicator: {
@@ -42,50 +42,55 @@ class ProjectTabs extends Component {
         super(props);
 
         this.state = {
-            value: 0,
-        };
+            selected: 0,
+        }
     }
 
     onTabChange = (event, newValue) => {
         this.setState({
-            value: newValue
-        })
+            selected: newValue,
+        });
     };
 
-    setTabProps = (index) => {
+    getTabProps = (index) => {
         return ({
             id: `project-tab-${index}`,
             'aria-controls': `project-tabpanel-${index}`,
         })
     };
 
+    getTabBodyProps = (index) => {
+        return ({
+            dataUpToDate: this.props.upToDate,
+            project: this.props.project,
+            onTabChange: this.props.onTabChange,
+            upToDate: this.props.tabsUpToDate[index],
+            value: index,
+        })
+    };
+
     render() {
-        const value = this.state.value;
+        const selected = this.state.selected;
 
         return (
             <Fragment>
-                <StyledTabs
-                    aria-label={"project tabs"}
-                    centered={true}
-                    onChange={this.onTabChange}
-                    value={value}
-                >
-                    <StyledTab label={"Data"} {...this.setTabProps(0)} />
-                    <StyledTab label={"Dominance cones"} {...this.setTabProps(1)} />
-                    <StyledTab label={"Class unions"} {...this.setTabProps(2)} />
-                    <StyledTab label={"Rules"} {...this.setTabProps(3)} />
-                    <StyledTab label={"Classification"} {...this.setTabProps(4)} />
-                    <StyledTab label={"Cross-validation"} {...this.setTabProps(5)} />
+                <StyledTabs aria-label={"project tabs"} centered={true} onChange={this.onTabChange} value={selected}>
+                    <StyledTab label={"Data"} {...this.getTabProps(0)} />
+                    <StyledTab label={"Dominance cones"} {...this.getTabProps(1)} />
+                    <StyledTab label={"Class unions"} {...this.getTabProps(2)} />
+                    <StyledTab label={"Rules"} {...this.getTabProps(3)} />
+                    <StyledTab label={"Classification"} {...this.getTabProps(4)} />
+                    <StyledTab label={"Cross-validation"} {...this.getTabProps(5)} />
                 </StyledTabs>
                 {
                     {
-                        0: <DisplayData {...this.props} value={0} />,
-                        1: <Cones {...this.props} value={1} />,
-                        2: <Unions {...this.props} value={2} />,
-                        3: <Rules {...this.props} value={3} />,
-                        4: <Classification {...this.props} value={4} />,
-                        5: <CrossValidation {...this.props} value={5} />,
-                    }[value]
+                        0: <Data project={this.props.project} updateProject={this.props.onDataChange} />,
+                        1: <Cones {...this.getTabBodyProps(0)} />,
+                        2: <Unions {...this.getTabBodyProps(1)} />,
+                        3: <Rules {...this.getTabBodyProps(2)} />,
+                        4: <Classification {...this.getTabBodyProps(3)} />,
+                        5: <CrossValidation {...this.getTabBodyProps(4)} />,
+                    }[selected]
                 }
             </Fragment>
         );
@@ -93,9 +98,11 @@ class ProjectTabs extends Component {
 }
 
 ProjectTabs.propTypes = {
-    changed: PropTypes.array,
+    dataUpToDate: PropTypes.bool,
     project: PropTypes.object,
-    updateProject: PropTypes.func,
+    onDataChange: PropTypes.func,
+    onTabChange: PropTypes.func,
+    tabsUpToDate: PropTypes.arrayOf(PropTypes.bool),
 };
 
 export default ProjectTabs;

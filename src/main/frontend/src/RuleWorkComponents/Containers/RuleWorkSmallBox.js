@@ -9,6 +9,7 @@ const useStyles = makeStyles({
         flexDirection: "row",
         flexWrap: "nowrap",
         alignItems: "center",
+        justifyContent: "space-between"
     },
     'multi-row': {
         margin: "4px 0",
