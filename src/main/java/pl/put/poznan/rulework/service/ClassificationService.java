@@ -27,7 +27,7 @@ public class ClassificationService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private Classification makeClassification(InformationTable informationTable, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
+    private Classification calculateClassification(InformationTable informationTable, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
         /*logger.info("RuleSet size = {}", ruleSetWithComputableCharacteristics.size());
         for(int i = 0; i < ruleSetWithComputableCharacteristics.size(); i++) {
             logger.info("\tRegula nr {}:\t{}", i, ruleSetWithComputableCharacteristics.getRule(i));
@@ -116,7 +116,7 @@ public class ClassificationService {
             throw ex;
         }
 
-        Classification classification = makeClassification(informationTable, ruleSetWithComputableCharacteristics);
+        Classification classification = calculateClassification(informationTable, ruleSetWithComputableCharacteristics);
         project.setClassification(classification);
 
         return classification;
@@ -144,7 +144,7 @@ public class ClassificationService {
             throw ex;
         }
 
-        Classification classification = makeClassification(informationTable, ruleSetWithComputableCharacteristics);
+        Classification classification = calculateClassification(informationTable, ruleSetWithComputableCharacteristics);
         project.setClassification(classification);
 
         return classification;
@@ -167,7 +167,7 @@ public class ClassificationService {
             throw ex;
         }
 
-        Classification classification = makeClassification(informationTable, ruleSetWithComputableCharacteristics);
+        Classification classification = calculateClassification(informationTable, ruleSetWithComputableCharacteristics);
         project.setClassification(classification);
 
         return classification;

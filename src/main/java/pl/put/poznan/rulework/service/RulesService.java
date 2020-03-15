@@ -5,6 +5,7 @@ import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator;
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 import org.rulelearn.rules.*;
@@ -32,27 +33,7 @@ public class RulesService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    public RuleSetWithComputableCharacteristics getRules(UUID id) {
-        logger.info("Id:\t{}", id);
-
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
-
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
-        if(ruleSetWithComputableCharacteristics == null) {
-            EmptyResponseException ex = new EmptyResponseException("Rules", id);
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-
-        logger.debug("ruleSetWithComputableCharacteristics:\t{}", ruleSetWithComputableCharacteristics.toString());
-        return ruleSetWithComputableCharacteristics;
-    }
-
-    public RuleSetWithComputableCharacteristics putRules(UUID id) {
-        logger.info("Id:\t{}", id);
-
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
-
+    private void calculateRuleSetWithComputableCharacteristics (Project project) {
         Unions unions = project.getUnionsWithSingleLimitingDecision();
         if(unions == null) {
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = new UnionsWithSingleLimitingDecision(
@@ -89,8 +70,47 @@ public class RulesService {
 
         RuleSetWithComputableCharacteristics resultSet = RuleSetWithComputableCharacteristics.join(upwardCertainRules, downwardCertainRules);
         project.setRuleSetWithComputableCharacteristics(resultSet);
+    }
 
-        return resultSet;
+    public RuleSetWithComputableCharacteristics getRules(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        if(ruleSetWithComputableCharacteristics == null) {
+            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        logger.debug("ruleSetWithComputableCharacteristics:\t{}", ruleSetWithComputableCharacteristics.toString());
+        return ruleSetWithComputableCharacteristics;
+    }
+
+    public RuleSetWithComputableCharacteristics putRules(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        calculateRuleSetWithComputableCharacteristics(project);
+
+        return project.getRuleSetWithComputableCharacteristics();
+    }
+
+    public RuleSetWithComputableCharacteristics postRules(UUID id, String metadata, String data) throws IOException {
+        logger.info("Id:\t{}", id);
+        logger.info("Metadata:\t{}", metadata);
+        logger.info("Data:\t{}", data);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        project.setInformationTable(informationTable);
+
+        calculateRuleSetWithComputableCharacteristics(project);
+
+        return project.getRuleSetWithComputableCharacteristics();
     }
 
     public Pair<String, Resource> download(UUID id) throws IOException {
