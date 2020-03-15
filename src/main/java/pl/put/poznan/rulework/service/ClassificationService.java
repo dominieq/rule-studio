@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.exception.EmptyResponseException;
 import pl.put.poznan.rulework.model.Classification;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
@@ -91,7 +92,15 @@ public class ClassificationService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        return project.getClassification();
+        Classification classification = project.getClassification();
+        if(classification == null) {
+            EmptyResponseException ex = new EmptyResponseException("Classification", id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        logger.debug("classification:\t{}", classification);
+        return classification;
     }
 
     public Classification putClassification(UUID id) {
@@ -100,7 +109,14 @@ public class ClassificationService {
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
         InformationTable informationTable = project.getInformationTable();
 
-        Classification classification = makeClassification(informationTable, project.getRuleSetWithComputableCharacteristics());
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        if(ruleSetWithComputableCharacteristics == null) {
+            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        Classification classification = makeClassification(informationTable, ruleSetWithComputableCharacteristics);
         project.setClassification(classification);
 
         return classification;
@@ -121,7 +137,37 @@ public class ClassificationService {
         Attribute[] attributes = project.getInformationTable().getAttributes();
         InformationTable informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
 
-        Classification classification = makeClassification(informationTable, project.getRuleSetWithComputableCharacteristics());
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        if(ruleSetWithComputableCharacteristics == null) {
+            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        Classification classification = makeClassification(informationTable, ruleSetWithComputableCharacteristics);
+        project.setClassification(classification);
+
+        return classification;
+    }
+
+    public Classification postClassification(UUID id, String metadata, String data) throws IOException {
+        logger.info("Id:\t{}", id);
+        logger.info("Metadata:\t{}", metadata);
+        logger.info("Data:\t{}", data);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        project.setInformationTable(informationTable);
+
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        if(ruleSetWithComputableCharacteristics == null) {
+            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        Classification classification = makeClassification(informationTable, ruleSetWithComputableCharacteristics);
         project.setClassification(classification);
 
         return classification;

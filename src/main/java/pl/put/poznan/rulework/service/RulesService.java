@@ -16,7 +16,6 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
-import pl.put.poznan.rulework.exception.ProjectNotFoundException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
@@ -34,7 +33,7 @@ public class RulesService {
     ProjectsContainer projectsContainer;
 
     public RuleSetWithComputableCharacteristics getRules(UUID id) {
-        logger.info("Id:\t" + id);
+        logger.info("Id:\t{}", id);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -45,11 +44,12 @@ public class RulesService {
             throw ex;
         }
 
-        return project.getRuleSetWithComputableCharacteristics();
+        logger.debug("ruleSetWithComputableCharacteristics:\t{}", ruleSetWithComputableCharacteristics.toString());
+        return ruleSetWithComputableCharacteristics;
     }
 
     public RuleSetWithComputableCharacteristics putRules(UUID id) {
-        logger.info("Id:\t" + id);
+        logger.info("Id:\t{}", id);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -87,18 +87,27 @@ public class RulesService {
         RuleSetWithComputableCharacteristics downwardCertainRules = (new VCDomLEM(certainRuleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
         downwardCertainRules.calculateAllCharacteristics();
 
-        project.setRuleSetWithComputableCharacteristics(RuleSetWithComputableCharacteristics.join(upwardCertainRules, downwardCertainRules));
+        RuleSetWithComputableCharacteristics resultSet = RuleSetWithComputableCharacteristics.join(upwardCertainRules, downwardCertainRules);
+        project.setRuleSetWithComputableCharacteristics(resultSet);
 
-        return project.getRuleSetWithComputableCharacteristics();
+        return resultSet;
     }
 
     public Pair<String, Resource> download(UUID id) throws IOException {
-        logger.info("Id:\t" + id);
+        logger.info("Id:\t{}", id);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
-        String ruleMLString = ruleMLBuilder.toRuleMLString(project.getRuleSetWithComputableCharacteristics(), 1);
+
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        if(ruleSetWithComputableCharacteristics == null) {
+            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        String ruleMLString = ruleMLBuilder.toRuleMLString(ruleSetWithComputableCharacteristics, 1);
 
         InputStream is = new ByteArrayInputStream(ruleMLString.getBytes());
 

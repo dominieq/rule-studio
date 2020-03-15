@@ -29,35 +29,34 @@ public class DominanceConesService {
     }
 
     public DominanceCones getDominanceCones(UUID id) {
-        logger.info("Id:\t" + id);
+        logger.info("Id:\t{}", id);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        if(project.getDominanceCones() == null) {
+        DominanceCones dominanceCones = project.getDominanceCones();
+        if(dominanceCones == null) {
             EmptyResponseException ex = new EmptyResponseException("Dominance cones", id);
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        logger.info(project.getDominanceCones().toString());
-
-        return project.getDominanceCones();
+        logger.debug("dominanceCones:\t{}", dominanceCones.toString());
+        return dominanceCones;
     }
 
     public DominanceCones putDominanceCones(UUID id) {
-        logger.info("Id:\t" + id);
+        logger.info("Id:\t{}", id);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         calculateDominanceCones(project, project.getInformationTable());
 
-        logger.info(project.getDominanceCones().toString());
-
+        logger.debug("dominanceCones:\t{}", project.getDominanceCones().toString());
         return project.getDominanceCones();
     }
 
     public DominanceCones postDominanceCones(UUID id, String metadata, String data) throws IOException {
-        logger.info("Id:\t" + id);
+        logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data:\t{}", data);
 
@@ -68,8 +67,7 @@ public class DominanceConesService {
 
         calculateDominanceCones(project, informationTable);
 
-        logger.info(project.getDominanceCones().toString());
-
+        logger.debug("dominanceCones:\t{}", project.getDominanceCones().toString());
         return project.getDominanceCones();
     }
 }
