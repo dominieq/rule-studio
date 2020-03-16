@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
+import Item from "../../../RuleWorkComponents/API/Item";
 import {filterFunction, FilterNoResults, FilterTextField} from "../ProjectTabsUtils";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
@@ -56,6 +57,7 @@ class Classification extends Component {
 
                             this.setState({
                                 loading: false,
+                                displayedItems: items,
                                 ruleType: this.props.project.ruleType,
                             }, () => {
                                 this._data = result;
@@ -217,7 +219,19 @@ class Classification extends Component {
     getItems = (data) => {
         let items = [];
         if (Object.keys(data).length) {
-
+            for (let i = 0; i < data.simpleClassificationResults.length; i++) {
+                const id = i.toString();
+                const name = "Object " + (i + 1);
+                const traits = {
+                    attributes: data.informationTable.attributes,
+                    value: data.informationTable.objects[i]
+                };
+                const tables = {
+                    indicesOfCoveringRules: data.indiciesOfCoveringRules[i]
+                };
+                const item = new Item(id, name, traits, null, tables);
+                items = [...items, item];
+            }
         }
         return items;
     };
