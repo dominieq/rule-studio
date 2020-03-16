@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
@@ -16,7 +15,7 @@ function StyledTypography(props) {
     const classes = useStyles();
 
     return (
-        <Typography {...other} className={clsx(classes[styleVariant])} component={"p"}>
+        <Typography className={classes[styleVariant]} component={"p"} {...other}>
             {children}
         </Typography>
     )
@@ -24,7 +23,7 @@ function StyledTypography(props) {
 
 StyledTypography.propTypes = {
     children: PropTypes.node,
-    styleVariant: PropTypes.oneOf(["label",]).isRequired,
+    styleVariant: PropTypes.oneOf(["label",]),
 };
 
 export default StyledTypography;
