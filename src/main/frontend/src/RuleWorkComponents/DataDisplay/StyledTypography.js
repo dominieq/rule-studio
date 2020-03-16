@@ -8,6 +8,9 @@ const useStyles = makeStyles({
         minWidth: "fit-content",
         marginRight: "16px"
     },
+    "filter-no-results": {
+        color: "#66FF66"
+    }
 }, {name: "rule-work"});
 
 function StyledTypography(props) {
@@ -23,7 +26,7 @@ function StyledTypography(props) {
 
 StyledTypography.propTypes = {
     children: PropTypes.node,
-    styleVariant: PropTypes.oneOf(["label",]),
+    styleVariant: PropTypes.oneOf(["label", "filter-no-results"]),
 };
 
 export default StyledTypography;
