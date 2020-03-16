@@ -6,6 +6,7 @@ import DemoUnionsWithSingleLimitingDecision from './DemoUnionsWithSingleLimiting
 import DemoData from './DemoData'
 import DemoMetadata from './DemoMetadata'
 import DemoRules from './DemoRules'
+import DemoClassification from './DemoClassification'
 
 class Demo extends Component {
 
@@ -19,6 +20,7 @@ class Demo extends Component {
                 <DemoDominanceCones></DemoDominanceCones>
                 <DemoUnionsWithSingleLimitingDecision></DemoUnionsWithSingleLimitingDecision>
                 <DemoRules></DemoRules>
+                <DemoClassification></DemoClassification>
             </div>
         )
     }

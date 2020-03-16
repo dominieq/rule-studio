@@ -33,36 +33,25 @@ public class RulesService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private Project getProjectFromProjectsContainer(UUID id) {
-        Project project = projectsContainer.getProjectHashMap().get(id);
-        if(project == null) {
-            ProjectNotFoundException ex = new ProjectNotFoundException(id);
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-
-        return project;
-    }
-
-    public RuleSetWithCharacteristics getRules(UUID id) {
+    public RuleSetWithComputableCharacteristics getRules(UUID id) {
         logger.info("Id:\t" + id);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRuleSetWithCharacteristics();
-        if(ruleSetWithCharacteristics == null) {
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        if(ruleSetWithComputableCharacteristics == null) {
             EmptyResponseException ex = new EmptyResponseException("Rules", id);
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        return project.getRuleSetWithCharacteristics();
+        return project.getRuleSetWithComputableCharacteristics();
     }
 
-    public RuleSetWithCharacteristics putRules(UUID id) {
+    public RuleSetWithComputableCharacteristics putRules(UUID id) {
         logger.info("Id:\t" + id);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         Unions unions = project.getUnionsWithSingleLimitingDecision();
         if(unions == null) {
@@ -89,9 +78,6 @@ public class RulesService {
                 ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(stoppingConditionChecker)).
                 build();
 
-        RuleInducerComponents possibleRuleInducerComponents = new PossibleRuleInducerComponents.Builder().
-                build();
-
         ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
         ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
         ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
@@ -101,27 +87,18 @@ public class RulesService {
         RuleSetWithComputableCharacteristics downwardCertainRules = (new VCDomLEM(certainRuleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
         downwardCertainRules.calculateAllCharacteristics();
 
-        RuleSetWithComputableCharacteristics upwardPossibleRules = (new VCDomLEM(possibleRuleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider)).generateRules();
-        upwardPossibleRules.calculateAllCharacteristics();
-        RuleSetWithComputableCharacteristics downwardPossibleRules = (new VCDomLEM(possibleRuleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
-        downwardPossibleRules.calculateAllCharacteristics();
+        project.setRuleSetWithComputableCharacteristics(RuleSetWithComputableCharacteristics.join(upwardCertainRules, downwardCertainRules));
 
-        RuleSetWithCharacteristics tmpRuleSet1 = RuleSetWithCharacteristics.join(upwardCertainRules, downwardCertainRules);
-        RuleSetWithCharacteristics tmpRuleSet2 = RuleSetWithCharacteristics.join(upwardPossibleRules, downwardPossibleRules);
-        project.setRuleSetWithCharacteristics(RuleSetWithCharacteristics.join(tmpRuleSet1, tmpRuleSet2));
-
-        return project.getRuleSetWithCharacteristics();
+        return project.getRuleSetWithComputableCharacteristics();
     }
 
     public Pair<String, Resource> download(UUID id) throws IOException {
         logger.info("Id:\t" + id);
 
-        Project project = getProjectFromProjectsContainer(id);
-
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRuleSetWithCharacteristics();
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
-        String ruleMLString = ruleMLBuilder.toRuleMLString(project.getRuleSetWithCharacteristics(), 1);
+        String ruleMLString = ruleMLBuilder.toRuleMLString(project.getRuleSetWithComputableCharacteristics(), 1);
 
         InputStream is = new ByteArrayInputStream(ruleMLString.getBytes());
 

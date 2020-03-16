@@ -6,7 +6,8 @@ class GetDataDownload extends Component {
 
         this.state = {
             id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f',
-            format: 'json'
+            format: 'json',
+            separator: ','
         }
     }
 
@@ -22,6 +23,12 @@ class GetDataDownload extends Component {
         })
     }
 
+    handleSeparatorChange = (event) => {
+        this.setState({
+            separator: event.target.value
+        })
+    }
+
     getDataDownload = (event) => {
         event.preventDefault()
         let filename = "filename";
@@ -29,6 +36,9 @@ class GetDataDownload extends Component {
         var link = `http://localhost:8080/projects/${this.state.id_projektu}/data/download`;
         if(this.state.format !== "") {
             link += `?format=${this.state.format}`;
+        }
+        if(this.state.separator !== "") {
+            link += `&separator=${this.state.separator}`;
         }
 
         console.log(link)
@@ -70,6 +80,8 @@ class GetDataDownload extends Component {
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
                 format->
                 <input type='text' value={this.state.format} onChange={this.handleFormatChange} />
+                separator(only csv)->
+                <input type='text' value={this.state.separator} onChange={this.handleSeparatorChange} />
                 <button onClick={this.getDataDownload}>getDataDownload</button>
             </div>
         )

@@ -2,10 +2,7 @@ package pl.put.poznan.rulework.service;
 
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.data.csv.ObjectParser;
-import org.rulelearn.data.json.AttributeParser;
-import org.rulelearn.rules.Rule;
-import org.rulelearn.rules.RuleSetWithCharacteristics;
+import org.rulelearn.rules.*;
 import org.rulelearn.rules.ruleml.RuleParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +14,6 @@ import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Map;
@@ -31,7 +27,7 @@ public class ProjectService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private Project getProjectFromProjectsContainer(UUID id) {
+    public static Project getProjectFromProjectsContainer(ProjectsContainer projectsContainer, UUID id) {
         Project project = projectsContainer.getProjectHashMap().get(id);
         if(project == null) {
             ProjectNotFoundException ex = new ProjectNotFoundException(id);
@@ -42,31 +38,96 @@ public class ProjectService {
         return project;
     }
 
+    public static InformationTable createInformationTableFromString(String metadata, String data) throws IOException {
+        Attribute[] attributes = MetadataService.attributesFromStringMetadata(metadata);
+        InformationTable informationTable = DataService.informationTableFromStringData(data, attributes);
+        return informationTable;
+    }
+
     public Project getProject(UUID id) {
         logger.info("Id:\t" + id);
 
-        return getProjectFromProjectsContainer(id);
+        return getProjectFromProjectsContainer(projectsContainer, id);
     }
 
     public Project getProjectWithImposePreferenceOrder(UUID id, Boolean imposePreferenceOrder) {
         logger.info("Id:\t" + id);
         logger.info("ImposePreferenceOrder:\t" + imposePreferenceOrder);
-        Project p = getProjectFromProjectsContainer(id);
+        Project p = getProjectFromProjectsContainer(projectsContainer, id);
         p.setInformationTable(p.getInformationTable().imposePreferenceOrders(imposePreferenceOrder));
         return p;
     }
 
-    public Project setProject(UUID id, MultipartFile metadataFile, MultipartFile dataFile, MultipartFile rulesFile) throws IOException {
-        logger.info("Id:\t" + id);
-        if(metadataFile != null)    logger.info("Metadata:\t" + metadataFile.getOriginalFilename() + "\t" + metadataFile.getContentType());
-        if(dataFile != null)        logger.info("Data:\t" + dataFile.getOriginalFilename() + "\t" + dataFile.getContentType());
-        if(rulesFile != null)       logger.info("Rules:\t" + rulesFile.getOriginalFilename() + "\t" + rulesFile.getContentType());
+    private RuleSetWithComputableCharacteristics parseComputableRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
+        Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
+        RuleParser ruleParser = new RuleParser(attributes);
+        parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
 
-        Project project = getProjectFromProjectsContainer(id);
+        for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
+            logger.info("ruleSet.size=" + rswc.size());
+            for(int i = 0; i < rswc.size(); i++) {
+                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                logger.info(i + ":\t" + ruleCharacteristics.toString());
+            }
+        }
+
+        Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
+
+        Rule[] rules = new Rule[ruleSetWithCharacteristics.size()];
+        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+            rules[i] = ruleSetWithCharacteristics.getRule(i);
+        }
+
+        RuleCoverageInformation[] ruleCoverageInformation = new RuleCoverageInformation[ruleSetWithCharacteristics.size()];
+        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+            ruleCoverageInformation[i] = new RuleCoverageInformation(null, null, null, null, 0);
+        }
+
+        return new RuleSetWithComputableCharacteristics(
+                rules,
+                ruleCoverageInformation
+        );
+    }
+
+    private RuleSetWithCharacteristics parseRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
+        Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
+        RuleParser ruleParser = new RuleParser(attributes);
+        parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
+
+        for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
+            logger.info("ruleSet.size=" + rswc.size());
+            for(int i = 0; i < rswc.size(); i++) {
+                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                logger.info(i + ":\t" + ruleCharacteristics.toString());
+            }
+        }
+
+        Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
+
+        return ruleSetWithCharacteristics;
+    }
+
+    public Project setProject(
+            UUID id,
+            MultipartFile metadataFile,
+            MultipartFile dataFile,
+            MultipartFile rulesFile,
+            Character separator,
+            Boolean header) throws IOException {
+        logger.info("Id:\t" + id);
+        if(metadataFile != null)    logger.info("Metadata:\t{}\t{}", metadataFile.getOriginalFilename(), metadataFile.getContentType());
+        if(dataFile != null)        logger.info("Data:\t{}\t{}", dataFile.getOriginalFilename(), dataFile.getContentType());
+        if(rulesFile != null)       logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
+        logger.info("Separator:\t{}", separator);
+        logger.info("Header:\t{}", header);
+
+        Project project = getProjectFromProjectsContainer(projectsContainer, id);
 
         if((metadataFile == null) && (dataFile == null) && (rulesFile == null)) {
             project.setInformationTable(new InformationTable(new Attribute[0], new ArrayList<>()));
-            project.setRuleSetWithCharacteristics(null);
+            project.setRuleSetWithComputableCharacteristics(null);
 
             return project;
         }
@@ -76,60 +137,26 @@ public class ProjectService {
         InformationTable informationTable = project.getInformationTable();
 
         if(metadataFile != null) { //load new metadata from file
-            AttributeParser attributeParser = new AttributeParser();
-            reader = new InputStreamReader(metadataFile.getInputStream());
-            attributes = attributeParser.parseAttributes(reader);
-            for(int i = 0; i < attributes.length; i++) {
-                logger.debug("{}:\t{}", i, attributes[i]);
-            }
+            attributes = MetadataService.attributesFromMultipartFileMetadata(metadataFile);
 
             informationTable = new InformationTable(attributes, new ArrayList<>());
-            project.setRuleSetWithCharacteristics(null);
+            project.setRuleSetWithComputableCharacteristics(null);
         }
 
         if(dataFile != null) { //load new data from file
             attributes = informationTable.getAttributes();
-
-            if (dataFile.getContentType().equals("application/json")) {
-                logger.info("Data type is json");
-                org.rulelearn.data.json.ObjectParser objectParser = new org.rulelearn.data.json.ObjectParser.Builder(attributes).build();
-                reader = new InputStreamReader(dataFile.getInputStream());
-                informationTable = objectParser.parseObjects(reader);
-
-            } else if (dataFile.getContentType().equals("application/vnd.ms-excel")) {
-                logger.info("Data type is csv");
-                ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
-                reader = new InputStreamReader(dataFile.getInputStream());
-                informationTable = objectParser.parseObjects(reader);
-
-            } else {
-                logger.error("Unrecognized format of data file: " + dataFile.getContentType());
-            }
+            informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
         }
 
         if((metadataFile != null) || (dataFile != null)) { //don't use setter, when only rulesFile is provided - informationTable doesn't change
             project.setInformationTable(informationTable);
         }
 
-        if(rulesFile != null) { //load new rules from file
+
+        if(rulesFile != null) { //load rules from file
             attributes = informationTable.getAttributes();
-
-            Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
-            RuleParser ruleParser = new RuleParser(attributes);
-            parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
-
-            for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
-                logger.debug("ruleSet.size={}", rswc.size());
-                for(int i = 0; i < rswc.size(); i++) {
-                    Rule rule = rswc.getRule(i);
-                    logger.debug("{}:\t{}", i, rule);
-                }
-            }
-
-            Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
-            RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
-
-            project.setRuleSetWithCharacteristics(ruleSetWithCharacteristics);
+            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = parseComputableRules(rulesFile, attributes);
+            project.setRuleSetWithComputableCharacteristics(ruleSetWithComputableCharacteristics);
         }
 
         return project;
@@ -139,7 +166,7 @@ public class ProjectService {
         logger.info("Id:\t" + id);
         logger.info("Name:\t" + name);
 
-        Project project = getProjectFromProjectsContainer(id);
+        Project project = getProjectFromProjectsContainer(projectsContainer, id);
 
         project.setName(name);
 

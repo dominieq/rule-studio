@@ -26,10 +26,11 @@ class Classification extends Component {
 
         this.state = {
             changes: false,
+            updated: false,
             loading: false,
             displayedItems: [],
-            openSettings: false,
             ruleType: "certain",
+            openSettings: false,
             snackbarProps: undefined,
         };
 
@@ -38,20 +39,82 @@ class Classification extends Component {
 
     componentDidMount() {
         this._isMounted = true;
-        console.log("Fetching classification from server...");
+        const project = {...this.props.project};
+
         this.setState({
-            ruleType: this.props.project.ruleType,
-        })
+            loading: true,
+        }, () => {
+            let msg = "";
+            fetch(`http://localhost:8080/projects/${project.result.id}/classification`, {
+                method: "GET"
+            }).then(response => {
+                if (response.status === 200) {
+                    response.json().then(result => {
+                        console.log(result);
+                        if (this._isMounted) {
+                            const items = this.getItems(result);
+
+                            this.setState({
+                                loading: false,
+                                ruleType: this.props.project.ruleType,
+                            }, () => {
+                                this._data = result;
+                                this._items = items;
+                            });
+                        }
+                    }).catch(error => {
+                        console.log(error);
+                        if (this._isMounted) {
+                            this.setState({
+                                loading: false,
+                                ruleType: this.props.project.ruleType,
+                            })
+                        }
+                    });
+                } else {
+                    response.json().then(result => {
+                        msg = "error " + result.status + ": " + result.message;
+                        let alertProps = {hasTitle: true, title: "Something went wrong! Please don't panick :)"};
+                        let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "info"};
+                        if (this._isMounted) {
+                            this.setState({
+                                loading: false,
+                                ruleType: this.props.project.ruleType,
+                                snackbarProps: result.status !== 404 ? snackbarProps : undefined
+                            });
+                        }
+                    }).catch(error => {
+                        console.log(error);
+                        if (this._isMounted) {
+                            this.setState({
+                                loading: true,
+                                ruleType: this.props.project.ruleType,
+                            });
+                        }
+                    });
+                }
+            }).catch(error => {
+                console.log(error);
+                if (this._isMounted) {
+                    msg = "Server error! Couldn't load classification :(";
+                    this.setState({
+                        loading: false,
+                        ruleType: this.props.project.ruleType,
+                        snackbarProps: {open: true, message: msg, variant: "error"}
+                    });
+                }
+            });
+        });
     }
 
     componentWillUnmount() {
         if (this.state.changes) {
             let project = {...this.props.project};
             if (Object.keys(this._data).length) {
-                // TODO DO SOMETHING
+                project.result.classification = this._data;
             }
             project.ruleType = this.state.ruleType;
-            this.props.onTabChange(project, this.props.value, false);
+            this.props.onTabChange(project, this.props.value, this.state.updated);
         }
     }
 
@@ -67,8 +130,70 @@ class Classification extends Component {
         });
     };
 
-    onCalculateClick = () => {
-        console.log("Fetching classification from server...");
+    onCalculateClick = (event) => {
+        event.persist();
+        const project = {...this.props.project};
+
+        let data = new FormData();
+        if (event.target.files) data.append("data", event.target.files[0]);
+
+        this.setState({
+            loading: true,
+        }, () => {
+            let msg = "";
+            fetch(`http://localhost:8080/projects/${project.result.id}/classification`, {
+                method: "PUT",
+                body: event.target.files ? data : null,
+            }).then(response => {
+                if (response.status === 200) {
+                    response.json().then(result => {
+                        console.log(result);
+                        if (this._isMounted) {
+                            const items = this.getItems(result);
+
+                            this.setState({
+                                changes: true,
+                                updated: true,
+                                loading: false,
+                                displayedItems: items,
+                            }, () => {
+                                this._data = result;
+                                this._items = items;
+                            });
+                        } else {
+                            project.result.classification = result;
+                            this.props.onTabChange(project, this.props.value, true);
+                        }
+                    }).catch(error => {
+                        console.log(error);
+                        if (this._isMounted) this.setState({loading: false});
+                    });
+                } else {
+                    response.json().then(result => {
+                        if (this._isMounted) {
+                            let alert = {hasTitle: true, title: "Something went wrong! Please don't panick :)"};
+                            msg = "error " + result.status + ": " + result.message;
+                            this.setState({
+                                loading: false,
+                                snackbarProps: {alertProps: alert, open: true, message: msg, variant: "info"}
+                            })
+                        }
+                    }).catch(error => {
+                        console.log(error);
+                        if (this._isMounted) this.setState({loading: false});
+                    })
+                }
+            }).catch(error => {
+                console.log(error);
+                if (this._isMounted) {
+                    msg = "Server error! Couldn't calculate classification :(";
+                    this.setState({
+                        loading: false,
+                        snackbarProps: {open: true, message: msg, variant: "error"}
+                    });
+                }
+            })
+        });
     };
 
     onRuleTypeChange = (event) => {
@@ -83,13 +208,17 @@ class Classification extends Component {
     };
 
     onSnackbarClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
+        if (reason !== 'clickaway') {
+            this.setState({snackbarProps: undefined});
         }
+    };
 
-        this.setState({
-            snackbarProps: undefined,
-        });
+    getItems = (data) => {
+        let items = [];
+        if (Object.keys(data).length) {
+
+        }
+        return items;
     };
 
     render() {

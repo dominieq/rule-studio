@@ -1,13 +1,12 @@
 import React, { Component } from 'react'
 
-class PutDataDownload extends Component {
+class PostUnionsWithSingleLimitingDecision extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f',
-            format: 'json',
-            separator: ',',
+            consistencyThreshold: 0,
             metadata: JSON.stringify(
               [
                 {
@@ -128,51 +127,36 @@ class PutDataDownload extends Component {
         })
     }
 
-    handleFormatChange = (event) => {
+    handleConsistencyThresholdChange = (event) => {
         this.setState({
-            format: event.target.value
+            consistencyThreshold: event.target.value
         })
     }
 
-    handleSeparatorChange = (event) => {
-        this.setState({
-            separator: event.target.value
-        })
-    }
-
-    putDataDownload = (event) => {
+    postUnionsWithSingleLimitingDecision = (event) => {
         event.preventDefault()
-        let filename = "filename";
-
-        var link = `http://localhost:8080/projects/${this.state.id_projektu}/data/download`;
-        if(this.state.format !== "") {
-            link += `?format=${this.state.format}`;
-        }
-        if(this.state.separator !== "") {
-            link += `&separator=${this.state.separator}`;
-        }
-
-        console.log(link)
 
         let formData = new FormData()
+        formData.append('consistencyThreshold', this.state.consistencyThreshold)
         formData.append('metadata', this.state.metadata)
         formData.append('data', this.state.data)
 
-        fetch(link, {
-            method: 'PUT',
+        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/unions`, {
+            method: 'POST',
             body: formData
         }).then(response => {
             console.log(response)
             if(response.status === 200) {
-                filename =  response.headers.get('Content-Disposition').split('filename=')[1];
-                response.blob().then(result => {
-                    console.log("Wynik dzialania response.blob():")
+                response.json().then(result => {
+                    console.log("Received dominance cones:")
                     console.log(result)
-                    let url = window.URL.createObjectURL(result);
-                    let link = document.createElement('a');
-                    link.href = url;
-                    link.download = filename;
-                    link.click();
+                }).catch(err => {
+                    console.log(err)
+                })
+            } else if(response.status === 404) {
+                response.json().then(result => {
+                    console.log("Błąd 404.")
+                    console.log(result.message)
                 }).catch(err => {
                     console.log(err)
                 })
@@ -194,14 +178,12 @@ class PutDataDownload extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                format->
-                <input type='text' value={this.state.format} onChange={this.handleFormatChange} />
-                separator(only csv)->
-                <input type='text' value={this.state.separator} onChange={this.handleSeparatorChange} />
-                <button onClick={this.putDataDownload}>putDataDownload</button>
+                consistencyThreshold->
+                <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
+                <button onClick={this.postUnionsWithSingleLimitingDecision}>postUnionsWithSingleLimitingDecision</button>
             </div>
         )
     }
 }
 
-export default PutDataDownload
+export default PostUnionsWithSingleLimitingDecision
