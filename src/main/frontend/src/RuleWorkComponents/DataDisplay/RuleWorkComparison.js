@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from "react";
+import React, {Component} from "react";
 import PropTypes from "prop-types";
 import {withStyles} from "@material-ui/core";
 import VirtualizedTable from "./VirtualizedTable";
@@ -22,21 +22,20 @@ class RuleWorkComparison extends Component {
                     {width: 50, label: `Object ${this.props.objectInDialog+1}`, dataKey: "o2"}];       
         
         return [{width: 50, label: 'Attribute name:', dataKey: 'name'},
-                {width: 50, label: `Value of Object ${this.props.objectInDialog+1}`, dataKey: "o1", }];
+                {width: 50, label: `Value of Object ${this.props.objectInDialog+1}:`, dataKey: "o1", }];
     }
 
     getAppropriateSign(o1,o2, attributeName) {
         const column = this.props.informationTable.attributes.find(x => x.name === attributeName);
         switch(column.preferenceType) {
             case "gain":
-                if(o1[attributeName] > o2[attributeName]) return "\u2ab0"; // >=
-                else if (o1[attributeName] < o2[attributeName]) return "\u2aaf"; // <=
+                if(o1[attributeName] > o2[attributeName]) return "\u2ab0"; // >= \u227B >
+                else if (o1[attributeName] < o2[attributeName]) return "\u2aaf"; // <= \u227A <
                 else return "=";
             case "cost":
                 if(o1[attributeName] > o2[attributeName]) return "\u2aaf";
                 else if (o1[attributeName] < o2[attributeName]) return "\u2ab0";
                 else return "=";
-            
             default:
                 return "uncomparable";
         }

@@ -25,15 +25,9 @@ class RuleWorkDataTables extends Component {
     }
 
     onListItemClick = (event, index) => {
-        if(this.props.tabName === 'rules') {
-            this.setState({
-                selectedItem: Object.keys(this.props.tables).findIndex(x => x === "indicesOfCoveredObjects"),
-            }, () => this.props.setChosenTable(this.state.selectedItem))
-        } else {
-            this.setState({
-                selectedItem: index,
-            }, () => this.props.setChosenTable(this.state.selectedItem))
-        }
+        this.setState({
+            selectedItem: index,
+        }, () => this.props.setChosenTable(this.state.selectedItem))
     };
 
     onPageChange = (event, value) => {
@@ -46,22 +40,9 @@ class RuleWorkDataTables extends Component {
         const tmp = [];
         const keys = Object.keys(objectWithArrays);
         for(let i in keys) {
-            if(tabName !== 'rules') tmp.push({name: keys[i] + " (" + objectWithArrays[keys[i]].length + ")"}); //name of the array with number of elements
-            else {
-                if(keys[i] === "indicesOfCoveredObjects") {
-                    tmp.push({name: keys[i] + " (" + objectWithArrays[keys[i]].length + ")"});
-                }
-            }
+            tmp.push({name: keys[i] + " (" + objectWithArrays[keys[i]].length + ")"}); //name of the array with number of elements
         }
         return tmp;
-    }
-
-    componentDidMount() {
-        if(this.props.tabName === 'rules') {
-            this.setState({
-                selectedItem: Object.keys(this.props.tables).findIndex(x => x === "indicesOfCoveredObjects"),
-            }, () => this.props.setChosenTable(this.state.selectedItem))
-        }
     }
 
     render() {
@@ -87,14 +68,6 @@ class RuleWorkDataTables extends Component {
                         />
                     ))}
                 </StyledList>
-                <StyledPagination
-                    count={count}
-                    onChange={this.onPageChange}
-                    page={selectedPage}
-                    showFirstButton={true}
-                    showLastButton={true}
-                    variant={"outlined"}
-                />
             </Fragment>
         )
     }

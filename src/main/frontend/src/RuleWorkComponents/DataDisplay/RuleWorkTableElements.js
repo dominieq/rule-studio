@@ -4,6 +4,7 @@ import {withStyles} from "@material-ui/core";
 import RuleWorkListItem from "./RuleWorkListItem";
 import StyledPagination from "../Navigation/StyledPagination";
 import List from "@material-ui/core/List";
+import Typography from '@material-ui/core/Typography';
 
 const StyledList = withStyles({
     root: {
@@ -20,7 +21,7 @@ class RuleWorkTableElements extends Component {
         this.state = {
             selectedItem: 0,
             selectedPage: 1,
-            itemsPerPage: 15,
+            itemsPerPage: 14,
             open: false,
         };
     }
@@ -47,39 +48,30 @@ class RuleWorkTableElements extends Component {
         })
     };
 
-    prepareListItems = (chosenTableWithIndex, tabName) => {
+    prepareListItems = (chosenTable, tabName) => {
         const tmp = [];
-
-        const array = chosenTableWithIndex.chosenTable;
-        if(tabName === 'rules' && chosenTableWithIndex.indexOfChosenTable === 3) {
-            for(let i in array) {
-                tmp.push({name: "Object " + (parseInt(i,10)+1)}); //index objects from 1
-            }
-            return tmp;
-        } else {
-            for(let i in array) {
-                tmp.push({name: "Object " + (parseInt(array[i],10)+1)}); //index objects from 1
-            }
-            return tmp;
+        for(let i in chosenTable) {
+            tmp.push({name: "Object " + (parseInt(chosenTable[i],10)+1)}); //index objects from 1
         }
+        return tmp;
     }
 
     render() {
         const {selectedItem, selectedPage, itemsPerPage} = this.state;
-        const {chosenTableWithIndex, setChosenObject, tabName, ...other} = this.props;
-
-        const chosenTable = chosenTableWithIndex.chosenTable;
+        const {chosenTable, setChosenObject, tabName, ...other} = this.props;
 
         const count = Math.ceil(chosenTable.length / itemsPerPage);
 
         const start = (selectedPage - 1) * itemsPerPage;
         const end = itemsPerPage * selectedPage;
         
-        const displayedItems = this.prepareListItems(chosenTableWithIndex, tabName).slice(start , end);
+        const displayedItems = this.prepareListItems(chosenTable, tabName).slice(start , end);
 
         return (
             <Fragment>
+                 
                 <StyledList {...other} component={"nav"}>
+                {tabName === "rules" && <Typography color="inherit" align="left" className="MuiListItem-gutters">Covered Objects:</Typography>}
                     {displayedItems.map((item, index) => (
                         <RuleWorkListItem
                             key={index}
@@ -103,21 +95,21 @@ class RuleWorkTableElements extends Component {
 }
 
 // Expected props:
-// chosenTableWithIndex (required) <-- object consisting of the array of integers (object indexes) from chosen array and index of that array
+// chosenTable (required) <-- array of integers (object indexes) from chosen data table
 // setChosenObject (required) <-- method responsible for setting chosen object (selected from the chosenTable) used in comparison.
 // tabName (required) <-- tells from which tab was dialog launched (especially needed in rules tab)
 // anything other (optional) <-- additional settings for StyledList
 
 //Example of props:
 /*
-    chosenTableWithIndex = {chosenTable: [1,2,5,6,9,11], index: 1}; (might be objects or lowerApproximation or anything other)
+    chosenTable = [1,2,5,6,9,11]; (might be objects or lowerApproximation or anything other)
     setChosenObject = {this.setChosenObject};
     tabName = {"cones"}
 }
 */
 
 RuleWorkTableElements.propTypes = {
-    chosenTableWithIndex: PropTypes.object,
+    chosenTable: PropTypes.array,
     setChosenTable: PropTypes.func,
     tabName: PropTypes.string
 };

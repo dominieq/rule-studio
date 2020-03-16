@@ -10,22 +10,32 @@ import RuleWorkCharacteristics from "../DataDisplay/RuleWorkCharacteristics";
 import RuleWorkDataTables from "../DataDisplay/RuleWorkDataTables";
 import RuleWorkTableElements from "../DataDisplay/RuleWorkTableElements";
 import RuleWorkComparison from "../DataDisplay/RuleWorkComparison";
-import RuleWorkList from "../DataDisplay/RuleWorkList";
 import RuleWorkBox from "../Containers/RuleWorkBox";
 
 class RuleWorkDialog extends Component {
     constructor(props) {
         super(props);
 
+
         this.state = {
             tableIndex: -1,     
             objectIndex: -1,      
         };
+
+        this.indexOfIndicesOfCoveredObjects = 2;
+    }
+
+    componentDidUpdate(prevProps) {
+        if(prevProps.name !== this.props.name)
+        this.setState({
+            tableIndex: -1,     
+            objectIndex: -1,
+        })
     }
 
     setChosenTable = (index) => {
         this.setState({
-            tableIndex: index,
+            tableIndex: index,     
             objectIndex: -1, //reset object index
         })
     }
@@ -33,15 +43,15 @@ class RuleWorkDialog extends Component {
     getChosenTable = (tables, index) => {
         let counter = 0;
         for(let i in tables) {
-            if(index === counter) return tables[i];            
+            if(index === counter) return tables[i];        
             counter++;
         }
     }
 
-    getChosenTableWithIndex = (tables, index) => {
+    getChosenTableForRules = (tables) => {
         let counter = 0;
         for(let i in tables) {
-            if(index === counter) return {chosenTable: tables[i], indexOfChosenTable: counter};
+            if(this.indexOfIndicesOfCoveredObjects === counter) return tables[i];        
             counter++;
         }
     }
@@ -64,8 +74,7 @@ class RuleWorkDialog extends Component {
     }
 
     render() {
-        console.log(this.props);
-        const {id, name, tabName, traits, tables, onClose, result, ...other} = this.props;
+        const {id, name, tables, tabName, traits, onClose, result, ...other} = this.props;
        
         let characteristicsExist = false;
         if(traits) characteristicsExist = (Object.keys(traits).length !== 0 ? true : false);
@@ -73,40 +82,78 @@ class RuleWorkDialog extends Component {
             <div>
                <StyledDialog fullScreen {...other} onClose={onClose}> 
                <DialogContent className="ruleWorkDialog">
-
-                    <div className="ruleWorkDialog-left">
-                        <div className="ruleWorkDialog-left-first">
-                                        <RuleWorkBox id={"object-list"} styleVariant={"tab-body1"}>
-                                            <RuleWorkDataTables tables={tables} setChosenTable={this.setChosenTable} tabName={tabName}/>
-                                        </RuleWorkBox>  
-                        </div>
-                        <div className="ruleWorkDialog-left-second">
-                                {this.state.tableIndex !== -1 && 
-                                    <RuleWorkBox id={"object-list"} styleVariant={"tab-body1"}>
-                                        <RuleWorkTableElements setChosenObject={this.setChosenObject} chosenTableWithIndex={this.getChosenTableWithIndex(tables,this.state.tableIndex)} tabName={tabName} />
-                                    </RuleWorkBox>
-                                } 
-                        </div>
+                   <div className="ruleWorkDialog-top">
+                    <DialogContentText color="inherit">
+                        {tabName === "cones" ? `Selected object: ${name}`
+                        : (tabName === "unions" ? `Selected union: ${name}` 
+                        : (tabName === "rules" ? `Selected rule: ${name}` 
+                        : null
+                        ))}
+                    </DialogContentText>
                     </div>
-                    <div className="ruleWorkDialog-right">
-                        { characteristicsExist === true //if charecteristics exist then display them on the half of the heigt of the screen
-                            &&  <div className="ruleWorkDialog-right-up">
-                                    <RuleWorkCharacteristics traits={traits} informationTable={result.informationTable} />
+
+                    {tabName !== "rules" &&
+                        <div className="ruleWorkDialog-bottom"> 
+                            <div className="ruleWorkDialog-left">
+                                <div className="ruleWorkDialog-left-first">
+                                                <RuleWorkBox id={"dialog-object-list-left"} styleVariant={"tab-body1"}>
+                                                    <RuleWorkDataTables tables={tables} setChosenTable={this.setChosenTable} tabName={tabName}/>
+                                                </RuleWorkBox>  
                                 </div>
-                        }
-                        {characteristicsExist === true //and also display object comparison
-                            &&  <div className={'ruleWorkDialog-right-down'}>
-                                    {this.state.objectIndex !== -1 && 
-                                        <RuleWorkComparison  objectInDialog={this.getChosenObject(tables)} objectBeforeDialog={this.getObjectBeforeDialog(id,tabName)} informationTable={result.informationTable} />
+                                <div className="ruleWorkDialog-left-second">
+                                        {this.state.tableIndex !== -1 && 
+                                            <RuleWorkBox id={"dialog-object-list-right"} styleVariant={"tab-body1"}>
+                                                <RuleWorkTableElements setChosenObject={this.setChosenObject} chosenTable={this.getChosenTable(tables,this.state.tableIndex)} tabName={tabName} />
+                                            </RuleWorkBox>
+                                        } 
+                                </div>
+                            </div>
+                            <div className="ruleWorkDialog-right">
+                                { characteristicsExist === true //if charecteristics exist then display them on the half of the heigt of the screen
+                                    &&  <div className="ruleWorkDialog-right-up">
+                                            <RuleWorkCharacteristics traits={traits} />
+                                        </div>
+                                }
+                                {characteristicsExist === true //and also display object comparison
+                                    &&  <div className={'ruleWorkDialog-right-down'}>
+                                            {this.state.objectIndex !== -1 && 
+                                                <RuleWorkComparison  objectInDialog={this.getChosenObject(tables)} objectBeforeDialog={this.getObjectBeforeDialog(id,tabName)} informationTable={result.informationTable} />
+                                            }
+                                        </div>
+                                }
+                                { characteristicsExist === false //if characteristics don't exist then display comparison on full height
+                                    &&  this.state.objectIndex !== -1 
+                                    &&  <RuleWorkComparison  objectInDialog={this.getChosenObject(tables)} objectBeforeDialog={this.getObjectBeforeDialog(id,tabName)} informationTable={result.informationTable} />
+                                }
+
+                            </div>
+                        </div>
+                    }
+                    {tabName === "rules" &&
+                        <div className="ruleWorkDialog-bottom"> 
+                            <div className="ruleWorkDialog-left">
+                                <div className="ruleWorkDialog-left-first">
+                                    { characteristicsExist === true &&
+                                        <RuleWorkCharacteristics traits={traits} />
                                     }
                                 </div>
-                        }
-                        { characteristicsExist === false //if characteristics don't exist then display comparison on full height
-                            &&  this.state.objectIndex !== -1 
-                            &&  <RuleWorkComparison  objectInDialog={this.getChosenObject(tables)} objectBeforeDialog={this.getObjectBeforeDialog(id,tabName)} informationTable={result.informationTable} />
-                        }
+                                <div className="ruleWorkDialog-left-second">
+                                        {
+                                            <RuleWorkBox id={"dialog-object-list"} styleVariant={"tab-body1"}>
+                                                <RuleWorkTableElements setChosenObject={this.setChosenObject} chosenTable={this.getChosenTableForRules(tables)} tabName={tabName} />
+                                            </RuleWorkBox>
+                                        } 
+                                </div>
+                            </div>
+                            <div className="ruleWorkDialog-right">
+                                {  this.state.objectIndex !== -1 
+                                    &&  <RuleWorkComparison  objectInDialog={this.getChosenTableForRules(tables)[this.state.objectIndex]} objectBeforeDialog={this.getObjectBeforeDialog(id,tabName)} informationTable={result.informationTable} />
+                                }
 
-                    </div>
+                            </div>
+                        </div>
+                    }
+
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={onClose} color="inherit"> Close </Button>
