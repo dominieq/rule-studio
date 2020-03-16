@@ -1,5 +1,6 @@
 import React, {Component, Fragment} from "react";
 import PropTypes from "prop-types";
+import {filterFunction, FilterNoResults, FilterTextField} from "../ProjectTabsUtils";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
@@ -112,14 +113,15 @@ class CrossValidation extends Component {
         });
     };
 
-    onSnackbarClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
+    onFilterChange = (event) => {
+        const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
+        this.setState({displayedItems: filteredItems});
+    };
 
-        this.setState({
-            snackbarProps: undefined,
-        });
+    onSnackbarClose = (event, reason) => {
+        if (reason !== 'clickaway') {
+            this.setState({snackbarProps: undefined});
+        }
     };
 
     renderResultsActions = () => {
@@ -198,6 +200,7 @@ class CrossValidation extends Component {
                     </RuleWorkTooltip>
                     <span style={{flexGrow: 1}} />
                     {this.renderResultsActions()}
+                    <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <RuleWorkDrawer
                     height={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
@@ -228,9 +231,12 @@ class CrossValidation extends Component {
                     {loading ?
                         <StyledCircularProgress />
                         :
-                        <RuleWorkList>
-                            {displayedItems}
-                        </RuleWorkList>
+                        displayedItems ?
+                            <RuleWorkList>
+                                {displayedItems}
+                            </RuleWorkList>
+                            :
+                            <FilterNoResults />
                     }
                 </RuleWorkBox>
                 <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />

@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import Item from "../../../RuleWorkComponents/API/Item";
-import MeasureSelector from "../ProjectTabsUtils/MeasureSelector";
+import {filterFunction, FilterNoResults, FilterTextField} from "../ProjectTabsUtils/Filtering";
+import {MeasureSelector, ThresholdSelector} from "../ProjectTabsUtils/Calculations";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
@@ -13,7 +14,6 @@ import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import ThresholdSelector from "../ProjectTabsUtils/ThresholdSelector";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import Calculator from "mdi-material-ui/Calculator";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
@@ -323,16 +323,14 @@ class Rules extends Component {
     };
 
     onFilterChange = (event) => {
-        const filterText = event.target.value;
+        const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
+        this.setState({displayedItems: filteredItems});
     };
 
     onSnackbarClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
+        if (reason !== 'clickaway') {
+            this.setState({snackbarProps: undefined});
         }
-        this.setState({
-            snackbarProps: undefined,
-        });
     };
 
     getItems = (data) => {
@@ -415,7 +413,7 @@ class Rules extends Component {
                     <RuleWorkTooltip title={"Save file"}>
                         <StyledButton
                             aria-label={"rules-save-button"}
-                            disabled={!this.props.project || !this.state.displayedItems.length || loading}
+                            disabled={!this.props.project || !this.state.displayedItems || loading}
                             isIcon={true}
                             onClick={this.onSaveFileClick}
                         >
@@ -423,6 +421,7 @@ class Rules extends Component {
                         </StyledButton>
                     </RuleWorkTooltip>
                     <span style={{flexGrow: 1}} />
+                    <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <RuleWorkDrawer
                     height={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
@@ -462,9 +461,12 @@ class Rules extends Component {
                     {loading ?
                         <StyledCircularProgress />
                         :
-                        <RuleWorkList>
-                            {displayedItems}
-                        </RuleWorkList>
+                        displayedItems ?
+                            <RuleWorkList>
+                                {displayedItems}
+                            </RuleWorkList>
+                            :
+                            <FilterNoResults />
                     }
                 </RuleWorkBox>
                 <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />

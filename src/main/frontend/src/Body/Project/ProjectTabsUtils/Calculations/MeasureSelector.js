@@ -1,7 +1,7 @@
 import React, {Fragment} from "react";
 import PropTypes from "prop-types";
-import RuleWorkHelper from "../../../RuleWorkComponents/Feedback/RuleWorkHelper";
-import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import RuleWorkHelper from "../../../../RuleWorkComponents/Feedback/RuleWorkHelper";
+import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 
 function MeasureSelector(props) {
     return (

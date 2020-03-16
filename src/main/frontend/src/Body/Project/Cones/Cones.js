@@ -1,14 +1,15 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import Item from "../../../RuleWorkComponents/API/Item";
+import {filterFunction, FilterNoResults, FilterTextField} from "../ProjectTabsUtils/Filtering";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
-import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import Calculator from "mdi-material-ui/Calculator";
+
 
 class Cones extends Component {
     constructor(props) {
@@ -166,38 +167,14 @@ class Cones extends Component {
     };
 
     onFilterChange = (event) => {
-        const filterText = event.target.value.toString();
-        const items = this._items.slice(0);
-
-        if (filterText === "") {
-            this.setState({
-                displayedItems: items,
-            });
-            return;
-        }
-
-        let displayedItems = [];
-        for (let i = 0; i < items.length; i++) {
-            const object = items[i];
-
-            if (object.name.toString().includes(filterText)) {
-                displayedItems = [...displayedItems, object];
-            }
-        }
-        if (displayedItems.length > 0) {
-            this.setState({
-                displayedItems: displayedItems,
-            });
-        }
+        const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
+        this.setState({displayedItems: filteredItems});
     };
 
     onSnackbarClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
+        if (reason !== 'clickaway') {
+            this.setState({snackbarProps: undefined});
         }
-        this.setState({
-            snackbarProps: undefined,
-        });
     };
 
     getItems = (data) => {
@@ -241,20 +218,18 @@ class Cones extends Component {
                         Calculate
                     </StyledButton>
                     <span style={{flexGrow: 1}}/>
-                    <RuleWorkTextField
-                        hasOutsideLabel={true}
-                        onChange={this.onFilterChange}
-                        outsideLabel={"Filter objects"}
-                        type={"search"}
-                    />
+                    <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <RuleWorkBox id={"cones-list"} styleVariant={"tab-body"}>
                     {loading ?
                         <StyledCircularProgress />
                         :
-                        <RuleWorkList>
-                            {displayedItems}
-                        </RuleWorkList>
+                        displayedItems ?
+                            <RuleWorkList>
+                                {displayedItems}
+                            </RuleWorkList>
+                            :
+                            <FilterNoResults />
                     }
                 </RuleWorkBox>
                 <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />

@@ -1,8 +1,8 @@
 import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
-import RuleWorkHelper from "../../../RuleWorkComponents/Feedback/RuleWorkHelper";
-import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import StyledSlider from "../../../RuleWorkComponents/Inputs/StyledSlider";
+import RuleWorkHelper from "../../../../RuleWorkComponents/Feedback/RuleWorkHelper";
+import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledSlider from "../../../../RuleWorkComponents/Inputs/StyledSlider";
 
 class ThresholdSelector extends Component {
     constructor(props) {
