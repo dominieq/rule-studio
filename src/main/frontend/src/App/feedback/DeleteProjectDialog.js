@@ -75,11 +75,11 @@ class DeleteProjectDialog extends Component {
                 >
                     <RuleWorkTextField
                         fullWidth={true}
+                        hasOutsideLabel={true}
                         onChange={this.onInputChange}
+                        outsideLabel={"Type project name"}
                         value={name}
-                    >
-                        Type project name
-                    </RuleWorkTextField>
+                    />
                 </StyledDialogContent>
                 <DialogActions>
                     <StyledButton

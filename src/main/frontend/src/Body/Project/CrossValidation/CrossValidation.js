@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import RuleWorkSelect from "../../../RuleWorkComponents/Inputs/RuleWorkSelect";
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
 import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
@@ -129,13 +128,15 @@ class CrossValidation extends Component {
         if (Array.isArray(folds) && folds.length) {
             return (
                 <Fragment>
-                    <RuleWorkSelect
-                        label={"Choose fold"}
+                    <RuleWorkTextField
+                        hasOutsideLabel={true}
                         onChange={this.onFoldIndexChange}
+                        outsideLabel={"Choose fold"}
+                        select={true}
                         value={foldIndex}
                     >
                         {folds}
-                    </RuleWorkSelect>
+                    </RuleWorkTextField>
                     <StyledDivider />
                     <ToggleButtonGroup
                         aria-label={"display-toggle-button-group"}
@@ -206,12 +207,12 @@ class CrossValidation extends Component {
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <RuleWorkSmallBox id={"fold-number-selector"} >
                         <RuleWorkTextField
-                            value={foldNumber}
+                            hasOutsideLabel={true}
                             onChange={this.onFoldNumberChange}
-                            style={{maxWidth: 128}}
-                        >
-                            Choose number of folds
-                        </RuleWorkTextField>
+                            outsideLabel={"Choose number of folds"}
+                            style={{maxWidth: 72}}
+                            value={foldNumber}
+                        />
                     </RuleWorkSmallBox>
                     <RuleWorkSmallBox id={"cross-validation-footer"} styleVariant={"footer"}>
                         <StyledButton

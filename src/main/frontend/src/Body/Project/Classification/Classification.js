@@ -4,7 +4,6 @@ import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import RuleWorkSelect from "../../../RuleWorkComponents/Inputs/RuleWorkSelect";
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
 import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
@@ -273,11 +272,11 @@ class Classification extends Component {
                     </RuleWorkButtonGroup>
                     <span style={{flexGrow: 1}} />
                     <RuleWorkTextField
-                        type={"search"}
+                        hasOutsideLabel={true}
                         onChange={this.onFilterChange}
-                    >
-                        Filter objects
-                    </RuleWorkTextField>
+                        outsideLabel={"Filter objects"}
+                        type={"search"}
+                    />
                 </StyledPaper>
                 <RuleWorkDrawer
                     height={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
@@ -286,14 +285,16 @@ class Classification extends Component {
                 >
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <RuleWorkSmallBox id={"rule-type-selector"}>
-                        <RuleWorkSelect
+                        <RuleWorkTextField
                             disabledChildren={["possible"]}
-                            label={"Choose rule type"}
+                            hasOutsideLabel={true}
                             onChange={this.onRuleTypeChange}
+                            outsideLabel={"Choose rule type"}
+                            select={true}
                             value={ruleType}
                         >
                             {["certain", "possible"]}
-                        </RuleWorkSelect>
+                        </RuleWorkTextField>
                     </RuleWorkSmallBox>
                     <RuleWorkSmallBox id={"classification-settings-footer"} styleVariant={"footer"}>
                         <StyledButton

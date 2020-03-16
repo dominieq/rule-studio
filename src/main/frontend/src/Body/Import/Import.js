@@ -108,11 +108,11 @@ class Import extends Component{
                     <RuleWorkSmallBox>
                         <RuleWorkTextField
                             fullWidth={true}
+                            hasOutsideLabel={true}
                             onChange={this.onProjectNameChange}
+                            outsideLabel={"Project name"}
                             value={name}
-                        >
-                            Project name
-                        </RuleWorkTextField>
+                        />
                     </RuleWorkSmallBox>
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <RuleWorkSmallBox>

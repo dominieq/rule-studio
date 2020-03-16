@@ -242,11 +242,11 @@ class Cones extends Component {
                     </StyledButton>
                     <span style={{flexGrow: 1}}/>
                     <RuleWorkTextField
-                        type={"search"}
+                        hasOutsideLabel={true}
                         onChange={this.onFilterChange}
-                    >
-                        Filter objects
-                    </RuleWorkTextField>
+                        outsideLabel={"Filter objects"}
+                        type={"search"}
+                    />
                 </StyledPaper>
                 <RuleWorkBox id={"cones-list"} styleVariant={"tab-body"}>
                     {loading ?
