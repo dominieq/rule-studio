@@ -61,7 +61,7 @@ class ProjectTabs extends Component {
 
     getTabBodyProps = (index) => {
         return ({
-            dataUpToDate: this.props.upToDate,
+            dataUpToDate: this.props.dataUpToDate,
             project: this.props.project,
             onTabChange: this.props.onTabChange,
             upToDate: this.props.tabsUpToDate[index],

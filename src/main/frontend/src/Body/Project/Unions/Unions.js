@@ -26,6 +26,7 @@ class Unions extends Component {
 
         this.state = {
             changes: false,
+            updated: false,
             loading: false,
             displayedItems: [],
             threshold: 0,
@@ -44,16 +45,15 @@ class Unions extends Component {
         this.setState({
             loading: true,
         }, () => {
+            let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/unions`, {
                 method: "GET",
             }).then(response => {
-
                 if (response.status === 200) {
                     response.json().then(result => {
-                        console.log(result);
-                        const items = this.getItems(result);
-
                         if (this._isMounted) {
+                            const items = this.getItems(result);
+
                             this.setState({
                                 loading: false,
                                 displayedItems: items,
@@ -65,41 +65,48 @@ class Unions extends Component {
                             });
                         }
                     }).catch(error => {
+                        console.log(error);
                         if (this._isMounted) {
                             this.setState({
                                 loading: false,
                                 threshold: this.props.project.threshold,
                                 measure: this.props.project.measure,
-                                snackbarProps: {
-                                    open: true,
-                                    message: "Rules loaded but couldn't parse!",
-                                    variant: "error",
-                                },
-                            }, () => {
-                                console.log(error);
                             });
                         }
                     });
                 } else {
-                    this.setState({
-                        loading: false,
-                        threshold: this.props.project.threshold,
-                        measure: this.props.project.measure,
+                    response.json().then(result => {
+                        if (this._isMounted) {
+                            msg = "error " + result.status + ": " + result.message;
+                            let alertProps = {hasTitle: true, title: "Something went wrong! Please don't panic :)"};
+                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "info"};
+                            this.setState({
+                                loading: false,
+                                threshold: this.props.project.threshold,
+                                measure: this.props.project.measure,
+                                snackbarProps: result.status !== 404 ? snackbarProps : undefined
+                            });
+                        }
+                    }).catch(error => {
+                        console.log(error);
+                        if (this._isMounted) {
+                            this.setState({
+                                loading: false,
+                                threshold: this.props.project.threshold,
+                                measure: this.props.project.measure,
+                            });
+                        }
                     });
                 }
             }).catch(error => {
+                console.log(error);
                 if (this._isMounted) {
+                    msg = "Server error! Couldn't load unions :(";
                     this.setState({
                         loading: false,
                         threshold: this.props.project.threshold,
                         measure: this.props.project.measure,
-                        snackbarProps: {
-                            open: true,
-                            message: "Server error. Couldn't load unions!",
-                            variant: "error",
-                        },
-                    }, () => {
-                        console.log(error);
+                        snackbarProps: {open: true, message: msg, variant: "error"},
                     });
                 }
             });
@@ -107,6 +114,8 @@ class Unions extends Component {
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
+
         if (this.state.changes) {
             let project = {...this.props.project};
             if (Object.keys(this._data).length) {
@@ -115,7 +124,7 @@ class Unions extends Component {
             }
             project.threshold = this.state.threshold;
             project.measure = this.state.measure;
-            this.props.onTabChange(project, this.props.value, false);
+            this.props.onTabChange(project, this.props.value, this.state.updated);
         }
     }
 
@@ -146,83 +155,70 @@ class Unions extends Component {
     };
 
     onCountUnionsClick = () => {
-        const project = this.props.project;
+        const project = {...this.props.project};
         const threshold = this.state.threshold;
-        const link = `http://localhost:8080/projects/${project.result.id}/unions?consistencyThreshold=${threshold}`;
 
         this.setState({
             loading: true,
         }, () => {
-            fetch(link, {
-                method: "GET"
+            let link = `http://localhost:8080/projects/${project.result.id}/unions`;
+            if (this.props.dataUpToDate) link = link + `?consistencyThreshold=${threshold}`;
+
+            let data = new FormData();
+            data.append("threshold", threshold);
+            data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
+            data.append("data", JSON.stringify(project.result.informationTable.objects));
+
+            let msg = "";
+            fetch(link + `?consistencyThreshold=${threshold}`, {
+                method: this.props.dataUpToDate ? "PUT" : "POST",
+                body: this.props.dataUpToDate ? null : data
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
-                        console.log(result);
-                        const items = this.getItems(result);
-
                         if (this._isMounted) {
+                            const items = this.getItems(result);
+
                             this.setState({
                                 changes: true,
+                                updated: true,
                                 loading: false,
                                 displayedItems: items,
                             }, () => {
                                 this._data = result;
                                 this._items = items;
                             });
+                        } else {
+                            project.result.unionsWithSingleLimitingDecision = result;
+                            project.result.calculatedUnionsWithSingleLimitingDecision = true;
+                            this.props.onTabChange(project, this.props.value, true);
                         }
                     }).catch(error => {
+                        console.log(error);
+                        if (this._isMounted) this.setState({loading: false});
+                    });
+                } else {
+                    response.json().then(result => {
                         if (this._isMounted) {
+                            msg = "error " + result.status + ": " + result.message;
+                            let alertProps = {hasTitle: true, title: "Something went wrong! Please don't panic :)"};
                             this.setState({
                                 loading: false,
-                                snackbarProps: {
-                                    open: true,
-                                    message: "Error. Unions calculated but couldn't parse!",
-                                    variant: "error",
-                                },
-                            }, () => {
-                                console.log(error);
+                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "info"},
                             });
                         }
+                    }).catch(error => {
+                        console.log(error);
+                        if (this._isMounted) this.setState({loading: false});
                     });
-                } else if (response.status === 404) {
-                    if (this._isMounted) {
-                        this.setState({
-                            loading: false,
-                            snackbarProps: {
-                                open: true,
-                                message: "Couldn't calculate unions. Perhaps you didn't calculate cones :)",
-                                variant: "info",
-                            }
-                        }, () => {
-                            console.log(response);
-                        });
-                    }
-                } else {
-                    if (this._isMounted) {
-                        this.setState({
-                            loading: false,
-                            snackbarProps: {
-                                open: true,
-                                message: "Something went wrong. Couldn't calculate unions :(",
-                                variant: "warning",
-                            }
-                        }, () => {
-                            console.log(response);
-                        });
-                    }
                 }
             }).catch(error => {
+                console.log(error);
                 if (this._isMounted) {
+                    msg = "Server error! Couldn't calculate unions :(";
                     this.setState({
                         loading: false,
-                        snackbarProps: {
-                            open: true,
-                            message: "Server error. Couldn't calculate unions!",
-                            variant: "error",
-                        },
-                    }, () => {
-                        console.log(error);
+                        snackbarProps: {open: true, message: msg, variant: "error"},
                     });
                 }
             });
@@ -233,13 +229,8 @@ class Unions extends Component {
         if (reason === 'clickaway') {
             return;
         }
-
         this.setState({
-            snackbarProps: {
-                open: false,
-                message: "",
-                variant: "info",
-            }
+            snackbarProps: {open: false, message: "", variant: "info"},
         })
     };
 

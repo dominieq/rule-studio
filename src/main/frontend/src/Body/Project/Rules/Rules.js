@@ -29,6 +29,7 @@ class Rules extends Component {
 
         this.state = {
             changes: false,
+            updated: false,
             loading: false,
             displayedItems: [],
             externalRules: false,
@@ -48,16 +49,15 @@ class Rules extends Component {
         this.setState({
             loading: true,
         }, () => {
+            let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
                 method: "GET",
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
-                        console.log(result);
-
-                        const items = this.getItems(result);
-
                         if (this._isMounted) {
+                            const items = this.getItems(result);
+
                             this.setState({
                                 loading: false,
                                 displayedItems: items,
@@ -70,19 +70,13 @@ class Rules extends Component {
                             });
                         }
                     }).catch(error => {
+                        console.log(error);
                         if (this._isMounted) {
                             this.setState({
                                 loading: false,
                                 externalRules: this.props.project.external,
                                 threshold: this.props.threshold,
                                 measure: this.props.measure,
-                                snackbarProps: {
-                                    open: true,
-                                    message: "Rules loaded but couldn't parse!",
-                                    variant: "error",
-                                },
-                            }, () => {
-                                console.log(error);
                             });
                         }
                     });
@@ -97,19 +91,15 @@ class Rules extends Component {
                     }
                 }
             }).catch(error => {
+                console.log(error);
                 if (this._isMounted) {
+                    msg = "Server error! Couldn't load rules :( " + error.message;
                     this.setState({
                         loading: false,
                         externalRules: this.props.project.external,
                         threshold: this.props.threshold,
                         measure: this.props.measure,
-                        snackbarProps: {
-                            open: true,
-                            message: "Server error. Couldn't load rules!",
-                            variant: "error",
-                        },
-                    }, () => {
-                        console.log(error);
+                        snackbarProps: {open: true, message: msg, variant: "error"},
                     });
                 }
             });
@@ -118,6 +108,8 @@ class Rules extends Component {
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
+
         if (this.state.changes) {
             let project = {...this.props.project};
             if (Object.keys(this._data).length) {
@@ -126,7 +118,7 @@ class Rules extends Component {
             project.externalRules = this.state.externalRules;
             project.threshold = this.state.threshold;
             project.measure = this.state.measure;
-            this.props.onTabChange(project, this.props.value, false)
+            this.props.onTabChange(project, this.props.value, this.state.updated)
         }
     }
 
@@ -157,81 +149,64 @@ class Rules extends Component {
     };
 
     onCalculateClick = () => {
+        const project = {...this.props.project};
+
         this.setState({
             loading: true,
         }, () => {
-            const project = {...this.props.project};
+            let data = new FormData();
+            data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
+            data.append("data", JSON.stringify(project.result.informationTable.objects));
 
+            let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
-                method: "PUT",
+                method: this.props.dataUpToDate ? "PUT" : "POST",
+                body: this.props.dataUpToDate ? null : data
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
-                        console.log(result);
-                        const items = this.getItems(result);
-
                         if (this._isMounted) {
+                            const items = this.getItems(result);
+
                             this.setState({
                                 changes: true,
+                                updated: true,
                                 loading: false,
                                 displayedItems: items,
                             }, () => {
                                 this._data = result;
                                 this._items = items;
                             });
+                        } else {
+                            project.ruleSetWithCharacteristics = result;
+                            this.props.onTabChange(project, this.props.value, true);
                         }
                     }).catch(error => {
-                        if (this._isMounted) {
-                            this.setState({
-                                loading: false,
-                                snackbarProps: {
-                                    open: true,
-                                    message: "Error. Rules calculated but couldn't parse!",
-                                    variant: "error",
-                                },
-                            }, () => {
-                                console.log(error);
-                            });
-                        }
+                        console.log(error);
+                        if (this._isMounted) this.setState({loading: false});
                     })
                 } else  if (response.status === 404) {
-                    if (this._isMounted) {
-                        this.setState({
-                            loading: false,
-                            snackbarProp: {
-                                open: true,
-                                message: "Couldn't calculate rules. Perhaps you didn't calculate unions :)",
-                                variant: "info",
-                            },
-                        }, () => {
-                            console.log(response);
-                        });
-                    }
-                } else {
-                    if (this._isMounted) {
-                        this.setState({
-                            loading: false,
-                            snackbarProp: {
-                                open: true,
-                                message: "Something went wrong. Couldn't calculate rules :(",
-                                variant: "warning",
-                            },
-                        }, () => {
-                            console.log(response);
-                        });
-                    }
+                    response.json().then(result => {
+                        if (this._isMounted) {
+                            msg = "error " + result.status + ": " + result.message;
+                            let alertProps = {hasTitle: true, title: "Something went wrong! Please don't panic :)"};
+                            this.setState({
+                                loading: false,
+                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "info"},
+                            });
+                        }
+                    }).catch(error => {
+                        console.log(error);
+                        if (this._isMounted) this.setState({loading: false});
+                    });
                 }
             }).catch(error => {
+                console.log(error);
                 if (this._isMounted) {
+                    msg = "Server error! Couldn't calculate rules :( " + error.message;
                     this.setState({
                         loading: false,
-                        snackbarProps: {
-                            open: true,
-                            message: "Server error. Couldn't calculate rules!",
-                            variant: "error",
-                        },
-                    }, () => {
-                        console.log(error);
+                        snackbarProps: {open: true, message: msg, variant: "error"},
                     });
                 }
             });
@@ -239,45 +214,64 @@ class Rules extends Component {
     };
 
     onUploadFileChanged = (event) => {
-        console.log(event.target.files[0]);
-        if (event.target.file[0]) {
+        if (event.target.files[0]) {
             const project = {...this.props.project};
+
             let data = new FormData();
             data.append("rules", event.target.files[0]);
+
             this.setState({
                 loading: true,
             }, () => {
+                let msg = "";
                 fetch(`http://localhost:8080/projects/${project.result.id}`, {
                     method: "POST",
                     body: data,
                 }).then(response => {
-                    return response.json();
-                }).then(result => {
-                    console.log(result);
-                    const items = this.getItems(result);
-
-                    if (this._isMounted) {
-                        this.setState({
-                            changes: true,
-                            loading: false,
-                            displayedItems: items,
-                            externalRules: true,
-                        }, () => {
-                            this._data = result;
-                            this._items = items;
+                    if (response.status === 200) {
+                        response.json().then(result => {
+                            const items = this.getItems(result);
+                            if (this._isMounted) {
+                                this.setState({
+                                    changes: true,
+                                    loading: false,
+                                    displayedItems: items,
+                                    externalRules: true,
+                                }, () => {
+                                    this._data = result;
+                                    this._items = items;
+                                });
+                            } else {
+                                project.ruleSetWithCharacteristics = result;
+                                project.externalRules = true;
+                                this.props.onTabChange(project, this.props.value, false)
+                            }
+                        }).catch(error => {
+                            console.log(error);
+                            if (this._isMounted) this.setState({loading: false});
+                        });
+                    } else {
+                        response.json().then(result => {
+                            if (this._isMounted) {
+                                let alert = {hasTitle: true, title: "Something went wrong. Please don't panic :) "};
+                                msg = "error: " + result.status + " " + result.message;
+                                this.setState({
+                                    loading: false,
+                                    snackbarProps: {alertProps: alert, open: true, message: msg, variant: "warning"}
+                                });
+                            }
+                        }).catch(error => {
+                            console.log(error);
+                            if (this._isMounted) this.setState({loading: false});
                         });
                     }
                 }).catch(error => {
+                    console.log(error);
                     if (this._isMounted) {
+                        msg = "Server error! Couldn't parse rules :( ";
                         this.setState({
                             loading: false,
-                            snackbarProps: {
-                                open: true,
-                                message: "Server error. Couldn't parse rules!",
-                                variant: "error",
-                            },
-                        }, () => {
-                            console.log(error);
+                            snackbarProps: {open: true, message: msg, variant: "error"}
                         });
                     }
                 });
@@ -287,6 +281,7 @@ class Rules extends Component {
 
     onSaveFileClick = () => {
         const project = {...this.props.project};
+        let msg = "";
 
         fetch(`http://localhost:8080/projects/${project.result.id}/rules/download`, {
             method: "GET",
@@ -301,41 +296,27 @@ class Rules extends Component {
                     link.download = filename;
                     link.click();
                 }).catch(error => {
-                    if (this._isMounted) {
-                        this.setState({
-                            snackbarProp: {
-                                open: true,
-                                message: "Error. Couldn't parse file!",
-                                variant: "error",
-                            },
-                        }, () => {
-                            console.log(error);
-                        });
-                    }
+                    console.log(error);
                 });
             } else {
-                if (this._isMounted) {
-                    this.setState({
-                        snackbarProps: {
-                            open: true,
-                            message: "Something went wrong. Couldn't download rules :(",
-                            variant: "warning",
-                        },
-                    }, () => {
-                        console.log(response);
-                    });
-                }
+                response.json().then(result => {
+                    let alert = {hasTitle: true, title: "Something went wrong! Couldn't download rules :("};
+                    msg = "error: " + result.status + " " + result.message;
+                    if (this._isMounted) {
+                        this.setState({
+                            snackbarProps: {alertProps: alert, open: true, message: msg, variant: "warning"},
+                        });
+                    }
+                }).catch(error => {
+                    console.log(error);
+                });
             }
         }).catch(error => {
+            console.log(error);
             if (this._isMounted) {
+                msg = "Server error! Couldn't download rules :( " + error.message;
                 this.setState({
-                    snackbarProps: {
-                        open: true,
-                        message: "Server error. Couldn't download rules!",
-                        variant: "error",
-                    },
-                }, () => {
-                    console.log(error);
+                    snackbarProps: {open: true, message: msg, variant: "error"},
                 });
             }
         });
@@ -415,7 +396,7 @@ class Rules extends Component {
                     <StyledDivider />
                     <RuleWorkTooltip title={"Upload file"}>
                         <RuleWorkUpload
-                            accept={".json"}
+                            accept={".xml"}
                             disabled={!this.props.project || loading}
                             id={"rules-upload-button"}
                             onChange={this.onUploadFileChanged}

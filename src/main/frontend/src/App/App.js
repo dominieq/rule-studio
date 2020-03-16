@@ -67,23 +67,23 @@ class App extends Component {
         }
 
         this.setState({
+            dataUpToDate: false,
             projects: projects,
-            informationTableUpdated: false,
-            upToDate: tabsUpToDate,
+            tabsUpToDate: tabsUpToDate,
         });
     };
 
     onTabChanges = (project, tabValue, updated) => {
         let projects = this.state.projects.slice(0);
-        let upToDate = this.state.upToDate.slice(0);
+        let tabsUpToDate = this.state.tabsUpToDate.slice(0);
 
         projects[this.state.currentProject] = project;
-        upToDate[tabValue] = updated;
+        tabsUpToDate[tabValue] = updated;
 
         this.setState({
+            dataUpToDate: updated,
             projects: projects,
-            informationTableUpdated: updated,
-            upToDate: upToDate,
+            tabsUpToDate: tabsUpToDate,
         });
     };
 
@@ -168,13 +168,10 @@ class App extends Component {
     };
 
     onDeleteDialogClose = (action) => {
-        if (action) {
+        const currentProject = this.state.currentProject;
+        if (action && currentProject !== -1) {
             let projects = this.state.projects.slice(0);
-            const currentProject = this.state.currentProject;
-
-            if (currentProject === -1) return;
-
-            const project = projects[currentProject];
+            const project = {...projects[currentProject]};
 
             fetch(`http://localhost:8080/projects/${project.result.id}`, {
                 method: 'DELETE',
@@ -192,7 +189,9 @@ class App extends Component {
                         variant: "success",
                         message: `${removedProject[0].result.name} has been successfully deleted!`,
                     },
-                })
+                    dataUpToDate: true,
+                    tabsUpToDate: Array(5).fill(true),
+                });
             }).catch(error => {
                 console.log(error);
             });
