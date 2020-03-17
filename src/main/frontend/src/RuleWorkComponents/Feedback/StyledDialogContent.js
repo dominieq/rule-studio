@@ -30,7 +30,7 @@ function StyledDialogContent(props) {
 
 StyledDialogContent.propTypes = {
     children: PropTypes.any,
-    direction: PropTypes.string.isRequired,
+    direction: PropTypes.string,
 };
 
 export default StyledDialogContent;
