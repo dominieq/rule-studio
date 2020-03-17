@@ -17,6 +17,9 @@ const styles = theme => ({
     paddingTop: 10,
     marginTop: 10,
     maxWidth: 30,//752,
+  },
+  left: {
+    textAlign: "left",
   }  
 });
 
@@ -200,7 +203,7 @@ class AttributeDomain extends React.Component {
   render() {
     const { classes } = this.props;
     return (
-        <div className={classes.demo}>
+        <div className={classes.left}>
             <Button
               onClick={this.onClickAddElement}
               color="primary"

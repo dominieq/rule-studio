@@ -63,6 +63,7 @@ export default function IconLabelButtons(props) {
           Edit attributes
         </Button>
 
+{/*
         <Button
           variant="contained"
           color="primary"
@@ -72,6 +73,7 @@ export default function IconLabelButtons(props) {
         >
           Save changes
         </Button>
+*/}
 
         <Button
           variant="contained"
