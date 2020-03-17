@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 
-class PutUnionsWithSingleLimitingDecision extends Component {
+class PutCrossValidation extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2',
-            consistencyThreshold: 0
+            numberOfFolds: 10
         }
     }
 
@@ -16,16 +16,16 @@ class PutUnionsWithSingleLimitingDecision extends Component {
         })
     }
 
-    handleConsistencyThresholdChange = (event) => {
+    handleNumberOfFolds = (event) => {
         this.setState({
-            consistencyThreshold: event.target.value
+            numberOfFolds: event.target.value
         })
     }
 
-    putUnionsWithSingleLimitingDecision = (event) => {
+    putCrossValidation = (event) => {
         event.preventDefault();
 
-        var link = `http://localhost:8080/projects/${this.state.id_projektu}/unions?consistencyThreshold=${this.state.consistencyThreshold}`;
+        var link = `http://localhost:8080/projects/${this.state.id_projektu}/crossValidation?numberOfFolds=${this.state.numberOfFolds}`;
 
         console.log(link)
 
@@ -35,7 +35,7 @@ class PutUnionsWithSingleLimitingDecision extends Component {
             console.log(response)
             if(response.status === 200) {
                 response.json().then(result => {
-                    console.log("Received unions:")
+                    console.log("Received cross-validation:")
                     console.log(result)
                 }).catch(err => {
                     console.log(err)
@@ -65,12 +65,12 @@ class PutUnionsWithSingleLimitingDecision extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                consistencyThreshold->
-                <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
-                <button onClick={this.putUnionsWithSingleLimitingDecision}>putUnionsWithSingleLimitingDecision</button>
+                numberOfFolds->
+                <input type='text' value={this.state.numberOfFolds} onChange={this.handleNumberOfFolds} />
+                <button onClick={this.putCrossValidation}>putCrossValidation</button>
             </div>
         )
     }
 }
 
-export default PutUnionsWithSingleLimitingDecision
+export default PutCrossValidation

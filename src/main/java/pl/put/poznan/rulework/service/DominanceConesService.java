@@ -21,9 +21,9 @@ public class DominanceConesService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private void calculateDominanceCones(Project project, InformationTable informationTable) {
+    private void calculateDominanceCones(Project project) {
         DominanceCones dominanceCones = new DominanceCones();
-        dominanceCones.calculateDCones(informationTable);
+        dominanceCones.calculateDCones(project.getInformationTable());
         project.setDominanceCones(dominanceCones);
         project.setCalculatedDominanceCones(true);
     }
@@ -49,7 +49,7 @@ public class DominanceConesService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateDominanceCones(project, project.getInformationTable());
+        calculateDominanceCones(project);
 
         logger.debug("dominanceCones:\t{}", project.getDominanceCones().toString());
         return project.getDominanceCones();
@@ -65,7 +65,7 @@ public class DominanceConesService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateDominanceCones(project, informationTable);
+        calculateDominanceCones(project);
 
         logger.debug("dominanceCones:\t{}", project.getDominanceCones().toString());
         return project.getDominanceCones();

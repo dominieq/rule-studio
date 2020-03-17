@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 
-class PutUnionsWithSingleLimitingDecision extends Component {
+class GetCrossValidation extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2',
-            consistencyThreshold: 0
+            id_projektu: '3e004b4d-fb9a-4413-84b5-4d3f26c06f70'
         }
     }
 
@@ -16,26 +15,16 @@ class PutUnionsWithSingleLimitingDecision extends Component {
         })
     }
 
-    handleConsistencyThresholdChange = (event) => {
-        this.setState({
-            consistencyThreshold: event.target.value
-        })
-    }
+    getCrossValidation = (event) => {
+        event.preventDefault()
 
-    putUnionsWithSingleLimitingDecision = (event) => {
-        event.preventDefault();
-
-        var link = `http://localhost:8080/projects/${this.state.id_projektu}/unions?consistencyThreshold=${this.state.consistencyThreshold}`;
-
-        console.log(link)
-
-        fetch(link, {
-            method: 'PUT'
+        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/crossValidation`, {
+            method: 'GET'
         }).then(response => {
             console.log(response)
             if(response.status === 200) {
                 response.json().then(result => {
-                    console.log("Received unions:")
+                    console.log("Received cross-validation:")
                     console.log(result)
                 }).catch(err => {
                     console.log(err)
@@ -65,12 +54,10 @@ class PutUnionsWithSingleLimitingDecision extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                consistencyThreshold->
-                <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
-                <button onClick={this.putUnionsWithSingleLimitingDecision}>putUnionsWithSingleLimitingDecision</button>
+                <button onClick={this.getCrossValidation}>getCrossValidation</button>
             </div>
         )
     }
 }
 
-export default PutUnionsWithSingleLimitingDecision
+export default GetCrossValidation
