@@ -21,43 +21,42 @@ public class DominanceConesService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private void calculateDominanceCones(Project project, InformationTable informationTable) {
+    private void calculateDominanceCones(Project project) {
         DominanceCones dominanceCones = new DominanceCones();
-        dominanceCones.calculateDCones(informationTable);
+        dominanceCones.calculateDCones(project.getInformationTable());
         project.setDominanceCones(dominanceCones);
         project.setCalculatedDominanceCones(true);
     }
 
     public DominanceCones getDominanceCones(UUID id) {
-        logger.info("Id:\t" + id);
+        logger.info("Id:\t{}", id);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        if(project.getDominanceCones() == null) {
+        DominanceCones dominanceCones = project.getDominanceCones();
+        if(dominanceCones == null) {
             EmptyResponseException ex = new EmptyResponseException("Dominance cones", id);
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        logger.info(project.getDominanceCones().toString());
-
-        return project.getDominanceCones();
+        logger.debug("dominanceCones:\t{}", dominanceCones.toString());
+        return dominanceCones;
     }
 
     public DominanceCones putDominanceCones(UUID id) {
-        logger.info("Id:\t" + id);
+        logger.info("Id:\t{}", id);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateDominanceCones(project, project.getInformationTable());
+        calculateDominanceCones(project);
 
-        logger.info(project.getDominanceCones().toString());
-
+        logger.debug("dominanceCones:\t{}", project.getDominanceCones().toString());
         return project.getDominanceCones();
     }
 
     public DominanceCones postDominanceCones(UUID id, String metadata, String data) throws IOException {
-        logger.info("Id:\t" + id);
+        logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data:\t{}", data);
 
@@ -66,10 +65,9 @@ public class DominanceConesService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateDominanceCones(project, informationTable);
+        calculateDominanceCones(project);
 
-        logger.info(project.getDominanceCones().toString());
-
+        logger.debug("dominanceCones:\t{}", project.getDominanceCones().toString());
         return project.getDominanceCones();
     }
 }

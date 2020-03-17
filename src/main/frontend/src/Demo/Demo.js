@@ -7,6 +7,7 @@ import DemoData from './DemoData'
 import DemoMetadata from './DemoMetadata'
 import DemoRules from './DemoRules'
 import DemoClassification from './DemoClassification'
+import DemoCrossValidation from './DemoCrossValidation'
 
 class Demo extends Component {
 
@@ -21,6 +22,7 @@ class Demo extends Component {
                 <DemoUnionsWithSingleLimitingDecision></DemoUnionsWithSingleLimitingDecision>
                 <DemoRules></DemoRules>
                 <DemoClassification></DemoClassification>
+                <DemoCrossValidation></DemoCrossValidation>
             </div>
         )
     }

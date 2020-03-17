@@ -10,19 +10,19 @@ import java.util.List;
 public class Classification {
     private SimpleClassificationResult[] simpleClassificationResults;
     private InformationTable informationTable;
-    private IntList[] indiciesOfCoveringRules;
-    private IntList[] indiciesOfCoveredObjects;
+    private IntList[] indicesOfCoveringRules;
+    private IntList[] indicesOfCoveredObjects;
 
     public Classification(SimpleClassificationResult[] simpleClassificationResults, InformationTable informationTable) {
         this.simpleClassificationResults = simpleClassificationResults;
         this.informationTable = informationTable;
     }
 
-    public Classification(SimpleClassificationResult[] simpleClassificationResults, InformationTable informationTable, IntList[] indiciesOfCoveringRules, IntList[] indiciesOfCoveredObjects) {
+    public Classification(SimpleClassificationResult[] simpleClassificationResults, InformationTable informationTable, IntList[] indicesOfCoveringRules, IntList[] indicesOfCoveredObjects) {
         this.simpleClassificationResults = simpleClassificationResults;
         this.informationTable = informationTable;
-        this.indiciesOfCoveringRules = indiciesOfCoveringRules;
-        this.indiciesOfCoveredObjects = indiciesOfCoveredObjects;
+        this.indicesOfCoveringRules = indicesOfCoveringRules;
+        this.indicesOfCoveredObjects = indicesOfCoveredObjects;
     }
 
     public SimpleClassificationResult[] getSimpleClassificationResults() {
@@ -41,20 +41,20 @@ public class Classification {
         this.informationTable = informationTable;
     }
 
-    public IntList[] getIndiciesOfCoveringRules() {
-        return indiciesOfCoveringRules;
+    public IntList[] getindicesOfCoveringRules() {
+        return indicesOfCoveringRules;
     }
 
-    public void setIndiciesOfCoveringRules(IntList[] indiciesOfCoveringRules) {
-        this.indiciesOfCoveringRules = indiciesOfCoveringRules;
+    public void setindicesOfCoveringRules(IntList[] indicesOfCoveringRules) {
+        this.indicesOfCoveringRules = indicesOfCoveringRules;
     }
 
-    public IntList[] getIndiciesOfCoveredObjects() {
-        return indiciesOfCoveredObjects;
+    public IntList[] getindicesOfCoveredObjects() {
+        return indicesOfCoveredObjects;
     }
 
-    public void setIndiciesOfCoveredObjects(IntList[] indiciesOfCoveredObjects) {
-        this.indiciesOfCoveredObjects = indiciesOfCoveredObjects;
+    public void setindicesOfCoveredObjects(IntList[] indicesOfCoveredObjects) {
+        this.indicesOfCoveredObjects = indicesOfCoveredObjects;
     }
 
     @Override
@@ -62,8 +62,8 @@ public class Classification {
         return "Classification{" +
                 "simpleClassificationResults=" + Arrays.toString(simpleClassificationResults) +
                 ", informationTable=" + informationTable +
-                ", indiciesOfCoveringRules=" + indiciesOfCoveringRules +
-                ", indiciesOfCoveredObjects=" + indiciesOfCoveredObjects +
+                ", indicesOfCoveringRules=" + indicesOfCoveringRules +
+                ", indicesOfCoveredObjects=" + indicesOfCoveredObjects +
                 '}';
     }
 }

@@ -35,21 +35,21 @@ class PutUnionsWithSingleLimitingDecision extends Component {
             console.log(response)
             if(response.status === 200) {
                 response.json().then(result => {
-                    console.log("Otrzymane unie:")
+                    console.log("Received unions:")
                     console.log(result)
                 }).catch(err => {
                     console.log(err)
                 })
             } else if(response.status === 404) {
                 response.json().then(result => {
-                    console.log("Błąd 404.")
+                    console.log("Error 404.")
                     console.log(result.message)
                 }).catch(err => {
                     console.log(err)
                 })
             } else {
                 response.json().then(result => {
-                    console.log("Wynik dzialania response.json():")
+                    console.log("Result of response.json():")
                     console.log(result)
                 }).catch(err => {
                     console.log(err)
