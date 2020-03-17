@@ -1,21 +1,27 @@
 package pl.put.poznan.rulework.service;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
 import javafx.util.Pair;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator;
+import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 import org.rulelearn.rules.*;
 import org.rulelearn.rules.ruleml.RuleMLBuilder;
+import org.rulelearn.rules.ruleml.RuleParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
@@ -23,6 +29,7 @@ import pl.put.poznan.rulework.model.ProjectsContainer;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -32,6 +39,57 @@ public class RulesService {
 
     @Autowired
     ProjectsContainer projectsContainer;
+
+    public static RuleSetWithComputableCharacteristics parseComputableRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
+        Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
+        RuleParser ruleParser = new RuleParser(attributes);
+        parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
+
+        for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
+            logger.info("ruleSet.size=" + rswc.size());
+            for(int i = 0; i < rswc.size(); i++) {
+                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                logger.info(i + ":\t" + ruleCharacteristics.toString());
+            }
+        }
+
+        Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
+
+        Rule[] rules = new Rule[ruleSetWithCharacteristics.size()];
+        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+            rules[i] = ruleSetWithCharacteristics.getRule(i);
+        }
+
+        RuleCoverageInformation[] ruleCoverageInformation = new RuleCoverageInformation[ruleSetWithCharacteristics.size()];
+        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+            ruleCoverageInformation[i] = new RuleCoverageInformation(new IntArraySet(), new IntArraySet(), new IntArrayList(), new Int2ObjectArrayMap<>(), 0);
+        }
+
+        return new RuleSetWithComputableCharacteristics(
+                rules,
+                ruleCoverageInformation
+        );
+    }
+
+    public static RuleSetWithCharacteristics parseRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
+        Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
+        RuleParser ruleParser = new RuleParser(attributes);
+        parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
+
+        for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
+            logger.info("ruleSet.size=" + rswc.size());
+            for(int i = 0; i < rswc.size(); i++) {
+                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                logger.info(i + ":\t" + ruleCharacteristics.toString());
+            }
+        }
+
+        Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
+
+        return ruleSetWithCharacteristics;
+    }
 
     private void calculateRuleSetWithComputableCharacteristics (Project project) {
         Unions unions = project.getUnionsWithSingleLimitingDecision();

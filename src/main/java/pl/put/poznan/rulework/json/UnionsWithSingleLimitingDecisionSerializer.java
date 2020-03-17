@@ -18,6 +18,9 @@ public class UnionsWithSingleLimitingDecisionSerializer extends JsonSerializer<U
 
         jsonGenerator.writeStartObject();
 
+        jsonGenerator.writeFieldName("qualityOfApproximation");
+        jsonGenerator.writeNumber(unionsWithSingleLimitingDecision.getQualityOfApproximation());
+
         jsonGenerator.writeFieldName("downwardUnions");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionsWithSingleLimitingDecision.getDownwardUnions()));
 

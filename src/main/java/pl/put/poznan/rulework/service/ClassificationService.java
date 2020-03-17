@@ -56,34 +56,34 @@ public class ClassificationService {
         int rulesCount = ruleSetWithComputableCharacteristics.size();
         int objectCount = informationTable.getNumberOfObjects();
 
-        IntList[] indiciesOfCoveringRules = new IntList[objectCount];
-        IntList[] indiciesOfCoveredObjects = new IntList[rulesCount];
+        IntList[] indicesOfCoveringRules = new IntList[objectCount];
+        IntList[] indicesOfCoveredObjects = new IntList[rulesCount];
 
 
         for(ruleIndex = 0; ruleIndex < rulesCount; ruleIndex++) {
-            indiciesOfCoveredObjects[ruleIndex] = new IntArrayList();
+            indicesOfCoveredObjects[ruleIndex] = new IntArrayList();
         }
 
         for(objectIndex = 0; objectIndex < objectCount; objectIndex++) {
-            indiciesOfCoveringRules[objectIndex] = new IntArrayList();
+            indicesOfCoveringRules[objectIndex] = new IntArrayList();
 
             for(ruleIndex = 0; ruleIndex < rulesCount; ruleIndex++) {
 
                 if (ruleSetWithComputableCharacteristics.getRule(ruleIndex).covers(objectIndex, informationTable)) { //current rule covers considered object
-                    indiciesOfCoveringRules[objectIndex].add(ruleIndex);
-                    indiciesOfCoveredObjects[ruleIndex].add(objectIndex);
+                    indicesOfCoveringRules[objectIndex].add(ruleIndex);
+                    indicesOfCoveredObjects[ruleIndex].add(objectIndex);
                 }
             }
         }
 
         for(objectIndex = 0; objectIndex < objectCount; objectIndex++) {
             logger.info("Obiekt nr {}:\t{}", objectIndex, informationTable.getFields(objectIndex).toString());
-            for(ruleIndex = 0; ruleIndex < indiciesOfCoveringRules[objectIndex].size(); ruleIndex++) {
-                logger.info("\tRegula nr {}:\t{}", ruleIndex, ruleSetWithComputableCharacteristics.getRule(indiciesOfCoveringRules[objectIndex].getInt(ruleIndex)));
+            for(ruleIndex = 0; ruleIndex < indicesOfCoveringRules[objectIndex].size(); ruleIndex++) {
+                logger.info("\tRegula nr {}:\t{}", ruleIndex, ruleSetWithComputableCharacteristics.getRule(indicesOfCoveringRules[objectIndex].getInt(ruleIndex)));
             }
         }
 
-        Classification classification = new Classification(simpleClassificationResults, informationTable, indiciesOfCoveringRules, indiciesOfCoveredObjects);
+        Classification classification = new Classification(simpleClassificationResults, informationTable, indicesOfCoveringRules, indicesOfCoveredObjects);
         return classification;
     }
 

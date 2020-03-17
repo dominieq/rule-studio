@@ -58,57 +58,6 @@ public class ProjectService {
         return p;
     }
 
-    private RuleSetWithComputableCharacteristics parseComputableRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
-        Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
-        RuleParser ruleParser = new RuleParser(attributes);
-        parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
-
-        for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
-            logger.info("ruleSet.size=" + rswc.size());
-            for(int i = 0; i < rswc.size(); i++) {
-                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
-                logger.info(i + ":\t" + ruleCharacteristics.toString());
-            }
-        }
-
-        Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
-
-        Rule[] rules = new Rule[ruleSetWithCharacteristics.size()];
-        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
-            rules[i] = ruleSetWithCharacteristics.getRule(i);
-        }
-
-        RuleCoverageInformation[] ruleCoverageInformation = new RuleCoverageInformation[ruleSetWithCharacteristics.size()];
-        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
-            ruleCoverageInformation[i] = new RuleCoverageInformation(null, null, null, null, 0);
-        }
-
-        return new RuleSetWithComputableCharacteristics(
-                rules,
-                ruleCoverageInformation
-        );
-    }
-
-    private RuleSetWithCharacteristics parseRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
-        Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
-        RuleParser ruleParser = new RuleParser(attributes);
-        parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
-
-        for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
-            logger.info("ruleSet.size=" + rswc.size());
-            for(int i = 0; i < rswc.size(); i++) {
-                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
-                logger.info(i + ":\t" + ruleCharacteristics.toString());
-            }
-        }
-
-        Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
-
-        return ruleSetWithCharacteristics;
-    }
-
     public Project setProject(
             UUID id,
             MultipartFile metadataFile,
@@ -155,7 +104,7 @@ public class ProjectService {
 
         if(rulesFile != null) { //load rules from file
             attributes = informationTable.getAttributes();
-            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = parseComputableRules(rulesFile, attributes);
+            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.parseComputableRules(rulesFile, attributes);
             project.setRuleSetWithComputableCharacteristics(ruleSetWithComputableCharacteristics);
         }
 
