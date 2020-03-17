@@ -54,6 +54,7 @@ div.react-grid-HeaderCell-sortable > .pull-right {
   font-weight: bold;
   border-right: 1px solid #dddddd;
   border-bottom: 1px solid #dddddd;
+  display: grid !important;
 }
 
 .radio-button-group-save-file {

@@ -1,10 +1,17 @@
-.left-aligned {
-    text-align: left;
-    overflow: hidden;
-    width: 100%;
+#rule-work-data-1 {
+    display: flex;
 }
 
+#rule-work-data-2 {
+    display: none;
+}
 
-.left-align-filter-button {
-    float: left;
+@media only screen and (max-width: 1242px) {
+    #rule-work-data-1 {
+        display: none;
+    }
+
+    #rule-work-data-2 {
+        display: flex;
+    }
 }

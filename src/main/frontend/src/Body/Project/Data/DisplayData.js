@@ -441,6 +441,8 @@ class DisplayData extends React.Component {
             const selected = [...prevState.selectedRows];
             const tmpRows =  [...prevState.rows];
 
+            //if none of the rows is selected
+            if(selected.length === 0) { return ;}
             //if selected all rows
             if(selected.length === tmpRows.length) {
                 this.grid.selectAllCheckbox.checked = false;
@@ -1037,39 +1039,40 @@ class DisplayData extends React.Component {
     }
 
     setHeaderColorAndStyle = (column, idx) => {
-        const tmp = document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes;
-        if((column.type !== undefined || column.identifierType !== undefined) && !(/<\/?[a-z][\s\S]*>/i.test(column.type))) { //make sure attribute type doesn't contain html tags
-            if(tmp.length === 2) {
-                if(column.identifierType !== undefined) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(identification)");
-                else if(column.active) {
-                    document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",active)");
-                }
-                else {
-                    document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",inactive)");
-                }
-            } else if(tmp.length > 2) {
-                if(column.identifierType !== undefined) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(identification)";
-                else if(column.active) {
-                    document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",active)";
-                }
-                else {
-                    document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",inactive)";
+        if(document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes !== undefined) {
+            const tmp = document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes;
+            if((column.type !== undefined || column.identifierType !== undefined) && !(/<\/?[a-z][\s\S]*>/i.test(column.type))) { //make sure attribute type doesn't contain html tags
+                if(tmp.length === 2) {
+                    if(column.identifierType !== undefined) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(identification)");
+                    else if(column.active) {
+                        document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",active)");
+                    }
+                    else {
+                        document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",inactive)");
+                    }
+                } else if(tmp.length > 2) {
+                    if(column.identifierType !== undefined) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(identification)";
+                    else if(column.active) {
+                        document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",active)";
+                    }
+                    else {
+                        document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",inactive)";
+                    }
                 }
             }
-        }
 
-        if(column.active === false || column.identifierType !== undefined || column.type === "description") document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#A0A0A0";
-        else {
-            if(column.preferenceType === "gain")
-                document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#228B22";
-            else if(column.preferenceType === "cost")
-                document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#DC143C";
-            else if(column.preferenceType === "none")
-                document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#3F51B5";
+            if(column.active === false || column.identifierType !== undefined || column.type === "description") document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#A0A0A0";
             else {
-                document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#A0A0A0";
+                if(column.preferenceType === "gain")
+                    document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#228B22";
+                else if(column.preferenceType === "cost")
+                    document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#DC143C";
+                else if(column.preferenceType === "none")
+                    document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#3F51B5";
+                else {
+                    document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#A0A0A0";
+                }
             }
-        }
 
         let cols = [...this.state.columns];
         let newColumn = {...column};
@@ -1085,6 +1088,7 @@ class DisplayData extends React.Component {
         this.setState({
             columns: cols,
         })
+        }
     }
 
     setHeaderRightClick = (column, idx) => {
@@ -1112,6 +1116,42 @@ class DisplayData extends React.Component {
         this.setHeaderColorAndStyle(column, idx);
         this.setHeaderRightClick(column, idx);
     }
+    
+    setRowsAndHeaderColorAndStyleAndRightClick = (column, idx, isNewColumn) => {
+        let nextRows = [...this.state.rows];
+        if(isNewColumn) {
+            for(let i in nextRows) {
+                nextRows[i][column.key] = "?";
+            }
+        } else {
+            if(column.valueType === "enumeration") {
+                for(let i in nextRows) {
+                    if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
+                }
+            }
+            else if(column.valueType === "integer") {
+                for(let i in nextRows) {
+                    let tmp = parseInt(nextRows[i][column.key],10);
+                if(isNaN(tmp)) nextRows[i][column.key] = "?";
+                else nextRows[i][column.key] = tmp;
+                }
+            } else if(column.valueType === "real") {
+                for(let i in nextRows) {
+                    let tmp = parseFloat(nextRows[i][column.key]);
+                if(isNaN(tmp)) nextRows[i][column.key] = "?";
+                else nextRows[i][column.key] = tmp;
+                }
+            } else {
+                for(let i in nextRows) {
+                    nextRows[i][column.key] = "?";
+                }
+            }
+        }
+        this.setState({
+            rows: nextRows,
+        }) 
+        this.setHeaderColorAndStyleAndRightClick(column, idx);
+    }
 
     applyOnAddAttribute = (e) => {
         e.preventDefault();
@@ -1131,7 +1171,7 @@ class DisplayData extends React.Component {
                 missingValueTypeSelected: '',
                 attributesDomainElements: [],
                 columns: [...prevState.columns, newColumn]
-            }),() => this.setHeaderColorAndStyleAndRightClick(this.state.columns[this.state.columns.length-1], this.state.columns.length-1)
+            }),() => this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.columns[this.state.columns.length-1], this.state.columns.length-1, true)
             );   
         } else {
             this.setState({
@@ -1192,7 +1232,7 @@ class DisplayData extends React.Component {
         for(i=0; i<cols.length; i++) {
             if(cols[i].name === this.state.editAttributeSelected) break;
         }
-        let col = {...cols[i]} //copy all attributes
+        let col = {...cols[i]} //{...cols[i]} //copy all attributes
 
         const validationOk = this.validateOnAddAndEditAttribute(false,e.target.attributeName.value.trim(), this.state.attributeTypeSelected, this.state.missingValueTypeSelected,
             this.state.identifierTypeSelected, this.state.attributePreferenceTypeSelected, this.state.valueTypeSelected, this.state.attributesDomainElements)
@@ -1217,11 +1257,13 @@ class DisplayData extends React.Component {
                     if(!col.domain.includes("?")) col.domain.push("?");
                     col.editor = <DropDownEditor options={col.domain} />
                 } else if(col.valueType === "integer" || col.valueType === "real") {
+                    col.editor = undefined;
                     col.filterRenderer = NumericFilter;
                 }
             }
-            cols[i] = col;
 
+            cols[i] = col;
+            
             this.setState({
                 dataModified: true,
                 editAttributeSelected: '',
@@ -1233,7 +1275,7 @@ class DisplayData extends React.Component {
                 missingValueTypeSelected: '',
                 attributesDomainElements: [],
                 columns: cols,
-            },() => this.setHeaderColorAndStyleAndRightClick(this.state.columns[i], i)
+            },() => this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.columns[i], i, false)
             );   
         } else {
             this.setState({
