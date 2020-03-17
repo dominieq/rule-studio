@@ -1,5 +1,5 @@
 import React from 'react';
-import RuleWorkBox from "../../RuleWorkComponents/Containers/RuleWorkBox";
+import {RuleWorkBox} from "../../RuleWorkComponents";
 import logo from "./logo_transparent.png";
 import "./Home.css";
 

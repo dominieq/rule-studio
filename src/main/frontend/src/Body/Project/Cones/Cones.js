@@ -1,15 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
-import Item from "../../../RuleWorkComponents/API/Item";
 import {filterFunction, FilterNoResults, FilterTextField} from "../ProjectTabsUtils/Filtering";
-import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
-import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import {Item, RuleWorkBox, RuleWorkList, StyledButton, StyledPaper} from "../../../RuleWorkComponents";
+import {RuleWorkDialog, RuleWorkSnackbar, StyledCircularProgress} from "../../../RuleWorkComponents/Feedback";
 import Calculator from "mdi-material-ui/Calculator";
-
 
 class Cones extends Component {
     constructor(props) {
@@ -23,7 +17,8 @@ class Cones extends Component {
             updated: false,
             loading: false,
             displayedItems: [],
-            openSettings: false,
+            selectedItem: null,
+            openDetails: false,
             snackbarProps: undefined,
         };
 
@@ -171,6 +166,20 @@ class Cones extends Component {
         this.setState({displayedItems: filteredItems});
     };
 
+    onDetailsOpen = (index) => {
+        this.setState({
+            openDetails: true,
+            selectedItem: {...this.state.displayedItems[index]},
+        })
+    };
+
+    onDetailsClose = () => {
+        this.setState({
+            openDetails: false,
+            selectedItem: null,
+        });
+    };
+
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
             this.setState({snackbarProps: undefined});
@@ -202,7 +211,7 @@ class Cones extends Component {
     };
 
     render() {
-        const {loading, displayedItems, snackbarProps} = this.state;
+        const {loading, displayedItems, openDetails, selectedItem, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-cones"} styleVariant={"tab"}>
@@ -225,13 +234,21 @@ class Cones extends Component {
                         <StyledCircularProgress />
                         :
                         displayedItems ?
-                            <RuleWorkList>
+                            <RuleWorkList onItemSelected={this.onDetailsOpen}>
                                 {displayedItems}
                             </RuleWorkList>
                             :
                             <FilterNoResults />
                     }
                 </RuleWorkBox>
+                {selectedItem &&
+                    <RuleWorkDialog
+                        item={selectedItem}
+                        onClose={this.onDetailsClose}
+                        open={openDetails}
+                        projectResult={this.props.project.result}
+                    />
+                }
                 <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         );

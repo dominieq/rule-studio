@@ -23,21 +23,17 @@ function DefaultElement(props, ref) {
 const DefaultForwardRef = React.forwardRef(DefaultElement);
 
 function RuleWorkTooltip(props) {
-    const {children, isCustom, isDisabled, themeVariant, ...other} = props;
+    const {children, isCustom, themeVariant, ...other} = props;
     const classes = useStyles(props);
 
     return (
         <Tooltip classes={{tooltip: classes.tooltip}} {...other}>
-            {isDisabled ?
-                <span>
+            {isCustom ?
+                <DefaultForwardRef>
                     {children}
-                </span>
-                : isCustom ?
-                    <DefaultForwardRef>
-                        {children}
-                    </DefaultForwardRef>
-                    :
-                    {children}
+                </DefaultForwardRef>
+                :
+                {children}
             }
         </Tooltip>
     )
@@ -46,14 +42,12 @@ function RuleWorkTooltip(props) {
 RuleWorkTooltip.propTypes = {
     children: PropTypes.node,
     isCustom: PropTypes.bool,
-    isDisabled: PropTypes.bool,
     themeVariant: PropTypes.oneOf(["default", "primary", "secondary"]),
     title: PropTypes.string.isRequired,
 };
 
 RuleWorkTooltip.defaultProps = {
     isCustom: true,
-    isDisabled: false,
     themeVariant: "default",
 };
 

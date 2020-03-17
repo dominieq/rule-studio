@@ -1,12 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
+import {StyledButton, RuleWorkTooltip} from "../RuleWorkComponents";
 import ProjectMenu from "./ProjectMenu";
-import StyledButton from "../RuleWorkComponents/Inputs/StyledButton";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import HomeIcon from "@material-ui/icons/Home";
-import RuleWorkTooltip from "../RuleWorkComponents/Inputs/RuleWorkTooltip";
 
 const useStyles = makeStyles({
     colorPrimary: {

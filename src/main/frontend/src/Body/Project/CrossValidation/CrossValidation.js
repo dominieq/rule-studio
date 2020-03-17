@@ -1,18 +1,11 @@
 import React, {Component, Fragment} from "react";
 import PropTypes from "prop-types";
 import {filterFunction, FilterNoResults, FilterTextField} from "../ProjectTabsUtils";
-import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
-import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
-import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import RuleWorkTooltip from "../../../RuleWorkComponents/Inputs/RuleWorkTooltip";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
-import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
-import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import StyledToggleButton from "../../../RuleWorkComponents/Inputs/StyledToggleButton";
+import {StyledPaper} from "../../../RuleWorkComponents"
+import {RuleWorkBox, RuleWorkDrawer, RuleWorkSmallBox} from "../../../RuleWorkComponents/Containers";
+import {RuleWorkList, RuleWorkTooltip, StyledDivider} from "../../../RuleWorkComponents/DataDisplay";
+import {RuleWorkDialog, RuleWorkSnackbar, StyledCircularProgress} from "../../../RuleWorkComponents/Feedback";
+import {RuleWorkTextField, StyledButton, StyledToggleButton} from "../../../RuleWorkComponents/Inputs";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import Calculator from "mdi-material-ui/Calculator";
 import SvgIcon from "@material-ui/core/SvgIcon";
@@ -33,6 +26,8 @@ class CrossValidation extends Component {
             foldIndex: 0,
             foldNumber: 1,
             folds: [],
+            selectedItem: null,
+            openDetails: false,
             openSettings: false,
             snackbarProps: undefined,
         };
@@ -118,6 +113,20 @@ class CrossValidation extends Component {
         this.setState({displayedItems: filteredItems});
     };
 
+    onDetailsOpen = (index) => {
+        this.setState({
+            selectedItem: this.state.displayedItems[index],
+            openDetails: true
+        });
+    };
+
+    onDetailsClose = () => {
+        this.setState({
+            selectedItem: null,
+            openDetails: false,
+        });
+    };
+
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
             this.setState({snackbarProps: undefined});
@@ -164,7 +173,8 @@ class CrossValidation extends Component {
     };
 
     render() {
-        const {loading, displayedItems, foldNumber, openSettings, snackbarProps} = this.state;
+        const {loading, displayedItems, foldNumber, selectedItem, openDetails,
+            openSettings, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-cross-validation"} styleVariant={"tab"}>
@@ -232,13 +242,21 @@ class CrossValidation extends Component {
                         <StyledCircularProgress />
                         :
                         displayedItems ?
-                            <RuleWorkList>
+                            <RuleWorkList onItemSelected={this.onDetailsOpen}>
                                 {displayedItems}
                             </RuleWorkList>
                             :
                             <FilterNoResults />
                     }
                 </RuleWorkBox>
+                {selectedItem &&
+                    <RuleWorkDialog
+                        item={selectedItem}
+                        onClose={this.onDetailsClose}
+                        open={openDetails}
+                        projectResult={this.props.project.result}
+                    />
+                }
                 <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )

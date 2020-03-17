@@ -1,15 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import RuleWorkTooltip from "../../RuleWorkComponents/Inputs/RuleWorkTooltip";
-import RuleWorkUpload from "../../RuleWorkComponents/Inputs/RuleWorkUpload";
-import StyledButton from "../../RuleWorkComponents/Inputs/StyledButton";
-import StyledFileChip from "../../RuleWorkComponents/DataDisplay/StyledFileChip";
+import {RuleWorkTooltip, RuleWorkUpload, StyledButton, StyledFileChip} from "../../RuleWorkComponents";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Typography from "@material-ui/core/Typography";
-import DeleteCircle from "mdi-material-ui/DeleteCircle";
-import FileUpload from "mdi-material-ui/FileUpload";
+import {DeleteCircle, FileUpload} from "mdi-material-ui";
 import "./FileSelectZone.css"
-
 
 class FileSelectZone extends Component {
     constructor(props) {

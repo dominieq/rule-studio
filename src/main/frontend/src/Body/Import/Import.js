@@ -1,14 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import FileSelectZone from "./FileSelectZone";
-import RuleWorkBox  from "../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkSmallBox from "../../RuleWorkComponents/Containers/RuleWorkSmallBox"
-import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import StyledButton from "../../RuleWorkComponents/Inputs/StyledButton";
-import RuleWorkCollapsibleDivider from "../../RuleWorkComponents/Inputs/RuleWorkCollapsibleDivider";
-import StyledDivider from "../../RuleWorkComponents/DataDisplay/StyledDivider";
-import StyledPaper from "../../RuleWorkComponents/Surfaces/StyledPaper";
-import StyledSwitch from "../../RuleWorkComponents/Inputs/StyledSwitch";
+import {StyledDivider, StyledPaper} from "../../RuleWorkComponents";
+import {RuleWorkBox, RuleWorkSmallBox}  from "../../RuleWorkComponents/Containers"
+import {RuleWorkTextField, StyledButton, RuleWorkCollapsibleDivider, StyledSwitch} from
+        "../../RuleWorkComponents/Inputs";
 import Collapse from "@material-ui/core/Collapse";
 
 class Import extends Component{

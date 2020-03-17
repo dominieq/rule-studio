@@ -1,7 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
-import RuleWorkTooltip from "../RuleWorkComponents/Inputs/RuleWorkTooltip";
-import StyledButton from "../RuleWorkComponents/Inputs/StyledButton";
+import {RuleWorkTooltip, StyledButton} from "../RuleWorkComponents";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";

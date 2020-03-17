@@ -1,20 +1,11 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import Item from "../../../RuleWorkComponents/API/Item";
 import {filterFunction, FilterNoResults, FilterTextField} from "../ProjectTabsUtils";
-import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
-import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
-import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
-import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import RuleWorkTooltip from "../../../RuleWorkComponents/Inputs/RuleWorkTooltip";
-import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
-import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
-import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import {Item, StyledPaper} from "../../../RuleWorkComponents";
+import {RuleWorkBox, RuleWorkDrawer, RuleWorkSmallBox} from "../../../RuleWorkComponents/Containers";
+import {RuleWorkList, RuleWorkTooltip, StyledDivider} from "../../../RuleWorkComponents/DataDisplay";
+import {RuleWorkDialog, RuleWorkSnackbar, StyledCircularProgress} from "../../../RuleWorkComponents/Feedback";
+import {RuleWorkButtonGroup, RuleWorkTextField, RuleWorkUpload, StyledButton} from "../../../RuleWorkComponents/Inputs";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import {mdiCloseThick, mdiCog} from "@mdi/js"
 
@@ -31,6 +22,8 @@ class Classification extends Component {
             loading: false,
             displayedItems: [],
             ruleType: "certain",
+            selectedItem: null,
+            openDetails: false,
             openSettings: false,
             snackbarProps: undefined,
         };
@@ -210,6 +203,20 @@ class Classification extends Component {
         this.setState({displayedItems: filteredItems});
     };
 
+    onDetailsOpen = (index) => {
+        this.setState({
+            selectedItem: this.state.displayedItems[index],
+            openDetails: true,
+        });
+    };
+
+    onDetailsClose = () => {
+        this.setState({
+            selectedItem: null,
+            openDetails: false,
+        })
+    };
+
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
             this.setState({snackbarProps: undefined});
@@ -237,7 +244,8 @@ class Classification extends Component {
     };
 
     render() {
-        const {loading, displayedItems, openSettings, ruleType, snackbarProps} = this.state;
+        const {loading, displayedItems, ruleType, selectedItem, openDetails,
+            openSettings, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-classification"} styleVariant={"tab"}>
@@ -322,13 +330,21 @@ class Classification extends Component {
                         <StyledCircularProgress />
                         :
                         displayedItems ?
-                            <RuleWorkList>
+                            <RuleWorkList onItemSelected={this.onDetailsOpen}>
                                 {displayedItems}
                             </RuleWorkList>
                             :
                             <FilterNoResults />
                     }
                 </RuleWorkBox>
+                {selectedItem &&
+                    <RuleWorkDialog
+                        item={selectedItem}
+                        onClose={this.onDetailsClose}
+                        open={openDetails}
+                        projectResult={this.props.project.result}
+                    />
+                }
                 <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )

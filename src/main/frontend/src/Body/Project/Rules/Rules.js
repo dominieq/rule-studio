@@ -1,24 +1,17 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
-import Item from "../../../RuleWorkComponents/API/Item";
+import {Item, StyledPaper} from "../../../RuleWorkComponents";
 import {filterFunction, FilterNoResults, FilterTextField} from "../ProjectTabsUtils/Filtering";
 import {MeasureSelector, ThresholdSelector} from "../ProjectTabsUtils/Calculations";
-import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
-import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import RuleWorkTooltip from "../../../RuleWorkComponents/Inputs/RuleWorkTooltip";
-import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
-import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
-import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
-import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import {RuleWorkBox, RuleWorkDrawer, RuleWorkSmallBox} from "../../../RuleWorkComponents/Containers";
+import {RuleWorkList, RuleWorkTooltip, StyledDivider} from "../../../RuleWorkComponents/DataDisplay";
+import {RuleWorkDialog, RuleWorkSnackbar, StyledCircularProgress} from "../../../RuleWorkComponents/Feedback";
+import {RuleWorkUpload, StyledButton} from "../../../RuleWorkComponents/Inputs";
 import SvgIcon from "@material-ui/core/SvgIcon";
+import {CloudUpload as CloudUploadIcon, Save as SaveIcon} from "@material-ui/icons";
 import Calculator from "mdi-material-ui/Calculator";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import SaveIcon from "@material-ui/icons/Save";
 import {mdiCloseThick, mdiCog} from "@mdi/js";
+
 
 class Rules extends Component {
     constructor(props) {
@@ -35,6 +28,8 @@ class Rules extends Component {
             externalRules: false,
             threshold: 0,
             measure: "epsilon",
+            selectedItem: null,
+            openDetails: false,
             openSettings: false,
             snackbarProps: undefined,
         };
@@ -327,6 +322,20 @@ class Rules extends Component {
         this.setState({displayedItems: filteredItems});
     };
 
+    onDetailsOpen = (index) => {
+        this.setState({
+            selectedItem: this.state.displayedItems[index],
+            openDetails: true
+        });
+    };
+
+    onDetailsClose = () => {
+        this.setState({
+            selectedItem: null,
+            openDetails: false
+        });
+    };
+
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
             this.setState({snackbarProps: undefined});
@@ -355,7 +364,8 @@ class Rules extends Component {
     };
 
     render() {
-        const {loading, displayedItems, threshold, measure, openSettings, snackbarProps} = this.state;
+        const {loading, displayedItems, threshold, measure, selectedItem, openDetails,
+            openSettings, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
@@ -462,13 +472,21 @@ class Rules extends Component {
                         <StyledCircularProgress />
                         :
                         displayedItems ?
-                            <RuleWorkList>
+                            <RuleWorkList onItemSelected={this.onDetailsOpen}>
                                 {displayedItems}
                             </RuleWorkList>
                             :
                             <FilterNoResults />
                     }
                 </RuleWorkBox>
+                {selectedItem &&
+                    <RuleWorkDialog
+                        item={selectedItem}
+                        onClose={this.onDetailsClose}
+                        open={openDetails}
+                        projectResult={this.props.project.result}
+                    />
+                }
                 <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )

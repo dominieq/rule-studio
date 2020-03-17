@@ -1,5 +1,5 @@
 import React from 'react';
-import RuleWorkBox from "../../RuleWorkComponents/Containers/RuleWorkBox";
+import {RuleWorkBox} from "../../RuleWorkComponents";
 
 function Help() {
     return (

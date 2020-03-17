@@ -2,20 +2,14 @@ import React, {Component} from "react";
 import PropTypes from "prop-types";
 import {filterFunction, FilterNoResults, FilterTextField,} from "../ProjectTabsUtils/Filtering";
 import {MeasureSelector, ThresholdSelector} from "../ProjectTabsUtils/Calculations"
-import Item from "../../../RuleWorkComponents/API/Item";
-import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
-import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
-import RuleWorkTooltip from "../../../RuleWorkComponents/Inputs/RuleWorkTooltip";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
-import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
-import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import {Item, StyledButton, StyledPaper} from "../../../RuleWorkComponents";
+import {RuleWorkBox, RuleWorkDrawer, RuleWorkSmallBox} from "../../../RuleWorkComponents/Containers";
+import {RuleWorkList, StyledDivider, RuleWorkTooltip} from "../../../RuleWorkComponents/DataDisplay";
+import {RuleWorkDialog, RuleWorkSnackbar, StyledCircularProgress} from "../../../RuleWorkComponents/Feedback";
 import Calculator from "mdi-material-ui/Calculator";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import {mdiCloseThick, mdiCog} from "@mdi/js";
+
 
 class Unions extends Component {
     constructor(props) {
@@ -31,6 +25,8 @@ class Unions extends Component {
             displayedItems: [],
             threshold: 0,
             measure: "epsilon",
+            selectedItem: null,
+            openDetails: false,
             openSettings: false,
             snackbarProps: undefined,
         };
@@ -230,6 +226,20 @@ class Unions extends Component {
         this.setState({displayedItems: filteredItems});
     };
 
+    onDetailsOpen = (index) => {
+        this.setState({
+            selectedItem: this.state.displayedItems[index],
+            openDetails: true
+        });
+    };
+
+    onDetailsClose = () => {
+        this.setState({
+            selectedItem: null,
+            openDetails: false,
+        });
+    };
+
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
             this.setState({snackbarProps: undefined})
@@ -268,7 +278,8 @@ class Unions extends Component {
     };
 
     render() {
-        const {loading, displayedItems, threshold, measure, openSettings, snackbarProps} = this.state;
+        const {loading, displayedItems, threshold, measure, selectedItem, openDetails,
+            openSettings, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-unions"} styleVariant={"tab"}>
@@ -328,13 +339,21 @@ class Unions extends Component {
                     <StyledCircularProgress/>
                     :
                     displayedItems ?
-                        <RuleWorkList>
+                        <RuleWorkList onItemSelected={this.onDetailsOpen}>
                             {displayedItems}
                         </RuleWorkList>
                         :
                         <FilterNoResults />
                 }
                 </RuleWorkBox>
+                {selectedItem &&
+                    <RuleWorkDialog
+                        item={selectedItem}
+                        onClose={this.onDetailsClose}
+                        open={openDetails}
+                        projectResult={this.props.project.result}
+                    />
+                }
                 <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )

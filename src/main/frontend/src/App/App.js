@@ -1,13 +1,9 @@
 import React, {Component, Fragment} from 'react';
 import DeleteProjectDialog from "./feedback/DeleteProjectDialog";
 import Header from "../Header/Header";
-import Help from "../Body/Help/Help";
-import Home from "../Body/Home/Home";
-import Import from "../Body/Import/Import";
-import Project from "../RuleWorkComponents/API/Project";
-import ProjectTabs from "../Body/Project/ProjectTabs";
+import {Help, Home, Import, ProjectTabs} from "../Body";
+import {Project, RuleWorkSnackbar} from "../RuleWorkComponents";
 import RenameProjectDialog from "./feedback/RenameProjectDialog";
-import RuleWorkSnackbar from "../RuleWorkComponents/Feedback/RuleWorkSnackbar";
 
 class App extends Component {
     constructor(props) {
