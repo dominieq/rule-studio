@@ -1,5 +1,6 @@
 package pl.put.poznan.rulework.rest;
 
+import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.InformationTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulework.service.ImposePreferenceOrderService;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @CrossOrigin
@@ -32,6 +34,19 @@ public class ImposePreferenceOrderController {
         logger.info("Getting impose preference order...");
 
         InformationTable result = imposePreferenceOrderService.getImposePreferenceOrder(id, binarizeNominalAttributesWith3PlusValues);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<InformationTable> postUnionsWithSingleLimitingDecision(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "binarizeNominalAttributesWith3PlusValues") Boolean binarizeNominalAttributesWith3PlusValues,
+            @RequestParam(name = "metadata") String metadata,
+            @RequestParam(name = "data") String data) throws IOException {
+        logger.info("Posting impose preference order...");
+
+        InformationTable result = imposePreferenceOrderService.postImposePreferenceOrder(id, binarizeNominalAttributesWith3PlusValues, metadata, data);
 
         return ResponseEntity.ok(result);
     }

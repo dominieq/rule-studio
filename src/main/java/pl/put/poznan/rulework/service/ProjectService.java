@@ -50,14 +50,6 @@ public class ProjectService {
         return getProjectFromProjectsContainer(projectsContainer, id);
     }
 
-    public Project getProjectWithImposePreferenceOrder(UUID id, Boolean imposePreferenceOrder) {
-        logger.info("Id:\t" + id);
-        logger.info("ImposePreferenceOrder:\t" + imposePreferenceOrder);
-        Project p = getProjectFromProjectsContainer(projectsContainer, id);
-        p.setInformationTable(p.getInformationTable().imposePreferenceOrders(imposePreferenceOrder));
-        return p;
-    }
-
     public Project setProject(
             UUID id,
             MultipartFile metadataFile,

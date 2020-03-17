@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import GetImposePreferenceOrder from './DemoImposePreferenceOrder/GetImposePreferenceOrder'
+import PostImposePreferenceOrder from './DemoImposePreferenceOrder/PostImposePreferenceOrder'
 
 class DemoImposePreferenceOrder extends Component {
 
@@ -9,6 +10,7 @@ class DemoImposePreferenceOrder extends Component {
                 <hr></hr>
                 <h2>ImposePreferenceOrderController</h2>
                 <GetImposePreferenceOrder></GetImposePreferenceOrder>
+                <PostImposePreferenceOrder></PostImposePreferenceOrder>
             </div>
         )
     }

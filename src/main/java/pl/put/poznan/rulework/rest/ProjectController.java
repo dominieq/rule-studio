@@ -30,18 +30,12 @@ public class ProjectController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Project> getProject(
-            @PathVariable("id") UUID id,
-            @RequestParam(name = "imposePreferenceOrder", required = false) Boolean imposePreferenceOrder) {
+            @PathVariable("id") UUID id) {
 
         logger.info("Getting project");
-        Project result;
-        if(imposePreferenceOrder != null) {
-            result = projectService.getProjectWithImposePreferenceOrder(id, imposePreferenceOrder);
-        } else {
-            result = projectService.getProject(id);
-        }
+        Project result = projectService.getProject(id);
 
-        logger.info(result.toString());
+        logger.debug(result.toString());
         return ResponseEntity.ok(result);
     }
 

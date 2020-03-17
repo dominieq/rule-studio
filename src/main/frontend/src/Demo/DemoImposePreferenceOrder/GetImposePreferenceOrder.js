@@ -65,7 +65,7 @@ class GetImposePreferenceOrder extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                <input type="checkbox" id="binarizeNominalAttributesWith3PlusValuesGetImposePreferenceOrder" onChange={this.handleHeaderChange} />
+                <input type="checkbox" id="binarizeNominalAttributesWith3PlusValuesGetImposePreferenceOrder" onChange={this.handleBinarizeNominalAttributesWith3PlusValuesChange} />
                 <label for="binarizeNominalAttributesWith3PlusValuesGetImposePreferenceOrder"> binarizeNominalAttributesWith3PlusValues </label>
                 <button onClick={this.getImposePreferenceOrder}>getImposePreferenceOrder</button>
             </div>
