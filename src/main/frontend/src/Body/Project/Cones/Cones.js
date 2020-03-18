@@ -90,6 +90,14 @@ class Cones extends Component {
         });
     }
 
+   componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
+            this.setState({
+                displayedItems: [...this.getItems(this._data)]
+            });
+        }
+    }
+
     componentWillUnmount() {
         this._isMounted = false;
 
@@ -198,12 +206,19 @@ class Cones extends Component {
         let items = [];
 
         if (data) {
-            for (let i = 0; i < data.numberOfObjects; i++) {
-                // TODO Change id to object id from InformationTable.
-                const id = i.toString();
+            const indexOption = this.props.project.settings.indexOption;
+            const objects = [...this.props.project.result.informationTable.objects];
 
-                // TODO Add choice to display description instead of a number.
-                const name = "Object " + (i + 1);
+            for (let i = 0; i < data.numberOfObjects; i++) {
+                const id = i.toString();
+                let name = "Object " + (i + 1);
+
+                if (indexOption !== "default") {
+                    if (Object.keys(objects[i]).includes(indexOption)) {
+                        name = objects[i][indexOption];
+                    }
+                }
+
                 const tables = {
                     positiveDCones: data.positiveDCones[i],
                     negativeDCones: data.negativeDCones[i],

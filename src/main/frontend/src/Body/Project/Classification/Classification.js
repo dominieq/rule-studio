@@ -238,9 +238,19 @@ class Classification extends Component {
     getItems = (data) => {
         let items = [];
         if (Object.keys(data).length) {
+            const indexOption = this.props.project.settings.indexOption;
+            const objects = [...this.props.project.result.informationTable.objects];
+
             for (let i = 0; i < data.simpleClassificationResults.length; i++) {
                 const id = i.toString();
-                const name = "Object " + (i + 1);
+                let name = "Object " + (i + 1);
+
+                if (indexOption !== "default") {
+                    if (Object.keys(objects[i]).includes(indexOption)) {
+                        name = objects[i][indexOption];
+                    }
+                }
+
                 const traits = {
                     attributes: data.informationTable.attributes,
                     value: data.informationTable.objects[i]

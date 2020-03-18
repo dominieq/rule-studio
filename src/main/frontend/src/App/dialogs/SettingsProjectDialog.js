@@ -56,7 +56,7 @@ class SettingsProjectDialog extends Component {
         let options = ["default"];
         if (attributes) {
             for (let i = 0; i < attributes.length; i++) {
-                if (Object.keys(attributes[i]).includes("identifierType") && attributes.active) {
+                if (Object.keys(attributes[i]).includes("identifierType") && attributes[i].active) {
                     options = [...options, attributes[i].name];
                 } else if (Object.keys(attributes[i]).includes("type") && attributes[i].type === "description") {
                     options = [...options, attributes[i].name]

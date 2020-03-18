@@ -178,18 +178,21 @@ class App extends Component {
         })
     };
 
-    onSettingsDialogClose = (settings) => {
-        if (settings && Object.keys(settings).length) {
-            let projects = [...this.state.projects];
-            projects[this.state.currentProject].settings = settings;
-            this.setState({
-                projects: projects
-            })
+    onSettingsDialogClose = (newSettings) => {
+        if (newSettings && Object.keys(newSettings).length) {
+            this.setState(({currentProject, projects, open}) => ({
+                projects: [
+                    ...projects.slice(0, currentProject),
+                    {...projects[currentProject], settings: newSettings},
+                    ...projects.slice(currentProject + 1)
+                ],
+                open: {...open, settingsDialog: false}
+            }));
+        } else {
+            this.setState(prevState => ({
+                open: {...prevState.open, settingsDialog: false}
+            }));
         }
-
-        let open = {...this.state.open};
-        open.settingsDialog = false;
-        this.setState({open: open});
     };
 
     onDeleteDialogClose = (action) => {
@@ -349,7 +352,7 @@ class App extends Component {
                     open={settingsDialog}
                     onClose={this.onSettingsDialogClose}
                     settings={currentProject >= 0 ?
-                        projects[currentProject].settings : null
+                        {...projects[currentProject].settings} : null
                     }
                 />
                 <DeleteProjectDialog
