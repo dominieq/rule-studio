@@ -1,10 +1,10 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
+import Accept from "./Utils/Accept";
+import Cancel from "./Utils/Cancel";
 import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import StyledButton from "../../RuleWorkComponents/Inputs/StyledButton";
 import StyledDialog from "../../RuleWorkComponents/Feedback/StyledDialog";
 import StyledDialogContent from "../../RuleWorkComponents/Feedback/StyledDialogContent";
-import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
@@ -69,10 +69,7 @@ class DeleteProjectDialog extends Component {
                 <DialogTitle id={"delete-project-dialog"}>
                     Confirm deletion of {currentName}
                 </DialogTitle>
-                <StyledDialogContent
-                    direction={"row"}
-                    dividers={true}
-                >
+                <StyledDialogContent>
                     <RuleWorkTextField
                         fullWidth={true}
                         hasOutsideLabel={true}
@@ -82,22 +79,14 @@ class DeleteProjectDialog extends Component {
                     />
                 </StyledDialogContent>
                 <DialogActions>
-                    <StyledButton
-                        autoFocus
-                        onClick={this.onCancelClick}
-                        themeVariant={"primary"}
-                        variant={"outlined"}
-                    >
-                        Cancel
-                    </StyledButton>
-                    <StyledButton
+                    <Cancel onClick={this.onCancelClick} themeVariant={"primary"} />
+                    <Accept
                         disabled={!correct}
                         onClick={this.onDeleteClick}
                         themeVariant={"secondary"}
-                        variant={"outlined"}
                     >
                         Delete
-                    </StyledButton>
+                    </Accept>
                 </DialogActions>
                 {children}
             </StyledDialog>

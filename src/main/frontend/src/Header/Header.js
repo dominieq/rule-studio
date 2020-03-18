@@ -1,11 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
-import {StyledButton, RuleWorkTooltip} from "../RuleWorkComponents";
-import ProjectMenu from "./ProjectMenu";
+import RuleWorkTooltip from "../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
+import StyledButton from "../RuleWorkComponents/Inputs/StyledButton";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import HomeIcon from "@material-ui/icons/Home";
+import Palette from "mdi-material-ui/Palette";
 
 const useStyles = makeStyles({
     colorPrimary: {
@@ -15,36 +16,36 @@ const useStyles = makeStyles({
 }, {name: "MuiAppBar"});
 
 function Header(props) {
-    const {onButtonClick, ...other} = props;
+    const {children, onBodyChange, onColorsChange} = props;
     const classes = useStyles();
 
     return (
         <AppBar classes={{colorPrimary: classes.colorPrimary}} position={"relative"}>
             <Toolbar>
-                <StyledButton color={"inherit"} isIcon={true} onClick={() => onButtonClick("Home")}>
+                <StyledButton color={"inherit"} isIcon={true} onClick={() => onBodyChange("Home")}>
                     <HomeIcon />
                 </StyledButton>
-                <RuleWorkTooltip title={"Import files and create new project"}>
-                    <StyledButton onClick={() => onButtonClick("Import")}>
-                        New
-                    </StyledButton>
-                </RuleWorkTooltip>
-                <ProjectMenu {...other}/>
-                <StyledButton onClick={() => onButtonClick("Help")}>
+                <StyledButton onClick={() => onBodyChange("Import")}>
+                    New Project
+                </StyledButton>
+                {children}
+                <StyledButton onClick={() => onBodyChange("Help")}>
                     Help
                 </StyledButton>
+                <RuleWorkTooltip title={"Change colors"}>
+                    <StyledButton color={"inherit"} isIcon={true} onClick={onColorsChange}>
+                        <Palette />
+                    </StyledButton>
+                </RuleWorkTooltip>
             </Toolbar>
         </AppBar>
     );
 }
 
 Header.propTypes = {
-    onButtonClick: PropTypes.func.isRequired,
-    currentProject: PropTypes.number.isRequired,
-    projects: PropTypes.array.isRequired,
-    onProjectClick: PropTypes.func.isRequired,
-    onProjectDelete: PropTypes.func.isRequired,
-    onProjectRename: PropTypes.func.isRequired,
+    children: PropTypes.element,
+    onBodyChange: PropTypes.func,
+    onColorsChange: PropTypes.func,
 };
 
 export default Header;

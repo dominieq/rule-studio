@@ -1,9 +1,15 @@
 import React, {Component, Fragment} from 'react';
-import DeleteProjectDialog from "./feedback/DeleteProjectDialog";
 import Header from "../Header/Header";
-import {Help, Home, Import, ProjectTabs} from "../Body";
-import {Project, RuleWorkSnackbar} from "../RuleWorkComponents";
-import RenameProjectDialog from "./feedback/RenameProjectDialog";
+import ProjectMenu from "../Header/ProjectMenu";
+import Help from '../Body/Help/Help';
+import Home from "../Body/Home/Home";
+import Import from "../Body/Import/Import";
+import ProjectTabs from "../Body/Project/ProjectTabs";
+import Project from "../RuleWorkComponents/API/Project";
+import RuleWorkSnackbar from "../RuleWorkComponents/Feedback/RuleWorkSnackbar";
+import DeleteProjectDialog from "./dialogs/DeleteProjectDialog";
+import RenameProjectDialog from "./dialogs/RenameProjectDialog";
+import SettingsProjectDialog from "./dialogs/SettingsProjectDialog";
 
 class App extends Component {
     constructor(props) {
@@ -13,7 +19,9 @@ class App extends Component {
             body: "Home",
             currentProject: -1,
             projects: [],
+            defaultColours: true,
             open: {
+                settingsDialog: false,
                 renameDialog: false,
                 deleteDialog: false,
             },
@@ -96,18 +104,34 @@ class App extends Component {
         });
     };
 
-    onSnackbarClose = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
+    onColorsChange = () => {
+        this.setState(prevState => ({
+            defaultColours: !prevState.defaultColours
+        }))
+    };
 
-        this.setState({
-            snackbarProps: {
-                open: false,
-                variant: "info",
-                message: "",
-            }
-        })
+    onProjectSettings = () => {
+        let open = {...this.state.open};
+        open.settingsDialog = true;
+        this.setState({open: open})
+    };
+
+    onProjectRename = () => {
+        let open = {...this.state.open};
+        open.renameDialog = true;
+        this.setState({open: open});
+    };
+
+    onProjectDelete = () => {
+        let open = {...this.state.open};
+        open.deleteDialog = true;
+        this.setState({open: open});
+    };
+
+    onSnackbarClose = (event, reason) => {
+        if (reason !== "clickaway") {
+            this.setState({snackbarProps: undefined});
+        }
     };
 
     onFilesAccepted = (name, files) => {
@@ -115,9 +139,9 @@ class App extends Component {
             this.setState({
                 snackbarProps: {
                     open: true,
-                    variant: "warning",
-                    message: "Project name already exists"
-                },
+                    message: "Project name already exists",
+                    variant: "warning"
+                }
             });
             return
         }
@@ -154,13 +178,18 @@ class App extends Component {
         })
     };
 
-    onProjectDelete = () => {
-        let open = this.state.open;
-        open.deleteDialog = true;
+    onSettingsDialogClose = (settings) => {
+        if (settings && Object.keys(settings).length) {
+            let projects = [...this.state.projects];
+            projects[this.state.currentProject].settings = settings;
+            this.setState({
+                projects: projects
+            })
+        }
 
-        this.setState({
-            open: open,
-        });
+        let open = {...this.state.open};
+        open.settingsDialog = false;
+        this.setState({open: open});
     };
 
     onDeleteDialogClose = (action) => {
@@ -192,21 +221,10 @@ class App extends Component {
                 console.log(error);
             });
         }
+
         let open = this.state.open;
         open.deleteDialog = false;
-
-        this.setState({
-            open: open,
-        });
-    };
-
-    onProjectRename = () => {
-        let open = this.state.open;
-        open.renameDialog = true;
-
-        this.setState({
-            open: open,
-        });
+        this.setState({open: open});
     };
 
     onRenameDialogClose = (name) => {
@@ -279,18 +297,24 @@ class App extends Component {
 
     render() {
         const {currentProject, projects, open, snackbarProps} = this.state;
-        const {renameDialog, deleteDialog} = open;
+        const {renameDialog, deleteDialog, settingsDialog} = open;
+        const showSnackbarNormally = !renameDialog || !deleteDialog || !settingsDialog;
 
         return (
             <Fragment>
                 <Header
-                    onButtonClick={(name) => this.onBodyChange(name)}
-                    currentProject={currentProject + 1}
-                    projects={["Select your projects", ...projects]}
-                    onProjectClick={(index) => this.onCurrentProjectChange(index)}
-                    onProjectDelete={() => this.onProjectDelete()}
-                    onProjectRename={() => this.onProjectRename()}
-                />
+                    onBodyChange={this.onBodyChange}
+                    onColorsChange={this.onColorsChange}
+                >
+                    <ProjectMenu
+                        currentProject={currentProject + 1}
+                        onProjectClick={this.onCurrentProjectChange}
+                        onProjectDelete={this.onProjectDelete}
+                        onProjectRename={this.onProjectRename}
+                        onProjectSettings={this.onProjectSettings}
+                        projects={["Select your projects", ...projects]}
+                    />
+                </Header>
                 {
                     {
                         "Help": <Help />,
@@ -310,18 +334,32 @@ class App extends Component {
                     }[this.state.body]
                 }
                 <RenameProjectDialog
-                    currentName={currentProject >= 0 ? projects[currentProject].result.name : ""}
+                    currentName={currentProject >= 0 ?
+                        projects[currentProject].result.name : ""
+                    }
                     open={renameDialog}
                     onClose={this.onRenameDialogClose}
                 >
-                    {renameDialog ? <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} /> : null}
+                    {renameDialog && <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />}
                 </RenameProjectDialog>
+                <SettingsProjectDialog
+                    attributes={currentProject >= 0 ?
+                        projects[currentProject].result.informationTable.attributes : null
+                    }
+                    open={settingsDialog}
+                    onClose={this.onSettingsDialogClose}
+                    settings={currentProject >= 0 ?
+                        projects[currentProject].settings : null
+                    }
+                />
                 <DeleteProjectDialog
-                    currentName={currentProject >= 0 ? projects[currentProject].result.name : ""}
+                    currentName={currentProject >= 0 ?
+                        projects[currentProject].result.name : ""
+                    }
                     open={deleteDialog}
                     onClose={this.onDeleteDialogClose}
                 />
-                {!renameDialog || !deleteDialog ?
+                {showSnackbarNormally ?
                     <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose}/> : null
                 }
             </Fragment>

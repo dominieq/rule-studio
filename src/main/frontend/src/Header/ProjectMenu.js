@@ -1,6 +1,8 @@
 import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
-import {RuleWorkTooltip, StyledButton} from "../RuleWorkComponents";
+import RuleWorkSmallBox from "../RuleWorkComponents/Containers/RuleWorkSmallBox";
+import RuleWorkTooltip from "../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
+import StyledButton from "../RuleWorkComponents/Inputs/StyledButton";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";
@@ -8,7 +10,8 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import DeleteIcon from "@material-ui/icons/Delete";
 import RenameBox from "mdi-material-ui/RenameBox";
-import "./ProjectMenu.css";
+import SvgIcon from "@material-ui/core/SvgIcon";
+import {mdiCog} from "@mdi/js";
 
 class ProjectMenu extends Component {
     constructor(props) {
@@ -43,6 +46,15 @@ class ProjectMenu extends Component {
         if (this.props.currentProject > 0) {
             return (
                 <Fragment>
+                    <RuleWorkTooltip title={"Project settings"}>
+                        <StyledButton
+                            aria-label={"project-settings"}
+                            isIcon={true}
+                            onClick={this.props.onProjectSettings}
+                        >
+                            <SvgIcon><path d={mdiCog} /></SvgIcon>
+                        </StyledButton>
+                    </RuleWorkTooltip>
                     <RuleWorkTooltip title={"Rename project"}>
                         <StyledButton
                             aria-label={"rename-project-button"}
@@ -52,7 +64,7 @@ class ProjectMenu extends Component {
                             <RenameBox />
                         </StyledButton>
                     </RuleWorkTooltip>
-                    <span />
+                    <span style={{flexGrow: 1}} />
                     <RuleWorkTooltip title={"Delete project"}>
                         <StyledButton
                             aria-label={"delete-project-button"}
@@ -64,7 +76,7 @@ class ProjectMenu extends Component {
                 </Fragment>
             )
         }  else {
-            return null;
+            return <span style={{flexGrow: 1}} />;
         }
     };
 
@@ -74,11 +86,11 @@ class ProjectMenu extends Component {
 
         let primaryText = "Select your project";
         if (currentProject > 0) {
-            primaryText = "Active project: " + projects[currentProject].result.name;
+            primaryText = "Active project " + projects[currentProject].result.name;
         }
 
         return (
-            <div className={"rule-work-project-panel"}>
+            <RuleWorkSmallBox id={"project-menu"} style={{flexGrow: 1}}>
                 <List component={"nav"} >
                     <ListItem
                         button
@@ -94,7 +106,7 @@ class ProjectMenu extends Component {
                     open={Boolean(anchorE1)}
                     onClose={this.onMenuClose}
                 >
-                    {projects.map((project, index) => (
+                    {projects && projects.map((project, index) => (
                         <MenuItem
                             key={index}
                             disabled={index === 0}
@@ -105,17 +117,30 @@ class ProjectMenu extends Component {
                     ))}
                 </Menu>
                 {this.renderProjectButtons()}
-            </div>
+            </RuleWorkSmallBox>
         )
     }
 }
 
 ProjectMenu.propTypes = {
-    currentProject: PropTypes.number.isRequired,
-    projects: PropTypes.array.isRequired,
-    onProjectClick: PropTypes.func.isRequired,
-    onProjectDelete: PropTypes.func.isRequired,
-    onProjectRename: PropTypes.func.isRequired,
+    currentProject: PropTypes.number,
+    onProjectClick: PropTypes.func,
+    onProjectDelete: PropTypes.func,
+    onProjectRename: PropTypes.func,
+    onProjectSettings: PropTypes.func,
+    projects: PropTypes.arrayOf(PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({
+            result: PropTypes.object,
+            externalRules: PropTypes.bool,
+            threshold: PropTypes.number,
+            measure: PropTypes.string,
+            ruleType: PropTypes.string,
+            foldDisplay: PropTypes.number,
+            foldIndex: PropTypes.number,
+            foldNumber: PropTypes.number,
+        })
+    ])),
 };
 
 export default ProjectMenu;

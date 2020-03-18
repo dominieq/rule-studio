@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import StyledButton from "../../RuleWorkComponents/Inputs/StyledButton";
+import Accept from "./Utils/Accept";
+import Cancel from "./Utils/Cancel"
+import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import StyledDialog from "../../RuleWorkComponents/Feedback/StyledDialog";
 import StyledDialogContent from "../../RuleWorkComponents/Feedback/StyledDialogContent";
-import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import DialogActions from  "@material-ui/core/DialogActions"
 import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
 
 class RenameProjectDialog extends Component {
     constructor(props) {
@@ -60,10 +61,7 @@ class RenameProjectDialog extends Component {
                 <DialogTitle id={"rename-project-dialog"}>
                     Rename project
                 </DialogTitle>
-                <StyledDialogContent
-                    direction={"row"}
-                    dividers={true}
-                >
+                <StyledDialogContent>
                     <RuleWorkTextField
                         fullWidth={true}
                         hasOutsideLabel={true}
@@ -73,22 +71,8 @@ class RenameProjectDialog extends Component {
                     />
                 </StyledDialogContent>
                 <DialogActions>
-                    <StyledButton
-                        autoFocus
-                        onClick={this.onCancelClick}
-                        themeVariant={"secondary"}
-                        variant={"outlined"}
-                    >
-                        Cancel
-                    </StyledButton>
-                    <StyledButton
-                        disabled={!name}
-                        onClick={this.onOkClick}
-                        themeVariant={"primary"}
-                        variant={"outlined"}
-                    >
-                        Ok
-                    </StyledButton>
+                    <Cancel onClick={this.onCancelClick} />
+                    <Accept disabled={!name} onClick={this.onOkClick} />
                 </DialogActions>
                 {children}
             </StyledDialog>
@@ -97,7 +81,7 @@ class RenameProjectDialog extends Component {
 }
 
 RenameProjectDialog.propTypes = {
-    children: PropTypes.any,
+    children: PropTypes.node,
     currentName: PropTypes.string,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
