@@ -256,7 +256,7 @@ class Classification extends Component {
                     value: data.informationTable.objects[i]
                 };
                 const tables = {
-                    indicesOfCoveringRules: data.indiciesOfCoveringRules[i]
+                    indicesOfCoveringRules: data.indicesOfCoveringRules[i]
                 };
                 const item = new Item(id, name, traits, null, tables);
                 items = [...items, item];
