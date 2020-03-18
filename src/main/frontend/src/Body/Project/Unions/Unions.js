@@ -176,7 +176,7 @@ class Unions extends Component {
             data.append("data", JSON.stringify(project.result.informationTable.objects));
 
             let msg = "";
-            fetch(link + `?consistencyThreshold=${threshold}`, {
+            fetch(link, {
                 method: this.props.dataUpToDate ? "PUT" : "POST",
                 body: this.props.dataUpToDate ? null : data
             }).then(response => {

@@ -47,6 +47,7 @@ class CrossValidation extends Component {
 
     componentDidMount() {
         this._isMounted = true;
+
         console.log("Fetching cross-validation from server...");
         this.setState({
             foldDisplay: this.props.project.foldDisplay,
@@ -56,6 +57,8 @@ class CrossValidation extends Component {
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
+
         if (this.state.changes) {
             let project = {...this.props.project};
             if (Object.keys(this._data).length) {

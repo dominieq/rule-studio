@@ -116,7 +116,7 @@ class Import extends Component{
                     </RuleWorkSmallBox>
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <RuleWorkSmallBox>
-                        <StyledSwitch
+                        <RuleWorkSwitch
                             label={"Create project with metadata"}
                             checked={checked}
                             onChange={this.onCheckboxChange}
