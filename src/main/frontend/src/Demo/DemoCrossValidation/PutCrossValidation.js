@@ -6,6 +6,7 @@ class PutCrossValidation extends Component {
 
         this.state = {
             id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2',
+            consistencyThreshold: 0,
             numberOfFolds: 10
         }
     }
@@ -13,6 +14,12 @@ class PutCrossValidation extends Component {
     handleIdChange = (event) => {
         this.setState({
             id_projektu: event.target.value
+        })
+    }
+
+    handleConsistencyThresholdChange = (event) => {
+        this.setState({
+            consistencyThreshold: event.target.value
         })
     }
 
@@ -25,7 +32,7 @@ class PutCrossValidation extends Component {
     putCrossValidation = (event) => {
         event.preventDefault();
 
-        var link = `http://localhost:8080/projects/${this.state.id_projektu}/crossValidation?numberOfFolds=${this.state.numberOfFolds}`;
+        var link = `http://localhost:8080/projects/${this.state.id_projektu}/crossValidation?consistencyThreshold=${this.state.consistencyThreshold}&numberOfFolds=${this.state.numberOfFolds}`;
 
         console.log(link)
 
@@ -65,6 +72,8 @@ class PutCrossValidation extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
+                consistencyThreshold->
+                <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
                 numberOfFolds->
                 <input type='text' value={this.state.numberOfFolds} onChange={this.handleNumberOfFolds} />
                 <button onClick={this.putCrossValidation}>putCrossValidation</button>

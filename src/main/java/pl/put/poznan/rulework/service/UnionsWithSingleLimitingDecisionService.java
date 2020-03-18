@@ -23,11 +23,17 @@ public class UnionsWithSingleLimitingDecisionService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private void calculateUnionsWithSingleLimitingDecision(Project project, Double consistencyThreshold) {
+    public static UnionsWithSingleLimitingDecision calculateUnionsWithSingleLimitingDecision(InformationTable informationTable, Double consistencyThreshold) {
         UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = new UnionsWithSingleLimitingDecision(
-                new InformationTableWithDecisionDistributions(project.getInformationTable()),
+                new InformationTableWithDecisionDistributions(informationTable),
                 new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), consistencyThreshold)
         );
+
+        return unionsWithSingleLimitingDecision;
+    }
+
+    public static void calculateUnionsWithSingleLimitingDecisionInProject(Project project, Double consistencyThreshold) {
+        UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(project.getInformationTable(), consistencyThreshold);
 
         project.setUnionsWithSingleLimitingDecision(unionsWithSingleLimitingDecision);
         project.setCalculatedUnionsWithSingleLimitingDecision(true);
@@ -55,7 +61,7 @@ public class UnionsWithSingleLimitingDecisionService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateUnionsWithSingleLimitingDecision(project, consistencyThreshold);
+        calculateUnionsWithSingleLimitingDecisionInProject(project, consistencyThreshold);
 
         return project.getUnionsWithSingleLimitingDecision();
     }
@@ -71,7 +77,7 @@ public class UnionsWithSingleLimitingDecisionService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateUnionsWithSingleLimitingDecision(project, consistencyThreshold);
+        calculateUnionsWithSingleLimitingDecisionInProject(project, consistencyThreshold);
 
         return project.getUnionsWithSingleLimitingDecision();
     }

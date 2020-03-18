@@ -91,20 +91,7 @@ public class RulesService {
         return ruleSetWithCharacteristics;
     }
 
-    private void calculateRuleSetWithComputableCharacteristics (Project project) {
-        Unions unions = project.getUnionsWithSingleLimitingDecision();
-        if(unions == null) {
-            UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = new UnionsWithSingleLimitingDecision(
-                    new InformationTableWithDecisionDistributions(project.getInformationTable()),
-                    new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), 0)
-            );
-
-            project.setUnionsWithSingleLimitingDecision(unionsWithSingleLimitingDecision);
-            project.setCalculatedUnionsWithSingleLimitingDecision(true);
-
-            unions = unionsWithSingleLimitingDecision;
-        }
-
+    public static RuleSetWithComputableCharacteristics calculateRuleSetWithComputableCharacteristics(Unions unions) {
         final RuleInductionStoppingConditionChecker stoppingConditionChecker =
                 new EvaluationAndCoverageStoppingConditionChecker(
                         EpsilonConsistencyMeasure.getInstance(),
@@ -127,7 +114,19 @@ public class RulesService {
         downwardCertainRules.calculateAllCharacteristics();
 
         RuleSetWithComputableCharacteristics resultSet = RuleSetWithComputableCharacteristics.join(upwardCertainRules, downwardCertainRules);
-        project.setRuleSetWithComputableCharacteristics(resultSet);
+        return resultSet;
+    }
+
+    public static void calculateRuleSetWithComputableCharacteristicsInProject(Project project) {
+        Unions unions = project.getUnionsWithSingleLimitingDecision();
+        if(unions == null) {
+            UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecisionInProject(project, 0.0);
+
+            unions = project.getUnionsWithSingleLimitingDecision();
+        }
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = calculateRuleSetWithComputableCharacteristics(unions);
+
+        project.setRuleSetWithComputableCharacteristics(ruleSetWithComputableCharacteristics);
     }
 
     public RuleSetWithComputableCharacteristics getRules(UUID id) {
@@ -151,7 +150,7 @@ public class RulesService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateRuleSetWithComputableCharacteristics(project);
+        calculateRuleSetWithComputableCharacteristicsInProject(project);
 
         return project.getRuleSetWithComputableCharacteristics();
     }
@@ -166,7 +165,7 @@ public class RulesService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateRuleSetWithComputableCharacteristics(project);
+        calculateRuleSetWithComputableCharacteristicsInProject(project);
 
         return project.getRuleSetWithComputableCharacteristics();
     }

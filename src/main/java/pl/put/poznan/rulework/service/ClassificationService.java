@@ -27,7 +27,7 @@ public class ClassificationService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private Classification calculateClassification(InformationTable informationTable, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
+    public static Classification calculateClassification(InformationTable informationTable, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
         /*logger.info("RuleSet size = {}", ruleSetWithComputableCharacteristics.size());
         for(int i = 0; i < ruleSetWithComputableCharacteristics.size(); i++) {
             logger.info("\tRegula nr {}:\t{}", i, ruleSetWithComputableCharacteristics.getRule(i));
@@ -76,10 +76,12 @@ public class ClassificationService {
             }
         }
 
-        for(objectIndex = 0; objectIndex < objectCount; objectIndex++) {
-            logger.info("Obiekt nr {}:\t{}", objectIndex, informationTable.getFields(objectIndex).toString());
-            for(ruleIndex = 0; ruleIndex < indicesOfCoveringRules[objectIndex].size(); ruleIndex++) {
-                logger.info("\tRegula nr {}:\t{}", ruleIndex, ruleSetWithComputableCharacteristics.getRule(indicesOfCoveringRules[objectIndex].getInt(ruleIndex)));
+        if(logger.isDebugEnabled()) {
+            for(objectIndex = 0; objectIndex < objectCount; objectIndex++) {
+                logger.debug("Obiekt nr {}:\t{}", objectIndex, informationTable.getFields(objectIndex).toString());
+                for(ruleIndex = 0; ruleIndex < indicesOfCoveringRules[objectIndex].size(); ruleIndex++) {
+                    logger.debug("\tRegula nr {}:\t{}", ruleIndex, ruleSetWithComputableCharacteristics.getRule(indicesOfCoveringRules[objectIndex].getInt(ruleIndex)));
+                }
             }
         }
 

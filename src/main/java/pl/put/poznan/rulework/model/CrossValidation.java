@@ -2,17 +2,20 @@ package pl.put.poznan.rulework.model;
 
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.sampling.CrossValidator;
+import org.rulelearn.sampling.CrossValidator.CrossValidationFold;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Random;
 
 public class CrossValidation {
     private Integer numberOfFolds;
-    private List<CrossValidator.CrossValidationFold<InformationTable>> folds;
+    private CrossValidationSingleFold crossValidationSingleFolds[];
 
-    public CrossValidation(Integer numberOfFolds, List<CrossValidator.CrossValidationFold<InformationTable>> folds) {
+    public CrossValidation(Integer numberOfFolds, CrossValidationSingleFold[] crossValidationSingleFolds) {
         this.numberOfFolds = numberOfFolds;
-        this.folds = folds;
+        this.crossValidationSingleFolds = crossValidationSingleFolds;
     }
 
     public Integer getNumberOfFolds() {
@@ -23,11 +26,11 @@ public class CrossValidation {
         this.numberOfFolds = numberOfFolds;
     }
 
-    public List<CrossValidator.CrossValidationFold<InformationTable>> getFolds() {
-        return folds;
+    public CrossValidationSingleFold[] getCrossValidationSingleFolds() {
+        return crossValidationSingleFolds;
     }
 
-    public void setFolds(List<CrossValidator.CrossValidationFold<InformationTable>> folds) {
-        this.folds = folds;
+    public void setCrossValidationSingleFolds(CrossValidationSingleFold[] crossValidationSingleFolds) {
+        this.crossValidationSingleFolds = crossValidationSingleFolds;
     }
 }
