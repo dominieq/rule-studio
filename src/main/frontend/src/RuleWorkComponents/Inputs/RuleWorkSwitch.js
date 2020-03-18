@@ -39,11 +39,11 @@ const useStylesSwitch = makeStyles(theme => ({
     },
     checked: {},
     focusVisible: {},
-}));
+}), {name: "MuiSwitch"});
 
-function StyledSwitchElement(props) {
-    const {...other} = props;
-    const classes = useStylesSwitch();
+export function StyledSwitch(props) {
+    const {classes: propsClasses, ...other} = props;
+    const classes = {...useStylesSwitch(), ...propsClasses};
 
     return (
         <Switch
@@ -54,16 +54,23 @@ function StyledSwitchElement(props) {
                 track: classes.track,
                 checked: classes.checked,
             }}
-            disableRipple={true}
             focusVisibleClassName={classes.focusVisible}
             {...other}
         />
     )
 }
 
-StyledSwitchElement.propTypes = {
+StyledSwitch.propTypes = {
     checked: PropTypes.bool,
+    classes: PropTypes.object,
+    className: PropTypes.string,
+    disableRipple: PropTypes.bool,
     onChange: PropTypes.func,
+    style: PropTypes.object,
+};
+
+StyledSwitch.defaultProps = {
+    disableRipple: true,
 };
 
 const useStylesLabel = makeStyles({
@@ -74,23 +81,21 @@ const useStylesLabel = makeStyles({
     },
 });
 
-function StyledSwitch(props) {
-    const {label, ...other} = props;
-    const classes = useStylesLabel();
+export function RuleWorkSwitch(props) {
+    const {classes: propsClasses, label, ...other} = props;
+    const classes = {...useStylesLabel(), ...propsClasses};
 
     return (
         <FormControlLabel
-            classes={{root: classes.root}}
-            control={<StyledSwitchElement {...other} />}
+            classes={classes}
+            control={<StyledSwitch {...other} />}
             label={label}
         />
     )
 }
 
-StyledSwitch.propTypes = {
+RuleWorkSwitch.propTypes = {
     label: PropTypes.string,
     checked: PropTypes.bool,
     onChange: PropTypes.func,
 };
-
-export default StyledSwitch;
