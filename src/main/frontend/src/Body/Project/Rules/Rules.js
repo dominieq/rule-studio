@@ -1,17 +1,28 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
-import {Item, StyledPaper} from "../../../RuleWorkComponents";
-import {filterFunction, FilterNoResults, FilterTextField} from "../ProjectTabsUtils/Filtering";
-import {MeasureSelector, ThresholdSelector} from "../ProjectTabsUtils/Calculations";
-import {RuleWorkBox, RuleWorkDrawer, RuleWorkSmallBox} from "../../../RuleWorkComponents/Containers";
-import {RuleWorkList, RuleWorkTooltip, StyledDivider} from "../../../RuleWorkComponents/DataDisplay";
-import {RuleWorkDialog, RuleWorkSnackbar, StyledCircularProgress} from "../../../RuleWorkComponents/Feedback";
-import {RuleWorkUpload, StyledButton} from "../../../RuleWorkComponents/Inputs";
+import filterFunction from "../ProjectTabsUtils/Filtering/FilterFunction";
+import FilterNoResults from "../ProjectTabsUtils/Filtering/FilterNoResults";
+import FilterTextField from "../ProjectTabsUtils/Filtering/FilterTextField";
+import MeasureSelector from "../ProjectTabsUtils/Calculations/MeasureSelector";
+import ThresholdSelector from "../ProjectTabsUtils/Calculations/ThresholdSelector";
+import Item from "../../../RuleWorkComponents/API/Item";
+import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
+import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
+import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
+import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
+import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
+import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
+import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
+import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
+import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
+import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import SvgIcon from "@material-ui/core/SvgIcon";
-import {CloudUpload as CloudUploadIcon, Save as SaveIcon} from "@material-ui/icons";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import SaveIcon from "@material-ui/icons/Save";
 import Calculator from "mdi-material-ui/Calculator";
 import {mdiCloseThick, mdiCog} from "@mdi/js";
-
 
 class Rules extends Component {
     constructor(props) {

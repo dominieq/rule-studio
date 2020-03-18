@@ -1,15 +1,25 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import {filterFunction, FilterNoResults, FilterTextField,} from "../ProjectTabsUtils/Filtering";
-import {MeasureSelector, ThresholdSelector} from "../ProjectTabsUtils/Calculations"
-import {Item, StyledButton, StyledPaper} from "../../../RuleWorkComponents";
-import {RuleWorkBox, RuleWorkDrawer, RuleWorkSmallBox} from "../../../RuleWorkComponents/Containers";
-import {RuleWorkList, StyledDivider, RuleWorkTooltip} from "../../../RuleWorkComponents/DataDisplay";
-import {RuleWorkDialog, RuleWorkSnackbar, StyledCircularProgress} from "../../../RuleWorkComponents/Feedback";
+import filterFunction from "../ProjectTabsUtils/Filtering/FilterFunction";
+import FilterNoResults from "../ProjectTabsUtils/Filtering/FilterNoResults";
+import FilterTextField from "../ProjectTabsUtils/Filtering/FilterTextField";
+import MeasureSelector from "../ProjectTabsUtils/Calculations/MeasureSelector";
+import ThresholdSelector from "../ProjectTabsUtils/Calculations/ThresholdSelector";
+import Item from "../../../RuleWorkComponents/API/Item";
+import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
+import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
+import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
+import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
+import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
+import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
+import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
+import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
+import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
+import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import Calculator from "mdi-material-ui/Calculator";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import {mdiCloseThick, mdiCog} from "@mdi/js";
-
 
 class Unions extends Component {
     constructor(props) {

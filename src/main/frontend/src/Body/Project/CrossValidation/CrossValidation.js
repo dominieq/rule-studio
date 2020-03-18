@@ -1,11 +1,21 @@
 import React, {Component, Fragment} from "react";
 import PropTypes from "prop-types";
-import {filterFunction, FilterNoResults, FilterTextField} from "../ProjectTabsUtils";
-import {StyledPaper} from "../../../RuleWorkComponents"
-import {RuleWorkBox, RuleWorkDrawer, RuleWorkSmallBox} from "../../../RuleWorkComponents/Containers";
-import {RuleWorkList, RuleWorkTooltip, StyledDivider} from "../../../RuleWorkComponents/DataDisplay";
-import {RuleWorkDialog, RuleWorkSnackbar, StyledCircularProgress} from "../../../RuleWorkComponents/Feedback";
-import {RuleWorkTextField, StyledButton, StyledToggleButton} from "../../../RuleWorkComponents/Inputs";
+import filterFunction from "../ProjectTabsUtils/Filtering/FilterFunction";
+import FilterNoResults from "../ProjectTabsUtils/Filtering/FilterNoResults";
+import FilterTextField from "../ProjectTabsUtils/Filtering/FilterTextField";
+import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
+import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
+import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
+import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
+import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
+import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
+import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
+import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
+import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
+import StyledToggleButton from "../../../RuleWorkComponents/Inputs/StyledToggleButton";
+import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import Calculator from "mdi-material-ui/Calculator";
 import SvgIcon from "@material-ui/core/SvgIcon";

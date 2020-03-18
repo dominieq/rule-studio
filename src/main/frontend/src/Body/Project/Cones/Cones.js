@@ -1,8 +1,16 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
-import {filterFunction, FilterNoResults, FilterTextField} from "../ProjectTabsUtils/Filtering";
-import {Item, RuleWorkBox, RuleWorkList, StyledButton, StyledPaper} from "../../../RuleWorkComponents";
-import {RuleWorkDialog, RuleWorkSnackbar, StyledCircularProgress} from "../../../RuleWorkComponents/Feedback";
+import filterFunction from "../ProjectTabsUtils/Filtering/FilterFunction";
+import FilterNoResults from "../ProjectTabsUtils/Filtering/FilterNoResults";
+import FilterTextField from "../ProjectTabsUtils/Filtering/FilterTextField";
+import Item from "../../../RuleWorkComponents/API/Item";
+import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox"
+import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
+import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
+import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
+import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
+import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import Calculator from "mdi-material-ui/Calculator";
 
 class Cones extends Component {
