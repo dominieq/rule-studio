@@ -5,8 +5,10 @@ import DemoDominanceCones from './DemoDominanceCones'
 import DemoUnionsWithSingleLimitingDecision from './DemoUnionsWithSingleLimitingDecision'
 import DemoData from './DemoData'
 import DemoMetadata from './DemoMetadata'
+import DemoImposePreferenceOrder from './DemoImposePreferenceOrder'
 import DemoRules from './DemoRules'
 import DemoClassification from './DemoClassification'
+import DemoCrossValidation from './DemoCrossValidation'
 
 class Demo extends Component {
 
@@ -17,10 +19,12 @@ class Demo extends Component {
                 <DemoProject></DemoProject>
                 <DemoData></DemoData>
                 <DemoMetadata></DemoMetadata>
+                <DemoImposePreferenceOrder></DemoImposePreferenceOrder>
                 <DemoDominanceCones></DemoDominanceCones>
                 <DemoUnionsWithSingleLimitingDecision></DemoUnionsWithSingleLimitingDecision>
                 <DemoRules></DemoRules>
                 <DemoClassification></DemoClassification>
+                <DemoCrossValidation></DemoCrossValidation>
             </div>
         )
     }

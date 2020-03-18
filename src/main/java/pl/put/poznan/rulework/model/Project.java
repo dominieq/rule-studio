@@ -16,6 +16,7 @@ public class Project {
     private UnionsWithSingleLimitingDecision unions;
     private RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics;
     private Classification classification;
+    private CrossValidation crossValidation;
 
     private boolean calculatedDominanceCones;
     private boolean calculatedUnionsWithSingleLimitingDecision;
@@ -28,6 +29,7 @@ public class Project {
         this.calculatedUnionsWithSingleLimitingDecision = false;
         this.ruleSetWithComputableCharacteristics = null;
         this.classification = null;
+        this.crossValidation = null;
     }
 
     public Project(String name, InformationTable informationTable) {
@@ -38,6 +40,7 @@ public class Project {
         this.calculatedUnionsWithSingleLimitingDecision = false;
         this.ruleSetWithComputableCharacteristics = null;
         this.classification = null;
+        this.crossValidation = null;
     }
 
     public UUID getId() {
@@ -114,6 +117,14 @@ public class Project {
         this.classification = classification;
     }
 
+    public CrossValidation getCrossValidation() {
+        return crossValidation;
+    }
+
+    public void setCrossValidation(CrossValidation crossValidation) {
+        this.crossValidation = crossValidation;
+    }
+
     @Override
     public String toString() {
         return "Project{" +
@@ -124,6 +135,7 @@ public class Project {
                 ", unions=" + unions +
                 ", ruleSetWithComputableCharacteristics=" + ruleSetWithComputableCharacteristics +
                 ", classification=" + classification +
+                ", crossValidation=" + crossValidation +
                 ", calculatedDominanceCones=" + calculatedDominanceCones +
                 ", calculatedUnionsWithSingleLimitingDecision=" + calculatedUnionsWithSingleLimitingDecision +
                 '}';

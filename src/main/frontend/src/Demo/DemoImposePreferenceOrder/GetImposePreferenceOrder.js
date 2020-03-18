@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 
-class PutUnionsWithSingleLimitingDecision extends Component {
+class GetImposePreferenceOrder extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2',
-            consistencyThreshold: 0
+            binarizeNominalAttributesWith3PlusValues: false
         }
     }
 
@@ -16,26 +16,26 @@ class PutUnionsWithSingleLimitingDecision extends Component {
         })
     }
 
-    handleConsistencyThresholdChange = (event) => {
+    handleBinarizeNominalAttributesWith3PlusValuesChange = (event) => {
         this.setState({
-            consistencyThreshold: event.target.value
+            binarizeNominalAttributesWith3PlusValues: event.target.checked
         })
     }
 
-    putUnionsWithSingleLimitingDecision = (event) => {
+    getImposePreferenceOrder = (event) => {
         event.preventDefault();
 
-        var link = `http://localhost:8080/projects/${this.state.id_projektu}/unions?consistencyThreshold=${this.state.consistencyThreshold}`;
+        var link = `http://localhost:8080/projects/${this.state.id_projektu}/imposePreferenceOrder?binarizeNominalAttributesWith3PlusValues=${this.state.binarizeNominalAttributesWith3PlusValues}`;
 
         console.log(link)
 
         fetch(link, {
-            method: 'PUT'
+            method: 'GET'
         }).then(response => {
             console.log(response)
             if(response.status === 200) {
                 response.json().then(result => {
-                    console.log("Received unions:")
+                    console.log("Received information table:")
                     console.log(result)
                 }).catch(err => {
                     console.log(err)
@@ -65,12 +65,12 @@ class PutUnionsWithSingleLimitingDecision extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                consistencyThreshold->
-                <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
-                <button onClick={this.putUnionsWithSingleLimitingDecision}>putUnionsWithSingleLimitingDecision</button>
+                <input type="checkbox" id="binarizeNominalAttributesWith3PlusValuesGetImposePreferenceOrder" onChange={this.handleBinarizeNominalAttributesWith3PlusValuesChange} />
+                <label for="binarizeNominalAttributesWith3PlusValuesGetImposePreferenceOrder"> binarizeNominalAttributesWith3PlusValues </label>
+                <button onClick={this.getImposePreferenceOrder}>getImposePreferenceOrder</button>
             </div>
         )
     }
 }
 
-export default PutUnionsWithSingleLimitingDecision
+export default GetImposePreferenceOrder

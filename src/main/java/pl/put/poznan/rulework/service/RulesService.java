@@ -1,28 +1,35 @@
 package pl.put.poznan.rulework.service;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
 import javafx.util.Pair;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator;
+import org.rulelearn.data.Attribute;
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 import org.rulelearn.rules.*;
 import org.rulelearn.rules.ruleml.RuleMLBuilder;
+import org.rulelearn.rules.ruleml.RuleParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
-import pl.put.poznan.rulework.exception.ProjectNotFoundException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -33,26 +40,58 @@ public class RulesService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    public RuleSetWithComputableCharacteristics getRules(UUID id) {
-        logger.info("Id:\t" + id);
+    public static RuleSetWithComputableCharacteristics parseComputableRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
+        Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
+        RuleParser ruleParser = new RuleParser(attributes);
+        parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
-
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
-        if(ruleSetWithComputableCharacteristics == null) {
-            EmptyResponseException ex = new EmptyResponseException("Rules", id);
-            logger.error(ex.getMessage());
-            throw ex;
+        for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
+            logger.info("ruleSet.size=" + rswc.size());
+            for(int i = 0; i < rswc.size(); i++) {
+                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                logger.info(i + ":\t" + ruleCharacteristics.toString());
+            }
         }
 
-        return project.getRuleSetWithComputableCharacteristics();
+        Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
+
+        Rule[] rules = new Rule[ruleSetWithCharacteristics.size()];
+        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+            rules[i] = ruleSetWithCharacteristics.getRule(i);
+        }
+
+        RuleCoverageInformation[] ruleCoverageInformation = new RuleCoverageInformation[ruleSetWithCharacteristics.size()];
+        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+            ruleCoverageInformation[i] = new RuleCoverageInformation(new IntArraySet(), new IntArraySet(), new IntArrayList(), new Int2ObjectArrayMap<>(), 0);
+        }
+
+        return new RuleSetWithComputableCharacteristics(
+                rules,
+                ruleCoverageInformation
+        );
     }
 
-    public RuleSetWithComputableCharacteristics putRules(UUID id) {
-        logger.info("Id:\t" + id);
+    public static RuleSetWithCharacteristics parseRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
+        Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
+        RuleParser ruleParser = new RuleParser(attributes);
+        parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
+            logger.info("ruleSet.size=" + rswc.size());
+            for(int i = 0; i < rswc.size(); i++) {
+                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                logger.info(i + ":\t" + ruleCharacteristics.toString());
+            }
+        }
 
+        Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
+
+        return ruleSetWithCharacteristics;
+    }
+
+    private void calculateRuleSetWithComputableCharacteristics (Project project) {
         Unions unions = project.getUnionsWithSingleLimitingDecision();
         if(unions == null) {
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = new UnionsWithSingleLimitingDecision(
@@ -87,18 +126,66 @@ public class RulesService {
         RuleSetWithComputableCharacteristics downwardCertainRules = (new VCDomLEM(certainRuleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
         downwardCertainRules.calculateAllCharacteristics();
 
-        project.setRuleSetWithComputableCharacteristics(RuleSetWithComputableCharacteristics.join(upwardCertainRules, downwardCertainRules));
+        RuleSetWithComputableCharacteristics resultSet = RuleSetWithComputableCharacteristics.join(upwardCertainRules, downwardCertainRules);
+        project.setRuleSetWithComputableCharacteristics(resultSet);
+    }
+
+    public RuleSetWithComputableCharacteristics getRules(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        if(ruleSetWithComputableCharacteristics == null) {
+            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        logger.debug("ruleSetWithComputableCharacteristics:\t{}", ruleSetWithComputableCharacteristics.toString());
+        return ruleSetWithComputableCharacteristics;
+    }
+
+    public RuleSetWithComputableCharacteristics putRules(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        calculateRuleSetWithComputableCharacteristics(project);
+
+        return project.getRuleSetWithComputableCharacteristics();
+    }
+
+    public RuleSetWithComputableCharacteristics postRules(UUID id, String metadata, String data) throws IOException {
+        logger.info("Id:\t{}", id);
+        logger.info("Metadata:\t{}", metadata);
+        logger.info("Data:\t{}", data);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        project.setInformationTable(informationTable);
+
+        calculateRuleSetWithComputableCharacteristics(project);
 
         return project.getRuleSetWithComputableCharacteristics();
     }
 
     public Pair<String, Resource> download(UUID id) throws IOException {
-        logger.info("Id:\t" + id);
+        logger.info("Id:\t{}", id);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
-        String ruleMLString = ruleMLBuilder.toRuleMLString(project.getRuleSetWithComputableCharacteristics(), 1);
+
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        if(ruleSetWithComputableCharacteristics == null) {
+            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        String ruleMLString = ruleMLBuilder.toRuleMLString(ruleSetWithComputableCharacteristics, 1);
 
         InputStream is = new ByteArrayInputStream(ruleMLString.getBytes());
 
