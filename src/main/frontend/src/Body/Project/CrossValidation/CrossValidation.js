@@ -1,18 +1,21 @@
 import React, {Component, Fragment} from "react";
 import PropTypes from "prop-types";
+import filterFunction from "../Utils/Filtering/FilterFunction";
+import FilterNoResults from "../Utils/Filtering/FilterNoResults";
+import FilterTextField from "../Utils/Filtering/FilterTextField";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
-import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import RuleWorkSelect from "../../../RuleWorkComponents/Inputs/RuleWorkSelect";
+import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
-import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import RuleWorkTooltip from "../../../RuleWorkComponents/Inputs/RuleWorkTooltip";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
-import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
+import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
+import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
+import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledToggleButton from "../../../RuleWorkComponents/Inputs/StyledToggleButton";
+import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import Calculator from "mdi-material-ui/Calculator";
 import SvgIcon from "@material-ui/core/SvgIcon";
@@ -33,6 +36,8 @@ class CrossValidation extends Component {
             foldIndex: 0,
             foldNumber: 1,
             folds: [],
+            selectedItem: null,
+            openDetails: false,
             openSettings: false,
             snackbarProps: undefined,
         };
@@ -42,6 +47,7 @@ class CrossValidation extends Component {
 
     componentDidMount() {
         this._isMounted = true;
+
         console.log("Fetching cross-validation from server...");
         this.setState({
             foldDisplay: this.props.project.foldDisplay,
@@ -51,6 +57,8 @@ class CrossValidation extends Component {
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
+
         if (this.state.changes) {
             let project = {...this.props.project};
             if (Object.keys(this._data).length) {
@@ -113,14 +121,29 @@ class CrossValidation extends Component {
         });
     };
 
-    onSnackbarClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
+    onFilterChange = (event) => {
+        const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
+        this.setState({displayedItems: filteredItems});
+    };
 
+    onDetailsOpen = (index) => {
         this.setState({
-            snackbarProps: undefined,
+            selectedItem: this.state.displayedItems[index],
+            openDetails: true
         });
+    };
+
+    onDetailsClose = () => {
+        this.setState({
+            selectedItem: null,
+            openDetails: false,
+        });
+    };
+
+    onSnackbarClose = (event, reason) => {
+        if (reason !== 'clickaway') {
+            this.setState({snackbarProps: undefined});
+        }
     };
 
     renderResultsActions = () => {
@@ -129,13 +152,15 @@ class CrossValidation extends Component {
         if (Array.isArray(folds) && folds.length) {
             return (
                 <Fragment>
-                    <RuleWorkSelect
-                        label={"Choose fold"}
+                    <RuleWorkTextField
+                        hasOutsideLabel={true}
                         onChange={this.onFoldIndexChange}
+                        outsideLabel={"Choose fold"}
+                        select={true}
                         value={foldIndex}
                     >
                         {folds}
-                    </RuleWorkSelect>
+                    </RuleWorkTextField>
                     <StyledDivider />
                     <ToggleButtonGroup
                         aria-label={"display-toggle-button-group"}
@@ -161,7 +186,8 @@ class CrossValidation extends Component {
     };
 
     render() {
-        const {loading, displayedItems, foldNumber, openSettings, snackbarProps} = this.state;
+        const {loading, displayedItems, foldNumber, selectedItem, openDetails,
+            openSettings, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-cross-validation"} styleVariant={"tab"}>
@@ -197,6 +223,7 @@ class CrossValidation extends Component {
                     </RuleWorkTooltip>
                     <span style={{flexGrow: 1}} />
                     {this.renderResultsActions()}
+                    <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <RuleWorkDrawer
                     height={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
@@ -206,12 +233,12 @@ class CrossValidation extends Component {
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <RuleWorkSmallBox id={"fold-number-selector"} >
                         <RuleWorkTextField
-                            value={foldNumber}
+                            hasOutsideLabel={true}
                             onChange={this.onFoldNumberChange}
-                            style={{maxWidth: 128}}
-                        >
-                            Choose number of folds
-                        </RuleWorkTextField>
+                            outsideLabel={"Choose number of folds"}
+                            style={{maxWidth: 72}}
+                            value={foldNumber}
+                        />
                     </RuleWorkSmallBox>
                     <RuleWorkSmallBox id={"cross-validation-footer"} styleVariant={"footer"}>
                         <StyledButton
@@ -227,11 +254,22 @@ class CrossValidation extends Component {
                     {loading ?
                         <StyledCircularProgress />
                         :
-                        <RuleWorkList>
-                            {displayedItems}
-                        </RuleWorkList>
+                        displayedItems ?
+                            <RuleWorkList onItemSelected={this.onDetailsOpen}>
+                                {displayedItems}
+                            </RuleWorkList>
+                            :
+                            <FilterNoResults />
                     }
                 </RuleWorkBox>
+                {selectedItem &&
+                    <RuleWorkDialog
+                        item={selectedItem}
+                        onClose={this.onDetailsClose}
+                        open={openDetails}
+                        projectResult={this.props.project.result}
+                    />
+                }
                 <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )
@@ -239,10 +277,8 @@ class CrossValidation extends Component {
 }
 
 CrossValidation.propTypes = {
-    dataUpToDate: PropTypes.bool,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    upToDate: PropTypes.bool,
     value: PropTypes.number,
 };
 

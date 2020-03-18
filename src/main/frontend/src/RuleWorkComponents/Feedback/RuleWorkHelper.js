@@ -2,8 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
+import RuleWorkTooltip from "../DataDisplay/RuleWorkTooltip";
 import Avatar from "@material-ui/core/Avatar";
-import Tooltip from "@material-ui/core/Tooltip";
 import HelpCircle from "mdi-material-ui/HelpCircle";
 
 const useStyles = makeStyles({
@@ -42,11 +42,11 @@ function RuleWorkHelper(props) {
     const classes =  useStyles();
 
     return (
-        <Tooltip title={children}>
+        <RuleWorkTooltip title={children}>
             <Avatar className={clsx(classes[size], classes[color])} {...other}>
                 <HelpCircle className={classes[size + "Icon"]} color={"inherit"}/>
             </Avatar>
-        </Tooltip>
+        </RuleWorkTooltip>
     )
 }
 
