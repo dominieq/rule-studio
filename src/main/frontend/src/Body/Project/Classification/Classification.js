@@ -1,8 +1,8 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import filterFunction from "../ProjectTabsUtils/Filtering/FilterFunction";
-import FilterNoResults from "../ProjectTabsUtils/Filtering/FilterNoResults";
-import FilterTextField from "../ProjectTabsUtils/Filtering/FilterTextField";
+import filterFunction from "../Utils/Filtering/FilterFunction";
+import FilterNoResults from "../Utils/Filtering/FilterNoResults";
+import FilterTextField from "../Utils/Filtering/FilterTextField";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"

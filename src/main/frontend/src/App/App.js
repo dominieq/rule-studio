@@ -7,9 +7,9 @@ import Import from "../Body/Import/Import";
 import ProjectTabs from "../Body/Project/ProjectTabs";
 import Project from "../RuleWorkComponents/API/Project";
 import RuleWorkSnackbar from "../RuleWorkComponents/Feedback/RuleWorkSnackbar";
-import DeleteProjectDialog from "./dialogs/DeleteProjectDialog";
-import RenameProjectDialog from "./dialogs/RenameProjectDialog";
-import SettingsProjectDialog from "./dialogs/SettingsProjectDialog";
+import DeleteProjectDialog from "./Dialogs/DeleteProjectDialog";
+import RenameProjectDialog from "./Dialogs/RenameProjectDialog";
+import SettingsProjectDialog from "./Dialogs/SettingsProjectDialog";
 
 class App extends Component {
     constructor(props) {
