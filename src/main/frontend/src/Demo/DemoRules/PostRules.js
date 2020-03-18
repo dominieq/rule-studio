@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 
-class PostUnionsWithSingleLimitingDecision extends Component {
+class PostRules extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f',
-            consistencyThreshold: 0,
             metadata: JSON.stringify(
               [
                 {
@@ -127,28 +126,21 @@ class PostUnionsWithSingleLimitingDecision extends Component {
         })
     }
 
-    handleConsistencyThresholdChange = (event) => {
-        this.setState({
-            consistencyThreshold: event.target.value
-        })
-    }
-
-    postUnionsWithSingleLimitingDecision = (event) => {
+    postRules = (event) => {
         event.preventDefault()
 
         let formData = new FormData()
-        formData.append('consistencyThreshold', this.state.consistencyThreshold)
         formData.append('metadata', this.state.metadata)
         formData.append('data', this.state.data)
 
-        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/unions`, {
+        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/rules`, {
             method: 'POST',
             body: formData
         }).then(response => {
             console.log(response)
             if(response.status === 200) {
                 response.json().then(result => {
-                    console.log("Received unions with single limiting decision:")
+                    console.log("Received rules:")
                     console.log(result)
                 }).catch(err => {
                     console.log(err)
@@ -178,12 +170,10 @@ class PostUnionsWithSingleLimitingDecision extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                consistencyThreshold->
-                <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
-                <button onClick={this.postUnionsWithSingleLimitingDecision}>postUnionsWithSingleLimitingDecision</button>
+                <button onClick={this.postRules}>postRules</button>
             </div>
         )
     }
 }
 
-export default PostUnionsWithSingleLimitingDecision
+export default PostRules

@@ -24,7 +24,7 @@ div.react-grid-HeaderCell .input-sm {
 
 div.react-grid-HeaderCell-sortable {
   height: 100%;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
 }

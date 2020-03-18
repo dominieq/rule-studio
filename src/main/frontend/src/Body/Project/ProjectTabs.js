@@ -36,7 +36,14 @@ const StyledTab = withStyles({
             color: "#66FF66",
             opacity: 1,
         },
+    },
+    wrapper: {
+        flexDirection: "row",
+        '&>.MuiSvgIcon-root': {
+            marginRight: 8,
+        }
     }
+
 }, {name: "MuiTab"})(props => <Tab {...props} disableRipple={true} /> );
 
 class ProjectTabs extends Component {

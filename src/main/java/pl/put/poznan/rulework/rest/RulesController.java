@@ -45,6 +45,16 @@ public class RulesController {
         return ResponseEntity.ok(result);
     }
 
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RuleSetWithComputableCharacteristics> postRules (
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "metadata") String metadata,
+            @RequestParam(name = "data") String data) throws IOException {
+        logger.info("Posting rules...");
+        RuleSetWithComputableCharacteristics result = rulesService.postRules(id, metadata, data);
+        return ResponseEntity.ok(result);
+    }
+
     @RequestMapping(value = "/download", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<Resource> download(
             @PathVariable("id") UUID id) throws IOException {

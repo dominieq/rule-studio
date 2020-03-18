@@ -34,22 +34,24 @@ public class UnionsWithSingleLimitingDecisionService {
     }
 
     public UnionsWithSingleLimitingDecision getUnionsWithSingleLimitingDecision(UUID id) {
-        logger.info("Id:\t" + id);
+        logger.info("Id:\t{}", id);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        if(project.getUnionsWithSingleLimitingDecision() == null) {
+        UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = project.getUnionsWithSingleLimitingDecision();
+        if(unionsWithSingleLimitingDecision == null) {
             EmptyResponseException ex = new EmptyResponseException("Unions", id);
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        return project.getUnionsWithSingleLimitingDecision();
+        logger.debug("unionsWithSingleLimitingDecision:\t{}", unionsWithSingleLimitingDecision.toString());
+        return unionsWithSingleLimitingDecision;
     }
 
     public UnionsWithSingleLimitingDecision putUnionsWithSingleLimitingDecision(UUID id, Double consistencyThreshold) {
-        logger.info("Id:\t" + id);
-        logger.info("ConsistencyThreshold:\t" + consistencyThreshold);
+        logger.info("Id:\t{}", id);
+        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -59,8 +61,8 @@ public class UnionsWithSingleLimitingDecisionService {
     }
 
     public UnionsWithSingleLimitingDecision postUnionsWithSingleLimitingDecision(UUID id, Double consistencyThreshold, String metadata, String data) throws IOException {
-        logger.info("Id:\t" + id);
-        logger.info("ConsistencyThreshold:\t" + consistencyThreshold);
+        logger.info("Id:\t{}", id);
+        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data:\t{}", data);
 

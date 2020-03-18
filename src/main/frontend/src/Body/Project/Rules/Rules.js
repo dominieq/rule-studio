@@ -119,7 +119,7 @@ class Rules extends Component {
         if (this.state.changes) {
             let project = {...this.props.project};
             if (Object.keys(this._data).length) {
-                project.result.ruleSetWithCharacteristics = this._data;
+                project.result.ruleSetWithComputableCharacteristics = this._data;
             }
             project.externalRules = this.state.externalRules;
             project.threshold = this.state.threshold;
@@ -184,7 +184,7 @@ class Rules extends Component {
                                 this._items = items;
                             });
                         } else {
-                            project.ruleSetWithCharacteristics = result;
+                            project.ruleSetWithComputableCharacteristics = result;
                             this.props.onTabChange(project, this.props.value, true);
                         }
                     }).catch(error => {
@@ -236,10 +236,11 @@ class Rules extends Component {
                 }).then(response => {
                     if (response.status === 200) {
                         response.json().then(result => {
-                            const items = this.getItems(result);
+                            const items = this.getItems(result.ruleSetWithComputableCharacteristics);
                             if (this._isMounted) {
                                 this.setState({
                                     changes: true,
+                                    updated: this.props.project.dataUpToDate,
                                     loading: false,
                                     displayedItems: items,
                                     externalRules: true,
@@ -248,9 +249,9 @@ class Rules extends Component {
                                     this._items = items;
                                 });
                             } else {
-                                project.ruleSetWithCharacteristics = result;
+                                project.ruleSetWithComputableCharacteristics = result;
                                 project.externalRules = true;
-                                this.props.onTabChange(project, this.props.value, false)
+                                this.props.onTabChange(project, this.props.value, this.props.project.dataUpToDate);
                             }
                         }).catch(error => {
                             console.log(error);

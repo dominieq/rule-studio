@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 
-class PostUnionsWithSingleLimitingDecision extends Component {
+class PostImposePreferenceOrder extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f',
-            consistencyThreshold: 0,
+            binarizeNominalAttributesWith3PlusValues: false,
             metadata: JSON.stringify(
               [
                 {
@@ -20,7 +20,7 @@ class PostUnionsWithSingleLimitingDecision extends Component {
                   "type": "condition",
                   "valueType": "enumeration",
                   "domain": ["NA", "low", "med", "high", "critical"],
-                  "preferenceType": "gain"
+                  "preferenceType": "none"
                 },
                 {
                   "name": "TargetAssetCriticality",
@@ -64,7 +64,7 @@ class PostUnionsWithSingleLimitingDecision extends Component {
                   "active": true,
                   "type": "condition",
                   "valueType": "real",
-                  "preferenceType": "gain"
+                  "preferenceType": "none"
                 },
                 {
                   "name": "MaxCVE",
@@ -127,42 +127,42 @@ class PostUnionsWithSingleLimitingDecision extends Component {
         })
     }
 
-    handleConsistencyThresholdChange = (event) => {
+    handleBinarizeNominalAttributesWith3PlusValuesChange = (event) => {
         this.setState({
-            consistencyThreshold: event.target.value
+            binarizeNominalAttributesWith3PlusValues: event.target.checked
         })
     }
 
-    postUnionsWithSingleLimitingDecision = (event) => {
+    postImposePreferenceOrder = (event) => {
         event.preventDefault()
 
         let formData = new FormData()
-        formData.append('consistencyThreshold', this.state.consistencyThreshold)
+        formData.append('binarizeNominalAttributesWith3PlusValues', this.state.binarizeNominalAttributesWith3PlusValues)
         formData.append('metadata', this.state.metadata)
         formData.append('data', this.state.data)
 
-        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/unions`, {
+        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/imposePreferenceOrder`, {
             method: 'POST',
             body: formData
         }).then(response => {
             console.log(response)
             if(response.status === 200) {
                 response.json().then(result => {
-                    console.log("Received unions with single limiting decision:")
+                    console.log("Received information table:")
                     console.log(result)
                 }).catch(err => {
                     console.log(err)
                 })
             } else if(response.status === 404) {
                 response.json().then(result => {
-                    console.log("Błąd 404.")
+                    console.log("Error 404.")
                     console.log(result.message)
                 }).catch(err => {
                     console.log(err)
                 })
             } else {
                 response.json().then(result => {
-                    console.log("Wynik dzialania response.json():")
+                    console.log("Result of response.json():")
                     console.log(result)
                 }).catch(err => {
                     console.log(err)
@@ -178,12 +178,12 @@ class PostUnionsWithSingleLimitingDecision extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                consistencyThreshold->
-                <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
-                <button onClick={this.postUnionsWithSingleLimitingDecision}>postUnionsWithSingleLimitingDecision</button>
+                <input type="checkbox" id="binarizeNominalAttributesWith3PlusValuesPostImposePreferenceOrder" onChange={this.handleBinarizeNominalAttributesWith3PlusValuesChange} />
+                <label for="binarizeNominalAttributesWith3PlusValuesPostImposePreferenceOrder"> binarizeNominalAttributesWith3PlusValues </label>
+                <button onClick={this.postImposePreferenceOrder}>postImposePreferenceOrder</button>
             </div>
         )
     }
 }
 
-export default PostUnionsWithSingleLimitingDecision
+export default PostImposePreferenceOrder

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import GetClassification from './DemoClassification/GetClassification'
 import PutClassification from './DemoClassification/PutClassification'
 import PutClassificationNewData from './DemoClassification/PutClassificationNewData'
+import PostClassification from './DemoClassification/PostClassification'
 
 class DemoClassification extends Component {
 
@@ -13,6 +14,7 @@ class DemoClassification extends Component {
                 <GetClassification></GetClassification>
                 <PutClassification></PutClassification>
                 <PutClassificationNewData></PutClassificationNewData>
+                <PostClassification></PostClassification>
             </div>
         )
     }

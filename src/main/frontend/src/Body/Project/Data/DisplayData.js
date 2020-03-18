@@ -124,7 +124,9 @@ class DisplayData extends React.Component {
             isLoading: false,
             isOpenedTransform: false,
             binarizeNominalAttributesWith3PlusValues: false,
-        };        
+        };    
+        
+        this._isMounted = false;
     }
 
     /**
@@ -216,21 +218,13 @@ class DisplayData extends React.Component {
                 attribute.identifierType = metadata[el].identifierType;
             } else {
                 attribute.type = metadata[el].type;
+                attribute.width = Math.max(100, 20 + 10*metadata[el].name.length, 20+10*(metadata[el].type.length + 9));
                 attribute.preferenceType = metadata[el].preferenceType;
                 attribute.valueType = metadata[el].valueType;
                 if(attribute.valueType === "enumeration") {
                     attribute.domain = metadata[el].domain;
-                    attribute.domain.push("?");
+                    if(!attribute.domain.includes("?")) attribute.domain.push("?");
                     attribute.editor = <DropDownEditor options={attribute.domain} />;
-                    attribute.events = {
-                        onClick: function(ev, args) {
-                            console.log("kliknalem")
-                            const { rowIdx, idx } = args;
-                            console.log("rowIdx:" + rowIdx + ",idx: " + idx)
-                            console.log(this.grid)
-                            this.grid && this.grid.openCellEditor(rowIdx, idx);
-                          }
-                    }
                 } else if(attribute.valueType === "integer" || attribute.valueType === "real") {
                     attribute.filterRenderer = NumericFilter;
                 }
@@ -255,18 +249,19 @@ class DisplayData extends React.Component {
                 }
             }                        
         }
+        this._isMounted = true;
     }
 
     componentWillUnmount() {
-        //if(this.state.dataModified) {
+        if(this.state.dataModified) {
             const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
             const tmpData = this.prepareDataFileBeforeSendingToServer();
             const tmpProject = {...this.props.project}
             tmpProject.result.informationTable.attributes = tmpMetaData;
             tmpProject.result.informationTable.objects = tmpData;
-            this.props.updateProject(tmpProject, this.props.value);
-            //do something with changed prop?
-        //}
+            this.props.updateProject(tmpProject);
+        }
+        this._isMounted = false;
     }
 
     /** 
@@ -656,12 +651,14 @@ class DisplayData extends React.Component {
                 console.log("obiekty:")
                 console.log(result.informationTable.objects);
         
-                this.setState({
-                    columns: this.prepareMetaDataFromImport(result.informationTable.attributes),
-                    rows: this.prepareDataFromImport(result.informationTable.objects),
-                    isLoading: false,
-                    dataModified: true,
-                }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
+                if(this._isMounted) {
+                    this.setState({
+                        columns: this.prepareMetaDataFromImport(result.informationTable.attributes),
+                        rows: this.prepareDataFromImport(result.informationTable.objects),
+                        isLoading: false,
+                        dataModified: true,
+                    }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
+                }
         
             }).catch(err => {
                 console.log(err)
@@ -676,7 +673,7 @@ class DisplayData extends React.Component {
      * @returns {Array}
      */
     prepareMetadataFileBeforeSendingToServer() {
-        const newMetadata = [...this.state.columns].map(({editable,sortable,resizable,filterable,visible,draggable,editor,filterRenderer,sortDescendingFirst,key,...others}) => others);
+        const newMetadata = [...this.state.columns].map(({editable,sortable,resizable,filterable,visible,draggable,editor,filterRenderer,sortDescendingFirst,key,width,...others}) => others);
         if(newMetadata.length > 0) newMetadata.shift();
         return newMetadata;
     }
@@ -695,6 +692,7 @@ class DisplayData extends React.Component {
      * Method responsible for sending changed files i.e. metadata and data files to the server. The method is executed after "SAVE CHANGES" button click.
      * @method
      */
+    /*
     sendFilesToServer = () => {
         const tmpMetaData = JSON.stringify(this.prepareMetadataFileBeforeSendingToServer());
         const tmpData = JSON.stringify(this.prepareDataFileBeforeSendingToServer());
@@ -724,20 +722,24 @@ class DisplayData extends React.Component {
                 console.log("Wynik dzialania response.json():")
                 console.log(result)
 
-                this.setState({
-                    dataModified: false,
-                    isLoading: false,
-                })
+                if(this._isMounted) {
+                    this.setState({
+                        dataModified: false,
+                        isLoading: false,
+                    })
+                }
             }).catch(err => {
                 console.log(err)
-                this.setState({
-                    isLoading: false,
-                })
+                if(this._isMounted) {
+                    this.setState({
+                        isLoading: false,
+                    })
+                }
             })
         })
         })
 
-    }
+    }*/
 
     /**
      * Method responsible for setting the value of the chosen file type ("Data","Metadata","Both") in the save to file dialog. The dialog is accessible through the "SAVE TO FILE" button.
@@ -976,6 +978,11 @@ class DisplayData extends React.Component {
                             break;
                         }
 
+                        if(error === '' && domain[i].text === "?") {
+                            error = "You cannot choose '?' for the domain name! Please rename the domain element.";
+                            break;
+                        }
+
                         if(error === '') {
                             const domainTmp = domain.map(x => x.text.trim());
                             if(new Set(domainTmp).size !== domainTmp.length) {
@@ -1020,6 +1027,7 @@ class DisplayData extends React.Component {
             
             if(attribute.valueType === "enumeration") {
                 attribute.domain = domain.map(x => x.text.trim());
+                if(!attribute.domain.includes("?")) attribute.domain.push("?");
                 attribute.editor = <DropDownEditor options={attribute.domain} />
             } else if(attribute.valueType === "integer" || attribute.valueType === "real") {
                 attribute.filterRenderer = NumericFilter;
@@ -1030,26 +1038,53 @@ class DisplayData extends React.Component {
 
     setHeaderColorAndStyle = (column, idx) => {
         const tmp = document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes;
-        if(column.type !== undefined && !(/<\/?[a-z][\s\S]*>/i.test(column.type))) { //make sure attribute type doesn't contain html tags
+        if((column.type !== undefined || column.identifierType !== undefined) && !(/<\/?[a-z][\s\S]*>/i.test(column.type))) { //make sure attribute type doesn't contain html tags
             if(tmp.length === 2) {
-                if(column.active) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",active)");
-                else document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",inactive)");
+                if(column.identifierType !== undefined) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(identification)");
+                else if(column.active) {
+                    document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",active)");
+                }
+                else {
+                    document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",inactive)");
+                }
             } else if(tmp.length > 2) {
-                if(column.active) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",active)";
-                else document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",inactive)";
+                if(column.identifierType !== undefined) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(identification)";
+                else if(column.active) {
+                    document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",active)";
+                }
+                else {
+                    document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",inactive)";
+                }
             }
         }
 
-      //  if(column.type)
-        if(column.preferenceType === "gain")
-            document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#228B22";
-        else if(column.preferenceType === "cost")
-            document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#DC143C";
-        else if(column.preferenceType === "none")
-            document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#3F51B5";
+        if(column.active === false || column.identifierType !== undefined || column.type === "description") document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#A0A0A0";
         else {
-            document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#A0A0A0";
+            if(column.preferenceType === "gain")
+                document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#228B22";
+            else if(column.preferenceType === "cost")
+                document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#DC143C";
+            else if(column.preferenceType === "none")
+                document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#3F51B5";
+            else {
+                document.getElementsByClassName("react-grid-HeaderCell")[idx].style.backgroundColor = "#A0A0A0";
+            }
         }
+
+        let cols = [...this.state.columns];
+        let newColumn = {...column};
+        if(column.type !== undefined) newColumn.width = Math.max(120, 20 + 10*column.name.length, 20+10*(column.type.length + 9));
+        else if(column.identifierType !== undefined) newColumn.width = Math.max(120, 20 + 10*column.name.length, 20+10*(column.identifierType.length + 9));
+        else newColumn.width = 120;
+        for(let i=0; i<cols.length; i++) {
+            if(cols[i].key === column.key) {
+                cols[i] = newColumn;
+                break;
+            }
+        }
+        this.setState({
+            columns: cols,
+        })
     }
 
     setHeaderRightClick = (column, idx) => {
@@ -1062,7 +1097,7 @@ class DisplayData extends React.Component {
                 isRightMB = e.which == 3; 
             else if ("button" in e)  // IE, Opera 
                 isRightMB = e.button == 2; 
-
+            
             if(isRightMB) {
                 this.setState({
                     isColumnHeaderMenuOpened: e.currentTarget,
@@ -1112,6 +1147,7 @@ class DisplayData extends React.Component {
             label="Active"
             labelPlacement="start"
             key="attributeIsActive"
+            style={{justifyContent: "space-evenly"}}
         />)
         tmp.push(<ValidationTextField label="Name" required variant="outlined" id="attributeName" key="attributeName" defaultValue="" />)
         tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key="attributeType" displayName={"Type"} items={["Identification","Description","Condition","Decision"]}/>)
@@ -1166,8 +1202,10 @@ class DisplayData extends React.Component {
             col.name = e.target.attributeName.value.trim();
             col.active = e.target.attributeIsActive.checked;
             if(this.state.attributeTypeSelected === "Identification") {
-                col.identifierType = this.state.identifierTypeSelected.toLowerCase();  
+                col.identifierType = this.state.identifierTypeSelected.toLowerCase();
+                col.type = undefined;
             } else {
+                col.identifierType = undefined;
                 col.type = this.state.attributeTypeSelected.toLowerCase();
                 col.preferenceType = this.state.attributePreferenceTypeSelected.toLowerCase();
                 col.valueType = this.state.valueTypeSelected.toLowerCase();
@@ -1176,6 +1214,7 @@ class DisplayData extends React.Component {
 
                 if(col.valueType === "enumeration") {
                     col.domain = this.state.attributesDomainElements.map(x => x.text.trim());
+                    if(!col.domain.includes("?")) col.domain.push("?");
                     col.editor = <DropDownEditor options={col.domain} />
                 } else if(col.valueType === "integer" || col.valueType === "real") {
                     col.filterRenderer = NumericFilter;
@@ -1225,6 +1264,7 @@ class DisplayData extends React.Component {
             label="Active"
             labelPlacement="start"
             key={"attributeIsActive"+attribute.name}
+            style={{justifyContent: "space-evenly"}}
         />)
         tmp.push(<ValidationTextField label="Name" required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
 
@@ -1258,9 +1298,9 @@ class DisplayData extends React.Component {
 
                 if(attribute.valueType === "enumeration")
                 {
-                    const domain = []
-                    attribute.domain.forEach( (x, index) => {
-                        domain.push({id: index, text: x});
+                    const domain = [];
+                    attribute.domain.forEach( (x, index) => { 
+                        if(x !== "?") domain.push({id: index, text: x});
                     })
                     tmp.push(<div className="attributeDomainWrapper" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements} defaultValue={domain}/> </div> </div>)
                 }
@@ -1334,7 +1374,6 @@ class DisplayData extends React.Component {
 
     onCellSelected = (coord) => {
         const {rowIdx, Idx} = coord;
-
     }
 
     handleChangeBinarize = (e) => {
@@ -1382,7 +1421,7 @@ class DisplayData extends React.Component {
                     getValidFilterValues={columnKey => this.getValidFilterValues(this.state.rows, columnKey)}
                     toolbar={<EditDataFilterButton enableFilter={true} > 
                             < EditDataButtons deleteRow={this.deleteSelectedRows} insertRow={this.insertRow} 
-                                    sendFilesToServer={this.sendFilesToServer} saveToFileDialog={this.openOnSaveToFile} onAddAttribute={this.onAddAttribute} 
+                                    /*sendFilesToServer={this.sendFilesToServer} */ saveToFileDialog={this.openOnSaveToFile} onAddAttribute={this.onAddAttribute} 
                                     onEditAttributes={this.onEditAttributes} openOnTransform={this.openOnTransform} modified={this.state.dataModified} 
                                     setProjectSettings={this.setProjectSettings}/> 
                             </EditDataFilterButton> }
@@ -1500,7 +1539,7 @@ class DisplayData extends React.Component {
                     <DialogTitle id="transform-warning-title">{"Are you sure you want to continue?"}</DialogTitle>
                     <DialogContent>
                     <DialogContentText id="transform-dialog-description">
-                        Impose Preference Orders (Please click "save changes" button before clicking "Submit")
+                        Impose Preference Orders
                     </DialogContentText>
                     <Tooltip title="binarizeNominalAttributesWith3PlusValues" placement="bottom" arrow>
                     <FormControlLabel
