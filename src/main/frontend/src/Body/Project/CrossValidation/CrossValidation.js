@@ -277,10 +277,8 @@ class CrossValidation extends Component {
 }
 
 CrossValidation.propTypes = {
-    dataUpToDate: PropTypes.bool,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    upToDate: PropTypes.bool,
     value: PropTypes.number,
 };
 

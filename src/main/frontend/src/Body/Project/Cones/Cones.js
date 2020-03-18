@@ -35,7 +35,7 @@ class Cones extends Component {
 
     componentDidMount() {
         this._isMounted = true;
-        const project = {...this.props.project};
+        const project = this.props.project;
 
         this.setState({
             loading: true,
@@ -112,7 +112,7 @@ class Cones extends Component {
     }
 
     onCalculateClick = () => {
-        const project = {...this.props.project};
+        let project = {...this.props.project};
 
         this.setState({
             loading: true,
@@ -123,8 +123,8 @@ class Cones extends Component {
 
             let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/cones`, {
-                method: this.props.dataUpToDate ? "PUT" : "POST",
-                body: this.props.dataUpToDate ? null : data,
+                method: project.dataUpToDate ? "PUT" : "POST",
+                body: project.dataUpToDate ? null : data,
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
@@ -279,10 +279,8 @@ class Cones extends Component {
 }
 
 Cones.propTypes = {
-    dataUpToDate: PropTypes.bool,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    upToDate: PropTypes.bool,
     value: PropTypes.number,
 };
 

@@ -161,14 +161,14 @@ class Unions extends Component {
     };
 
     onCountUnionsClick = () => {
-        const project = {...this.props.project};
+        let project = {...this.props.project};
         const threshold = this.state.threshold;
 
         this.setState({
             loading: true,
         }, () => {
             let link = `http://localhost:8080/projects/${project.result.id}/unions`;
-            if (this.props.dataUpToDate) link = link + `?consistencyThreshold=${threshold}`;
+            if (project.dataUpToDate) link = link + `?consistencyThreshold=${threshold}`;
 
             let data = new FormData();
             data.append("threshold", threshold);
@@ -177,8 +177,8 @@ class Unions extends Component {
 
             let msg = "";
             fetch(link, {
-                method: this.props.dataUpToDate ? "PUT" : "POST",
-                body: this.props.dataUpToDate ? null : data
+                method: project.dataUpToDate ? "PUT" : "POST",
+                body: project.dataUpToDate ? null : data
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
@@ -371,10 +371,8 @@ class Unions extends Component {
 }
 
 Unions.propTypes = {
-    dataUpToDate: PropTypes.bool,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    upToDate: PropTypes.bool,
     value: PropTypes.number,
 };
 

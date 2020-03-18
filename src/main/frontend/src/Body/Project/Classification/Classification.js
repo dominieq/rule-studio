@@ -139,7 +139,7 @@ class Classification extends Component {
 
     onCalculateClick = (event) => {
         event.persist();
-        const project = {...this.props.project};
+        let project = {...this.props.project};
 
         let data = new FormData();
         if (event.target.files) data.append("data", event.target.files[0]);
@@ -374,10 +374,8 @@ class Classification extends Component {
 }
 
 Classification.propTypes = {
-    dataUpToDate: PropTypes.bool,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    upToDate: PropTypes.bool,
     value: PropTypes.number,
 };
 

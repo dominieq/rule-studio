@@ -63,18 +63,17 @@ class ProjectTabs extends Component {
 
     getTabBodyProps = (index) => {
         return ({
-            dataUpToDate: this.props.dataUpToDate,
             project: this.props.project,
             onTabChange: this.props.onTabChange,
-            upToDate: this.props.tabsUpToDate[index],
             value: index,
         })
     };
 
     renderTabLabel = (name, index) => {
-        let addExternalRulesAlert = this.props.project.externalRules && index > 1;
+        const project = this.props.project;
+        let addExternalRulesAlert = project.externalRules && index > 1;
 
-        if (this.props.tabsUpToDate[index]) {
+        if (project && project.tabsUpToDate[index]) {
             return (
                 <Fragment>
                     {addExternalRulesAlert ? <ExternalRulesAlert /> : null}
@@ -137,11 +136,9 @@ class ProjectTabs extends Component {
 }
 
 ProjectTabs.propTypes = {
-    dataUpToDate: PropTypes.bool,
-    project: PropTypes.object,
     onDataChange: PropTypes.func,
     onTabChange: PropTypes.func,
-    tabsUpToDate: PropTypes.arrayOf(PropTypes.bool),
+    project: PropTypes.object,
 };
 
 export default ProjectTabs;

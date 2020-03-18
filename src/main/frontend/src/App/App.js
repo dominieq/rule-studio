@@ -26,8 +26,6 @@ class App extends Component {
                 deleteDialog: false,
             },
             snackbarProps: undefined,
-            dataUpToDate: true,
-            tabsUpToDate: Array(5).fill(true),
         };
     }
 
@@ -38,13 +36,11 @@ class App extends Component {
             return response.json();
         }).then(result => {
             let projects = [];
-
             if (!result.isEmpty) {
                 for (let i = 0; i < result.length; i++) {
                     projects = [...projects, new Project(result[i])]
                 }
             }
-
             this.setState({
                 projects: projects,
             })
@@ -62,33 +58,37 @@ class App extends Component {
     };
 
     onDataChanges = (project) => {
-        let projects = this.state.projects.slice(0);
-        let tabsUpToDate = this.state.tabsUpToDate.slice(0);
-
-        projects[this.state.currentProject] = project;
-        for (let i = 0; i < tabsUpToDate.length; i++) {
-            tabsUpToDate[i] = false;
-        }
-
-        this.setState({
-            dataUpToDate: false,
-            projects: projects,
-            tabsUpToDate: tabsUpToDate,
-        });
+        this.setState(({currentProject, projects}) => ({
+            projects: [
+                ...projects.slice(0, currentProject),
+                {
+                    ...projects[currentProject],
+                    ...project,
+                    dataUpToDate: false,
+                    tabsUpToDate: Array(5).fill(false)
+                },
+                ...projects.slice(currentProject + 1)
+            ],
+        }));
     };
 
     onTabChanges = (project, tabValue, updated) => {
-        let projects = this.state.projects.slice(0);
-        let tabsUpToDate = this.state.tabsUpToDate.slice(0);
-
-        projects[this.state.currentProject] = project;
-        tabsUpToDate[tabValue] = updated;
-
-        this.setState({
-            dataUpToDate: updated,
-            projects: projects,
-            tabsUpToDate: tabsUpToDate,
-        });
+        this.setState(({currentProject, projects}) => ({
+            projects: [
+                ...projects.slice(0, currentProject),
+                {
+                    ...projects[currentProject],
+                    ...project,
+                    dataUpToDate: updated,
+                    tabsUpToDate: [
+                        ...projects[currentProject].tabsUpToDate.slice(0, tabValue),
+                        updated,
+                        ...projects[currentProject].tabsUpToDate.slice(tabValue + 1)
+                    ]
+                },
+                ...projects.slice(currentProject + 1)
+            ],
+        }));
     };
 
     onBodyChange = (name) => {
@@ -111,21 +111,21 @@ class App extends Component {
     };
 
     onProjectSettings = () => {
-        let open = {...this.state.open};
-        open.settingsDialog = true;
-        this.setState({open: open})
+        this.setState(({open}) =>({
+            open: {...open, settingsDialog: true}
+        }));
     };
 
     onProjectRename = () => {
-        let open = {...this.state.open};
-        open.renameDialog = true;
-        this.setState({open: open});
+        this.setState(({open}) => ({
+            open: {...open, renameDialog: true}
+        }));
     };
 
     onProjectDelete = () => {
-        let open = {...this.state.open};
-        open.deleteDialog = true;
-        this.setState({open: open});
+        this.setState(({open}) => ({
+            open: {...open, deleteDialog: true}
+        }));
     };
 
     onSnackbarClose = (event, reason) => {
@@ -206,7 +206,7 @@ class App extends Component {
             }).then(response => {
                 return response.toString();
             }).then(() => {
-                const removedProject = projects.splice(projects.indexOf(project), 1);
+                const removedProject = projects.splice(currentProject, 1);
 
                 this.setState({
                     body: "Home",
@@ -232,9 +232,10 @@ class App extends Component {
 
     onRenameDialogClose = (name) => {
         if (name) {
+            let msg = "";
             if (this.isNameUnique(name)) {
                 const currentProject = this.state.currentProject;
-                let projects = this.state.projects.slice(0);
+                const projects = this.state.projects.slice(0);
 
                 let data = new FormData();
                 data.append("name", name);
@@ -243,46 +244,42 @@ class App extends Component {
                     method: "PATCH",
                     body: data,
                 }).then(response => {
-                    return response.json();
-                }).then(result => {
-                    projects[currentProject].result.name = result.name;
-
-                    this.setState({
-                        projects: projects,
-                        snackbarProps: {
-                            open: true,
-                            variant: "success",
-                            message: "Project name changed successfully!",
-                        },
-                    });
+                    if (response.status === 200) {
+                        response.json().then(result => {
+                            msg = "Project name changed successfully!";
+                            this.setState(({currentProject, projects, open}) => ({
+                                projects: [
+                                    ...projects.slice(0, currentProject),
+                                    {...projects[currentProject], result: result},
+                                    ...projects.slice(currentProject + 1)
+                                ],
+                                open: {...open, renameDialog: false},
+                                snackbarProps: {open: true, message: msg, variant: "success"},
+                            }));
+                        }).catch(error => {
+                            console.log(error);
+                            this.setState(({open}) => ({open: {...open, renameDialog: false}}));
+                        })
+                    } else {
+                        response.json().then(result => {
+                            msg = result.status + " Something went wrong. Couldn't change name!";
+                            this.setState(({open}) => ({
+                                open: {...open, renameDialog: false},
+                                snackbarProps: {open: true, message: msg, variant: "error"}
+                            }));
+                        });
+                    }
                 }).catch(error => {
-                    this.setState({
-                        snackbarProps: {
-                            open: true,
-                            variant: "error",
-                            message: "Server error! Couldn't change project name"
-                        }
-                    }, () => {
-                        console.log(error)
-                    });
+                    console.log(error);
+                    this.setState(({open}) => ({open: {...open, renameDialog: false}}));
                 });
             } else {
+                msg = "Project name already exists!";
                 this.setState({
-                    snackbarProps: {
-                        open: true,
-                        variant: 'warning',
-                        message: "Project name already exists!"
-                    }
+                    snackbarProps: {open: true, message: msg, variant: 'warning'}
                 });
-                return;
             }
         }
-        let open = this.state.open;
-        open.renameDialog = false;
-
-        this.setState({
-            open: open,
-        });
     };
 
     isNameUnique = (name) => {
@@ -328,11 +325,9 @@ class App extends Component {
                             />,
                         "Project":
                             <ProjectTabs
-                                dataUpToDate={this.state.dataUpToDate}
                                 project={projects[currentProject]}
                                 onDataChange={this.onDataChanges}
                                 onTabChange={this.onTabChanges}
-                                tabsUpToDate={this.state.tabsUpToDate}
                             />,
                     }[this.state.body]
                 }
