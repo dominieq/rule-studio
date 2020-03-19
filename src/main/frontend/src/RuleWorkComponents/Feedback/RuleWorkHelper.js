@@ -42,7 +42,7 @@ function RuleWorkHelper(props) {
     const classes =  useStyles();
 
     return (
-        <RuleWorkTooltip title={children}>
+        <RuleWorkTooltip leaveDelay={2000} title={children}>
             <Avatar className={clsx(classes[size], classes[color])} {...other}>
                 <HelpCircle className={classes[size + "Icon"]} color={"inherit"}/>
             </Avatar>
