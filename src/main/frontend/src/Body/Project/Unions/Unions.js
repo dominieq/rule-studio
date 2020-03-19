@@ -3,8 +3,11 @@ import PropTypes from "prop-types";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterNoResults from "../Utils/Filtering/FilterNoResults";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
+import CalculateButton from "../Utils/Calculations/CalculateButton";
 import MeasureSelector from "../Utils/Calculations/MeasureSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
+import SettingsButton from "../Utils/Settings/SettingsButton";
+import SettingsFooter from "../Utils/Settings/SettingsFooter";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
@@ -17,7 +20,6 @@ import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnack
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import Calculator from "mdi-material-ui/Calculator";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import {mdiCloseThick, mdiCog} from "@mdi/js";
 
@@ -293,24 +295,19 @@ class Unions extends Component {
 
         return (
             <RuleWorkBox id={"rule-work-unions"} styleVariant={"tab"}>
-                <StyledPaper id={"unions-bar"} paperRef={this.upperBar} square={true} variant={"outlined"}>
-                    <RuleWorkTooltip title={"Click to choose consistency & measure"}>
-                        <StyledButton isIcon={true} onClick={this.onSettingsClick}>
-                            <SvgIcon><path d={mdiCog}/></SvgIcon>
-                        </StyledButton>
-                    </RuleWorkTooltip>
+                <StyledPaper id={"unions-bar"} paperRef={this.upperBar}>
+                    <SettingsButton
+                        aria-label={"unions-settings-button"}
+                        onClick={this.onSettingsClick}
+                        title={"Click to choose consistency & measure"}
+                    />
                     <StyledDivider />
                     <RuleWorkTooltip title={`Calculate with threshold ${threshold}`}>
-                        <StyledButton
+                        <CalculateButton
+                            aria-label={"unions-calculate-button"}
                             disabled={!this.props.project || loading}
-                            disableElevation
                             onClick={this.onCountUnionsClick}
-                            startIcon={<Calculator />}
-                            themeVariant={"primary"}
-                            variant={"contained"}
-                        >
-                            Calculate
-                        </StyledButton>
+                        />
                     </RuleWorkTooltip>
                     <span style={{flexGrow: 1}} />
                     <FilterTextField onChange={this.onFilterChange}/>
@@ -334,15 +331,10 @@ class Unions extends Component {
                             value={threshold}
                         />
                     </RuleWorkSmallBox>
-                    <RuleWorkSmallBox styleVariant={"footer"}>
-                        <StyledButton
-                            isIcon={true}
-                            onClick={this.onSettingsClose}
-                            themeVariant={"secondary"}
-                        >
-                            <SvgIcon><path d={mdiCloseThick} /></SvgIcon>
-                        </StyledButton>
-                    </RuleWorkSmallBox>
+                    <SettingsFooter
+                        id={"unions-settings-footer"}
+                        onClose={this.onSettingsClose}
+                    />
                 </RuleWorkDrawer>
                 <RuleWorkBox id={"unions-list"} styleVariant={"tab-body"}>
                 {loading ?

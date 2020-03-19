@@ -34,8 +34,8 @@ const useStyles = makeStyles({
 }, {name: "rule-work"});
 
 function StyledPaper(props) {
-    const {children, styleVariant, paperRef, ...other} = props;
-    const classes = useStyles();
+    const {children, classes: propsClasses, styleVariant, paperRef, ...other} = props;
+    const classes = {...useStyles(), ...propsClasses};
 
     return (
             <Paper
@@ -50,12 +50,19 @@ function StyledPaper(props) {
 
 StyledPaper.propTypes = {
     children: PropTypes.node,
+    classes: PropTypes.object,
+    component: PropTypes.elementType,
+    elevation: PropTypes.number,
     paperRef: PropTypes.object,
+    square: PropTypes.bool,
     styleVariant: PropTypes.oneOf(["bar", "panel", "popper"]),
+    variant: PropTypes.oneOf(["elevation", "outlined"]),
 };
 
 StyledPaper.defaultProps = {
-    styleVariant: "bar"
+    square: true,
+    styleVariant: "bar",
+    variant: "outlined"
 };
 
 export default StyledPaper;

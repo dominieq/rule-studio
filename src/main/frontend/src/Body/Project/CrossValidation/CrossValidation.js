@@ -3,6 +3,9 @@ import PropTypes from "prop-types";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterNoResults from "../Utils/Filtering/FilterNoResults";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
+import CalculateButton from "../Utils/Calculations/CalculateButton";
+import SettingsButton from "../Utils/Settings/SettingsButton";
+import SettingsFooter from "../Utils/Settings/SettingsFooter";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
@@ -13,13 +16,9 @@ import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/
 import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledToggleButton from "../../../RuleWorkComponents/Inputs/StyledToggleButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import Calculator from "mdi-material-ui/Calculator";
-import SvgIcon from "@material-ui/core/SvgIcon";
-import {mdiCloseThick, mdiCog} from "@mdi/js";
 
 class CrossValidation extends Component {
     constructor(props) {
@@ -191,35 +190,19 @@ class CrossValidation extends Component {
 
         return (
             <RuleWorkBox id={"rule-work-cross-validation"} styleVariant={"tab"}>
-                <StyledPaper
-                    id={"cross-validation-bar"}
-                    paperRef={this.upperBar}
-                    styleVariant={"bar"}
-                    square={true}
-                    variant={"outlined"}
-                >
-                    <RuleWorkTooltip title={"Click to customize number of folds"}>
-                        <StyledButton
-                            aria-label={"cross-validation-settings-button"}
-                            isIcon={true}
-                            onClick={this.onSettingsClick}
-                        >
-                            <SvgIcon><path d={mdiCog} /></SvgIcon>
-                        </StyledButton>
-                    </RuleWorkTooltip>
+                <StyledPaper id={"cross-validation-bar"} paperRef={this.upperBar}>
+                    <SettingsButton
+                        aria-label={"cross-validation-settings-button"}
+                        onClick={this.onSettingsClick}
+                        title={"Click to customize number of folds"}
+                    />
                     <StyledDivider />
                     <RuleWorkTooltip title={`Current number of folds: ${foldNumber}`}>
-                        <StyledButton
-                            aria-label={"cross-validation-calculate"}
-                            disable={!this.props.project & loading}
-                            disableElevation={true}
+                        <CalculateButton
+                            aria-label={"cross-validation-calculate-button"}
+                            disabled={!this.props.project || loading}
                             onClick={this.onCalculateClick}
-                            startIcon={<Calculator />}
-                            themeVariant={"primary"}
-                            variant={"contained"}
-                        >
-                            Calculate
-                        </StyledButton>
+                        />
                     </RuleWorkTooltip>
                     <span style={{flexGrow: 1}} />
                     {this.renderResultsActions()}
@@ -240,15 +223,11 @@ class CrossValidation extends Component {
                             value={foldNumber}
                         />
                     </RuleWorkSmallBox>
-                    <RuleWorkSmallBox id={"cross-validation-footer"} styleVariant={"footer"}>
-                        <StyledButton
-                            isIcon={true}
-                            onClick={this.onSettingsClose}
-                            themeVariant={"secondary"}
-                        >
-                            <SvgIcon><path d={mdiCloseThick} /></SvgIcon>
-                        </StyledButton>
-                    </RuleWorkSmallBox>
+                    <SettingsFooter
+                        id={"cross-validation-settings-footer"}
+                        onClose={this.onSettingsClose}
+                        styleVariant={"footer"}
+                    />
                 </RuleWorkDrawer>
                 <RuleWorkBox id={"cross-validation-body"} styleVariant={"tab-body"}>
                     {loading ?

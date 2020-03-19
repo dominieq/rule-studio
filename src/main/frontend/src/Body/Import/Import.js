@@ -104,7 +104,13 @@ class Import extends Component{
 
         return (
             <RuleWorkBox id={"rule-work-import"} onKeyPress={this.onEnterClick} styleVariant={"body"}>
-                <StyledPaper id={"import-panel"} elevation={6} styleVariant={"panel"} square={true}>
+                <StyledPaper
+                    id={"import-panel"}
+                    elevation={6}
+                    styleVariant={"panel"}
+                    square={true}
+                    variant={"elevation"}
+                >
                     <RuleWorkSmallBox>
                         <RuleWorkTextField
                             fullWidth={true}
