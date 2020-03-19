@@ -5,7 +5,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import org.rulelearn.classification.*;
 import org.rulelearn.data.*;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
+import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.validation.ClassificationValidationResult;
+import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,15 +38,15 @@ public class ClassificationService {
 
         Attribute[] attributes = informationTable.getAttributes();
 
-        int i;
-        for(i = 0; i < attributes.length; i++) {
-            if (attributes[i] instanceof EvaluationAttribute && ((EvaluationAttribute)attributes[i]).getType() == AttributeType.DECISION && attributes[i].isActive()) {
+        int decisionAttributeIndex;
+        for(decisionAttributeIndex = 0; decisionAttributeIndex < attributes.length; decisionAttributeIndex++) {
+            if (attributes[decisionAttributeIndex] instanceof EvaluationAttribute && ((EvaluationAttribute)attributes[decisionAttributeIndex]).getType() == AttributeType.DECISION && attributes[decisionAttributeIndex].isActive()) {
                 break;
             }
         }
-        EvaluationField evaluationField = (EvaluationField)informationTable.getField(0, i);
+        EvaluationField evaluationField = (EvaluationField)informationTable.getField(0, decisionAttributeIndex);
 
-        SimpleDecision defaultDecision = new SimpleDecision(evaluationField, i);
+        SimpleDecision defaultDecision = new SimpleDecision(evaluationField, decisionAttributeIndex);
         SimpleClassificationResult defaultClassificationResult = new SimpleClassificationResult(defaultDecision);
         //SimpleRuleClassifier classifier = new SimpleRuleClassifier(ruleSetWithComputableCharacteristics, simpleClassificationResult);
         //SimpleOptimizingRuleClassifier classifier = new SimpleOptimizingRuleClassifier(ruleSetWithComputableCharacteristics, simpleClassificationResult, informationTable);
@@ -85,7 +88,16 @@ public class ClassificationService {
             }
         }
 
-        Classification classification = new Classification(simpleClassificationResults, informationTable, indicesOfCoveringRules, indicesOfCoveredObjects);
+        ClassificationValidationResult classificationValidationResult = new ClassificationValidationResult(informationTable.getDecisions(), simpleClassificationResults);
+
+        Decision[] suggestedDecisions = new Decision[simpleClassificationResults.length];
+        for(int i = 0; i < simpleClassificationResults.length; i++) {
+            suggestedDecisions[i] = simpleClassificationResults[i].getSuggestedDecision();
+        }
+        OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(informationTable.getUniqueDecisions(), informationTable.getDecisions(), suggestedDecisions);
+        ordinalMisclassificationMatrix.
+
+        Classification classification = new Classification(simpleClassificationResults, informationTable, indicesOfCoveringRules, indicesOfCoveredObjects, classificationValidationResult, ordinalMisclassificationMatrix);
         return classification;
     }
 
