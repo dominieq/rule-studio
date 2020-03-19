@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import {makeStyles} from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     tooltip: {
-        backgroundColor: "#ABFAA9",
-        color: "#2A3439",
+        backgroundColor: theme.palette.paper.text,
+        color: theme.palette.background.default,
     }
-});
+}));
 
 function DefaultElement(props, ref) {
     const {children, isDisabled, ...other} = props;

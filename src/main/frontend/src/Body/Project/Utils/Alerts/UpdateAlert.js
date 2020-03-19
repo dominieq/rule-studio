@@ -5,9 +5,9 @@ import RuleWorkTooltip from "../../../../RuleWorkComponents/DataDisplay/RuleWork
 import Badge from "@material-ui/core/Badge";
 import AlertOctagram from "mdi-material-ui/AlertOctagram";
 
-const StyledBadge = withStyles({
+const StyledBadge = withStyles(theme => ({
     badge: {
-        color: "#E8D963",
+        color: theme.palette.button.secondary,
         top: "2.5%",
         right: 0,
         '& .MuiSvgIcon-root': {
@@ -15,7 +15,7 @@ const StyledBadge = withStyles({
             width: "0.75em"
         },
     },
-}, {name: "MuiBadge"})(props => <Badge {...props} />);
+}), {name: "MuiBadge"})(props => <Badge {...props} />);
 
 function UpdateAlert(props) {
     const {children} = props;

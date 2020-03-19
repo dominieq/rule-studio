@@ -4,23 +4,23 @@ import {withStyles} from "@material-ui/core/styles";
 import Pagination from "@material-ui/lab/Pagination";
 import PaginationItem from "@material-ui/lab/PaginationItem";
 
-const StyledPaginationItem = withStyles({
+const StyledPaginationItem = withStyles(theme => ({
     root: {
-        color: "#ABFAA9",
+        color: theme.palette.paper.text,
     },
     outlined: {
-        borderColor: "#ABFAA9",
+        borderColor: theme.palette.paper.text,
     },
     page: {
         '&.Mui-selected': {
-            backgroundColor: "#ABFAA9",
-            color: "#2A3439",
+            backgroundColor: theme.palette.paper.text,
+            color: theme.palette.background.default,
             '&:hover': {
-                backgroundColor: "#ABFAA9",
+                backgroundColor: theme.palette.paper.text,
             },
         },
     }
-})(props => <PaginationItem {...props}/>);
+}))(props => <PaginationItem {...props}/>);
 
 const useStyles = makeStyles({
     root: {

@@ -6,10 +6,10 @@ import RuleWorkTooltip from "../DataDisplay/RuleWorkTooltip";
 import Avatar from "@material-ui/core/Avatar";
 import HelpCircle from "mdi-material-ui/HelpCircle";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     default: {
-        color: "#66FF66",
-        backgroundColor: "#2A3439"
+        color: theme.palette.text.default,
+        backgroundColor: theme.palette.background.default
     },
     small: {
         height: 24,
@@ -35,7 +35,7 @@ const useStyles = makeStyles({
         height: "2.14em",
         width: "2.14em",
     }
-}, {name: "MuiAvatar"});
+}), {name: "MuiAvatar"});
 
 function RuleWorkHelper(props) {
     const {children, size, color, ...other} = props;

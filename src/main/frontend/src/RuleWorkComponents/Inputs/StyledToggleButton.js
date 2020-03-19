@@ -3,26 +3,26 @@ import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     root: {
-        backgroundColor: "rgb(171,250,169, 0.5)",
-        color: "rgb(84,95,102, 0.9)",
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.default,
         fontSize: "0.775rem",
         height: 36,
         '&:hover': {
-            backgroundColor: "#ABFAA9",
-            color: "#2A3439",
+            backgroundColor: theme.palette.button.contained.backgroundAction,
+            color: theme.palette.button.contained.text,
         },
         '&.Mui-selected': {
-            backgroundColor: "#6BD425",
-            color: "#2A3439",
+            backgroundColor: theme.palette.button.contained.background,
+            color: theme.palette.button.contained.text,
             '&:hover': {
-                backgroundColor: "#6BD425",
-                color: "#2A3439",
+                backgroundColor: theme.palette.button.contained.backgroundAction,
+                color: theme.palette.button.contained.text,
             }
         }
     },
-}, {name: "MuiToggleButton"});
+}), {name: "MuiToggleButton"});
 
 function StyledToggleButton(props) {
     const {children, ...other} = props;

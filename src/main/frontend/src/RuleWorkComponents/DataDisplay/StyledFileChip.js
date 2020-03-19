@@ -2,24 +2,24 @@ import React from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     root: {
-        color: "#2A3439",
-        backgroundColor: "#6BD425",
+        color: theme.palette.chip.text,
+        backgroundColor: theme.palette.chip.background,
     },
     clickable: {
         '&:hover': {
-            color: "#2A3439",
-            backgroundColor: "#6BD425",
+            color: theme.palette.chip.text,
+            backgroundColor: theme.palette.chip.background,
         }
     },
     deletable: {
         '&:focus': {
-            color: "#2A3439",
-            backgroundColor: "#6BD425",
+            color: theme.palette.chip.text,
+            backgroundColor: theme.palette.chip.background,
         }
     }
-});
+}));
 
 
 function StyledFileChip(props) {

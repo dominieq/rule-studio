@@ -8,12 +8,12 @@ import Toolbar from "@material-ui/core/Toolbar";
 import HomeIcon from "@material-ui/icons/Home";
 import Palette from "mdi-material-ui/Palette";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     colorPrimary: {
-        color: "#2A3439",
-        backgroundColor: "#66FF66",
+        backgroundColor: theme.palette.appbar.background,
+        color: theme.palette.appbar.text,
     }
-}, {name: "MuiAppBar"});
+}), {name: "MuiAppBar"});
 
 function Header(props) {
     const {children, onBodyChange, onColorsChange} = props;

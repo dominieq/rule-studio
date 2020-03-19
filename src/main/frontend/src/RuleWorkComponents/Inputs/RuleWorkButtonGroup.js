@@ -11,9 +11,10 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Popper from "@material-ui/core/Popper";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     left: {
-        borderRight: "1px solid #545F66",
+        borderRight: "1px solid",
+        borderRightColor: theme.palette.text.default,
         '& .MuiButton-root': {
             borderRadius: "4px 0 0 4px",
             minWidth: 36,
@@ -25,7 +26,7 @@ const useStyles = makeStyles({
             borderRadius: "0 4px 4px 0",
         },
     },
-}, {name: "button-wrapper"});
+}), {name: "button-wrapper"});
 
 function ButtonWrapper(props) {
     const {children, placement} = props;

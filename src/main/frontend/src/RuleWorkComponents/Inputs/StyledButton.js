@@ -4,47 +4,47 @@ import {makeStyles} from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     text: {
         color: props => ({
             "inherit": "inherit",
-            "primary": "#ABFAA9",
-            "secondary": "#E8D963"
+            "primary": theme.palette.button.primary,
+            "secondary": theme.palette.button.secondary
         }[props.themeVariant]),
     },
     contained: {
-        color: "#2A3439",
-        backgroundColor: "#ABFAA9",
+        color: theme.palette.button.contained.text,
+        backgroundColor: theme.palette.button.contained.background,
         "&:hover": {
-            color: "#2A3439",
-            backgroundColor: "#6BD425",
+            color: theme.palette.button.contained.text,
+            backgroundColor: theme.palette.button.contained.backgroundAction,
         },
         "&:active": {
-            color: "#2A3439",
-            backgroundColor: "#6BD425",
+            color: theme.palette.button.contained.text,
+            backgroundColor: theme.palette.button.contained.backgroundAction,
         }
     },
     outlined: {
         color: props => ({
             "inherit": "inherit",
-            "primary": "#ABFAA9",
-            "secondary": "#E8D963",
+            "primary": theme.palette.button.primary,
+            "secondary": theme.palette.button.secondary,
         }[props.themeVariant]),
         borderColor: props => ({
             "inherit": "inherit",
-            "primary": "#ABFAA9",
-            "secondary": "#E8D963",
+            "primary": theme.palette.button.primary,
+            "secondary": theme.palette.button.secondary,
         }[props.themeVariant]),
     },
     icon: {
         padding: 6,
         color: props => ({
             "inherit": "inherit",
-            "primary": "#ABFAA9",
-            "secondary": "#E8D963"
+            "primary": theme.palette.button.primary,
+            "secondary": theme.palette.button.secondary
         })[props.themeVariant]
     },
-}, {name: "styled-button"});
+}), {name: "styled-button"});
 
 function StyledButton(props) {
     const {children, isIcon, themeVariant, variant, ...other} = props;

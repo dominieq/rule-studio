@@ -2,11 +2,11 @@ import React from "react";
 import {makeStyles} from "@material-ui/core";
 import {TransferUp} from "mdi-material-ui";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     root: {
-        color: "#E8D963",
+        color: theme.palette.button.secondary,
     }
-}, {name: "MuiSvgRoot"});
+}), {name: "MuiSvgRoot"});
 
 function ExternalRulesAlert() {
     const classes = useStyles();

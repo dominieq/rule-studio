@@ -4,17 +4,17 @@ import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
 import Divider from "@material-ui/core/Divider";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     bar: {
         margin: "0 16px",
-        backgroundColor: "#2A3439"
+        backgroundColor: theme.palette.background.default
     },
     panel: {
         margin: "12px 0",
         height: 1,
-        backgroundColor: "#ABFAA9"
+        backgroundColor: theme.palette.paper.text
     }
-}, {name: "styled-divider"});
+}), {name: "styled-divider"});
 
 function StyledDivider(props) {
     const {styleVariant, ...other} = props;

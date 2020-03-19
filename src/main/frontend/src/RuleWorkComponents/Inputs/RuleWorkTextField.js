@@ -5,30 +5,29 @@ import StyledTypography from "../DataDisplay/StyledTypography";
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     root: {
         '& .MuiOutlinedInput-root': {
             height: 40,
-            backgroundColor: "#ABFAA9",
+            backgroundColor: theme.palette.button.contained.background,
             '& fieldset': {
-                borderColor: "#ABFAA9",
+                borderColor: theme.palette.button.contained.background,
             },
             '&:hover fieldset': {
-                borderColor: "#66FF66"
+                borderColor: theme.palette.text.default
             },
             '&.Mui-focused fieldset': {
-                borderColor: "#66FF66",
+                borderColor: theme.palette.text.default,
             },
             '&:hover': {
-                backgroundColor: "#6BD425"
+                backgroundColor: theme.palette.button.contained.backgroundAction
             },
             '&.Mui-focused': {
-
-                backgroundColor: "#6BD425"
+                backgroundColor: theme.palette.button.contained.backgroundAction
             },
         },
     },
-}, {name: "MuiFormControl"});
+}), {name: "MuiFormControl"});
 
 function RuleWorkTextField(props) {
     const {children, disabledChildren, hasOutsideLabel, outsideLabel, outsideLabelProps, select, ...other} = props;

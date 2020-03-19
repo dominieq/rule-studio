@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component} from 'react';
 import Header from "../Header/Header";
 import ProjectMenu from "../Header/ProjectMenu";
 import Help from '../Body/Help/Help';
@@ -10,6 +10,9 @@ import RuleWorkSnackbar from "../RuleWorkComponents/Feedback/RuleWorkSnackbar";
 import DeleteProjectDialog from "./Dialogs/DeleteProjectDialog";
 import RenameProjectDialog from "./Dialogs/RenameProjectDialog";
 import SettingsProjectDialog from "./Dialogs/SettingsProjectDialog";
+import {DarkTheme, LightTheme} from "./Themes/Themes";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import {MuiThemeProvider} from "@material-ui/core/styles";
 
 class App extends Component {
     constructor(props) {
@@ -19,7 +22,7 @@ class App extends Component {
             body: "Home",
             currentProject: -1,
             projects: [],
-            defaultColours: true,
+            darkTheme: true,
             open: {
                 settingsDialog: false,
                 renameDialog: false,
@@ -58,6 +61,13 @@ class App extends Component {
     };
 
     onDataChanges = (project) => {
+        let tabsUpToDate = [
+            !project.result.dominanceCones,
+            !project.result.unionsWithSingleLimitingDecision,
+            !project.result.ruleSetWithComputableCharacteristics,
+            !project.result.classification,
+            !project.result.crossValidation
+        ];
         this.setState(({currentProject, projects}) => ({
             projects: [
                 ...projects.slice(0, currentProject),
@@ -65,7 +75,7 @@ class App extends Component {
                     ...projects[currentProject],
                     ...project,
                     dataUpToDate: false,
-                    tabsUpToDate: Array(5).fill(false)
+                    tabsUpToDate: tabsUpToDate
                 },
                 ...projects.slice(currentProject + 1)
             ],
@@ -106,7 +116,7 @@ class App extends Component {
 
     onColorsChange = () => {
         this.setState(prevState => ({
-            defaultColours: !prevState.defaultColours
+            darkTheme: !prevState.darkTheme
         }))
     };
 
@@ -278,8 +288,10 @@ class App extends Component {
                 this.setState({
                     snackbarProps: {open: true, message: msg, variant: 'warning'}
                 });
+                return;
             }
         }
+        this.setState(({open}) => ({open: {...open, renameDialog: false}}))
     };
 
     isNameUnique = (name) => {
@@ -301,7 +313,8 @@ class App extends Component {
         const showSnackbarNormally = !renameDialog || !deleteDialog || !settingsDialog;
 
         return (
-            <Fragment>
+            <MuiThemeProvider theme={this.state.darkTheme ? DarkTheme : LightTheme}>
+                <CssBaseline />
                 <Header
                     onBodyChange={this.onBodyChange}
                     onColorsChange={this.onColorsChange}
@@ -360,7 +373,7 @@ class App extends Component {
                 {showSnackbarNormally ?
                     <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose}/> : null
                 }
-            </Fragment>
+            </MuiThemeProvider>
         );
     }
 }

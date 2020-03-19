@@ -3,12 +3,12 @@ import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
 
-const useStyles = makeStyles( {
+const useStyles = makeStyles( theme => ({
     paper: {
-        color: "#ABFAA9",
-        backgroundColor: "#545F66"
+        backgroundColor: theme.palette.paper.background,
+        color: theme.palette.paper.text,
     }
-});
+}));
 
 function StyledDialog(props) {
     const {children, classes: propsClasses, ...other} = props;
