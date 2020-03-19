@@ -29,6 +29,7 @@ class CrossValidation extends Component {
 
         this.state = {
             changes: false,
+            updated: false,
             loading: false,
             displayedItems: [],
             foldDisplay: 0,
@@ -66,7 +67,7 @@ class CrossValidation extends Component {
             project.foldDisplay = this.state.foldDisplay;
             project.foldIndex = this.state.foldIndex;
             project.foldNumber = this.state.foldNumber;
-            this.props.onTabChange(project, this.props.value, false);
+            this.props.onTabChange(project, this.props.value, this.state.updated);
         }
     }
 
@@ -88,6 +89,7 @@ class CrossValidation extends Component {
         if (!isNaN(input)) {
             this.setState({
                 changes: Number(input) !== 1,
+                updated: this.props.project.dataUpToDate,
                 foldNumber: Number(input),
             });
         }
@@ -107,6 +109,7 @@ class CrossValidation extends Component {
     onFoldIndexChange = (event) => {
         this.setState({
             changes: Boolean(event.target.value),
+            updated: this.props.project.dataUpToDate,
             foldIndex: event.target.value,
         })
     };
@@ -116,6 +119,7 @@ class CrossValidation extends Component {
 
         this.setState({
             changes: Boolean(newDisplay),
+            updated: this.props.project.dataUpToDate,
             foldDisplay: newDisplay,
         });
     };

@@ -18,10 +18,7 @@ import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkToo
 import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
 import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import SvgIcon from "@material-ui/core/SvgIcon";
-import {mdiCloseThick, mdiCog} from "@mdi/js";
 
 class Unions extends Component {
     constructor(props) {
@@ -151,6 +148,7 @@ class Unions extends Component {
     onThresholdChange = (threshold) => {
         this.setState({
             changes: Boolean(threshold),
+            updated: this.props.project.dataUpToDate,
             threshold: threshold,
         });
     };
@@ -158,6 +156,7 @@ class Unions extends Component {
     onMeasureChange = (event) => {
         this.setState({
             changes: event.target.value !== "epsilon",
+            updated: this.props.project.dataUpToDate,
             measure: event.target.value,
         });
     };

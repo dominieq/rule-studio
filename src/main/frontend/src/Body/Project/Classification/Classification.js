@@ -205,6 +205,7 @@ class Classification extends Component {
     onRuleTypeChange = (event) => {
         this.setState({
             changes: event.target.value !== "certain",
+            updated: this.props.project.dataUpToDate,
             ruleType: event.target.value,
         });
     };

@@ -67,7 +67,7 @@ class Rules extends Component {
                             this.setState({
                                 loading: false,
                                 displayedItems: items,
-                                externalRules: this.props.project.external,
+                                externalRules: this.props.project.externalRules,
                                 threshold: this.props.project.threshold,
                                 measure: this.props.project.measure,
                             }, () => {
@@ -80,7 +80,7 @@ class Rules extends Component {
                         if (this._isMounted) {
                             this.setState({
                                 loading: false,
-                                externalRules: this.props.project.external,
+                                externalRules: this.props.project.externalRules,
                                 threshold: this.props.threshold,
                                 measure: this.props.measure,
                             });
@@ -90,7 +90,7 @@ class Rules extends Component {
                     if (this._isMounted) {
                         this.setState({
                             loading: false,
-                            externalRules: this.props.project.external,
+                            externalRules: this.props.project.externalRules,
                             threshold: this.props.project.threshold,
                             measure: this.props.project.measure,
                         });
@@ -102,7 +102,7 @@ class Rules extends Component {
                     msg = "Server error! Couldn't load rules :( " + error.message;
                     this.setState({
                         loading: false,
-                        externalRules: this.props.project.external,
+                        externalRules: this.props.project.externalRules,
                         threshold: this.props.threshold,
                         measure: this.props.measure,
                         snackbarProps: {open: true, message: msg, variant: "error"},
@@ -143,6 +143,7 @@ class Rules extends Component {
     onThresholdChange = (threshold) => {
         this.setState({
             changes: Boolean(threshold),
+            updated: this.props.project.dataUpToDate,
             threshold: threshold,
         });
     };
@@ -150,6 +151,7 @@ class Rules extends Component {
     onMeasureChange = (event) => {
         this.setState({
             changes: event.target.value !== "epsilon",
+            updated: this.props.project.dataUpToDate,
             measure: event.target.value,
         });
     };
