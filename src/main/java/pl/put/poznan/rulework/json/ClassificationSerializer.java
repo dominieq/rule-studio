@@ -36,12 +36,6 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
         jsonGenerator.writeFieldName("indicesOfCoveringRules");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getindicesOfCoveringRules()));
 
-        jsonGenerator.writeFieldName("indicesOfCoveredObjects");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getindicesOfCoveredObjects()));
-
-        jsonGenerator.writeFieldName("classificationValidationResult");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getClassificationValidationResult()));
-
         jsonGenerator.writeFieldName("ordinalMisclassificationMatrix");
         OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = classification.getOrdinalMisclassificationMatrix();
 

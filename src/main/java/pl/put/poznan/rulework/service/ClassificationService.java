@@ -62,12 +62,6 @@ public class ClassificationService {
         int objectCount = informationTable.getNumberOfObjects();
 
         IntList[] indicesOfCoveringRules = new IntList[objectCount];
-        IntList[] indicesOfCoveredObjects = new IntList[rulesCount];
-
-
-        for(ruleIndex = 0; ruleIndex < rulesCount; ruleIndex++) {
-            indicesOfCoveredObjects[ruleIndex] = new IntArrayList();
-        }
 
         for(objectIndex = 0; objectIndex < objectCount; objectIndex++) {
             indicesOfCoveringRules[objectIndex] = new IntArrayList();
@@ -76,7 +70,6 @@ public class ClassificationService {
 
                 if (ruleSetWithComputableCharacteristics.getRule(ruleIndex).covers(objectIndex, informationTable)) { //current rule covers considered object
                     indicesOfCoveringRules[objectIndex].add(ruleIndex);
-                    indicesOfCoveredObjects[ruleIndex].add(objectIndex);
                 }
             }
         }
@@ -89,8 +82,6 @@ public class ClassificationService {
                 }
             }
         }
-
-        ClassificationValidationResult classificationValidationResult = new ClassificationValidationResult(informationTable.getDecisions(), simpleClassificationResults);
 
         Decision[] suggestedDecisions = new Decision[simpleClassificationResults.length];
         for(int i = 0; i < simpleClassificationResults.length; i++) {
@@ -109,7 +100,7 @@ public class ClassificationService {
         }
         OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(informationTable.getOrderedUniqueFullyDeterminedDecisions(), informationTable.getDecisions(), suggestedDecisions);
 
-        Classification classification = new Classification(simpleClassificationResults, informationTable, decisionsDomain, indicesOfCoveringRules, indicesOfCoveredObjects, classificationValidationResult, ordinalMisclassificationMatrix);
+        Classification classification = new Classification(simpleClassificationResults, informationTable, decisionsDomain, indicesOfCoveringRules, ordinalMisclassificationMatrix);
         return classification;
     }
 

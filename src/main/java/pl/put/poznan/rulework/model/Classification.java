@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import org.rulelearn.classification.SimpleClassificationResult;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.validation.ClassificationValidationResult;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 
 import java.util.Arrays;
@@ -14,8 +13,6 @@ public class Classification {
     private InformationTable informationTable;
     private Decision[] decisionsDomain;
     private IntList[] indicesOfCoveringRules;
-    private IntList[] indicesOfCoveredObjects;
-    private ClassificationValidationResult classificationValidationResult;
     private OrdinalMisclassificationMatrix ordinalMisclassificationMatrix;
 
     public Classification(SimpleClassificationResult[] simpleClassificationResults, InformationTable informationTable) {
@@ -23,13 +20,11 @@ public class Classification {
         this.informationTable = informationTable;
     }
 
-    public Classification(SimpleClassificationResult[] simpleClassificationResults, InformationTable informationTable, Decision[] decisionsDomain, IntList[] indicesOfCoveringRules, IntList[] indicesOfCoveredObjects, ClassificationValidationResult classificationValidationResult, OrdinalMisclassificationMatrix ordinalMisclassificationMatrix) {
+    public Classification(SimpleClassificationResult[] simpleClassificationResults, InformationTable informationTable, Decision[] decisionsDomain, IntList[] indicesOfCoveringRules, OrdinalMisclassificationMatrix ordinalMisclassificationMatrix) {
         this.simpleClassificationResults = simpleClassificationResults;
         this.informationTable = informationTable;
         this.decisionsDomain = decisionsDomain;
         this.indicesOfCoveringRules = indicesOfCoveringRules;
-        this.indicesOfCoveredObjects = indicesOfCoveredObjects;
-        this.classificationValidationResult = classificationValidationResult;
         this.ordinalMisclassificationMatrix = ordinalMisclassificationMatrix;
     }
 
@@ -65,22 +60,6 @@ public class Classification {
         this.indicesOfCoveringRules = indicesOfCoveringRules;
     }
 
-    public IntList[] getindicesOfCoveredObjects() {
-        return indicesOfCoveredObjects;
-    }
-
-    public void setindicesOfCoveredObjects(IntList[] indicesOfCoveredObjects) {
-        this.indicesOfCoveredObjects = indicesOfCoveredObjects;
-    }
-
-    public ClassificationValidationResult getClassificationValidationResult() {
-        return classificationValidationResult;
-    }
-
-    public void setClassificationValidationResult(ClassificationValidationResult classificationValidationResult) {
-        this.classificationValidationResult = classificationValidationResult;
-    }
-
     public OrdinalMisclassificationMatrix getOrdinalMisclassificationMatrix() {
         return ordinalMisclassificationMatrix;
     }
@@ -96,8 +75,6 @@ public class Classification {
                 ", informationTable=" + informationTable +
                 ", decisionsDomain=" + Arrays.toString(decisionsDomain) +
                 ", indicesOfCoveringRules=" + Arrays.toString(indicesOfCoveringRules) +
-                ", indicesOfCoveredObjects=" + Arrays.toString(indicesOfCoveredObjects) +
-                ", classificationValidationResult=" + classificationValidationResult +
                 ", ordinalMisclassificationMatrix=" + ordinalMisclassificationMatrix +
                 '}';
     }

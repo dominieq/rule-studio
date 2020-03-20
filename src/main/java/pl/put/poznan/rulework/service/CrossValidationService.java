@@ -36,10 +36,9 @@ public class CrossValidationService {
 
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecision(trainingTable, consistencyThreshold);
             RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.calculateRuleSetWithComputableCharacteristics(unionsWithSingleLimitingDecision);
-            Classification classificationTrainingTable = ClassificationService.calculateClassification(trainingTable, ruleSetWithComputableCharacteristics);
             Classification classificationValidationTable = ClassificationService.calculateClassification(validationTable, ruleSetWithComputableCharacteristics);
 
-            crossValidationSingleFolds[i] = new CrossValidationSingleFold(trainingTable, validationTable, unionsWithSingleLimitingDecision, ruleSetWithComputableCharacteristics, classificationTrainingTable, classificationValidationTable);
+            crossValidationSingleFolds[i] = new CrossValidationSingleFold(validationTable, ruleSetWithComputableCharacteristics, classificationValidationTable);
         }
 
         CrossValidation crossValidation = new CrossValidation(numberOfFolds, crossValidationSingleFolds);
