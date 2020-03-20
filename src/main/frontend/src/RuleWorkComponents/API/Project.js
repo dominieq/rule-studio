@@ -8,6 +8,11 @@ class Project {
         this.foldDisplay = 0;
         this.foldIndex = 0;
         this.foldNumber = 1;
+        this.settings = {
+            indexOption: "default",
+        };
+        this.dataUpToDate = true;
+        this.tabsUpToDate = Array(5.).fill(true);
     }
 }
 

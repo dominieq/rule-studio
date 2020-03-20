@@ -4,10 +4,10 @@ import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     paper: {
-        color: "#ABFAA9",
-        backgroundColor: "#545F66",
+        backgroundColor: theme.palette.paper.background,
+        color: theme.palette.paper.text,
     },
     bar: {
         position: "relative",
@@ -26,16 +26,18 @@ const useStyles = makeStyles({
         padding: "8px 16px",
     },
     popper: {
-        backgroundColor: "#ABFAA9",
-        border: "1px solid #66FF66",
-        color: "#2A3439",
-        marginTop: "1px",
+        backgroundColor: theme.palette.popper.background,
+        border: "1px solid",
+        borderColor: theme.palette.background.default,
+        borderRadius: "2.5%",
+        color: theme.palette.popper.text,
+        marginTop: 1,
     }
-}, {name: "rule-work"});
+}), {name: "rule-work"});
 
 function StyledPaper(props) {
-    const {children, styleVariant, paperRef, ...other} = props;
-    const classes = useStyles();
+    const {children, classes: propsClasses, styleVariant, paperRef, ...other} = props;
+    const classes = {...useStyles(), ...propsClasses};
 
     return (
             <Paper
@@ -50,12 +52,19 @@ function StyledPaper(props) {
 
 StyledPaper.propTypes = {
     children: PropTypes.node,
+    classes: PropTypes.object,
+    component: PropTypes.elementType,
+    elevation: PropTypes.number,
     paperRef: PropTypes.object,
+    square: PropTypes.bool,
     styleVariant: PropTypes.oneOf(["bar", "panel", "popper"]),
+    variant: PropTypes.oneOf(["elevation", "outlined"]),
 };
 
 StyledPaper.defaultProps = {
-    styleVariant: "bar"
+    square: true,
+    styleVariant: "bar",
+    variant: "outlined"
 };
 
 export default StyledPaper;

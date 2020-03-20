@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.exception.EmptyResponseException;
 import pl.put.poznan.rulework.model.Classification;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
@@ -26,7 +27,7 @@ public class ClassificationService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private Classification makeClassification(InformationTable informationTable, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
+    private Classification calculateClassification(InformationTable informationTable, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
         /*logger.info("RuleSet size = {}", ruleSetWithComputableCharacteristics.size());
         for(int i = 0; i < ruleSetWithComputableCharacteristics.size(); i++) {
             logger.info("\tRegula nr {}:\t{}", i, ruleSetWithComputableCharacteristics.getRule(i));
@@ -55,34 +56,34 @@ public class ClassificationService {
         int rulesCount = ruleSetWithComputableCharacteristics.size();
         int objectCount = informationTable.getNumberOfObjects();
 
-        IntList[] indiciesOfCoveringRules = new IntList[objectCount];
-        IntList[] indiciesOfCoveredObjects = new IntList[rulesCount];
+        IntList[] indicesOfCoveringRules = new IntList[objectCount];
+        IntList[] indicesOfCoveredObjects = new IntList[rulesCount];
 
 
         for(ruleIndex = 0; ruleIndex < rulesCount; ruleIndex++) {
-            indiciesOfCoveredObjects[ruleIndex] = new IntArrayList();
+            indicesOfCoveredObjects[ruleIndex] = new IntArrayList();
         }
 
         for(objectIndex = 0; objectIndex < objectCount; objectIndex++) {
-            indiciesOfCoveringRules[objectIndex] = new IntArrayList();
+            indicesOfCoveringRules[objectIndex] = new IntArrayList();
 
             for(ruleIndex = 0; ruleIndex < rulesCount; ruleIndex++) {
 
                 if (ruleSetWithComputableCharacteristics.getRule(ruleIndex).covers(objectIndex, informationTable)) { //current rule covers considered object
-                    indiciesOfCoveringRules[objectIndex].add(ruleIndex);
-                    indiciesOfCoveredObjects[ruleIndex].add(objectIndex);
+                    indicesOfCoveringRules[objectIndex].add(ruleIndex);
+                    indicesOfCoveredObjects[ruleIndex].add(objectIndex);
                 }
             }
         }
 
         for(objectIndex = 0; objectIndex < objectCount; objectIndex++) {
             logger.info("Obiekt nr {}:\t{}", objectIndex, informationTable.getFields(objectIndex).toString());
-            for(ruleIndex = 0; ruleIndex < indiciesOfCoveringRules[objectIndex].size(); ruleIndex++) {
-                logger.info("\tRegula nr {}:\t{}", ruleIndex, ruleSetWithComputableCharacteristics.getRule(indiciesOfCoveringRules[objectIndex].getInt(ruleIndex)));
+            for(ruleIndex = 0; ruleIndex < indicesOfCoveringRules[objectIndex].size(); ruleIndex++) {
+                logger.info("\tRegula nr {}:\t{}", ruleIndex, ruleSetWithComputableCharacteristics.getRule(indicesOfCoveringRules[objectIndex].getInt(ruleIndex)));
             }
         }
 
-        Classification classification = new Classification(simpleClassificationResults, informationTable, indiciesOfCoveringRules, indiciesOfCoveredObjects);
+        Classification classification = new Classification(simpleClassificationResults, informationTable, indicesOfCoveringRules, indicesOfCoveredObjects);
         return classification;
     }
 
@@ -91,7 +92,15 @@ public class ClassificationService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        return project.getClassification();
+        Classification classification = project.getClassification();
+        if(classification == null) {
+            EmptyResponseException ex = new EmptyResponseException("Classification", id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        logger.debug("classification:\t{}", classification);
+        return classification;
     }
 
     public Classification putClassification(UUID id) {
@@ -100,7 +109,14 @@ public class ClassificationService {
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
         InformationTable informationTable = project.getInformationTable();
 
-        Classification classification = makeClassification(informationTable, project.getRuleSetWithComputableCharacteristics());
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        if(ruleSetWithComputableCharacteristics == null) {
+            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        Classification classification = calculateClassification(informationTable, ruleSetWithComputableCharacteristics);
         project.setClassification(classification);
 
         return classification;
@@ -121,7 +137,37 @@ public class ClassificationService {
         Attribute[] attributes = project.getInformationTable().getAttributes();
         InformationTable informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
 
-        Classification classification = makeClassification(informationTable, project.getRuleSetWithComputableCharacteristics());
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        if(ruleSetWithComputableCharacteristics == null) {
+            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        Classification classification = calculateClassification(informationTable, ruleSetWithComputableCharacteristics);
+        project.setClassification(classification);
+
+        return classification;
+    }
+
+    public Classification postClassification(UUID id, String metadata, String data) throws IOException {
+        logger.info("Id:\t{}", id);
+        logger.info("Metadata:\t{}", metadata);
+        logger.info("Data:\t{}", data);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        project.setInformationTable(informationTable);
+
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        if(ruleSetWithComputableCharacteristics == null) {
+            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        Classification classification = calculateClassification(informationTable, ruleSetWithComputableCharacteristics);
         project.setClassification(classification);
 
         return classification;

@@ -1,24 +1,28 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
+import filterFunction from "../Utils/Filtering/FilterFunction";
+import FilterNoResults from "../Utils/Filtering/FilterNoResults";
+import FilterTextField from "../Utils/Filtering/FilterTextField";
+import CalculateButton from "../Utils/Calculations/CalculateButton";
+import MeasureSelector from "../Utils/Calculations/MeasureSelector";
+import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
+import SettingsButton from "../Utils/Settings/SettingsButton";
+import SettingsFooter from "../Utils/Settings/SettingsFooter";
 import Item from "../../../RuleWorkComponents/API/Item";
-import MeasureSelector from "../ProjectTabsUtils/MeasureSelector";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
+import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import RuleWorkTooltip from "../../../RuleWorkComponents/Inputs/RuleWorkTooltip";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
+import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
+import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
+import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
 import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
+import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
-import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import ThresholdSelector from "../ProjectTabsUtils/ThresholdSelector";
-import SvgIcon from "@material-ui/core/SvgIcon";
-import Calculator from "mdi-material-ui/Calculator";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
-import {mdiCloseThick, mdiCog} from "@mdi/js";
 
 class Rules extends Component {
     constructor(props) {
@@ -29,11 +33,14 @@ class Rules extends Component {
 
         this.state = {
             changes: false,
+            updated: false,
             loading: false,
             displayedItems: [],
             externalRules: false,
             threshold: 0,
             measure: "epsilon",
+            selectedItem: null,
+            openDetails: false,
             openSettings: false,
             snackbarProps: undefined,
         };
@@ -48,20 +55,19 @@ class Rules extends Component {
         this.setState({
             loading: true,
         }, () => {
+            let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
                 method: "GET",
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
-                        console.log(result);
-
-                        const items = this.getItems(result);
-
                         if (this._isMounted) {
+                            const items = this.getItems(result);
+
                             this.setState({
                                 loading: false,
                                 displayedItems: items,
-                                externalRules: this.props.project.external,
+                                externalRules: this.props.project.externalRules,
                                 threshold: this.props.project.threshold,
                                 measure: this.props.project.measure,
                             }, () => {
@@ -70,19 +76,13 @@ class Rules extends Component {
                             });
                         }
                     }).catch(error => {
+                        console.log(error);
                         if (this._isMounted) {
                             this.setState({
                                 loading: false,
-                                externalRules: this.props.project.external,
+                                externalRules: this.props.project.externalRules,
                                 threshold: this.props.threshold,
                                 measure: this.props.measure,
-                                snackbarProps: {
-                                    open: true,
-                                    message: "Rules loaded but couldn't parse!",
-                                    variant: "error",
-                                },
-                            }, () => {
-                                console.log(error);
                             });
                         }
                     });
@@ -90,26 +90,22 @@ class Rules extends Component {
                     if (this._isMounted) {
                         this.setState({
                             loading: false,
-                            externalRules: this.props.project.external,
+                            externalRules: this.props.project.externalRules,
                             threshold: this.props.project.threshold,
                             measure: this.props.project.measure,
                         });
                     }
                 }
             }).catch(error => {
+                console.log(error);
                 if (this._isMounted) {
+                    msg = "Server error! Couldn't load rules :( " + error.message;
                     this.setState({
                         loading: false,
-                        externalRules: this.props.project.external,
+                        externalRules: this.props.project.externalRules,
                         threshold: this.props.threshold,
                         measure: this.props.measure,
-                        snackbarProps: {
-                            open: true,
-                            message: "Server error. Couldn't load rules!",
-                            variant: "error",
-                        },
-                    }, () => {
-                        console.log(error);
+                        snackbarProps: {open: true, message: msg, variant: "error"},
                     });
                 }
             });
@@ -118,15 +114,17 @@ class Rules extends Component {
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
+
         if (this.state.changes) {
             let project = {...this.props.project};
             if (Object.keys(this._data).length) {
-                project.result.ruleSetWithCharacteristics = this._data;
+                project.result.ruleSetWithComputableCharacteristics = this._data;
             }
             project.externalRules = this.state.externalRules;
             project.threshold = this.state.threshold;
             project.measure = this.state.measure;
-            this.props.onTabChange(project, this.props.value, false)
+            this.props.onTabChange(project, this.props.value, this.state.updated)
         }
     }
 
@@ -145,6 +143,7 @@ class Rules extends Component {
     onThresholdChange = (threshold) => {
         this.setState({
             changes: Boolean(threshold),
+            updated: this.props.project.dataUpToDate,
             threshold: threshold,
         });
     };
@@ -152,86 +151,70 @@ class Rules extends Component {
     onMeasureChange = (event) => {
         this.setState({
             changes: event.target.value !== "epsilon",
+            updated: this.props.project.dataUpToDate,
             measure: event.target.value,
         });
     };
 
     onCalculateClick = () => {
+        let project = {...this.props.project};
+
         this.setState({
             loading: true,
         }, () => {
-            const project = {...this.props.project};
+            let data = new FormData();
+            data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
+            data.append("data", JSON.stringify(project.result.informationTable.objects));
 
+            let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
-                method: "PUT",
+                method: project.dataUpToDate ? "PUT" : "POST",
+                body: project.dataUpToDate ? null : data
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
-                        console.log(result);
-                        const items = this.getItems(result);
-
                         if (this._isMounted) {
+                            const items = this.getItems(result);
+
                             this.setState({
                                 changes: true,
+                                updated: true,
                                 loading: false,
                                 displayedItems: items,
                             }, () => {
                                 this._data = result;
                                 this._items = items;
                             });
+                        } else {
+                            project.ruleSetWithComputableCharacteristics = result;
+                            this.props.onTabChange(project, this.props.value, true);
                         }
                     }).catch(error => {
-                        if (this._isMounted) {
-                            this.setState({
-                                loading: false,
-                                snackbarProps: {
-                                    open: true,
-                                    message: "Error. Rules calculated but couldn't parse!",
-                                    variant: "error",
-                                },
-                            }, () => {
-                                console.log(error);
-                            });
-                        }
+                        console.log(error);
+                        if (this._isMounted) this.setState({loading: false});
                     })
                 } else  if (response.status === 404) {
-                    if (this._isMounted) {
-                        this.setState({
-                            loading: false,
-                            snackbarProp: {
-                                open: true,
-                                message: "Couldn't calculate rules. Perhaps you didn't calculate unions :)",
-                                variant: "info",
-                            },
-                        }, () => {
-                            console.log(response);
-                        });
-                    }
-                } else {
-                    if (this._isMounted) {
-                        this.setState({
-                            loading: false,
-                            snackbarProp: {
-                                open: true,
-                                message: "Something went wrong. Couldn't calculate rules :(",
-                                variant: "warning",
-                            },
-                        }, () => {
-                            console.log(response);
-                        });
-                    }
+                    response.json().then(result => {
+                        if (this._isMounted) {
+                            msg = "error " + result.status + ": " + result.message;
+                            let alertProps = {hasTitle: true, title: "Something went wrong! Please don't panic :)"};
+                            this.setState({
+                                loading: false,
+                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "info"},
+                            });
+                        }
+                    }).catch(error => {
+                        console.log(error);
+                        if (this._isMounted) this.setState({loading: false});
+                    });
                 }
             }).catch(error => {
+                console.log(error);
                 if (this._isMounted) {
+                    msg = "Server error! Couldn't calculate rules :( " + error.message;
                     this.setState({
                         loading: false,
-                        snackbarProps: {
-                            open: true,
-                            message: "Server error. Couldn't calculate rules!",
-                            variant: "error",
-                        },
-                    }, () => {
-                        console.log(error);
+                        snackbarProps: {open: true, message: msg, variant: "error"},
                     });
                 }
             });
@@ -239,45 +222,65 @@ class Rules extends Component {
     };
 
     onUploadFileChanged = (event) => {
-        console.log(event.target.files[0]);
-        if (event.target.file[0]) {
-            const project = {...this.props.project};
+        if (event.target.files[0]) {
+            let project = {...this.props.project};
+
             let data = new FormData();
             data.append("rules", event.target.files[0]);
+
             this.setState({
                 loading: true,
             }, () => {
+                let msg = "";
                 fetch(`http://localhost:8080/projects/${project.result.id}`, {
                     method: "POST",
                     body: data,
                 }).then(response => {
-                    return response.json();
-                }).then(result => {
-                    console.log(result);
-                    const items = this.getItems(result);
-
-                    if (this._isMounted) {
-                        this.setState({
-                            changes: true,
-                            loading: false,
-                            displayedItems: items,
-                            externalRules: true,
-                        }, () => {
-                            this._data = result;
-                            this._items = items;
+                    if (response.status === 200) {
+                        response.json().then(result => {
+                            const items = this.getItems(result.ruleSetWithComputableCharacteristics);
+                            if (this._isMounted) {
+                                this.setState({
+                                    changes: true,
+                                    updated: this.props.project.dataUpToDate,
+                                    loading: false,
+                                    displayedItems: items,
+                                    externalRules: true,
+                                }, () => {
+                                    this._data = result;
+                                    this._items = items;
+                                });
+                            } else {
+                                project.ruleSetWithComputableCharacteristics = result;
+                                project.externalRules = true;
+                                this.props.onTabChange(project, this.props.value, this.props.project.dataUpToDate);
+                            }
+                        }).catch(error => {
+                            console.log(error);
+                            if (this._isMounted) this.setState({loading: false});
+                        });
+                    } else {
+                        response.json().then(result => {
+                            if (this._isMounted) {
+                                let alert = {hasTitle: true, title: "Something went wrong. Please don't panic :) "};
+                                msg = "error: " + result.status + " " + result.message;
+                                this.setState({
+                                    loading: false,
+                                    snackbarProps: {alertProps: alert, open: true, message: msg, variant: "warning"}
+                                });
+                            }
+                        }).catch(error => {
+                            console.log(error);
+                            if (this._isMounted) this.setState({loading: false});
                         });
                     }
                 }).catch(error => {
+                    console.log(error);
                     if (this._isMounted) {
+                        msg = "Server error! Couldn't parse rules :( ";
                         this.setState({
                             loading: false,
-                            snackbarProps: {
-                                open: true,
-                                message: "Server error. Couldn't parse rules!",
-                                variant: "error",
-                            },
-                        }, () => {
-                            console.log(error);
+                            snackbarProps: {open: true, message: msg, variant: "error"}
                         });
                     }
                 });
@@ -286,7 +289,8 @@ class Rules extends Component {
     };
 
     onSaveFileClick = () => {
-        const project = {...this.props.project};
+        const project = this.props.project;
+        let msg = "";
 
         fetch(`http://localhost:8080/projects/${project.result.id}/rules/download`, {
             method: "GET",
@@ -301,57 +305,55 @@ class Rules extends Component {
                     link.download = filename;
                     link.click();
                 }).catch(error => {
-                    if (this._isMounted) {
-                        this.setState({
-                            snackbarProp: {
-                                open: true,
-                                message: "Error. Couldn't parse file!",
-                                variant: "error",
-                            },
-                        }, () => {
-                            console.log(error);
-                        });
-                    }
+                    console.log(error);
                 });
             } else {
-                if (this._isMounted) {
-                    this.setState({
-                        snackbarProps: {
-                            open: true,
-                            message: "Something went wrong. Couldn't download rules :(",
-                            variant: "warning",
-                        },
-                    }, () => {
-                        console.log(response);
-                    });
-                }
+                response.json().then(result => {
+                    let alert = {hasTitle: true, title: "Something went wrong! Couldn't download rules :("};
+                    msg = "error: " + result.status + " " + result.message;
+                    if (this._isMounted) {
+                        this.setState({
+                            snackbarProps: {alertProps: alert, open: true, message: msg, variant: "warning"},
+                        });
+                    }
+                }).catch(error => {
+                    console.log(error);
+                });
             }
         }).catch(error => {
+            console.log(error);
             if (this._isMounted) {
+                msg = "Server error! Couldn't download rules :( " + error.message;
                 this.setState({
-                    snackbarProps: {
-                        open: true,
-                        message: "Server error. Couldn't download rules!",
-                        variant: "error",
-                    },
-                }, () => {
-                    console.log(error);
+                    snackbarProps: {open: true, message: msg, variant: "error"},
                 });
             }
         });
     };
 
     onFilterChange = (event) => {
-        const filterText = event.target.value;
+        const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
+        this.setState({displayedItems: filteredItems});
+    };
+
+    onDetailsOpen = (index) => {
+        this.setState({
+            selectedItem: this.state.displayedItems[index],
+            openDetails: true
+        });
+    };
+
+    onDetailsClose = () => {
+        this.setState({
+            selectedItem: null,
+            openDetails: false
+        });
     };
 
     onSnackbarClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
+        if (reason !== 'clickaway') {
+            this.setState({snackbarProps: undefined});
         }
-        this.setState({
-            snackbarProps: undefined,
-        });
     };
 
     getItems = (data) => {
@@ -376,46 +378,29 @@ class Rules extends Component {
     };
 
     render() {
-        const {loading, displayedItems, threshold, measure, openSettings, snackbarProps} = this.state;
+        const {loading, displayedItems, threshold, measure, selectedItem, openDetails,
+            openSettings, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
-                <StyledPaper
-                    id={"rules-bar"}
-                    paperRef={this.upperBar}
-                    styleVariant={"bar"}
-                    square={true}
-                    variant={"outlined"}
-                >
-                    <RuleWorkTooltip title={"Click to choose consistency & measure"}>
-                        <StyledButton
-                            aria-label={"rules-settings-button"}
-                            isIcon={true}
-                            onClick={this.onSettingsClick}
-                            themeVariant={"primary"}
-                            variant={"contained"}
-                        >
-                            <SvgIcon><path d={mdiCog} /></SvgIcon>
-                        </StyledButton>
-                    </RuleWorkTooltip>
+                <StyledPaper id={"rules-bar"} paperRef={this.upperBar}>
+                    <SettingsButton
+                        aria-label={"rules-settings-button"}
+                        onClick={this.onSettingsClick}
+                        title={"Click to choose consistency & measure"}
+                    />
                     <StyledDivider />
                     <RuleWorkTooltip title={`Calculate with threshold ${threshold}`}>
-                        <StyledButton
+                        <CalculateButton
                             aria-label={"rules-calculate-button"}
                             disabled={!this.props.project || loading}
-                            disableElevation={true}
                             onClick={this.onCalculateClick}
-                            startIcon={<Calculator />}
-                            themeVariant={"primary"}
-                            variant={"contained"}
-                        >
-                            Calculate
-                        </StyledButton>
+                        />
                     </RuleWorkTooltip>
                     <StyledDivider />
                     <RuleWorkTooltip title={"Upload file"}>
                         <RuleWorkUpload
-                            accept={".json"}
+                            accept={".xml"}
                             disabled={!this.props.project || loading}
                             id={"rules-upload-button"}
                             onChange={this.onUploadFileChanged}
@@ -434,7 +419,7 @@ class Rules extends Component {
                     <RuleWorkTooltip title={"Save file"}>
                         <StyledButton
                             aria-label={"rules-save-button"}
-                            disabled={!this.props.project || !this.state.displayedItems.length || loading}
+                            disabled={!this.props.project || !this.state.displayedItems || loading}
                             isIcon={true}
                             onClick={this.onSaveFileClick}
                         >
@@ -442,6 +427,7 @@ class Rules extends Component {
                         </StyledButton>
                     </RuleWorkTooltip>
                     <span style={{flexGrow: 1}} />
+                    <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <RuleWorkDrawer
                     height={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
@@ -462,16 +448,10 @@ class Rules extends Component {
                             value={threshold}
                         />
                     </RuleWorkSmallBox>
-                    <RuleWorkSmallBox id={"rules-settings-footer"} styleVariant={"footer"}>
-                        <StyledButton
-                            aria-label={"rules-close-settings-button"}
-                            isIcon={true}
-                            onClick={this.onSettingsClose}
-                            themeVariant={"secondary"}
-                        >
-                            <SvgIcon><path d={mdiCloseThick} /></SvgIcon>
-                        </StyledButton>
-                    </RuleWorkSmallBox>
+                    <SettingsFooter
+                        id={"rules-settings-footer"}
+                        onClose={this.onSettingsClose}
+                    />
                 </RuleWorkDrawer>
                 <RuleWorkBox
                     id={"rules-body"}
@@ -481,11 +461,22 @@ class Rules extends Component {
                     {loading ?
                         <StyledCircularProgress />
                         :
-                        <RuleWorkList>
-                            {displayedItems}
-                        </RuleWorkList>
+                        displayedItems ?
+                            <RuleWorkList onItemSelected={this.onDetailsOpen}>
+                                {displayedItems}
+                            </RuleWorkList>
+                            :
+                            <FilterNoResults />
                     }
                 </RuleWorkBox>
+                {selectedItem &&
+                    <RuleWorkDialog
+                        item={selectedItem}
+                        onClose={this.onDetailsClose}
+                        open={openDetails}
+                        projectResult={this.props.project.result}
+                    />
+                }
                 <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )
@@ -493,10 +484,8 @@ class Rules extends Component {
 }
 
 Rules.propTypes = {
-    dataUpToDate: PropTypes.bool,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    upToDate: PropTypes.bool,
     value: PropTypes.number,
 };
 

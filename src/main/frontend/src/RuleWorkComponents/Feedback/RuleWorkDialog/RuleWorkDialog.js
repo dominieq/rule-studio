@@ -1,21 +1,20 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import "./RuleWorkDialog.css";
-import StyledDialog from "../../RuleWorkComponents/Feedback/StyledDialog";
+import StyledDialog from "../StyledDialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
-import RuleWorkCharacteristics from "../DataDisplay/RuleWorkCharacteristics";
-import RuleWorkDataTables from "../DataDisplay/RuleWorkDataTables";
-import RuleWorkTableElements from "../DataDisplay/RuleWorkTableElements";
-import RuleWorkComparison from "../DataDisplay/RuleWorkComparison";
-import RuleWorkBox from "../Containers/RuleWorkBox";
+import RuleWorkCharacteristics from "../../DataDisplay/RuleWorkCharacteristics";
+import RuleWorkDataTables from "../../DataDisplay/RuleWorkDataTables";
+import RuleWorkTableElements from "../../DataDisplay/RuleWorkTableElements";
+import RuleWorkComparison from "../../DataDisplay/RuleWorkComparison";
+import RuleWorkBox from "../../Containers/RuleWorkBox";
 
 class RuleWorkDialog extends Component {
     constructor(props) {
         super(props);
-
 
         this.state = {
             tableIndex: -1,     
@@ -38,7 +37,7 @@ class RuleWorkDialog extends Component {
             tableIndex: index,     
             objectIndex: -1, //reset object index
         })
-    }
+    };
 
     getChosenTable = (tables, index) => {
         let counter = 0;
@@ -46,7 +45,7 @@ class RuleWorkDialog extends Component {
             if(index === counter) return tables[i];        
             counter++;
         }
-    }
+    };
 
     getChosenTableForRules = (tables) => {
         let counter = 0;
@@ -54,102 +53,123 @@ class RuleWorkDialog extends Component {
             if(this.indexOfIndicesOfCoveredObjects === counter) return tables[i];        
             counter++;
         }
-    }
+    };
 
     setChosenObject = (index) => {
         this.setState({
             objectIndex: index
         })
-    }
+    };
 
     getChosenObject = (tables) => {
-        return this.getChosenTable(tables,this.state.tableIndex)[this.state.objectIndex];
-    }
+        return this.getChosenTable(tables, this.state.tableIndex)[this.state.objectIndex];
+    };
    
     getObjectBeforeDialog = (id, tabName) => {
         if(tabName !== "unions" && tabName !== "rules") {
             return parseInt(id,10);
         }
         return undefined;
-    }
+    };
 
     render() {
-        const {id, name, tables, tabName, traits, onClose, result, ...other} = this.props;
+        const {item, projectResult, tabName, onClose, ...other} = this.props;
        
         let characteristicsExist = false;
-        if(traits) characteristicsExist = (Object.keys(traits).length !== 0 ? true : false);
+        if(item.traits) characteristicsExist = (Object.keys(item.traits).length !== 0);
         return (
             <div>
-               <StyledDialog fullScreen {...other} onClose={onClose}> 
-               <DialogContent className="ruleWorkDialog">
-                   <div className="ruleWorkDialog-top">
+                <StyledDialog fullScreen {...other} onClose={onClose}>
+                <DialogContent className="ruleWorkDialog">
+                    <div className="ruleWorkDialog-top">
                     <DialogContentText color="inherit">
-                        {tabName === "cones" ? `Selected object: ${name}`
-                        : (tabName === "unions" ? `Selected union: ${name}` 
-                        : (tabName === "rules" ? `Selected rule: ${name}` 
+                        {tabName === "cones" ? `Selected object: ${item.name}`
+                        : (tabName === "unions" ? `Selected union: ${item.name}`
+                        : (tabName === "rules" ? `Selected rule: ${item.name}`
                         : null
                         ))}
                     </DialogContentText>
                     </div>
-
                     {tabName !== "rules" &&
-                        <div className="ruleWorkDialog-bottom"> 
+                        <div className="ruleWorkDialog-bottom">
                             <div className="ruleWorkDialog-left">
                                 <div className="ruleWorkDialog-left-first">
-                                                <RuleWorkBox id={"dialog-object-list-left"} styleVariant={"tab-body1"}>
-                                                    <RuleWorkDataTables tables={tables} setChosenTable={this.setChosenTable} tabName={tabName}/>
-                                                </RuleWorkBox>  
+                                    <RuleWorkBox id={"dialog-object-list-left"} styleVariant={"tab-body"}>
+                                        <RuleWorkDataTables
+                                            tables={item.tables}
+                                            setChosenTable={this.setChosenTable}
+                                            tabName={tabName}
+                                        />
+                                    </RuleWorkBox>
                                 </div>
                                 <div className="ruleWorkDialog-left-second">
-                                        {this.state.tableIndex !== -1 && 
-                                            <RuleWorkBox id={"dialog-object-list-right"} styleVariant={"tab-body1"}>
-                                                <RuleWorkTableElements setChosenObject={this.setChosenObject} chosenTable={this.getChosenTable(tables,this.state.tableIndex)} tabName={tabName} />
-                                            </RuleWorkBox>
-                                        } 
+                                    {this.state.tableIndex !== -1 &&
+                                        <RuleWorkBox id={"dialog-object-list-right"} styleVariant={"tab-body"}>
+                                            <RuleWorkTableElements
+                                                setChosenObject={this.setChosenObject}
+                                                chosenTable={this.getChosenTable(item.tables, this.state.tableIndex)}
+                                                tabName={tabName}
+                                            />
+                                        </RuleWorkBox>
+                                    }
                                 </div>
                             </div>
                             <div className="ruleWorkDialog-right">
                                 { characteristicsExist === true //if charecteristics exist then display them on the half of the heigt of the screen
                                     &&  <div className="ruleWorkDialog-right-up">
-                                            <RuleWorkCharacteristics traits={traits} />
+                                            <RuleWorkCharacteristics traits={item.traits} />
                                         </div>
                                 }
                                 {characteristicsExist === true //and also display object comparison
                                     &&  <div className={'ruleWorkDialog-right-down'}>
-                                            {this.state.objectIndex !== -1 && 
-                                                <RuleWorkComparison  objectInDialog={this.getChosenObject(tables)} objectBeforeDialog={this.getObjectBeforeDialog(id,tabName)} informationTable={result.informationTable} />
+                                            {this.state.objectIndex !== -1 &&
+                                                <RuleWorkComparison
+                                                    objectInDialog={this.getChosenObject(item.tables)}
+                                                    objectBeforeDialog={this.getObjectBeforeDialog(item.id, tabName)}
+                                                    informationTable={projectResult.informationTable}
+                                                />
                                             }
                                         </div>
                                 }
                                 { characteristicsExist === false //if characteristics don't exist then display comparison on full height
-                                    &&  this.state.objectIndex !== -1 
-                                    &&  <RuleWorkComparison  objectInDialog={this.getChosenObject(tables)} objectBeforeDialog={this.getObjectBeforeDialog(id,tabName)} informationTable={result.informationTable} />
+                                    &&  this.state.objectIndex !== -1
+                                    &&  <RuleWorkComparison
+                                            objectInDialog={this.getChosenObject(item.tables)}
+                                            objectBeforeDialog={this.getObjectBeforeDialog(item.id, tabName)}
+                                            informationTable={projectResult.informationTable}
+                                        />
                                 }
-
                             </div>
                         </div>
                     }
                     {tabName === "rules" &&
-                        <div className="ruleWorkDialog-bottom"> 
+                        <div className="ruleWorkDialog-bottom">
                             <div className="ruleWorkDialog-left">
                                 <div className="ruleWorkDialog-left-first">
                                     { characteristicsExist === true &&
-                                        <RuleWorkCharacteristics traits={traits} />
+                                        <RuleWorkCharacteristics traits={item.traits} />
                                     }
                                 </div>
                                 <div className="ruleWorkDialog-left-second">
-                                        {
-                                            <RuleWorkBox id={"dialog-object-list"} styleVariant={"tab-body1"}>
-                                                <RuleWorkTableElements setChosenObject={this.setChosenObject} chosenTable={this.getChosenTableForRules(tables)} tabName={tabName} />
-                                            </RuleWorkBox>
-                                        } 
+                                    {
+                                        <RuleWorkBox id={"dialog-object-list"} styleVariant={"tab-body"}>
+                                            <RuleWorkTableElements
+                                                setChosenObject={this.setChosenObject}
+                                                chosenTable={this.getChosenTableForRules(item.tables)}
+                                                tabName={tabName}
+                                            />
+                                        </RuleWorkBox>
+                                    }
                                 </div>
                             </div>
                             <div className="ruleWorkDialog-right">
-                                {  this.state.objectIndex !== -1 
-                                    &&  <RuleWorkComparison  objectInDialog={this.getChosenTableForRules(tables)[this.state.objectIndex]} objectBeforeDialog={this.getObjectBeforeDialog(id,tabName)} informationTable={result.informationTable} />
+                                {  this.state.objectIndex !== -1
+                                    &&  <RuleWorkComparison
+                                            objectInDialog={this.getChosenTableForRules(item.tables)[this.state.objectIndex]}
+                                            objectBeforeDialog={this.getObjectBeforeDialog(item.id, tabName)}
+                                            informationTable={projectResult.informationTable}
+                                />
                                 }
-
                             </div>
                         </div>
                     }
@@ -159,7 +179,6 @@ class RuleWorkDialog extends Component {
                     <Button onClick={onClose} color="inherit"> Close </Button>
                 </DialogActions>
                 </StyledDialog>
-                
             </div>
         );
     }
@@ -205,16 +224,39 @@ class RuleWorkDialog extends Component {
     open={this.state.isOpen}
 }
 */
-
 RuleWorkDialog.propTypes = {
-    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.object]),
-    name: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    traits: PropTypes.object,
-    tables: PropTypes.object,
-    result: PropTypes.object,
-    tabName: PropTypes.oneOf(["unions","cones","rules"]),
+    item: PropTypes.shape({
+        id: PropTypes.string,
+        name: PropTypes.string,
+        traits: PropTypes.object,
+        actions: PropTypes.object,
+        tables: PropTypes.object,
+    }),
     onClose: PropTypes.func,
-    open: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+    open: PropTypes.bool,
+    projectResult: PropTypes.shape({
+        id: PropTypes.string,
+        name: PropTypes.string,
+        informationTable: PropTypes.shape({
+            attributes: PropTypes.array,
+            objects: PropTypes.array,
+        }),
+        classification: PropTypes.shape({
+
+        }),
+        dominanceCones: PropTypes.shape({
+
+        }),
+        calculatedDominanceCones: PropTypes.bool,
+        ruleSetWithCharacteristics: PropTypes.shape({
+
+        }),
+        unionsWithSingleLimitingDecision: PropTypes.shape({
+
+        }),
+        calculatedUnionsWithSingleLimitingDecision: PropTypes.bool,
+    }),
+    tabName: PropTypes.oneOf(["unions", "cones", "rules", "classification", "cross-validation"]),
 };
 
 export default RuleWorkDialog;

@@ -18,7 +18,13 @@ function RuleWorkListItem(props) {
 }
 
 RuleWorkListItem.propTypes = {
-    object: PropTypes.object,
+    object: PropTypes.shape({
+        id: PropTypes.string,
+        name: PropTypes.string,
+        traits: PropTypes.object,
+        actions: PropTypes.object,
+        tables: PropTypes.object,
+    }),
 };
 
 export default RuleWorkListItem

@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import FileSelectZone from "./FileSelectZone";
-import RuleWorkBox  from "../../RuleWorkComponents/Containers/RuleWorkBox";
+import RuleWorkBox from "../../RuleWorkComponents/Containers/RuleWorkBox"
 import RuleWorkSmallBox from "../../RuleWorkComponents/Containers/RuleWorkSmallBox"
-import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import StyledButton from "../../RuleWorkComponents/Inputs/StyledButton";
-import RuleWorkCollapsibleDivider from "../../RuleWorkComponents/Inputs/RuleWorkCollapsibleDivider";
 import StyledDivider from "../../RuleWorkComponents/DataDisplay/StyledDivider";
+import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledButton  from "../../RuleWorkComponents/Inputs/StyledButton"
+import RuleWorkCollapsibleDivider from "../../RuleWorkComponents/Inputs/RuleWorkCollapsibleDivider";
+import {RuleWorkSwitch} from "../../RuleWorkComponents/Inputs/RuleWorkSwitch";
 import StyledPaper from "../../RuleWorkComponents/Surfaces/StyledPaper";
-import StyledSwitch from "../../RuleWorkComponents/Inputs/StyledSwitch";
 import Collapse from "@material-ui/core/Collapse";
 
 class Import extends Component{
@@ -104,19 +104,25 @@ class Import extends Component{
 
         return (
             <RuleWorkBox id={"rule-work-import"} onKeyPress={this.onEnterClick} styleVariant={"body"}>
-                <StyledPaper id={"import-panel"} elevation={6} styleVariant={"panel"} square={true}>
+                <StyledPaper
+                    id={"import-panel"}
+                    elevation={6}
+                    styleVariant={"panel"}
+                    square={true}
+                    variant={"elevation"}
+                >
                     <RuleWorkSmallBox>
                         <RuleWorkTextField
                             fullWidth={true}
+                            hasOutsideLabel={true}
                             onChange={this.onProjectNameChange}
+                            outsideLabel={"Project name"}
                             value={name}
-                        >
-                            Project name
-                        </RuleWorkTextField>
+                        />
                     </RuleWorkSmallBox>
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <RuleWorkSmallBox>
-                        <StyledSwitch
+                        <RuleWorkSwitch
                             label={"Create project with metadata"}
                             checked={checked}
                             onChange={this.onCheckboxChange}

@@ -2,24 +2,25 @@ import React from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import Slider from "@material-ui/core/Slider";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     root: {
-        color: "#66FF66",
+        color: theme.palette.button.contained.backgroundAction,
         height: 6
     },
     thumb: {
         height: 18,
         width: 18,
-        backgroundColor: "#ABFAA9",
+        backgroundColor: theme.palette.button.contained.background,
         marginTop: -6,
         marginLeft: -8,
         '&:hover':{
-            backgroundColor: "#6BD425",
+            backgroundColor: theme.palette.button.contained.backgroundAction,
             boxShadow: "none",
         },
         '&:active': {
-            backgroundColor: "#6BD425",
-            border: "2px solid #66FF66",
+            backgroundColor: theme.palette.button.contained.backgroundAction,
+            border: "2px solid",
+            borderColor: theme.palette.text.default,
             boxShadow: "none",
         },
     },
@@ -30,9 +31,9 @@ const useStyles = makeStyles({
     rail: {
         height: 6,
         borderRadius: 3,
-        backgroundColor: "#2A3439",
+        backgroundColor: theme.palette.background.default,
     },
-}, {name: "MuiSlider"});
+}), {name: "MuiSlider"});
 
 function StyledSlider(props) {
     const {...other} = props;

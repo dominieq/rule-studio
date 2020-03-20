@@ -7,9 +7,9 @@ import AddIcon from '@material-ui/icons/Add';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import EditIcon from '@material-ui/icons/Edit';
 import TransformIcon from '@material-ui/icons/Transform';
-import RuleWorkTooltip from '../../../RuleWorkComponents/Inputs/RuleWorkTooltip';
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
+import RuleWorkTooltip from '../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip';
 
 export default function IconLabelButtons(props) {
     const style = {

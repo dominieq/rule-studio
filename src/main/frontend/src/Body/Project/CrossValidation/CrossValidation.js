@@ -1,22 +1,24 @@
 import React, {Component, Fragment} from "react";
 import PropTypes from "prop-types";
+import filterFunction from "../Utils/Filtering/FilterFunction";
+import FilterNoResults from "../Utils/Filtering/FilterNoResults";
+import FilterTextField from "../Utils/Filtering/FilterTextField";
+import CalculateButton from "../Utils/Calculations/CalculateButton";
+import SettingsButton from "../Utils/Settings/SettingsButton";
+import SettingsFooter from "../Utils/Settings/SettingsFooter";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
-import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import RuleWorkSelect from "../../../RuleWorkComponents/Inputs/RuleWorkSelect";
+import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
-import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import RuleWorkTooltip from "../../../RuleWorkComponents/Inputs/RuleWorkTooltip";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
-import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
+import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
+import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
+import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import StyledToggleButton from "../../../RuleWorkComponents/Inputs/StyledToggleButton";
+import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import Calculator from "mdi-material-ui/Calculator";
-import SvgIcon from "@material-ui/core/SvgIcon";
-import {mdiCloseThick, mdiCog} from "@mdi/js";
 
 class CrossValidation extends Component {
     constructor(props) {
@@ -27,12 +29,15 @@ class CrossValidation extends Component {
 
         this.state = {
             changes: false,
+            updated: false,
             loading: false,
             displayedItems: [],
             foldDisplay: 0,
             foldIndex: 0,
             foldNumber: 1,
             folds: [],
+            selectedItem: null,
+            openDetails: false,
             openSettings: false,
             snackbarProps: undefined,
         };
@@ -42,6 +47,7 @@ class CrossValidation extends Component {
 
     componentDidMount() {
         this._isMounted = true;
+
         console.log("Fetching cross-validation from server...");
         this.setState({
             foldDisplay: this.props.project.foldDisplay,
@@ -51,6 +57,8 @@ class CrossValidation extends Component {
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
+
         if (this.state.changes) {
             let project = {...this.props.project};
             if (Object.keys(this._data).length) {
@@ -59,7 +67,7 @@ class CrossValidation extends Component {
             project.foldDisplay = this.state.foldDisplay;
             project.foldIndex = this.state.foldIndex;
             project.foldNumber = this.state.foldNumber;
-            this.props.onTabChange(project, this.props.value, false);
+            this.props.onTabChange(project, this.props.value, this.state.updated);
         }
     }
 
@@ -81,6 +89,7 @@ class CrossValidation extends Component {
         if (!isNaN(input)) {
             this.setState({
                 changes: Number(input) !== 1,
+                updated: this.props.project.dataUpToDate,
                 foldNumber: Number(input),
             });
         }
@@ -100,6 +109,7 @@ class CrossValidation extends Component {
     onFoldIndexChange = (event) => {
         this.setState({
             changes: Boolean(event.target.value),
+            updated: this.props.project.dataUpToDate,
             foldIndex: event.target.value,
         })
     };
@@ -109,18 +119,34 @@ class CrossValidation extends Component {
 
         this.setState({
             changes: Boolean(newDisplay),
+            updated: this.props.project.dataUpToDate,
             foldDisplay: newDisplay,
         });
     };
 
-    onSnackbarClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
+    onFilterChange = (event) => {
+        const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
+        this.setState({displayedItems: filteredItems});
+    };
 
+    onDetailsOpen = (index) => {
         this.setState({
-            snackbarProps: undefined,
+            selectedItem: this.state.displayedItems[index],
+            openDetails: true
         });
+    };
+
+    onDetailsClose = () => {
+        this.setState({
+            selectedItem: null,
+            openDetails: false,
+        });
+    };
+
+    onSnackbarClose = (event, reason) => {
+        if (reason !== 'clickaway') {
+            this.setState({snackbarProps: undefined});
+        }
     };
 
     renderResultsActions = () => {
@@ -129,13 +155,15 @@ class CrossValidation extends Component {
         if (Array.isArray(folds) && folds.length) {
             return (
                 <Fragment>
-                    <RuleWorkSelect
-                        label={"Choose fold"}
+                    <RuleWorkTextField
+                        hasOutsideLabel={true}
                         onChange={this.onFoldIndexChange}
+                        outsideLabel={"Choose fold"}
+                        select={true}
                         value={foldIndex}
                     >
                         {folds}
-                    </RuleWorkSelect>
+                    </RuleWorkTextField>
                     <StyledDivider />
                     <ToggleButtonGroup
                         aria-label={"display-toggle-button-group"}
@@ -161,42 +189,28 @@ class CrossValidation extends Component {
     };
 
     render() {
-        const {loading, displayedItems, foldNumber, openSettings, snackbarProps} = this.state;
+        const {loading, displayedItems, foldNumber, selectedItem, openDetails,
+            openSettings, snackbarProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-cross-validation"} styleVariant={"tab"}>
-                <StyledPaper
-                    id={"cross-validation-bar"}
-                    paperRef={this.upperBar}
-                    styleVariant={"bar"}
-                    square={true}
-                    variant={"outlined"}
-                >
-                    <RuleWorkTooltip title={"Click to customize number of folds"}>
-                        <StyledButton
-                            aria-label={"cross-validation-settings-button"}
-                            isIcon={true}
-                            onClick={this.onSettingsClick}
-                        >
-                            <SvgIcon><path d={mdiCog} /></SvgIcon>
-                        </StyledButton>
-                    </RuleWorkTooltip>
+                <StyledPaper id={"cross-validation-bar"} paperRef={this.upperBar}>
+                    <SettingsButton
+                        aria-label={"cross-validation-settings-button"}
+                        onClick={this.onSettingsClick}
+                        title={"Click to customize number of folds"}
+                    />
                     <StyledDivider />
                     <RuleWorkTooltip title={`Current number of folds: ${foldNumber}`}>
-                        <StyledButton
-                            aria-label={"cross-validation-calculate"}
-                            disable={!this.props.project & loading}
-                            disableElevation={true}
+                        <CalculateButton
+                            aria-label={"cross-validation-calculate-button"}
+                            disabled={!this.props.project || loading}
                             onClick={this.onCalculateClick}
-                            startIcon={<Calculator />}
-                            themeVariant={"primary"}
-                            variant={"contained"}
-                        >
-                            Calculate
-                        </StyledButton>
+                        />
                     </RuleWorkTooltip>
                     <span style={{flexGrow: 1}} />
                     {this.renderResultsActions()}
+                    <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <RuleWorkDrawer
                     height={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
@@ -206,32 +220,39 @@ class CrossValidation extends Component {
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <RuleWorkSmallBox id={"fold-number-selector"} >
                         <RuleWorkTextField
-                            value={foldNumber}
+                            hasOutsideLabel={true}
                             onChange={this.onFoldNumberChange}
-                            style={{maxWidth: 128}}
-                        >
-                            Choose number of folds
-                        </RuleWorkTextField>
+                            outsideLabel={"Choose number of folds"}
+                            style={{maxWidth: 72}}
+                            value={foldNumber}
+                        />
                     </RuleWorkSmallBox>
-                    <RuleWorkSmallBox id={"cross-validation-footer"} styleVariant={"footer"}>
-                        <StyledButton
-                            isIcon={true}
-                            onClick={this.onSettingsClose}
-                            themeVariant={"secondary"}
-                        >
-                            <SvgIcon><path d={mdiCloseThick} /></SvgIcon>
-                        </StyledButton>
-                    </RuleWorkSmallBox>
+                    <SettingsFooter
+                        id={"cross-validation-settings-footer"}
+                        onClose={this.onSettingsClose}
+                        styleVariant={"footer"}
+                    />
                 </RuleWorkDrawer>
                 <RuleWorkBox id={"cross-validation-body"} styleVariant={"tab-body"}>
                     {loading ?
                         <StyledCircularProgress />
                         :
-                        <RuleWorkList>
-                            {displayedItems}
-                        </RuleWorkList>
+                        displayedItems ?
+                            <RuleWorkList onItemSelected={this.onDetailsOpen}>
+                                {displayedItems}
+                            </RuleWorkList>
+                            :
+                            <FilterNoResults />
                     }
                 </RuleWorkBox>
+                {selectedItem &&
+                    <RuleWorkDialog
+                        item={selectedItem}
+                        onClose={this.onDetailsClose}
+                        open={openDetails}
+                        projectResult={this.props.project.result}
+                    />
+                }
                 <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )
@@ -239,10 +260,8 @@ class CrossValidation extends Component {
 }
 
 CrossValidation.propTypes = {
-    dataUpToDate: PropTypes.bool,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    upToDate: PropTypes.bool,
     value: PropTypes.number,
 };
 

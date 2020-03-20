@@ -1,7 +1,7 @@
 import React, {Fragment} from "react";
 import PropTypes from "prop-types";
-import RuleWorkHelper from "../../../RuleWorkComponents/Feedback/RuleWorkHelper";
-import RuleWorkSelect from "../../../RuleWorkComponents/Inputs/RuleWorkSelect";
+import RuleWorkHelper from "../../../../RuleWorkComponents/Feedback/RuleWorkHelper";
+import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 
 function MeasureSelector(props) {
     return (
@@ -11,13 +11,15 @@ function MeasureSelector(props) {
             >
                 {"Add more information to tooltip"}
             </RuleWorkHelper>
-            <RuleWorkSelect
+            <RuleWorkTextField
                 disabledChildren={["rough membership"]}
-                label={"Select consistency measure"}
+                hasOutsideLabel={true}
+                outsideLabel={"Select consistency measure"}
+                select={true}
                 {...props}
             >
                 {["epsilon", "rough membership"]}
-            </RuleWorkSelect>
+            </RuleWorkTextField>
         </Fragment>
     )
 }

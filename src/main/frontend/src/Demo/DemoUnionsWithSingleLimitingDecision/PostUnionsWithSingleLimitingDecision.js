@@ -148,7 +148,7 @@ class PostUnionsWithSingleLimitingDecision extends Component {
             console.log(response)
             if(response.status === 200) {
                 response.json().then(result => {
-                    console.log("Received dominance cones:")
+                    console.log("Received unions with single limiting decision:")
                     console.log(result)
                 }).catch(err => {
                     console.log(err)

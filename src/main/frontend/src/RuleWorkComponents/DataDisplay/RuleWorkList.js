@@ -5,13 +5,13 @@ import RuleWorkListItem from "./RuleWorkListItem";
 import StyledPagination from "../Navigation/StyledPagination";
 import List from "@material-ui/core/List";
 
-const StyledList = withStyles({
+const StyledList = withStyles(theme=> ({
     root: {
-        backgroundColor: "#545F66",
-        color: "#ABFAA9",
+        backgroundColor: theme.palette.list.background,
+        color: theme.palette.list.text,
         minWidth: "50%",
     }
-})(props => <List {...props} />);
+}))(props => <List {...props} />);
 
 class RuleWorkList extends Component {
     constructor(props) {
@@ -27,6 +27,8 @@ class RuleWorkList extends Component {
     onListItemClick = (event, index) => {
         this.setState({
             selectedItem: index,
+        }, () => {
+            this.props.onItemSelected(this.state.selectedItem);
         })
     };
 
@@ -38,7 +40,7 @@ class RuleWorkList extends Component {
 
     render() {
         const {selectedItem, selectedPage, itemsPerPage} = this.state;
-        const {children, ...other} = this.props;
+        const {children, onItemSelected, ...other} = this.props;
 
         const count = Math.ceil(children.length / itemsPerPage);
 
@@ -72,7 +74,14 @@ class RuleWorkList extends Component {
 }
 
 RuleWorkList.propTypes = {
-    children: PropTypes.arrayOf(PropTypes.object),
+    children: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.string,
+        name: PropTypes.string,
+        traits: PropTypes.object,
+        actions: PropTypes.object,
+        tables: PropTypes.object,
+    })),
+    onItemSelected: PropTypes.func,
 };
 
 export default RuleWorkList;

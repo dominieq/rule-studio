@@ -7,35 +7,44 @@ import Cones from "./Cones/Cones";
 import Data from "./Data/DisplayData";
 import Rules from "./Rules/Rules";
 import Unions from "./Unions/Unions";
+import ExternalRulesAlert from "./Utils/Alerts/ExternalRulesAlert";
+import UpdateAlert from "./Utils/Alerts/UpdateAlert";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 
-const StyledTabs = withStyles({
+const StyledTabs = withStyles(theme => ({
     indicator: {
-        backgroundColor: "#545F66",
+        backgroundColor: theme.palette.tab.background,
     },
-}, {name: "MuiTabs"})(props => <Tabs {...props} />);
+}), {name: "MuiTabs"})(props => <Tabs {...props} />);
 
-const StyledTab = withStyles({
+const StyledTab = withStyles(theme => ({
     root: {
-        color: "rgb(171,250,169, 0.4)",
+        color: theme.palette.tab.textIdle,
         '&:hover': {
-            backgroundColor: "rgb(84,95,102, 0.8)",
-            color: "rgb(102,255,102, 0.8)",
+            backgroundColor: theme.palette.tab.backgroundAction,
+            color: theme.palette.tab.textAction,
         },
         '&:focus': {
-            backgroundColor: "rgb(84,95,102, 0.8)",
-            color: "rgb(102,255,102, 0.8)",
+            backgroundColor: theme.palette.tab.backgroundAction,
+            color: theme.palette.tab.textAction,
         }
     },
     textColorInherit: {
         '&.Mui-selected': {
-            backgroundColor: "#545F66",
-            color: "#66FF66",
+            backgroundColor: theme.palette.tab.background,
+            color: theme.palette.tab.text,
             opacity: 1,
         },
+    },
+    wrapper: {
+        flexDirection: "row",
+        '&>.MuiSvgIcon-root': {
+            marginRight: 8,
+        }
     }
-}, {name: "MuiTab"})(props => <Tab {...props} disableRipple={true} /> );
+
+}), {name: "MuiTab"})(props => <Tab {...props} disableRipple={true} /> );
 
 class ProjectTabs extends Component {
     constructor(props) {
@@ -61,12 +70,33 @@ class ProjectTabs extends Component {
 
     getTabBodyProps = (index) => {
         return ({
-            dataUpToDate: this.props.upToDate,
             project: this.props.project,
             onTabChange: this.props.onTabChange,
-            upToDate: this.props.tabsUpToDate[index],
             value: index,
         })
+    };
+
+    renderTabLabel = (name, index) => {
+        const project = this.props.project;
+        let addExternalRulesAlert = project.externalRules && index > 1;
+
+        if (project && project.tabsUpToDate[index]) {
+            return (
+                <Fragment>
+                    {addExternalRulesAlert ? <ExternalRulesAlert /> : null}
+                    {name}
+                </Fragment>
+            );
+        } else {
+            return (
+                <Fragment>
+                    {addExternalRulesAlert ? <ExternalRulesAlert /> : null}
+                    <UpdateAlert>
+                        {name}
+                    </UpdateAlert>
+                </Fragment>
+            );
+        }
     };
 
     render() {
@@ -76,11 +106,26 @@ class ProjectTabs extends Component {
             <Fragment>
                 <StyledTabs aria-label={"project tabs"} centered={true} onChange={this.onTabChange} value={selected}>
                     <StyledTab label={"Data"} {...this.getTabProps(0)} />
-                    <StyledTab label={"Dominance cones"} {...this.getTabProps(1)} />
-                    <StyledTab label={"Class unions"} {...this.getTabProps(2)} />
-                    <StyledTab label={"Rules"} {...this.getTabProps(3)} />
-                    <StyledTab label={"Classification"} {...this.getTabProps(4)} />
-                    <StyledTab label={"Cross-validation"} {...this.getTabProps(5)} />
+                    <StyledTab
+                        label={this.renderTabLabel("Dominance cones", 0)}
+                        {...this.getTabProps(1)}
+                    />
+                    <StyledTab
+                        label={this.renderTabLabel("Class unions" , 1)}
+                        {...this.getTabProps(2)}
+                    />
+                    <StyledTab
+                        label={this.renderTabLabel("Rules", 2)}
+                        {...this.getTabProps(3)}
+                    />
+                    <StyledTab
+                        label={this.renderTabLabel("Classification", 3)}
+                        {...this.getTabProps(4)}
+                    />
+                    <StyledTab
+                        label={this.renderTabLabel("Cross-validation", 4)}
+                        {...this.getTabProps(5)}
+                    />
                 </StyledTabs>
                 {
                     {
@@ -98,11 +143,9 @@ class ProjectTabs extends Component {
 }
 
 ProjectTabs.propTypes = {
-    dataUpToDate: PropTypes.bool,
-    project: PropTypes.object,
     onDataChange: PropTypes.func,
     onTabChange: PropTypes.func,
-    tabsUpToDate: PropTypes.arrayOf(PropTypes.bool),
+    project: PropTypes.object,
 };
 
 export default ProjectTabs;
