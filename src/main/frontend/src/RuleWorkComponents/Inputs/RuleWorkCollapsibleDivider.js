@@ -7,6 +7,7 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 
 const useStylesButton = makeStyles(theme => ({
     root: {
+        color: theme.palette.paper.text,
         padding: 0,
     },
     expand: {
@@ -39,7 +40,7 @@ function ExpandButton(props) {
     )
 }
 
-const useStylesDivider = makeStyles({
+const useStylesDivider = makeStyles(theme => ({
     root: {
         display: "flex",
         flexDirection: "row",
@@ -50,7 +51,7 @@ const useStylesDivider = makeStyles({
     },
     label: {
         fontSize: "smaller",
-        color: "#2A3439",
+        color: theme.palette.paper.text,
         minWidth: "fit-content",
         marginRight: "1em",
         marginTop: "-1px",
@@ -58,9 +59,9 @@ const useStylesDivider = makeStyles({
     'horizontal-line': {
         height: "1px",
         width: "100%",
-        backgroundColor: "#2A3439",
+        backgroundColor: theme.palette.paper.text,
     },
-}, {name: "styled-collapsible-divider"});
+}), {name: "styled-collapsible-divider"});
 
 function RuleWorkCollapsibleDivider(props) {
     const {onClick, expanded} = props;

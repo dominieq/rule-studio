@@ -3,12 +3,17 @@ import PropTypes from 'prop-types';
 import {makeStyles} from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     tooltip: {
-        backgroundColor: "#ABFAA9",
-        color: "#2A3439",
+        backgroundColor: theme.palette.paper.text,
+        border: "1px solid",
+        borderColor: theme.palette.background.default,
+        color: theme.palette.background.default,
+    },
+    wrapper: {
+
     }
-});
+}), {name: "MuiTooltip"});
 
 function DefaultElement(props, ref) {
     const {children, isDisabled, ...other} = props;
@@ -23,13 +28,13 @@ function DefaultElement(props, ref) {
 const DefaultForwardRef = React.forwardRef(DefaultElement);
 
 function RuleWorkTooltip(props) {
-    const {children, isCustom, themeVariant, ...other} = props;
-    const classes = useStyles(props);
+    const {children, classes: propsClasses, isCustom, ...other} = props;
+    const classes = {...useStyles(), ...propsClasses};
 
     return (
         <Tooltip classes={{tooltip: classes.tooltip}} {...other}>
             {isCustom ?
-                <DefaultForwardRef>
+                <DefaultForwardRef className={classes.wrapper}>
                     {children}
                 </DefaultForwardRef>
                 :
@@ -40,15 +45,18 @@ function RuleWorkTooltip(props) {
 }
 
 RuleWorkTooltip.propTypes = {
-    children: PropTypes.node,
+    arrow: PropTypes.bool,
+    children: PropTypes.node.isRequired,
+    classes: PropTypes.object,
+    enterDelay: PropTypes.number,
+    id: PropTypes.string,
     isCustom: PropTypes.bool,
-    themeVariant: PropTypes.oneOf(["default", "primary", "secondary"]),
+    leaveDelay: PropTypes.number,
     title: PropTypes.string.isRequired,
 };
 
 RuleWorkTooltip.defaultProps = {
     isCustom: true,
-    themeVariant: "default",
 };
 
 export default RuleWorkTooltip;

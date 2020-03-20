@@ -3,23 +3,22 @@ import PropTypes from "prop-types";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterNoResults from "../Utils/Filtering/FilterNoResults";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
+import CalculateButton from "../Utils/Calculations/CalculateButton";
+import SettingsButton from "../Utils/Settings/SettingsButton";
+import SettingsFooter from "../Utils/Settings/SettingsFooter";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
-import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
 import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
 import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
 import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import SvgIcon from "@material-ui/core/SvgIcon";
-import {mdiCloseThick, mdiCog} from "@mdi/js"
 
 class Classification extends Component {
     constructor(props) {
@@ -206,6 +205,7 @@ class Classification extends Component {
     onRuleTypeChange = (event) => {
         this.setState({
             changes: event.target.value !== "certain",
+            updated: this.props.project.dataUpToDate,
             ruleType: event.target.value,
         });
     };
@@ -271,49 +271,36 @@ class Classification extends Component {
 
         return (
             <RuleWorkBox id={"rule-work-classification"} styleVariant={"tab"}>
-                <StyledPaper
-                    id={"classification-bar"}
-                    paperRef={this.upperBar}
-                    styleVariant={"bar"}
-                    square={true}
-                    variant={"outlined"}
-                >
-                    <RuleWorkTooltip title={"Click to choose rule type"}>
-                        <StyledButton
-                            isIcon={true}
-                            onClick={this.onSettingsClick}
-                        >
-                            <SvgIcon><path d={mdiCog}/></SvgIcon>
-                        </StyledButton>
-                    </RuleWorkTooltip>
+                <StyledPaper id={"classification-bar"} paperRef={this.upperBar}>
+                    <SettingsButton
+                        aria-label={"classification-settings-button"}
+                        onClick={this.onSettingsClick}
+                        title={"Click to choose rule type"}
+                    />
                     <StyledDivider />
                     <RuleWorkButtonGroup
                         id={"classification-button-group"}
                         options={["Classify current data", "Choose new data & classify"]}
                     >
-                        <StyledButton
+                        <CalculateButton
                             aria-label={"classify-current-file"}
-                            disableElevation={true}
+                            disabled={!this.props.project || loading}
                             onClick={this.onCalculateClick}
-                            themeVariant={"primary"}
-                            variant={"contained"}
                         >
                             Classify current data
-                        </StyledButton>
+                        </CalculateButton>
                         <RuleWorkUpload
                             accept={".json,.csv"}
                             id={"classify-new-file"}
                             onChange={this.onCalculateClick}
                         >
-                            <StyledButton
+                            <CalculateButton
                                 aria-label={"classify-new-file"}
-                                disableElevation={true}
+                                disabled={!this.props.project || loading}
                                 component={"span"}
-                                themeVariant={"primary"}
-                                variant={"contained"}
                             >
                                 Choose new data & classify
-                            </StyledButton>
+                            </CalculateButton>
                         </RuleWorkUpload>
                     </RuleWorkButtonGroup>
                     <span style={{flexGrow: 1}} />
@@ -337,15 +324,10 @@ class Classification extends Component {
                             {["certain", "possible"]}
                         </RuleWorkTextField>
                     </RuleWorkSmallBox>
-                    <RuleWorkSmallBox id={"classification-settings-footer"} styleVariant={"footer"}>
-                        <StyledButton
-                            isIcon={true}
-                            onClick={this.onSettingsClose}
-                            themeVariant={"secondary"}
-                        >
-                            <SvgIcon><path d={mdiCloseThick} /></SvgIcon>
-                        </StyledButton>
-                    </RuleWorkSmallBox>
+                    <SettingsFooter
+                        id={"classification-settings-footer"}
+                        onClose={this.onSettingsClose}
+                    />
                 </RuleWorkDrawer>
                 <RuleWorkBox id={"classification-body"} styleVariant={"tab-body"} >
                     {loading ?

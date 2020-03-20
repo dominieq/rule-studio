@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
 import DialogContent from "@material-ui/core/DialogContent";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme=> ({
     root: {
         display: "flex",
         flexDirection: "row",
@@ -12,10 +12,10 @@ const useStyles = makeStyles({
         justifyContent: "space-evenly",
     },
     dividers: {
-        borderTopColor: "#6BD425",
-        borderBottomColor: "#6BD425",
+        borderTopColor: theme.palette.text.default,
+        borderBottomColor: theme.palette.text.default,
     }
-},{name: "MuiDialogContent"});
+}),{name: "MuiDialogContent"});
 
 function StyledDialogContent(props) {
     const {children, classes: propsClasses, ...other} = props;

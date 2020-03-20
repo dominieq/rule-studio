@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
+import CalculateButton from "../Utils/Calculations/CalculateButton";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterNoResults from "../Utils/Filtering/FilterNoResults";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -9,9 +10,7 @@ import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
 import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import Calculator from "mdi-material-ui/Calculator";
 
 class Cones extends Component {
     constructor(props) {
@@ -238,17 +237,12 @@ class Cones extends Component {
 
         return (
             <RuleWorkBox id={"rule-work-cones"} styleVariant={"tab"}>
-                <StyledPaper id={"cones-bar"} paperRef={this.upperBar} square={true} variant={"outlined"}>
-                    <StyledButton
+                <StyledPaper id={"cones-bar"} paperRef={this.upperBar}>
+                    <CalculateButton
+                        aria-label={"cones-calculate-button"}
                         disabled={!this.props.project || loading}
-                        disableElevation={true}
                         onClick={this.onCalculateClick}
-                        startIcon={<Calculator />}
-                        themeVariant={"primary"}
-                        variant={"contained"}
-                    >
-                        Calculate
-                    </StyledButton>
+                    />
                     <span style={{flexGrow: 1}}/>
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>

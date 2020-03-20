@@ -4,9 +4,9 @@ import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     root: {
-        color: "#66FF66",
+        color: theme.palette.text.default,
     },
     wrapper: {
         flexGrow: 1,
@@ -14,7 +14,7 @@ const useStyles = makeStyles({
         alignItems: "center",
         justifyContent: "center",
     }
-});
+}));
 
 function StyledCircularProgress(props) {
     const {useWrapper, ...other} = props;

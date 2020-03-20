@@ -3,8 +3,11 @@ import PropTypes from "prop-types";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterNoResults from "../Utils/Filtering/FilterNoResults";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
+import CalculateButton from "../Utils/Calculations/CalculateButton";
 import MeasureSelector from "../Utils/Calculations/MeasureSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
+import SettingsButton from "../Utils/Settings/SettingsButton";
+import SettingsFooter from "../Utils/Settings/SettingsFooter";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
@@ -18,11 +21,8 @@ import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledC
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import SvgIcon from "@material-ui/core/SvgIcon";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
-import Calculator from "mdi-material-ui/Calculator";
-import {mdiCloseThick, mdiCog} from "@mdi/js";
 
 class Rules extends Component {
     constructor(props) {
@@ -67,7 +67,7 @@ class Rules extends Component {
                             this.setState({
                                 loading: false,
                                 displayedItems: items,
-                                externalRules: this.props.project.external,
+                                externalRules: this.props.project.externalRules,
                                 threshold: this.props.project.threshold,
                                 measure: this.props.project.measure,
                             }, () => {
@@ -80,7 +80,7 @@ class Rules extends Component {
                         if (this._isMounted) {
                             this.setState({
                                 loading: false,
-                                externalRules: this.props.project.external,
+                                externalRules: this.props.project.externalRules,
                                 threshold: this.props.threshold,
                                 measure: this.props.measure,
                             });
@@ -90,7 +90,7 @@ class Rules extends Component {
                     if (this._isMounted) {
                         this.setState({
                             loading: false,
-                            externalRules: this.props.project.external,
+                            externalRules: this.props.project.externalRules,
                             threshold: this.props.project.threshold,
                             measure: this.props.project.measure,
                         });
@@ -102,7 +102,7 @@ class Rules extends Component {
                     msg = "Server error! Couldn't load rules :( " + error.message;
                     this.setState({
                         loading: false,
-                        externalRules: this.props.project.external,
+                        externalRules: this.props.project.externalRules,
                         threshold: this.props.threshold,
                         measure: this.props.measure,
                         snackbarProps: {open: true, message: msg, variant: "error"},
@@ -143,6 +143,7 @@ class Rules extends Component {
     onThresholdChange = (threshold) => {
         this.setState({
             changes: Boolean(threshold),
+            updated: this.props.project.dataUpToDate,
             threshold: threshold,
         });
     };
@@ -150,6 +151,7 @@ class Rules extends Component {
     onMeasureChange = (event) => {
         this.setState({
             changes: event.target.value !== "epsilon",
+            updated: this.props.project.dataUpToDate,
             measure: event.target.value,
         });
     };
@@ -381,37 +383,19 @@ class Rules extends Component {
 
         return (
             <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
-                <StyledPaper
-                    id={"rules-bar"}
-                    paperRef={this.upperBar}
-                    styleVariant={"bar"}
-                    square={true}
-                    variant={"outlined"}
-                >
-                    <RuleWorkTooltip title={"Click to choose consistency & measure"}>
-                        <StyledButton
-                            aria-label={"rules-settings-button"}
-                            isIcon={true}
-                            onClick={this.onSettingsClick}
-                            themeVariant={"primary"}
-                            variant={"contained"}
-                        >
-                            <SvgIcon><path d={mdiCog} /></SvgIcon>
-                        </StyledButton>
-                    </RuleWorkTooltip>
+                <StyledPaper id={"rules-bar"} paperRef={this.upperBar}>
+                    <SettingsButton
+                        aria-label={"rules-settings-button"}
+                        onClick={this.onSettingsClick}
+                        title={"Click to choose consistency & measure"}
+                    />
                     <StyledDivider />
                     <RuleWorkTooltip title={`Calculate with threshold ${threshold}`}>
-                        <StyledButton
+                        <CalculateButton
                             aria-label={"rules-calculate-button"}
                             disabled={!this.props.project || loading}
-                            disableElevation={true}
                             onClick={this.onCalculateClick}
-                            startIcon={<Calculator />}
-                            themeVariant={"primary"}
-                            variant={"contained"}
-                        >
-                            Calculate
-                        </StyledButton>
+                        />
                     </RuleWorkTooltip>
                     <StyledDivider />
                     <RuleWorkTooltip title={"Upload file"}>
@@ -464,16 +448,10 @@ class Rules extends Component {
                             value={threshold}
                         />
                     </RuleWorkSmallBox>
-                    <RuleWorkSmallBox id={"rules-settings-footer"} styleVariant={"footer"}>
-                        <StyledButton
-                            aria-label={"rules-close-settings-button"}
-                            isIcon={true}
-                            onClick={this.onSettingsClose}
-                            themeVariant={"secondary"}
-                        >
-                            <SvgIcon><path d={mdiCloseThick} /></SvgIcon>
-                        </StyledButton>
-                    </RuleWorkSmallBox>
+                    <SettingsFooter
+                        id={"rules-settings-footer"}
+                        onClose={this.onSettingsClose}
+                    />
                 </RuleWorkDrawer>
                 <RuleWorkBox
                     id={"rules-body"}

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     docked: {
         position: "absolute",
         maxWidth: "50%",
@@ -14,14 +14,14 @@ const useStyles = makeStyles({
     paper: {
         position: "relative",
         padding: "0 16px 8px",
-        backgroundColor: "#545F66",
-        color: "#ABFAA9",
+        backgroundColor: theme.palette.paper.background,
+        color: theme.palette.paper.text,
         boxShadow: "0px 11px 15px -7px rgba(0,0,0,0.2), " +
             "0px 24px 38px 3px rgba(0,0,0,0.14), " +
             "0px 9px 46px 8px rgba(0,0,0,0.1)",
         zIndex: 0,
     },
-}, {name: "rule-work-drawer"});
+}), {name: "rule-work-drawer"});
 
 function RuleWorkDrawer(props) {
     const {children, height, onClickAway, ...other} = props;

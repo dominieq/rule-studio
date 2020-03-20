@@ -12,28 +12,28 @@ import UpdateAlert from "./Utils/Alerts/UpdateAlert";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 
-const StyledTabs = withStyles({
+const StyledTabs = withStyles(theme => ({
     indicator: {
-        backgroundColor: "#545F66",
+        backgroundColor: theme.palette.tab.background,
     },
-}, {name: "MuiTabs"})(props => <Tabs {...props} />);
+}), {name: "MuiTabs"})(props => <Tabs {...props} />);
 
-const StyledTab = withStyles({
+const StyledTab = withStyles(theme => ({
     root: {
-        color: "rgb(171,250,169, 0.4)",
+        color: theme.palette.tab.textIdle,
         '&:hover': {
-            backgroundColor: "rgb(84,95,102, 0.8)",
-            color: "rgb(102,255,102, 0.8)",
+            backgroundColor: theme.palette.tab.backgroundAction,
+            color: theme.palette.tab.textAction,
         },
         '&:focus': {
-            backgroundColor: "rgb(84,95,102, 0.8)",
-            color: "rgb(102,255,102, 0.8)",
+            backgroundColor: theme.palette.tab.backgroundAction,
+            color: theme.palette.tab.textAction,
         }
     },
     textColorInherit: {
         '&.Mui-selected': {
-            backgroundColor: "#545F66",
-            color: "#66FF66",
+            backgroundColor: theme.palette.tab.background,
+            color: theme.palette.tab.text,
             opacity: 1,
         },
     },
@@ -44,7 +44,7 @@ const StyledTab = withStyles({
         }
     }
 
-}, {name: "MuiTab"})(props => <Tab {...props} disableRipple={true} /> );
+}), {name: "MuiTab"})(props => <Tab {...props} disableRipple={true} /> );
 
 class ProjectTabs extends Component {
     constructor(props) {

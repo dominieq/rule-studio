@@ -16,7 +16,7 @@ const useStylesSwitch = makeStyles(theme => ({
         '&$checked': {
             transform: 'translateX(16px)',
             '& + $track': {
-                backgroundColor: '#6BD425',
+                backgroundColor: theme.palette.button.contained.backgroundAction,
                 opacity: 1,
                 border: 'none',
             },
@@ -28,12 +28,13 @@ const useStylesSwitch = makeStyles(theme => ({
     thumb: {
         width: 17,
         height: 17,
-        color: '#ABFAA9',
+        color: theme.palette.button.contained.background,
     },
     track: {
         borderRadius: 20 / 2,
-        border: "1px solid #2A3439",
-        backgroundColor: "#545F66",
+        border: "1px solid",
+        borderColor: theme.palette.button.contained.text,
+        backgroundColor: theme.palette.background.default,
         opacity: 1,
         transition: theme.transitions.create(['background-color', 'border']),
     },

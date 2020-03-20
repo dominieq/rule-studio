@@ -5,13 +5,13 @@ import RuleWorkListItem from "./RuleWorkListItem";
 import StyledPagination from "../Navigation/StyledPagination";
 import List from "@material-ui/core/List";
 
-const StyledList = withStyles({
+const StyledList = withStyles(theme=> ({
     root: {
-        backgroundColor: "#545F66",
-        color: "#ABFAA9",
+        backgroundColor: theme.palette.list.background,
+        color: theme.palette.list.text,
         minWidth: "50%",
     }
-})(props => <List {...props} />);
+}))(props => <List {...props} />);
 
 class RuleWorkList extends Component {
     constructor(props) {
