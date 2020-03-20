@@ -5,7 +5,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import org.rulelearn.classification.*;
 import org.rulelearn.data.*;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
+import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
+import org.rulelearn.types.EnumerationFieldFactory;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.validation.ClassificationValidationResult;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
@@ -94,10 +96,20 @@ public class ClassificationService {
         for(int i = 0; i < simpleClassificationResults.length; i++) {
             suggestedDecisions[i] = simpleClassificationResults[i].getSuggestedDecision();
         }
-        OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(informationTable.getUniqueDecisions(), informationTable.getDecisions(), suggestedDecisions);
-        ordinalMisclassificationMatrix.
 
-        Classification classification = new Classification(simpleClassificationResults, informationTable, indicesOfCoveringRules, indicesOfCoveredObjects, classificationValidationResult, ordinalMisclassificationMatrix);
+        EnumerationField decisionEnumerationField = (EnumerationField)evaluationField;
+        ElementList elementList = decisionEnumerationField.getElementList();
+        AttributePreferenceType attributePreferenceType = decisionEnumerationField.getPreferenceType();
+        Decision[] decisionsDomain = new Decision[elementList.getSize()];
+        for(int i = 0; i < elementList.getSize(); i++) {
+            EnumerationField enumerationField = EnumerationFieldFactory.getInstance().create(elementList, i, attributePreferenceType);
+            decisionsDomain[i] = DecisionFactory.INSTANCE.create(
+                    new EnumerationField[] {enumerationField},
+                    new int[] {decisionAttributeIndex});
+        }
+        OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(informationTable.getOrderedUniqueFullyDeterminedDecisions(), informationTable.getDecisions(), suggestedDecisions);
+
+        Classification classification = new Classification(simpleClassificationResults, informationTable, decisionsDomain, indicesOfCoveringRules, indicesOfCoveredObjects, classificationValidationResult, ordinalMisclassificationMatrix);
         return classification;
     }
 
