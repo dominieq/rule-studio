@@ -6,12 +6,27 @@
     border: solid 1px red;
 }
 
-.data-modified {
-  display: inline-block;
-  background-color: black;
-  color: white;
+
+/******KOLOROWANIE GRIDU **** */
+/*
+.react-grid-Main {
+  color: #f4f80f;
 }
 
+.react-grid-Row:hover .react-grid-Cell,
+.react-grid-Row.row-context-menu .react-grid-Cell {
+  background-color: #ff7cf8;
+}
+
+.react-grid-Cell {
+  background-color: #545F66;
+  color: #ABFAA9;
+}
+
+div.react-grid-HeaderCell {
+  background: #f87a32;
+}
+*/
 div.react-grid-HeaderCell .input-sm {
     height: 30px;
     padding: 5px 10px;
@@ -20,7 +35,11 @@ div.react-grid-HeaderCell .input-sm {
     border-radius: 3px;
     max-width : 100%;
     border : 1px solid #ddd;
+    /*background-color: blue;
+    color: black;*/
 }
+
+/*********KOLOROWANIE GRIDU************** */
 
 div.react-grid-HeaderCell-sortable {
   height: 100%;
@@ -42,20 +61,20 @@ div.react-grid-HeaderCell-sortable > .pull-right {
  border-radius: 100%;
  font-size: small;
 }
-
+/*
 .react-grid-HeaderCell {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
   background: #FFFFFF;
-  color: #000000; /* 100%: FF, 87%: DE, 70%: B3, 54%: 8A, 50%: 80, 38%: 61, 12%: 1F */
+  color: #000000; /* 100%: FF, 87%: DE, 70%: B3, 54%: 8A, 50%: 80, 38%: 61, 12%: 1F 
   padding: 8px;
   font-weight: bold;
   border-right: 1px solid #dddddd;
   border-bottom: 1px solid #dddddd;
   display: grid !important;
-}
+}*/
 
 .radio-button-group-save-file {
   /*display: flex;*/
@@ -68,21 +87,43 @@ div.react-grid-HeaderCell-sortable > .pull-right {
 .MuiDialogContent-root{
   
 }
+/*
+#edit-attributes-dialog {
+  width: 700px !important;
+  margin: auto;
+  text-align: center;
+  overflow-x: hidden;
+}
+/**/
+
+#edit-attributes-list {
+  width: 100%;
+}
 
 .nicelyInColumn {
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: flex-start;
   float: left;
   margin-right: 16px;
+  width: 16vw;
 }
 
 .editAttributesValues {
+  margin-top: 16px;
+  width: auto;
+  
+  
+}
+.editAttributesWrapper {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;    
+}
+
+.editAttributesValues > div, .editAttributesValues > label {
+  float: left;
+  clear: left;
+  width: 16vw;
 }
 
 .attributeDomain {
@@ -91,29 +132,37 @@ div.react-grid-HeaderCell-sortable > .pull-right {
   /*overflow-y: auto;*/
 }
 
-.attributeDomainWrapper {
-  width: 346px;
+div.attributeDomainWrapper {
+  height: 98%;
   margin-top: 16px;
+  clear: none;
+  float: none;
+  display: inline-block;
+  flex-basis: 100%; 
+  width: 346px;
+  
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-/* width */
+/* BLUE SCROLL IN EDIT ATTRIBUTES ENUMERATION */
+/* width 
 .attributeDomainWrapper::-webkit-scrollbar {
   width: 14px;
 }
 
-/* Track */
+/* Track 
 .attributeDomainWrapper::-webkit-scrollbar-track {
   box-shadow: inset 0 0 5px grey;
   border-radius: 14px;
 }
 
-/* Handle */
+/* Handle 
 .attributeDomainWrapper::-webkit-scrollbar-thumb {
   background: #3f51b5;
   border-radius: 14px;
 }
+*/
 /*
 .attributeDomain {
   width: 350px;

@@ -29,6 +29,8 @@ import { withStyles } from '@material-ui/core/styles';
 import { DraggableHeader } from 'react-data-grid-addons';
 import PropTypes from 'prop-types';
 import RuleWorkLoadingIcon from './RuleWorkLoadingIcon';
+import StyledDialog from '../../../RuleWorkComponents/Feedback/StyledDialog';
+import StyledButton from '../../../RuleWorkComponents/Inputs/StyledButton';
 
 const selectors = Data.Selectors;
 const { NumericFilter } = Filters;
@@ -39,22 +41,50 @@ const { DraggableContainer } = DraggableHeader;
 const heightOfRow = 50;
 const heightOfHeaderRow = 60;
 
+const defaultPrimaryColor = "#ABFAA9";
+
 const ValidationTextField = withStyles({
     root: {
-      '& input:valid + fieldset': {
-        borderColor: 'green',
-        borderWidth: 2,
+        '& label': {
+          color: 'black',
+          backgroundColor: '#ABFAA9',
+        },
+        '&:hover label': {
+            backgroundColor: "#6BD425",
+        },
+        '& label.Mui-focused': {
+          color: 'black',
+          backgroundColor: '#66FF66'
+        },
+      '& .MuiOutlinedInput-root': {
+          height: 40,
+          backgroundColor: "#ABFAA9",
+          '&:hover fieldset': {
+              borderColor: "#66FF66",
+          },
+          '&.Mui-focused fieldset': {
+              borderColor: "#66FF66",
+          },
+          '&:hover': {
+              backgroundColor: "#6BD425",
+              '& label': {
+                backgroundColor: '#ABFAA9'
+              }
+          },
+          '&.Mui-focused': {
+              backgroundColor: "#6BD425"
+          },
       },
-      '& input:invalid + fieldset': {
-        borderColor: 'red',
-        borderWidth: 2,
-      },
-      '& input:valid:focus + fieldset': {
-        borderLeftWidth: 6,
-        padding: '4px !important', // override inline-style
-      },
-    },
+  },
 })(TextField);
+
+const StyledList = withStyles({
+    root: {
+        backgroundColor: "#545F66",
+        color: "#ABFAA9",
+        minWidth: "50%",
+    }
+})(props => <List {...props} />);
 
 function RightClickContextMenu({
     idx,
@@ -493,6 +523,8 @@ class DisplayData extends React.Component {
         this.setState(prevState => {
             const nextRows = [...prevState.rows];
             const newRow = {};
+            prevState.columns.forEach( col => {if(col.key !== "uniqueLP") newRow[col.key] = "?"});
+            
             if( nextRows[rowIdx] !== undefined) { //if the cell is selected (and exists)
                 switch(where) {
                     case "above": //above the chosen row
@@ -634,39 +666,167 @@ class DisplayData extends React.Component {
      * @method
      */
     onTransformAttributes = () => {
-        console.log("Wykonuje transform, gdzie binaryzacja: " + this.state.binarizeNominalAttributesWith3PlusValues)
-        this.setState({
+        if(this.state.dataModified) {
+            console.log("Wykonuje transform wrzucajac nowe pliki, gdzie binaryzacja: " + this.state.binarizeNominalAttributesWith3PlusValues)
+            this.setState({
+                    isLoading: true,
+                    isOpenedTransform: false,
+                }, () => {
+                    let formData = new FormData();
+                    formData.append('binarizeNominalAttributesWith3PlusValues', this.state.binarizeNominalAttributesWith3PlusValues);
+                    formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
+                    formData.append('data', JSON.stringify(this.prepareDataFileBeforeSendingToServer()));
+        
+                fetch(`http://localhost:8080/projects/${this.props.project.result.id}/imposePreferenceOrder`, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    console.log(response)
+
+                    if(response.status === 200) {
+                        response.json().then(result => {
+                            console.log("Received information table:")
+                            console.log(result)
+                            console.log("atrybuty:")
+                            console.log(result.informationTable.attributes);
+                            console.log("obiekty:")
+                            console.log(result.informationTable.objects);
+                    
+                            if(this._isMounted) {
+                                this.setState({
+                                    columns: this.prepareMetaDataFromImport(result.informationTable.attributes),
+                                    rows: this.prepareDataFromImport(result.informationTable.objects),
+                                    isLoading: false,
+                                    dataModified: true,
+                                }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
+                            }
+
+                        }).catch(err => {
+                            console.log(err)
+                        })
+                    } else if(response.status === 404) {
+                        response.json().then(result => {
+                            console.log("Error 404.")
+                            console.log(result.message)
+                            if(this._isMounted) {
+                                this.setState({
+                                    isLoading: false,
+                                })
+                            }
+                        }).catch(err => {
+                            if(this._isMounted) {
+                                this.setState({
+                                    isLoading: false,
+                                })
+                            }
+                            console.log(err)
+                        })
+                    } else {
+                        response.json().then(result => {
+                            console.log("Result of response.json():")
+                            console.log(result)
+                            if(this._isMounted) {
+                                this.setState({
+                                    isLoading: false,
+                                })
+                            }
+                        }).catch(err => {
+                            if(this._isMounted) {
+                                this.setState({
+                                    isLoading: false,
+                                })
+                            }
+                            console.log(err)
+                        })
+                    }
+                }).catch(err => {
+                    if(this._isMounted) {
+                        this.setState({
+                            isLoading: false,
+                        })
+                    }
+                    console.log(err)
+                })
+            })
+        } else {
+            this.setState({
                 isLoading: true,
                 isOpenedTransform: false,
             }, () => {
-    
-            fetch(`http://localhost:8080/projects/${this.props.project.result.id}?imposePreferenceOrder=${this.state.binarizeNominalAttributesWith3PlusValues}`, {
-                method: 'GET'
-            }).then(response => {
-                console.log(response)
-                return response.json()
-            }).then(result => {
-                console.log("Wynik dzialania response.json():")
-                console.log(result)
-                console.log("atrybuty:")
-                console.log(result.informationTable.attributes);
-                console.log("obiekty:")
-                console.log(result.informationTable.objects);
-        
-                if(this._isMounted) {
-                    this.setState({
-                        columns: this.prepareMetaDataFromImport(result.informationTable.attributes),
-                        rows: this.prepareDataFromImport(result.informationTable.objects),
-                        isLoading: false,
-                        dataModified: true,
-                    }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
-                }
-        
-            }).catch(err => {
-                console.log(err)
+                console.log("Wykonuje transform bez nowych plikow, gdzie binaryzacja: " + this.state.binarizeNominalAttributesWith3PlusValues)
+                let link = `http://localhost:8080/projects/${this.props.project.result.id}/imposePreferenceOrder?binarizeNominalAttributesWith3PlusValues=${this.state.binarizeNominalAttributesWith3PlusValues}`;
+                console.log(link);
+
+                
+                fetch(link, {
+                    method: 'GET'
+                }).then(response => {
+                    console.log(response)
+                    if(response.status === 200) {
+                        response.json().then(result => {
+                            console.log("Received information table:")
+                            console.log(result)
+                            console.log("atrybuty:")
+                            console.log(result.informationTable.attributes);
+                            console.log("obiekty:")
+                            console.log(result.informationTable.objects);
+                    
+                            if(this._isMounted) {
+                                this.setState({
+                                    columns: this.prepareMetaDataFromImport(result.informationTable.attributes),
+                                    rows: this.prepareDataFromImport(result.informationTable.objects),
+                                    isLoading: false,
+                                    dataModified: true,
+                                }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
+                            }
+                        }).catch(err => {
+                            console.log(err)
+                        })
+                    } else if(response.status === 404) {
+                        response.json().then(result => {
+                            console.log("Error 404.")
+                            console.log(result.message)
+                            if(this._isMounted) {
+                                this.setState({
+                                    isLoading: false,
+                                })
+                            }
+                        }).catch(err => {
+                            if(this._isMounted) {
+                                this.setState({
+                                    isLoading: false,
+                                })
+                            }
+                            console.log(err)
+                        })
+                    } else {
+                        response.json().then(result => {
+                            console.log("Result of response.json():")
+                            console.log(result)
+                            if(this._isMounted) {
+                                this.setState({
+                                    isLoading: false,
+                                })
+                            }
+                        }).catch(err => {
+                            if(this._isMounted) {
+                                this.setState({
+                                    isLoading: false,
+                                })
+                            }
+                            console.log(err)
+                        })
+                    }
+                }).catch(err => {
+                    if(this._isMounted) {
+                        this.setState({
+                            isLoading: false,
+                        })
+                    }
+                    console.log(err)
+                })
             })
-        })
-        
+        }
     }
 
     /**
@@ -1147,10 +1307,11 @@ class DisplayData extends React.Component {
                 }
             }
         }
+        
         this.setState({
             rows: nextRows,
-        }) 
-        this.setHeaderColorAndStyleAndRightClick(column, idx);
+        }, () => this.setHeaderColorAndStyleAndRightClick(column, idx)) 
+        
     }
 
     applyOnAddAttribute = (e) => {
@@ -1183,13 +1344,13 @@ class DisplayData extends React.Component {
     displayAddAttributeFields = () => {
         const tmp = [];
         tmp.push(<FormControlLabel
-            control={<Checkbox defaultChecked={true} color="primary" style={{float: "left", width: "65%"}} name="attributeIsActive"/>}
+            control={<Checkbox defaultChecked={true} style={{float: "left", width: "65%", color: defaultPrimaryColor}} name="attributeIsActive"/>}
             label="Active"
             labelPlacement="start"
             key="attributeIsActive"
             style={{justifyContent: "space-evenly"}}
         />)
-        tmp.push(<ValidationTextField label="Name" required variant="outlined" id="attributeName" key="attributeName" defaultValue="" />)
+        tmp.push(<ValidationTextField label="Name" size="small" fullWidth required variant="outlined" id="attributeName" key="attributeName" defaultValue="" />)
         tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key="attributeType" displayName={"Type"} items={["Identification","Description","Condition","Decision"]}/>)
 
         if(this.state.attributeTypeSelected !== "Identification") {
@@ -1302,13 +1463,13 @@ class DisplayData extends React.Component {
         const tmp = [];
         
         tmp.push(<FormControlLabel
-            control={<Checkbox defaultChecked={attribute.active} color="primary" style={{float: "left", width: "65%"}} name="attributeIsActive"/>}
+            control={<Checkbox defaultChecked={attribute.active} color="primary" style={{float: "left", width: "65%", color: defaultPrimaryColor}} name="attributeIsActive"/>}
             label="Active"
             labelPlacement="start"
             key={"attributeIsActive"+attribute.name}
             style={{justifyContent: "space-evenly"}}
         />)
-        tmp.push(<ValidationTextField label="Name" required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
+        tmp.push(<ValidationTextField label="Name" fullWidth required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
 
         if((this.state.attributeTypeSelected === '' && this.state.valueTypeSelected === '') || (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected.toLowerCase() === attribute.valueType)   /*|| (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected === '') //nothing has changed
             || (this.state.attributeTypeSelected === '' && this.state.valueTypeSelected.toLowerCase() === attribute.valueType) || (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected.toLowerCase() === attribute.valueType) */
@@ -1401,14 +1562,14 @@ class DisplayData extends React.Component {
         if(this.state.saveToFileWhichFile === "data" || this.state.saveToFileWhichFile === "both") {
             return(
                 <RadioGroup className={"radio-button-group-save-file"} aria-label="format" name="format" value={this.state.saveToFileWhichFormat} onChange={this.handleChangeSaveToFileWhichFormat}>
-                    <FormControlLabel value="csv" control={<Radio color="primary"/>} label="CSV" />
-                    <FormControlLabel value="json" control={<Radio color="primary" />} label="JSON" />
+                    <FormControlLabel value="csv" control={<Radio style={{color: defaultPrimaryColor}}/>} label="CSV" />
+                    <FormControlLabel value="json" control={<Radio style={{color: defaultPrimaryColor}} />} label="JSON" />
                 </RadioGroup>
             )
         } else if(this.state.saveToFileWhichFile === "metadata") {
             return(
                 <RadioGroup className={"radio-button-group-save-file"} aria-label="format" name="format" value={this.state.saveToFileWhichFormat} onChange={this.handleChangeSaveToFileWhichFormat}>
-                    <FormControlLabel value="json" control={<Radio color="primary" />} label="JSON" />
+                    <FormControlLabel value="json" control={<Radio style={{color: defaultPrimaryColor}} />} label="JSON" />
                 </RadioGroup>
             )
         }
@@ -1464,8 +1625,7 @@ class DisplayData extends React.Component {
                     toolbar={<EditDataFilterButton enableFilter={true} > 
                             < EditDataButtons deleteRow={this.deleteSelectedRows} insertRow={this.insertRow} 
                                     /*sendFilesToServer={this.sendFilesToServer} */ saveToFileDialog={this.openOnSaveToFile} onAddAttribute={this.onAddAttribute} 
-                                    onEditAttributes={this.onEditAttributes} openOnTransform={this.openOnTransform} modified={this.state.dataModified} 
-                                    setProjectSettings={this.setProjectSettings}/> 
+                                    onEditAttributes={this.onEditAttributes} openOnTransform={this.openOnTransform} setProjectSettings={this.setProjectSettings}/> 
                             </EditDataFilterButton> }
                     onAddFilter={this.handleFilterChange}
                     onClearFilters={this.onClearFilters}
@@ -1498,13 +1658,10 @@ class DisplayData extends React.Component {
                 />
                 </DraggableContainer>     
                 
-                <Dialog open={this.state.isOpenedAddAttribute} onClose={this.closeOnAddAttribute} aria-labelledby="add-attribute-dialog">
+                <StyledDialog open={this.state.isOpenedAddAttribute} fullWidth={true} maxWidth={"xs"} onClose={this.closeOnAddAttribute} aria-labelledby="add-attribute-dialog">
                     <DialogTitle id="add-attribute-dialog">{"Add new attribute"}</DialogTitle>
                     <form onSubmit={this.applyOnAddAttribute}>
                     <DialogContent>
-                        <DialogContentText>
-                            This is the place where you can add new attribute
-                        </DialogContentText>
                         <div className="nicelyInColumn">
                             {this.displayAddAttributeFields()}
                             {
@@ -1514,26 +1671,25 @@ class DisplayData extends React.Component {
                         </div>        
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.closeOnAddAttribute} color="primary"> Cancel </Button>
-                        <Button type="submit" color="primary" disabled={false}> Apply </Button>
+                        <StyledButton onClick={this.closeOnAddAttribute} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
+                        <StyledButton type="submit" themeVariant={"primary"} variant={"outlined"} disabled={false}> Apply </StyledButton>
                     </DialogActions>
                     </form>
-                </Dialog>
+                </StyledDialog>
 
-                <Dialog open={this.state.isOpenedEditAttributes} onClose={this.closeOnEditAttributes} aria-labelledby="edit-attributes-dialog">
+                <StyledDialog open={this.state.isOpenedEditAttributes} fullWidth={true} maxWidth={"md"} onClose={this.closeOnEditAttributes} aria-labelledby="edit-attributes-dialog">
                     <DialogTitle id="edit-attributes-dialog">{"Edit attributes"}</DialogTitle>
                     <form onSubmit={this.applyOnEditAttributes}>
                     <DialogContent>
-                        <DialogContentText>
                             Choose attribute to edit. <br/> Please note that you can apply changes only to the selected attribute.
-                        </DialogContentText>
+                        <div className="editAttributesWrapper">
                         <div className="nicelyInColumn">
-                            <List component="nav" aria-label="display attributes"> 
+                            <StyledList component="nav" aria-label="display attributes" id="edit-attributes-list"> 
                             {this.displayListOfAttributesForModification().map(x => (
                                 <ListItem button data-value={x.name} key={x.key} selected={this.state.editAttributeSelected === x.name} onClick={this.handleListItemClick} >
                                     <ListItemText primary={x.name}/>
                                 </ListItem>))}
-                            </List>
+                            </StyledList>
                         </div>
                         <div className="editAttributesValues">
                             {this.state.editAttributeSelected !== '' ? this.displayFieldsOfSelectedAttribute() : null}    
@@ -1541,51 +1697,45 @@ class DisplayData extends React.Component {
                                 this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
                                 closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
                             }                        
-                        </div>        
+                        </div> 
+                        </div>       
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.closeOnEditAttributes} color="primary"> Cancel </Button>
-                        <Button type="submit" color="primary" disabled={this.state.editAttributeSelected === ''}> Apply </Button>
+                        <StyledButton onClick={this.closeOnEditAttributes} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
+                        <StyledButton type="submit" themeVariant={"primary"} variant={"outlined"} disabled={this.state.editAttributeSelected === ''}> Apply </StyledButton>
                     </DialogActions>
                     </form>
-                </Dialog>
+                </StyledDialog>
 
-
-                <Dialog fullWidth={true} maxWidth={"sm"} open={this.state.isOpenedSaveToFile} onClose={this.closeOnSaveToFile} aria-labelledby="save-files-dialog">
+                <StyledDialog fullWidth={true} maxWidth={"sm"} open={this.state.isOpenedSaveToFile} onClose={this.closeOnSaveToFile} aria-labelledby="save-files-dialog">
                     <DialogTitle id="save-files-dialog">{"Choose type and format to be saved in."}</DialogTitle>
                     <DialogContent>
-                        When selected "Both" the first downloaded file will be "Metadata" and then the second one "Data" 
-                    
+                        When selected "Both" the first downloaded file will be "Metadata" <br/> and then the second one "Data" 
                     <RadioGroup className={"radio-button-group-save-file"} aria-label="file" name="file" value={this.state.saveToFileWhichFile} onChange={this.handleChangeSaveToFileWhichFile}>
-                        <FormControlLabel value="data" control={<Radio color="primary"/>} label="Data" />
-                        <FormControlLabel value="metadata" control={<Radio color="primary" />} label="Metadata" />
-                        <FormControlLabel value="both" control={<Radio color="primary"/>} label="Both" />
+                        <FormControlLabel value="data" control={<Radio style={{color: defaultPrimaryColor}}/>} label="Data" />
+                        <FormControlLabel value="metadata" control={<Radio style={{color: defaultPrimaryColor}} />} label="Metadata" />
+                        <FormControlLabel value="both" control={<Radio style={{color: defaultPrimaryColor}}/>} label="Both" />
                     </RadioGroup>
                     {this.displayRadioButtonsAccordinglyToChosenFile()}
                     
                     </DialogContent>
                     <DialogActions>
-                    <Button onClick={this.closeOnSaveToFile} color="primary" variant="outlined">
-                        Cancel
-                    </Button>
-                    <Button onClick={this.saveToFile} color="primary" autoFocus variant="outlined" 
-                            disabled={!(this.state.saveToFileWhichFormat!=='' && this.state.saveToFileWhichFile!=='')}>
-                        Ok
-                    </Button>
+                        <StyledButton onClick={this.closeOnSaveToFile} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
+                        <StyledButton onClick={this.saveToFile} themeVariant={"primary"} variant={"outlined"} autoFocus
+                            disabled={!(this.state.saveToFileWhichFormat!=='' && this.state.saveToFileWhichFile!=='')}> 
+                            Ok 
+                        </StyledButton>
                     </DialogActions>
-                </Dialog>
+                </StyledDialog>
                 
                 {this.displayColumnHeaderMenu()}
 
-                <Dialog open={this.state.isOpenedTransform} onClose={this.closeOnTransform} aria-labelledby="transform-warning-dialog">
-                    <DialogTitle id="transform-warning-title">{"Are you sure you want to continue?"}</DialogTitle>
+                <StyledDialog open={this.state.isOpenedTransform} onClose={this.closeOnTransform} aria-labelledby="transform-warning-dialog">
+                    <DialogTitle id="transform-warning-title">{"Do you want to impose preference orders?"}</DialogTitle>
                     <DialogContent>
-                    <DialogContentText id="transform-dialog-description">
-                        Impose Preference Orders
-                    </DialogContentText>
-                    <Tooltip title="binarizeNominalAttributesWith3PlusValues" placement="bottom" arrow>
+                    <Tooltip title="Binarize nominal attributes with 3+ values?" placement="bottom" arrow>
                     <FormControlLabel
-                        control={<Checkbox defaultChecked={false} color="primary" name="binarize" onChange={this.handleChangeBinarize}/>}
+                        control={<Checkbox defaultChecked={false} style={{color: defaultPrimaryColor}} name="binarize" onChange={this.handleChangeBinarize}/>}
                         label="Binarize"
                         labelPlacement="start"
                         key="attributeIsActive"
@@ -1594,14 +1744,12 @@ class DisplayData extends React.Component {
                     
                     </DialogContent>
                     <DialogActions>
-                    <Button onClick={this.closeOnTransform} style={{color: "#F2545B", borderColor:"#4C061D"}} variant={"outlined"}>
-                        Cancel
-                    </Button>
-                    <Button onClick={this.onTransformAttributes} style={{color:"#66FF66", borderColor:"#6BD425"}} variant={"outlined"}>
-                        Submit
-                    </Button>
+
+                    <StyledButton onClick={this.closeOnTransform} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
+                    <StyledButton onClick={this.onTransformAttributes} themeVariant={"primary"} variant={"outlined"} > Submit </StyledButton>
+
                     </DialogActions>
-                </Dialog>
+                </StyledDialog>
 
               
                 {this.state.isLoading ? <RuleWorkLoadingIcon size={60}/> : null }
