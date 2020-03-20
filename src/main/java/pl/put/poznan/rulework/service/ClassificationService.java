@@ -55,29 +55,20 @@ public class ClassificationService {
         //SimpleOptimizingCountingRuleClassifier classifier = new SimpleOptimizingCountingRuleClassifier(ruleSetWithComputableCharacteristics, simpleClassificationResult, informationTable);
         SimpleOptimizingCountingRuleClassifier classifier = new SimpleOptimizingCountingRuleClassifier(ruleSetWithComputableCharacteristics, defaultClassificationResult);
 
-        SimpleClassificationResult[] simpleClassificationResults = classifier.classifyAll(informationTable);
-
-        int objectIndex, ruleIndex;
-        int rulesCount = ruleSetWithComputableCharacteristics.size();
+        int objectIndex;
         int objectCount = informationTable.getNumberOfObjects();
-
         IntList[] indicesOfCoveringRules = new IntList[objectCount];
 
-        for(objectIndex = 0; objectIndex < objectCount; objectIndex++) {
+        SimpleClassificationResult[] simpleClassificationResults = new SimpleClassificationResult[objectCount];
+        for (objectIndex = 0; objectIndex < simpleClassificationResults.length; objectIndex++) {
             indicesOfCoveringRules[objectIndex] = new IntArrayList();
-
-            for(ruleIndex = 0; ruleIndex < rulesCount; ruleIndex++) {
-
-                if (ruleSetWithComputableCharacteristics.getRule(ruleIndex).covers(objectIndex, informationTable)) { //current rule covers considered object
-                    indicesOfCoveringRules[objectIndex].add(ruleIndex);
-                }
-            }
+            simpleClassificationResults[objectIndex] = classifier.classify(objectIndex, informationTable, indicesOfCoveringRules[objectIndex]);
         }
 
         if(logger.isDebugEnabled()) {
             for(objectIndex = 0; objectIndex < objectCount; objectIndex++) {
                 logger.debug("Obiekt nr {}:\t{}", objectIndex, informationTable.getFields(objectIndex).toString());
-                for(ruleIndex = 0; ruleIndex < indicesOfCoveringRules[objectIndex].size(); ruleIndex++) {
+                for(int ruleIndex = 0; ruleIndex < indicesOfCoveringRules[objectIndex].size(); ruleIndex++) {
                     logger.debug("\tRegula nr {}:\t{}", ruleIndex, ruleSetWithComputableCharacteristics.getRule(indicesOfCoveringRules[objectIndex].getInt(ruleIndex)));
                 }
             }
