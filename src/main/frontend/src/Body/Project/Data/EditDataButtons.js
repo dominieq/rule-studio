@@ -163,11 +163,6 @@ export default function IconLabelButtons(props) {
             </StyledButton>
             }
         </RuleWorkTooltip>
-
-              
-      <div className="data-modified" key={props.modified}> 
-      {props.modified ? "Data has been modified! " : null}
-      </div>
     </Fragment>
     );
 }
