@@ -54,6 +54,9 @@ class Rules extends Component {
 
         this.setState({
             loading: true,
+            externalRules: this.props.project.externalRules,
+            threshold: this.props.project.threshold,
+            measure: this.props.project.measure,
         }, () => {
             let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
@@ -67,9 +70,6 @@ class Rules extends Component {
                             this.setState({
                                 loading: false,
                                 displayedItems: items,
-                                externalRules: this.props.project.externalRules,
-                                threshold: this.props.project.threshold,
-                                measure: this.props.project.measure,
                             }, () => {
                                 this._data = result;
                                 this._items = items;
@@ -77,22 +77,28 @@ class Rules extends Component {
                         }
                     }).catch(error => {
                         console.log(error);
-                        if (this._isMounted) {
-                            this.setState({
-                                loading: false,
-                                externalRules: this.props.project.externalRules,
-                                threshold: this.props.threshold,
-                                measure: this.props.measure,
-                            });
-                        }
+                        if (this._isMounted) this.setState({loading: false});
                     });
                 } else {
-                    if (this._isMounted) {
-                        this.setState({
-                            loading: false,
-                            externalRules: this.props.project.externalRules,
-                            threshold: this.props.project.threshold,
-                            measure: this.props.project.measure,
+                    if (response.status !== 404) {
+                        response.json().then(result => {
+                            if (this._isMounted) {
+                                msg = "ERROR " + result.status + " " + result.message;
+                                let alertProps = {title: "Something went wrong! Couldn't load rules :("};
+                                this.setState({
+                                    loading: false,
+                                    snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "warning"}
+                                });
+                            }
+                        }).catch(() => {
+                            if (this._isMounted){
+                                msg = "Something went wrong! Couldn't load rules :(";
+                                let alertProps = {title: "ERROR " + response.status};
+                                this.setState({
+                                    loading: false,
+                                    snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                                });
+                            }
                         });
                     }
                 }
@@ -102,9 +108,6 @@ class Rules extends Component {
                     msg = "Server error! Couldn't load rules :( " + error.message;
                     this.setState({
                         loading: false,
-                        externalRules: this.props.project.externalRules,
-                        threshold: this.props.threshold,
-                        measure: this.props.measure,
                         snackbarProps: {open: true, message: msg, variant: "error"},
                     });
                 }
@@ -124,7 +127,17 @@ class Rules extends Component {
             project.externalRules = this.state.externalRules;
             project.threshold = this.state.threshold;
             project.measure = this.state.measure;
-            this.props.onTabChange(project, this.props.value, this.state.updated)
+
+            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+            tabsUpToDate[this.props.value] = this.state.updated;
+
+            if (this.state.externalRules) {
+                tabsUpToDate[this.props.value] = null;
+                tabsUpToDate[this.props.value + 1] = !this.props.project.result.classification;
+                tabsUpToDate[this.props.value + 2] = !this.props.project.result.crossValidation;
+            }
+
+            this.props.onTabChange(project, this.state.updated, tabsUpToDate);
         }
     }
 
@@ -173,12 +186,15 @@ class Rules extends Component {
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
+                        const updated = true;
+
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
                             this.setState({
                                 changes: true,
-                                updated: true,
+                                updated: updated,
+                                externalRules: false,
                                 loading: false,
                                 displayedItems: items,
                             }, () => {
@@ -187,31 +203,42 @@ class Rules extends Component {
                             });
                         } else {
                             project.ruleSetWithComputableCharacteristics = result;
-                            this.props.onTabChange(project, this.props.value, true);
+                            project.externalRules = false;
+
+                            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+                            tabsUpToDate[this.props.value] = updated;
+
+                            this.props.onTabChange(project, updated, tabsUpToDate);
                         }
                     }).catch(error => {
                         console.log(error);
                         if (this._isMounted) this.setState({loading: false});
                     })
-                } else  if (response.status === 404) {
+                } else {
                     response.json().then(result => {
                         if (this._isMounted) {
-                            msg = "error " + result.status + ": " + result.message;
-                            let alertProps = {hasTitle: true, title: "Something went wrong! Please don't panic :)"};
+                            msg = "ERROR " + result.status + ": " + result.message;
+                            let alertProps = {title: "Something went wrong! Couldn't calculate rules :("};
                             this.setState({
                                 loading: false,
-                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "info"},
+                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "warning"}
                             });
                         }
-                    }).catch(error => {
-                        console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
+                    }).catch(() => {
+                        if (this._isMounted) {
+                            msg = "Something went wrong! Couldn't calculate rules :(";
+                            let alertProps = {title: "ERROR " + response.status};
+                            this.setState({
+                                loading: false,
+                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                            });
+                        }
                     });
                 }
             }).catch(error => {
                 console.log(error);
                 if (this._isMounted) {
-                    msg = "Server error! Couldn't calculate rules :( " + error.message;
+                    msg = "Server error! Couldn't calculate rules :(";
                     this.setState({
                         loading: false,
                         snackbarProps: {open: true, message: msg, variant: "error"},
@@ -238,14 +265,15 @@ class Rules extends Component {
                 }).then(response => {
                     if (response.status === 200) {
                         response.json().then(result => {
-                            const items = this.getItems(result.ruleSetWithComputableCharacteristics);
                             if (this._isMounted) {
+                                const items = this.getItems(result.ruleSetWithComputableCharacteristics);
+
                                 this.setState({
                                     changes: true,
                                     updated: this.props.project.dataUpToDate,
+                                    externalRules: true,
                                     loading: false,
                                     displayedItems: items,
-                                    externalRules: true,
                                 }, () => {
                                     this._data = result;
                                     this._items = items;
@@ -253,7 +281,13 @@ class Rules extends Component {
                             } else {
                                 project.ruleSetWithComputableCharacteristics = result;
                                 project.externalRules = true;
-                                this.props.onTabChange(project, this.props.value, this.props.project.dataUpToDate);
+
+                                let tabsUpToDate = [...this.props.project.tabsUpToDate];
+                                tabsUpToDate[this.props.value] = null;
+                                tabsUpToDate[this.props.value] = !this.props.project.result.classification;
+                                tabsUpToDate[this.props.value] = !this.props.project.result.crossValidation;
+
+                                this.props.onTabChange(project, this.props.project.dataUpToDate, tabsUpToDate);
                             }
                         }).catch(error => {
                             console.log(error);
@@ -262,22 +296,28 @@ class Rules extends Component {
                     } else {
                         response.json().then(result => {
                             if (this._isMounted) {
-                                let alert = {hasTitle: true, title: "Something went wrong. Please don't panic :) "};
                                 msg = "error: " + result.status + " " + result.message;
+                                let alertProps = {title: "Something went wrong. Couldn't upload rules :("};
                                 this.setState({
                                     loading: false,
-                                    snackbarProps: {alertProps: alert, open: true, message: msg, variant: "warning"}
+                                    snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "warning"}
                                 });
                             }
-                        }).catch(error => {
-                            console.log(error);
-                            if (this._isMounted) this.setState({loading: false});
+                        }).catch(() => {
+                            if (this._isMounted) {
+                                msg = "Something went wrong! Couldn't upload rules :(";
+                                let alertProps = {title: "ERROR " + response.status};
+                                this.setState({
+                                    loading: false,
+                                    snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                                });
+                            }
                         });
                     }
                 }).catch(error => {
                     console.log(error);
                     if (this._isMounted) {
-                        msg = "Server error! Couldn't parse rules :( ";
+                        msg = "Server error! Couldn't upload rules :(";
                         this.setState({
                             loading: false,
                             snackbarProps: {open: true, message: msg, variant: "error"}
@@ -309,21 +349,25 @@ class Rules extends Component {
                 });
             } else {
                 response.json().then(result => {
-                    let alert = {hasTitle: true, title: "Something went wrong! Couldn't download rules :("};
-                    msg = "error: " + result.status + " " + result.message;
                     if (this._isMounted) {
+                        msg = "ERROR: " + result.status + " " + result.message;
+                        let alertProps = {title: "Something went wrong! Couldn't download rules :("};
                         this.setState({
-                            snackbarProps: {alertProps: alert, open: true, message: msg, variant: "warning"},
+                            snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "warning"},
                         });
                     }
-                }).catch(error => {
-                    console.log(error);
+                }).catch(() => {
+                    msg = "Something went wrong! Couldn't download rules :(";
+                    let alertProps = {title: "ERROR " + response.status};
+                    this.setState({
+                        snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                    })
                 });
             }
         }).catch(error => {
             console.log(error);
             if (this._isMounted) {
-                msg = "Server error! Couldn't download rules :( " + error.message;
+                msg = "Server error! Couldn't download rules :( ";
                 this.setState({
                     snackbarProps: {open: true, message: msg, variant: "error"},
                 });

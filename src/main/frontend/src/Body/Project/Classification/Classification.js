@@ -48,6 +48,7 @@ class Classification extends Component {
 
         this.setState({
             loading: true,
+            ruleType: this.props.project.ruleType,
         }, () => {
             let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/classification`, {
@@ -55,14 +56,12 @@ class Classification extends Component {
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
-                        console.log(result);
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
                             this.setState({
                                 loading: false,
                                 displayedItems: items,
-                                ruleType: this.props.project.ruleType,
                             }, () => {
                                 this._data = result;
                                 this._items = items;
@@ -70,34 +69,30 @@ class Classification extends Component {
                         }
                     }).catch(error => {
                         console.log(error);
-                        if (this._isMounted) {
-                            this.setState({
-                                loading: false,
-                                ruleType: this.props.project.ruleType,
-                            })
-                        }
+                        if (this._isMounted) this.setState({loading: false});
                     });
                 } else {
-                    response.json().then(result => {
-                        msg = "error " + result.status + ": " + result.message;
-                        let alertProps = {hasTitle: true, title: "Something went wrong! Please don't panick :)"};
-                        let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "info"};
-                        if (this._isMounted) {
-                            this.setState({
-                                loading: false,
-                                ruleType: this.props.project.ruleType,
-                                snackbarProps: result.status !== 404 ? snackbarProps : undefined
-                            });
-                        }
-                    }).catch(error => {
-                        console.log(error);
-                        if (this._isMounted) {
-                            this.setState({
-                                loading: true,
-                                ruleType: this.props.project.ruleType,
-                            });
-                        }
-                    });
+                    if (response.status !== 404) {
+                        response.json().then(result => {
+                            if (this._isMounted) {
+                                msg = "ERROR " + result.status + ": " + result.message;
+                                let alertProps = {title: "Something went wrong! Couldn't load classification :("};
+                                this.setState({
+                                    loading: false,
+                                    snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "warning"}
+                                });
+                            }
+                        }).catch(() => {
+                            if (this._isMounted) {
+                                msg = "Something went wrong! Couldn't load classification :(";
+                                let alertProps = {title: "ERROR " + response.status};
+                                this.setState({
+                                    loading: true,
+                                    snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                                });
+                            }
+                        });
+                    }
                 }
             }).catch(error => {
                 console.log(error);
@@ -105,7 +100,6 @@ class Classification extends Component {
                     msg = "Server error! Couldn't load classification :(";
                     this.setState({
                         loading: false,
-                        ruleType: this.props.project.ruleType,
                         snackbarProps: {open: true, message: msg, variant: "error"}
                     });
                 }
@@ -114,13 +108,19 @@ class Classification extends Component {
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
+
         if (this.state.changes) {
             let project = {...this.props.project};
             if (Object.keys(this._data).length) {
                 project.result.classification = this._data;
             }
             project.ruleType = this.state.ruleType;
-            this.props.onTabChange(project, this.props.value, this.state.updated);
+
+            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+            tabsUpToDate[this.props.value] = this.state.updated;
+
+            this.props.onTabChange(project, this.state.updated, tabsUpToDate);
         }
     }
 
@@ -153,13 +153,14 @@ class Classification extends Component {
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
-                        console.log(result);
+                        const updated = true;
+
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
                             this.setState({
                                 changes: true,
-                                updated: true,
+                                updated: updated,
                                 loading: false,
                                 displayedItems: items,
                             }, () => {
@@ -168,7 +169,11 @@ class Classification extends Component {
                             });
                         } else {
                             project.result.classification = result;
-                            this.props.onTabChange(project, this.props.value, true);
+
+                            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+                            tabsUpToDate[this.props.value] = updated;
+
+                            this.props.onTabChange(project, updated, tabsUpToDate);
                         }
                     }).catch(error => {
                         console.log(error);
@@ -177,16 +182,22 @@ class Classification extends Component {
                 } else {
                     response.json().then(result => {
                         if (this._isMounted) {
-                            let alert = {hasTitle: true, title: "Something went wrong! Please don't panick :)"};
-                            msg = "error " + result.status + ": " + result.message;
+                            msg = "ERROR " + result.status + ": " + result.message;
+                            let alert = {title: "Something went wrong! Couldn't calculate classification :("};
                             this.setState({
                                 loading: false,
-                                snackbarProps: {alertProps: alert, open: true, message: msg, variant: "info"}
+                                snackbarProps: {alertProps: alert, open: true, message: msg, variant: "warning"}
                             })
                         }
-                    }).catch(error => {
-                        console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
+                    }).catch(() => {
+                        if (this._isMounted) {
+                            msg = "Something went wrong! Couldn't calculate classification :(";
+                            let alertProps = {title: "ERROR " + response.status};
+                            this.setState({
+                                loading: false,
+                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                            });
+                        }
                     })
                 }
             }).catch(error => {

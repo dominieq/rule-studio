@@ -8,7 +8,8 @@ import Data from "./Data/DisplayData";
 import Rules from "./Rules/Rules";
 import Unions from "./Unions/Unions";
 import ExternalRulesAlert from "./Utils/Alerts/ExternalRulesAlert";
-import UpdateAlert from "./Utils/Alerts/UpdateAlert";
+import OutdatedDataAlert from "./Utils/Alerts/OutdatedDataAlert";
+import OutdatedRulesAlert from "./Utils/Alerts/OutdatedRulesAlert";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 
@@ -77,25 +78,30 @@ class ProjectTabs extends Component {
     };
 
     renderTabLabel = (name, index) => {
-        const project = this.props.project;
-        let addExternalRulesAlert = project.externalRules && index > 1;
+        const updated = this.props.project.tabsUpToDate[index];
+        const externalRulesAlert = this.props.project.externalRules && index > 1 ? <ExternalRulesAlert /> : null;
 
-        if (project && project.tabsUpToDate[index]) {
+        if (updated === null || updated) {
             return (
                 <Fragment>
-                    {addExternalRulesAlert ? <ExternalRulesAlert /> : null}
+                    {externalRulesAlert}
                     {name}
                 </Fragment>
             );
+        } else if (this.props.project.externalRules && index > 2) {
+            return (
+                <OutdatedRulesAlert>
+                    {externalRulesAlert}
+                    {name}
+                </OutdatedRulesAlert>
+            );
         } else {
             return (
-                <Fragment>
-                    {addExternalRulesAlert ? <ExternalRulesAlert /> : null}
-                    <UpdateAlert>
-                        {name}
-                    </UpdateAlert>
-                </Fragment>
-            );
+                <OutdatedDataAlert>
+                    {externalRulesAlert}
+                    {name}
+                </OutdatedDataAlert>
+            )
         }
     };
 
