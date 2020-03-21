@@ -25,11 +25,11 @@ const useStyles = makeStyles(theme => ({
 }), {name: "MuiToggleButton"});
 
 function StyledToggleButton(props) {
-    const {children, ...other} = props;
-    const classes = useStyles();
+    const {children, classes: propsClasses, ...other} = props;
+    const classes = {...useStyles(), ...propsClasses};
 
     return (
-        <ToggleButton classes={{root: classes.root}} {...other}>
+        <ToggleButton classes={classes} {...other}>
             {children}
         </ToggleButton>
     )
@@ -37,6 +37,7 @@ function StyledToggleButton(props) {
 
 StyledToggleButton.propTypes = {
     children: PropTypes.node,
+    classes: PropTypes.object,
     value: PropTypes.any,
 };
 

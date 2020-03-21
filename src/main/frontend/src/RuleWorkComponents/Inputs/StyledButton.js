@@ -1,5 +1,6 @@
 import React, {Fragment} from "react";
 import PropTypes from "prop-types";
+import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
@@ -47,24 +48,17 @@ const useStyles = makeStyles(theme => ({
 }), {name: "styled-button"});
 
 function StyledButton(props) {
-    const {children, isIcon, themeVariant, variant, ...other} = props;
-    const classes = useStyles(props);
+    const {children, classes: propsClasses, classname, isIcon, themeVariant, variant, ...other} = props;
+    const classes = {...useStyles(props), ...propsClasses};
 
     return (
         <Fragment>
             {isIcon ?
-               <IconButton
-                   className={classes.icon}
-                   {...other}
-               >
+               <IconButton className={clsx(classes.icon, classname)} {...other}>
                    {children}
                </IconButton>
                 :
-                <Button
-                    className={classes[variant]}
-                    variant={variant}
-                    {...other}
-                >
+                <Button className={clsx(classes[variant], classname)} variant={variant} {...other}>
                     {children}
                 </Button>
             }
@@ -74,6 +68,8 @@ function StyledButton(props) {
 
 StyledButton.propTypes = {
     children: PropTypes.node,
+    classes: PropTypes.object,
+    classname: PropTypes.string,
     isIcon: PropTypes.bool,
     themeVariant: PropTypes.oneOf(["inherit", "primary", "secondary"]),
     variant: PropTypes.oneOf(["text", "outlined", "contained"]),

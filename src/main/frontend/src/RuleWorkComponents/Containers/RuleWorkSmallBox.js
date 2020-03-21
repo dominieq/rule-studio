@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
@@ -24,11 +25,11 @@ const useStyles = makeStyles({
 },{name: "rule-work-box"});
 
 function RuleWorkSmallBox(props) {
-    const {children, styleVariant, ...other} = props;
-    const classes = useStyles();
+    const {children, classes: propsClasses, className, styleVariant, ...other} = props;
+    const classes = {...useStyles(), ...propsClasses};
 
     return (
-        <div className={classes[styleVariant]} {...other}>
+        <div className={clsx(classes[styleVariant], className)} {...other}>
             {children}
         </div>
     )
@@ -36,6 +37,8 @@ function RuleWorkSmallBox(props) {
 
 RuleWorkSmallBox.propTypes = {
     children: PropTypes.node,
+    classes: PropTypes.object,
+    className: PropTypes.string,
     styleVariant: PropTypes.oneOf(["row", "multi-row", "footer"])
 };
 

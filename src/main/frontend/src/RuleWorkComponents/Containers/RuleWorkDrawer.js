@@ -24,11 +24,11 @@ const useStyles = makeStyles(theme => ({
 }), {name: "rule-work-drawer"});
 
 function RuleWorkDrawer(props) {
-    const {children, height, onClickAway, ...other} = props;
-    const classes = useStyles();
+    const {children, classes: propsClasses, height, ...other} = props;
+    const classes = {...useStyles(), ...propsClasses};
 
     return (
-        <Drawer classes={{docked: classes.docked, paper: classes.paper}} variant={"persistent"} {...other}>
+        <Drawer classes={classes} variant={"persistent"} {...other}>
             <div style={{height: height}}/>
             {children}
         </Drawer>
@@ -37,6 +37,7 @@ function RuleWorkDrawer(props) {
 
 RuleWorkDrawer.propTypes = {
     children: PropTypes.node,
+    classes: PropTypes.object,
     height: PropTypes.number,
 };
 

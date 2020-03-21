@@ -17,15 +17,17 @@ const useStyles = makeStyles(theme => ({
 }), {name: "styled-divider"});
 
 function StyledDivider(props) {
-    const {styleVariant, ...other} = props;
-    const classes = useStyles();
+    const {classes: propsClasses, className, styleVariant, ...other} = props;
+    const classes = {...useStyles(), ...propsClasses};
 
     return (
-        <Divider className={clsx(classes[styleVariant])} {...other} />
+        <Divider className={clsx(classes[styleVariant], className)} {...other} />
     )
 }
 
 StyledDivider.propTypes = {
+    classes: PropTypes.object,
+    className: PropTypes.string,
     flexItem: PropTypes.bool,
     orientation: PropTypes.oneOf(["horizontal", "vertical"]),
     styleVariant: PropTypes.oneOf(["bar", "panel"]),

@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
 import {withStyles} from "@material-ui/core/styles";
 import Pagination from "@material-ui/lab/Pagination";
@@ -26,20 +27,19 @@ const useStyles = makeStyles({
     root: {
         marginTop: 12,
     },
-});
+}, {name: "MuiPagination"});
 
 function StyledPagination(props) {
-    const classes = useStyles();
+    const {classes: propsClasses, ...other} = props;
+    const classes = {...useStyles(), ...propsClasses};
 
     return (
-        <Pagination
-            classes={{root: classes.root}}
-            renderItem={
-                item => <StyledPaginationItem {...item}/>
-            }
-            {...props}
-        />
+        <Pagination classes={classes} renderItem={item => <StyledPaginationItem {...item}/>} {...other} />
     )
 }
+
+StyledPagination.propTypes = {
+    classes: PropTypes.object,
+};
 
 export default StyledPagination;
