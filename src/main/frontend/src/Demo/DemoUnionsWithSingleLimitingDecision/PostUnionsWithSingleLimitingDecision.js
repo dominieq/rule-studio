@@ -193,8 +193,11 @@ class PostUnionsWithSingleLimitingDecision extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                typeOfUnions->
-                <input type='text' value={this.state.typeOfUnions} onChange={this.handleTypeOfUnionsChange} />
+                <label for="typeOfUnionsPostUnionsWithSingleLimitingDecision">typeOfUnions-></label>
+                <select id="typeOfUnionsPostUnionsWithSingleLimitingDecision" onChange={this.handleTypeOfUnionsChange}>
+                    <option value="monotonic">monotonic</option>
+                    <option value="standard">standard</option>
+                </select>
                 consistencyThreshold->
                 <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
                 <button onClick={this.postUnionsWithSingleLimitingDecision}>postUnionsWithSingleLimitingDecision</button>

@@ -28,8 +28,7 @@ public class UnionsWithSingleLimitingDecisionController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UnionsWithSingleLimitingDecision> getUnionsWithSingleLimitingDecision(
-            @PathVariable("id") UUID id,
-            @RequestParam(name = "consistencyThreshold", required = false) Double consistencyThreshold) {
+            @PathVariable("id") UUID id) {
         logger.info("Getting unions with single limiting decision...");
 
         UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.getUnionsWithSingleLimitingDecision(id);

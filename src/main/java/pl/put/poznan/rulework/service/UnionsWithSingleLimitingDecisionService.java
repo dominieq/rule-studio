@@ -54,10 +54,8 @@ public class UnionsWithSingleLimitingDecisionService {
         UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(project.getInformationTable(), typeOfUnions, consistencyThreshold);
 
         project.setUnionsWithSingleLimitingDecision(unionsWithSingleLimitingDecision);
-        logger.info("Before:\ttypeOfUnions={}\tconsistencyThreshold={}", project.getTypeOfUnions(), project.getConsistencyThreshold());
         project.setTypeOfUnions(typeOfUnions);
         project.setConsistencyThreshold(consistencyThreshold);
-        logger.info("After:\ttypeOfUnions={}\tconsistencyThreshold={}", project.getTypeOfUnions(), project.getConsistencyThreshold());
         project.setCalculatedUnionsWithSingleLimitingDecision(true);
     }
 

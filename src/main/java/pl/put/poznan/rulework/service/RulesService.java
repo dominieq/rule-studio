@@ -117,10 +117,11 @@ public class RulesService {
         return resultSet;
     }
 
-    public static void calculateRuleSetWithComputableCharacteristicsInProject(Project project) {
+    public static void calculateRuleSetWithComputableCharacteristicsInProject(Project project, String typeOfUnions, Double consistencyThreshold) {
         Unions unions = project.getUnionsWithSingleLimitingDecision();
-        if(unions == null) {
-            UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecisionInProject(project, "monotonic", 0.0);
+        if((project.getTypeOfUnions() == null) || (project.getConsistencyThreshold() == null) || (project.getTypeOfUnions() != typeOfUnions) || (project.getConsistencyThreshold() != consistencyThreshold)) {
+            logger.info("Calculating new set of unions");
+            UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecisionInProject(project, typeOfUnions, consistencyThreshold);
 
             unions = project.getUnionsWithSingleLimitingDecision();
         }
@@ -145,18 +146,22 @@ public class RulesService {
         return ruleSetWithComputableCharacteristics;
     }
 
-    public RuleSetWithComputableCharacteristics putRules(UUID id) {
+    public RuleSetWithComputableCharacteristics putRules(UUID id, String typeOfUnions, Double consistencyThreshold) {
         logger.info("Id:\t{}", id);
+        logger.info("TypeOfUnions:\t{}", typeOfUnions);
+        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateRuleSetWithComputableCharacteristicsInProject(project);
+        calculateRuleSetWithComputableCharacteristicsInProject(project, typeOfUnions, consistencyThreshold);
 
         return project.getRuleSetWithComputableCharacteristics();
     }
 
-    public RuleSetWithComputableCharacteristics postRules(UUID id, String metadata, String data) throws IOException {
+    public RuleSetWithComputableCharacteristics postRules(UUID id, String typeOfUnions, Double consistencyThreshold, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
+        logger.info("TypeOfUnions:\t{}", typeOfUnions);
+        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data:\t{}", data);
 
@@ -165,7 +170,7 @@ public class RulesService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateRuleSetWithComputableCharacteristicsInProject(project);
+        calculateRuleSetWithComputableCharacteristicsInProject(project, typeOfUnions, consistencyThreshold);
 
         return project.getRuleSetWithComputableCharacteristics();
     }
