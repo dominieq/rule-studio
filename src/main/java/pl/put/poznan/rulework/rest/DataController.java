@@ -53,7 +53,8 @@ public class DataController {
     public ResponseEntity<Resource> getDownload(
             @PathVariable("id") UUID id,
             @RequestParam(name = "format") String format,
-            @RequestParam(name = "separator", defaultValue = ",") String separator) throws IOException {
+            @RequestParam(name = "separator", defaultValue = ",") String separator,
+            @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
         logger.info("Downloading server's data");
         logger.info("Format:\t{}", format);
 
@@ -71,7 +72,7 @@ public class DataController {
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .body(resource);
         } else {
-            p = dataService.getDownloadCsv(id, separator);
+            p = dataService.getDownloadCsv(id, separator, header);
             projectName = p.getKey();
             resource = p.getValue();
 
@@ -87,6 +88,7 @@ public class DataController {
             @PathVariable("id") UUID id,
             @RequestParam(name = "format") String format,
             @RequestParam(name = "separator", defaultValue = ",") String separator,
+            @RequestParam(name = "header", defaultValue = "false") Boolean header,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Downloading client's data");
@@ -105,7 +107,7 @@ public class DataController {
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .body(resource);
         } else {
-            p = dataService.putDownloadCsv(id, metadata, data, separator);
+            p = dataService.putDownloadCsv(id, metadata, data, separator, header);
             projectName = p.getKey();
             resource = p.getValue();
 

@@ -15,6 +15,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
@@ -49,7 +50,9 @@ public class DataService {
             reader = new InputStreamReader(dataFile.getInputStream());
             informationTable = objectParser.parseObjects(reader);
         } else {
-            logger.error("Unrecognized format of data file: " + dataFile.getContentType());
+            WrongParameterException ex = new WrongParameterException(String.format("Unrecognized format of data file:\t%s", dataFile.getContentType()));
+            logger.error(ex.getMessage());
+            throw ex;
         }
 
         if(logger.isTraceEnabled()) {
@@ -132,11 +135,11 @@ public class DataService {
         return new InputStreamResource(is);
     }
 
-    private InputStreamResource produceCsvResource(InformationTable informationTable, String separator) throws IOException {
+    private InputStreamResource produceCsvResource(InformationTable informationTable, String separator, Boolean header) throws IOException {
         StringWriter sw = new StringWriter();
 
         org.rulelearn.data.csv.InformationTableWriter itw = new org.rulelearn.data.csv.InformationTableWriter();
-        itw.writeObjects(informationTable, sw, separator);
+        itw.writeObjects(informationTable, sw, separator, header);
 
         byte[] barray = sw.toString().getBytes();
         InputStream is = new ByteArrayInputStream(barray);
@@ -155,14 +158,15 @@ public class DataService {
         return new Pair<>(project.getName(), resource);
     }
 
-    public Pair<String, Resource> getDownloadCsv(UUID id, String separator) throws IOException {
+    public Pair<String, Resource> getDownloadCsv(UUID id, String separator, Boolean header) throws IOException {
         logger.info("Downloading data in csv format");
         logger.info("Id:\t{}", id);
         logger.info("Separator:\t{}", separator);
+        logger.info("Header:\t{}", header);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InputStreamResource resource = produceCsvResource(project.getInformationTable(), separator);
+        InputStreamResource resource = produceCsvResource(project.getInformationTable(), separator, header);
 
         return new Pair<>(project.getName(), resource);
     }
@@ -184,12 +188,13 @@ public class DataService {
         return new Pair<>(project.getName(), resource);
     }
 
-    public Pair<String, Resource> putDownloadCsv(UUID id, String metadata, String data, String separator) throws IOException {
+    public Pair<String, Resource> putDownloadCsv(UUID id, String metadata, String data, String separator, Boolean header) throws IOException {
         logger.info("Downloading data in csv format");
         logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data:\t{}", data);
         logger.info("Separator:\t{}", separator);
+        logger.info("Header:\t{}", header);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -197,7 +202,7 @@ public class DataService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
 
         // serialize data from InformationTable object
-        InputStreamResource resource = produceCsvResource(informationTable, separator);
+        InputStreamResource resource = produceCsvResource(informationTable, separator, header);
 
         return new Pair<>(project.getName(), resource);
     }

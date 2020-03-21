@@ -5,7 +5,12 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import org.rulelearn.classification.*;
 import org.rulelearn.data.*;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
+import org.rulelearn.types.ElementList;
+import org.rulelearn.types.EnumerationField;
+import org.rulelearn.types.EnumerationFieldFactory;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.validation.ClassificationValidationResult;
+import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +32,7 @@ public class ClassificationService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private Classification calculateClassification(InformationTable informationTable, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
+    public static Classification calculateClassification(InformationTable informationTable, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
         /*logger.info("RuleSet size = {}", ruleSetWithComputableCharacteristics.size());
         for(int i = 0; i < ruleSetWithComputableCharacteristics.size(); i++) {
             logger.info("\tRegula nr {}:\t{}", i, ruleSetWithComputableCharacteristics.getRule(i));
@@ -35,55 +40,58 @@ public class ClassificationService {
 
         Attribute[] attributes = informationTable.getAttributes();
 
-        int i;
-        for(i = 0; i < attributes.length; i++) {
-            if (attributes[i] instanceof EvaluationAttribute && ((EvaluationAttribute)attributes[i]).getType() == AttributeType.DECISION && attributes[i].isActive()) {
+        int decisionAttributeIndex;
+        for(decisionAttributeIndex = 0; decisionAttributeIndex < attributes.length; decisionAttributeIndex++) {
+            if (attributes[decisionAttributeIndex] instanceof EvaluationAttribute && ((EvaluationAttribute)attributes[decisionAttributeIndex]).getType() == AttributeType.DECISION && attributes[decisionAttributeIndex].isActive()) {
                 break;
             }
         }
-        EvaluationField evaluationField = (EvaluationField)informationTable.getField(0, i);
+        EvaluationField evaluationField = (EvaluationField)informationTable.getField(0, decisionAttributeIndex);
 
-        SimpleDecision defaultDecision = new SimpleDecision(evaluationField, i);
+        SimpleDecision defaultDecision = new SimpleDecision(evaluationField, decisionAttributeIndex);
         SimpleClassificationResult defaultClassificationResult = new SimpleClassificationResult(defaultDecision);
         //SimpleRuleClassifier classifier = new SimpleRuleClassifier(ruleSetWithComputableCharacteristics, simpleClassificationResult);
         //SimpleOptimizingRuleClassifier classifier = new SimpleOptimizingRuleClassifier(ruleSetWithComputableCharacteristics, simpleClassificationResult, informationTable);
         //SimpleOptimizingCountingRuleClassifier classifier = new SimpleOptimizingCountingRuleClassifier(ruleSetWithComputableCharacteristics, simpleClassificationResult, informationTable);
         SimpleOptimizingCountingRuleClassifier classifier = new SimpleOptimizingCountingRuleClassifier(ruleSetWithComputableCharacteristics, defaultClassificationResult);
 
-        SimpleClassificationResult[] simpleClassificationResults = classifier.classifyAll(informationTable);
-
-        int objectIndex, ruleIndex;
-        int rulesCount = ruleSetWithComputableCharacteristics.size();
+        int objectIndex;
         int objectCount = informationTable.getNumberOfObjects();
-
         IntList[] indicesOfCoveringRules = new IntList[objectCount];
-        IntList[] indicesOfCoveredObjects = new IntList[rulesCount];
 
-
-        for(ruleIndex = 0; ruleIndex < rulesCount; ruleIndex++) {
-            indicesOfCoveredObjects[ruleIndex] = new IntArrayList();
+        SimpleClassificationResult[] simpleClassificationResults = new SimpleClassificationResult[objectCount];
+        for (objectIndex = 0; objectIndex < simpleClassificationResults.length; objectIndex++) {
+            indicesOfCoveringRules[objectIndex] = new IntArrayList();
+            simpleClassificationResults[objectIndex] = classifier.classify(objectIndex, informationTable, indicesOfCoveringRules[objectIndex]);
         }
 
-        for(objectIndex = 0; objectIndex < objectCount; objectIndex++) {
-            indicesOfCoveringRules[objectIndex] = new IntArrayList();
-
-            for(ruleIndex = 0; ruleIndex < rulesCount; ruleIndex++) {
-
-                if (ruleSetWithComputableCharacteristics.getRule(ruleIndex).covers(objectIndex, informationTable)) { //current rule covers considered object
-                    indicesOfCoveringRules[objectIndex].add(ruleIndex);
-                    indicesOfCoveredObjects[ruleIndex].add(objectIndex);
+        if(logger.isDebugEnabled()) {
+            for(objectIndex = 0; objectIndex < objectCount; objectIndex++) {
+                logger.debug("Obiekt nr {}:\t{}", objectIndex, informationTable.getFields(objectIndex).toString());
+                for(int ruleIndex = 0; ruleIndex < indicesOfCoveringRules[objectIndex].size(); ruleIndex++) {
+                    logger.debug("\tRegula nr {}:\t{}", ruleIndex, ruleSetWithComputableCharacteristics.getRule(indicesOfCoveringRules[objectIndex].getInt(ruleIndex)));
                 }
             }
         }
 
-        for(objectIndex = 0; objectIndex < objectCount; objectIndex++) {
-            logger.info("Obiekt nr {}:\t{}", objectIndex, informationTable.getFields(objectIndex).toString());
-            for(ruleIndex = 0; ruleIndex < indicesOfCoveringRules[objectIndex].size(); ruleIndex++) {
-                logger.info("\tRegula nr {}:\t{}", ruleIndex, ruleSetWithComputableCharacteristics.getRule(indicesOfCoveringRules[objectIndex].getInt(ruleIndex)));
-            }
+        Decision[] suggestedDecisions = new Decision[simpleClassificationResults.length];
+        for(int i = 0; i < simpleClassificationResults.length; i++) {
+            suggestedDecisions[i] = simpleClassificationResults[i].getSuggestedDecision();
         }
 
-        Classification classification = new Classification(simpleClassificationResults, informationTable, indicesOfCoveringRules, indicesOfCoveredObjects);
+        EnumerationField decisionEnumerationField = (EnumerationField)evaluationField;
+        ElementList elementList = decisionEnumerationField.getElementList();
+        AttributePreferenceType attributePreferenceType = decisionEnumerationField.getPreferenceType();
+        Decision[] decisionsDomain = new Decision[elementList.getSize()];
+        for(int i = 0; i < elementList.getSize(); i++) {
+            EnumerationField enumerationField = EnumerationFieldFactory.getInstance().create(elementList, i, attributePreferenceType);
+            decisionsDomain[i] = DecisionFactory.INSTANCE.create(
+                    new EnumerationField[] {enumerationField},
+                    new int[] {decisionAttributeIndex});
+        }
+        OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(informationTable.getOrderedUniqueFullyDeterminedDecisions(), informationTable.getDecisions(), suggestedDecisions);
+
+        Classification classification = new Classification(simpleClassificationResults, informationTable, decisionsDomain, indicesOfCoveringRules, ordinalMisclassificationMatrix);
         return classification;
     }
 

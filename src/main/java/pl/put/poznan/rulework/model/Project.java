@@ -14,6 +14,8 @@ public class Project {
     private InformationTable informationTable;
     private DominanceCones dominanceCones;
     private UnionsWithSingleLimitingDecision unions;
+    private String typeOfUnions;
+    private Double consistencyThreshold;
     private RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics;
     private Classification classification;
     private CrossValidation crossValidation;
@@ -27,9 +29,6 @@ public class Project {
         this.informationTable = new InformationTable(new Attribute[0], new ArrayList<>());
         this.calculatedDominanceCones = false;
         this.calculatedUnionsWithSingleLimitingDecision = false;
-        this.ruleSetWithComputableCharacteristics = null;
-        this.classification = null;
-        this.crossValidation = null;
     }
 
     public Project(String name, InformationTable informationTable) {
@@ -38,9 +37,6 @@ public class Project {
         this.informationTable = informationTable;
         this.calculatedDominanceCones = false;
         this.calculatedUnionsWithSingleLimitingDecision = false;
-        this.ruleSetWithComputableCharacteristics = null;
-        this.classification = null;
-        this.crossValidation = null;
     }
 
     public UUID getId() {
@@ -83,6 +79,22 @@ public class Project {
 
     public void setUnionsWithSingleLimitingDecision(UnionsWithSingleLimitingDecision unions) {
         this.unions = unions;
+    }
+
+    public String getTypeOfUnions() {
+        return typeOfUnions;
+    }
+
+    public void setTypeOfUnions(String typeOfUnions) {
+        this.typeOfUnions = typeOfUnions;
+    }
+
+    public Double getConsistencyThreshold() {
+        return consistencyThreshold;
+    }
+
+    public void setConsistencyThreshold(Double consistencyThreshold) {
+        this.consistencyThreshold = consistencyThreshold;
     }
 
     public boolean isCalculatedDominanceCones() {

@@ -2,27 +2,30 @@ package pl.put.poznan.rulework.model;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import org.rulelearn.classification.SimpleClassificationResult;
+import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class Classification {
     private SimpleClassificationResult[] simpleClassificationResults;
     private InformationTable informationTable;
+    private Decision[] decisionsDomain;
     private IntList[] indicesOfCoveringRules;
-    private IntList[] indicesOfCoveredObjects;
+    private OrdinalMisclassificationMatrix ordinalMisclassificationMatrix;
 
     public Classification(SimpleClassificationResult[] simpleClassificationResults, InformationTable informationTable) {
         this.simpleClassificationResults = simpleClassificationResults;
         this.informationTable = informationTable;
     }
 
-    public Classification(SimpleClassificationResult[] simpleClassificationResults, InformationTable informationTable, IntList[] indicesOfCoveringRules, IntList[] indicesOfCoveredObjects) {
+    public Classification(SimpleClassificationResult[] simpleClassificationResults, InformationTable informationTable, Decision[] decisionsDomain, IntList[] indicesOfCoveringRules, OrdinalMisclassificationMatrix ordinalMisclassificationMatrix) {
         this.simpleClassificationResults = simpleClassificationResults;
         this.informationTable = informationTable;
+        this.decisionsDomain = decisionsDomain;
         this.indicesOfCoveringRules = indicesOfCoveringRules;
-        this.indicesOfCoveredObjects = indicesOfCoveredObjects;
+        this.ordinalMisclassificationMatrix = ordinalMisclassificationMatrix;
     }
 
     public SimpleClassificationResult[] getSimpleClassificationResults() {
@@ -41,6 +44,14 @@ public class Classification {
         this.informationTable = informationTable;
     }
 
+    public Decision[] getDecisionsDomain() {
+        return decisionsDomain;
+    }
+
+    public void setDecisionsDomain(Decision[] decisionsDomain) {
+        this.decisionsDomain = decisionsDomain;
+    }
+
     public IntList[] getindicesOfCoveringRules() {
         return indicesOfCoveringRules;
     }
@@ -49,12 +60,12 @@ public class Classification {
         this.indicesOfCoveringRules = indicesOfCoveringRules;
     }
 
-    public IntList[] getindicesOfCoveredObjects() {
-        return indicesOfCoveredObjects;
+    public OrdinalMisclassificationMatrix getOrdinalMisclassificationMatrix() {
+        return ordinalMisclassificationMatrix;
     }
 
-    public void setindicesOfCoveredObjects(IntList[] indicesOfCoveredObjects) {
-        this.indicesOfCoveredObjects = indicesOfCoveredObjects;
+    public void setOrdinalMisclassificationMatrix(OrdinalMisclassificationMatrix ordinalMisclassificationMatrix) {
+        this.ordinalMisclassificationMatrix = ordinalMisclassificationMatrix;
     }
 
     @Override
@@ -62,8 +73,9 @@ public class Classification {
         return "Classification{" +
                 "simpleClassificationResults=" + Arrays.toString(simpleClassificationResults) +
                 ", informationTable=" + informationTable +
-                ", indicesOfCoveringRules=" + indicesOfCoveringRules +
-                ", indicesOfCoveredObjects=" + indicesOfCoveredObjects +
+                ", decisionsDomain=" + Arrays.toString(decisionsDomain) +
+                ", indicesOfCoveringRules=" + Arrays.toString(indicesOfCoveringRules) +
+                ", ordinalMisclassificationMatrix=" + ordinalMisclassificationMatrix +
                 '}';
     }
 }

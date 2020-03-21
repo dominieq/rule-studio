@@ -91,20 +91,7 @@ public class RulesService {
         return ruleSetWithCharacteristics;
     }
 
-    private void calculateRuleSetWithComputableCharacteristics (Project project) {
-        Unions unions = project.getUnionsWithSingleLimitingDecision();
-        if(unions == null) {
-            UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = new UnionsWithSingleLimitingDecision(
-                    new InformationTableWithDecisionDistributions(project.getInformationTable()),
-                    new VCDominanceBasedRoughSetCalculator(EpsilonConsistencyMeasure.getInstance(), 0)
-            );
-
-            project.setUnionsWithSingleLimitingDecision(unionsWithSingleLimitingDecision);
-            project.setCalculatedUnionsWithSingleLimitingDecision(true);
-
-            unions = unionsWithSingleLimitingDecision;
-        }
-
+    public static RuleSetWithComputableCharacteristics calculateRuleSetWithComputableCharacteristics(Unions unions) {
         final RuleInductionStoppingConditionChecker stoppingConditionChecker =
                 new EvaluationAndCoverageStoppingConditionChecker(
                         EpsilonConsistencyMeasure.getInstance(),
@@ -127,7 +114,20 @@ public class RulesService {
         downwardCertainRules.calculateAllCharacteristics();
 
         RuleSetWithComputableCharacteristics resultSet = RuleSetWithComputableCharacteristics.join(upwardCertainRules, downwardCertainRules);
-        project.setRuleSetWithComputableCharacteristics(resultSet);
+        return resultSet;
+    }
+
+    public static void calculateRuleSetWithComputableCharacteristicsInProject(Project project, String typeOfUnions, Double consistencyThreshold) {
+        Unions unions = project.getUnionsWithSingleLimitingDecision();
+        if((project.getTypeOfUnions() == null) || (project.getConsistencyThreshold() == null) || (project.getTypeOfUnions() != typeOfUnions) || (project.getConsistencyThreshold() != consistencyThreshold)) {
+            logger.info("Calculating new set of unions");
+            UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecisionInProject(project, typeOfUnions, consistencyThreshold);
+
+            unions = project.getUnionsWithSingleLimitingDecision();
+        }
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = calculateRuleSetWithComputableCharacteristics(unions);
+
+        project.setRuleSetWithComputableCharacteristics(ruleSetWithComputableCharacteristics);
     }
 
     public RuleSetWithComputableCharacteristics getRules(UUID id) {
@@ -146,18 +146,22 @@ public class RulesService {
         return ruleSetWithComputableCharacteristics;
     }
 
-    public RuleSetWithComputableCharacteristics putRules(UUID id) {
+    public RuleSetWithComputableCharacteristics putRules(UUID id, String typeOfUnions, Double consistencyThreshold) {
         logger.info("Id:\t{}", id);
+        logger.info("TypeOfUnions:\t{}", typeOfUnions);
+        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateRuleSetWithComputableCharacteristics(project);
+        calculateRuleSetWithComputableCharacteristicsInProject(project, typeOfUnions, consistencyThreshold);
 
         return project.getRuleSetWithComputableCharacteristics();
     }
 
-    public RuleSetWithComputableCharacteristics postRules(UUID id, String metadata, String data) throws IOException {
+    public RuleSetWithComputableCharacteristics postRules(UUID id, String typeOfUnions, Double consistencyThreshold, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
+        logger.info("TypeOfUnions:\t{}", typeOfUnions);
+        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data:\t{}", data);
 
@@ -166,7 +170,7 @@ public class RulesService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateRuleSetWithComputableCharacteristics(project);
+        calculateRuleSetWithComputableCharacteristicsInProject(project, typeOfUnions, consistencyThreshold);
 
         return project.getRuleSetWithComputableCharacteristics();
     }
