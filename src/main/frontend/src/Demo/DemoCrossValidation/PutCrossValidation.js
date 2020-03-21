@@ -6,6 +6,7 @@ class PutCrossValidation extends Component {
 
         this.state = {
             id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2',
+            typeOfUnions: 'monotonic',
             consistencyThreshold: 0,
             numberOfFolds: 10
         }
@@ -14,6 +15,12 @@ class PutCrossValidation extends Component {
     handleIdChange = (event) => {
         this.setState({
             id_projektu: event.target.value
+        })
+    }
+
+    handleTypeOfUnionsChange = (event) => {
+        this.setState({
+            typeOfUnions: event.target.value
         })
     }
 
@@ -32,7 +39,7 @@ class PutCrossValidation extends Component {
     putCrossValidation = (event) => {
         event.preventDefault();
 
-        var link = `http://localhost:8080/projects/${this.state.id_projektu}/crossValidation?consistencyThreshold=${this.state.consistencyThreshold}&numberOfFolds=${this.state.numberOfFolds}`;
+        var link = `http://localhost:8080/projects/${this.state.id_projektu}/crossValidation?typeOfUnions=${this.state.typeOfUnions}&consistencyThreshold=${this.state.consistencyThreshold}&numberOfFolds=${this.state.numberOfFolds}`;
 
         console.log(link)
 
@@ -50,6 +57,13 @@ class PutCrossValidation extends Component {
             } else if(response.status === 404) {
                 response.json().then(result => {
                     console.log("Error 404.")
+                    console.log(result.message)
+                }).catch(err => {
+                    console.log(err)
+                })
+            } else if(response.status === 422) {
+                response.json().then(result => {
+                    console.log("Error 422.")
                     console.log(result.message)
                 }).catch(err => {
                     console.log(err)
@@ -72,6 +86,8 @@ class PutCrossValidation extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
+                typeOfUnions->
+                <input type='text' value={this.state.typeOfUnions} onChange={this.handleTypeOfUnionsChange} />
                 consistencyThreshold->
                 <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
                 numberOfFolds->

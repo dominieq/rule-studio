@@ -23,7 +23,7 @@ public class CrossValidationService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private CrossValidation calculateCrossValidation(InformationTable informationTable, Double consistencyThreshold, Integer numberOfFolds) {
+    private CrossValidation calculateCrossValidation(InformationTable informationTable, String typeOfUnions, Double consistencyThreshold, Integer numberOfFolds) {
         CrossValidationSingleFold crossValidationSingleFolds[] = new CrossValidationSingleFold[numberOfFolds];
 
         CrossValidator crossValidator = new CrossValidator(new Random());
@@ -34,7 +34,7 @@ public class CrossValidationService {
             InformationTable trainingTable = folds.get(i).getTrainingTable();
             InformationTable validationTable = folds.get(i).getValidationTable();
 
-            UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecision(trainingTable, consistencyThreshold);
+            UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecision(trainingTable, typeOfUnions, consistencyThreshold);
             RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.calculateRuleSetWithComputableCharacteristics(unionsWithSingleLimitingDecision);
             Classification classificationValidationTable = ClassificationService.calculateClassification(validationTable, ruleSetWithComputableCharacteristics);
 
@@ -61,14 +61,15 @@ public class CrossValidationService {
         return crossValidation;
     }
 
-    public CrossValidation putCrossValidation(UUID id, Double consistencyThreshold, Integer numberOfFolds) {
+    public CrossValidation putCrossValidation(UUID id, String typeOfUnions, Double consistencyThreshold, Integer numberOfFolds) {
         logger.info("Id:\t{}", id);
+        logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
         logger.info("NumberOfFolds:\t{}", numberOfFolds);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), consistencyThreshold, numberOfFolds);
+        CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), typeOfUnions, consistencyThreshold, numberOfFolds);
 
         project.setCrossValidation(crossValidation);
 

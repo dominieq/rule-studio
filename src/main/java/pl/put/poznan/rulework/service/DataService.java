@@ -15,6 +15,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
@@ -49,7 +50,9 @@ public class DataService {
             reader = new InputStreamReader(dataFile.getInputStream());
             informationTable = objectParser.parseObjects(reader);
         } else {
-            logger.error("Unrecognized format of data file: " + dataFile.getContentType());
+            WrongParameterException ex = new WrongParameterException(String.format("Unrecognized format of data file:\t%s", dataFile.getContentType()));
+            logger.error(ex.getMessage());
+            throw ex;
         }
 
         if(logger.isTraceEnabled()) {

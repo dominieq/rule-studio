@@ -38,11 +38,12 @@ public class CrossValidationController {
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CrossValidation> putDominanceCones(
             @PathVariable("id") UUID id,
+            @RequestParam(name = "typeOfUnions") String typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
             @RequestParam(name = "numberOfFolds") Integer numberOfFolds) {
         logger.info("Putting cross validation...");
 
-        CrossValidation result = crossValidationService.putCrossValidation(id, consistencyThreshold, numberOfFolds);
+        CrossValidation result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, numberOfFolds);
 
         return ResponseEntity.ok(result);
     }

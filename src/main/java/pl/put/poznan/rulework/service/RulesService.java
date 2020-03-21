@@ -120,7 +120,7 @@ public class RulesService {
     public static void calculateRuleSetWithComputableCharacteristicsInProject(Project project) {
         Unions unions = project.getUnionsWithSingleLimitingDecision();
         if(unions == null) {
-            UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecisionInProject(project, 0.0);
+            UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecisionInProject(project, "monotonic", 0.0);
 
             unions = project.getUnionsWithSingleLimitingDecision();
         }
