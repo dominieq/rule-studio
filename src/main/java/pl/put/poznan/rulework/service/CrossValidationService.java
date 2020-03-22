@@ -23,7 +23,7 @@ public class CrossValidationService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private CrossValidation calculateCrossValidation(InformationTable informationTable, String typeOfUnions, Double consistencyThreshold, Integer numberOfFolds) {
+    private CrossValidation calculateCrossValidation(InformationTable informationTable, String typeOfUnions, Double consistencyThreshold, String typeOfClassifier, String defaultClassificationResult, Integer numberOfFolds) {
         CrossValidationSingleFold crossValidationSingleFolds[] = new CrossValidationSingleFold[numberOfFolds];
 
         CrossValidator crossValidator = new CrossValidator(new Random());
@@ -36,7 +36,7 @@ public class CrossValidationService {
 
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecision(trainingTable, typeOfUnions, consistencyThreshold);
             RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.calculateRuleSetWithComputableCharacteristics(unionsWithSingleLimitingDecision);
-            Classification classificationValidationTable = ClassificationService.calculateClassification(validationTable, ruleSetWithComputableCharacteristics);
+            Classification classificationValidationTable = ClassificationService.calculateClassification(validationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics);
 
             crossValidationSingleFolds[i] = new CrossValidationSingleFold(validationTable, ruleSetWithComputableCharacteristics, classificationValidationTable);
         }
@@ -61,15 +61,17 @@ public class CrossValidationService {
         return crossValidation;
     }
 
-    public CrossValidation putCrossValidation(UUID id, String typeOfUnions, Double consistencyThreshold, Integer numberOfFolds) {
+    public CrossValidation putCrossValidation(UUID id, String typeOfUnions, Double consistencyThreshold, String typeOfClassifier, String defaultClassificationResult, Integer numberOfFolds) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
+        logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
+        logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
         logger.info("NumberOfFolds:\t{}", numberOfFolds);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), typeOfUnions, consistencyThreshold, numberOfFolds);
+        CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), typeOfUnions, consistencyThreshold, typeOfClassifier, defaultClassificationResult, numberOfFolds);
 
         project.setCrossValidation(crossValidation);
 

@@ -119,7 +119,7 @@ public class RulesService {
 
     public static void calculateRuleSetWithComputableCharacteristicsInProject(Project project, String typeOfUnions, Double consistencyThreshold) {
         Unions unions = project.getUnionsWithSingleLimitingDecision();
-        if((project.getTypeOfUnions() == null) || (project.getConsistencyThreshold() == null) || (project.getTypeOfUnions() != typeOfUnions) || (project.getConsistencyThreshold() != consistencyThreshold)) {
+        if((project.isCalculatedUnionsWithSingleLimitingDecision()) || (project.getTypeOfUnions() != typeOfUnions) || (project.getConsistencyThreshold() != consistencyThreshold)) {
             logger.info("Calculating new set of unions");
             UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecisionInProject(project, typeOfUnions, consistencyThreshold);
 

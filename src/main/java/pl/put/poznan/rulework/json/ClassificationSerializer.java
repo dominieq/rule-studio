@@ -24,8 +24,8 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
 
         jsonGenerator.writeStartObject();
 
-        jsonGenerator.writeFieldName("simpleClassificationResults");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getSimpleClassificationResults()));
+        jsonGenerator.writeFieldName("classificationResults");
+        jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getClassificationResults()));
 
         jsonGenerator.writeFieldName("informationTable");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getInformationTable()));
