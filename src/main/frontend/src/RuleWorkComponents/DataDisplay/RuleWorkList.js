@@ -9,9 +9,10 @@ const StyledList = withStyles(theme=> ({
     root: {
         backgroundColor: theme.palette.list.background,
         color: theme.palette.list.text,
+        maxWidth: "75%",
         minWidth: "50%",
     }
-}))(props => <List {...props} />);
+}), {name: "rule-work-list"})(props => <List {...props} />);
 
 class RuleWorkList extends Component {
     constructor(props) {
@@ -50,18 +51,19 @@ class RuleWorkList extends Component {
 
         return (
             <Fragment>
-                <StyledList {...other} component={"nav"}>
+                <StyledList {...other}>
                     {displayedItems.map((item, index) => (
                         <RuleWorkListItem
                             key={index}
                             object={item}
                             selected={selectedItem === index}
-                            onClick={event => this.onListItemClick(event, index)}
+                            onClick={event => this.onListItemClick(event, item.id)}
                         />
                     ))}
                 </StyledList>
                 <StyledPagination
                     count={count}
+                    hidden={children.length < 50}
                     onChange={this.onPageChange}
                     page={selectedPage}
                     showFirstButton={true}
@@ -76,12 +78,23 @@ class RuleWorkList extends Component {
 RuleWorkList.propTypes = {
     children: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string,
-        name: PropTypes.string,
-        traits: PropTypes.object,
-        actions: PropTypes.object,
-        tables: PropTypes.object,
+        header: PropTypes.string,
+        subheader: PropTypes.string,
+        content: PropTypes.string,
+        multiContent: PropTypes.arrayOf(PropTypes.object)
     })),
+    classes: PropTypes.object,
+    component: PropTypes.elementType,
+    dense: PropTypes.bool,
+    disablePadding: PropTypes.bool,
+    ListItemContent: PropTypes.object,
     onItemSelected: PropTypes.func,
+    subheader: PropTypes.node,
+};
+
+RuleWorkList.defaultProps = {
+    component: "nav",
+    disablePadding: true,
 };
 
 export default RuleWorkList;
