@@ -74,27 +74,27 @@ class Unions extends Component {
                         if (this._isMounted) this.setState({loading: false});
                     });
                 } else {
-                    if (response.status !== 404) {
-                        response.json().then(result => {
-                            if (this._isMounted) {
-                                msg = "ERROR " + result.status + ": " + result.message;
-                                let alertProps = {title: "Something went wrong! Couldn't load unions :("};
-                                this.setState({
-                                    loading: false,
-                                    snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "warning"}
-                                });
-                            }
-                        }).catch(() => {
-                            if (this._isMounted) {
-                                msg = "Something went wrong! Couldn't load unions :(";
-                                let alertProps = {title: "ERROR " + response.status};
-                                this.setState({
-                                    loading: false,
-                                    snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
-                                });
-                            }
-                        });
-                    }
+                    response.json().then(result => {
+                        if (this._isMounted) {
+                            msg = "ERROR " + result.status + ": " + result.message;
+                            let alertProps = {title: "Something went wrong! Couldn't load unions :("};
+                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "warning"};
+                            this.setState({
+                                loading: false,
+                                snackbarProps: result.status !== 404 ? snackbarProps : undefined
+                            });
+                        }
+                    }).catch(() => {
+                        if (this._isMounted) {
+                            msg = "Something went wrong! Couldn't load unions :(";
+                            let alertProps = {title: "ERROR " + response.status};
+                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "error"};
+                            this.setState({
+                                loading: false,
+                                snackbarProps: response.status !== 404 ? snackbarProps : undefined
+                            });
+                        }
+                    });
                 }
             }).catch(error => {
                 console.log(error);
