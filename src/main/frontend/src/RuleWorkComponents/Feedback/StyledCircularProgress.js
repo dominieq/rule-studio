@@ -14,25 +14,34 @@ const useStyles = makeStyles(theme => ({
         alignItems: "center",
         justifyContent: "center",
     }
-}));
+}), {name: "MuiCircularProgress"});
 
 function StyledCircularProgress(props) {
-    const {useWrapper, ...other} = props;
-    const classes = useStyles();
+    const {classes: propsClasses, className, useWrapper, ...other} = props;
+    const classes = {...useStyles(), ...propsClasses};
+    const {wrapper, ...otherClasses} = classes;
 
     return (
-        <div className={clsx({[classes.wrapper]: useWrapper})}>
-            <CircularProgress {...other} classes={{root: classes.root}} />
+        <div className={clsx({[wrapper]: useWrapper}, className)}>
+            <CircularProgress {...other} classes={otherClasses} />
         </div>
-
     )
 }
 
 StyledCircularProgress.propTypes = {
+    classes: PropTypes.object,
+    className: PropTypes.string,
+    color: PropTypes.oneOf(["inherit", "primary", "secondary"]),
+    disableShrink: PropTypes.bool,
+    size: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    thickness: PropTypes.number,
     useWrapper: PropTypes.bool,
+    value: PropTypes.number,
+    variant: PropTypes.oneOf(["determinant", "indeterminant", "static"])
 };
 
 StyledCircularProgress.defaultProps = {
+    disableShrink: true,
     useWrapper: true,
 };
 

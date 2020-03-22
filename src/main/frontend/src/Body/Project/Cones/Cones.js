@@ -62,24 +62,31 @@ class Cones extends Component {
                     });
                 } else {
                     response.json().then(result => {
-                        msg = "error " + result.status + ": " + result.message;
-                        let alertProps = {hasTitle: true, title: "Something went wrong! Please don't panic :)"};
-                        let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "info"};
                         if (this._isMounted) {
+                            msg = "ERROR " + result.status + ": " + result.message;
+                            let alertProps = {title: "Something went wrong! Couldn't load dominance cones :("};
+                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "warning"};
                             this.setState({
                                 loading: false,
-                                snackbarProps: result.status !== 404 ? snackbarProps : null
+                                snackbarProps: result.status !== 404 ? snackbarProps : undefined,
                             });
                         }
-                    }).catch(error => {
-                        console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
+                    }).catch(() => {
+                        if (this._isMounted) {
+                            msg = "Something went wrong! Couldn't load dominance cones :(";
+                            let alertProps = {title: "ERROR " + response.status};
+                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                            this.setState({
+                                loading: false,
+                                snackbarProps: response.status !== 404 ? snackbarProps : undefined,
+                            });
+                        }
                     });
                 }
             }).catch(error => {
                 console.log(error);
                 if (this._isMounted) {
-                    msg = "Server error! Couldn't load cones :(";
+                    msg = "Server error! Couldn't load dominance cones :(";
                     this.setState({
                         loading: false,
                         snackbarProps: {open: true, message: msg, variant: "error"},
@@ -106,7 +113,11 @@ class Cones extends Component {
                 project.result.dominanceCones = this._data;
                 project.result.calculatedDominanceCones = true;
             }
-            this.props.onTabChange(project, this.props.value, this.state.updated);
+
+            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+            tabsUpToDate[this.props.value] = this.state.updated;
+
+            this.props.onTabChange(project, this.state.updated, tabsUpToDate);
         }
     }
 
@@ -127,12 +138,14 @@ class Cones extends Component {
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
+                        const updated = true;
+
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
                             this.setState({
                                 changes: true,
-                                updated: true,
+                                updated: updated,
                                 loading: false,
                                 displayedItems: items,
                             }, () => {
@@ -141,8 +154,12 @@ class Cones extends Component {
                             });
                         } else {
                             project.result.dominanceCones = result;
-                            project.result.calculatedDominanceCones = true;
-                            this.props.onTabChange(project, this.props.value, true);
+                            project.result.calculatedDominanceCones = updated;
+
+                            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+                            tabsUpToDate[this.props.value] = updated;
+
+                            this.props.onTabChange(project, updated, tabsUpToDate);
                         }
                     }).catch(error => {
                         console.log(error);
@@ -151,16 +168,22 @@ class Cones extends Component {
                 } else {
                     response.json().then(result => {
                         if (this._isMounted) {
-                            msg = "error " + result.status + ": " + result.message;
-                            let alertProps = {hasTitle: true, title: "Something went wrong! Please don't panic :)"};
+                            msg = "ERROR " + result.status + ": " + result.message;
+                            let alertProps = {title: "Something went wrong! Couldn't calculate dominance cones :("};
                             this.setState({
                                 loading: false,
-                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "info"}
+                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "warning"}
                             });
                         }
-                    }).catch(error => {
-                        console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
+                    }).catch(() => {
+                        if (this._isMounted) {
+                            msg = "Something went wrong! Couldn't calculate dominance cones :(";
+                            let alertProps = {title: "ERROR " + response.status};
+                            this.setState({
+                                loading: false,
+                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                            });
+                        }
                     });
                 }
             }).catch(error => {

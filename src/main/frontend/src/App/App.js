@@ -64,9 +64,9 @@ class App extends Component {
         let tabsUpToDate = [
             !project.result.dominanceCones,
             !project.result.unionsWithSingleLimitingDecision,
-            !project.result.ruleSetWithComputableCharacteristics,
-            !project.result.classification,
-            !project.result.crossValidation
+            !project.result.ruleSetWithComputableCharacteristics || project.externalRules,
+            !project.result.classification || project.externalRules,
+            !project.result.crossValidation || project.externalRules,
         ];
         this.setState(({currentProject, projects}) => ({
             projects: [
@@ -82,19 +82,15 @@ class App extends Component {
         }));
     };
 
-    onTabChanges = (project, tabValue, updated) => {
+    onTabChanges = (project, dataUpToDate, tabsUpToDate) => {
         this.setState(({currentProject, projects}) => ({
             projects: [
                 ...projects.slice(0, currentProject),
                 {
                     ...projects[currentProject],
                     ...project,
-                    dataUpToDate: updated,
-                    tabsUpToDate: [
-                        ...projects[currentProject].tabsUpToDate.slice(0, tabValue),
-                        updated,
-                        ...projects[currentProject].tabsUpToDate.slice(tabValue + 1)
-                    ]
+                    dataUpToDate: dataUpToDate,
+                    tabsUpToDate: tabsUpToDate
                 },
                 ...projects.slice(currentProject + 1)
             ],

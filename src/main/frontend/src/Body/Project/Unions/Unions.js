@@ -49,6 +49,8 @@ class Unions extends Component {
 
         this.setState({
             loading: true,
+            threshold: this.props.project.threshold,
+            measure: this.props.project.measure,
         }, () => {
             let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/unions`, {
@@ -62,8 +64,6 @@ class Unions extends Component {
                             this.setState({
                                 loading: false,
                                 displayedItems: items,
-                                threshold: this.props.project.threshold,
-                                measure: this.props.project.measure,
                             }, () => {
                                 this._data = result;
                                 this._items = items;
@@ -71,34 +71,27 @@ class Unions extends Component {
                         }
                     }).catch(error => {
                         console.log(error);
-                        if (this._isMounted) {
-                            this.setState({
-                                loading: false,
-                                threshold: this.props.project.threshold,
-                                measure: this.props.project.measure,
-                            });
-                        }
+                        if (this._isMounted) this.setState({loading: false});
                     });
                 } else {
                     response.json().then(result => {
                         if (this._isMounted) {
-                            msg = "error " + result.status + ": " + result.message;
-                            let alertProps = {hasTitle: true, title: "Something went wrong! Please don't panic :)"};
-                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "info"};
+                            msg = "ERROR " + result.status + ": " + result.message;
+                            let alertProps = {title: "Something went wrong! Couldn't load unions :("};
+                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "warning"};
                             this.setState({
                                 loading: false,
-                                threshold: this.props.project.threshold,
-                                measure: this.props.project.measure,
                                 snackbarProps: result.status !== 404 ? snackbarProps : undefined
                             });
                         }
-                    }).catch(error => {
-                        console.log(error);
+                    }).catch(() => {
                         if (this._isMounted) {
+                            msg = "Something went wrong! Couldn't load unions :(";
+                            let alertProps = {title: "ERROR " + response.status};
+                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "error"};
                             this.setState({
                                 loading: false,
-                                threshold: this.props.project.threshold,
-                                measure: this.props.project.measure,
+                                snackbarProps: response.status !== 404 ? snackbarProps : undefined
                             });
                         }
                     });
@@ -109,8 +102,6 @@ class Unions extends Component {
                     msg = "Server error! Couldn't load unions :(";
                     this.setState({
                         loading: false,
-                        threshold: this.props.project.threshold,
-                        measure: this.props.project.measure,
                         snackbarProps: {open: true, message: msg, variant: "error"},
                     });
                 }
@@ -129,7 +120,11 @@ class Unions extends Component {
             }
             project.threshold = this.state.threshold;
             project.measure = this.state.measure;
-            this.props.onTabChange(project, this.props.value, this.state.updated);
+
+            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+            tabsUpToDate[this.props.value] = this.state.updated;
+
+            this.props.onTabChange(project, this.state.updated, tabsUpToDate);
         }
     }
 
@@ -172,7 +167,7 @@ class Unions extends Component {
             if (project.dataUpToDate) link = link + `?consistencyThreshold=${threshold}`;
 
             let data = new FormData();
-            data.append("threshold", threshold);
+            data.append("consistencyThreshold", threshold);
             data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
             data.append("data", JSON.stringify(project.result.informationTable.objects));
 
@@ -183,12 +178,14 @@ class Unions extends Component {
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
+                        const updated = true;
+
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
                             this.setState({
                                 changes: true,
-                                updated: true,
+                                updated: updated,
                                 loading: false,
                                 displayedItems: items,
                             }, () => {
@@ -197,8 +194,12 @@ class Unions extends Component {
                             });
                         } else {
                             project.result.unionsWithSingleLimitingDecision = result;
-                            project.result.calculatedUnionsWithSingleLimitingDecision = true;
-                            this.props.onTabChange(project, this.props.value, true);
+                            project.result.calculatedUnionsWithSingleLimitingDecision = updated;
+
+                            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+                            tabsUpToDate[this.props.value] = updated;
+
+                            this.props.onTabChange(project, updated, tabsUpToDate);
                         }
                     }).catch(error => {
                         console.log(error);
@@ -207,16 +208,22 @@ class Unions extends Component {
                 } else {
                     response.json().then(result => {
                         if (this._isMounted) {
-                            msg = "error " + result.status + ": " + result.message;
-                            let alertProps = {hasTitle: true, title: "Something went wrong! Please don't panic :)"};
+                            msg = "ERROR " + result.status + ": " + result.message;
+                            let alertProps = {title: "Something went wrong! Couldn't calculate unions :("};
                             this.setState({
                                 loading: false,
-                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "info"},
+                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "warning"}
                             });
                         }
-                    }).catch(error => {
-                        console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
+                    }).catch(() => {
+                        if (this._isMounted) {
+                            msg = "Something went wrong! Couldn't calculate unions :(";
+                            let alertProps = {title: "ERROR " + response.status};
+                            this.setState({
+                                loading: false,
+                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                            });
+                        }
                     });
                 }
             }).catch(error => {

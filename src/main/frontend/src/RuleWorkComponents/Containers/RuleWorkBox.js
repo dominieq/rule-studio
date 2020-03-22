@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
@@ -26,11 +27,11 @@ const useStyles = makeStyles({
 }, {name: "rule-work"});
 
 function RuleWorkBox(props) {
-    const {children, styleVariant, ...other} =  props;
-    const classes = useStyles();
+    const {children, classes: propsClasses, className, styleVariant, ...other} =  props;
+    const classes = {...useStyles(), ...propsClasses};
 
     return (
-        <div className={classes[styleVariant]} {...other}>
+        <div className={clsx(classes[styleVariant], className)} {...other}>
             {children}
         </div>
     )
@@ -38,6 +39,8 @@ function RuleWorkBox(props) {
 
 RuleWorkBox.propTypes = {
     children: PropTypes.node,
+    classes: PropTypes.object,
+    className: PropTypes.string,
     styleVariant: PropTypes.oneOf(["body", "tab", "tab-body"]),
 };
 

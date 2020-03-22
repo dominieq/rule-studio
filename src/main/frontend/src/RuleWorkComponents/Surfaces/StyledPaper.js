@@ -36,12 +36,12 @@ const useStyles = makeStyles(theme => ({
 }), {name: "rule-work"});
 
 function StyledPaper(props) {
-    const {children, classes: propsClasses, styleVariant, paperRef, ...other} = props;
+    const {children, classes: propsClasses, className, styleVariant, paperRef, ...other} = props;
     const classes = {...useStyles(), ...propsClasses};
 
     return (
             <Paper
-                className={clsx(classes.paper, classes[styleVariant])}
+                className={clsx(classes.paper, classes[styleVariant], className)}
                 {...paperRef ? {ref: paperRef} : null}
                 {...other}
             >
@@ -53,6 +53,7 @@ function StyledPaper(props) {
 StyledPaper.propTypes = {
     children: PropTypes.node,
     classes: PropTypes.object,
+    className: PropTypes.string,
     component: PropTypes.elementType,
     elevation: PropTypes.number,
     paperRef: PropTypes.object,

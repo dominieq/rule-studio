@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
 import RuleWorkTooltip from "../../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
 import Badge from "@material-ui/core/Badge";
-import AlertOctagram from "mdi-material-ui/AlertOctagram";
 
 const StyledBadge = withStyles(theme => ({
     badge: {
@@ -23,18 +22,15 @@ const useStyles = makeStyles({
     },
 }, {name: "MuiTooltip"});
 
-function UpdateAlert(props) {
-    const classes = useStyles();
+function AlertBadge(props) {
+    const {classes: propsClasses} = props;
+    const classes = {...useStyles(), ...propsClasses};
 
     return (
         <StyledBadge
             badgeContent={
-                <RuleWorkTooltip
-                    classes={{tooltip: classes['update-width']}}
-                    leaveDelay={1000}
-                    title={"Results in this tab are based on old data. Recalculate to refresh results"}
-                >
-                    <AlertOctagram />
+                <RuleWorkTooltip classes={{tooltip: classes['update-width']}} leaveDelay={1000} title={props.title}>
+                    {props.icon}
                 </RuleWorkTooltip>
             }
             overlap={"circle"}
@@ -44,8 +40,11 @@ function UpdateAlert(props) {
     )
 }
 
-UpdateAlert.propTypes = {
+AlertBadge.propTypes = {
     children: PropTypes.node,
+    classes: PropTypes.object,
+    icon: PropTypes.element.isRequired,
+    title: PropTypes.string.isRequired,
 };
 
-export default UpdateAlert;
+export default AlertBadge;
