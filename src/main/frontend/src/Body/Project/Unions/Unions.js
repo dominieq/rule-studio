@@ -266,33 +266,58 @@ class Unions extends Component {
 
     getItems = (data) => {
         let items = [];
-
         if (data) {
             for (let type of ["downwardUnions", "upwardUnions"]) {
                 for (let i = 0; i < data[type].length; i++) {
                     const id = i.toString();
-                    const name = data[type][i].unionType.replace("_", " ").toLowerCase();
+                    const name = data[type][i].unionType.replace("_", " ").toLowerCase()
+                        + " " + data[type][i].limitingDecision;
                     const traits = {
                         accuracyOfApproximation: data[type][i].accuracyOfApproximation,
                         qualityOfApproximation: data[type][i].qualityOfApproximation,
                     };
                     const tables = {
-                        objects: data[type][i].objects,
-                        lowerApproximation: data[type][i].lowerApproximation,
-                        upperApproximation: data[type][i].upperApproximation,
-                        boundary: data[type][i].boundary,
-                        positiveRegion: data[type][i].positiveRegion,
-                        negativeRegion: data[type][i].negativeRegion,
-                        boundaryRegion: data[type][i].boundaryRegion,
+                        objects: data[type][i].objects.slice(),
+                        lowerApproximation: data[type][i].lowerApproximation.slice(),
+                        upperApproximation: data[type][i].upperApproximation.slice(),
+                        boundary: data[type][i].boundary.slice(),
+                        positiveRegion: data[type][i].positiveRegion.slice(),
+                        negativeRegion: data[type][i].negativeRegion.slice(),
+                        boundaryRegion: data[type][i].boundaryRegion.slice(),
                     };
 
                     const item = new Item(id, name, traits, null, tables);
-
-                    items = [...items, item];
+                    items.push(item);
                 }
             }
         }
         return items;
+    };
+
+    getListItems = (items) => {
+        let listItems = [];
+        if (this._data) {
+            for (let i = 0; i < items.length; i++) {
+                const listItem = {
+                    id: items[i].id,
+                    header: items[i].name,
+                    subheader: undefined,
+                    content: undefined,
+                    multiContent: [
+                        {
+                            title: "Accuracy of approximation:",
+                            subtitle: items[i].traits.accuracyOfApproximation,
+                        },
+                        {
+                            title: "Quality of approximation: ",
+                            subtitle: items[i].traits.qualityOfApproximation,
+                        }
+                    ],
+                };
+                listItems.push(listItem);
+            }
+        }
+        return listItems;
     };
 
     render() {
@@ -348,7 +373,7 @@ class Unions extends Component {
                     :
                     displayedItems ?
                         <RuleWorkList onItemSelected={this.onDetailsOpen}>
-                            {displayedItems}
+                            {this.getListItems(displayedItems)}
                         </RuleWorkList>
                         :
                         <FilterNoResults />
