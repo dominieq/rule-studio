@@ -40,10 +40,12 @@ public class CrossValidationController {
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") String typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
+            @RequestParam(name = "typeOfClassifier") String typeOfClassifier,
+            @RequestParam(name = "defaultClassificationResult") String defaultClassificationResult,
             @RequestParam(name = "numberOfFolds") Integer numberOfFolds) {
         logger.info("Putting cross validation...");
 
-        CrossValidation result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, numberOfFolds);
+        CrossValidation result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfClassifier, defaultClassificationResult, numberOfFolds);
 
         return ResponseEntity.ok(result);
     }

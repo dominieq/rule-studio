@@ -17,11 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
+import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Classification;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -32,7 +34,51 @@ public class ClassificationService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    public static Classification calculateClassification(InformationTable informationTable, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
+    private static SimpleEvaluatedClassificationResult createDefaultSimpleEvaluatedClassificationResult(String defaultClassificationResult, InformationTable informationTable) {
+        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = new InformationTableWithDecisionDistributions(informationTable);
+        SimpleEvaluatedClassificationResult simpleEvaluatedClassificationResult = null;
+
+        switch (defaultClassificationResult) {
+            case "majorityDecisionClass":
+                List<Decision> modes = informationTableWithDecisionDistributions.getDecisionDistribution().getMode();
+                simpleEvaluatedClassificationResult = new SimpleEvaluatedClassificationResult((SimpleDecision)modes.get(0), 1.0);
+                break;
+            case "medianDecisionClass":
+                Decision median = informationTableWithDecisionDistributions.getDecisionDistribution().getMedian(informationTableWithDecisionDistributions.getOrderedUniqueFullyDeterminedDecisions());
+                simpleEvaluatedClassificationResult = new SimpleEvaluatedClassificationResult((SimpleDecision)median, 1.0);
+                break;
+            default:
+                WrongParameterException ex = new WrongParameterException(String.format("Given default classification result \"%s\" is unrecognized.", defaultClassificationResult));
+                logger.error(ex.getMessage());
+                break;
+        }
+
+        return simpleEvaluatedClassificationResult;
+    }
+
+    private static SimpleClassificationResult createDefaultSimpleClassificationResult(String defaultClassificationResult, InformationTable informationTable) {
+        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = new InformationTableWithDecisionDistributions(informationTable);
+        SimpleClassificationResult simpleClassificationResult = null;
+
+        switch (defaultClassificationResult) {
+            case "majorityDecisionClass":
+                List<Decision> modes = informationTableWithDecisionDistributions.getDecisionDistribution().getMode();
+                simpleClassificationResult = new SimpleClassificationResult((SimpleDecision)modes.get(0));
+                break;
+            case "medianDecisionClass":
+                Decision median = informationTableWithDecisionDistributions.getDecisionDistribution().getMedian(informationTableWithDecisionDistributions.getOrderedUniqueFullyDeterminedDecisions());
+                simpleClassificationResult = new SimpleClassificationResult((SimpleDecision)median);
+                break;
+            default:
+                WrongParameterException ex = new WrongParameterException(String.format("Given default classification result \"%s\" is unrecognized.", defaultClassificationResult));
+                logger.error(ex.getMessage());
+                break;
+        }
+
+        return simpleClassificationResult;
+    }
+
+    public static Classification calculateClassification(InformationTable informationTable, String typeOfClassifier, String typeOfDefaultClassificationResult, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
         /*logger.info("RuleSet size = {}", ruleSetWithComputableCharacteristics.size());
         for(int i = 0; i < ruleSetWithComputableCharacteristics.size(); i++) {
             logger.info("\tRegula nr {}:\t{}", i, ruleSetWithComputableCharacteristics.getRule(i));
@@ -48,21 +94,42 @@ public class ClassificationService {
         }
         EvaluationField evaluationField = (EvaluationField)informationTable.getField(0, decisionAttributeIndex);
 
-        SimpleDecision defaultDecision = new SimpleDecision(evaluationField, decisionAttributeIndex);
-        SimpleClassificationResult defaultClassificationResult = new SimpleClassificationResult(defaultDecision);
-        //SimpleRuleClassifier classifier = new SimpleRuleClassifier(ruleSetWithComputableCharacteristics, simpleClassificationResult);
-        //SimpleOptimizingRuleClassifier classifier = new SimpleOptimizingRuleClassifier(ruleSetWithComputableCharacteristics, simpleClassificationResult, informationTable);
-        //SimpleOptimizingCountingRuleClassifier classifier = new SimpleOptimizingCountingRuleClassifier(ruleSetWithComputableCharacteristics, simpleClassificationResult, informationTable);
-        SimpleOptimizingCountingRuleClassifier classifier = new SimpleOptimizingCountingRuleClassifier(ruleSetWithComputableCharacteristics, defaultClassificationResult);
+        SimpleClassificationResult simpleClassificationResult = null;
+        SimpleEvaluatedClassificationResult simpleEvaluatedClassificationResult = null;
+
+        RuleClassifier classifier = null;
+
+        switch (typeOfClassifier) {
+            case "SimpleRuleClassifier":
+                simpleClassificationResult = createDefaultSimpleClassificationResult(typeOfDefaultClassificationResult, informationTable);
+                classifier = new SimpleRuleClassifier(ruleSetWithComputableCharacteristics, simpleClassificationResult);
+                break;
+            case "SimpleOptimizingCountingRuleClassifier":
+                simpleClassificationResult = createDefaultSimpleClassificationResult(typeOfDefaultClassificationResult, informationTable);
+                classifier = new SimpleOptimizingCountingRuleClassifier(ruleSetWithComputableCharacteristics, simpleClassificationResult);
+                break;
+            case "ScoringRuleClassifierScore":
+                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, informationTable);
+                classifier = new ScoringRuleClassifier(ruleSetWithComputableCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.SCORE);
+                break;
+            case "ScoringRuleClassifierHybrid":
+                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, informationTable);
+                classifier = new ScoringRuleClassifier(ruleSetWithComputableCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.HYBRID);
+                break;
+            default:
+                WrongParameterException ex = new WrongParameterException(String.format("Given type of classifier \"%s\" is unrecognized.", typeOfClassifier));
+                logger.error(ex.getMessage());
+                break;
+        }
 
         int objectIndex;
         int objectCount = informationTable.getNumberOfObjects();
         IntList[] indicesOfCoveringRules = new IntList[objectCount];
 
-        SimpleClassificationResult[] simpleClassificationResults = new SimpleClassificationResult[objectCount];
-        for (objectIndex = 0; objectIndex < simpleClassificationResults.length; objectIndex++) {
+        ClassificationResult[] classificationResults = new ClassificationResult[objectCount];
+        for (objectIndex = 0; objectIndex < classificationResults.length; objectIndex++) {
             indicesOfCoveringRules[objectIndex] = new IntArrayList();
-            simpleClassificationResults[objectIndex] = classifier.classify(objectIndex, informationTable, indicesOfCoveringRules[objectIndex]);
+            classificationResults[objectIndex] = classifier.classify(objectIndex, informationTable, indicesOfCoveringRules[objectIndex]);
         }
 
         if(logger.isDebugEnabled()) {
@@ -74,9 +141,9 @@ public class ClassificationService {
             }
         }
 
-        Decision[] suggestedDecisions = new Decision[simpleClassificationResults.length];
-        for(int i = 0; i < simpleClassificationResults.length; i++) {
-            suggestedDecisions[i] = simpleClassificationResults[i].getSuggestedDecision();
+        Decision[] suggestedDecisions = new Decision[classificationResults.length];
+        for(int i = 0; i < classificationResults.length; i++) {
+            suggestedDecisions[i] = classificationResults[i].getSuggestedDecision();
         }
 
         EnumerationField decisionEnumerationField = (EnumerationField)evaluationField;
@@ -91,7 +158,7 @@ public class ClassificationService {
         }
         OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(informationTable.getOrderedUniqueFullyDeterminedDecisions(), informationTable.getDecisions(), suggestedDecisions);
 
-        Classification classification = new Classification(simpleClassificationResults, informationTable, decisionsDomain, indicesOfCoveringRules, ordinalMisclassificationMatrix);
+        Classification classification = new Classification(classificationResults, informationTable, decisionsDomain, indicesOfCoveringRules, ordinalMisclassificationMatrix);
         return classification;
     }
 
@@ -111,8 +178,10 @@ public class ClassificationService {
         return classification;
     }
 
-    public Classification putClassification(UUID id) {
+    public Classification putClassification(UUID id, String typeOfClassifier, String defaultClassificationResult) {
         logger.info("Id:\t{}", id);
+        logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
+        logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
         InformationTable informationTable = project.getInformationTable();
@@ -124,7 +193,7 @@ public class ClassificationService {
             throw ex;
         }
 
-        Classification classification = calculateClassification(informationTable, ruleSetWithComputableCharacteristics);
+        Classification classification = calculateClassification(informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics);
         project.setClassification(classification);
 
         return classification;
@@ -132,10 +201,14 @@ public class ClassificationService {
 
     public Classification putClassificationNewData(
             UUID id,
+            String typeOfClassifier,
+            String defaultClassificationResult,
             MultipartFile dataFile,
             Character separator,
             Boolean header) throws IOException {
         logger.info("Id:\t{}", id);
+        logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
+        logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
         logger.info("Data:\t{}\t{}", dataFile.getOriginalFilename(), dataFile.getContentType());
         logger.info("Separator:\t{}", separator);
         logger.info("Header:\t{}", header);
@@ -152,14 +225,16 @@ public class ClassificationService {
             throw ex;
         }
 
-        Classification classification = calculateClassification(informationTable, ruleSetWithComputableCharacteristics);
+        Classification classification = calculateClassification(informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics);
         project.setClassification(classification);
 
         return classification;
     }
 
-    public Classification postClassification(UUID id, String metadata, String data) throws IOException {
+    public Classification postClassification(UUID id, String typeOfClassifier, String defaultClassificationResult, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
+        logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
+        logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data:\t{}", data);
 
@@ -175,7 +250,7 @@ public class ClassificationService {
             throw ex;
         }
 
-        Classification classification = calculateClassification(informationTable, ruleSetWithComputableCharacteristics);
+        Classification classification = calculateClassification(informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics);
         project.setClassification(classification);
 
         return classification;
