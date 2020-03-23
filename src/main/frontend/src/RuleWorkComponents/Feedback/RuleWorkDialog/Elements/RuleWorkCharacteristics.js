@@ -1,22 +1,17 @@
-import React, {Component} from "react";
+import React, {Fragment} from "react";
 import PropTypes from "prop-types";
-import {withStyles} from "@material-ui/core";
 import VirtualizedTable from "./VirtualizedTable";
 import Paper from "@material-ui/core/Paper";
 
-class RuleWorkCharacteristics extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
+function RuleWorkCharacteristics(props) {
+    const {traits, ...other} = props;
 
-    getColumns() {
+    const getColumns = () => {
         return [{width: 200, label: "Name of the property:", dataKey: "key", },
                 {width: 200, label: "Value of the property:", dataKey: "value"}];       
-    }
+    };
 
-    getRows(traits) {
+    const getRows = (traits) => {
         const tmp = [];
         for(const k in traits) {
             tmp.push({
@@ -25,28 +20,26 @@ class RuleWorkCharacteristics extends Component {
             })
         }
         return tmp;
-    }
+    };
 
-    rowCount(traits) {
+    const rowCount = (traits) => {
         return Object.keys(traits).length;
-    }
+    };
 
-    render() {        
-        const {traits, ...other} = this.props;
-        return (
-            <Paper style={{ height: '100%', width: '100%' }} {...other} >
-            {
-                traits !== null && 
-                <VirtualizedTable
-                    rowCount={this.rowCount(traits)}
-                    rowGetter={({ index }) => this.getRows(traits)[index]}
-                    columns={this.getColumns()}
-                />
+
+    return (
+        <Fragment>
+            {traits &&
+                <Paper style={{ height: '100%', width: '100%' }} {...other} >
+                    <VirtualizedTable
+                        rowCount={rowCount(traits)}
+                        rowGetter={({ index }) => getRows(traits)[index]}
+                        columns={getColumns()}
+                    />
+                </Paper>
             }
-            </Paper>
-        )
-        
-    }
+        </Fragment>
+    )
 }
 
 // Expected props:

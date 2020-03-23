@@ -1,50 +1,47 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import PropTypes from "prop-types";
-import "./RuleWorkDialog.css";
+import RuleWorkBox from "../../Containers/RuleWorkBox";
+import RuleWorkCharacteristics from "./Elements/RuleWorkCharacteristics";
+import RuleWorkComparison from "./Elements/RuleWorkComparison";
+import RuleWorkDataTables from "./Elements/RuleWorkDataTables";
+import RuleWorkTableElements from "./Elements/RuleWorkTableElements";
+import StyledButton from "../../Inputs/StyledButton";
 import StyledDialog from "../StyledDialog";
 import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
-import RuleWorkCharacteristics from "../../DataDisplay/RuleWorkCharacteristics";
-import RuleWorkDataTables from "../../DataDisplay/RuleWorkDataTables";
-import RuleWorkTableElements from "../../DataDisplay/RuleWorkTableElements";
-import RuleWorkComparison from "../../DataDisplay/RuleWorkComparison";
-import RuleWorkBox from "../../Containers/RuleWorkBox";
+import "./RuleWorkDialog.css";
 
 class RuleWorkDialog extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            tableIndex: -1,     
-            objectIndex: -1,      
+            tableIndex: undefined,
+            itemInTableIndex: undefined,
         };
 
         this.indexOfIndicesOfCoveredObjects = 2;
     }
 
-    componentDidUpdate(prevProps) {
-        if(prevProps.name !== this.props.name)
-        this.setState({
-            tableIndex: -1,     
-            objectIndex: -1,
-        })
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if(prevProps.item.name !== this.props.item.name){
+            this.setState({
+                tableIndex: undefined,
+                itemInTableIndex: undefined
+            });
+        }
     }
 
-    setChosenTable = (index) => {
+    onTableSelected = (index) => {
         this.setState({
-            tableIndex: index,     
-            objectIndex: -1, //reset object index
-        })
+            tableIndex: index,
+            itemInTableIndex: undefined
+        });
     };
 
-    getChosenTable = (tables, index) => {
-        let counter = 0;
-        for(let i in tables) {
-            if(index === counter) return tables[i];        
-            counter++;
-        }
+    onItemInTableSelected = (index) => {
+        this.setState({itemInTableIndex: index});
     };
 
     getChosenTableForRules = (tables) => {
@@ -55,39 +52,20 @@ class RuleWorkDialog extends Component {
         }
     };
 
-    setChosenObject = (index) => {
-        this.setState({
-            objectIndex: index
-        })
-    };
-
-    getChosenObject = (tables) => {
-        return this.getChosenTable(tables, this.state.tableIndex)[this.state.objectIndex];
-    };
-   
-    getObjectBeforeDialog = (id, tabName) => {
-        if(tabName !== "unions" && tabName !== "rules") {
-            return parseInt(id,10);
-        }
-        return undefined;
-    };
-
     render() {
+        const {tableIndex, itemInTableIndex} = this.state;
         const {item, projectResult, tabName, onClose, ...other} = this.props;
        
         let characteristicsExist = false;
         if(item.traits) characteristicsExist = (Object.keys(item.traits).length !== 0);
+
+
         return (
-            <div>
-                <StyledDialog fullScreen {...other} onClose={onClose}>
+            <StyledDialog fullScreen {...other} onClose={onClose}>
                 <DialogContent className="ruleWorkDialog">
                     <div className="ruleWorkDialog-top">
                     <DialogContentText color="inherit">
-                        {tabName === "cones" ? `Selected object: ${item.name}`
-                        : (tabName === "unions" ? `Selected union: ${item.name}`
-                        : (tabName === "rules" ? `Selected rule: ${item.name}`
-                        : null
-                        ))}
+                        {"Selected item: " + item.name}
                     </DialogContentText>
                     </div>
                     {tabName !== "rules" &&
@@ -96,47 +74,44 @@ class RuleWorkDialog extends Component {
                                 <div className="ruleWorkDialog-left-first">
                                     <RuleWorkBox id={"dialog-object-list-left"} styleVariant={"tab-body"}>
                                         <RuleWorkDataTables
+                                            onTableSelected={this.onTableSelected}
                                             tables={item.tables}
-                                            setChosenTable={this.setChosenTable}
-                                            tabName={tabName}
                                         />
                                     </RuleWorkBox>
                                 </div>
                                 <div className="ruleWorkDialog-left-second">
-                                    {this.state.tableIndex !== -1 &&
+                                    {!Number.isNaN(Number(tableIndex)) &&
                                         <RuleWorkBox id={"dialog-object-list-right"} styleVariant={"tab-body"}>
                                             <RuleWorkTableElements
-                                                setChosenObject={this.setChosenObject}
-                                                chosenTable={this.getChosenTable(item.tables, this.state.tableIndex)}
-                                                tabName={tabName}
+                                                onTableItemSelected={this.onItemInTableSelected}
+                                                table={Object.values(item.tables)[tableIndex]}
                                             />
                                         </RuleWorkBox>
                                     }
                                 </div>
                             </div>
                             <div className="ruleWorkDialog-right">
-                                { characteristicsExist === true //if charecteristics exist then display them on the half of the heigt of the screen
-                                    &&  <div className="ruleWorkDialog-right-up">
+                                {item.traits &&
+                                    <Fragment>
+                                        <div className="ruleWorkDialog-right-up">
                                             <RuleWorkCharacteristics traits={item.traits} />
                                         </div>
-                                }
-                                {characteristicsExist === true //and also display object comparison
-                                    &&  <div className={'ruleWorkDialog-right-down'}>
-                                            {this.state.objectIndex !== -1 &&
+                                        {!Number.isNaN(Number(itemInTableIndex)) &&
+                                            <div className={'ruleWorkDialog-right-down'}>
                                                 <RuleWorkComparison
-                                                    objectInDialog={this.getChosenObject(item.tables)}
-                                                    objectBeforeDialog={this.getObjectBeforeDialog(item.id, tabName)}
                                                     informationTable={projectResult.informationTable}
+                                                    itemIndex={item.id}
+                                                    itemInTableIndex={itemInTableIndex}
                                                 />
-                                            }
-                                        </div>
+                                            </div>
+                                        }
+                                    </Fragment>
                                 }
-                                { characteristicsExist === false //if characteristics don't exist then display comparison on full height
-                                    &&  this.state.objectIndex !== -1
+                                {!item.traits && !Number.isNaN(Number(itemInTableIndex))
                                     &&  <RuleWorkComparison
-                                            objectInDialog={this.getChosenObject(item.tables)}
-                                            objectBeforeDialog={this.getObjectBeforeDialog(item.id, tabName)}
                                             informationTable={projectResult.informationTable}
+                                            itemIndex={item.id}
+                                            itemInTableIndex={itemInTableIndex}
                                         />
                                 }
                             </div>
@@ -154,32 +129,31 @@ class RuleWorkDialog extends Component {
                                     {
                                         <RuleWorkBox id={"dialog-object-list"} styleVariant={"tab-body"}>
                                             <RuleWorkTableElements
-                                                setChosenObject={this.setChosenObject}
-                                                chosenTable={this.getChosenTableForRules(item.tables)}
-                                                tabName={tabName}
+                                                onTableItemSelected={this.onItemInTableSelected}
+                                                table={this.getChosenTableForRules(item.tables)}
                                             />
                                         </RuleWorkBox>
                                     }
                                 </div>
                             </div>
                             <div className="ruleWorkDialog-right">
-                                {  this.state.objectIndex !== -1
+                                {  itemInTableIndex !== -1
                                     &&  <RuleWorkComparison
-                                            objectInDialog={this.getChosenTableForRules(item.tables)[this.state.objectIndex]}
-                                            objectBeforeDialog={this.getObjectBeforeDialog(item.id, tabName)}
                                             informationTable={projectResult.informationTable}
-                                />
+                                            itemIndex={item.id}
+                                            itemInTableIndex={itemInTableIndex}
+                                        />
                                 }
                             </div>
                         </div>
                     }
-
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={onClose} color="inherit"> Close </Button>
+                    <StyledButton onClick={onClose} themeVariant={"secondary"} variant={"outlined"}>
+                        Close
+                    </StyledButton>
                 </DialogActions>
-                </StyledDialog>
-            </div>
+            </StyledDialog>
         );
     }
 }
@@ -226,7 +200,7 @@ class RuleWorkDialog extends Component {
 */
 RuleWorkDialog.propTypes = {
     item: PropTypes.shape({
-        id: PropTypes.string,
+        id: PropTypes.number,
         name: PropTypes.string,
         traits: PropTypes.object,
         actions: PropTypes.object,
@@ -234,28 +208,7 @@ RuleWorkDialog.propTypes = {
     }),
     onClose: PropTypes.func,
     open: PropTypes.bool,
-    projectResult: PropTypes.shape({
-        id: PropTypes.string,
-        name: PropTypes.string,
-        informationTable: PropTypes.shape({
-            attributes: PropTypes.array,
-            objects: PropTypes.array,
-        }),
-        classification: PropTypes.shape({
-
-        }),
-        dominanceCones: PropTypes.shape({
-
-        }),
-        calculatedDominanceCones: PropTypes.bool,
-        ruleSetWithCharacteristics: PropTypes.shape({
-
-        }),
-        unionsWithSingleLimitingDecision: PropTypes.shape({
-
-        }),
-        calculatedUnionsWithSingleLimitingDecision: PropTypes.bool,
-    }),
+    projectResult: PropTypes.object,
     tabName: PropTypes.oneOf(["unions", "cones", "rules", "classification", "cross-validation"]),
 };
 
