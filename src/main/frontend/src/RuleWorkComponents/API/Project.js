@@ -10,7 +10,7 @@ class Project {
         this.ruleType = "certain";
         this.foldDisplay = 0;
         this.foldIndex = 0;
-        this.foldNumber = 1;
+        this.foldNumber = 2;
 
         this.externalRules = false;
         this.dataUpToDate = true;

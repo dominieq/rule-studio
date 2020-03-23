@@ -32,9 +32,13 @@ class CrossValidation extends Component {
             updated: false,
             loading: false,
             displayedItems: [],
+            threshold: 0,
+            typeOfUnions: "monotonic",
+            typeOfClassifier: "SimpleRuleClassifier",
+            defaultClassificationResult: "majorityDecisionClass",
             foldDisplay: 0,
             foldIndex: 0,
-            foldNumber: 1,
+            foldNumber: 2,
             folds: [],
             selectedItem: null,
             openDetails: false,
@@ -48,12 +52,73 @@ class CrossValidation extends Component {
     componentDidMount() {
         this._isMounted = true;
 
-        console.log("Fetching cross-validation from server...");
         this.setState({
+            loading: true,
+            threshold: this.props.project.threshold,
+            typeOfUnions: this.props.project.typeOfUnions,
+            typeOfClassifier: this.props.project.typeOfClassifier,
+            defaultClassificationResult: this.props.project.defaultClassificationResult,
             foldDisplay: this.props.project.foldDisplay,
             foldIndex: this.props.project.foldIndex,
             foldNumber: this.props.project.foldNumber,
-        })
+        }, () => {
+            const project = {...this.props.project};
+            let msg = "";
+            fetch(`http://localhost:8080/projects/${project.result.id}/crossValidation`, {
+                method: 'GET'
+            }).then(response => {
+                if (response.status === 200) {
+                    response.json().then(result => {
+                        if (this._isMounted) {
+                            const items = this.getItems(result.crossValidationSingleFolds);
+
+                            this._data = result;
+                            this._items = items;
+                            this.setState({
+                                loading: false,
+                                displayedItems: items,
+                                foldNumber: result.numberOfFolds,
+                                folds: Array.from(Array(result.numberOfFolds).keys()).map(x => ++x)
+                            });
+                        }
+                    }).catch(error => {
+                        console.log(error);
+                        if (this._isMounted) this.setState({loading: false});
+                    });
+                } else {
+                    response.json().then(result => {
+                        if (this._isMounted) {
+                            msg = "ERROR " + result.status + " " + result.message;
+                            let alertProps = {title: "Something went wrong! Couldn't calculate cross-validation :("};
+                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "warning"};
+                            this.setState({
+                                loading: false,
+                                snackbarProps: response.status !== 404 ? snackbarProps : undefined
+                            });
+                        }
+                    }).catch(() => {
+                        if (this._isMounted) {
+                            msg = "Something went wrong! Couldn't calculate cross-validation :(";
+                            let alertProps = {title: "ERROR " + response.status};
+                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "error"};
+                            this.setState({
+                                loading: false,
+                                snackbarProps: response.status !== 404 ? snackbarProps : undefined
+                            });
+                        }
+                    });
+                }
+            }).catch(error => {
+                console.log(error);
+                if (this._isMounted) {
+                    msg = "Server error! Couldn't calculate classification :(";
+                    this.setState({
+                        loading: false,
+                        snackbarProps: {open: true, message: msg, variant: "error"}
+                    });
+                }
+            });
+        });
     }
 
     componentWillUnmount() {
@@ -62,12 +127,17 @@ class CrossValidation extends Component {
         if (this.state.changes) {
             let project = {...this.props.project};
             if (Object.keys(this._data).length) {
-                //TODO DO SOMETHING
+                project.result.crossValidation = this._data;
             }
+            project.threshold = this.state.threshold;
+            project.typeOfUnions = this.state.typeOfUnions;
+            project.typeOfClassifier = this.state.typeOfClassifier;
+            project.defaultClassificationResult = this.state.defaultClassificationResult;
             project.foldDisplay = this.state.foldDisplay;
             project.foldIndex = this.state.foldIndex;
             project.foldNumber = this.state.foldNumber;
-            this.props.onTabChange(project, this.props.value, this.state.updated);
+
+            this.props.onTabChange(project, this.state.updated, true);
         }
     }
 
@@ -96,13 +166,78 @@ class CrossValidation extends Component {
     };
 
     onCalculateClick = () => {
-        console.log("Calculating cross-validation on server...");
-        const array = Array(this.state.foldNumber).fill(1);
-        for (let i = 0; i < array.length; i++) {
-            array[i] = i + 1;
-        }
         this.setState({
-            folds: array,
+            loading: true,
+        }, () => {
+            const project = {...this.props.project};
+
+            let data = new FormData();
+            data.append("typeOfUnions", this.state.typeOfUnions);
+            data.append("consistencyThreshold", this.state.threshold);
+            data.append("typeOfClassifier", this.state.typeOfClassifier);
+            data.append("defaultClassificationResult", this.state.defaultClassificationResult);
+            data.append("numberOfFolds", this.state.foldNumber);
+
+            let msg = "";
+            fetch(`http://localhost:8080/projects/${project.result.id}/crossValidation`, {
+                method: "PUT",
+                body: data
+            }).then(response => {
+                if (response.status === 200) {
+                    response.json().then(result => {
+                        const updated = true;
+
+                        if (this._isMounted) {
+                            const items = this.getItems(result.crossValidationSingleFolds);
+
+                            this._data = result;
+                            this._items = items;
+                            this.setState({
+                                changes: true,
+                                updated: updated,
+                                loading: false,
+                                displayedItems: items,
+                                foldNumber: result.numberOfFolds,
+                                folds: Array.from(Array(result.numberOfFolds).keys()).map(x => ++x),
+                            });
+                        } else {
+
+                        }
+                    }).catch(error => {
+                        console.log(error);
+                        if (this._isMounted) this.setState({loading: false})
+                    });
+                } else {
+                    response.json().then(result => {
+                        if (this._isMounted) {
+                            msg = "ERROR " + result.status + " " + result.message;
+                            let alertProps = {title: "Something went wrong! Couldn't calculate cross-validation :("};
+                            this.setState({
+                                loading: false,
+                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "warning"}
+                            });
+                        }
+                    }).catch(() => {
+                        if (this._isMounted) {
+                            msg = "Something went wrong! Couldn't calculate cross-validation :(";
+                            let alertProps = {title: "ERROR " + response.status};
+                            this.setState({
+                                loading: false,
+                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                            });
+                        }
+                    });
+                }
+            }).catch(error => {
+                console.log(error);
+                if (this._isMounted) {
+                    msg = "Server error! Couldn't calculate cross-validation :(";
+                    this.setState({
+                        loading: false,
+                        snackbarProps: {open: true, message: msg, variant: "error"}
+                    });
+                }
+            });
         });
     };
 
@@ -147,6 +282,16 @@ class CrossValidation extends Component {
         if (reason !== 'clickaway') {
             this.setState({snackbarProps: undefined});
         }
+    };
+
+    getItems = (data) => {
+        let items = [];
+        if (data) {
+            for (let i = 0; i < data.length; i++) {
+                console.log(data[i]);
+            }
+        }
+        return items;
     };
 
     renderResultsActions = () => {
