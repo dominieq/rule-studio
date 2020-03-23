@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class Classification {
     private ClassificationResult[] classificationResults;
     private InformationTable informationTable;
-    private Decision[] decisionsDomain;
+    private Decision[] orderOfDecisions;
     private IntList[] indicesOfCoveringRules;
     private OrdinalMisclassificationMatrix ordinalMisclassificationMatrix;
 
@@ -20,10 +20,10 @@ public class Classification {
         this.informationTable = informationTable;
     }
 
-    public Classification(ClassificationResult[] simpleClassificationResults, InformationTable informationTable, Decision[] decisionsDomain, IntList[] indicesOfCoveringRules, OrdinalMisclassificationMatrix ordinalMisclassificationMatrix) {
+    public Classification(ClassificationResult[] simpleClassificationResults, InformationTable informationTable, Decision[] orderOfDecisions, IntList[] indicesOfCoveringRules, OrdinalMisclassificationMatrix ordinalMisclassificationMatrix) {
         this.classificationResults = simpleClassificationResults;
         this.informationTable = informationTable;
-        this.decisionsDomain = decisionsDomain;
+        this.orderOfDecisions = orderOfDecisions;
         this.indicesOfCoveringRules = indicesOfCoveringRules;
         this.ordinalMisclassificationMatrix = ordinalMisclassificationMatrix;
     }
@@ -44,19 +44,19 @@ public class Classification {
         this.informationTable = informationTable;
     }
 
-    public Decision[] getDecisionsDomain() {
-        return decisionsDomain;
+    public Decision[] getOrderOfDecisions() {
+        return orderOfDecisions;
     }
 
-    public void setDecisionsDomain(Decision[] decisionsDomain) {
-        this.decisionsDomain = decisionsDomain;
+    public void setOrderOfDecisions(Decision[] orderOfDecisions) {
+        this.orderOfDecisions = orderOfDecisions;
     }
 
-    public IntList[] getindicesOfCoveringRules() {
+    public IntList[] getIndicesOfCoveringRules() {
         return indicesOfCoveringRules;
     }
 
-    public void setindicesOfCoveringRules(IntList[] indicesOfCoveringRules) {
+    public void setIndicesOfCoveringRules(IntList[] indicesOfCoveringRules) {
         this.indicesOfCoveringRules = indicesOfCoveringRules;
     }
 
@@ -71,9 +71,9 @@ public class Classification {
     @Override
     public String toString() {
         return "Classification{" +
-                "simpleClassificationResults=" + Arrays.toString(classificationResults) +
+                "classificationResults=" + Arrays.toString(classificationResults) +
                 ", informationTable=" + informationTable +
-                ", decisionsDomain=" + Arrays.toString(decisionsDomain) +
+                ", orderOfDecisions=" + Arrays.toString(orderOfDecisions) +
                 ", indicesOfCoveringRules=" + Arrays.toString(indicesOfCoveringRules) +
                 ", ordinalMisclassificationMatrix=" + ordinalMisclassificationMatrix +
                 '}';

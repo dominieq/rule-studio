@@ -3,13 +3,14 @@ package pl.put.poznan.rulework.service;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import org.rulelearn.classification.*;
+import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.*;
+import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
 import org.rulelearn.types.ElementList;
 import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EnumerationFieldFactory;
 import org.rulelearn.types.EvaluationField;
-import org.rulelearn.validation.ClassificationValidationResult;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +35,101 @@ public class ClassificationService {
 
     @Autowired
     ProjectsContainer projectsContainer;
+
+    private static Decision[] induceOrderedUniqueFullyDeterminedDecisions(RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics, InformationTable informationTable) {
+        List<Decision> allDecisions = new ArrayList<>();
+
+        Decision[] informationTableDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
+        for(int i = 0; i < informationTableDecisions.length; i++) {
+            allDecisions.add(informationTableDecisions[i]);
+        }
+
+        for(int i = 0; i < ruleSetWithComputableCharacteristics.size(); i++) {
+            Rule rule = ruleSetWithComputableCharacteristics.getRule(i);
+            rule.getDecision();
+            allDecisions.add(new SimpleDecision(rule.getDecision().getLimitingEvaluation(), rule.getDecision().getAttributeWithContext().getAttributeIndex()));
+        }
+
+
+        if (allDecisions.size() < 1) {
+            return allDecisions.toArray(new Decision[0]);
+        }
+
+        ArrayList<Decision> orderedUniqueFullyDeterminedDecisionsList = new ArrayList<Decision>();
+
+        //auxiliary variables
+        Decision candidateDecision;
+        Decision alreadyPresentDecision;
+        boolean iterate;
+        int decisionIndex;
+
+        //create sorted list of decisions:
+
+        //extract first fully-determined decision (if there is any)
+        int startingIndex = allDecisions.size(); //make sure that if there is no fully-determined decision, so first such decision could not be found, then next such decisions would not be searched for
+        for (int i = 0; i < allDecisions.size(); i++) {
+            //current decision is fully-determined
+            if (allDecisions.get(i).hasNoMissingEvaluation()) {
+                orderedUniqueFullyDeterminedDecisionsList.add(allDecisions.get(i));
+                startingIndex = i + 1;
+                break; //first fully-determined decision found
+            }
+        }
+
+        //iterate through objects and extract next unique fully-determined decisions, retaining respective order of comparable decisions
+        for (int i = startingIndex; i < allDecisions.size(); i++) {
+            candidateDecision = allDecisions.get(i);
+
+            //verify if candidate decision satisfies loop entry condition of being fully-determined
+            if (candidateDecision.hasNoMissingEvaluation()) {
+                iterate = true;
+                decisionIndex = 0;
+
+                while (iterate) {
+                    alreadyPresentDecision = orderedUniqueFullyDeterminedDecisionsList.get(decisionIndex);
+                    //candidate decision is equal (identical) to compared decision from the list
+                    if (candidateDecision.equals(alreadyPresentDecision)) {
+                        //ignore candidate decision since it is already present in the list of decisions
+                        iterate = false;
+                    }
+                    //candidate decision is different than compared decision from the list
+                    else {
+                        //candidate decision is worse than compared decision from the list
+                        if (candidateDecision.isAtMostAsGoodAs(alreadyPresentDecision) == TernaryLogicValue.TRUE) {
+                            //insert candidate decision into appropriate position and shift following elements forward
+                            orderedUniqueFullyDeterminedDecisionsList.add(decisionIndex, candidateDecision);
+                            iterate = false;
+                        }
+                        //candidate decision is better than compared decision from the list
+                        //or is incomparable with the compared decision from the list
+                        else {
+                            //there is no next decision on the list
+                            if (decisionIndex == orderedUniqueFullyDeterminedDecisionsList.size() - 1) {
+                                //append candidate decision to the end of the list
+                                orderedUniqueFullyDeterminedDecisionsList.add(candidateDecision);
+                                iterate = false;
+                            }
+                            //there is next decision on the list
+                            else {
+                                decisionIndex++; //go to next decision from the list
+                            } //else
+                        } //else
+                    } //else
+                } //while
+            } //if
+        } //for
+
+        //create returned array of decisions
+        int decisionsCount = orderedUniqueFullyDeterminedDecisionsList.size();
+        Decision[] orderedUniqueFullyDeterminedDecisions = new Decision[decisionsCount];
+
+        for (int i = 0; i < decisionsCount; i++)
+            orderedUniqueFullyDeterminedDecisions[i] = orderedUniqueFullyDeterminedDecisionsList.get(i);
+
+        return orderedUniqueFullyDeterminedDecisions;
+
+
+    }
 
     private static SimpleEvaluatedClassificationResult createDefaultSimpleEvaluatedClassificationResult(String defaultClassificationResult, InformationTable informationTable) {
         InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = new InformationTableWithDecisionDistributions(informationTable);
@@ -78,21 +175,13 @@ public class ClassificationService {
         return simpleClassificationResult;
     }
 
-    public static Classification calculateClassification(InformationTable informationTable, String typeOfClassifier, String typeOfDefaultClassificationResult, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
-        /*logger.info("RuleSet size = {}", ruleSetWithComputableCharacteristics.size());
-        for(int i = 0; i < ruleSetWithComputableCharacteristics.size(); i++) {
-            logger.info("\tRegula nr {}:\t{}", i, ruleSetWithComputableCharacteristics.getRule(i));
-        }*/
-
-        Attribute[] attributes = informationTable.getAttributes();
-
-        int decisionAttributeIndex;
-        for(decisionAttributeIndex = 0; decisionAttributeIndex < attributes.length; decisionAttributeIndex++) {
-            if (attributes[decisionAttributeIndex] instanceof EvaluationAttribute && ((EvaluationAttribute)attributes[decisionAttributeIndex]).getType() == AttributeType.DECISION && attributes[decisionAttributeIndex].isActive()) {
-                break;
+    public static Classification calculateClassification(InformationTable informationTable, String typeOfClassifier, String typeOfDefaultClassificationResult, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics, Decision[] orderOfDecisions) {
+        if(logger.isDebugEnabled()) {
+            logger.debug("RuleSet size = {}", ruleSetWithComputableCharacteristics.size());
+            for(int i = 0; i < ruleSetWithComputableCharacteristics.size(); i++) {
+                logger.debug("\tRegula nr {}:\t{}", i, ruleSetWithComputableCharacteristics.getRule(i));
             }
         }
-        EvaluationField evaluationField = (EvaluationField)informationTable.getField(0, decisionAttributeIndex);
 
         SimpleClassificationResult simpleClassificationResult = null;
         SimpleEvaluatedClassificationResult simpleEvaluatedClassificationResult = null;
@@ -145,20 +234,9 @@ public class ClassificationService {
         for(int i = 0; i < classificationResults.length; i++) {
             suggestedDecisions[i] = classificationResults[i].getSuggestedDecision();
         }
+        OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, informationTable.getDecisions(), suggestedDecisions);
 
-        EnumerationField decisionEnumerationField = (EnumerationField)evaluationField;
-        ElementList elementList = decisionEnumerationField.getElementList();
-        AttributePreferenceType attributePreferenceType = decisionEnumerationField.getPreferenceType();
-        Decision[] decisionsDomain = new Decision[elementList.getSize()];
-        for(int i = 0; i < elementList.getSize(); i++) {
-            EnumerationField enumerationField = EnumerationFieldFactory.getInstance().create(elementList, i, attributePreferenceType);
-            decisionsDomain[i] = DecisionFactory.INSTANCE.create(
-                    new EnumerationField[] {enumerationField},
-                    new int[] {decisionAttributeIndex});
-        }
-        OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(informationTable.getOrderedUniqueFullyDeterminedDecisions(), informationTable.getDecisions(), suggestedDecisions);
-
-        Classification classification = new Classification(classificationResults, informationTable, decisionsDomain, indicesOfCoveringRules, ordinalMisclassificationMatrix);
+        Classification classification = new Classification(classificationResults, informationTable, orderOfDecisions, indicesOfCoveringRules, ordinalMisclassificationMatrix);
         return classification;
     }
 
@@ -193,7 +271,8 @@ public class ClassificationService {
             throw ex;
         }
 
-        Classification classification = calculateClassification(informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics);
+        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithComputableCharacteristics, informationTable);
+        Classification classification = calculateClassification(informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics, orderOfDecisions);
         project.setClassification(classification);
 
         return classification;
@@ -225,7 +304,8 @@ public class ClassificationService {
             throw ex;
         }
 
-        Classification classification = calculateClassification(informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics);
+        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithComputableCharacteristics, informationTable);
+        Classification classification = calculateClassification(informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics, orderOfDecisions);
         project.setClassification(classification);
 
         return classification;
@@ -250,7 +330,8 @@ public class ClassificationService {
             throw ex;
         }
 
-        Classification classification = calculateClassification(informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics);
+        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithComputableCharacteristics, informationTable);
+        Classification classification = calculateClassification(informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics, orderOfDecisions);
         project.setClassification(classification);
 
         return classification;

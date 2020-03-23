@@ -1,6 +1,7 @@
 package pl.put.poznan.rulework.service;
 
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
+import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
 import org.rulelearn.sampling.CrossValidator;
@@ -25,6 +26,7 @@ public class CrossValidationService {
 
     private CrossValidation calculateCrossValidation(InformationTable informationTable, String typeOfUnions, Double consistencyThreshold, String typeOfClassifier, String defaultClassificationResult, Integer numberOfFolds) {
         CrossValidationSingleFold crossValidationSingleFolds[] = new CrossValidationSingleFold[numberOfFolds];
+        Decision[] orderOfDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
 
         CrossValidator crossValidator = new CrossValidator(new Random());
         List<CrossValidator.CrossValidationFold<InformationTable>> folds = crossValidator.splitIntoKFold(informationTable, numberOfFolds);
@@ -36,7 +38,7 @@ public class CrossValidationService {
 
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecision(trainingTable, typeOfUnions, consistencyThreshold);
             RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.calculateRuleSetWithComputableCharacteristics(unionsWithSingleLimitingDecision);
-            Classification classificationValidationTable = ClassificationService.calculateClassification(validationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics);
+            Classification classificationValidationTable = ClassificationService.calculateClassification(validationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics, orderOfDecisions);
 
             crossValidationSingleFolds[i] = new CrossValidationSingleFold(validationTable, ruleSetWithComputableCharacteristics, classificationValidationTable);
         }
