@@ -33,6 +33,8 @@ class Classification extends Component {
             loading: false,
             displayedItems: [],
             ruleType: "certain",
+            typeOfClassifier: "SimpleRuleClassifier",
+            defaultClassificationResult: "majorityDecisionClass",
             selectedItem: null,
             openDetails: false,
             openSettings: false,
@@ -49,6 +51,8 @@ class Classification extends Component {
         this.setState({
             loading: true,
             ruleType: this.props.project.ruleType,
+            typeOfClassifier: this.props.project.typeOfClassifier,
+            defaultClassificationResult: this.props.project.defaultClassificationResult
         }, () => {
             let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/classification`, {
@@ -92,7 +96,6 @@ class Classification extends Component {
                             });
                         }
                     });
-
                 }
             }).catch(error => {
                 console.log(error);
@@ -124,8 +127,10 @@ class Classification extends Component {
                 project.result.classification = this._data;
             }
             project.ruleType = this.state.ruleType;
+            project.typeOfClassifier = this.state.typeOfClassifier;
+            project.defaultClassificationResult = this.state.defaultClassificationResult;
 
-            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
             tabsUpToDate[this.props.value] = this.state.updated;
 
             this.props.onTabChange(project, this.state.updated, tabsUpToDate);
@@ -149,15 +154,21 @@ class Classification extends Component {
         let project = {...this.props.project};
 
         let data = new FormData();
+        data.append("typeOfClassifier", this.state.typeOfClassifier);
+        data.append("defaultClassificationResult", this.state.defaultClassificationResult);
         if (event.target.files) data.append("data", event.target.files[0]);
+        if (!project.dataUpToDate && !event.target.files) {
+            data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
+            data.append("data", JSON.stringify(project.result.informationTable.objects));
+        }
 
         this.setState({
             loading: true,
         }, () => {
             let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/classification`, {
-                method: "PUT",
-                body: event.target.files ? data : null,
+                method: project.dataUpToDate ? "PUT" : "POST",
+                body: data,
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
@@ -177,7 +188,7 @@ class Classification extends Component {
                         } else {
                             project.result.classification = result;
 
-                            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+                            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
                             tabsUpToDate[this.props.value] = updated;
 
                             this.props.onTabChange(project, updated, tabsUpToDate);
@@ -257,9 +268,9 @@ class Classification extends Component {
         let items = [];
         if (Object.keys(data).length) {
             const indexOption = this.props.project.settings.indexOption;
-            const objects = [...this.props.project.result.informationTable.objects];
+            const objects = this.props.project.result.informationTable.objects.slice();
 
-            for (let i = 0; i < data.simpleClassificationResults.length; i++) {
+            for (let i = 0; i < data.classificationResults.length; i++) {
                 const id = i;
                 let name = "Object " + (i + 1);
 
@@ -291,7 +302,7 @@ class Classification extends Component {
                 const listItem = {
                     id: items[i].id,
                     header: items[i].name,
-                    subheader: "Belongs to class " + this._data.simpleClassificationResults[items[i].id],
+                    subheader: "Suggested decision " + this._data.classificationResults[items[i].id].suggestedDecision,
                     content: "Is covered by " + items[i].tables.indicesOfCoveringRules.length + " rules"
                 };
                 listItems.push(listItem)
