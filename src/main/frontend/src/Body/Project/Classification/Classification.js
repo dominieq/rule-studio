@@ -235,16 +235,16 @@ class Classification extends Component {
 
     onDetailsOpen = (index) => {
         this.setState({
-            selectedItem: this.state.displayedItems[index],
             openDetails: true,
+            selectedItem: {...this._items[index]}
         });
     };
 
     onDetailsClose = () => {
         this.setState({
-            selectedItem: null,
             openDetails: false,
-        })
+            selectedItem: null
+        });
     };
 
     onSnackbarClose = (event, reason) => {
@@ -260,7 +260,7 @@ class Classification extends Component {
             const objects = [...this.props.project.result.informationTable.objects];
 
             for (let i = 0; i < data.simpleClassificationResults.length; i++) {
-                const id = i.toString();
+                const id = i;
                 let name = "Object " + (i + 1);
 
                 if (indexOption !== "default") {

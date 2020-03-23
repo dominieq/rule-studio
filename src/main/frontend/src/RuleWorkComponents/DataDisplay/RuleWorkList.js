@@ -77,7 +77,7 @@ class RuleWorkList extends Component {
 
 RuleWorkList.propTypes = {
     children: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string,
+        id: PropTypes.number,
         header: PropTypes.string,
         subheader: PropTypes.string,
         content: PropTypes.string,

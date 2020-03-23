@@ -246,15 +246,15 @@ class Unions extends Component {
 
     onDetailsOpen = (index) => {
         this.setState({
-            selectedItem: this.state.displayedItems[index],
-            openDetails: true
+            openDetails: true,
+            selectedItem: {...this._items[index]},
         });
     };
 
     onDetailsClose = () => {
         this.setState({
-            selectedItem: null,
             openDetails: false,
+            selectedItem: null,
         });
     };
 
@@ -269,7 +269,7 @@ class Unions extends Component {
         if (data) {
             for (let type of ["downwardUnions", "upwardUnions"]) {
                 for (let i = 0; i < data[type].length; i++) {
-                    const id = i.toString();
+                    const id = i;
                     const name = data[type][i].unionType.replace("_", " ").toLowerCase()
                         + " " + data[type][i].limitingDecision;
                     const traits = {

@@ -379,15 +379,15 @@ class Rules extends Component {
 
     onDetailsOpen = (index) => {
         this.setState({
-            selectedItem: this.state.displayedItems[index],
-            openDetails: true
+            openDetails: true,
+            selectedItem: {...this._items[index]}
         });
     };
 
     onDetailsClose = () => {
         this.setState({
-            selectedItem: null,
-            openDetails: false
+            openDetails: false,
+            selectedItem: null
         });
     };
 
@@ -401,7 +401,7 @@ class Rules extends Component {
         let items = [];
         if (data) {
             for (let i = 0; i < data.length; i++) {
-                const id = i.toString();
+                const id = i;
                 const name = data[i].rule.decisions[0][0].attributeName;
                 const traits = {...data[i].ruleCharacteristics};
                 const tables = {

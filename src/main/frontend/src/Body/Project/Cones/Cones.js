@@ -207,7 +207,7 @@ class Cones extends Component {
     onDetailsOpen = (index) => {
         this.setState({
             openDetails: true,
-            selectedItem: {...this.state.displayedItems[index]},
+            selectedItem: {...this._items[index]},
         })
     };
 
@@ -232,7 +232,7 @@ class Cones extends Component {
             const objects = [...this.props.project.result.informationTable.objects];
 
             for (let i = 0; i < data.numberOfObjects; i++) {
-                const id = i.toString();
+                const id = i;
                 let name = "Object " + (i + 1);
 
                 if (indexOption !== "default") {

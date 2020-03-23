@@ -103,7 +103,7 @@ RuleWorkListItem.propTypes = {
     disableGutters: PropTypes.bool,
     divider: PropTypes.bool,
     object: PropTypes.shape({
-        id: PropTypes.string,
+        id: PropTypes.number,
         header: PropTypes.string,
         subheader: PropTypes.string,
         content: PropTypes.string,
