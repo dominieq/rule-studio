@@ -6,6 +6,8 @@ class PostClassification extends Component {
 
         this.state = {
             id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f',
+            typeOfClassifier: 'SimpleRuleClassifier',
+            defaultClassificationResult: 'majorityDecisionClass',
             metadata: JSON.stringify(
               [
                 {
@@ -126,14 +128,32 @@ class PostClassification extends Component {
         })
     }
 
+    handletypeOfClassifierChange = (event) => {
+        this.setState({
+            typeOfClassifier: event.target.value
+        })
+    }
+
+    handleDefaultClassificationResultChange = (event) => {
+        this.setState({
+            defaultClassificationResult: event.target.value
+        })
+    }
+
     postClassification = (event) => {
         event.preventDefault()
 
         let formData = new FormData()
+        formData.append('typeOfClassifier', this.state.typeOfClassifier)
+        formData.append('defaultClassificationResult', this.state.defaultClassificationResult)
         formData.append('metadata', this.state.metadata)
         formData.append('data', this.state.data)
 
-        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/classification`, {
+        var link = `http://localhost:8080/projects/${this.state.id_projektu}/classification`;
+
+        console.log(link)
+
+        fetch(link, {
             method: 'POST',
             body: formData
         }).then(response => {
@@ -147,14 +167,21 @@ class PostClassification extends Component {
                 })
             } else if(response.status === 404) {
                 response.json().then(result => {
-                    console.log("Błąd 404.")
+                    console.log("Error 404.")
+                    console.log(result.message)
+                }).catch(err => {
+                    console.log(err)
+                })
+            } else if(response.status === 422) {
+                response.json().then(result => {
+                    console.log("Error 422.")
                     console.log(result.message)
                 }).catch(err => {
                     console.log(err)
                 })
             } else {
                 response.json().then(result => {
-                    console.log("Wynik dzialania response.json():")
+                    console.log("Result of response.json():")
                     console.log(result)
                 }).catch(err => {
                     console.log(err)
@@ -170,6 +197,18 @@ class PostClassification extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
+                <label for="typeOfClassifierPostClassification">typeOfClassifier-></label>
+                <select id="typeOfClassifierPostClassification" onChange={this.handletypeOfClassifierChange}>
+                    <option value="SimpleRuleClassifier">SimpleRuleClassifier</option>
+                    <option value="SimpleOptimizingCountingRuleClassifier">SimpleOptimizingCountingRuleClassifier</option>
+                    <option value="ScoringRuleClassifierScore">ScoringRuleClassifierScore</option>
+                    <option value="ScoringRuleClassifierHybrid">ScoringRuleClassifierHybrid</option>
+                </select>
+                <label for="defaultClassificationResultPostClassification">defaultClassificationResult-></label>
+                <select id="defaultClassificationResultPostClassification" onChange={this.handleDefaultClassificationResultChange}>
+                    <option value="majorityDecisionClass">majorityDecisionClass</option>
+                    <option value="medianDecisionClass">medianDecisionClass</option>
+                </select>
                 <button onClick={this.postClassification}>postClassification</button>
             </div>
         )

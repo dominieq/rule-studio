@@ -39,6 +39,7 @@ class Rules extends Component {
             externalRules: false,
             threshold: 0,
             measure: "epsilon",
+            typeOfUnions: "monotonic",
             selectedItem: null,
             openDetails: false,
             openSettings: false,
@@ -57,6 +58,7 @@ class Rules extends Component {
             externalRules: this.props.project.externalRules,
             threshold: this.props.project.threshold,
             measure: this.props.project.measure,
+            typeOfUnions: this.props.project.typeOfUnions,
         }, () => {
             let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
@@ -126,8 +128,9 @@ class Rules extends Component {
             project.externalRules = this.state.externalRules;
             project.threshold = this.state.threshold;
             project.measure = this.state.measure;
+            project.typeOfUnions = this.state.typeOfUnions;
 
-            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
             tabsUpToDate[this.props.value] = this.state.updated;
 
             if (this.state.externalRules) {
@@ -170,16 +173,23 @@ class Rules extends Component {
 
     onCalculateClick = () => {
         let project = {...this.props.project};
+        const threshold = this.state.threshold;
+        const typeOfUnions = this.state.typeOfUnions;
 
         this.setState({
             loading: true,
         }, () => {
+            let link = `http://localhost:8080/projects/${project.result.id}/rules`;
+            if (project.dataUpToDate) link = link + `?typeOfUnions=${typeOfUnions}&consistencyThreshold=${threshold}`;
+
             let data = new FormData();
+            data.append("typeOfUnions", typeOfUnions);
+            data.append("consistencyThreshold", threshold);
             data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
             data.append("data", JSON.stringify(project.result.informationTable.objects));
 
             let msg = "";
-            fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
+            fetch(link, {
                 method: project.dataUpToDate ? "PUT" : "POST",
                 body: project.dataUpToDate ? null : data
             }).then(response => {
@@ -203,7 +213,7 @@ class Rules extends Component {
                             project.ruleSetWithComputableCharacteristics = result;
                             project.externalRules = false;
 
-                            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+                            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
                             tabsUpToDate[this.props.value] = updated;
 
                             this.props.onTabChange(project, updated, tabsUpToDate);
@@ -276,10 +286,10 @@ class Rules extends Component {
                                     displayedItems: items,
                                 });
                             } else {
-                                project.ruleSetWithComputableCharacteristics = result;
+                                project.ruleSetWithComputableCharacteristics = result.ruleSetWithComputableCharacteristics;
                                 project.externalRules = true;
 
-                                let tabsUpToDate = [...this.props.project.tabsUpToDate];
+                                let tabsUpToDate = this.props.project.tabsUpToDate.slice();
                                 tabsUpToDate[this.props.value] = null;
                                 tabsUpToDate[this.props.value] = !this.props.project.result.classification;
                                 tabsUpToDate[this.props.value] = !this.props.project.result.crossValidation;

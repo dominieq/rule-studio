@@ -8,6 +8,7 @@ class PutDataDownload extends Component {
             id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f',
             format: 'json',
             separator: ',',
+            header: false,
             metadata: JSON.stringify(
               [
                 {
@@ -140,6 +141,12 @@ class PutDataDownload extends Component {
         })
     }
 
+    handleHeaderChange = (event) => {
+        this.setState({
+            header: event.target.checked
+        })
+    }
+
     putDataDownload = (event) => {
         event.preventDefault()
         let filename = "filename";
@@ -151,6 +158,7 @@ class PutDataDownload extends Component {
         if(this.state.separator !== "") {
             link += `&separator=${this.state.separator}`;
         }
+        link += `&header=${this.state.header}`;
 
         console.log(link)
 
@@ -166,7 +174,7 @@ class PutDataDownload extends Component {
             if(response.status === 200) {
                 filename =  response.headers.get('Content-Disposition').split('filename=')[1];
                 response.blob().then(result => {
-                    console.log("Wynik dzialania response.blob():")
+                    console.log("Result of response.blob():")
                     console.log(result)
                     let url = window.URL.createObjectURL(result);
                     let link = document.createElement('a');
@@ -178,7 +186,7 @@ class PutDataDownload extends Component {
                 })
             } else {
                 response.json().then(result => {
-                    console.log("Wynik dzialania response.json():")
+                    console.log("Result of response.json():")
                     console.log(result)
                 }).catch(err => {
                     console.log(err)
@@ -198,6 +206,8 @@ class PutDataDownload extends Component {
                 <input type='text' value={this.state.format} onChange={this.handleFormatChange} />
                 separator(only csv)->
                 <input type='text' value={this.state.separator} onChange={this.handleSeparatorChange} />
+                <input type="checkbox" id="headerPutDataDownload" onChange={this.handleHeaderChange} />
+                <label for="headerPutDataDownload"> header </label>
                 <button onClick={this.putDataDownload}>putDataDownload</button>
             </div>
         )

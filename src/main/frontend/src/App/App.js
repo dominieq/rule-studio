@@ -166,19 +166,15 @@ class App extends Component {
         }).then(result => {
             const project = new Project(result);
 
-            let newProjects = this.state.projects.slice(0);
-            newProjects = [...newProjects, project];
-
-            this.setState({
+            this.setState(({projects}) => ({
                 body: "Project",
-                currentProject: newProjects.indexOf(project),
-                projects: newProjects,
-                snackbarProps: {
-                    open: true,
-                    variant: "success",
-                    message: `${result.name} has been created!`,
-                },
-            });
+                currentProject: projects.length,
+                projects: [
+                    ...projects,
+                    project
+                ],
+                snackbarProps: {open: true, message: `${result.name} has been created!`, variant: "success"},
+            }));
         }).catch(error => {
             console.log(error);
         })

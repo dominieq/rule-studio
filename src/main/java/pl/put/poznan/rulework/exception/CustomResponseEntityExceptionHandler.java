@@ -24,4 +24,11 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
             HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
+
+    @ExceptionHandler(WrongParameterException.class)
+    public void wrongParameterException(
+            WrongParameterException ex,
+            HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.UNPROCESSABLE_ENTITY.value(), ex.getMessage());
+    }
 }

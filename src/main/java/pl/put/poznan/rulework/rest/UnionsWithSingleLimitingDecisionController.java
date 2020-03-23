@@ -28,8 +28,7 @@ public class UnionsWithSingleLimitingDecisionController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UnionsWithSingleLimitingDecision> getUnionsWithSingleLimitingDecision(
-            @PathVariable("id") UUID id,
-            @RequestParam(name = "consistencyThreshold", required = false) Double consistencyThreshold) {
+            @PathVariable("id") UUID id) {
         logger.info("Getting unions with single limiting decision...");
 
         UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.getUnionsWithSingleLimitingDecision(id);
@@ -40,10 +39,11 @@ public class UnionsWithSingleLimitingDecisionController {
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UnionsWithSingleLimitingDecision> putUnionsWithSingleLimitingDecision(
             @PathVariable("id") UUID id,
+            @RequestParam(name = "typeOfUnions") String typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold) {
         logger.info("Putting unions with single limiting decision...");
 
-        UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.putUnionsWithSingleLimitingDecision(id, consistencyThreshold);
+        UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.putUnionsWithSingleLimitingDecision(id, typeOfUnions, consistencyThreshold);
 
         return ResponseEntity.ok(result);
     }
@@ -51,12 +51,13 @@ public class UnionsWithSingleLimitingDecisionController {
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UnionsWithSingleLimitingDecision> postUnionsWithSingleLimitingDecision(
             @PathVariable("id") UUID id,
+            @RequestParam(name = "typeOfUnions") String typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting unions with single limiting decision...");
 
-        UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.postUnionsWithSingleLimitingDecision(id, consistencyThreshold, metadata, data);
+        UnionsWithSingleLimitingDecision result = unionsWithSingleLimitingDecisionService.postUnionsWithSingleLimitingDecision(id, typeOfUnions, consistencyThreshold, metadata, data);
 
         return ResponseEntity.ok(result);
     }

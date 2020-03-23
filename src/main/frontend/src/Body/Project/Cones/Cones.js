@@ -48,12 +48,11 @@ class Cones extends Component {
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
+                            this._data = result;
+                            this._items = items;
                             this.setState({
                                 loading: false,
                                 displayedItems: items,
-                            }, () => {
-                                this._data = result;
-                                this._items = items;
                             });
                         }
                     }).catch(error => {
@@ -99,7 +98,7 @@ class Cones extends Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
             this.setState({
-                displayedItems: [...this.getItems(this._data)]
+                displayedItems: this.getItems(this._data)
             });
         }
     }
@@ -114,7 +113,7 @@ class Cones extends Component {
                 project.result.calculatedDominanceCones = true;
             }
 
-            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
             tabsUpToDate[this.props.value] = this.state.updated;
 
             this.props.onTabChange(project, this.state.updated, tabsUpToDate);
@@ -143,20 +142,19 @@ class Cones extends Component {
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
+                            this._data = result;
+                            this._items = items;
                             this.setState({
                                 changes: true,
                                 updated: updated,
                                 loading: false,
                                 displayedItems: items,
-                            }, () => {
-                                this._data = result;
-                                this._items = items;
                             });
                         } else {
                             project.result.dominanceCones = result;
                             project.result.calculatedDominanceCones = updated;
 
-                            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+                            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
                             tabsUpToDate[this.props.value] = updated;
 
                             this.props.onTabChange(project, updated, tabsUpToDate);

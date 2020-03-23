@@ -39,19 +39,23 @@ public class RulesController {
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RuleSetWithComputableCharacteristics> putRules (
-            @PathVariable("id") UUID id) {
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "typeOfUnions") String typeOfUnions,
+            @RequestParam(name = "consistencyThreshold") Double consistencyThreshold) {
         logger.info("Putting rules...");
-        RuleSetWithComputableCharacteristics result = rulesService.putRules(id);
+        RuleSetWithComputableCharacteristics result = rulesService.putRules(id, typeOfUnions, consistencyThreshold);
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RuleSetWithComputableCharacteristics> postRules (
             @PathVariable("id") UUID id,
+            @RequestParam(name = "typeOfUnions") String typeOfUnions,
+            @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting rules...");
-        RuleSetWithComputableCharacteristics result = rulesService.postRules(id, metadata, data);
+        RuleSetWithComputableCharacteristics result = rulesService.postRules(id, typeOfUnions, consistencyThreshold, metadata, data);
         return ResponseEntity.ok(result);
     }
 

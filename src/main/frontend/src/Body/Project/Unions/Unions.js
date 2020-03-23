@@ -34,6 +34,7 @@ class Unions extends Component {
             displayedItems: [],
             threshold: 0,
             measure: "epsilon",
+            typeOfUnions: "monotonic",
             selectedItem: null,
             openDetails: false,
             openSettings: false,
@@ -51,6 +52,7 @@ class Unions extends Component {
             loading: true,
             threshold: this.props.project.threshold,
             measure: this.props.project.measure,
+            typeOfUnions: this.props.project.typeOfUnions
         }, () => {
             let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/unions`, {
@@ -61,12 +63,11 @@ class Unions extends Component {
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
+                            this._data = result;
+                            this._items = items;
                             this.setState({
                                 loading: false,
                                 displayedItems: items,
-                            }, () => {
-                                this._data = result;
-                                this._items = items;
                             });
                         }
                     }).catch(error => {
@@ -118,10 +119,11 @@ class Unions extends Component {
                 project.result.unionsWithSingleLimitingDecision = this._data;
                 project.result.calculatedUnionsWithSingleLimitingDecision = true;
             }
+            project.typeOfUnions = this.state.typeOfUnions;
             project.threshold = this.state.threshold;
             project.measure = this.state.measure;
 
-            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
             tabsUpToDate[this.props.value] = this.state.updated;
 
             this.props.onTabChange(project, this.state.updated, tabsUpToDate);
@@ -159,14 +161,16 @@ class Unions extends Component {
     onCountUnionsClick = () => {
         let project = {...this.props.project};
         const threshold = this.state.threshold;
+        const typeOfUnions = this.state.typeOfUnions;
 
         this.setState({
             loading: true,
         }, () => {
             let link = `http://localhost:8080/projects/${project.result.id}/unions`;
-            if (project.dataUpToDate) link = link + `?consistencyThreshold=${threshold}`;
+            if (project.dataUpToDate) link = link + `?typeOfUnions=${typeOfUnions}&consistencyThreshold=${threshold}`;
 
             let data = new FormData();
+            data.append("typeOfUnions", typeOfUnions);
             data.append("consistencyThreshold", threshold);
             data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
             data.append("data", JSON.stringify(project.result.informationTable.objects));
@@ -183,20 +187,19 @@ class Unions extends Component {
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
+                            this._data = result;
+                            this._items = items;
                             this.setState({
                                 changes: true,
                                 updated: updated,
                                 loading: false,
                                 displayedItems: items,
-                            }, () => {
-                                this._data = result;
-                                this._items = items;
                             });
                         } else {
                             project.result.unionsWithSingleLimitingDecision = result;
                             project.result.calculatedUnionsWithSingleLimitingDecision = updated;
 
-                            let tabsUpToDate = [...this.props.project.tabsUpToDate];
+                            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
                             tabsUpToDate[this.props.value] = updated;
 
                             this.props.onTabChange(project, updated, tabsUpToDate);
