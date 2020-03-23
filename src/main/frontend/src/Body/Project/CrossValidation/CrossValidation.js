@@ -131,15 +131,15 @@ class CrossValidation extends Component {
 
     onDetailsOpen = (index) => {
         this.setState({
-            selectedItem: this.state.displayedItems[index],
-            openDetails: true
+            openDetails: true,
+            selectedItem: this._items[index],
         });
     };
 
     onDetailsClose = () => {
         this.setState({
-            selectedItem: null,
             openDetails: false,
+            selectedItem: null
         });
     };
 

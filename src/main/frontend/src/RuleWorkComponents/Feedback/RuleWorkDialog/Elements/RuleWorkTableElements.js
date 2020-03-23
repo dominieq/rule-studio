@@ -1,18 +1,17 @@
 import React, {Component, Fragment} from "react";
 import PropTypes from "prop-types";
 import {withStyles} from "@material-ui/core";
-import RuleWorkListItem from "./RuleWorkListItem";
-import StyledPagination from "../Navigation/StyledPagination";
+import StyledPagination from "../../../Navigation/StyledPagination";
 import List from "@material-ui/core/List";
-import Typography from '@material-ui/core/Typography';
+import ListItem from "@material-ui/core/ListItem";
 
-const StyledList = withStyles({
+const StyledList = withStyles(theme => ({
     root: {
-        backgroundColor: "#545F66",
-        color: "#ABFAA9",
+        backgroundColor: theme.palette.list.background,
+        color: theme.palette.list.text,
         minWidth: "50%",
     }
-})(props => <List {...props} />);
+}))(props => <List {...props} />);
 
 class RuleWorkTableElements extends Component {
     constructor(props) {
@@ -22,63 +21,66 @@ class RuleWorkTableElements extends Component {
             selectedItem: 0,
             selectedPage: 1,
             itemsPerPage: 14,
-            open: false,
         };
     }
 
-    componentDidUpdate(prevProps) {
-        if(prevProps.chosenTable !== this.props.chosenTable) { //if table changed, then set back to page 1 and selected 0
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if(prevProps.table !== this.props.table) {
             this.setState({
                 selectedItem: 0,
                 selectedPage: 1,
-            })
+            });
         }
     }
 
     onListItemClick = (event, index) => {
         this.setState({
             selectedItem: index,
-            open: true,
-        }, () => this.props.setChosenObject(this.state.selectedItem + this.state.itemsPerPage*(this.state.selectedPage-1))) //set accordingly to the page
+        }, () => {
+            this.props.onTableItemSelected(this.state.selectedItem);
+        });
     };
 
     onPageChange = (event, value) => {
-        this.setState({
-            selectedPage: value,
-        })
+        this.setState({selectedPage: value});
     };
 
-    prepareListItems = (chosenTable, tabName) => {
-        const tmp = [];
-        for(let i in chosenTable) {
-            tmp.push({name: "Object " + (parseInt(chosenTable[i],10)+1)}); //index objects from 1
+    prepareListItems = (table) => {
+        const tableItems = [];
+        for(let i = 0; i < table.length; i++) {
+            const tableItem = {
+                id: table[i].toString(),
+                name: "Object " + (Number(table[i]) + 1)
+            };
+            tableItems.push(tableItem);
         }
-        return tmp;
-    }
+        return tableItems;
+    };
 
     render() {
         const {selectedItem, selectedPage, itemsPerPage} = this.state;
-        const {chosenTable, setChosenObject, tabName, ...other} = this.props;
+        const {table, onTableItemSelected, ...other} = this.props;
 
-        const count = Math.ceil(chosenTable.length / itemsPerPage);
+        const count = Math.ceil(table.length / itemsPerPage);
 
         const start = (selectedPage - 1) * itemsPerPage;
         const end = itemsPerPage * selectedPage;
         
-        const displayedItems = this.prepareListItems(chosenTable, tabName).slice(start , end);
+        const displayedItems = this.prepareListItems(table).slice(start , end);
 
         return (
             <Fragment>
-                 
-                <StyledList {...other} component={"nav"}>
-                {tabName === "rules" && <Typography color="inherit" align="left" className="MuiListItem-gutters">Covered Objects:</Typography>}
+                <StyledList component={"nav"} disablePadding={true} {...other}>
                     {displayedItems.map((item, index) => (
-                        <RuleWorkListItem
+                        <ListItem
+                            button={true}
+                            disableRipple={true}
                             key={index}
-                            object={item}
                             selected={selectedItem === index}
-                            onClick={event => this.onListItemClick(event, index)}
-                        />
+                            onClick={event => this.onListItemClick(event, item.id)}
+                        >
+                            {item.name}
+                        </ListItem>
                     ))}
                 </StyledList>
                 <StyledPagination
@@ -109,9 +111,8 @@ class RuleWorkTableElements extends Component {
 */
 
 RuleWorkTableElements.propTypes = {
-    chosenTable: PropTypes.array,
-    setChosenTable: PropTypes.func,
-    tabName: PropTypes.string
+    onTableItemSelected: PropTypes.func,
+    table: PropTypes.array,
 };
 
 export default RuleWorkTableElements;

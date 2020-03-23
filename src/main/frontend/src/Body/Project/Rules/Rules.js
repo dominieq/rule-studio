@@ -67,12 +67,11 @@ class Rules extends Component {
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
+                            this._data = result;
+                            this._items = items;
                             this.setState({
                                 loading: false,
                                 displayedItems: items,
-                            }, () => {
-                                this._data = result;
-                                this._items = items;
                             });
                         }
                     }).catch(error => {
@@ -191,15 +190,14 @@ class Rules extends Component {
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
+                            this._data = result;
+                            this._items = items;
                             this.setState({
                                 changes: true,
                                 updated: updated,
                                 externalRules: false,
                                 loading: false,
                                 displayedItems: items,
-                            }, () => {
-                                this._data = result;
-                                this._items = items;
                             });
                         } else {
                             project.ruleSetWithComputableCharacteristics = result;
@@ -268,15 +266,14 @@ class Rules extends Component {
                             if (this._isMounted) {
                                 const items = this.getItems(result.ruleSetWithComputableCharacteristics);
 
+                                this._data = result;
+                                this._items = items;
                                 this.setState({
                                     changes: true,
                                     updated: this.props.project.dataUpToDate,
                                     externalRules: true,
                                     loading: false,
                                     displayedItems: items,
-                                }, () => {
-                                    this._data = result;
-                                    this._items = items;
                                 });
                             } else {
                                 project.ruleSetWithComputableCharacteristics = result;
@@ -382,15 +379,15 @@ class Rules extends Component {
 
     onDetailsOpen = (index) => {
         this.setState({
-            selectedItem: this.state.displayedItems[index],
-            openDetails: true
+            openDetails: true,
+            selectedItem: {...this._items[index]}
         });
     };
 
     onDetailsClose = () => {
         this.setState({
-            selectedItem: null,
-            openDetails: false
+            openDetails: false,
+            selectedItem: null
         });
     };
 
@@ -404,21 +401,43 @@ class Rules extends Component {
         let items = [];
         if (data) {
             for (let i = 0; i < data.length; i++) {
-                const id = i.toString();
-                const name = data[i].rule.toString;
-                const traits = data[i].ruleCharacteristics;
+                const id = i;
+                const name = data[i].rule.decisions[0][0].attributeName;
+                const traits = {...data[i].ruleCharacteristics};
                 const tables = {
-                    indicesOfPositiveObjects: data[i].ruleCoverageInformation.indicesOfPositiveObjects,
-                    indicesOfNeutralObjects: data[i].ruleCoverageInformation.indicesOfNeutralObjects,
-                    indicesOfCoveredObjects: data[i].ruleCoverageInformation.indicesOfCoveredObjects,
-                    decisionsOfCoveredObjects: data[i].ruleCoverageInformation.decisionsOfCoveredObjects,
+                    indicesOfPositiveObjects: data[i].ruleCoverageInformation.indicesOfPositiveObjects.slice(),
+                    indicesOfNeutralObjects: data[i].ruleCoverageInformation.indicesOfNeutralObjects.slice(),
+                    indicesOfCoveredObjects: data[i].ruleCoverageInformation.indicesOfCoveredObjects.slice(),
+                    decisionsOfCoveredObjects: {...data[i].ruleCoverageInformation.decisionsOfCoveredObjects},
                 };
 
                 const item = new Item(id, name, traits, null, tables);
-                items = [...items, item];
+                items.push(item);
             }
         }
         return items;
+    };
+
+    getListItems = (items) => {
+        let listItems = [];
+        if (this._data) {
+            for (let i = 0; i < items.length; i++) {
+                const listItem = {
+                    id: items[i].id,
+                    header: this._data[items[i].id].rule.decisions[0][0].toString,
+                    subheader: "Type: " + this._data[items[i].id].rule.type.toLowerCase(),
+                    content: undefined,
+                    multiContent: this._data[items[i].id].rule.conditions.map(condition => (
+                        {
+                            title: condition.attributeName,
+                            subtitle: condition.relationSymbol + " " + condition.limitingEvaluation,
+                        }
+                    )),
+                };
+                listItems.push(listItem);
+            }
+        }
+        return listItems;
     };
 
     render() {
@@ -507,7 +526,7 @@ class Rules extends Component {
                         :
                         displayedItems ?
                             <RuleWorkList onItemSelected={this.onDetailsOpen}>
-                                {displayedItems}
+                                {this.getListItems(displayedItems)}
                             </RuleWorkList>
                             :
                             <FilterNoResults />

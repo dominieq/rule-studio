@@ -75,7 +75,7 @@ class Cones extends Component {
                         if (this._isMounted) {
                             msg = "Something went wrong! Couldn't load dominance cones :(";
                             let alertProps = {title: "ERROR " + response.status};
-                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "error"};
                             this.setState({
                                 loading: false,
                                 snackbarProps: response.status !== 404 ? snackbarProps : undefined,
@@ -96,7 +96,7 @@ class Cones extends Component {
         });
     }
 
-   componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
             this.setState({
                 displayedItems: [...this.getItems(this._data)]
@@ -207,7 +207,7 @@ class Cones extends Component {
     onDetailsOpen = (index) => {
         this.setState({
             openDetails: true,
-            selectedItem: {...this.state.displayedItems[index]},
+            selectedItem: {...this._items[index]},
         })
     };
 
@@ -232,7 +232,7 @@ class Cones extends Component {
             const objects = [...this.props.project.result.informationTable.objects];
 
             for (let i = 0; i < data.numberOfObjects; i++) {
-                const id = i.toString();
+                const id = i;
                 let name = "Object " + (i + 1);
 
                 if (indexOption !== "default") {
@@ -242,17 +242,43 @@ class Cones extends Component {
                 }
 
                 const tables = {
-                    positiveDCones: data.positiveDCones[i],
-                    negativeDCones: data.negativeDCones[i],
-                    positiveInvDCones: data.positiveInvDCones[i],
-                    negativeInvDCones: data.negativeInvDCones[i],
+                    positiveDCones: data.positiveDCones[i].slice(),
+                    negativeDCones: data.negativeDCones[i].slice(),
+                    positiveInvDCones: data.positiveInvDCones[i].slice(),
+                    negativeInvDCones: data.negativeInvDCones[i].slice(),
                 };
 
                 const item = new Item(id, name, null, null, tables);
-                items = [...items, item];
+                items.push(item);
             }
         }
         return items;
+    };
+
+    getListItems = (items) => {
+        let listItems = [];
+        if (this._data) {
+            for (let i = 0; i < items.length; i++) {
+                const listItem = {
+                    id: items[i].id,
+                    header: items[i].name,
+                    subheader: undefined,
+                    content: undefined,
+                    multiContent: [
+                        {
+                            title: "Number of positive dominance cones:",
+                            subtitle: items[i].tables.positiveDCones.length,
+                        },
+                        {
+                            title: "Number of negative dominance cones:",
+                            subtitle: items[i].tables.negativeDCones.length,
+                        }
+                    ]
+                };
+                listItems.push(listItem)
+            }
+        }
+        return listItems;
     };
 
     render() {
@@ -275,7 +301,7 @@ class Cones extends Component {
                         :
                         displayedItems ?
                             <RuleWorkList onItemSelected={this.onDetailsOpen}>
-                                {displayedItems}
+                                {this.getListItems(displayedItems)}
                             </RuleWorkList>
                             :
                             <FilterNoResults />

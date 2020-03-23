@@ -59,12 +59,11 @@ class Classification extends Component {
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
+                            this._data = result;
+                            this._items = items;
                             this.setState({
                                 loading: false,
                                 displayedItems: items,
-                            }, () => {
-                                this._data = result;
-                                this._items = items;
                             });
                         }
                     }).catch(error => {
@@ -106,6 +105,14 @@ class Classification extends Component {
                 }
             });
         });
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
+            this.setState({
+                displayedItems: [...this.getItems(this._data)]
+            });
+        }
     }
 
     componentWillUnmount() {
@@ -159,14 +166,13 @@ class Classification extends Component {
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
+                            this._data = result;
+                            this._items = items;
                             this.setState({
                                 changes: true,
                                 updated: updated,
                                 loading: false,
                                 displayedItems: items,
-                            }, () => {
-                                this._data = result;
-                                this._items = items;
                             });
                         } else {
                             project.result.classification = result;
@@ -229,16 +235,16 @@ class Classification extends Component {
 
     onDetailsOpen = (index) => {
         this.setState({
-            selectedItem: this.state.displayedItems[index],
             openDetails: true,
+            selectedItem: {...this._items[index]}
         });
     };
 
     onDetailsClose = () => {
         this.setState({
-            selectedItem: null,
             openDetails: false,
-        })
+            selectedItem: null
+        });
     };
 
     onSnackbarClose = (event, reason) => {
@@ -254,7 +260,7 @@ class Classification extends Component {
             const objects = [...this.props.project.result.informationTable.objects];
 
             for (let i = 0; i < data.simpleClassificationResults.length; i++) {
-                const id = i.toString();
+                const id = i;
                 let name = "Object " + (i + 1);
 
                 if (indexOption !== "default") {
@@ -264,17 +270,34 @@ class Classification extends Component {
                 }
 
                 const traits = {
-                    attributes: data.informationTable.attributes,
-                    value: data.informationTable.objects[i]
+                    attributes: data.informationTable.attributes.slice(),
+                    values: {...data.informationTable.objects[i]}
                 };
                 const tables = {
-                    indicesOfCoveringRules: data.indicesOfCoveringRules[i]
+                    indicesOfCoveringRules: data.indicesOfCoveringRules[i].slice()
                 };
                 const item = new Item(id, name, traits, null, tables);
-                items = [...items, item];
+                items.push(item);
             }
         }
         return items;
+    };
+
+    getListItems = (items) => {
+        let listItems = [];
+        if (this._data) {
+
+            for (let i = 0; i < items.length; i++) {
+                const listItem = {
+                    id: items[i].id,
+                    header: items[i].name,
+                    subheader: "Belongs to class " + this._data.simpleClassificationResults[items[i].id],
+                    content: "Is covered by " + items[i].tables.indicesOfCoveringRules.length + " rules"
+                };
+                listItems.push(listItem)
+            }
+        }
+        return listItems;
     };
 
     render() {
@@ -347,7 +370,7 @@ class Classification extends Component {
                         :
                         displayedItems ?
                             <RuleWorkList onItemSelected={this.onDetailsOpen}>
-                                {displayedItems}
+                                {this.getListItems(displayedItems)}
                             </RuleWorkList>
                             :
                             <FilterNoResults />
