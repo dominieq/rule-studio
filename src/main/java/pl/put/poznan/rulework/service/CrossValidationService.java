@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
 import pl.put.poznan.rulework.model.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -78,6 +79,29 @@ public class CrossValidationService {
         logger.info("NumberOfFolds:\t{}", numberOfFolds);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), typeOfUnions, consistencyThreshold, typeOfClassifier, defaultClassificationResult, numberOfFolds);
+
+        project.setCrossValidation(crossValidation);
+
+        logger.debug("crossValidation:\t{}", project.getCrossValidation().toString());
+        return project.getCrossValidation();
+    }
+
+    public CrossValidation postCrossValidation(UUID id, String typeOfUnions, Double consistencyThreshold, String typeOfClassifier, String defaultClassificationResult, Integer numberOfFolds, String metadata, String data) throws IOException {
+        logger.info("Id:\t{}", id);
+        logger.info("TypeOfUnions:\t{}", typeOfUnions);
+        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
+        logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
+        logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
+        logger.info("NumberOfFolds:\t{}", numberOfFolds);
+        logger.info("Metadata:\t{}", metadata);
+        logger.info("Data:\t{}", data);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        project.setInformationTable(informationTable);
 
         CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), typeOfUnions, consistencyThreshold, typeOfClassifier, defaultClassificationResult, numberOfFolds);
 

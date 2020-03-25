@@ -27,7 +27,7 @@ public class CrossValidationController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CrossValidation> getData(
+    public ResponseEntity<CrossValidation> getCrossValidation(
             @PathVariable("id") UUID id) throws IOException {
         logger.info("Getting cross validation...");
         CrossValidation result = crossValidationService.getCrossValidation(id);
@@ -36,7 +36,7 @@ public class CrossValidationController {
     }
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CrossValidation> putDominanceCones(
+    public ResponseEntity<CrossValidation> putCrossValidation(
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") String typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
@@ -46,6 +46,23 @@ public class CrossValidationController {
         logger.info("Putting cross validation...");
 
         CrossValidation result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfClassifier, defaultClassificationResult, numberOfFolds);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CrossValidation> postCrossValidation(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "typeOfUnions") String typeOfUnions,
+            @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
+            @RequestParam(name = "typeOfClassifier") String typeOfClassifier,
+            @RequestParam(name = "defaultClassificationResult") String defaultClassificationResult,
+            @RequestParam(name = "numberOfFolds") Integer numberOfFolds,
+            @RequestParam(name = "metadata") String metadata,
+            @RequestParam(name = "data") String data) throws IOException {
+        logger.info("Posting cross validation...");
+
+        CrossValidation result = crossValidationService.postCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfClassifier, defaultClassificationResult, numberOfFolds, metadata, data);
 
         return ResponseEntity.ok(result);
     }
