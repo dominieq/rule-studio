@@ -41,9 +41,10 @@ public class RulesController {
     public ResponseEntity<RuleSetWithComputableCharacteristics> putRules (
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") String typeOfUnions,
-            @RequestParam(name = "consistencyThreshold") Double consistencyThreshold) {
+            @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
+            @RequestParam(name = "typeOfRules") String typeOfRules) {
         logger.info("Putting rules...");
-        RuleSetWithComputableCharacteristics result = rulesService.putRules(id, typeOfUnions, consistencyThreshold);
+        RuleSetWithComputableCharacteristics result = rulesService.putRules(id, typeOfUnions, consistencyThreshold, typeOfRules);
         return ResponseEntity.ok(result);
     }
 
@@ -52,10 +53,11 @@ public class RulesController {
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") String typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
+            @RequestParam(name = "typeOfRules") String typeOfRules,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting rules...");
-        RuleSetWithComputableCharacteristics result = rulesService.postRules(id, typeOfUnions, consistencyThreshold, metadata, data);
+        RuleSetWithComputableCharacteristics result = rulesService.postRules(id, typeOfUnions, consistencyThreshold, typeOfRules, metadata, data);
         return ResponseEntity.ok(result);
     }
 

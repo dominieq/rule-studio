@@ -26,7 +26,7 @@ public class CrossValidationService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private CrossValidation calculateCrossValidation(InformationTable informationTable, String typeOfUnions, Double consistencyThreshold, String typeOfClassifier, String defaultClassificationResult, Integer numberOfFolds) {
+    private CrossValidation calculateCrossValidation(InformationTable informationTable, String typeOfUnions, Double consistencyThreshold, String typeOfRules, String typeOfClassifier, String defaultClassificationResult, Integer numberOfFolds) {
         CrossValidationSingleFold crossValidationSingleFolds[] = new CrossValidationSingleFold[numberOfFolds];
         Decision[] orderOfDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
         OrdinalMisclassificationMatrix[] foldOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix[numberOfFolds];
@@ -40,7 +40,7 @@ public class CrossValidationService {
             InformationTable validationTable = folds.get(i).getValidationTable();
 
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecision(trainingTable, typeOfUnions, consistencyThreshold);
-            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.calculateRuleSetWithComputableCharacteristics(unionsWithSingleLimitingDecision);
+            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.calculateRuleSetWithComputableCharacteristics(unionsWithSingleLimitingDecision, typeOfRules);
             Classification classificationValidationTable = ClassificationService.calculateClassification(validationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics, orderOfDecisions);
 
             foldOrdinalMisclassificationMatrix[i] = classificationValidationTable.getOrdinalMisclassificationMatrix();
@@ -70,17 +70,18 @@ public class CrossValidationService {
         return crossValidation;
     }
 
-    public CrossValidation putCrossValidation(UUID id, String typeOfUnions, Double consistencyThreshold, String typeOfClassifier, String defaultClassificationResult, Integer numberOfFolds) {
+    public CrossValidation putCrossValidation(UUID id, String typeOfUnions, Double consistencyThreshold, String typeOfRules, String typeOfClassifier, String defaultClassificationResult, Integer numberOfFolds) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
+        logger.info("TypeOfRules:\t{}", typeOfRules);
         logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
         logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
         logger.info("NumberOfFolds:\t{}", numberOfFolds);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), typeOfUnions, consistencyThreshold, typeOfClassifier, defaultClassificationResult, numberOfFolds);
+        CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds);
 
         project.setCrossValidation(crossValidation);
 
@@ -88,10 +89,11 @@ public class CrossValidationService {
         return project.getCrossValidation();
     }
 
-    public CrossValidation postCrossValidation(UUID id, String typeOfUnions, Double consistencyThreshold, String typeOfClassifier, String defaultClassificationResult, Integer numberOfFolds, String metadata, String data) throws IOException {
+    public CrossValidation postCrossValidation(UUID id, String typeOfUnions, Double consistencyThreshold, String typeOfRules, String typeOfClassifier, String defaultClassificationResult, Integer numberOfFolds, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
+        logger.info("TypeOfRules:\t{}", typeOfRules);
         logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
         logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
         logger.info("NumberOfFolds:\t{}", numberOfFolds);
@@ -103,7 +105,7 @@ public class CrossValidationService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), typeOfUnions, consistencyThreshold, typeOfClassifier, defaultClassificationResult, numberOfFolds);
+        CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds);
 
         project.setCrossValidation(crossValidation);
 

@@ -8,6 +8,7 @@ class PostRules extends Component {
             id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f',
             typeOfUnions: 'monotonic',
             consistencyThreshold: 0,
+            typeOfRules: 'certain',
             metadata: JSON.stringify(
               [
                 {
@@ -140,12 +141,19 @@ class PostRules extends Component {
         })
     }
 
+    handleTypeOfRulesChange = (event) => {
+        this.setState({
+            typeOfRules: event.target.value
+        })
+    }
+
     postRules = (event) => {
       event.preventDefault()
 
       let formData = new FormData()
       formData.append('typeOfUnions', this.state.typeOfUnions)
       formData.append('consistencyThreshold', this.state.consistencyThreshold)
+      formData.append('typeOfRules', this.state.typeOfRules)
       formData.append('metadata', this.state.metadata)
       formData.append('data', this.state.data)
 
@@ -200,6 +208,12 @@ class PostRules extends Component {
                 </select>
                 consistencyThreshold->
                 <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
+                <label for="typeOfRulesPostRules">typeOfRules-></label>
+                <select id="typeOfRulesPostRules" onChange={this.handleTypeOfRulesChange}>
+                    <option value="certain">certain</option>
+                    <option value="possible">possible</option>
+                    <option value="both">both</option>
+                </select>
                 <button onClick={this.postRules}>postRules</button>
             </div>
         )

@@ -91,33 +91,61 @@ public class RulesService {
         return ruleSetWithCharacteristics;
     }
 
-    public static RuleSetWithComputableCharacteristics calculateRuleSetWithComputableCharacteristics(Unions unions) {
-        final RuleInductionStoppingConditionChecker stoppingConditionChecker =
-                new EvaluationAndCoverageStoppingConditionChecker(
-                        EpsilonConsistencyMeasure.getInstance(),
-                        EpsilonConsistencyMeasure.getInstance(),
-                        ((VCDominanceBasedRoughSetCalculator) unions.getRoughSetCalculator()).getLowerApproximationConsistencyThreshold()
-                );
-
-        RuleInducerComponents certainRuleInducerComponents = new CertainRuleInducerComponents.Builder().
-                ruleInductionStoppingConditionChecker(stoppingConditionChecker).
-                ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(stoppingConditionChecker)).
-                build();
+    public static RuleSetWithComputableCharacteristics calculateRuleSetWithComputableCharacteristics(Unions unions, String typeOfRules) {
+        RuleInducerComponents ruleInducerComponents = null;
 
         ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
         ApproximatedSetProvider unionAtMostProvider = new UnionProvider(Union.UnionType.AT_MOST, unions);
         ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 
-        RuleSetWithComputableCharacteristics upwardCertainRules = (new VCDomLEM(certainRuleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider)).generateRules();
-        upwardCertainRules.calculateAllCharacteristics();
-        RuleSetWithComputableCharacteristics downwardCertainRules = (new VCDomLEM(certainRuleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
-        downwardCertainRules.calculateAllCharacteristics();
+        RuleSetWithComputableCharacteristics rules = null;
+        RuleSetWithComputableCharacteristics resultSet = null;
 
-        RuleSetWithComputableCharacteristics resultSet = RuleSetWithComputableCharacteristics.join(upwardCertainRules, downwardCertainRules);
+
+        if(typeOfRules.equals("possible") || (typeOfRules.equals("both"))) {
+            ruleInducerComponents = new PossibleRuleInducerComponents.Builder().
+                    build();
+
+            rules = (new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider)).generateRules();
+            rules.calculateAllCharacteristics();
+            resultSet = rules;
+
+            rules = (new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
+            rules.calculateAllCharacteristics();
+            resultSet = RuleSetWithComputableCharacteristics.join(resultSet, rules);
+        }
+
+
+        if(typeOfRules.equals("certain") || (typeOfRules.equals("both"))) {
+            final RuleInductionStoppingConditionChecker stoppingConditionChecker =
+                    new EvaluationAndCoverageStoppingConditionChecker(
+                            EpsilonConsistencyMeasure.getInstance(),
+                            EpsilonConsistencyMeasure.getInstance(),
+                            ((VCDominanceBasedRoughSetCalculator) unions.getRoughSetCalculator()).getLowerApproximationConsistencyThreshold()
+                    );
+
+            ruleInducerComponents = new CertainRuleInducerComponents.Builder().
+                    ruleInductionStoppingConditionChecker(stoppingConditionChecker).
+                    ruleConditionsPruner(new AttributeOrderRuleConditionsPruner(stoppingConditionChecker)).
+                    build();
+
+            rules = (new VCDomLEM(ruleInducerComponents, unionAtLeastProvider, unionRuleDecisionsProvider)).generateRules();
+            rules.calculateAllCharacteristics();
+            if(resultSet == null) {
+                resultSet = rules;
+            } else {
+                resultSet = RuleSetWithComputableCharacteristics.join(resultSet, rules);
+            }
+
+            rules = (new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
+            rules.calculateAllCharacteristics();
+            resultSet = RuleSetWithComputableCharacteristics.join(resultSet, rules);
+        }
+
         return resultSet;
     }
 
-    public static void calculateRuleSetWithComputableCharacteristicsInProject(Project project, String typeOfUnions, Double consistencyThreshold) {
+    public static void calculateRuleSetWithComputableCharacteristicsInProject(Project project, String typeOfUnions, Double consistencyThreshold, String typeOfRules) {
         Unions unions = project.getUnionsWithSingleLimitingDecision();
         if((project.isCalculatedUnionsWithSingleLimitingDecision()) || (project.getTypeOfUnions() != typeOfUnions) || (project.getConsistencyThreshold() != consistencyThreshold)) {
             logger.info("Calculating new set of unions");
@@ -125,7 +153,7 @@ public class RulesService {
 
             unions = project.getUnionsWithSingleLimitingDecision();
         }
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = calculateRuleSetWithComputableCharacteristics(unions);
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = calculateRuleSetWithComputableCharacteristics(unions, typeOfRules);
 
         project.setRuleSetWithComputableCharacteristics(ruleSetWithComputableCharacteristics);
     }
@@ -146,22 +174,24 @@ public class RulesService {
         return ruleSetWithComputableCharacteristics;
     }
 
-    public RuleSetWithComputableCharacteristics putRules(UUID id, String typeOfUnions, Double consistencyThreshold) {
+    public RuleSetWithComputableCharacteristics putRules(UUID id, String typeOfUnions, Double consistencyThreshold, String typeOfRules) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
+        logger.info("TypeOfRules:\t{}", typeOfRules);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateRuleSetWithComputableCharacteristicsInProject(project, typeOfUnions, consistencyThreshold);
+        calculateRuleSetWithComputableCharacteristicsInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
 
         return project.getRuleSetWithComputableCharacteristics();
     }
 
-    public RuleSetWithComputableCharacteristics postRules(UUID id, String typeOfUnions, Double consistencyThreshold, String metadata, String data) throws IOException {
+    public RuleSetWithComputableCharacteristics postRules(UUID id, String typeOfUnions, Double consistencyThreshold, String metadata, String data, String typeOfRules) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
+        logger.info("TypeOfRules:\t{}", typeOfRules);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data:\t{}", data);
 
@@ -170,7 +200,7 @@ public class RulesService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateRuleSetWithComputableCharacteristicsInProject(project, typeOfUnions, consistencyThreshold);
+        calculateRuleSetWithComputableCharacteristicsInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
 
         return project.getRuleSetWithComputableCharacteristics();
     }

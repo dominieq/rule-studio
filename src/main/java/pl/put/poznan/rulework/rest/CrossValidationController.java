@@ -40,12 +40,13 @@ public class CrossValidationController {
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") String typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
+            @RequestParam(name = "typeOfRules") String typeOfRules,
             @RequestParam(name = "typeOfClassifier") String typeOfClassifier,
             @RequestParam(name = "defaultClassificationResult") String defaultClassificationResult,
             @RequestParam(name = "numberOfFolds") Integer numberOfFolds) {
         logger.info("Putting cross validation...");
 
-        CrossValidation result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfClassifier, defaultClassificationResult, numberOfFolds);
+        CrossValidation result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfClassifier, typeOfClassifier, defaultClassificationResult, numberOfFolds);
 
         return ResponseEntity.ok(result);
     }
@@ -55,6 +56,7 @@ public class CrossValidationController {
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") String typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
+            @RequestParam(name = "typeOfRules") String typeOfRules,
             @RequestParam(name = "typeOfClassifier") String typeOfClassifier,
             @RequestParam(name = "defaultClassificationResult") String defaultClassificationResult,
             @RequestParam(name = "numberOfFolds") Integer numberOfFolds,
@@ -62,7 +64,7 @@ public class CrossValidationController {
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting cross validation...");
 
-        CrossValidation result = crossValidationService.postCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfClassifier, defaultClassificationResult, numberOfFolds, metadata, data);
+        CrossValidation result = crossValidationService.postCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, metadata, data);
 
         return ResponseEntity.ok(result);
     }
