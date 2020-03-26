@@ -49,7 +49,7 @@ class RuleWorkTableElements extends Component {
         const tableItems = [];
         for(let i = 0; i < table.length; i++) {
             const tableItem = {
-                id: table[i].toString(),
+                id: table[i],
                 name: "Object " + (Number(table[i]) + 1)
             };
             tableItems.push(tableItem);
