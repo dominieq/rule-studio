@@ -16,7 +16,7 @@ import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
 import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
-import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
+import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
@@ -42,7 +42,7 @@ class Rules extends Component {
             selectedItem: null,
             openDetails: false,
             openSettings: false,
-            snackbarProps: undefined,
+            alertProps: undefined,
         };
 
         this.upperBar = React.createRef();
@@ -51,11 +51,11 @@ class Rules extends Component {
     componentDidMount() {
         this._isMounted = true;
         const project = {...this.props.project};
-
+        console.log(project);
         this.setState({
             loading: true,
         }, () => {
-            let msg = "";
+            let msg, title = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
                 method: "GET",
             }).then(response => {
@@ -67,33 +67,29 @@ class Rules extends Component {
                             this._data = result;
                             this._items = items;
                             this.setState({
-                                loading: false,
                                 displayedItems: items,
                             });
                         }
                     }).catch(error => {
                         console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
                     });
                 } else {
                     response.json().then(result => {
                         if (this._isMounted) {
                             msg = "ERROR " + result.status + " " + result.message;
-                            let alertProps = {title: "Something went wrong! Couldn't load rules :("};
-                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "warning"};
+                            title = "Something went wrong! Couldn't load rules :(";
+                            let alertProps = {message: msg, open: true, title: title, severity: "warning"};
                             this.setState({
-                                loading: false,
-                                snackbarProps: result.status !== 404 ? snackbarProps : undefined
+                                alertProps: result.status !== 404 ? alertProps : undefined
                             });
                         }
                     }).catch(() => {
-                        if (this._isMounted){
+                        if (this._isMounted) {
                             msg = "Something went wrong! Couldn't load rules :(";
-                            let alertProps = {title: "ERROR " + response.status};
-                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "error"};
+                            title = {title: "ERROR " + response.status};
+                            let alertProps = {message: msg, open: true, title: title, severity: "error"};
                             this.setState({
-                                loading: false,
-                                snackbarProps: response.status !== 404 ? snackbarProps : undefined
+                                alertProps: response.status !== 404 ? alertProps : undefined
                             });
                         }
                     });
@@ -101,10 +97,9 @@ class Rules extends Component {
             }).catch(error => {
                 console.log(error);
                 if (this._isMounted) {
-                    msg = "Server error! Couldn't load rules :( " + error.message;
+                    msg = "Server error! Couldn't load rules :( ";
                     this.setState({
-                        loading: false,
-                        snackbarProps: {open: true, message: msg, variant: "error"},
+                        alertProps: {message: msg, open: true, severity: "error"}
                     });
                 }
             }).finally(() => {
@@ -188,7 +183,7 @@ class Rules extends Component {
             data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
             data.append("data", JSON.stringify(project.result.informationTable.objects));
 
-            let msg = "";
+            let msg, title = "";
             fetch(link, {
                 method: project.dataUpToDate ? "PUT" : "POST",
                 body: project.dataUpToDate ? null : data
@@ -206,7 +201,6 @@ class Rules extends Component {
                                 changes: true,
                                 updated: updated,
                                 externalRules: false,
-                                loading: false,
                                 displayedItems: items,
                             });
                         } else {
@@ -220,25 +214,22 @@ class Rules extends Component {
                         }
                     }).catch(error => {
                         console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
                     })
                 } else {
                     response.json().then(result => {
                         if (this._isMounted) {
                             msg = "ERROR " + result.status + ": " + result.message;
-                            let alertProps = {title: "Something went wrong! Couldn't calculate rules :("};
+                            title = "Something went wrong! Couldn't calculate rules :(";
                             this.setState({
-                                loading: false,
-                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "warning"}
+                                alertProps: {message: msg, open: true, title: title, severity: "warning"}
                             });
                         }
                     }).catch(() => {
                         if (this._isMounted) {
                             msg = "Something went wrong! Couldn't calculate rules :(";
-                            let alertProps = {title: "ERROR " + response.status};
+                            title = "ERROR " + response.status;
                             this.setState({
-                                loading: false,
-                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                                alertProps: {message: msg, open: true, title: title, severity: "error"}
                             });
                         }
                     });
@@ -248,10 +239,11 @@ class Rules extends Component {
                 if (this._isMounted) {
                     msg = "Server error! Couldn't calculate rules :(";
                     this.setState({
-                        loading: false,
-                        snackbarProps: {open: true, message: msg, variant: "error"},
+                        alertProps: {message: msg, open: true, severity: "error"},
                     });
                 }
+            }).finally(() => {
+                if (this._isMounted) this.setState({loading: false});
             });
         });
     };
@@ -266,7 +258,7 @@ class Rules extends Component {
             this.setState({
                 loading: true,
             }, () => {
-                let msg = "";
+                let msg, title = "";
                 fetch(`http://localhost:8080/projects/${project.result.id}`, {
                     method: "POST",
                     body: data,
@@ -282,7 +274,6 @@ class Rules extends Component {
                                     changes: true,
                                     updated: this.props.project.dataUpToDate,
                                     externalRules: true,
-                                    loading: false,
                                     displayedItems: items,
                                 });
                             } else {
@@ -298,25 +289,22 @@ class Rules extends Component {
                             }
                         }).catch(error => {
                             console.log(error);
-                            if (this._isMounted) this.setState({loading: false});
                         });
                     } else {
                         response.json().then(result => {
                             if (this._isMounted) {
                                 msg = "error: " + result.status + " " + result.message;
-                                let alertProps = {title: "Something went wrong. Couldn't upload rules :("};
+                                title = "Something went wrong. Couldn't upload rules :(";
                                 this.setState({
-                                    loading: false,
-                                    snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "warning"}
+                                    alertProps: {message: msg, open: true, title: title, severity: "warning"}
                                 });
                             }
                         }).catch(() => {
                             if (this._isMounted) {
                                 msg = "Something went wrong! Couldn't upload rules :(";
-                                let alertProps = {title: "ERROR " + response.status};
+                                title = "ERROR " + response.status;
                                 this.setState({
-                                    loading: false,
-                                    snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                                    alertProps: {message: msg, open: true, title: title, severity: "error"}
                                 });
                             }
                         });
@@ -326,10 +314,11 @@ class Rules extends Component {
                     if (this._isMounted) {
                         msg = "Server error! Couldn't upload rules :(";
                         this.setState({
-                            loading: false,
-                            snackbarProps: {open: true, message: msg, variant: "error"}
+                            alertProps: {message: msg, open: true, severity: "error"}
                         });
                     }
+                }).finally(() => {
+                    if (this._isMounted) this.setState({loading: false});
                 });
             });
         }
@@ -337,7 +326,7 @@ class Rules extends Component {
 
     onSaveFileClick = () => {
         const project = this.props.project;
-        let msg = "";
+        let msg, title = "";
 
         fetch(`http://localhost:8080/projects/${project.result.id}/rules/download`, {
             method: "GET",
@@ -358,16 +347,16 @@ class Rules extends Component {
                 response.json().then(result => {
                     if (this._isMounted) {
                         msg = "ERROR: " + result.status + " " + result.message;
-                        let alertProps = {title: "Something went wrong! Couldn't download rules :("};
+                        title = "Something went wrong! Couldn't download rules :(";
                         this.setState({
-                            snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "warning"},
+                            alertProps: {message: msg, open: true, title: title, severity: "warning"},
                         });
                     }
                 }).catch(() => {
                     msg = "Something went wrong! Couldn't download rules :(";
-                    let alertProps = {title: "ERROR " + response.status};
+                    title = "ERROR " + response.status;
                     this.setState({
-                        snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                        alertProps: {message: msg, open: true, title: title, severity: "error"}
                     })
                 });
             }
@@ -376,7 +365,7 @@ class Rules extends Component {
             if (this._isMounted) {
                 msg = "Server error! Couldn't download rules :( ";
                 this.setState({
-                    snackbarProps: {open: true, message: msg, variant: "error"},
+                    alertProps: {message: msg, open: true, severity: "error"},
                 });
             }
         });
@@ -403,7 +392,9 @@ class Rules extends Component {
 
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
-            this.setState({snackbarProps: undefined});
+            this.setState(({alertProps}) => ({
+                alertProps: {...alertProps, open: false}
+            }));
         }
     };
 
@@ -452,7 +443,7 @@ class Rules extends Component {
 
     render() {
         const {loading, displayedItems, threshold, typeOfUnions, selectedItem, openDetails,
-            openSettings, snackbarProps} = this.state;
+            openSettings, alertProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
@@ -550,7 +541,7 @@ class Rules extends Component {
                         projectResult={this.props.project.result}
                     />
                 }
-                <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
+                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )
     }

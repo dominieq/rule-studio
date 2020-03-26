@@ -1,10 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Snackbar from "@material-ui/core/Snackbar";
-import AlertTitle from "@material-ui/lab/AlertTitle";
 import Alert from "@material-ui/lab/Alert";
+import AlertTitle from "@material-ui/lab/AlertTitle";
 
-function SnackbarAlert(props) {
+function StyledAlert(props) {
     const {children, title, ...other} = props;
 
     return (
@@ -15,23 +15,19 @@ function SnackbarAlert(props) {
     )
 }
 
-function RuleWorkSnackbar(props) {
-    const {alertProps, message, onClose, open, snackbarProps, variant} = props;
+function RuleWorkAlert(props) {
+    const {message, onClose, open, snackbarProps, ...other} = props;
 
     return (
         <Snackbar onClose={onClose} open={open} {...snackbarProps}>
-            <SnackbarAlert onClose={onClose} severity={variant} {...alertProps}>
+            <StyledAlert onClose={onClose} {...other}>
                 {message}
-            </SnackbarAlert>
+            </StyledAlert>
         </Snackbar>
     )
 }
 
-RuleWorkSnackbar.propTypes = {
-    alertProps: PropTypes.shape({
-        icon: PropTypes.node,
-        title: PropTypes.node,
-    }),
+RuleWorkAlert.propTypes = {
     message: PropTypes.string,
     onClose: PropTypes.func,
     open: PropTypes.bool,
@@ -41,16 +37,15 @@ RuleWorkSnackbar.propTypes = {
             vertical: PropTypes.oneOf(["top", "bottom"]),
         }),
         autoHideDuration: PropTypes.number,
-        resumeHideDuration: PropTypes.number,
-        TransitionComponent: PropTypes.elementType
     }),
-    variant: PropTypes.oneOf(["info", "success", "warning", "error"])
+    title: PropTypes.node,
+    severity: PropTypes.oneOf(["info", "success", "warning", "error"])
 };
 
-RuleWorkSnackbar.defaultProps = {
+RuleWorkAlert.defaultProps = {
     snackbarProps: {
         autoHideDuration: 6000,
     },
 };
 
-export default RuleWorkSnackbar
+export default RuleWorkAlert

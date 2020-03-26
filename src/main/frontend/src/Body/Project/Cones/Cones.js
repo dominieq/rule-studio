@@ -8,7 +8,7 @@ import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox"
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
-import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
+import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 
@@ -26,7 +26,7 @@ class Cones extends Component {
             displayedItems: [],
             selectedItem: null,
             openDetails: false,
-            snackbarProps: undefined,
+            alertProps: undefined,
         };
 
         this.upperBar = React.createRef();
@@ -34,12 +34,12 @@ class Cones extends Component {
 
     componentDidMount() {
         this._isMounted = true;
-        const project = this.props.project;
+        const project = {...this.props.project};
 
         this.setState({
             loading: true,
         }, () => {
-            let msg = "";
+            let msg, title = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/cones`, {
                 method: "GET"
             }).then(response => {
@@ -51,33 +51,29 @@ class Cones extends Component {
                             this._data = result;
                             this._items = items;
                             this.setState({
-                                loading: false,
                                 displayedItems: items,
                             });
                         }
                     }).catch(error => {
                         console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
                     });
                 } else {
                     response.json().then(result => {
                         if (this._isMounted) {
                             msg = "ERROR " + result.status + ": " + result.message;
-                            let alertProps = {title: "Something went wrong! Couldn't load dominance cones :("};
-                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "warning"};
+                            title = "Something went wrong! Couldn't load dominance cones :(";
+                            let alertProps = {message: msg, open: true,  title: title, severity: "warning"};
                             this.setState({
-                                loading: false,
-                                snackbarProps: result.status !== 404 ? snackbarProps : undefined,
+                                alertProps: result.status !== 404 ? alertProps : undefined,
                             });
                         }
                     }).catch(() => {
                         if (this._isMounted) {
                             msg = "Something went wrong! Couldn't load dominance cones :(";
-                            let alertProps = {title: "ERROR " + response.status};
-                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "error"};
+                            title = "ERROR " + response.status;
+                            let alertProps = {message: msg, open: true, title: title, severity: "error"};
                             this.setState({
-                                loading: false,
-                                snackbarProps: response.status !== 404 ? snackbarProps : undefined,
+                                alertProps: response.status !== 404 ? alertProps : undefined,
                             });
                         }
                     });
@@ -87,10 +83,11 @@ class Cones extends Component {
                 if (this._isMounted) {
                     msg = "Server error! Couldn't load dominance cones :(";
                     this.setState({
-                        loading: false,
-                        snackbarProps: {open: true, message: msg, variant: "error"},
+                        alertProps: {message: msg, open: true, severity: "error"},
                     });
                 }
+            }).finally(() => {
+                if (this._isMounted) this.setState({loading: false});
             });
         });
     }
@@ -130,7 +127,7 @@ class Cones extends Component {
             data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
             data.append("data", JSON.stringify(project.result.informationTable.objects));
 
-            let msg = "";
+            let msg, title = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/cones`, {
                 method: project.dataUpToDate ? "PUT" : "POST",
                 body: project.dataUpToDate ? null : data,
@@ -147,7 +144,6 @@ class Cones extends Component {
                             this.setState({
                                 changes: true,
                                 updated: updated,
-                                loading: false,
                                 displayedItems: items,
                             });
                         } else {
@@ -161,25 +157,22 @@ class Cones extends Component {
                         }
                     }).catch(error => {
                         console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
                     });
                 } else {
                     response.json().then(result => {
                         if (this._isMounted) {
                             msg = "ERROR " + result.status + ": " + result.message;
-                            let alertProps = {title: "Something went wrong! Couldn't calculate dominance cones :("};
+                            title = "Something went wrong! Couldn't calculate dominance cones :(";
                             this.setState({
-                                loading: false,
-                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "warning"}
+                                alertProps: {message: msg, open: true, title: title, severity: "warning"}
                             });
                         }
                     }).catch(() => {
                         if (this._isMounted) {
                             msg = "Something went wrong! Couldn't calculate dominance cones :(";
-                            let alertProps = {title: "ERROR " + response.status};
+                            title = "ERROR " + response.status;
                             this.setState({
-                                loading: false,
-                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                                alertProps: {message: msg, open: true, title: title, severity: "error"}
                             });
                         }
                     });
@@ -189,11 +182,12 @@ class Cones extends Component {
                 if (this._isMounted) {
                     msg = "Server error! Couldn't calculate dominance cones :(";
                     this.setState({
-                        loading: false,
-                        snackbarProps: {open: true, message: msg, variant: "error"}
+                        alertProps: {message: msg, open: true, severity: "error"}
                     });
                 }
-            });
+            }).finally(() => {
+                if (this._isMounted) this.setState({loading: false});
+            })
         });
     };
 
@@ -218,7 +212,9 @@ class Cones extends Component {
 
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
-            this.setState({snackbarProps: undefined});
+            this.setState(({alertProps}) => ({
+                alertProps: {...alertProps, open: false}
+            }));
         }
     };
 
@@ -264,11 +260,11 @@ class Cones extends Component {
                     content: undefined,
                     multiContent: [
                         {
-                            title: "Number of positive dominance cones:",
+                            title: "Number of objects in positive dominance cone:",
                             subtitle: items[i].tables.positiveDCones.length,
                         },
                         {
-                            title: "Number of negative dominance cones:",
+                            title: "Number of objects in negative dominance cone:",
                             subtitle: items[i].tables.negativeDCones.length,
                         }
                     ]
@@ -280,7 +276,7 @@ class Cones extends Component {
     };
 
     render() {
-        const {loading, displayedItems, openDetails, selectedItem, snackbarProps} = this.state;
+        const {loading, displayedItems, openDetails, selectedItem, alertProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-cones"} styleVariant={"tab"}>
@@ -313,7 +309,7 @@ class Cones extends Component {
                         projectResult={this.props.project.result}
                     />
                 }
-                <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
+                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         );
     }
