@@ -4,7 +4,7 @@ import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterNoResults from "../Utils/Filtering/FilterNoResults";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Calculations/CalculateButton";
-import MeasureSelector from "../Utils/Calculations/MeasureSelector";
+import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import SettingsButton from "../Utils/Settings/SettingsButton";
 import SettingsFooter from "../Utils/Settings/SettingsFooter";
@@ -38,7 +38,6 @@ class Rules extends Component {
             displayedItems: [],
             externalRules: false,
             threshold: 0,
-            measure: "epsilon",
             typeOfUnions: "monotonic",
             selectedItem: null,
             openDetails: false,
@@ -55,10 +54,6 @@ class Rules extends Component {
 
         this.setState({
             loading: true,
-            externalRules: this.props.project.externalRules,
-            threshold: this.props.project.threshold,
-            measure: this.props.project.measure,
-            typeOfUnions: this.props.project.typeOfUnions,
         }, () => {
             let msg = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
@@ -112,9 +107,15 @@ class Rules extends Component {
                         snackbarProps: {open: true, message: msg, variant: "error"},
                     });
                 }
+            }).finally(() => {
+                this.setState({
+                    loading: false,
+                    externalRules: this.props.project.externalRules,
+                    threshold: this.props.project.threshold,
+                    typeOfUnions: this.props.project.typeOfUnions
+                });
             });
         });
-
     }
 
     componentWillUnmount() {
@@ -127,7 +128,6 @@ class Rules extends Component {
             }
             project.externalRules = this.state.externalRules;
             project.threshold = this.state.threshold;
-            project.measure = this.state.measure;
             project.typeOfUnions = this.state.typeOfUnions;
 
             let tabsUpToDate = this.props.project.tabsUpToDate.slice();
@@ -163,11 +163,11 @@ class Rules extends Component {
         });
     };
 
-    onMeasureChange = (event) => {
+    onTypeOfUnionsChange = (event) => {
         this.setState({
             changes: event.target.value !== "epsilon",
             updated: this.props.project.dataUpToDate,
-            measure: event.target.value,
+            typeOfUnions: event.target.value,
         });
     };
 
@@ -412,7 +412,7 @@ class Rules extends Component {
         if (data) {
             for (let i = 0; i < data.length; i++) {
                 const id = i;
-                const name = data[i].rule.decisions[0][0].attributeName;
+                const name = data[i].rule.decisions[0][0].toString;
                 const traits = {...data[i].ruleCharacteristics};
                 const tables = {
                     indicesOfPositiveObjects: data[i].ruleCoverageInformation.indicesOfPositiveObjects.slice(),
@@ -451,7 +451,7 @@ class Rules extends Component {
     };
 
     render() {
-        const {loading, displayedItems, threshold, measure, selectedItem, openDetails,
+        const {loading, displayedItems, threshold, typeOfUnions, selectedItem, openDetails,
             openSettings, snackbarProps} = this.state;
 
         return (
@@ -460,7 +460,7 @@ class Rules extends Component {
                     <SettingsButton
                         aria-label={"rules-settings-button"}
                         onClick={this.onSettingsClick}
-                        title={"Click to choose consistency & measure"}
+                        title={"Click to choose consistency & type of unions"}
                     />
                     <StyledDivider />
                     <RuleWorkTooltip title={`Calculate with threshold ${threshold}`}>
@@ -508,10 +508,10 @@ class Rules extends Component {
                     open={openSettings}
                 >
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
-                    <RuleWorkSmallBox id={"rules-measure-selector"}>
-                        <MeasureSelector
-                            onChange={this.onMeasureChange}
-                            value={measure}
+                    <RuleWorkSmallBox id={"rules-union-type-selector"}>
+                        <TypeOfUnionsSelector
+                            onChange={this.onTypeOfUnionsChange}
+                            value={typeOfUnions}
                         />
                     </RuleWorkSmallBox>
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
