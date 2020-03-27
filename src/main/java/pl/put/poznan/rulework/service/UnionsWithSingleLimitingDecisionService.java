@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
 import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Project;
@@ -26,14 +27,14 @@ public class UnionsWithSingleLimitingDecisionService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    public static UnionsWithSingleLimitingDecision calculateUnionsWithSingleLimitingDecision(InformationTable informationTable, String typeOfUnions, Double consistencyThreshold) {
+    public static UnionsWithSingleLimitingDecision calculateUnionsWithSingleLimitingDecision(InformationTable informationTable, UnionType typeOfUnions, Double consistencyThreshold) {
         ConsistencyMeasure<Union> consistencyMeasure = null;
 
         switch (typeOfUnions) {
-            case "monotonic":
+            case MONOTONIC:
                 consistencyMeasure = EpsilonConsistencyMeasure.getInstance();
                 break;
-            case "standard":
+            case STANDARD:
                 consistencyMeasure = RoughMembershipMeasure.getInstance();
                 break;
             default:
@@ -50,7 +51,7 @@ public class UnionsWithSingleLimitingDecisionService {
         return unionsWithSingleLimitingDecision;
     }
 
-    public static void calculateUnionsWithSingleLimitingDecisionInProject(Project project, String typeOfUnions, Double consistencyThreshold) {
+    public static void calculateUnionsWithSingleLimitingDecisionInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold) {
         UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(project.getInformationTable(), typeOfUnions, consistencyThreshold);
 
         project.setUnionsWithSingleLimitingDecision(unionsWithSingleLimitingDecision);
@@ -75,7 +76,7 @@ public class UnionsWithSingleLimitingDecisionService {
         return unionsWithSingleLimitingDecision;
     }
 
-    public UnionsWithSingleLimitingDecision putUnionsWithSingleLimitingDecision(UUID id, String typeOfUnions, Double consistencyThreshold) {
+    public UnionsWithSingleLimitingDecision putUnionsWithSingleLimitingDecision(UUID id, UnionType typeOfUnions, Double consistencyThreshold) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
@@ -87,7 +88,7 @@ public class UnionsWithSingleLimitingDecisionService {
         return project.getUnionsWithSingleLimitingDecision();
     }
 
-    public UnionsWithSingleLimitingDecision postUnionsWithSingleLimitingDecision(UUID id, String typeOfUnions, Double consistencyThreshold, String metadata, String data) throws IOException {
+    public UnionsWithSingleLimitingDecision postUnionsWithSingleLimitingDecision(UUID id, UnionType typeOfUnions, Double consistencyThreshold, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);

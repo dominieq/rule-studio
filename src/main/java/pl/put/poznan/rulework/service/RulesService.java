@@ -6,11 +6,9 @@ import it.unimi.dsi.fastutil.ints.IntArraySet;
 import javafx.util.Pair;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
-import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 import org.rulelearn.rules.*;
 import org.rulelearn.rules.ruleml.RuleMLBuilder;
@@ -22,6 +20,8 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.enums.RuleType;
+import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
@@ -91,7 +91,7 @@ public class RulesService {
         return ruleSetWithCharacteristics;
     }
 
-    public static RuleSetWithComputableCharacteristics calculateRuleSetWithComputableCharacteristics(Unions unions, String typeOfRules) {
+    public static RuleSetWithComputableCharacteristics calculateRuleSetWithComputableCharacteristics(Unions unions, RuleType typeOfRules) {
         RuleInducerComponents ruleInducerComponents = null;
 
         ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
@@ -102,7 +102,7 @@ public class RulesService {
         RuleSetWithComputableCharacteristics resultSet = null;
 
 
-        if(typeOfRules.equals("possible") || (typeOfRules.equals("both"))) {
+        if((typeOfRules == RuleType.POSSIBLE) || (typeOfRules == RuleType.BOTH)) {
             ruleInducerComponents = new PossibleRuleInducerComponents.Builder().
                     build();
 
@@ -116,7 +116,7 @@ public class RulesService {
         }
 
 
-        if(typeOfRules.equals("certain") || (typeOfRules.equals("both"))) {
+        if((typeOfRules == RuleType.CERTAIN) || (typeOfRules == RuleType.BOTH)) {
             final RuleInductionStoppingConditionChecker stoppingConditionChecker =
                     new EvaluationAndCoverageStoppingConditionChecker(
                             EpsilonConsistencyMeasure.getInstance(),
@@ -145,7 +145,7 @@ public class RulesService {
         return resultSet;
     }
 
-    public static void calculateRuleSetWithComputableCharacteristicsInProject(Project project, String typeOfUnions, Double consistencyThreshold, String typeOfRules) {
+    public static void calculateRuleSetWithComputableCharacteristicsInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
         Unions unions = project.getUnionsWithSingleLimitingDecision();
         if((project.isCalculatedUnionsWithSingleLimitingDecision()) || (project.getTypeOfUnions() != typeOfUnions) || (project.getConsistencyThreshold() != consistencyThreshold)) {
             logger.info("Calculating new set of unions");
@@ -174,7 +174,7 @@ public class RulesService {
         return ruleSetWithComputableCharacteristics;
     }
 
-    public RuleSetWithComputableCharacteristics putRules(UUID id, String typeOfUnions, Double consistencyThreshold, String typeOfRules) {
+    public RuleSetWithComputableCharacteristics putRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
@@ -187,7 +187,7 @@ public class RulesService {
         return project.getRuleSetWithComputableCharacteristics();
     }
 
-    public RuleSetWithComputableCharacteristics postRules(UUID id, String typeOfUnions, Double consistencyThreshold, String metadata, String data, String typeOfRules) throws IOException {
+    public RuleSetWithComputableCharacteristics postRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);

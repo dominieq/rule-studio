@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.put.poznan.rulework.enums.ClassifierType;
+import pl.put.poznan.rulework.enums.DefaultClassificationResultType;
+import pl.put.poznan.rulework.enums.RuleType;
+import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.model.CrossValidation;
 import pl.put.poznan.rulework.service.CrossValidationService;
 
@@ -38,15 +42,15 @@ public class CrossValidationController {
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CrossValidation> putCrossValidation(
             @PathVariable("id") UUID id,
-            @RequestParam(name = "typeOfUnions") String typeOfUnions,
+            @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
-            @RequestParam(name = "typeOfRules") String typeOfRules,
-            @RequestParam(name = "typeOfClassifier") String typeOfClassifier,
-            @RequestParam(name = "defaultClassificationResult") String defaultClassificationResult,
+            @RequestParam(name = "typeOfRules") RuleType typeOfRules,
+            @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
+            @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
             @RequestParam(name = "numberOfFolds") Integer numberOfFolds) {
         logger.info("Putting cross validation...");
 
-        CrossValidation result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfClassifier, typeOfClassifier, defaultClassificationResult, numberOfFolds);
+        CrossValidation result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds);
 
         return ResponseEntity.ok(result);
     }
@@ -54,11 +58,11 @@ public class CrossValidationController {
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CrossValidation> postCrossValidation(
             @PathVariable("id") UUID id,
-            @RequestParam(name = "typeOfUnions") String typeOfUnions,
+            @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
-            @RequestParam(name = "typeOfRules") String typeOfRules,
-            @RequestParam(name = "typeOfClassifier") String typeOfClassifier,
-            @RequestParam(name = "defaultClassificationResult") String defaultClassificationResult,
+            @RequestParam(name = "typeOfRules") RuleType typeOfRules,
+            @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
+            @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
             @RequestParam(name = "numberOfFolds") Integer numberOfFolds,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {

@@ -4,6 +4,7 @@ import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
+import pl.put.poznan.rulework.enums.UnionType;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -14,7 +15,7 @@ public class Project {
     private InformationTable informationTable;
     private DominanceCones dominanceCones;
     private UnionsWithSingleLimitingDecision unions;
-    private String typeOfUnions;
+    private UnionType typeOfUnions;
     private Double consistencyThreshold;
     private RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics;
     private Classification classification;
@@ -81,11 +82,11 @@ public class Project {
         this.unions = unions;
     }
 
-    public String getTypeOfUnions() {
+    public UnionType getTypeOfUnions() {
         return typeOfUnions;
     }
 
-    public void setTypeOfUnions(String typeOfUnions) {
+    public void setTypeOfUnions(UnionType typeOfUnions) {
         this.typeOfUnions = typeOfUnions;
     }
 

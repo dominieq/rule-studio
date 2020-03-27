@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.service.UnionsWithSingleLimitingDecisionService;
 
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class UnionsWithSingleLimitingDecisionController {
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UnionsWithSingleLimitingDecision> putUnionsWithSingleLimitingDecision(
             @PathVariable("id") UUID id,
-            @RequestParam(name = "typeOfUnions") String typeOfUnions,
+            @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold) {
         logger.info("Putting unions with single limiting decision...");
 
@@ -51,7 +52,7 @@ public class UnionsWithSingleLimitingDecisionController {
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UnionsWithSingleLimitingDecision> postUnionsWithSingleLimitingDecision(
             @PathVariable("id") UUID id,
-            @RequestParam(name = "typeOfUnions") String typeOfUnions,
+            @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {

@@ -10,6 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.put.poznan.rulework.enums.ClassifierType;
+import pl.put.poznan.rulework.enums.DefaultClassificationResultType;
+import pl.put.poznan.rulework.enums.RuleType;
+import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
 import pl.put.poznan.rulework.model.*;
 
@@ -26,7 +30,7 @@ public class CrossValidationService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private CrossValidation calculateCrossValidation(InformationTable informationTable, String typeOfUnions, Double consistencyThreshold, String typeOfRules, String typeOfClassifier, String defaultClassificationResult, Integer numberOfFolds) {
+    private CrossValidation calculateCrossValidation(InformationTable informationTable, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult, Integer numberOfFolds) {
         CrossValidationSingleFold crossValidationSingleFolds[] = new CrossValidationSingleFold[numberOfFolds];
         Decision[] orderOfDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
         OrdinalMisclassificationMatrix[] foldOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix[numberOfFolds];
@@ -70,7 +74,7 @@ public class CrossValidationService {
         return crossValidation;
     }
 
-    public CrossValidation putCrossValidation(UUID id, String typeOfUnions, Double consistencyThreshold, String typeOfRules, String typeOfClassifier, String defaultClassificationResult, Integer numberOfFolds) {
+    public CrossValidation putCrossValidation(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult, Integer numberOfFolds) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
@@ -89,7 +93,7 @@ public class CrossValidationService {
         return project.getCrossValidation();
     }
 
-    public CrossValidation postCrossValidation(UUID id, String typeOfUnions, Double consistencyThreshold, String typeOfRules, String typeOfClassifier, String defaultClassificationResult, Integer numberOfFolds, String metadata, String data) throws IOException {
+    public CrossValidation postCrossValidation(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult, Integer numberOfFolds, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);

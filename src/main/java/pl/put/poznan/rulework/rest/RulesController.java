@@ -10,6 +10,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.put.poznan.rulework.enums.RuleType;
+import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.service.RulesService;
 
 import java.io.IOException;
@@ -40,9 +42,9 @@ public class RulesController {
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RuleSetWithComputableCharacteristics> putRules (
             @PathVariable("id") UUID id,
-            @RequestParam(name = "typeOfUnions") String typeOfUnions,
+            @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
-            @RequestParam(name = "typeOfRules") String typeOfRules) {
+            @RequestParam(name = "typeOfRules") RuleType typeOfRules) {
         logger.info("Putting rules...");
         RuleSetWithComputableCharacteristics result = rulesService.putRules(id, typeOfUnions, consistencyThreshold, typeOfRules);
         return ResponseEntity.ok(result);
@@ -51,9 +53,9 @@ public class RulesController {
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RuleSetWithComputableCharacteristics> postRules (
             @PathVariable("id") UUID id,
-            @RequestParam(name = "typeOfUnions") String typeOfUnions,
+            @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
-            @RequestParam(name = "typeOfRules") String typeOfRules,
+            @RequestParam(name = "typeOfRules") RuleType typeOfRules,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting rules...");
