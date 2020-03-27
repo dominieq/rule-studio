@@ -12,7 +12,6 @@ function TypeOfUnionsSelector(props) {
                 {"Add more information to tooltip"}
             </RuleWorkHelper>
             <RuleWorkTextField
-                hasOutsideLabel={true}
                 outsideLabel={"Select consistency measure"}
                 select={true}
                 {...props}

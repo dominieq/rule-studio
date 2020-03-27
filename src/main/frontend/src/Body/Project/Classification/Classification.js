@@ -359,7 +359,6 @@ class Classification extends Component {
                     <RuleWorkSmallBox id={"rule-type-selector"}>
                         <RuleWorkTextField
                             disabledChildren={["possible"]}
-                            hasOutsideLabel={true}
                             onChange={this.onRuleTypeChange}
                             outsideLabel={"Choose rule type"}
                             select={true}

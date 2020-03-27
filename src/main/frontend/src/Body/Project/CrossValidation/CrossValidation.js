@@ -298,7 +298,6 @@ class CrossValidation extends Component {
             return (
                 <Fragment>
                     <RuleWorkTextField
-                        hasOutsideLabel={true}
                         onChange={this.onFoldIndexChange}
                         outsideLabel={"Choose fold"}
                         select={true}
@@ -362,7 +361,6 @@ class CrossValidation extends Component {
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <RuleWorkSmallBox id={"fold-number-selector"} >
                         <RuleWorkTextField
-                            hasOutsideLabel={true}
                             onChange={this.onFoldNumberChange}
                             outsideLabel={"Choose number of folds"}
                             style={{maxWidth: 72}}

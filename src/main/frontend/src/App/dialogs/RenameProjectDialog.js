@@ -64,7 +64,6 @@ class RenameProjectDialog extends Component {
                 <StyledDialogContent>
                     <RuleWorkTextField
                         fullWidth={true}
-                        hasOutsideLabel={true}
                         onChange={this.onTextFieldChange}
                         outsideLabel={"Type new name"}
                         value={name}

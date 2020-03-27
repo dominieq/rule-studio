@@ -83,7 +83,6 @@ class SettingsProjectDialog extends Component {
                                 <EyeSettings />
                             </SettingsIcons>
                             <RuleWorkTextField
-                                hasOutsideLabel={true}
                                 onChange={this.onIndexOptionChange}
                                 outsideLabel={"Choose object's visible description"}
                                 select={true}

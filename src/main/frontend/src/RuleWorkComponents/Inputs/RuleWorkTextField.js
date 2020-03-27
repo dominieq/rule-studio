@@ -1,49 +1,60 @@
 import React, {Fragment} from "react";
 import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
-import StyledTypography from "../DataDisplay/StyledTypography";
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
 
-const useStyles = makeStyles(theme => ({
+const labelStyles = makeStyles({
+    label: {
+        minWidth: "fit-content",
+        marginRight: 16
+    }
+}, {name: "rule-work"});
+
+const inputStyles = makeStyles(theme => ({
     root: {
-        '& .MuiOutlinedInput-root': {
-            height: 40,
-            backgroundColor: theme.palette.button.contained.background,
-            '& fieldset': {
-                borderColor: theme.palette.button.contained.background,
-            },
-            '&:hover fieldset': {
-                borderColor: theme.palette.text.default
-            },
-            '&.Mui-focused fieldset': {
-                borderColor: theme.palette.text.default,
-            },
-            '&:hover': {
-                backgroundColor: theme.palette.button.contained.backgroundAction
-            },
-            '&.Mui-focused': {
-                backgroundColor: theme.palette.button.contained.backgroundAction
-            },
+        height: 40,
+        backgroundColor: theme.palette.button.contained.background,
+        '& fieldset': {
+            borderColor: theme.palette.button.contained.background,
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme.palette.text.default
+        },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme.palette.text.default,
+        },
+        '&:hover': {
+            backgroundColor: theme.palette.button.contained.backgroundAction
+        },
+        '&.Mui-focused': {
+            backgroundColor: theme.palette.button.contained.backgroundAction
         },
     },
-}), {name: "MuiFormControl"});
+}), {name: "MuiOutlinedInput"});
 
 function RuleWorkTextField(props) {
-    const {children, disabledChildren, hasOutsideLabel, outsideLabel, outsideLabelProps, select, ...other} = props;
-    const classes = useStyles();
+    const {children, disabledChildren, InputProps, outsideLabel, OutsideLabelProps, select, ...other} = props;
+    const inputClasses = inputStyles();
+    const labelClasses = labelStyles();
 
     return (
         <Fragment>
-            {hasOutsideLabel ?
-                <StyledTypography {...outsideLabelProps}>
+            {outsideLabel &&
+                <Typography className={labelClasses.label} {...OutsideLabelProps}>
                     {outsideLabel}
-                </StyledTypography>
-                :
-                null
+                </Typography>
             }
-            <TextField classes={{root: classes.root}} select={select} {...other}>
-                {select ?
+            <TextField
+                InputProps={{
+                    ...InputProps,
+                    classes: {root: inputClasses.root}
+                }}
+                select={select}
+                {...other}
+            >
+                {select &&
                     children.map((option, index) => (
                         <MenuItem
                             key={index}
@@ -53,8 +64,6 @@ function RuleWorkTextField(props) {
                             {option}
                         </MenuItem>
                     ))
-                    :
-                    null
                 }
             </TextField>
         </Fragment>
@@ -62,27 +71,44 @@ function RuleWorkTextField(props) {
 }
 
 RuleWorkTextField.propTypes = {
+    autoComplete: PropTypes.bool,
+    autoFocus: PropTypes.bool,
+    classes: PropTypes.object,
+    color: PropTypes.oneOf(["primary", "secondary"]),
     children: PropTypes.array,
+    defaultValue: PropTypes.any,
+    disabled: PropTypes.bool,
     disabledChildren: PropTypes.array,
-    hasOutsideLabel: PropTypes.bool,
+    error: PropTypes.bool,
+    FormHelperTextProps: PropTypes.object,
+    fullWidth: PropTypes.bool,
+    helperText: PropTypes.node,
+    id: PropTypes.string,
+    InputLabelProps: PropTypes.object,
+    InputProps: PropTypes.object,
+    inputProps: PropTypes.object,
+    inputRef: PropTypes.object,
+    label: PropTypes.node,
     margin: PropTypes.oneOf(["none", "dense", "normal"]),
+    multiline: PropTypes.bool,
+    name: PropTypes.string,
+    onChange: PropTypes.func,
     outsideLabel: PropTypes.node,
-    outsideLabelProps: PropTypes.shape({
-        styleVariant: PropTypes.oneOf(["label"]),
-        variant: PropTypes.string,
-    }),
+    OutsideLabelProps: PropTypes.object,
+    placeholder: PropTypes.string,
+    required: PropTypes.bool,
+    rows: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    rowsMax: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     select: PropTypes.bool,
+    SelectProps: PropTypes.object,
+    size: PropTypes.oneOf(["small", "medium"]),
+    type: PropTypes.string,
+    value: PropTypes.any,
     variant: PropTypes.oneOf(["standard", "outlined", "filled"]),
 };
 
 RuleWorkTextField.defaultProps = {
-    hasOutsideLabel: false,
     margin: "none",
-    outsideLabelProps: {
-        styleVariant: "label",
-        variant: "body1"
-    },
-    select: false,
     variant: "outlined",
 };
 
