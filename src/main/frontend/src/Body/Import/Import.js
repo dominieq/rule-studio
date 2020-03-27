@@ -6,8 +6,8 @@ import RuleWorkSmallBox from "../../RuleWorkComponents/Containers/RuleWorkSmallB
 import StyledDivider from "../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import StyledButton  from "../../RuleWorkComponents/Inputs/StyledButton"
-import RuleWorkCollapsibleDivider from "../../RuleWorkComponents/Inputs/RuleWorkCollapsibleDivider";
-import {RuleWorkSwitch} from "../../RuleWorkComponents/Inputs/RuleWorkSwitch";
+import CollapsibleDivider from "../../RuleWorkComponents/DataDisplay/CollapsibleDivider";
+import RuleWorkSwitch from "../../RuleWorkComponents/Inputs/RuleWorkSwitch";
 import StyledPaper from "../../RuleWorkComponents/Surfaces/StyledPaper";
 import Collapse from "@material-ui/core/Collapse";
 
@@ -135,7 +135,7 @@ class Import extends Component{
                                 onInputChange={this.onInputChange}
                                 onInputDelete={this.onInputDelete}
                             />
-                            <RuleWorkCollapsibleDivider
+                            <CollapsibleDivider
                                 onClick={this.onExpandClick}
                                 expanded={expand}
                             />
