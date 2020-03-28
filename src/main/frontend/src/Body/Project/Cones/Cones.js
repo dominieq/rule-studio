@@ -199,14 +199,13 @@ class Cones extends Component {
     onDetailsOpen = (index) => {
         this.setState({
             openDetails: true,
-            selectedItem: {...this._items[index]},
+            selectedItem: this._items[index],
         })
     };
 
     onDetailsClose = () => {
         this.setState({
-            openDetails: false,
-            selectedItem: null,
+            openDetails: false
         });
     };
 

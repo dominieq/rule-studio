@@ -268,8 +268,7 @@ class CrossValidation extends Component {
 
     onDetailsClose = () => {
         this.setState({
-            openDetails: false,
-            selectedItem: null
+            openDetails: false
         });
     };
 
