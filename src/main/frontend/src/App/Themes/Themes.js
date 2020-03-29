@@ -25,6 +25,10 @@ export const LightTheme = createMuiTheme({
         list: {
             background: "#ABFAA9",
             text: "#2A3439",
+            subheader: {
+                background: "#545F66",
+                text: "#ABFAA9"
+            }
         },
         paper: {
             background: "#98FB98",
@@ -76,6 +80,10 @@ export const DarkTheme = createMuiTheme({
         list: {
             background: "#545F66",
             text: "#ABFAA9",
+            subheader: {
+                background: "#ABFAA9",
+                text: "#147911"
+            }
         },
         paper: {
             background: "#545F66",
