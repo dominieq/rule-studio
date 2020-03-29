@@ -15,7 +15,7 @@ const paperStyles = makeStyles(theme => ({
 }), {name: "fullscreen-dialog"});
 
 function FullscreenDialog(props) {
-    const {children, onClose, open} = props;
+    const { children, onClose, open, ...other } = props;
     const paperClasses = paperStyles();
 
     return (
@@ -27,6 +27,7 @@ function FullscreenDialog(props) {
             onClose={onClose}
             open={open}
             TransitionComponent={Transition}
+            {...other}
         >
             {children}
         </StyledDialog>
