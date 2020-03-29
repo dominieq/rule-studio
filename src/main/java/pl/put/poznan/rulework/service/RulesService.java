@@ -25,6 +25,7 @@ import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
+import pl.put.poznan.rulework.model.RulesWithHttpParameters;
 import pl.put.poznan.rulework.model.UnionsWithHttpParameters;
 
 import java.io.ByteArrayInputStream;
@@ -146,7 +147,7 @@ public class RulesService {
         return resultSet;
     }
 
-    public static void calculateRuleSetWithComputableCharacteristicsInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
+    public static void calculateRulesWithHttpParametersInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
         UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
         if((project.getUnions() == null) || (unionsWithHttpParameters.getTypeOfUnion() != typeOfUnions) || (unionsWithHttpParameters.getConsistencyThreshold() != consistencyThreshold)) {
             logger.info("Calculating new set of unions");
@@ -156,26 +157,28 @@ public class RulesService {
         }
         RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = calculateRuleSetWithComputableCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
 
-        project.setRuleSetWithComputableCharacteristics(ruleSetWithComputableCharacteristics);
+        RulesWithHttpParameters rules = new RulesWithHttpParameters(ruleSetWithComputableCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules);
+
+        project.setRules(rules);
     }
 
-    public RuleSetWithComputableCharacteristics getRules(UUID id) {
+    public RulesWithHttpParameters getRules(UUID id) {
         logger.info("Id:\t{}", id);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
-        if(ruleSetWithComputableCharacteristics == null) {
+        RulesWithHttpParameters rules = project.getRules();
+        if(rules == null) {
             EmptyResponseException ex = new EmptyResponseException("Rules", id);
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        logger.debug("ruleSetWithComputableCharacteristics:\t{}", ruleSetWithComputableCharacteristics.toString());
-        return ruleSetWithComputableCharacteristics;
+        logger.debug("ruleSetWithComputableCharacteristics:\t{}", rules.toString());
+        return rules;
     }
 
-    public RuleSetWithComputableCharacteristics putRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
+    public RulesWithHttpParameters putRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
@@ -183,12 +186,12 @@ public class RulesService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateRuleSetWithComputableCharacteristicsInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
+        calculateRulesWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
 
-        return project.getRuleSetWithComputableCharacteristics();
+        return project.getRules();
     }
 
-    public RuleSetWithComputableCharacteristics postRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, String metadata, String data) throws IOException {
+    public RulesWithHttpParameters postRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
@@ -201,9 +204,9 @@ public class RulesService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateRuleSetWithComputableCharacteristicsInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
+        calculateRulesWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
 
-        return project.getRuleSetWithComputableCharacteristics();
+        return project.getRules();
     }
 
     public Pair<String, Resource> download(UUID id) throws IOException {
@@ -213,7 +216,7 @@ public class RulesService {
 
         RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
 
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRules().getRuleSet();
         if(ruleSetWithComputableCharacteristics == null) {
             EmptyResponseException ex = new EmptyResponseException("Rules", id);
             logger.error(ex.getMessage());

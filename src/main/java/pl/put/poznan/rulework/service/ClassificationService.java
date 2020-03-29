@@ -262,7 +262,7 @@ public class ClassificationService {
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
         InformationTable informationTable = project.getInformationTable();
 
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRules().getRuleSet();
         if(ruleSetWithComputableCharacteristics == null) {
             EmptyResponseException ex = new EmptyResponseException("Rules", id);
             logger.error(ex.getMessage());
@@ -295,7 +295,7 @@ public class ClassificationService {
         Attribute[] attributes = project.getInformationTable().getAttributes();
         InformationTable informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
 
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRules().getRuleSet();
         if(ruleSetWithComputableCharacteristics == null) {
             EmptyResponseException ex = new EmptyResponseException("Rules", id);
             logger.error(ex.getMessage());
@@ -321,7 +321,7 @@ public class ClassificationService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRuleSetWithComputableCharacteristics();
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRules().getRuleSet();
         if(ruleSetWithComputableCharacteristics == null) {
             EmptyResponseException ex = new EmptyResponseException("Rules", id);
             logger.error(ex.getMessage());

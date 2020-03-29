@@ -39,8 +39,8 @@ public class ProjectSerializer extends JsonSerializer<Project> {
         jsonGenerator.writeFieldName("unions");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getUnions()));
 
-        jsonGenerator.writeFieldName("ruleSetWithComputableCharacteristics");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getRuleSetWithComputableCharacteristics()));
+        jsonGenerator.writeFieldName("rules");
+        jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getRules()));
 
         jsonGenerator.writeFieldName("classification");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getClassification()));

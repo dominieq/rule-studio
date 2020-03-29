@@ -1,10 +1,7 @@
 package pl.put.poznan.rulework.model;
 
-import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
-import pl.put.poznan.rulework.enums.UnionType;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -15,7 +12,7 @@ public class Project {
     private InformationTable informationTable;
     private DominanceCones dominanceCones;
     private UnionsWithHttpParameters unions;
-    private RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics;
+    private RulesWithHttpParameters rules;
     private Classification classification;
     private CrossValidation crossValidation;
 
@@ -96,12 +93,12 @@ public class Project {
         this.calculatedUnionsWithSingleLimitingDecision = calculatedUnionsWithSingleLimitingDecision;
     }
 
-    public RuleSetWithComputableCharacteristics getRuleSetWithComputableCharacteristics() {
-        return ruleSetWithComputableCharacteristics;
+    public RulesWithHttpParameters getRules() {
+        return rules;
     }
 
-    public void setRuleSetWithComputableCharacteristics(RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
-        this.ruleSetWithComputableCharacteristics = ruleSetWithComputableCharacteristics;
+    public void setRules(RulesWithHttpParameters rules) {
+        this.rules = rules;
     }
 
     public Classification getClassification() {
@@ -128,7 +125,7 @@ public class Project {
                 ", informationTable=" + informationTable +
                 ", dominanceCones=" + dominanceCones +
                 ", unions=" + unions +
-                ", ruleSetWithComputableCharacteristics=" + ruleSetWithComputableCharacteristics +
+                ", rules=" + rules +
                 ", classification=" + classification +
                 ", crossValidation=" + crossValidation +
                 ", calculatedDominanceCones=" + calculatedDominanceCones +

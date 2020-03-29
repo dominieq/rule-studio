@@ -37,4 +37,13 @@ public class UnionsWithHttpParameters {
     public void setConsistencyThreshold(Double consistencyThreshold) {
         this.consistencyThreshold = consistencyThreshold;
     }
+
+    @Override
+    public String toString() {
+        return "UnionsWithHttpParameters{" +
+                "unions=" + unions +
+                ", typeOfUnion=" + typeOfUnion +
+                ", consistencyThreshold=" + consistencyThreshold +
+                '}';
+    }
 }

@@ -1,12 +1,8 @@
 package pl.put.poznan.rulework.service;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArraySet;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.*;
-import org.rulelearn.rules.ruleml.RuleParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
+import pl.put.poznan.rulework.model.RulesWithHttpParameters;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
 
 @Service
 public class ProjectsService {
@@ -74,7 +70,7 @@ public class ProjectsService {
 
         if(rulesFile != null) { //load rules from file
             RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.parseComputableRules(rulesFile, attributes);
-            project.setRuleSetWithComputableCharacteristics(ruleSetWithComputableCharacteristics);
+            project.setRules(new RulesWithHttpParameters(ruleSetWithComputableCharacteristics));
         }
 
 

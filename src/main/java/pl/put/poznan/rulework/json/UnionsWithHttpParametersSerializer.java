@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.jackson.JsonComponent;
 import pl.put.poznan.rulework.model.UnionsWithHttpParameters;
 
@@ -13,8 +15,12 @@ import java.io.IOException;
 @JsonComponent
 public class UnionsWithHttpParametersSerializer extends JsonSerializer<UnionsWithHttpParameters> {
 
+    private static final Logger logger = LoggerFactory.getLogger(UnionsWithHttpParametersSerializer.class);
+
     @Override
     public void serialize(UnionsWithHttpParameters unionsWithHttpParameters, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        logger.debug("Serialization of UnionsWithHttpParameters:\t{}", unionsWithHttpParameters);
+
         ObjectMapper mapper = (ObjectMapper) jsonGenerator.getCodec();
 
         jsonGenerator.writeStartObject();
@@ -31,11 +37,11 @@ public class UnionsWithHttpParametersSerializer extends JsonSerializer<UnionsWit
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionsWithSingleLimitingDecision.getUpwardUnions()));
 
 
-        jsonGenerator.writeFieldName("consistencyThreshold");
-        jsonGenerator.writeNumber(unionsWithHttpParameters.getConsistencyThreshold());
-
         jsonGenerator.writeFieldName("typeOfUnion");
         jsonGenerator.writeString(unionsWithHttpParameters.getTypeOfUnion().toString());
+
+        jsonGenerator.writeFieldName("consistencyThreshold");
+        jsonGenerator.writeNumber(unionsWithHttpParameters.getConsistencyThreshold());
 
         jsonGenerator.writeEndObject();
     }
