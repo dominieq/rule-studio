@@ -14,9 +14,7 @@ public class Project {
     private String name;
     private InformationTable informationTable;
     private DominanceCones dominanceCones;
-    private UnionsWithSingleLimitingDecision unions;
-    private UnionType typeOfUnions;
-    private Double consistencyThreshold;
+    private UnionsWithHttpParameters unions;
     private RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics;
     private Classification classification;
     private CrossValidation crossValidation;
@@ -74,28 +72,12 @@ public class Project {
         this.dominanceCones = dominanceCones;
     }
 
-    public UnionsWithSingleLimitingDecision getUnionsWithSingleLimitingDecision() {
+    public UnionsWithHttpParameters getUnions() {
         return unions;
     }
 
-    public void setUnionsWithSingleLimitingDecision(UnionsWithSingleLimitingDecision unions) {
+    public void setUnions(UnionsWithHttpParameters unions) {
         this.unions = unions;
-    }
-
-    public UnionType getTypeOfUnions() {
-        return typeOfUnions;
-    }
-
-    public void setTypeOfUnions(UnionType typeOfUnions) {
-        this.typeOfUnions = typeOfUnions;
-    }
-
-    public Double getConsistencyThreshold() {
-        return consistencyThreshold;
-    }
-
-    public void setConsistencyThreshold(Double consistencyThreshold) {
-        this.consistencyThreshold = consistencyThreshold;
     }
 
     public boolean isCalculatedDominanceCones() {

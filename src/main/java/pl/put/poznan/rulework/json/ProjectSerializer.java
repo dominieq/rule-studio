@@ -36,8 +36,8 @@ public class ProjectSerializer extends JsonSerializer<Project> {
         jsonGenerator.writeFieldName("dominanceCones");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getDominanceCones()));
 
-        jsonGenerator.writeFieldName("unionsWithSingleLimitingDecision");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getUnionsWithSingleLimitingDecision()));
+        jsonGenerator.writeFieldName("unions");
+        jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getUnions()));
 
         jsonGenerator.writeFieldName("ruleSetWithComputableCharacteristics");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getRuleSetWithComputableCharacteristics()));

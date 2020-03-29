@@ -43,7 +43,7 @@ public class CrossValidationService {
             InformationTable trainingTable = folds.get(i).getTrainingTable();
             InformationTable validationTable = folds.get(i).getValidationTable();
 
-            UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecision(trainingTable, typeOfUnions, consistencyThreshold);
+            UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsService.calculateUnionsWithSingleLimitingDecision(trainingTable, typeOfUnions, consistencyThreshold);
             RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.calculateRuleSetWithComputableCharacteristics(unionsWithSingleLimitingDecision, typeOfRules);
             Classification classificationValidationTable = ClassificationService.calculateClassification(validationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics, orderOfDecisions);
 

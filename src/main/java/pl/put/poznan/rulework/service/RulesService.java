@@ -25,6 +25,7 @@ import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
+import pl.put.poznan.rulework.model.UnionsWithHttpParameters;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -146,14 +147,14 @@ public class RulesService {
     }
 
     public static void calculateRuleSetWithComputableCharacteristicsInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
-        Unions unions = project.getUnionsWithSingleLimitingDecision();
-        if((project.isCalculatedUnionsWithSingleLimitingDecision()) || (project.getTypeOfUnions() != typeOfUnions) || (project.getConsistencyThreshold() != consistencyThreshold)) {
+        UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
+        if((project.getUnions() == null) || (unionsWithHttpParameters.getTypeOfUnion() != typeOfUnions) || (unionsWithHttpParameters.getConsistencyThreshold() != consistencyThreshold)) {
             logger.info("Calculating new set of unions");
-            UnionsWithSingleLimitingDecisionService.calculateUnionsWithSingleLimitingDecisionInProject(project, typeOfUnions, consistencyThreshold);
+            UnionsService.calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
 
-            unions = project.getUnionsWithSingleLimitingDecision();
+            unionsWithHttpParameters = project.getUnions();
         }
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = calculateRuleSetWithComputableCharacteristics(unions, typeOfRules);
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = calculateRuleSetWithComputableCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
 
         project.setRuleSetWithComputableCharacteristics(ruleSetWithComputableCharacteristics);
     }

@@ -15,14 +15,15 @@ import pl.put.poznan.rulework.exception.EmptyResponseException;
 import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
+import pl.put.poznan.rulework.model.UnionsWithHttpParameters;
 
 import java.io.IOException;
 import java.util.UUID;
 
 @Service
-public class UnionsWithSingleLimitingDecisionService {
+public class UnionsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UnionsWithSingleLimitingDecisionService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UnionsService.class);
 
     @Autowired
     ProjectsContainer projectsContainer;
@@ -51,44 +52,44 @@ public class UnionsWithSingleLimitingDecisionService {
         return unionsWithSingleLimitingDecision;
     }
 
-    public static void calculateUnionsWithSingleLimitingDecisionInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold) {
+    public static void calculateUnionsWithHttpParametersInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold) {
         UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(project.getInformationTable(), typeOfUnions, consistencyThreshold);
 
-        project.setUnionsWithSingleLimitingDecision(unionsWithSingleLimitingDecision);
-        project.setTypeOfUnions(typeOfUnions);
-        project.setConsistencyThreshold(consistencyThreshold);
+        UnionsWithHttpParameters unionsWithHttpParameters = new UnionsWithHttpParameters(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold);
+
+        project.setUnions(unionsWithHttpParameters);
         project.setCalculatedUnionsWithSingleLimitingDecision(true);
     }
 
-    public UnionsWithSingleLimitingDecision getUnionsWithSingleLimitingDecision(UUID id) {
+    public UnionsWithHttpParameters getUnions(UUID id) {
         logger.info("Id:\t{}", id);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = project.getUnionsWithSingleLimitingDecision();
-        if(unionsWithSingleLimitingDecision == null) {
+        UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
+        if(unionsWithHttpParameters == null) {
             EmptyResponseException ex = new EmptyResponseException("Unions", id);
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        logger.debug("unionsWithSingleLimitingDecision:\t{}", unionsWithSingleLimitingDecision.toString());
-        return unionsWithSingleLimitingDecision;
+        logger.debug("unionsWithHttpParameters:\t{}", unionsWithHttpParameters.toString());
+        return unionsWithHttpParameters;
     }
 
-    public UnionsWithSingleLimitingDecision putUnionsWithSingleLimitingDecision(UUID id, UnionType typeOfUnions, Double consistencyThreshold) {
+    public UnionsWithHttpParameters putUnions(UUID id, UnionType typeOfUnions, Double consistencyThreshold) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateUnionsWithSingleLimitingDecisionInProject(project, typeOfUnions, consistencyThreshold);
+        calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
 
-        return project.getUnionsWithSingleLimitingDecision();
+        return project.getUnions();
     }
 
-    public UnionsWithSingleLimitingDecision postUnionsWithSingleLimitingDecision(UUID id, UnionType typeOfUnions, Double consistencyThreshold, String metadata, String data) throws IOException {
+    public UnionsWithHttpParameters postUnions(UUID id, UnionType typeOfUnions, Double consistencyThreshold, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
@@ -100,8 +101,8 @@ public class UnionsWithSingleLimitingDecisionService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateUnionsWithSingleLimitingDecisionInProject(project, typeOfUnions, consistencyThreshold);
+        calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
 
-        return project.getUnionsWithSingleLimitingDecision();
+        return project.getUnions();
     }
 }
