@@ -157,7 +157,21 @@ public class CrossValidationSerializer extends JsonSerializer<CrossValidation> {
 
         jsonGenerator.writeEndObject();
 
-        jsonGenerator.writeEndObject();
+        jsonGenerator.writeFieldName("typeOfUnion");
+        jsonGenerator.writeString(crossValidation.getTypeOfUnion().toString());
 
+        jsonGenerator.writeFieldName("consistencyThreshold");
+        jsonGenerator.writeNumber(crossValidation.getConsistencyThreshold());
+
+        jsonGenerator.writeFieldName("typeOfRules");
+        jsonGenerator.writeString(crossValidation.getTypeOfRule().toString());
+
+        jsonGenerator.writeFieldName("typeOfClassifier");
+        jsonGenerator.writeString(crossValidation.getTypeOfClassifier().toString());
+
+        jsonGenerator.writeFieldName("defaultClassificationResult");
+        jsonGenerator.writeString(crossValidation.getDefaultClassificationResult().toString());
+
+        jsonGenerator.writeEndObject();
     }
 }

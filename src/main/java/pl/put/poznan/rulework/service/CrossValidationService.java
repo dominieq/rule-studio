@@ -54,7 +54,7 @@ public class CrossValidationService {
 
         OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, foldOrdinalMisclassificationMatrix);
 
-        CrossValidation crossValidation = new CrossValidation(numberOfFolds, crossValidationSingleFolds, meanOrdinalMisclassificationMatrix);
+        CrossValidation crossValidation = new CrossValidation(numberOfFolds, crossValidationSingleFolds, meanOrdinalMisclassificationMatrix, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult);
         return crossValidation;
     }
 
