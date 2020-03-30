@@ -38,12 +38,11 @@ public class RuleSetWithCharacteristicsSerializer extends JsonSerializer<RuleSet
             jsonGenerator.writeRawValue(mapper.writeValueAsString(ruleCharacteristics));
 
             if(ruleCharacteristics instanceof ComputableRuleCharacteristics) {
-                jsonGenerator.writeFieldName("ruleCoverageInformation");
+                jsonGenerator.writeFieldName("indicesOfCoveredObjects");
                 jsonGenerator.writeRawValue(
                         mapper.writeValueAsString(
-                                ((ComputableRuleCharacteristics) ruleCharacteristics).getRuleCoverageInformation()
-                        )
-                );
+                                ((ComputableRuleCharacteristics) ruleCharacteristics).getRuleCoverageInformation().getIndicesOfCoveredObjects()
+                        ));
             }
 
             jsonGenerator.writeEndObject();
