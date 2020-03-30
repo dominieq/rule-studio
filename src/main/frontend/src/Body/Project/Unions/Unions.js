@@ -15,7 +15,7 @@ import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSma
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
+import {UnionsDialog} from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
@@ -377,7 +377,7 @@ class Unions extends Component {
                 }
                 </RuleWorkBox>
                 {selectedItem &&
-                    <RuleWorkDialog
+                    <UnionsDialog
                         item={selectedItem}
                         onClose={this.onDetailsClose}
                         open={openDetails}

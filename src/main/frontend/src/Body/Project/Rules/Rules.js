@@ -15,7 +15,7 @@ import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSma
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
+import {RulesDialog} from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
@@ -533,7 +533,7 @@ class Rules extends Component {
                     }
                 </RuleWorkBox>
                 {selectedItem &&
-                    <RuleWorkDialog
+                    <RulesDialog
                         item={selectedItem}
                         onClose={this.onDetailsClose}
                         open={openDetails}

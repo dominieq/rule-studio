@@ -49,7 +49,7 @@ class ConesDialog extends PureComponent {
                         tables={item.tables}
                     />
                 </div>
-                <div id={"cones-table-content"} style={{width: "15%"}}>
+                <div id={"cones-table-content"} style={{display: "flex", flexDirection: "column", width: "15%"}}>
                     {!Number.isNaN(Number(tableIndex)) &&
                         <VirtualizedTableItems
                             headerText={Object.keys(item.tables)[tableIndex]}

@@ -39,7 +39,11 @@ const listStyles = makeStyles(theme => ({
         fontSize: "inherit",
         fontWeight: 900,
         letterSpacing: "0.05rem"
-    }
+    },
+    listWrapper: {
+        flexGrow: 1,
+        width: "100%",
+    },
 }), {name: "virtualized-list"});
 
 function VirtualizedTableItems(props) {
@@ -73,18 +77,20 @@ function VirtualizedTableItems(props) {
                     </Typography>
                 </ListSubheader>
             }
-            <AutoSizer>
-                {({height, width}) => (
-                    <List
-                        className={listClasses.root}
-                        height={height}
-                        rowHeight={rowHeight}
-                        rowCount={table.length}
-                        rowRenderer={rowRenderer}
-                        width={width}
-                    />
-                )}
-            </AutoSizer>
+            <div className={listClasses.listWrapper}>
+                <AutoSizer>
+                    {({height, width}) => (
+                        <List
+                            className={listClasses.root}
+                            height={height}
+                            rowHeight={rowHeight}
+                            rowCount={table.length}
+                            rowRenderer={rowRenderer}
+                            width={width}
+                        />
+                    )}
+                </AutoSizer>
+            </div>
         </Fragment>
     );
 }

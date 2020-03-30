@@ -7,7 +7,7 @@ import FilterTextField from "../Utils/Filtering/FilterTextField";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox"
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
+import {ConesDialog} from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
@@ -301,7 +301,7 @@ class Cones extends Component {
                     }
                 </RuleWorkBox>
                 {selectedItem &&
-                    <RuleWorkDialog
+                    <ConesDialog
                         item={selectedItem}
                         onClose={this.onDetailsClose}
                         open={openDetails}

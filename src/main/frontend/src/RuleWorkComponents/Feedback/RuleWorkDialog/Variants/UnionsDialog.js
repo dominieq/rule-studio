@@ -50,7 +50,7 @@ class UnionsDialog extends PureComponent {
                         tables={item.tables}
                     />
                 </div>
-                <div id={"unions-table-content"}>
+                <div id={"unions-table-content"} style={{display: "flex", flexDirection: "column"}}>
                     {!Number.isNaN(Number(tableIndex)) &&
                         <VirtualizedTableItems
                             headerText={Object.keys(item.tables)[tableIndex]}
@@ -60,7 +60,7 @@ class UnionsDialog extends PureComponent {
                         />
                     }
                 </div>
-                <div style={{display: "flex", flexDirection: "column"}}>
+                <div id={"unions-table-item"} style={{display: "flex", flexDirection: "column"}}>
                     <div style={{minHeight: "30%"}}>
                         <VirtualizedTraits traits={item.traits} />
                     </div>
