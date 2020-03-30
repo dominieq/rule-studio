@@ -8,6 +8,7 @@ class PutCrossValidation extends Component {
             id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2',
             typeOfUnions: 'monotonic',
             consistencyThreshold: 0,
+            typeOfRules: 'certain',
             typeOfClassifier: 'SimpleRuleClassifier',
             defaultClassificationResult: 'majorityDecisionClass',
             numberOfFolds: 10
@@ -29,6 +30,12 @@ class PutCrossValidation extends Component {
     handleConsistencyThresholdChange = (event) => {
         this.setState({
             consistencyThreshold: event.target.value
+        })
+    }
+
+    handleTypeOfRulesChange = (event) => {
+        this.setState({
+            typeOfRules: event.target.value
         })
     }
 
@@ -56,6 +63,7 @@ class PutCrossValidation extends Component {
         let formData = new FormData()
         formData.append('typeOfUnions', this.state.typeOfUnions)
         formData.append('consistencyThreshold', this.state.consistencyThreshold)
+        formData.append('typeOfRules', this.state.typeOfRules)
         formData.append('typeOfClassifier', this.state.typeOfClassifier)
         formData.append('defaultClassificationResult', this.state.defaultClassificationResult)
         formData.append('numberOfFolds', this.state.numberOfFolds)
@@ -115,6 +123,12 @@ class PutCrossValidation extends Component {
                 </select>
                 consistencyThreshold->
                 <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
+                <label for="typeOfRulesPutCrossValidation">typeOfRules-></label>
+                <select id="typeOfRulesPutCrossValidation" onChange={this.handleTypeOfRulesChange}>
+                    <option value="certain">certain</option>
+                    <option value="possible">possible</option>
+                    <option value="both">both</option>
+                </select>
                 <label for="typeOfClassifierPutCrossValidation">typeOfClassifier-></label>
                 <select id="typeOfClassifierPutCrossValidation" onChange={this.handletypeOfClassifierChange}>
                     <option value="SimpleRuleClassifier">SimpleRuleClassifier</option>

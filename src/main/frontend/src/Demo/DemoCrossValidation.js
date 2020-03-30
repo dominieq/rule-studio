@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PutCrossValidation from './DemoCrossValidation/PutCrossValidation'
 import GetCrossValidation from './DemoCrossValidation/GetCrossValidation'
+import PostCrossValidation from './DemoCrossValidation/PostCrossValidation'
 
 class DemoCrossValidation extends Component {
 
@@ -11,6 +12,7 @@ class DemoCrossValidation extends Component {
                 <h2>CrossValidationController</h2>
                 <GetCrossValidation></GetCrossValidation>
                 <PutCrossValidation></PutCrossValidation>
+                <PostCrossValidation></PostCrossValidation>
             </div>
         )
     }

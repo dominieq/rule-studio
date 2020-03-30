@@ -1,14 +1,17 @@
 import React, { Component } from 'react'
 
-class PostRules extends Component {
+class PostCrossValidation extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f',
+            id_projektu: '66f23be2-0595-40b9-aca1-fcc5f9b5ffc2',
             typeOfUnions: 'monotonic',
             consistencyThreshold: 0,
             typeOfRules: 'certain',
+            typeOfClassifier: 'SimpleRuleClassifier',
+            defaultClassificationResult: 'majorityDecisionClass',
+            numberOfFolds: 2,
             metadata: JSON.stringify(
               [
                 {
@@ -147,53 +150,78 @@ class PostRules extends Component {
         })
     }
 
-    postRules = (event) => {
-      event.preventDefault()
+    handletypeOfClassifierChange = (event) => {
+        this.setState({
+            typeOfClassifier: event.target.value
+        })
+    }
 
-      let formData = new FormData()
-      formData.append('typeOfUnions', this.state.typeOfUnions)
-      formData.append('consistencyThreshold', this.state.consistencyThreshold)
-      formData.append('typeOfRules', this.state.typeOfRules)
-      formData.append('metadata', this.state.metadata)
-      formData.append('data', this.state.data)
+    handleDefaultClassificationResultChange = (event) => {
+        this.setState({
+            defaultClassificationResult: event.target.value
+        })
+    }
 
-      fetch(`http://localhost:8080/projects/${this.state.id_projektu}/rules`, {
-          method: 'POST',
-          body: formData
-      }).then(response => {
-          console.log(response)
-          if(response.status === 200) {
-              response.json().then(result => {
-                  console.log("Received rules:")
-                  console.log(result)
-              }).catch(err => {
-                  console.log(err)
-              })
-          } else if(response.status === 404) {
-              response.json().then(result => {
-                  console.log("Error 404.")
-                  console.log(result.message)
-              }).catch(err => {
-                  console.log(err)
-              })
-          } else if(response.status === 422) {
-              response.json().then(result => {
-                  console.log("Error 422.")
-                  console.log(result.message)
-              }).catch(err => {
-                  console.log(err)
-              })
-          } else {
-              response.json().then(result => {
-                  console.log("Result of response.json():")
-                  console.log(result)
-              }).catch(err => {
-                  console.log(err)
-              })
-          }
-      }).catch(err => {
-          console.log(err)
-      })
+    handleNumberOfFolds = (event) => {
+        this.setState({
+            numberOfFolds: event.target.value
+        })
+    }
+
+    postCrossValidation = (event) => {
+        event.preventDefault();
+
+        let formData = new FormData()
+        formData.append('typeOfUnions', this.state.typeOfUnions)
+        formData.append('consistencyThreshold', this.state.consistencyThreshold)
+        formData.append('typeOfClassifier', this.state.typeOfClassifier)
+        formData.append('typeOfRules', this.state.typeOfRules)
+        formData.append('defaultClassificationResult', this.state.defaultClassificationResult)
+        formData.append('numberOfFolds', this.state.numberOfFolds)
+        formData.append('metadata', this.state.metadata)
+        formData.append('data', this.state.data)
+
+        var link = `http://localhost:8080/projects/${this.state.id_projektu}/crossValidation`;
+
+        console.log(link)
+
+        fetch(link, {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            console.log(response)
+            if(response.status === 200) {
+                response.json().then(result => {
+                    console.log("Received cross-validation:")
+                    console.log(result)
+                }).catch(err => {
+                    console.log(err)
+                })
+            } else if(response.status === 404) {
+                response.json().then(result => {
+                    console.log("Error 404.")
+                    console.log(result.message)
+                }).catch(err => {
+                    console.log(err)
+                })
+            } else if(response.status === 422) {
+                response.json().then(result => {
+                    console.log("Error 422.")
+                    console.log(result.message)
+                }).catch(err => {
+                    console.log(err)
+                })
+            } else {
+                response.json().then(result => {
+                    console.log("Result of response.json():")
+                    console.log(result)
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     render() {
@@ -201,23 +229,37 @@ class PostRules extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
-                <label for="typeOfUnionsPostRules">typeOfUnions-></label>
-                <select id="typeOfUnionsPostRules" onChange={this.handleTypeOfUnionsChange}>
+                <label for="typeOfUnionsPostCrossValidation">typeOfUnions-></label>
+                <select id="typeOfUnionsPostCrossValidation" onChange={this.handleTypeOfUnionsChange}>
                     <option value="monotonic">monotonic</option>
                     <option value="standard">standard</option>
                 </select>
                 consistencyThreshold->
                 <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
-                <label for="typeOfRulesPostRules">typeOfRules-></label>
-                <select id="typeOfRulesPostRules" onChange={this.handleTypeOfRulesChange}>
+                <label for="typeOfRulesPostCrossValidation">typeOfRules-></label>
+                <select id="typeOfRulesPostCrossValidation" onChange={this.handleTypeOfRulesChange}>
                     <option value="certain">certain</option>
                     <option value="possible">possible</option>
                     <option value="both">both</option>
                 </select>
-                <button onClick={this.postRules}>postRules</button>
+                <label for="typeOfClassifierPostCrossValidation">typeOfClassifier-></label>
+                <select id="typeOfClassifierPostCrossValidation" onChange={this.handletypeOfClassifierChange}>
+                    <option value="SimpleRuleClassifier">SimpleRuleClassifier</option>
+                    <option value="SimpleOptimizingCountingRuleClassifier">SimpleOptimizingCountingRuleClassifier</option>
+                    <option value="ScoringRuleClassifierScore">ScoringRuleClassifierScore</option>
+                    <option value="ScoringRuleClassifierHybrid">ScoringRuleClassifierHybrid</option>
+                </select>
+                <label for="defaultClassificationResultPostCrossValidation">defaultClassificationResult-></label>
+                <select id="defaultClassificationResultPostCrossValidation" onChange={this.handleDefaultClassificationResultChange}>
+                    <option value="majorityDecisionClass">majorityDecisionClass</option>
+                    <option value="medianDecisionClass">medianDecisionClass</option>
+                </select>
+                numberOfFolds->
+                <input type='text' value={this.state.numberOfFolds} onChange={this.handleNumberOfFolds} />
+                <button onClick={this.postCrossValidation}>postCrossValidation</button>
             </div>
         )
     }
 }
 
-export default PostRules
+export default PostCrossValidation

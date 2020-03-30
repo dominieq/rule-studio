@@ -3,7 +3,6 @@ package pl.put.poznan.rulework.service;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.*;
-import org.rulelearn.rules.ruleml.RuleParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.exception.ProjectNotFoundException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
+import pl.put.poznan.rulework.model.RulesWithHttpParameters;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -68,7 +67,7 @@ public class ProjectService {
 
         if((metadataFile == null) && (dataFile == null) && (rulesFile == null)) {
             project.setInformationTable(new InformationTable(new Attribute[0], new ArrayList<>()));
-            project.setRuleSetWithComputableCharacteristics(null);
+            project.setRules(null);
 
             return project;
         }
@@ -81,7 +80,7 @@ public class ProjectService {
             attributes = MetadataService.attributesFromMultipartFileMetadata(metadataFile);
 
             informationTable = new InformationTable(attributes, new ArrayList<>());
-            project.setRuleSetWithComputableCharacteristics(null);
+            project.setRules(null);
         }
 
         if(dataFile != null) { //load new data from file
@@ -97,7 +96,7 @@ public class ProjectService {
         if(rulesFile != null) { //load rules from file
             attributes = informationTable.getAttributes();
             RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.parseComputableRules(rulesFile, attributes);
-            project.setRuleSetWithComputableCharacteristics(ruleSetWithComputableCharacteristics);
+            project.setRules(new RulesWithHttpParameters(ruleSetWithComputableCharacteristics));
         }
 
         return project;

@@ -7,7 +7,8 @@ class PutRules extends Component {
         this.state = {
             id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f',
             typeOfUnions: 'monotonic',
-            consistencyThreshold: 0
+            consistencyThreshold: 0,
+            typeOfRules: 'certain'
         }
     }
 
@@ -29,11 +30,27 @@ class PutRules extends Component {
         })
     }
 
+    handleTypeOfRulesChange = (event) => {
+        this.setState({
+            typeOfRules: event.target.value
+        })
+    }
+
     putRules = (event) => {
         event.preventDefault()
 
-        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/rules?typeOfUnions=${this.state.typeOfUnions}&consistencyThreshold=${this.state.consistencyThreshold}`, {
-            method: 'PUT'
+        let formData = new FormData()
+        formData.append('typeOfUnions', this.state.typeOfUnions)
+        formData.append('consistencyThreshold', this.state.consistencyThreshold)
+        formData.append('typeOfRules', this.state.typeOfRules)
+
+        var link = `http://localhost:8080/projects/${this.state.id_projektu}/rules`;
+
+        console.log(link)
+
+        fetch(link, {
+            method: 'PUT',
+            body: formData
         }).then(response => {
             console.log(response)
             if(response.status === 200) {
@@ -82,6 +99,12 @@ class PutRules extends Component {
                 </select>
                 consistencyThreshold->
                 <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
+                <label for="typeOfRulesPutRules">typeOfRules-></label>
+                <select id="typeOfRulesPutRules" onChange={this.handleTypeOfRulesChange}>
+                    <option value="certain">certain</option>
+                    <option value="possible">possible</option>
+                    <option value="both">both</option>
+                </select>
                 <button onClick={this.putRules}>putRules</button>
             </div>
         )
