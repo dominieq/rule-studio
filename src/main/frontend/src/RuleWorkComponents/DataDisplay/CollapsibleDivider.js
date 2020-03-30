@@ -5,7 +5,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 
-const useStylesButton = makeStyles(theme => ({
+const expandStyles = makeStyles(theme => ({
     root: {
         color: theme.palette.paper.text,
         padding: 0,
@@ -24,7 +24,7 @@ const useStylesButton = makeStyles(theme => ({
 
 function ExpandButton(props) {
     const expanded = props.expanded;
-    const classes =  useStylesButton();
+    const classes =  expandStyles();
 
     return (
         <IconButton
@@ -40,7 +40,7 @@ function ExpandButton(props) {
     )
 }
 
-const useStylesDivider = makeStyles(theme => ({
+const dividerStyles = makeStyles(theme => ({
     root: {
         display: "flex",
         flexDirection: "row",
@@ -61,11 +61,11 @@ const useStylesDivider = makeStyles(theme => ({
         width: "100%",
         backgroundColor: theme.palette.paper.text,
     },
-}), {name: "styled-collapsible-divider"});
+}), {name: "collapsible-divider"});
 
-function RuleWorkCollapsibleDivider(props) {
+function CollapsibleDivider(props) {
     const {onClick, expanded} = props;
-    const classes = useStylesDivider();
+    const classes = dividerStyles();
 
     return (
         <div onClick={onClick} className={classes.root}>
@@ -78,9 +78,9 @@ function RuleWorkCollapsibleDivider(props) {
     )
 }
 
-RuleWorkCollapsibleDivider.propTypes = {
+CollapsibleDivider.propTypes = {
     onClick: PropTypes.func,
     expanded: PropTypes.bool,
 };
 
-export default RuleWorkCollapsibleDivider
+export default CollapsibleDivider

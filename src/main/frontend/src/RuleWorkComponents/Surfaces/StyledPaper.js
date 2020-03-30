@@ -11,7 +11,7 @@ const useStyles = makeStyles(theme => ({
     },
     bar: {
         position: "relative",
-        padding: "2px 15px 2px",
+        padding: "2px 16px",
         display: "flex",
         flexDirection: "row",
         flexWrap: "nowrap",
@@ -64,8 +64,8 @@ StyledPaper.propTypes = {
 
 StyledPaper.defaultProps = {
     square: true,
+    elevation: 0,
     styleVariant: "bar",
-    variant: "outlined"
 };
 
 export default StyledPaper;

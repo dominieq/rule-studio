@@ -13,7 +13,7 @@ import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSma
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
-import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
+import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
 import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
@@ -38,7 +38,7 @@ class Classification extends Component {
             selectedItem: null,
             openDetails: false,
             openSettings: false,
-            snackbarProps: undefined,
+            alertProps: undefined,
         };
 
         this.upperBar = React.createRef();
@@ -50,11 +50,8 @@ class Classification extends Component {
 
         this.setState({
             loading: true,
-            ruleType: this.props.project.ruleType,
-            typeOfClassifier: this.props.project.typeOfClassifier,
-            defaultClassificationResult: this.props.project.defaultClassificationResult
         }, () => {
-            let msg = "";
+            let msg, title = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/classification`, {
                 method: "GET"
             }).then(response => {
@@ -66,33 +63,29 @@ class Classification extends Component {
                             this._data = result;
                             this._items = items;
                             this.setState({
-                                loading: false,
                                 displayedItems: items,
                             });
                         }
                     }).catch(error => {
                         console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
                     });
                 } else {
                     response.json().then(result => {
                         if (this._isMounted) {
                             msg = "ERROR " + result.status + ": " + result.message;
-                            let alertProps = {title: "Something went wrong! Couldn't load classification :("};
-                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "warning"};
+                            title = "Something went wrong! Couldn't load classification :(";
+                            let alertProps = {message: msg, open: true, title: title, severity: "warning"};
                             this.setState({
-                                loading: false,
-                                snackbarProps: result.status !== 404 ? snackbarProps : undefined
+                                alertProps: result.status !== 404 ? alertProps : undefined
                             });
                         }
                     }).catch(() => {
                         if (this._isMounted) {
                             msg = "Something went wrong! Couldn't load classification :(";
-                            let alertProps = {title: "ERROR " + response.status};
-                            let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "error"};
+                            title = "ERROR " + response.status;
+                            let alertProps = {message: msg, open: true, title: title, severity: "error"};
                             this.setState({
-                                loading: true,
-                                snackbarProps: response.status !== 404 ? snackbarProps : undefined,
+                                alertProps: response.status !== 404 ? alertProps : undefined,
                             });
                         }
                     });
@@ -102,10 +95,16 @@ class Classification extends Component {
                 if (this._isMounted) {
                     msg = "Server error! Couldn't load classification :(";
                     this.setState({
-                        loading: false,
-                        snackbarProps: {open: true, message: msg, variant: "error"}
+                        alertProps: {message: msg, open: true, variant: "error"}
                     });
                 }
+            }).finally(() => {
+                this.setState({
+                    loading: false,
+                    defaultClassificationResult: this.props.project.defaultClassificationResult,
+                    ruleType: this.props.project.ruleType,
+                    typeOfClassifier: this.props.project.typeOfClassifier
+                });
             });
         });
     }
@@ -165,7 +164,7 @@ class Classification extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let msg = "";
+            let msg, title = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/classification`, {
                 method: project.dataUpToDate ? "PUT" : "POST",
                 body: data,
@@ -182,7 +181,6 @@ class Classification extends Component {
                             this.setState({
                                 changes: true,
                                 updated: updated,
-                                loading: false,
                                 displayedItems: items,
                             });
                         } else {
@@ -195,25 +193,22 @@ class Classification extends Component {
                         }
                     }).catch(error => {
                         console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
                     });
                 } else {
                     response.json().then(result => {
                         if (this._isMounted) {
                             msg = "ERROR " + result.status + ": " + result.message;
-                            let alert = {title: "Something went wrong! Couldn't calculate classification :("};
+                            title = "Something went wrong! Couldn't calculate classification :(";
                             this.setState({
-                                loading: false,
-                                snackbarProps: {alertProps: alert, open: true, message: msg, variant: "warning"}
+                                alertProps: {message: msg, open: true, title: title, severity: "warning"}
                             })
                         }
                     }).catch(() => {
                         if (this._isMounted) {
                             msg = "Something went wrong! Couldn't calculate classification :(";
-                            let alertProps = {title: "ERROR " + response.status};
+                            title = "ERROR " + response.status;
                             this.setState({
-                                loading: false,
-                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "error"}
+                                alertProps: {message: msg, open: true, title: title, severity: "error"}
                             });
                         }
                     })
@@ -223,11 +218,12 @@ class Classification extends Component {
                 if (this._isMounted) {
                     msg = "Server error! Couldn't calculate classification :(";
                     this.setState({
-                        loading: false,
-                        snackbarProps: {open: true, message: msg, variant: "error"}
+                        alertProps: {message: msg, open: true, severity: "error"}
                     });
                 }
-            })
+            }).finally(() => {
+                if (this._isMounted) this.setState({loading: false});
+            });
         });
     };
 
@@ -247,20 +243,21 @@ class Classification extends Component {
     onDetailsOpen = (index) => {
         this.setState({
             openDetails: true,
-            selectedItem: {...this._items[index]}
+            selectedItem: this._items[index]
         });
     };
 
     onDetailsClose = () => {
         this.setState({
-            openDetails: false,
-            selectedItem: null
+            openDetails: false
         });
     };
 
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
-            this.setState({snackbarProps: undefined});
+            this.setState(({alertProps}) => ({
+                alertProps: {...alertProps, open: false}
+            }));
         }
     };
 
@@ -302,7 +299,7 @@ class Classification extends Component {
                 const listItem = {
                     id: items[i].id,
                     header: items[i].name,
-                    subheader: "Suggested decision " + this._data.classificationResults[items[i].id].suggestedDecision,
+                    subheader: "Suggested decision: " + this._data.classificationResults[items[i].id].suggestedDecision,
                     content: "Is covered by " + items[i].tables.indicesOfCoveringRules.length + " rules"
                 };
                 listItems.push(listItem)
@@ -313,7 +310,7 @@ class Classification extends Component {
 
     render() {
         const {loading, displayedItems, ruleType, selectedItem, openDetails,
-            openSettings, snackbarProps} = this.state;
+            openSettings, alertProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-classification"} styleVariant={"tab"}>
@@ -361,7 +358,6 @@ class Classification extends Component {
                     <RuleWorkSmallBox id={"rule-type-selector"}>
                         <RuleWorkTextField
                             disabledChildren={["possible"]}
-                            hasOutsideLabel={true}
                             onChange={this.onRuleTypeChange}
                             outsideLabel={"Choose rule type"}
                             select={true}
@@ -395,7 +391,7 @@ class Classification extends Component {
                         projectResult={this.props.project.result}
                     />
                 }
-                <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
+                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )
     }

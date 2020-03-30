@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import RuleWorkHelper from "../../../../RuleWorkComponents/Feedback/RuleWorkHelper";
 import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 
-function MeasureSelector(props) {
+function TypeOfUnionsSelector(props) {
     return (
         <Fragment>
             <RuleWorkHelper
@@ -12,21 +12,20 @@ function MeasureSelector(props) {
                 {"Add more information to tooltip"}
             </RuleWorkHelper>
             <RuleWorkTextField
-                disabledChildren={["rough membership"]}
-                hasOutsideLabel={true}
                 outsideLabel={"Select consistency measure"}
                 select={true}
                 {...props}
             >
-                {["epsilon", "rough membership"]}
+                {["monotonic", "standard"]}
             </RuleWorkTextField>
         </Fragment>
     )
 }
 
-MeasureSelector.propTypes = {
+TypeOfUnionsSelector.propTypes = {
+    disabledChildren: PropTypes.arrayOf(PropTypes.string),
     onChange: PropTypes.func,
     value: PropTypes.string,
 };
 
-export default MeasureSelector;
+export default TypeOfUnionsSelector;

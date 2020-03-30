@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import {withStyles} from '@material-ui/core/styles';
 import TableCell from '@material-ui/core/TableCell';
 import { AutoSizer, Column, Table } from 'react-virtualized';
-import "./VirtualizedTable.css";
 
 const styles = theme => ({
     flexContainer: {
@@ -13,20 +12,33 @@ const styles = theme => ({
         boxSizing: 'border-box',
     },
     table: {
+        '& .ReactVirtualized__Grid__innerScrollContainer': {
+            background: theme.palette.list.background,
+            color: theme.palette.list.text,
+        },
         '& .ReactVirtualized__Table__headerRow': {
-            flip: false,
-            paddingRight: theme.direction === 'rtl' ? '0px !important' : undefined,
+            backgroundColor: theme.palette.list.subheader.background,
+            color: theme.palette.list.subheader.text
+        },
+        '& .ReactVirtualized__Table__headerColumn': {
+            width: "100% !important",
+            flex: "unset !important",
+            fontWeight: "bolder",
+            '& .MuiTableCell-head': {
+                fontWeight: 900
+            }
+        },
+        '& .ReactVirtualized__Table__rowColumn': {
+            width: "100% !important",
+            flex: "unset !important"
         },
     },
     tableRow: {
         cursor: 'pointer',
-    },
-    tableRowHover: {
-        '&:hover': {
-            backgroundColor: theme.palette.grey[200]
-        },
+
     },
     tableCell: {
+        borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
         flex: 1,
     },
     noClick: {
@@ -36,13 +48,9 @@ const styles = theme => ({
 
 class MuiVirtualizedTable extends PureComponent {
 
-    getRowClassName = ({ index }) => {
-        const { classes, onRowClick } = this.props;
-        console.log("Getting row's classname...");
-        console.log(index);
-        return clsx(classes.tableRow, classes.flexContainer, {
-            [classes.tableRowHover]: index !== -1 && onRowClick != null,
-        });
+    getRowClassName = () => {
+        const { classes } = this.props;
+        return clsx(classes.tableRow, classes.flexContainer);
     };
 
     cellRenderer = ({ cellData, columnIndex }) => {
@@ -137,4 +145,4 @@ MuiVirtualizedTable.defaultProps = {
     rowHeight: 48,
 };
 
-export default withStyles(styles)(MuiVirtualizedTable);
+export default withStyles(styles, {name: "virtualized-table"})(MuiVirtualizedTable);

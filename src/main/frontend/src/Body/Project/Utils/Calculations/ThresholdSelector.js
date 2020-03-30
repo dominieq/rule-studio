@@ -78,7 +78,6 @@ class ThresholdSelector extends Component {
                 </RuleWorkHelper>
                 <RuleWorkTextField
                     fullWidth={true}
-                    hasOutsideLabel={true}
                     onBlur={this.onInputBlur}
                     onChange={this.onInputChange}
                     outsideLabel={"Choose threshold"}

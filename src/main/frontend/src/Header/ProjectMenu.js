@@ -20,6 +20,8 @@ class ProjectMenu extends Component {
         this.state = {
             anchorE1: null,
         };
+
+        this.list = React.createRef();
     }
 
     onListItemClick = (event) => {
@@ -32,7 +34,7 @@ class ProjectMenu extends Component {
         this.setState({
             anchorE1: null,
         }, () => {
-            this.props.onProjectClick(index - 1);
+            this.props.onProjectClick(index);
         });
     };
 
@@ -50,7 +52,7 @@ class ProjectMenu extends Component {
                         <StyledButton
                             aria-label={"project-settings"}
                             isIcon={true}
-                            onClick={this.props.onProjectSettings}
+                            onClick={() => this.props.onDialogOpen("settingsDialog")}
                         >
                             <SvgIcon><path d={mdiCog} /></SvgIcon>
                         </StyledButton>
@@ -59,7 +61,7 @@ class ProjectMenu extends Component {
                         <StyledButton
                             aria-label={"rename-project-button"}
                             isIcon={true}
-                            onClick={this.props.onProjectRename}
+                            onClick={() => this.props.onDialogOpen("renameDialog")}
                         >
                             <RenameBox />
                         </StyledButton>
@@ -69,7 +71,7 @@ class ProjectMenu extends Component {
                         <StyledButton
                             aria-label={"delete-project-button"}
                             isIcon={true}
-                            onClick={this.props.onProjectDelete}>
+                            onClick={() => this.props.onDialogOpen("deleteDialog")}>
                             <DeleteIcon />
                         </StyledButton>
                     </RuleWorkTooltip>
@@ -84,38 +86,57 @@ class ProjectMenu extends Component {
         const anchorE1 = this.state.anchorE1;
         const {currentProject, projects} = this.props;
 
-        let primaryText = "Select your project";
+        let primaryText = projects[0];
         if (currentProject > 0) {
             primaryText = "Active project " + projects[currentProject].result.name;
         }
 
+        let displayedProjects = projects.slice(1);
+
         return (
             <RuleWorkSmallBox id={"project-menu"} style={{flexGrow: 1}}>
-                <List component={"nav"} >
+                <List component={"nav"} disablePadding={true}>
                     <ListItem
-                        button
+                        aria-controls={"project-menu"}
                         aria-haspopup={"true"}
-                        aria-controls={"lock-menu"}
-                        onClick={this.onListItemClick}>
+                        button={true}
+                        onClick={this.onListItemClick}
+                        ref={this.list}
+                        style={{borderRadius: 4}}
+                    >
                         <Typography color={"inherit"} variant={"button"}>{primaryText}</Typography>
                     </ListItem>
                 </List>
-                <Menu
-                    anchorEl={anchorE1}
-                    keepMounted
-                    open={Boolean(anchorE1)}
-                    onClose={this.onMenuClose}
-                >
-                    {projects && projects.map((project, index) => (
-                        <MenuItem
-                            key={index}
-                            disabled={index === 0}
-                            selected={index === currentProject}
-                            onClick={event => this.onMenuItemClick(event, index)}>
-                            {typeof project === "string" ? project : project.result.name}
-                        </MenuItem>
-                    ))}
-                </Menu>
+                {Boolean(displayedProjects.length) &&
+                    <Menu
+                        anchorEl={anchorE1}
+                        anchorOrigin={{
+                            horizontal: "center",
+                            vertical: "bottom"
+                        }}
+                        getContentAnchorEl={null}
+                        id={"project-menu"}
+                        keepMounted={true}
+                        onClose={this.onMenuClose}
+                        open={Boolean(anchorE1)}
+                        PaperProps={{
+                            style: {minWidth: this.list.current.offsetWidth}
+                        }}
+                        transformOrigin={{
+                            horizontal: "center",
+                            vertical: "top",
+                        }}
+                    >
+                        {displayedProjects.map((project, index) => (
+                            <MenuItem
+                                key={index}
+                                selected={index === currentProject}
+                                onClick={event => this.onMenuItemClick(event, index)}>
+                                {project.result.name}
+                            </MenuItem>
+                        ))}
+                    </Menu>
+                }
                 {this.renderProjectButtons()}
             </RuleWorkSmallBox>
         )
@@ -125,9 +146,7 @@ class ProjectMenu extends Component {
 ProjectMenu.propTypes = {
     currentProject: PropTypes.number,
     onProjectClick: PropTypes.func,
-    onProjectDelete: PropTypes.func,
-    onProjectRename: PropTypes.func,
-    onProjectSettings: PropTypes.func,
+    onDialogOpen: PropTypes.func,
     projects: PropTypes.arrayOf(PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.shape({
