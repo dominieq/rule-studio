@@ -16,7 +16,7 @@ function VirtualizedItem(props) {
         },
         {
             dataKey: "object",
-            label: `Object ${itemInTableIndex}`,
+            label: `Object ${itemInTableIndex + 1}`,
             width: 100
         }
     ];

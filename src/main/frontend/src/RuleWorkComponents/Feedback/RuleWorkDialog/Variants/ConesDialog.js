@@ -43,7 +43,7 @@ class ConesDialog extends PureComponent {
             <RuleWorkDialog onExited={this.onExited} title={"Selected item: " + item.name} {...other}>
                 <div id={"cones-tables"}>
                     <Tables
-                        headerText={"Tables"}
+                        headerText={"Dominance cones"}
                         onTableSelected={this.onTableSelected}
                         tableIndex={tableIndex}
                         tables={item.tables}
