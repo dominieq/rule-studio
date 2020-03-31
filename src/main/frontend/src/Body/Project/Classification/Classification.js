@@ -4,19 +4,20 @@ import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterNoResults from "../Utils/Filtering/FilterNoResults";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Calculations/CalculateButton";
+import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
+import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
+import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
 import SettingsButton from "../Utils/Settings/SettingsButton";
 import SettingsFooter from "../Utils/Settings/SettingsFooter";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
-import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
-import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 
@@ -32,9 +33,9 @@ class Classification extends Component {
             updated: false,
             loading: false,
             displayedItems: [],
+            defaultClassificationResult: "majorityDecisionClass",
             ruleType: "certain",
             typeOfClassifier: "SimpleRuleClassifier",
-            defaultClassificationResult: "majorityDecisionClass",
             selectedItem: null,
             openDetails: false,
             openSettings: false,
@@ -46,7 +47,7 @@ class Classification extends Component {
 
     componentDidMount() {
         this._isMounted = true;
-        const project = {...this.props.project};
+        const { project } = this.props;
 
         this.setState({
             loading: true,
@@ -125,9 +126,10 @@ class Classification extends Component {
             if (Object.keys(this._data).length) {
                 project.result.classification = this._data;
             }
+
+            project.defaultClassificationResult = this.state.defaultClassificationResult;
             project.ruleType = this.state.ruleType;
             project.typeOfClassifier = this.state.typeOfClassifier;
-            project.defaultClassificationResult = this.state.defaultClassificationResult;
 
             let tabsUpToDate = this.props.project.tabsUpToDate.slice();
             tabsUpToDate[this.props.value] = this.state.updated;
@@ -227,6 +229,22 @@ class Classification extends Component {
         });
     };
 
+    onDefaultClassificationResultChange = (event) => {
+        this.setState({
+            changes: event.target.value !== "majorityDecisionClass",
+            updated: this.props.project.dataUpToDate,
+            defaultClassificationResult: event.target.value
+        });
+    };
+
+    onClassifierTypeChange = (event) => {
+        this.setState({
+            changes: event.target.value !== "SimpleRuleClassifier",
+            updated: this.props.project.dataUpToDate,
+            typeOfClassifier: event.target.value
+        });
+    };
+
     onRuleTypeChange = (event) => {
         this.setState({
             changes: event.target.value !== "certain",
@@ -309,8 +327,8 @@ class Classification extends Component {
     };
 
     render() {
-        const {loading, displayedItems, ruleType, selectedItem, openDetails,
-            openSettings, alertProps} = this.state;
+        const { loading, displayedItems, selectedItem, openDetails, openSettings, alertProps } = this.state;
+        const { defaultClassificationResult, ruleType, typeOfClassifier } = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-classification"} styleVariant={"tab"}>
@@ -355,17 +373,24 @@ class Classification extends Component {
                     open={openSettings}
                 >
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
-                    <RuleWorkSmallBox id={"rule-type-selector"}>
-                        <RuleWorkTextField
-                            disabledChildren={["possible"]}
-                            onChange={this.onRuleTypeChange}
-                            outsideLabel={"Choose rule type"}
-                            select={true}
-                            value={ruleType}
-                        >
-                            {["certain", "possible"]}
-                        </RuleWorkTextField>
-                    </RuleWorkSmallBox>
+                    <TypeOfRulesSelector
+                        disabledChildren={["possible"]}
+                        id={"classification-rule-type-selector"}
+                        onChange={this.onRuleTypeChange}
+                        value={ruleType}
+                    />
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <TypeOfClassifierSelector
+                        id={"classification-classifier-type-selector"}
+                        onChange={this.onClassifierTypeChange}
+                        value={typeOfClassifier}
+                    />
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <DefaultClassificationResultSelector
+                        id={"classification-default-classification-result-selector"}
+                        onChange={this.onDefaultClassificationResultChange}
+                        value={defaultClassificationResult}
+                    />
                     <SettingsFooter
                         id={"classification-settings-footer"}
                         onClose={this.onSettingsClose}

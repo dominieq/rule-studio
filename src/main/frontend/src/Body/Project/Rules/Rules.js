@@ -11,7 +11,6 @@ import SettingsFooter from "../Utils/Settings/SettingsFooter";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
-import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
@@ -23,6 +22,7 @@ import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
+import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
 
 class Rules extends Component {
     constructor(props) {
@@ -150,30 +150,6 @@ class Rules extends Component {
     onSettingsClose = () => {
         this.setState({
             openSettings: false,
-        });
-    };
-
-    onRuleType = (event) => {
-        this.setState({
-            changes: event.target.value !== "certain",
-            updated: this.props.project.dataUpToDate,
-            ruleType: event.target.value
-        });
-    };
-
-    onThresholdChange = (threshold) => {
-        this.setState({
-            changes: Boolean(threshold),
-            updated: this.props.project.dataUpToDate,
-            threshold: threshold,
-        });
-    };
-
-    onTypeOfUnionsChange = (event) => {
-        this.setState({
-            changes: event.target.value !== "epsilon",
-            updated: this.props.project.dataUpToDate,
-            typeOfUnions: event.target.value,
         });
     };
 
@@ -382,6 +358,30 @@ class Rules extends Component {
         });
     };
 
+    onRuleTypeChange = (event) => {
+        this.setState({
+            changes: event.target.value !== "certain",
+            updated: this.props.project.dataUpToDate,
+            ruleType: event.target.value
+        });
+    };
+
+    onThresholdChange = (threshold) => {
+        this.setState({
+            changes: Boolean(threshold),
+            updated: this.props.project.dataUpToDate,
+            threshold: threshold,
+        });
+    };
+
+    onTypeOfUnionsChange = (event) => {
+        this.setState({
+            changes: event.target.value !== "epsilon",
+            updated: this.props.project.dataUpToDate,
+            typeOfUnions: event.target.value,
+        });
+    };
+
     onFilterChange = (event) => {
         const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
         this.setState({displayedItems: filteredItems});
@@ -449,8 +449,8 @@ class Rules extends Component {
     };
 
     render() {
-        const {loading, displayedItems, threshold, typeOfUnions, selectedItem, openDetails,
-            openSettings, alertProps} = this.state;
+        const { loading, displayedItems, selectedItem, openDetails, openSettings, alertProps } = this.state;
+        const { ruleType, threshold, typeOfUnions } = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
@@ -506,19 +506,23 @@ class Rules extends Component {
                     open={openSettings}
                 >
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
-                    <RuleWorkSmallBox id={"rules-union-type-selector"}>
-                        <TypeOfUnionsSelector
-                            onChange={this.onTypeOfUnionsChange}
-                            value={typeOfUnions}
-                        />
-                    </RuleWorkSmallBox>
+                    <TypeOfRulesSelector
+                        id={"rules-rule-type-selector"}
+                        onChange={this.onRuleTypeChange}
+                        value={ruleType}
+                    />
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
-                    <RuleWorkSmallBox id={"rules-threshold-selector"}>
-                        <ThresholdSelector
-                            onChange={this.onThresholdChange}
-                            value={threshold}
-                        />
-                    </RuleWorkSmallBox>
+                    <TypeOfUnionsSelector
+                        id={"rules-union-type-selector"}
+                        onChange={this.onTypeOfUnionsChange}
+                        value={typeOfUnions}
+                    />
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <ThresholdSelector
+                        id={"rules-threshold-selector"}
+                        onChange={this.onThresholdChange}
+                        value={threshold}
+                    />
                     <SettingsFooter
                         id={"rules-settings-footer"}
                         onClose={this.onSettingsClose}

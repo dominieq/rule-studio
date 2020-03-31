@@ -11,7 +11,6 @@ import SettingsFooter from "../Utils/Settings/SettingsFooter";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
-import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
@@ -346,19 +345,17 @@ class Unions extends Component {
                     open={openSettings}
                 >
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
-                    <RuleWorkSmallBox id={"unions-union-type-selector"}>
-                        <TypeOfUnionsSelector
-                            onChange={this.onUnionTypeChange}
-                            value={typeOfUnions}
-                        />
-                    </RuleWorkSmallBox>
+                    <TypeOfUnionsSelector
+                        id={"unions-union-type-selector"}
+                        onChange={this.onUnionTypeChange}
+                        value={typeOfUnions}
+                    />
                     <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
-                    <RuleWorkSmallBox id={"unions-threshold-selector"}>
-                        <ThresholdSelector
-                            onChange={this.onThresholdChange}
-                            value={threshold}
-                        />
-                    </RuleWorkSmallBox>
+                    <ThresholdSelector
+                        id={"unions-threshold-selector"}
+                        onChange={this.onThresholdChange}
+                        value={threshold}
+                    />
                     <SettingsFooter
                         id={"unions-settings-footer"}
                         onClose={this.onSettingsClose}

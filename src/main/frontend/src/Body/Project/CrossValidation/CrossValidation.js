@@ -19,6 +19,11 @@ import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextFi
 import StyledToggleButton from "../../../RuleWorkComponents/Inputs/StyledToggleButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
+import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
+import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
+import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
+import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
+import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 
 class CrossValidation extends Component {
     constructor(props) {
@@ -32,10 +37,11 @@ class CrossValidation extends Component {
             updated: false,
             loading: false,
             displayedItems: [],
-            threshold: 0,
-            typeOfUnions: "monotonic",
-            typeOfClassifier: "SimpleRuleClassifier",
             defaultClassificationResult: "majorityDecisionClass",
+            ruleType: "certain",
+            threshold: 0,
+            typeOfClassifier: "SimpleRuleClassifier",
+            typeOfUnions: "monotonic",
             foldDisplay: 0,
             foldIndex: 0,
             foldNumber: 2,
@@ -109,6 +115,7 @@ class CrossValidation extends Component {
                 this.setState({
                     loading: false,
                     defaultClassificationResult: this.props.project.defaultClassificationResult,
+                    ruleType: this.props.project.ruleType,
                     threshold: this.props.project.threshold,
                     typeOfClassifier: this.props.project.typeOfClassifier,
                     typeOfUnions: this.props.project.typeOfUnions,
@@ -124,18 +131,24 @@ class CrossValidation extends Component {
 
         if (this.state.changes) {
             let project = {...this.props.project};
+
             if (Object.keys(this._data).length) {
                 project.result.crossValidation = this._data;
             }
+
+            project.defaultClassificationResult = this.state.defaultClassificationResult;
+            project.ruleType = this.state.ruleType;
             project.threshold = this.state.threshold;
             project.typeOfUnions = this.state.typeOfUnions;
             project.typeOfClassifier = this.state.typeOfClassifier;
-            project.defaultClassificationResult = this.state.defaultClassificationResult;
             project.foldDisplay = this.state.foldDisplay;
             project.foldIndex = this.state.foldIndex;
             project.foldNumber = this.state.foldNumber;
 
-            this.props.onTabChange(project, this.state.updated, true);
+            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
+            tabsUpToDate[this.props.value] = this.state.updated;
+
+            this.props.onTabChange(project, this.state.updated, tabsUpToDate);
         }
     }
 
@@ -151,17 +164,7 @@ class CrossValidation extends Component {
         });
     };
 
-    onFoldNumberChange = (event) => {
-        const input = event.target.value;
 
-        if (!isNaN(input)) {
-            this.setState({
-                changes: Number(input) !== 1,
-                updated: this.props.project.dataUpToDate,
-                foldNumber: Number(input),
-            });
-        }
-    };
 
     onCalculateClick = () => {
         this.setState({
@@ -234,6 +237,58 @@ class CrossValidation extends Component {
                 if (this._isMounted) this.setState({loading: false});
             });
         });
+    };
+
+    onDefaultClassificationResultChange = (event) => {
+        this.setState({
+            changes: event.target.value !== "majorityDecisionClass",
+            updated: this.props.project.dataUpToDate,
+            defaultClassificationResult: event.target.value
+        });
+    };
+
+    onRuleTypeChange = (event) => {
+        this.setState({
+            changes: event.target.value !== "certain",
+            updated: this.props.project.dataUpToDate,
+            ruleType: event.target.value
+        });
+    };
+
+    onThresholdChange = (threshold) => {
+        this.setState({
+            changes: Boolean(threshold),
+            updated: this.props.project.dataUpToDate,
+            threshold: threshold
+        });
+    };
+
+    onTypeOfClassifier = (event) => {
+        this.setState({
+            changes: event.target.value !== "SimpleRuleClassifier",
+            updated: this.props.project.dataUpToDate,
+            typeOfClassifier: event.target.value
+        });
+    };
+
+    onTypeOfUnions = (event) => {
+        this.setState({
+            changes: event.target.value !== "monotonic",
+            updated: this.props.project.dataUpToDate,
+            typeOfUnions: event.target.value
+        });
+    };
+
+    onFoldNumberChange = (event) => {
+        const input = event.target.value;
+
+        if (!isNaN(input)) {
+            this.setState({
+                changes: Number(input) !== 1,
+                updated: this.props.project.dataUpToDate,
+                foldNumber: Number(input),
+            });
+        }
     };
 
     onFoldIndexChange = (event) => {
@@ -329,8 +384,8 @@ class CrossValidation extends Component {
     };
 
     render() {
-        const {loading, displayedItems, foldNumber, selectedItem, openDetails,
-            openSettings, alertProps} = this.state;
+        const { loading, displayedItems, foldNumber, selectedItem, openDetails, openSettings, alertProps } = this.state;
+        const { defaultClassificationResult, ruleType, threshold, typeOfClassifier, typeOfUnions } = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-cross-validation"} styleVariant={"tab"}>
@@ -366,6 +421,36 @@ class CrossValidation extends Component {
                             value={foldNumber}
                         />
                     </RuleWorkSmallBox>
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <TypeOfUnionsSelector
+                        id={"cross-validation-union-type-selector"}
+                        onChange={this.onTypeOfUnions}
+                        value={typeOfUnions}
+                    />
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <ThresholdSelector
+                        id={"cross-validation-threshold-selector"}
+                        onChange={this.onThresholdChange}
+                        value={threshold}
+                    />
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <TypeOfRulesSelector
+                        id={"cross-validation-rule-type-selector"}
+                        onChange={this.onRuleTypeChange}
+                        value={ruleType}
+                    />
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <TypeOfClassifierSelector
+                        id={"cross-validation-classifier-type-selector"}
+                        onChange={this.onTypeOfClassifier}
+                        value={typeOfClassifier}
+                    />
+                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <DefaultClassificationResultSelector
+                        id={"cross-validation-default-classification-result-selector"}
+                        onChange={this.onDefaultClassificationResultChange}
+                        value={defaultClassificationResult}
+                    />
                     <SettingsFooter
                         id={"cross-validation-settings-footer"}
                         onClose={this.onSettingsClose}
