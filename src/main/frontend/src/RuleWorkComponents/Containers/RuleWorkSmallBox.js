@@ -7,8 +7,6 @@ const useStyles = makeStyles({
     row: {
         margin: "4px 0",
         display: "flex",
-        flexDirection: "row",
-        flexWrap: "nowrap",
         alignItems: "center",
         justifyContent: "space-between"
     },

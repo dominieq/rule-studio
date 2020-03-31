@@ -1,6 +1,6 @@
 import React, {Fragment} from "react";
 import PropTypes from "prop-types";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -34,10 +34,40 @@ const inputStyles = makeStyles(theme => ({
     },
 }), {name: "MuiOutlinedInput"});
 
+const selectStyles = makeStyles({
+    selectMenu: {
+        '&:hover': {
+            overflow: "visible"
+        }
+    }
+});
+
 function RuleWorkTextField(props) {
-    const {children, disabledChildren, InputProps, outsideLabel, OutsideLabelProps, select, ...other} = props;
+    const { children, disabledChildren, outsideLabel, select, ...other } = props;
+    const { InputProps, OutsideLabelProps, SelectProps } = props;
     const inputClasses = inputStyles();
     const labelClasses = labelStyles();
+    const selectClasses = selectStyles();
+
+    const renderMenuItems = () => {
+        if (Array.isArray(children) && children.length) {
+            if (React.isValidElement(children[0])){
+                return children;
+            } else {
+                return (
+                    children.map((option, index) => (
+                        <MenuItem
+                            key={index}
+                            disabled={disabledChildren ? disabledChildren.includes(option) : false}
+                            value={option}
+                        >
+                            {option}
+                        </MenuItem>
+                    ))
+                );
+            }
+        }
+    };
 
     return (
         <Fragment>
@@ -52,19 +82,13 @@ function RuleWorkTextField(props) {
                     classes: {root: inputClasses.root}
                 }}
                 select={select}
+                SelectProps={{
+                    ...SelectProps,
+                    classes: {selectMenu: selectClasses.selectMenu}
+                }}
                 {...other}
             >
-                {select &&
-                    children.map((option, index) => (
-                        <MenuItem
-                            key={index}
-                            disabled={disabledChildren ? disabledChildren.includes(option) : false}
-                            value={option}
-                        >
-                            {option}
-                        </MenuItem>
-                    ))
-                }
+                {select && renderMenuItems()}
             </TextField>
         </Fragment>
     )

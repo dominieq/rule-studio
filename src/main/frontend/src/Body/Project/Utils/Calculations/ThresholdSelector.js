@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import RuleWorkHelper from "../../../../RuleWorkComponents/Feedback/RuleWorkHelper";
 import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import StyledSlider from "../../../../RuleWorkComponents/Inputs/StyledSlider";
+import RuleWorkSmallBox from "../../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 
 class ThresholdSelector extends Component {
     constructor(props) {
@@ -67,38 +68,38 @@ class ThresholdSelector extends Component {
     };
 
     render() {
-        const threshold = this.state.threshold;
-
+        const { threshold } = this.state;
+        const { id } = this.props;
         return (
-            <Fragment>
-                <RuleWorkHelper
-                    style={{marginRight: 16}}
-                >
+            <div id={id} style={{display: "flex", alignItems: "center", margin: "4px 0"}}>
+                <RuleWorkHelper style={{marginRight: 16}}>
                     {"Add more information to tooltip"}
                 </RuleWorkHelper>
-                <RuleWorkTextField
-                    fullWidth={true}
-                    onBlur={this.onInputBlur}
-                    onChange={this.onInputChange}
-                    outsideLabel={"Choose threshold"}
-                    style={{marginRight: 6, maxWidth: 72}}
-                    value={threshold}
-                />
+                <RuleWorkSmallBox style={{flexGrow: 1, margin: 0}}>
+                    <RuleWorkTextField
+                        onBlur={this.onInputBlur}
+                        onChange={this.onInputChange}
+                        outsideLabel={"Choose threshold"}
+                        style={{marginRight: 6, maxWidth: 72, minWidth: 60}}
+                        value={threshold}
+                    />
+                </RuleWorkSmallBox>
                 <StyledSlider
                     max={1.0}
                     min={0.0}
                     onChange={this.onSliderChange}
                     onMouseUp={this.onSliderMouseUp}
                     step={0.01}
-                    style={{marginLeft: 6, marginRight: 24, maxWidth: 72}}
+                    style={{marginLeft: 6, marginRight: 24, maxWidth: 72, minWidth: 60}}
                     value={typeof threshold === "number" ? threshold : 0.0}
                 />
-            </Fragment>
+            </div>
         );
     }
 }
 
 ThresholdSelector.propTypes = {
+    id: PropTypes.string,
     onChange: PropTypes.func,
     value: PropTypes.any,
 };
