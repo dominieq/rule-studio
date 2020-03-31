@@ -31,10 +31,10 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
         jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getInformationTable()));
 
         jsonGenerator.writeFieldName("decisionsDomain");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getDecisionsDomain()));
+        jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getOrderOfDecisions()));
 
         jsonGenerator.writeFieldName("indicesOfCoveringRules");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getindicesOfCoveringRules()));
+        jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getIndicesOfCoveringRules()));
 
         jsonGenerator.writeFieldName("ordinalMisclassificationMatrix");
         OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = classification.getOrdinalMisclassificationMatrix();
@@ -97,30 +97,30 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
 
         jsonGenerator.writeFieldName("deviationOfNumberOfUnknownAssignedDecisions");
         jsonGenerator.writeStartArray();
-        for(Decision decision : classification.getDecisionsDomain()) {
+        for(Decision decision : classification.getOrderOfDecisions()) {
             jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfUnknownAssignedDecisions(decision));
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeFieldName("deviationOfNumberOfUnknownOriginalDecisions");
         jsonGenerator.writeStartArray();
-        for(Decision decision : classification.getDecisionsDomain()) {
+        for(Decision decision : classification.getOrderOfDecisions()) {
             jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfUnknownOriginalDecisions(decision));
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeFieldName("deviationOfTruePositiveRate");
         jsonGenerator.writeStartArray();
-        for(Decision decision : classification.getDecisionsDomain()) {
+        for(Decision decision : classification.getOrderOfDecisions()) {
             jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfTruePositiveRate(decision));
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeFieldName("deviationOfValue");
         jsonGenerator.writeStartArray();
-        for(Decision originalDecision : classification.getDecisionsDomain()) {
+        for(Decision originalDecision : classification.getOrderOfDecisions()) {
             jsonGenerator.writeStartArray();
-            for(Decision assignedDecision : classification.getDecisionsDomain()) {
+            for(Decision assignedDecision : classification.getOrderOfDecisions()) {
                 jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfValue(originalDecision, assignedDecision));
             }
             jsonGenerator.writeEndArray();
@@ -129,30 +129,30 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
 
         jsonGenerator.writeFieldName("numberOfUnknownAssignedDecisions");
         jsonGenerator.writeStartArray();
-        for(Decision decision : classification.getDecisionsDomain()) {
+        for(Decision decision : classification.getOrderOfDecisions()) {
             jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfUnknownAssignedDecisions(decision));
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeFieldName("numberOfUnknownOriginalDecisions");
         jsonGenerator.writeStartArray();
-        for(Decision decision : classification.getDecisionsDomain()) {
+        for(Decision decision : classification.getOrderOfDecisions()) {
             jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfUnknownOriginalDecisions(decision));
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeFieldName("truePositiveRate");
         jsonGenerator.writeStartArray();
-        for(Decision decision : classification.getDecisionsDomain()) {
+        for(Decision decision : classification.getOrderOfDecisions()) {
             jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getTruePositiveRate(decision));
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeFieldName("value");
         jsonGenerator.writeStartArray();
-        for(Decision originalDecision : classification.getDecisionsDomain()) {
+        for(Decision originalDecision : classification.getOrderOfDecisions()) {
             jsonGenerator.writeStartArray();
-            for(Decision assignedDecision : classification.getDecisionsDomain()) {
+            for(Decision assignedDecision : classification.getOrderOfDecisions()) {
                 jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getValue(originalDecision, assignedDecision));
             }
             jsonGenerator.writeEndArray();
@@ -160,6 +160,12 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeEndObject();
+
+        jsonGenerator.writeFieldName("typeOfClassifier");
+        jsonGenerator.writeString(classification.getTypeOfClassifier().toString());
+
+        jsonGenerator.writeFieldName("defaultClassificationResult");
+        jsonGenerator.writeString(classification.getDefaultClassificationResult().toString());
 
         jsonGenerator.writeEndObject();
     }

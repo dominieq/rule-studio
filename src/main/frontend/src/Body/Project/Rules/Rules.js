@@ -37,6 +37,7 @@ class Rules extends Component {
             loading: false,
             displayedItems: [],
             externalRules: false,
+            ruleType: "certain",
             threshold: 0,
             typeOfUnions: "monotonic",
             selectedItem: null,
@@ -62,9 +63,9 @@ class Rules extends Component {
                 if (response.status === 200) {
                     response.json().then(result => {
                         if (this._isMounted) {
-                            const items = this.getItems(result);
+                            const items = this.getItems(result.ruleSet);
 
-                            this._data = result;
+                            this._data = result.ruleSet;
                             this._items = items;
                             this.setState({
                                 displayedItems: items,
@@ -106,6 +107,7 @@ class Rules extends Component {
                 this.setState({
                     loading: false,
                     externalRules: this.props.project.externalRules,
+                    ruleType: this.props.project.ruleType,
                     threshold: this.props.project.threshold,
                     typeOfUnions: this.props.project.typeOfUnions
                 });
@@ -122,6 +124,7 @@ class Rules extends Component {
                 project.result.ruleSetWithComputableCharacteristics = this._data;
             }
             project.externalRules = this.state.externalRules;
+            project.ruleType = this.state.ruleType;
             project.threshold = this.state.threshold;
             project.typeOfUnions = this.state.typeOfUnions;
 
@@ -150,6 +153,14 @@ class Rules extends Component {
         });
     };
 
+    onRuleType = (event) => {
+        this.setState({
+            changes: event.target.value !== "certain",
+            updated: this.props.project.dataUpToDate,
+            ruleType: event.target.value
+        });
+    };
+
     onThresholdChange = (threshold) => {
         this.setState({
             changes: Boolean(threshold),
@@ -167,35 +178,35 @@ class Rules extends Component {
     };
 
     onCalculateClick = () => {
-        let project = {...this.props.project};
-        const threshold = this.state.threshold;
-        const typeOfUnions = this.state.typeOfUnions;
-
         this.setState({
             loading: true,
         }, () => {
-            let link = `http://localhost:8080/projects/${project.result.id}/rules`;
-            if (project.dataUpToDate) link = link + `?typeOfUnions=${typeOfUnions}&consistencyThreshold=${threshold}`;
+            let project = {...this.props.project};
+            const {ruleType, threshold, typeOfUnions} = this.state;
 
             let data = new FormData();
             data.append("typeOfUnions", typeOfUnions);
             data.append("consistencyThreshold", threshold);
-            data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-            data.append("data", JSON.stringify(project.result.informationTable.objects));
+            data.append("typeOfRules", ruleType);
+
+            if (!project.dataUpToDate) {
+                data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
+                data.append("data", JSON.stringify(project.result.informationTable.objects));
+            }
 
             let msg, title = "";
-            fetch(link, {
+            fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
                 method: project.dataUpToDate ? "PUT" : "POST",
-                body: project.dataUpToDate ? null : data
+                body: data
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
                         const updated = true;
 
                         if (this._isMounted) {
-                            const items = this.getItems(result);
+                            const items = this.getItems(result.ruleSet);
 
-                            this._data = result;
+                            this._data = result.ruleSet;
                             this._items = items;
                             this.setState({
                                 changes: true,
@@ -266,9 +277,9 @@ class Rules extends Component {
                     if (response.status === 200) {
                         response.json().then(result => {
                             if (this._isMounted) {
-                                const items = this.getItems(result.ruleSetWithComputableCharacteristics);
+                                const items = this.getItems(result.rules.ruleSet);
 
-                                this._data = result;
+                                this._data = result.rules.ruleSet;
                                 this._items = items;
                                 this.setState({
                                     changes: true,
@@ -277,7 +288,7 @@ class Rules extends Component {
                                     displayedItems: items,
                                 });
                             } else {
-                                project.ruleSetWithComputableCharacteristics = result.ruleSetWithComputableCharacteristics;
+                                project.ruleSetWithComputableCharacteristics = result.rules.ruleSet;
                                 project.externalRules = true;
 
                                 let tabsUpToDate = this.props.project.tabsUpToDate.slice();
@@ -405,10 +416,7 @@ class Rules extends Component {
                 const name = data[i].rule.decisions[0][0].toString;
                 const traits = {...data[i].ruleCharacteristics};
                 const tables = {
-                    indicesOfPositiveObjects: data[i].ruleCoverageInformation.indicesOfPositiveObjects.slice(),
-                    indicesOfNeutralObjects: data[i].ruleCoverageInformation.indicesOfNeutralObjects.slice(),
-                    indicesOfCoveredObjects: data[i].ruleCoverageInformation.indicesOfCoveredObjects.slice(),
-                    decisionsOfCoveredObjects: {...data[i].ruleCoverageInformation.decisionsOfCoveredObjects},
+                    indicesOfCoveredObjects: data[i].indicesOfCoveredObjects.slice(),
                 };
 
                 const item = new Item(id, name, traits, null, tables);
