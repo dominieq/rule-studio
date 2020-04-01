@@ -1,29 +1,26 @@
 import React, {Component, Fragment} from "react";
 import PropTypes from "prop-types";
+import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterNoResults from "../Utils/Filtering/FilterNoResults";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Calculations/CalculateButton";
+import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
+import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
+import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
+import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
+import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import SettingsButton from "../Utils/Settings/SettingsButton";
-import SettingsFooter from "../Utils/Settings/SettingsFooter";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
 import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import StyledToggleButton from "../../../RuleWorkComponents/Inputs/StyledToggleButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
-import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
-import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
-import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
-import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 
 class CrossValidation extends Component {
     constructor(props) {
@@ -412,11 +409,11 @@ class CrossValidation extends Component {
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <RuleWorkDrawer
-                    height={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
-                    id={"cross-validation-settings-drawer"}
+                    id={"cross-validation-settings"}
                     open={openSettings}
+                    onClose={this.onSettingsClose}
+                    placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <RuleWorkSmallBox id={"fold-number-selector"} >
                         <RuleWorkTextField
                             onChange={this.onFoldNumberChange}
@@ -425,54 +422,48 @@ class CrossValidation extends Component {
                             value={foldNumber}
                         />
                     </RuleWorkSmallBox>
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <TypeOfUnionsSelector
                         id={"cross-validation-union-type-selector"}
                         onChange={this.onTypeOfUnions}
                         value={typeOfUnions}
                     />
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <ThresholdSelector
                         id={"cross-validation-threshold-selector"}
                         onChange={this.onThresholdChange}
                         value={threshold}
                     />
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <TypeOfRulesSelector
                         id={"cross-validation-rule-type-selector"}
                         onChange={this.onRuleTypeChange}
                         value={ruleType}
                     />
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <TypeOfClassifierSelector
                         id={"cross-validation-classifier-type-selector"}
                         onChange={this.onTypeOfClassifier}
                         value={typeOfClassifier}
                     />
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <DefaultClassificationResultSelector
                         id={"cross-validation-default-classification-result-selector"}
                         onChange={this.onDefaultClassificationResultChange}
                         value={defaultClassificationResult}
                     />
-                    <SettingsFooter
-                        id={"cross-validation-settings-footer"}
-                        onClose={this.onSettingsClose}
-                        styleVariant={"footer"}
-                    />
                 </RuleWorkDrawer>
-                <RuleWorkBox id={"cross-validation-body"} styleVariant={"tab-body"}>
-                    {loading ?
-                        <StyledCircularProgress />
-                        :
-                        displayedItems ?
-                            <RuleWorkList onItemSelected={this.onDetailsOpen}>
-                                {displayedItems}
-                            </RuleWorkList>
-                            :
-                            <FilterNoResults />
-                    }
-                </RuleWorkBox>
+                <TabBody
+                    content={this.getItems(displayedItems)}
+                    id={"cross-validation-list"}
+                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
+                    isLoading={loading}
+                    ListProps={{
+                        onItemSelected: this.onDetailsOpen
+                    }}
+                    noFilterResults={!displayedItems}
+                    subheaderContent={[
+                        {
+                            label: "Number of objects",
+                            value: displayedItems.length
+                        }
+                    ]}
+                />
                 {selectedItem &&
                     <RuleWorkDialog
                         item={selectedItem}

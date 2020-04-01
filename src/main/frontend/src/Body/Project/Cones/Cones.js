@@ -1,15 +1,13 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
+import TabBody from "../Utils/TabBody";
 import CalculateButton from "../Utils/Calculations/CalculateButton";
 import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterNoResults from "../Utils/Filtering/FilterNoResults";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox"
-import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import {ConesDialog} from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
+import { ConesDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 
 class Cones extends Component {
@@ -288,18 +286,22 @@ class Cones extends Component {
                     <span style={{flexGrow: 1}}/>
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
-                <RuleWorkBox id={"cones-list"} styleVariant={"tab-body"}>
-                    {loading ?
-                        <StyledCircularProgress />
-                        :
-                        displayedItems ?
-                            <RuleWorkList onItemSelected={this.onDetailsOpen}>
-                                {this.getListItems(displayedItems)}
-                            </RuleWorkList>
-                            :
-                            <FilterNoResults />
-                    }
-                </RuleWorkBox>
+                <TabBody
+                    content={this.getListItems(displayedItems)}
+                    id={"cones-list"}
+                    isLoading={loading}
+                    ListProps={{
+                        onItemSelected: this.onDetailsOpen
+                    }}
+                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
+                    noFilterResults={!displayedItems}
+                    subheaderContent={[
+                        {
+                            label: "Number of objects",
+                            value: displayedItems.length
+                        }
+                    ]}
+                />
                 {selectedItem &&
                     <ConesDialog
                         item={selectedItem}

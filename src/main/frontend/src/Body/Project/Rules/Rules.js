@@ -1,22 +1,19 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
+import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterNoResults from "../Utils/Filtering/FilterNoResults";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Calculations/CalculateButton";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import SettingsButton from "../Utils/Settings/SettingsButton";
-import SettingsFooter from "../Utils/Settings/SettingsFooter";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
-import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
 import {RulesDialog} from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
@@ -501,49 +498,43 @@ class Rules extends Component {
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <RuleWorkDrawer
-                    height={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
-                    id={"rules-settings-drawer"}
+                    id={"rules-settings"}
                     open={openSettings}
+                    onClose={this.onSettingsClose}
+                    placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <TypeOfRulesSelector
                         id={"rules-rule-type-selector"}
                         onChange={this.onRuleTypeChange}
                         value={ruleType}
                     />
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <TypeOfUnionsSelector
                         id={"rules-union-type-selector"}
                         onChange={this.onTypeOfUnionsChange}
                         value={typeOfUnions}
                     />
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <ThresholdSelector
                         id={"rules-threshold-selector"}
                         onChange={this.onThresholdChange}
                         value={threshold}
                     />
-                    <SettingsFooter
-                        id={"rules-settings-footer"}
-                        onClose={this.onSettingsClose}
-                    />
                 </RuleWorkDrawer>
-                <RuleWorkBox
-                    id={"rules-body"}
-                    style={!openSettings ? {zIndex: 2} : undefined}
-                    styleVariant={"tab-body"}
-                >
-                    {loading ?
-                        <StyledCircularProgress />
-                        :
-                        displayedItems ?
-                            <RuleWorkList onItemSelected={this.onDetailsOpen}>
-                                {this.getListItems(displayedItems)}
-                            </RuleWorkList>
-                            :
-                            <FilterNoResults />
-                    }
-                </RuleWorkBox>
+                <TabBody
+                    content={this.getListItems(displayedItems)}
+                    id={"rules-list"}
+                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
+                    isLoading={loading}
+                    ListProps={{
+                        onItemSelected: this.onDetailsOpen
+                    }}
+                    noFilterResults={!displayedItems}
+                    subheaderContent={[
+                        {
+                            label: "Number of objects",
+                            value: displayedItems.length
+                        }
+                    ]}
+                />
                 {selectedItem &&
                     <RulesDialog
                         item={selectedItem}

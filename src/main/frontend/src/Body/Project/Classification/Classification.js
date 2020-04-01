@@ -1,22 +1,18 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
+import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterNoResults from "../Utils/Filtering/FilterNoResults";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Calculations/CalculateButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
-import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
 import SettingsButton from "../Utils/Settings/SettingsButton";
-import SettingsFooter from "../Utils/Settings/SettingsFooter";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
-import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
@@ -247,14 +243,6 @@ class Classification extends Component {
         });
     };
 
-    onRuleTypeChange = (event) => {
-        this.setState({
-            changes: event.target.value !== "certain",
-            updated: this.props.project.dataUpToDate,
-            ruleType: event.target.value,
-        });
-    };
-
     onFilterChange = (event) => {
         const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
         this.setState({displayedItems: filteredItems});
@@ -330,7 +318,7 @@ class Classification extends Component {
 
     render() {
         const { loading, displayedItems, selectedItem, openDetails, openSettings, alertProps } = this.state;
-        const { defaultClassificationResult, ruleType, typeOfClassifier } = this.state;
+        const { defaultClassificationResult, typeOfClassifier } = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-classification"} styleVariant={"tab"}>
@@ -370,46 +358,38 @@ class Classification extends Component {
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <RuleWorkDrawer
-                    height={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
-                    id={"classification-settings-drawer"}
+                    id={"classification-settings"}
                     open={openSettings}
+                    onClose={this.onSettingsClose}
+                    placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
-                    <TypeOfRulesSelector
-                        disabledChildren={["possible"]}
-                        id={"classification-rule-type-selector"}
-                        onChange={this.onRuleTypeChange}
-                        value={ruleType}
-                    />
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <TypeOfClassifierSelector
                         id={"classification-classifier-type-selector"}
                         onChange={this.onClassifierTypeChange}
                         value={typeOfClassifier}
                     />
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
                     <DefaultClassificationResultSelector
                         id={"classification-default-classification-result-selector"}
                         onChange={this.onDefaultClassificationResultChange}
                         value={defaultClassificationResult}
                     />
-                    <SettingsFooter
-                        id={"classification-settings-footer"}
-                        onClose={this.onSettingsClose}
-                    />
                 </RuleWorkDrawer>
-                <RuleWorkBox id={"classification-body"} styleVariant={"tab-body"} >
-                    {loading ?
-                        <StyledCircularProgress />
-                        :
-                        displayedItems ?
-                            <RuleWorkList onItemSelected={this.onDetailsOpen}>
-                                {this.getListItems(displayedItems)}
-                            </RuleWorkList>
-                            :
-                            <FilterNoResults />
-                    }
-                </RuleWorkBox>
+                <TabBody
+                    content={this.getListItems(displayedItems)}
+                    id={"classification-list"}
+                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems)}
+                    isLoading={loading}
+                    ListProps={{
+                        onItemSelected: this.onDetailsOpen
+                    }}
+                    noFilterResults={!displayedItems}
+                    subheaderContent={[
+                        {
+                            label: "Number of objects",
+                            value: displayedItems.length,
+                        }
+                    ]}
+                />
                 {selectedItem &&
                     <RuleWorkDialog
                         item={selectedItem}

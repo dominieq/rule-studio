@@ -13,11 +13,8 @@ const useStyles = makeStyles(theme => ({
         position: "relative",
         padding: "2px 16px",
         display: "flex",
-        flexDirection: "row",
-        flexWrap: "nowrap",
         alignItems: "center",
-        justifyContent: "flex-start",
-        zIndex: 2,
+        zIndex: theme.zIndex.appBar,
     },
     panel: {
         position: "relative",
