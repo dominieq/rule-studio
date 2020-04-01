@@ -153,10 +153,12 @@ class Classification extends Component {
     onCalculateClick = (event) => {
         event.persist();
         let project = {...this.props.project};
+        const { defaultClassificationResult, ruleType, typeOfClassifier } = this.state;
 
         let data = new FormData();
-        data.append("typeOfClassifier", this.state.typeOfClassifier);
-        data.append("defaultClassificationResult", this.state.defaultClassificationResult);
+        data.append("defaultClassificationResult", defaultClassificationResult);
+        data.append("typeOfRules", ruleType);
+        data.append("typeOfClassifier", typeOfClassifier);
         if (event.target.files) data.append("data", event.target.files[0]);
         if (!project.dataUpToDate && !event.target.files) {
             data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
@@ -168,7 +170,7 @@ class Classification extends Component {
         }, () => {
             let msg, title = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/classification`, {
-                method: project.dataUpToDate ? "PUT" : "POST",
+                method: project.dataUpToDate || event.target.files ? "PUT" : "POST",
                 body: data,
             }).then(response => {
                 if (response.status === 200) {

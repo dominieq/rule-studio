@@ -62,6 +62,7 @@ class CrossValidation extends Component {
             loading: true,
         }, () => {
             const project = {...this.props.project};
+
             let msg, title = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/crossValidation`, {
                 method: 'GET'
@@ -164,24 +165,27 @@ class CrossValidation extends Component {
         });
     };
 
-
-
     onCalculateClick = () => {
         this.setState({
             loading: true,
         }, () => {
-            const project = {...this.props.project};
+            let project = {...this.props.project};
 
             let data = new FormData();
-            data.append("typeOfUnions", this.state.typeOfUnions);
+            data.append("defaultClassificationResult", this.state.defaultClassificationResult);
             data.append("consistencyThreshold", this.state.threshold);
             data.append("typeOfClassifier", this.state.typeOfClassifier);
-            data.append("defaultClassificationResult", this.state.defaultClassificationResult);
+            data.append("typeOfRules", this.state.ruleType);
+            data.append("typeOfUnions", this.state.typeOfUnions);
             data.append("numberOfFolds", this.state.foldNumber);
+            if (!project.dataUpToDate) {
+                data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
+                data.append("data", JSON.stringify(project.result.informationTable.objects));
+            }
 
             let msg, title = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/crossValidation`, {
-                method: "PUT",
+                method: project.dataUpToDate ? "PUT" : "POST",
                 body: data
             }).then(response => {
                 if (response.status === 200) {
