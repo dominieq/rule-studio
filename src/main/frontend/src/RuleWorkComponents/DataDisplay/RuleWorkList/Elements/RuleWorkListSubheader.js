@@ -58,8 +58,8 @@ function RuleWorkListSubheader(props) {
     return (
         <ListSubheader classes={{root: subheaderClasses.root}} {...other}>
             {children.map((child, index) => (
-                <Fragment>
-                    <div className={textClasses.parameterCell} key={index}>
+                <Fragment key={index}>
+                    <div className={textClasses.parameterCell}>
                         <div className={clsx(textClasses.textCell, textClasses.label)}>
                             { child.label }
                         </div>
@@ -93,7 +93,6 @@ RuleWorkListSubheader.propTypes = {
 RuleWorkListSubheader.defaultProps = {
     component: 'div',
     disableGutters: true,
-    //disableSticky: true,
 };
 
 export default RuleWorkListSubheader;

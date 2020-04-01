@@ -25,6 +25,25 @@ class RuleWorkList extends Component {
         };
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { itemsPerPage, selectedPage } = this.state;
+        const { children } = this.props;
+
+        if (prevProps.children.length !== children.length) {
+            const count = Math.ceil(children.length / itemsPerPage);
+            if (this.state.selectedPage > count) {
+                this.setState({
+                    selectedPage: count
+                });
+            }
+            if (children.length < itemsPerPage && selectedPage !== 1) {
+                this.setState({
+                    selectedPage: 1,
+                });
+            }
+        }
+    }
+
     onListItemClick = (event, index) => {
         this.setState({
             selectedItem: index,
