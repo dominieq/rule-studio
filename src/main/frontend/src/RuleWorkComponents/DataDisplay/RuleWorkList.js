@@ -1,6 +1,6 @@
-import React, {Component, Fragment} from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import {withStyles} from "@material-ui/core";
+import { withStyles } from "@material-ui/core";
 import RuleWorkListItem from "./RuleWorkListItem";
 import StyledPagination from "../Navigation/StyledPagination";
 import List from "@material-ui/core/List";
@@ -40,8 +40,8 @@ class RuleWorkList extends Component {
     };
 
     render() {
-        const {selectedItem, selectedPage, itemsPerPage} = this.state;
-        const {children, onItemSelected, ...other} = this.props;
+        const { selectedItem, selectedPage, itemsPerPage } = this.state;
+        const { children, onItemSelected, ...other } = this.props;
 
         const count = Math.ceil(children.length / itemsPerPage);
 
@@ -51,6 +51,14 @@ class RuleWorkList extends Component {
 
         return (
             <Fragment>
+                <StyledPagination
+                    count={count}
+                    hidden={children.length < 50 || displayedItems.length < 25}
+                    id={"top-pagination"}
+                    onChange={this.onPageChange}
+                    page={selectedPage}
+                    position={"top"}
+                />
                 <StyledList {...other}>
                     {displayedItems.map((item, index) => (
                         <RuleWorkListItem
@@ -64,11 +72,10 @@ class RuleWorkList extends Component {
                 <StyledPagination
                     count={count}
                     hidden={children.length < 50}
+                    id={"bottom-pagination"}
                     onChange={this.onPageChange}
                     page={selectedPage}
-                    showFirstButton={true}
-                    showLastButton={true}
-                    variant={"outlined"}
+                    position={"bottom"}
                 />
             </Fragment>
         )
@@ -87,7 +94,6 @@ RuleWorkList.propTypes = {
     component: PropTypes.elementType,
     dense: PropTypes.bool,
     disablePadding: PropTypes.bool,
-    ListItemContent: PropTypes.object,
     onItemSelected: PropTypes.func,
     subheader: PropTypes.node,
 };
