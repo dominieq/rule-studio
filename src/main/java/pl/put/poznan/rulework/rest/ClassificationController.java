@@ -7,6 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.enums.ClassifierType;
+import pl.put.poznan.rulework.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulework.model.Classification;
 import pl.put.poznan.rulework.service.ClassificationService;
 
@@ -39,6 +41,8 @@ public class ClassificationController {
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Classification> putClassification(
             @PathVariable("id") UUID id,
+            @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
+            @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
             @RequestParam(name = "data", required = false) MultipartFile dataFile,
             @RequestParam(name = "separator", defaultValue = ",") Character separator,
             @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
@@ -46,9 +50,9 @@ public class ClassificationController {
 
         Classification result = null;
         if(dataFile != null) {
-            result = classificationService.putClassificationNewData(id, dataFile, separator, header);
+            result = classificationService.putClassificationNewData(id, typeOfClassifier, defaultClassificationResult, dataFile, separator, header);
         } else {
-            result = classificationService.putClassification(id);
+            result = classificationService.putClassification(id, typeOfClassifier, defaultClassificationResult);
         }
 
         return ResponseEntity.ok(result);
@@ -57,11 +61,13 @@ public class ClassificationController {
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Classification> postClassification(
             @PathVariable("id") UUID id,
+            @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
+            @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting classification...");
 
-        Classification result = classificationService.postClassification(id, metadata, data);
+        Classification result = classificationService.postClassification(id, typeOfClassifier, defaultClassificationResult, metadata, data);
 
         return ResponseEntity.ok(result);
     }

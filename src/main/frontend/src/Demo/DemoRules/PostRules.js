@@ -6,6 +6,9 @@ class PostRules extends Component {
 
         this.state = {
             id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f',
+            typeOfUnions: 'monotonic',
+            consistencyThreshold: 0,
+            typeOfRules: 'certain',
             metadata: JSON.stringify(
               [
                 {
@@ -126,43 +129,71 @@ class PostRules extends Component {
         })
     }
 
-    postRules = (event) => {
-        event.preventDefault()
-
-        let formData = new FormData()
-        formData.append('metadata', this.state.metadata)
-        formData.append('data', this.state.data)
-
-        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/rules`, {
-            method: 'POST',
-            body: formData
-        }).then(response => {
-            console.log(response)
-            if(response.status === 200) {
-                response.json().then(result => {
-                    console.log("Received rules:")
-                    console.log(result)
-                }).catch(err => {
-                    console.log(err)
-                })
-            } else if(response.status === 404) {
-                response.json().then(result => {
-                    console.log("Błąd 404.")
-                    console.log(result.message)
-                }).catch(err => {
-                    console.log(err)
-                })
-            } else {
-                response.json().then(result => {
-                    console.log("Wynik dzialania response.json():")
-                    console.log(result)
-                }).catch(err => {
-                    console.log(err)
-                })
-            }
-        }).catch(err => {
-            console.log(err)
+    handleTypeOfUnionsChange = (event) => {
+        this.setState({
+            typeOfUnions: event.target.value
         })
+    }
+
+    handleConsistencyThresholdChange = (event) => {
+        this.setState({
+            consistencyThreshold: event.target.value
+        })
+    }
+
+    handleTypeOfRulesChange = (event) => {
+        this.setState({
+            typeOfRules: event.target.value
+        })
+    }
+
+    postRules = (event) => {
+      event.preventDefault()
+
+      let formData = new FormData()
+      formData.append('typeOfUnions', this.state.typeOfUnions)
+      formData.append('consistencyThreshold', this.state.consistencyThreshold)
+      formData.append('typeOfRules', this.state.typeOfRules)
+      formData.append('metadata', this.state.metadata)
+      formData.append('data', this.state.data)
+
+      fetch(`http://localhost:8080/projects/${this.state.id_projektu}/rules`, {
+          method: 'POST',
+          body: formData
+      }).then(response => {
+          console.log(response)
+          if(response.status === 200) {
+              response.json().then(result => {
+                  console.log("Received rules:")
+                  console.log(result)
+              }).catch(err => {
+                  console.log(err)
+              })
+          } else if(response.status === 404) {
+              response.json().then(result => {
+                  console.log("Error 404.")
+                  console.log(result.message)
+              }).catch(err => {
+                  console.log(err)
+              })
+          } else if(response.status === 422) {
+              response.json().then(result => {
+                  console.log("Error 422.")
+                  console.log(result.message)
+              }).catch(err => {
+                  console.log(err)
+              })
+          } else {
+              response.json().then(result => {
+                  console.log("Result of response.json():")
+                  console.log(result)
+              }).catch(err => {
+                  console.log(err)
+              })
+          }
+      }).catch(err => {
+          console.log(err)
+      })
     }
 
     render() {
@@ -170,6 +201,19 @@ class PostRules extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
+                <label for="typeOfUnionsPostRules">typeOfUnions-></label>
+                <select id="typeOfUnionsPostRules" onChange={this.handleTypeOfUnionsChange}>
+                    <option value="monotonic">monotonic</option>
+                    <option value="standard">standard</option>
+                </select>
+                consistencyThreshold->
+                <input type='text' value={this.state.consistencyThreshold} onChange={this.handleConsistencyThresholdChange} />
+                <label for="typeOfRulesPostRules">typeOfRules-></label>
+                <select id="typeOfRulesPostRules" onChange={this.handleTypeOfRulesChange}>
+                    <option value="certain">certain</option>
+                    <option value="possible">possible</option>
+                    <option value="both">both</option>
+                </select>
                 <button onClick={this.postRules}>postRules</button>
             </div>
         )

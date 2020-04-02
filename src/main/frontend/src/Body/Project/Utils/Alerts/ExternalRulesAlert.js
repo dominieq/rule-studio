@@ -1,6 +1,6 @@
 import React from "react";
 import {makeStyles} from "@material-ui/core";
-import {ArrowUpBoldOutline} from "mdi-material-ui";
+import {UploadOutline} from "mdi-material-ui";
 import RuleWorkTooltip from "../../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
 
 const iconStyle = makeStyles(theme => ({
@@ -27,7 +27,7 @@ function ExternalRulesAlert() {
             leaveDelay={1000}
             title={"You are currently using rule set from external file"}
         >
-            <ArrowUpBoldOutline classes={{...iconClasses}} />
+            <UploadOutline classes={{...iconClasses}} />
         </RuleWorkTooltip>
     )
 }

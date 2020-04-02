@@ -1,7 +1,6 @@
 package pl.put.poznan.rulework.rest;
 
 import javafx.util.Pair;
-import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.put.poznan.rulework.enums.RuleType;
+import pl.put.poznan.rulework.enums.UnionType;
+import pl.put.poznan.rulework.model.RulesWithHttpParameters;
 import pl.put.poznan.rulework.service.RulesService;
 
 import java.io.IOException;
@@ -30,28 +32,34 @@ public class RulesController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RuleSetWithComputableCharacteristics> getRules (
+    public ResponseEntity<RulesWithHttpParameters> getRules (
             @PathVariable("id") UUID id) {
         logger.info("Getting rules...");
-        RuleSetWithComputableCharacteristics result = rulesService.getRules(id);
+        RulesWithHttpParameters result = rulesService.getRules(id);
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RuleSetWithComputableCharacteristics> putRules (
-            @PathVariable("id") UUID id) {
+    public ResponseEntity<RulesWithHttpParameters> putRules (
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
+            @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
+            @RequestParam(name = "typeOfRules") RuleType typeOfRules) {
         logger.info("Putting rules...");
-        RuleSetWithComputableCharacteristics result = rulesService.putRules(id);
+        RulesWithHttpParameters result = rulesService.putRules(id, typeOfUnions, consistencyThreshold, typeOfRules);
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RuleSetWithComputableCharacteristics> postRules (
+    public ResponseEntity<RulesWithHttpParameters> postRules (
             @PathVariable("id") UUID id,
+            @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
+            @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
+            @RequestParam(name = "typeOfRules") RuleType typeOfRules,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting rules...");
-        RuleSetWithComputableCharacteristics result = rulesService.postRules(id, metadata, data);
+        RulesWithHttpParameters result = rulesService.postRules(id, typeOfUnions, consistencyThreshold, typeOfRules, metadata, data);
         return ResponseEntity.ok(result);
     }
 

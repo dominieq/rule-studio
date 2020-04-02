@@ -11,13 +11,10 @@ const useStyles = makeStyles(theme => ({
     },
     bar: {
         position: "relative",
-        padding: "2px 15px 2px",
+        padding: "2px 16px",
         display: "flex",
-        flexDirection: "row",
-        flexWrap: "nowrap",
         alignItems: "center",
-        justifyContent: "flex-start",
-        zIndex: 2,
+        zIndex: theme.zIndex.appBar,
     },
     panel: {
         position: "relative",
@@ -36,12 +33,12 @@ const useStyles = makeStyles(theme => ({
 }), {name: "rule-work"});
 
 function StyledPaper(props) {
-    const {children, classes: propsClasses, styleVariant, paperRef, ...other} = props;
+    const {children, classes: propsClasses, className, styleVariant, paperRef, ...other} = props;
     const classes = {...useStyles(), ...propsClasses};
 
     return (
             <Paper
-                className={clsx(classes.paper, classes[styleVariant])}
+                className={clsx(classes.paper, classes[styleVariant], className)}
                 {...paperRef ? {ref: paperRef} : null}
                 {...other}
             >
@@ -53,6 +50,7 @@ function StyledPaper(props) {
 StyledPaper.propTypes = {
     children: PropTypes.node,
     classes: PropTypes.object,
+    className: PropTypes.string,
     component: PropTypes.elementType,
     elevation: PropTypes.number,
     paperRef: PropTypes.object,
@@ -63,8 +61,8 @@ StyledPaper.propTypes = {
 
 StyledPaper.defaultProps = {
     square: true,
+    elevation: 0,
     styleVariant: "bar",
-    variant: "outlined"
 };
 
 export default StyledPaper;

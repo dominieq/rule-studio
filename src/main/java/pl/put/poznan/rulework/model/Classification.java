@@ -1,36 +1,53 @@
 package pl.put.poznan.rulework.model;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import org.rulelearn.classification.SimpleClassificationResult;
+import org.rulelearn.classification.ClassificationResult;
+import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.validation.OrdinalMisclassificationMatrix;
+import pl.put.poznan.rulework.enums.ClassifierType;
+import pl.put.poznan.rulework.enums.DefaultClassificationResultType;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class Classification {
-    private SimpleClassificationResult[] simpleClassificationResults;
+    private ClassificationResult[] classificationResults;
     private InformationTable informationTable;
+    private Decision[] orderOfDecisions;
     private IntList[] indicesOfCoveringRules;
-    private IntList[] indicesOfCoveredObjects;
+    private OrdinalMisclassificationMatrix ordinalMisclassificationMatrix;
+    private ClassifierType typeOfClassifier;
+    private DefaultClassificationResultType defaultClassificationResult;
 
-    public Classification(SimpleClassificationResult[] simpleClassificationResults, InformationTable informationTable) {
-        this.simpleClassificationResults = simpleClassificationResults;
+    public Classification(ClassificationResult[] simpleClassificationResults, InformationTable informationTable) {
+        this.classificationResults = simpleClassificationResults;
         this.informationTable = informationTable;
     }
 
-    public Classification(SimpleClassificationResult[] simpleClassificationResults, InformationTable informationTable, IntList[] indicesOfCoveringRules, IntList[] indicesOfCoveredObjects) {
-        this.simpleClassificationResults = simpleClassificationResults;
+    public Classification(ClassificationResult[] classificationResults, InformationTable informationTable, Decision[] orderOfDecisions, IntList[] indicesOfCoveringRules, OrdinalMisclassificationMatrix ordinalMisclassificationMatrix) {
+        this.classificationResults = classificationResults;
         this.informationTable = informationTable;
+        this.orderOfDecisions = orderOfDecisions;
         this.indicesOfCoveringRules = indicesOfCoveringRules;
-        this.indicesOfCoveredObjects = indicesOfCoveredObjects;
+        this.ordinalMisclassificationMatrix = ordinalMisclassificationMatrix;
     }
 
-    public SimpleClassificationResult[] getSimpleClassificationResults() {
-        return simpleClassificationResults;
+    public Classification(ClassificationResult[] classificationResults, InformationTable informationTable, Decision[] orderOfDecisions, IntList[] indicesOfCoveringRules, OrdinalMisclassificationMatrix ordinalMisclassificationMatrix, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult) {
+        this.classificationResults = classificationResults;
+        this.informationTable = informationTable;
+        this.orderOfDecisions = orderOfDecisions;
+        this.indicesOfCoveringRules = indicesOfCoveringRules;
+        this.ordinalMisclassificationMatrix = ordinalMisclassificationMatrix;
+        this.typeOfClassifier = typeOfClassifier;
+        this.defaultClassificationResult = defaultClassificationResult;
     }
 
-    public void setSimpleClassificationResults(SimpleClassificationResult[] simpleClassificationResults) {
-        this.simpleClassificationResults = simpleClassificationResults;
+    public ClassificationResult[] getClassificationResults() {
+        return classificationResults;
+    }
+
+    public void setClassificationResults(ClassificationResult[] classificationResults) {
+        this.classificationResults = classificationResults;
     }
 
     public InformationTable getInformationTable() {
@@ -41,29 +58,56 @@ public class Classification {
         this.informationTable = informationTable;
     }
 
-    public IntList[] getindicesOfCoveringRules() {
+    public Decision[] getOrderOfDecisions() {
+        return orderOfDecisions;
+    }
+
+    public void setOrderOfDecisions(Decision[] orderOfDecisions) {
+        this.orderOfDecisions = orderOfDecisions;
+    }
+
+    public IntList[] getIndicesOfCoveringRules() {
         return indicesOfCoveringRules;
     }
 
-    public void setindicesOfCoveringRules(IntList[] indicesOfCoveringRules) {
+    public void setIndicesOfCoveringRules(IntList[] indicesOfCoveringRules) {
         this.indicesOfCoveringRules = indicesOfCoveringRules;
     }
 
-    public IntList[] getindicesOfCoveredObjects() {
-        return indicesOfCoveredObjects;
+    public OrdinalMisclassificationMatrix getOrdinalMisclassificationMatrix() {
+        return ordinalMisclassificationMatrix;
     }
 
-    public void setindicesOfCoveredObjects(IntList[] indicesOfCoveredObjects) {
-        this.indicesOfCoveredObjects = indicesOfCoveredObjects;
+    public void setOrdinalMisclassificationMatrix(OrdinalMisclassificationMatrix ordinalMisclassificationMatrix) {
+        this.ordinalMisclassificationMatrix = ordinalMisclassificationMatrix;
+    }
+
+    public ClassifierType getTypeOfClassifier() {
+        return typeOfClassifier;
+    }
+
+    public void setTypeOfClassifier(ClassifierType typeOfClassifier) {
+        this.typeOfClassifier = typeOfClassifier;
+    }
+
+    public DefaultClassificationResultType getDefaultClassificationResult() {
+        return defaultClassificationResult;
+    }
+
+    public void setDefaultClassificationResult(DefaultClassificationResultType defaultClassificationResult) {
+        this.defaultClassificationResult = defaultClassificationResult;
     }
 
     @Override
     public String toString() {
         return "Classification{" +
-                "simpleClassificationResults=" + Arrays.toString(simpleClassificationResults) +
+                "classificationResults=" + Arrays.toString(classificationResults) +
                 ", informationTable=" + informationTable +
-                ", indicesOfCoveringRules=" + indicesOfCoveringRules +
-                ", indicesOfCoveredObjects=" + indicesOfCoveredObjects +
+                ", orderOfDecisions=" + Arrays.toString(orderOfDecisions) +
+                ", indicesOfCoveringRules=" + Arrays.toString(indicesOfCoveringRules) +
+                ", ordinalMisclassificationMatrix=" + ordinalMisclassificationMatrix +
+                ", typeOfClassifier=" + typeOfClassifier +
+                ", defaultClassificationResult=" + defaultClassificationResult +
                 '}';
     }
 }

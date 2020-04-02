@@ -1,11 +1,20 @@
 import React from "react";
-import StyledTypography from "../../../../RuleWorkComponents/DataDisplay/StyledTypography";
+import {makeStyles} from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
+
+const useStyles = makeStyles(theme=> ({
+    "no-results": {
+        color: theme.palette.text.default,
+    }
+}), {name: "filter"});
 
 function FilterNoResults() {
+    const classes = useStyles();
+
     return (
-        <StyledTypography styleVariant={"filter-no-results"} variant={"h6"}>
+        <Typography className={classes["no-results"]} variant={"h6"}>
             Oops... it appears that there are no objects containing your phrase.
-        </StyledTypography>
+        </Typography>
     )
 }
 

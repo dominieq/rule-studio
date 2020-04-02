@@ -1,15 +1,13 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
-import CalculateButton from "../Utils/Calculations/CalculateButton";
+import TabBody from "../Utils/TabBody";
+import CalculateButton from "../Utils/Buttons/CalculateButton";
 import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterNoResults from "../Utils/Filtering/FilterNoResults";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox"
-import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
-import RuleWorkSnackbar from "../../../RuleWorkComponents/Feedback/RuleWorkSnackbar";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import { ConesDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
+import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 
 class Cones extends Component {
@@ -26,7 +24,7 @@ class Cones extends Component {
             displayedItems: [],
             selectedItem: null,
             openDetails: false,
-            snackbarProps: undefined,
+            alertProps: undefined,
         };
 
         this.upperBar = React.createRef();
@@ -34,12 +32,12 @@ class Cones extends Component {
 
     componentDidMount() {
         this._isMounted = true;
-        const project = this.props.project;
+        const project = {...this.props.project};
 
         this.setState({
             loading: true,
         }, () => {
-            let msg = "";
+            let msg, title = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/cones`, {
                 method: "GET"
             }).then(response => {
@@ -48,51 +46,54 @@ class Cones extends Component {
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
+                            this._data = result;
+                            this._items = items;
                             this.setState({
-                                loading: false,
                                 displayedItems: items,
-                            }, () => {
-                                this._data = result;
-                                this._items = items;
                             });
                         }
                     }).catch(error => {
                         console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
                     });
                 } else {
                     response.json().then(result => {
-                        msg = "error " + result.status + ": " + result.message;
-                        let alertProps = {hasTitle: true, title: "Something went wrong! Please don't panic :)"};
-                        let snackbarProps = {alertProps: alertProps, open: true, message: msg, variant: "info"};
                         if (this._isMounted) {
+                            msg = "ERROR " + result.status + ": " + result.message;
+                            title = "Something went wrong! Couldn't load dominance cones :(";
+                            let alertProps = {message: msg, open: true,  title: title, severity: "warning"};
                             this.setState({
-                                loading: false,
-                                snackbarProps: result.status !== 404 ? snackbarProps : null
+                                alertProps: result.status !== 404 ? alertProps : undefined,
                             });
                         }
-                    }).catch(error => {
-                        console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
+                    }).catch(() => {
+                        if (this._isMounted) {
+                            msg = "Something went wrong! Couldn't load dominance cones :(";
+                            title = "ERROR " + response.status;
+                            let alertProps = {message: msg, open: true, title: title, severity: "error"};
+                            this.setState({
+                                alertProps: response.status !== 404 ? alertProps : undefined,
+                            });
+                        }
                     });
                 }
             }).catch(error => {
                 console.log(error);
                 if (this._isMounted) {
-                    msg = "Server error! Couldn't load cones :(";
+                    msg = "Server error! Couldn't load dominance cones :(";
                     this.setState({
-                        loading: false,
-                        snackbarProps: {open: true, message: msg, variant: "error"},
+                        alertProps: {message: msg, open: true, severity: "error"},
                     });
                 }
+            }).finally(() => {
+                if (this._isMounted) this.setState({loading: false});
             });
         });
     }
 
-   componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
             this.setState({
-                displayedItems: [...this.getItems(this._data)]
+                displayedItems: this.getItems(this._data)
             });
         }
     }
@@ -106,7 +107,11 @@ class Cones extends Component {
                 project.result.dominanceCones = this._data;
                 project.result.calculatedDominanceCones = true;
             }
-            this.props.onTabChange(project, this.props.value, this.state.updated);
+
+            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
+            tabsUpToDate[this.props.value] = this.state.updated;
+
+            this.props.onTabChange(project, this.state.updated, tabsUpToDate);
         }
     }
 
@@ -120,47 +125,54 @@ class Cones extends Component {
             data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
             data.append("data", JSON.stringify(project.result.informationTable.objects));
 
-            let msg = "";
+            let msg, title = "";
             fetch(`http://localhost:8080/projects/${project.result.id}/cones`, {
                 method: project.dataUpToDate ? "PUT" : "POST",
                 body: project.dataUpToDate ? null : data,
             }).then(response => {
                 if (response.status === 200) {
                     response.json().then(result => {
+                        const updated = true;
+
                         if (this._isMounted) {
                             const items = this.getItems(result);
 
+                            this._data = result;
+                            this._items = items;
                             this.setState({
                                 changes: true,
-                                updated: true,
-                                loading: false,
+                                updated: updated,
                                 displayedItems: items,
-                            }, () => {
-                                this._data = result;
-                                this._items = items;
                             });
                         } else {
                             project.result.dominanceCones = result;
-                            project.result.calculatedDominanceCones = true;
-                            this.props.onTabChange(project, this.props.value, true);
+                            project.result.calculatedDominanceCones = updated;
+
+                            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
+                            tabsUpToDate[this.props.value] = updated;
+
+                            this.props.onTabChange(project, updated, tabsUpToDate);
                         }
                     }).catch(error => {
                         console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
                     });
                 } else {
                     response.json().then(result => {
                         if (this._isMounted) {
-                            msg = "error " + result.status + ": " + result.message;
-                            let alertProps = {hasTitle: true, title: "Something went wrong! Please don't panic :)"};
+                            msg = "ERROR " + result.status + ": " + result.message;
+                            title = "Something went wrong! Couldn't calculate dominance cones :(";
                             this.setState({
-                                loading: false,
-                                snackbarProps: {alertProps: alertProps, open: true, message: msg, variant: "info"}
+                                alertProps: {message: msg, open: true, title: title, severity: "warning"}
                             });
                         }
-                    }).catch(error => {
-                        console.log(error);
-                        if (this._isMounted) this.setState({loading: false});
+                    }).catch(() => {
+                        if (this._isMounted) {
+                            msg = "Something went wrong! Couldn't calculate dominance cones :(";
+                            title = "ERROR " + response.status;
+                            this.setState({
+                                alertProps: {message: msg, open: true, title: title, severity: "error"}
+                            });
+                        }
                     });
                 }
             }).catch(error => {
@@ -168,11 +180,12 @@ class Cones extends Component {
                 if (this._isMounted) {
                     msg = "Server error! Couldn't calculate dominance cones :(";
                     this.setState({
-                        loading: false,
-                        snackbarProps: {open: true, message: msg, variant: "error"}
+                        alertProps: {message: msg, open: true, severity: "error"}
                     });
                 }
-            });
+            }).finally(() => {
+                if (this._isMounted) this.setState({loading: false});
+            })
         });
     };
 
@@ -184,20 +197,21 @@ class Cones extends Component {
     onDetailsOpen = (index) => {
         this.setState({
             openDetails: true,
-            selectedItem: {...this.state.displayedItems[index]},
+            selectedItem: this._items[index],
         })
     };
 
     onDetailsClose = () => {
         this.setState({
-            openDetails: false,
-            selectedItem: null,
+            openDetails: false
         });
     };
 
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
-            this.setState({snackbarProps: undefined});
+            this.setState(({alertProps}) => ({
+                alertProps: {...alertProps, open: false}
+            }));
         }
     };
 
@@ -209,7 +223,7 @@ class Cones extends Component {
             const objects = [...this.props.project.result.informationTable.objects];
 
             for (let i = 0; i < data.numberOfObjects; i++) {
-                const id = i.toString();
+                const id = i;
                 let name = "Object " + (i + 1);
 
                 if (indexOption !== "default") {
@@ -219,21 +233,47 @@ class Cones extends Component {
                 }
 
                 const tables = {
-                    positiveDCones: data.positiveDCones[i],
-                    negativeDCones: data.negativeDCones[i],
-                    positiveInvDCones: data.positiveInvDCones[i],
-                    negativeInvDCones: data.negativeInvDCones[i],
+                    positiveDCones: data.positiveDCones[i].slice(),
+                    negativeDCones: data.negativeDCones[i].slice(),
+                    positiveInvDCones: data.positiveInvDCones[i].slice(),
+                    negativeInvDCones: data.negativeInvDCones[i].slice(),
                 };
 
                 const item = new Item(id, name, null, null, tables);
-                items = [...items, item];
+                items.push(item);
             }
         }
         return items;
     };
 
+    getListItems = (items) => {
+        let listItems = [];
+        if (this._data && items) {
+            for (let i = 0; i < items.length; i++) {
+                const listItem = {
+                    id: items[i].id,
+                    header: items[i].name,
+                    subheader: undefined,
+                    content: undefined,
+                    multiContent: [
+                        {
+                            title: "Number of objects in positive dominance cone:",
+                            subtitle: items[i].tables.positiveDCones.length,
+                        },
+                        {
+                            title: "Number of objects in negative dominance cone:",
+                            subtitle: items[i].tables.negativeDCones.length,
+                        }
+                    ]
+                };
+                listItems.push(listItem)
+            }
+        }
+        return listItems;
+    };
+
     render() {
-        const {loading, displayedItems, openDetails, selectedItem, snackbarProps} = this.state;
+        const {loading, displayedItems, openDetails, selectedItem, alertProps} = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-cones"} styleVariant={"tab"}>
@@ -246,27 +286,31 @@ class Cones extends Component {
                     <span style={{flexGrow: 1}}/>
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
-                <RuleWorkBox id={"cones-list"} styleVariant={"tab-body"}>
-                    {loading ?
-                        <StyledCircularProgress />
-                        :
-                        displayedItems ?
-                            <RuleWorkList onItemSelected={this.onDetailsOpen}>
-                                {displayedItems}
-                            </RuleWorkList>
-                            :
-                            <FilterNoResults />
-                    }
-                </RuleWorkBox>
+                <TabBody
+                    content={this.getListItems(displayedItems)}
+                    id={"cones-list"}
+                    isLoading={loading}
+                    ListProps={{
+                        onItemSelected: this.onDetailsOpen
+                    }}
+                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
+                    noFilterResults={!displayedItems}
+                    subheaderContent={[
+                        {
+                            label: "Number of objects",
+                            value: displayedItems && displayedItems.length
+                        }
+                    ]}
+                />
                 {selectedItem &&
-                    <RuleWorkDialog
+                    <ConesDialog
                         item={selectedItem}
                         onClose={this.onDetailsClose}
                         open={openDetails}
                         projectResult={this.props.project.result}
                     />
                 }
-                <RuleWorkSnackbar {...snackbarProps} onClose={this.onSnackbarClose} />
+                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         );
     }
