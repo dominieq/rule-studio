@@ -17,6 +17,10 @@ class Project {
         this.settings = {
             indexOption: "default",
         };
+        this.dataHistory = {
+            historySnapshot: 0,
+            history: []
+        };
     }
 }
 

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emsi-iggy/rulework-react-data-grid": "^6.1.0",
     "@material-ui/core": "^4.9.6",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.46",
@@ -10,10 +11,10 @@
     "bootstrap": "^4.3.1",
     "clsx": "^1.1.0",
     "immutability-helper": "^3.0.1",
+    "jsdoc": "^3.6.3",
     "mdi-material-ui": "^6.12.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.0",
-    "react-data-grid": "^6.1.0",
     "react-data-grid-addons": "^6.1.0",
     "react-dom": "^16.13.0",
     "react-scripts": "^3.4.0",
@@ -24,7 +25,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "doc": "jsdoc -c jsdoc.json"
   },
   "eslintConfig": {
     "extends": "react-app"

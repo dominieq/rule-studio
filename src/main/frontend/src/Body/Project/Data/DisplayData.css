@@ -5,11 +5,31 @@
 .is-visible {
     border: solid 1px red;
 }
+/*
+.rdg-selected {
+  border: none !important;
+  
+}
 
-.data-modified {
-  display: inline-block;
-  background-color: black;
-  color: white;
+.drag-handle {
+  display: none;
+}*/
+
+/* USTAW ROZMIAR */
+.react-grid-Main{
+  height: 100%;
+}
+  
+.react-grid-Container{
+  height: 100%;
+}
+
+.react-grid-Grid{
+  min-height: 100% !important;
+}
+
+.react-grid-Canvas{
+  height: 100% !important;
 }
 
 div.react-grid-HeaderCell .input-sm {
@@ -20,6 +40,10 @@ div.react-grid-HeaderCell .input-sm {
     border-radius: 3px;
     max-width : 100%;
     border : 1px solid #ddd;
+    /*
+    background-color: #2A3439;
+    color: rgb(102,255,102, 0.8);
+    */
 }
 
 div.react-grid-HeaderCell-sortable {
@@ -43,45 +67,34 @@ div.react-grid-HeaderCell-sortable > .pull-right {
  font-size: small;
 }
 
-.react-grid-HeaderCell {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  background: #FFFFFF;
-  color: #000000; /* 100%: FF, 87%: DE, 70%: B3, 54%: 8A, 50%: 80, 38%: 61, 12%: 1F */
-  padding: 8px;
-  font-weight: bold;
-  border-right: 1px solid #dddddd;
-  border-bottom: 1px solid #dddddd;
-}
-
-.radio-button-group-save-file {
-  /*display: flex;*/
-  
-   flex-direction: row !important; 
-  
-   justify-content: center;
-}
-
-.MuiDialogContent-root{
-  
+#edit-attributes-list {
+  width: 100%;
 }
 
 .nicelyInColumn {
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: flex-start;
   float: left;
   margin-right: 16px;
+  width: 16vw;
 }
 
 .editAttributesValues {
+  margin-top: 16px;
+  width: auto;
+  
+  
+}
+.editAttributesWrapper {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;    
+}
+
+.editAttributesValues > div, .editAttributesValues > label {
+  float: left;
+  clear: left;
+  width: 16vw;
 }
 
 .attributeDomain {
@@ -90,131 +103,37 @@ div.react-grid-HeaderCell-sortable > .pull-right {
   /*overflow-y: auto;*/
 }
 
-.attributeDomainWrapper {
-  width: 346px;
+div.attributeDomainWrapper {
+  height: 98%;
   margin-top: 16px;
+  clear: none;
+  float: none;
+  display: inline-block;
+  flex-basis: 100%; 
+  width: 346px;
+  
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-/* width */
+/* BLUE SCROLL IN EDIT ATTRIBUTES ENUMERATION */
+/* width 
 .attributeDomainWrapper::-webkit-scrollbar {
   width: 14px;
 }
 
-/* Track */
+/* Track 
 .attributeDomainWrapper::-webkit-scrollbar-track {
   box-shadow: inset 0 0 5px grey;
   border-radius: 14px;
 }
 
-/* Handle */
+/* Handle 
 .attributeDomainWrapper::-webkit-scrollbar-thumb {
   background: #3f51b5;
   border-radius: 14px;
 }
-/*
-.attributeDomain {
-  width: 350px;
-  height: 300px;
-  margin-top: 16px;
-  /* border: 1px solid red; 
-  overflow-y: auto;
-}*/
-
-/* cell 
-.react-grid-Cell {
-  background-color: #212121;
-  color: #B3B3B3;
-  padding-left: 8px;
-  padding-right: 8px;
-  border-right: 1px solid #eee;
-  border-bottom: 1px solid #dddddd;
-}
-/* core 
-.react-grid-Main {
-  background-color: #212121;
-  color: inherit;
-  padding: 0px;
-  outline: 1px solid #212121;
-  clear : both;
-}
-
-.react-grid-Main {
-  background-color: #FF0000;
-  border: 1px solid #212121;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.react-grid-Canvas {
-  background-color: #212121;
-}
-
-/ rows 
-.react-grid-Row.row-context-menu .react-grid-Cell {
-  background-color: #FF0000;
-}
-
-
-/* header 
-.react-grid-HeaderCell {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  background: #FFFFFF;
-  color: #000000; // 100%: FF, 87%: DE, 70%: B3, 54%: 8A, 50%: 80, 38%: 61, 12%: 1F 
-  padding: 8px;
-  font-weight: bold;
-  border-right: 1px solid #dddddd;
-  border-bottom: 1px solid #dddddd;
-}
-
-/* cell 
-.react-grid-Cell {
-  background-color: #212121;
-  color: #B3B3B3;
-  padding-left: 8px;
-  padding-right: 8px;
-  border-right: 1px solid #eee;
-  border-bottom: 1px solid #dddddd;
-}
-/* core 
-.react-grid-Main {
-  background-color: #212121;
-  color: inherit;
-  padding: 0px;
-  outline: 1px solid #212121;
-  clear : both;
-}
-
-.react-grid-Main {
-  background-color: #FF0000;
-  border: 1px solid #212121;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.react-grid-Canvas {
-  background-color: #212121;
-}
-
-/* rows 
-.react-grid-Row.row-context-menu .react-grid-Cell {
-  background-color: #FF0000;
-}
 */
-
-
 
 /* Context-Menu */
 .react-contextmenu {
@@ -222,11 +141,11 @@ div.react-grid-HeaderCell-sortable > .pull-right {
     padding: 5px 0;
     margin: 2px 0 0;
     font-size: 16px;
-    color: #373a3c;
+    color: black;
     text-align: left;
-    background-color: #fff;
+    background-color: rgb(171,250,169);                 /* BACKGROUND COLOR */
     background-clip: padding-box;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 1px solid rgb(94, 255, 0);                 /* BORDER */
     border-radius: 0.25rem;
     outline: none;
     opacity: 0;
@@ -249,13 +168,14 @@ div.react-grid-HeaderCell-sortable > .pull-right {
     background: 0 0;
     border: 0;
     cursor: pointer;
+    outline: transparent !important;
   }
   
   .react-contextmenu-item.react-contextmenu-item--active,
   .react-contextmenu-item.react-contextmenu-item--selected {
-    color: #fff;
-    background-color: #20a0ff;
-    border-color: #20a0ff;
+    color: black;                                       /* COLOR OF SELECTED */
+    background-color: rgb(158,230,156);
+    border-color: rgb(94, 255, 0);
     text-decoration: none;
   }
   
@@ -279,18 +199,7 @@ div.react-grid-HeaderCell-sortable > .pull-right {
   
   .react-contextmenu-item.react-contextmenu-submenu {
     padding: 0;
-  }
-  
-  .react-contextmenu-item.react-contextmenu-submenu > .react-contextmenu-item {
-  }
-  
-  .react-contextmenu-item.react-contextmenu-submenu
-    > .react-contextmenu-item:after {
-    content: "▶";
-    display: inline-block;
-    position: absolute;
-    right: 7px;
-  }
+  } 
   
   .example-multiple-targets::after {
     content: attr(data-count);
@@ -304,7 +213,7 @@ div.react-grid-HeaderCell-sortable > .pull-right {
   *
   *
   */
-
+/*
   .rdg-editor-container * {
     box-sizing: border-box;
   }
@@ -312,7 +221,7 @@ div.react-grid-HeaderCell-sortable > .pull-right {
   .rdg-editor-container *::before, .rdg-editor-container *::after {
     box-sizing: border-box;
   }
-
+*/
   .react-grid-Main :root {
     --blue:#007bff;
     --indigo:#6610f2;

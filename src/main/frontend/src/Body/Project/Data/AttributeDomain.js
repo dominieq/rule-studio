@@ -10,6 +10,7 @@ import { Button } from "@material-ui/core";
 import { withStyles } from '@material-ui/styles';
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 
 const styles = theme => ({
   root: {
@@ -23,6 +24,40 @@ const styles = theme => ({
   }  
 });
 
+const style = {
+    backgroundColor: "#545F66",
+    color: "#ABFAA9",
+}
+
+const StyledList = withStyles({
+  root: {
+      backgroundColor: "#545F66",
+      color: "#ABFAA9",
+      //minWidth: "50%",
+  }
+})(props => <List {...props} />);
+
+const StyledTextField = withStyles({
+  root: {
+      '& label': {
+        color: 'black',
+        backgroundColor: '#ABFAA9',
+      },
+      '& .MuiInput-underline:before': {
+        borderBottomColor: '#6BD425',
+      },
+      '&:hover label': {
+          backgroundColor: "#6BD425",
+      },
+      '& .MuiInput-underline:after': {
+        borderBottomColor: '#6BD425',
+      },
+      '& label.Mui-focused': {
+        color: 'black',
+        backgroundColor: '#66FF66'
+      },
+  },
+})(TextField);
 
 class AttributeDomain extends React.Component {
   constructor(props) {
@@ -152,14 +187,16 @@ class AttributeDomain extends React.Component {
     const elements = [];
     this.state.domainElements.forEach((x, num) => {
       elements.push(
-        <List dense={false} key={x.id.toString()}>
+        <StyledList dense={false} key={x.id.toString()}>
           <ListItem>
             <ListItemText primary={num + 1} classes={{ root: classes.root }} />
-            <TextField
+            <StyledTextField
               id={x.id.toString()}
               label="Domain element"
               onChange={this.textFieldOnChange}
               defaultValue={x.text}
+              autoComplete="off"
+              required
             />
 
             <IconButton
@@ -167,6 +204,7 @@ class AttributeDomain extends React.Component {
               className={classes.margin}
               size="small"
               value={x.id}
+              style={style}
               onClick={this.switchUpward}
             >
               <ArrowUpwardIcon fontSize="inherit" />
@@ -178,6 +216,7 @@ class AttributeDomain extends React.Component {
               disableFocusRipple={false}
               size="small"
               value={x.id}
+              style={style}
               onClick={this.switchDownward}
             >
               <ArrowDownwardIcon fontSize="inherit" />
@@ -189,12 +228,13 @@ class AttributeDomain extends React.Component {
                 aria-label="delete"
                 onClick={this.onClickRemoveElement}
                 value={x.id}
+                style={style}
               >
                 <DeleteIcon />
               </IconButton>
             </ListItemSecondaryAction>
           </ListItem>
-        </List>
+        </StyledList>
       );
     });
     return elements;
@@ -204,14 +244,16 @@ class AttributeDomain extends React.Component {
     const { classes } = this.props;
     return (
         <div className={classes.left}>
-            <Button
-              onClick={this.onClickAddElement}
-              color="primary"
-              variant="outlined"
-              size="large"
-            >
-              Add domain element
-            </Button>
+          <StyledButton
+            disableElevation={true}
+            onClick={this.onClickAddElement}
+            themeVariant={"primary"}
+            variant={"contained"} //outlined
+            style={{display: "flex", margin: "auto"}}
+          >
+            Add domain element
+          </StyledButton>
+            
             {this.renderElements(classes)}
         </div>
     );
