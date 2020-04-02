@@ -1,9 +1,7 @@
 import React, { Fragment } from 'react';
-import Button from '@material-ui/core/Button';
 import SearchIcon from '@material-ui/icons/Search';
-import { createMuiTheme } from '@material-ui/core/styles';
 import './EditDataButtons.css';
-import RuleWorkTooltip from '../../../RuleWorkComponents/Inputs/RuleWorkTooltip';
+import RuleWorkTooltip from '../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip';
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";

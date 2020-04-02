@@ -1,7 +1,7 @@
 import React from 'react';
-import ReactDataGrid from 'react-data-grid';
+import ReactDataGrid from '@emsi-iggy/rulework-react-data-grid';
 
-import { Editors,  Data, Menu, Filters} from 'react-data-grid-addons';
+import { Editors,  Data, Menu} from 'react-data-grid-addons';
 
 import './DisplayData.css';
 import EditDataButtons from './EditDataButtons';
@@ -21,29 +21,116 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import Tooltip from '@material-ui/core/Tooltip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, createStyles } from '@material-ui/core/styles';
 import { DraggableHeader } from 'react-data-grid-addons';
 import PropTypes from 'prop-types';
 import RuleWorkLoadingIcon from './RuleWorkLoadingIcon';
 import StyledDialog from '../../../RuleWorkComponents/Feedback/StyledDialog';
 import StyledButton from '../../../RuleWorkComponents/Inputs/StyledButton';
+import NumericFilter from './NumericFilter';
+import { Divider } from '@material-ui/core';
 
 const selectors = Data.Selectors;
-const { NumericFilter } = Filters;
 const { DropDownEditor } = Editors;
 const { ContextMenu, MenuItem, ContextMenuTrigger } = Menu;
 const { DraggableContainer } = DraggableHeader;
 
-const heightOfRow = 50;
-const heightOfHeaderRow = 60;
+const heightOfRow = 40; //50
+const heightOfHeaderRow = 50; //60
+const maxNoOfHistorySteps = 30;
+
+const StyledReactDataGrid = (theme) => createStyles({
+    root: {
+    "& div.react-grid-Container": {
+        
+      "& .react-grid-Canvas": {
+        backgroundColor: theme.palette.reactDataGrid.cell.backgroundColor
+      },
+      "& .react-grid-HeaderRow": {
+        backgroundColor: theme.palette.reactDataGrid.cell.backgroundColor
+      },
+      "& .react-grid-Row:hover .react-grid-Cell, .react-grid-Row.row-context-menu .react-grid-Cell": {
+        backgroundColor: theme.palette.reactDataGrid.rowHover.backgroundColor
+      },
+      "& .react-grid-Row .row-selected": {
+        backgroundColor: theme.palette.reactDataGrid.rowMarked.backgroundColor
+      },
+      "& .react-grid-Cell": {
+        backgroundColor: theme.palette.reactDataGrid.cell.backgroundColor,
+        color: theme.palette.reactDataGrid.cell.color,
+        borderRight: theme.palette.reactDataGrid.cell.borderRight,
+        borderBottom: theme.palette.reactDataGrid.cell.borderBottom,
+      },
+      "& .react-grid-HeaderCell": {
+        backgroundColor: theme.palette.reactDataGrid.headerCell.backgroundColor,
+        color: theme.palette.reactDataGrid.headerCell.color,
+        borderRight: theme.palette.reactDataGrid.headerCell.borderRight,
+        borderBottom: theme.palette.reactDataGrid.headerCell.borderBottom,
+      },
+      "& .react-grid-cell-dragged-over-up, .react-grid-cell-dragged-over-down": {
+        background: theme.palette.reactDataGrid.cellDragging.background
+      },
+      "& .rdg-selected": {
+        border: theme.palette.reactDataGrid.cellSelected.border
+      },
+      "& .rdg-selected .drag-handle": {
+        background: theme.palette.reactDataGrid.cellSelected.squareDragHandle.background
+      },
+      "& .rdg-selected:hover .drag-handle": {
+        border: theme.palette.reactDataGrid.cellSelected.squareDragHandle.onHover.border,
+        background: theme.palette.reactDataGrid.cellSelected.squareDragHandle.background
+      },
+      "& .rdg-editor-container .form-control.editor-main": {
+        backgroundColor: theme.palette.reactDataGrid.cellEditor.simple.backgroundColor,
+        color: theme.palette.reactDataGrid.cellEditor.simple.color
+      },
+      "& .rdg-editor-container .editor-main": {
+        backgroundColor: theme.palette.reactDataGrid.cellEditor.dropDown.backgroundColor,
+        color: theme.palette.reactDataGrid.cellEditor.dropDown.color
+      },
+      "& input.editor-main:focus, select.editor-main:focus": {
+        border: theme.palette.reactDataGrid.cellEditor.outline.border,
+      },
+      "& .react-grid-checkbox:checked + .react-grid-checkbox-label:before": {
+        background: theme.palette.reactDataGrid.checkbox.selected.background,
+        boxShadow: theme.palette.reactDataGrid.checkbox.selected.boxShadow,
+      },
+      "& .react-grid-checkbox + .react-grid-checkbox-label:before, .radio-custom + .radio-custom-label:before": {
+        background: theme.palette.reactDataGrid.checkbox.deselected.background,
+        border: theme.palette.reactDataGrid.checkbox.deselected.border,
+      },
+      "& .react-grid-HeaderCell .input-sm": {
+        backgroundColor: theme.palette.reactDataGrid.search.backgroundColor,
+        color: theme.palette.reactDataGrid.search.color,
+      },
+      "& .react-grid-Main .form-control:focus": {
+        backgroundColor: theme.palette.reactDataGrid.search.focused.backgroundColor,
+        color: theme.palette.reactDataGrid.search.focused.color,
+        borderColor: theme.palette.reactDataGrid.search.focused.borderColor
+      },
+      "& .form-control.input-sm::placeholder": {
+        color: theme.palette.reactDataGrid.search.placeholder.color,
+        opacity: theme.palette.reactDataGrid.search.placeholder.opacity,
+      },
+      "& .react-contextmenu": {
+        backgroundColor: theme.palette.reactDataGrid.contextMenu.backgroundColor,
+        border: theme.palette.reactDataGrid.contextMenu.border,
+      },
+      "& .react-contextmenu-item.react-contextmenu-item--active, .react-contextmenu-item.react-contextmenu-item--selected": {
+        backgroundColor: theme.palette.reactDataGrid.contextMenu.hover.backgroundColor,
+        color: theme.palette.reactDataGrid.contextMenu.hover.color,
+      },
+            
+    }
+  }   
+});
 
 const defaultPrimaryColor = "#ABFAA9";
 
-const ValidationTextField = withStyles({
+const ValidationTextField = withStyles(theme => ({
     root: {
         '& label': {
           color: 'black',
@@ -58,7 +145,7 @@ const ValidationTextField = withStyles({
         },
       '& .MuiOutlinedInput-root': {
           height: 40,
-          backgroundColor: "#ABFAA9",
+          backgroundColor: theme.palette.button.primary,
           '&:hover fieldset': {
               borderColor: "#66FF66",
           },
@@ -76,7 +163,7 @@ const ValidationTextField = withStyles({
           },
       },
   },
-})(TextField);
+}))(TextField);
 
 const StyledList = withStyles({
     root: {
@@ -123,10 +210,8 @@ function RightClickContextMenu({
 class DisplayData extends React.Component {
     constructor(props) {
         super(props);
-
+        
         this.state = {
-            rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
-            columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
             enableRowInsert: 0, //-1 no sort, 0-sort asc, 1-sort desc
             selectedRows: [],
             filters: {},
@@ -135,8 +220,10 @@ class DisplayData extends React.Component {
             isOpenedAddAttribute: false,
             isOpenedEditAttributes: false,
             isOpenedSaveToFile: false,
-            saveToFileWhichFile: '',
-            saveToFileWhichFormat: '',
+            saveToFileMetaData: false,
+            saveToFileData: '',
+            saveToFileCsvHeader: false,
+            saveToFileCsvSeparator: '',
             
             editAttributeSelected: '', //name of selected attribute
             addAttributeErrorNotification: '',
@@ -154,9 +241,26 @@ class DisplayData extends React.Component {
             isLoading: false,
             isOpenedTransform: false,
             binarizeNominalAttributesWith3PlusValues: false,
+
+            historySnapshot: this.props.project.dataHistory.historySnapshot,
+            history: this.props.project.dataHistory.history.length ? 
+                this.props.project.dataHistory.history 
+                :
+                [
+                    {
+                        rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
+                        columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
+                    }
+                ],
+            wholeAppError: false,
         };    
         
         this._isMounted = false;
+    }
+
+    static getDerivedStateFromError(error) {
+        // Update state so the next render will show the fallback UI.
+        return { wholeAppError: true };
     }
 
     /**
@@ -174,11 +278,9 @@ class DisplayData extends React.Component {
      * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
      */
     componentDidUpdate(prevProps, prevState) {
+        console.log("Witam w metodzie: componentDidUpdate")
         if(prevProps.project.result.id !== this.props.project.result.id) {
             this.setState({
-                columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
-                rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
-
                 enableRowInsert: 0, //-1 no sort, 0-sort asc, 1-sort desc
                 selectedRows: [],
                 filters: {},
@@ -187,8 +289,10 @@ class DisplayData extends React.Component {
                 isOpenedAddAttribute: false,
                 isOpenedEditAttributes: false,
                 isOpenedSaveToFile: false,
-                saveToFileWhichFile: '',
-                saveToFileWhichFormat: '',
+                saveToFileMetaData: false,
+                saveToFileData: '',
+                saveToFileCsvHeader: false,
+                saveToFileCsvSeparator: '',
                 
                 editAttributeSelected: '', //name of selected attribute
                 addAttributeErrorNotification: '',
@@ -205,9 +309,26 @@ class DisplayData extends React.Component {
 
                 isLoading: false,
                 isOpenedTransform: false,
-                binarizeNominalAttributesWith3PlusValues: false
-            }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
+                binarizeNominalAttributesWith3PlusValues: false,
+
+                historySnapshot: this.props.project.dataHistory.historySnapshot,
+                history: this.props.project.dataHistory.history.length ? 
+                this.props.project.dataHistory.history 
+                :
+                [
+                    {
+                        rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
+                        columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
+                    }
+                ],
+            }, () => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true)))
         }
+       // if(prevState.history[prevState.historySnapshot] !== undefined && this.state.history[this.state.historySnapshot] !== undefined) {
+            console.log("PrevState columns (gdzieJestem = " + prevState.historySnapshot + "):")
+            console.log(prevState.history);
+            console.log("State columns (gdzieJestem = " + this.state.historySnapshot + "):")
+            console.log(this.state.history)
+        //}
     }
 
     /** 
@@ -269,26 +390,32 @@ class DisplayData extends React.Component {
      * Runs only once, after component is mounted (after first [render]{@link DisplayData#render} and before methods shouldComponentUpdate() and [componentDidUpdate]{@link DisplayData#componentDidUpdate}).
      */
     componentDidMount() {
+        console.log("Witam w metodzie: componentDidMount")
         const headers = document.getElementsByClassName("react-grid-HeaderCell-sortable");
         for(let i=0; i<headers.length; i++) {
-            for(let j=0; j<this.state.columns.length; j++)
+            for(let j=0; j<this.state.history[this.state.historySnapshot].columns.length; j++)
             {
-                if(headers[i].innerText === this.state.columns[j].name) {
-                    this.setHeaderColorAndStyleAndRightClick(this.state.columns[j], i);
+                if(headers[i].innerText === this.state.history[this.state.historySnapshot].columns[j].name) {
+                    this.setHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[j], i, true);
                     break;
                 }
             }                        
         }
+       
+
         this._isMounted = true;
     }
 
     componentWillUnmount() {
+        console.log("Witam w metodzie: componentWillUnmount")
         if(this.state.dataModified) {
+            console.log("wszedlem do component did update -> zmienione dane")
             const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
             const tmpData = this.prepareDataFileBeforeSendingToServer();
             const tmpProject = {...this.props.project}
             tmpProject.result.informationTable.attributes = tmpMetaData;
             tmpProject.result.informationTable.objects = tmpData;
+            tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history}
             this.props.updateProject(tmpProject);
         }
         this._isMounted = false;
@@ -303,39 +430,58 @@ class DisplayData extends React.Component {
      * It is a pair key - value, where the key is the column key and the value is the value of the cell to which the cell has been changed.
      */
     onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-        if(toRow - fromRow > 100) {
+        if(toRow - fromRow > 15) {
             this.setState({
-                loading: true
-            });   
+                isLoading: true
+            }, () => {
+                setTimeout(() => {
+                    this.setState(prevState => {
+                        const rows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
+                        const filtered = this.filteredRows();
+                        for (let i = fromRow; i <= toRow; i++) {
+                            const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                            rows[rows_index] = { ...filtered[i], ...updated };
+                        }
 
-            setTimeout(() => {
-                const rows = [...this.state.rows]
-                const filtered = this.filteredRows();
-                for (let i = fromRow; i <= toRow; i++) {
-                    const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
-                    rows[rows_index] = { ...filtered[i], ...updated };
-                }
+                        const tmpHistory = prevState.history.slice(0,prevState.historySnapshot+1);
+                        tmpHistory.push({rows: rows, columns: prevState.history[prevState.historySnapshot].columns});
+                        if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
 
-                this.setState({
-                    rows: rows, 
-                    dataModified: true,
-                    loading: false
-                })
-            })
+                        if(this._isMounted) {
+                            return {
+                                dataModified: true,
+                                isLoading: false,
+                                history: tmpHistory,
+                                historySnapshot: tmpHistory.length-1, 
+                            }
+                        }
+                    });
+                },500)
+            });
         } else {
             this.setState(prevState => {
-                const rows = [...prevState.rows]
+                const rows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
                 const filtered = this.filteredRows();
                 for (let i = fromRow; i <= toRow; i++) {
                     const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                    if(fromRow === toRow) //check if any change happend
+                    {
+                        const tmp = Object.entries(updated)[0];
+                        if(rows[rows_index][tmp[0]] === tmp[1]) {
+                            return ;
+                        }
+                    }
                     rows[rows_index] = { ...filtered[i], ...updated };
                 }
+                const tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
+                tmpHistory.push({rows: rows, columns: prevState.history[prevState.historySnapshot].columns});
+                if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                 return { 
-                    rows: rows, 
-                    dataModified: true
+                    dataModified: true,
+                    history: tmpHistory,
+                    historySnapshot: tmpHistory.length-1, 
                 };
-            });            
-
+            });
         }
     };
 
@@ -346,23 +492,47 @@ class DisplayData extends React.Component {
      * @param {Number} sortDirection Indicates which way sorting should take place. This is one of the values "ASC", "DESC", "NONE", which stand for ascending, descending and none.
      */
     onGridSort = (sortColumn, sortDirection) => {
-        let tmpEnableRowInsert = -1
+        let tmpEnableRowInsert = -1;
+        const tmpCol = this.state.history[this.state.historySnapshot].columns.find(col => col.key === sortColumn);
+        let numberSorting = false;
+        if(tmpCol.valueType !== undefined && (tmpCol.valueType === "integer" || tmpCol.valueType === "real")) numberSorting = true;
+        
         const comparer = (a, b) => {
             if (sortDirection === "ASC") {
+                console.log("Porownuje: " + a[sortColumn] + " z " + b[sortColumn]);
                 ((sortColumn === "uniqueLP") ? tmpEnableRowInsert = 0 : tmpEnableRowInsert = -1)
+                if(numberSorting) {
+                    //a-at the beginning, b-at the end
+                    if(a[sortColumn] === "?") return -1;
+                    return a[sortColumn] - b[sortColumn];
+                }
                 return a[sortColumn] > b[sortColumn] ? 1 : -1;
             } else if (sortDirection === "DESC") {
                 ((sortColumn === "uniqueLP") ? tmpEnableRowInsert = 1 : tmpEnableRowInsert = -1)
+                if(numberSorting) {
+                    //a-at the beginning, b-at the end
+                    if(b[sortColumn] === "?") return -1;
+                    return b[sortColumn] - a[sortColumn];
+                }
                 return a[sortColumn] < b[sortColumn] ? 1 : -1;
             } else {
                 tmpEnableRowInsert = 0;
                 return a["uniqueLP"] > b["uniqueLP"] ? 1 : -1;
             }
         };
-        this.setState( (prevState) => ({
-            rows: [...prevState.rows].sort(comparer),
-            enableRowInsert: tmpEnableRowInsert
-        }));
+        
+        this.setState(prevState => {
+            const rows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows)).sort(comparer);
+            const tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
+            tmpHistory.push({rows: rows, columns: prevState.history[prevState.historySnapshot].columns});
+            if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
+            return {
+                enableRowInsert: tmpEnableRowInsert,
+                dataModified: true,
+                history: tmpHistory,
+                historySnapshot: tmpHistory.length-1,
+            }
+        });
     };
 
     /** 
@@ -396,8 +566,8 @@ class DisplayData extends React.Component {
     /**
      * Method responsible for adding filter to filters array which is in the state.
      * @method
-     * @param {Object} filter Consists of two objects. The first one is the column object containg all the pairs key-value for the column.
-     * The second object is flterTerm which has been written in the filter field.
+     * @param {Object} filter Consists of two key-value pairs. The first one is the column object containg all the pairs key-value for the column.
+     * The second is flterTerm which has been written in the filter field.
      */
     handleFilterChange = (filter) => {
         this.setState(prevState => {
@@ -429,7 +599,10 @@ class DisplayData extends React.Component {
      * @method
      */
     filteredRows = () => {
-        return this.getRows(this.state.rows, this.state.filters);
+        if(this.state.history[this.state.historySnapshot] !== undefined) {
+            return this.getRows(this.state.history[this.state.historySnapshot].rows, this.state.filters);
+        }
+        return [];
     }
 
     /**
@@ -450,14 +623,21 @@ class DisplayData extends React.Component {
      */
     deleteRowByRowIdx = (rowIdx) => {
         this.setState(prevState => {
-            const nextRows = [...prevState.rows];
+            const nextRows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
             if( nextRows[rowIdx] !== undefined) {
                 const removedRowUniqueLP = nextRows[rowIdx].uniqueLP;
                 nextRows.splice(rowIdx, 1);
                 nextRows.forEach(r => {
                     if(r.uniqueLP >= removedRowUniqueLP) r.uniqueLP-=1
                 })
-                return {rows: nextRows, dataModified: true};
+                const tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
+                tmpHistory.push({rows: nextRows, columns: prevState.history[prevState.historySnapshot].columns});
+                if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
+                return {
+                    dataModified: true, 
+                    history: tmpHistory, 
+                    historySnapshot: tmpHistory.length-1
+                };
             }
         })
     };
@@ -469,18 +649,27 @@ class DisplayData extends React.Component {
     deleteSelectedRows = () => {
         this.setState(prevState => {
             const selected = [...prevState.selectedRows];
-            const tmpRows =  [...prevState.rows];
+            const tmpRows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
 
             //if none of the rows is selected
             if(selected.length === 0) { return ;}
+
             //if selected all rows
             if(selected.length === tmpRows.length) {
                 this.grid.selectAllCheckbox.checked = false;
-                return {rows: [], selectedRows : [], dataModified: true};
+                const tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
+                tmpHistory.push({rows: [], columns: prevState.history[prevState.historySnapshot].columns});
+                if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
+                return {
+                    selectedRows: [], 
+                    dataModified: true, 
+                    history: tmpHistory, 
+                    historySnapshot: tmpHistory.length-1
+                };
             }
 
-            //add additional column (uniqueLPtmp)
-            tmpRows.forEach((r,idx) => r.uniqueLPtmp = idx);
+            //add additional column (uniqueLP2)
+            tmpRows.forEach((r,idx) => r.uniqueLP2 = idx);
 
             //sort by No.
             tmpRows.sort((a,b) => a["uniqueLP"] - b["uniqueLP"]);
@@ -494,20 +683,25 @@ class DisplayData extends React.Component {
             //correct No. numbers after removing elements
             filteredRows.forEach((r,idx) => r["uniqueLP"] = idx+1);
 
-            //sort back by uniqueLPtmp
-            filteredRows.sort((a,b) => a.uniqueLPtmp - b.uniqueLPtmp);
+            //sort back by uniqueLP2
+            filteredRows.sort((a,b) => a.uniqueLP2 - b.uniqueLP2);
 
-            //remove additional column (uniqueLPtmp)
-            const nextRows = filteredRows.map( ({uniqueLPtmp, ...others}) => others);
+            //remove additional column (uniqueLP2)
+            const nextRows = filteredRows.map( ({uniqueLP2, ...others}) => others);
+
+            const tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
+            tmpHistory.push({rows: nextRows, columns: prevState.history[prevState.historySnapshot].columns});
+            if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
 
             return {
-                rows: nextRows,
-                selectedRows : [], 
-                dataModified: true
+                selectedRows: [], 
+                dataModified: true,
+                history: tmpHistory, 
+                historySnapshot: tmpHistory.length-1
             };
         }, () => { 
-            if(this.state.rows.length > 0 && this.state.rows.length * heightOfRow < document.getElementsByClassName("react-grid-Canvas")[0].scrollTop) {
-                document.getElementsByClassName("react-grid-Canvas")[0].scrollTop = this.state.rows.length * heightOfRow;
+            if(this.state.history[this.state.historySnapshot].rows.length > 0 && this.state.history[this.state.historySnapshot].rows.length * heightOfRow < document.getElementsByClassName("react-grid-Canvas")[0].scrollTop) {
+                document.getElementsByClassName("react-grid-Canvas")[0].scrollTop = this.state.history[this.state.historySnapshot].rows.length * heightOfRow;
             };
         })        
     };
@@ -521,9 +715,11 @@ class DisplayData extends React.Component {
      */
     insertRow = (rowIdx, where) => {       
         this.setState(prevState => {
-            const nextRows = [...prevState.rows];
+            const nextRows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
             const newRow = {};
-            prevState.columns.forEach( col => {if(col.key !== "uniqueLP") newRow[col.key] = "?"});
+            prevState.history[prevState.historySnapshot].columns.forEach( col => {
+                if(col.key !== "uniqueLP") newRow[col.key] = "?";
+            });
             
             if( nextRows[rowIdx] !== undefined) { //if the cell is selected (and exists)
                 switch(where) {
@@ -570,20 +766,28 @@ class DisplayData extends React.Component {
                         }
                     break;
                     default: //at the end of rows array
-                        newRow.uniqueLP = Math.max(...nextRows.map(o => o.uniqueLP), 0) + 1; //nextRows[nextRows.length-1].uniqueLP + 1;
+                        newRow.uniqueLP = Math.max(...nextRows.map(o => o.uniqueLP), 0) + 1;
                         nextRows.push(newRow);
                     break;
                 };
+                const tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
+                tmpHistory.push({rows: nextRows, columns: prevState.history[prevState.historySnapshot].columns});
+                if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                 return { 
-                    rows: nextRows,
-                    dataModified: true
+                    dataModified: true,
+                    history: tmpHistory, 
+                    historySnapshot: tmpHistory.length-1
                 };
             } else if(nextRows.length === 0) { //when array is empty
                 newRow.uniqueLP = 1;
                 nextRows.push(newRow);
+                const tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
+                tmpHistory.push({rows: nextRows, columns: prevState.history[prevState.historySnapshot].columns});
+                if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                 return { 
-                    rows: nextRows, 
-                    dataModified: true
+                    dataModified: true,
+                    history: tmpHistory,
+                    historySnapshot: tmpHistory.length-1
                 };
             }
         });
@@ -688,17 +892,20 @@ class DisplayData extends React.Component {
                             console.log("Received information table:")
                             console.log(result)
                             console.log("atrybuty:")
-                            console.log(result.informationTable.attributes);
+                            console.log(result.attributes);
                             console.log("obiekty:")
-                            console.log(result.informationTable.objects);
+                            console.log(result.objects);
                     
                             if(this._isMounted) {
+                                const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
+				                tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes)});
+                                if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                                 this.setState({
-                                    columns: this.prepareMetaDataFromImport(result.informationTable.attributes),
-                                    rows: this.prepareDataFromImport(result.informationTable.objects),
                                     isLoading: false,
                                     dataModified: true,
-                                }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
+                                    history: tmpHistory, 
+                                    historySnapshot: tmpHistory.length-1
+                                }, () => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true)))
                             }
 
                         }).catch(err => {
@@ -756,7 +963,6 @@ class DisplayData extends React.Component {
                 console.log("Wykonuje transform bez nowych plikow, gdzie binaryzacja: " + this.state.binarizeNominalAttributesWith3PlusValues)
                 let link = `http://localhost:8080/projects/${this.props.project.result.id}/imposePreferenceOrder?binarizeNominalAttributesWith3PlusValues=${this.state.binarizeNominalAttributesWith3PlusValues}`;
                 console.log(link);
-
                 
                 fetch(link, {
                     method: 'GET'
@@ -767,17 +973,20 @@ class DisplayData extends React.Component {
                             console.log("Received information table:")
                             console.log(result)
                             console.log("atrybuty:")
-                            console.log(result.informationTable.attributes);
+                            console.log(result.attributes);
                             console.log("obiekty:")
-                            console.log(result.informationTable.objects);
-                    
+                            console.log(result.objects);
+                            
                             if(this._isMounted) {
+                                const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
+                                tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes)});
+                                if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                                 this.setState({
-                                    columns: this.prepareMetaDataFromImport(result.informationTable.attributes),
-                                    rows: this.prepareDataFromImport(result.informationTable.objects),
                                     isLoading: false,
                                     dataModified: true,
-                                }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx)))
+                                    history: tmpHistory, 
+                                    historySnapshot: tmpHistory.length-1
+                                }, () => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true)))
                             }
                         }).catch(err => {
                             console.log(err)
@@ -835,8 +1044,16 @@ class DisplayData extends React.Component {
      * @returns {Array}
      */
     prepareMetadataFileBeforeSendingToServer() {
-        const newMetadata = [...this.state.columns].map(({editable,sortable,resizable,filterable,visible,draggable,editor,filterRenderer,sortDescendingFirst,key,width,...others}) => others);
+        if(this.state.history[this.state.historySnapshot] === undefined) return ;
+        const newMetadata = JSON.parse(JSON.stringify(this.state.history[this.state.historySnapshot].columns)).map(({editable,sortable,resizable,filterable,visible,draggable,editor,filterRenderer,sortDescendingFirst,key,width,...others}) => others);
+        
+        //remove No. column
         if(newMetadata.length > 0) newMetadata.shift();
+        
+        //remove missing value sign ("?")
+        newMetadata.forEach(col => {
+            if(col.domain !== undefined) col.domain.pop();
+        })
         return newMetadata;
     }
 
@@ -846,82 +1063,32 @@ class DisplayData extends React.Component {
      * @returns {Array}
      */
     prepareDataFileBeforeSendingToServer() {
-        const newData = [...this.state.rows].map( ({uniqueLP, ...others}) => others);
+        if(this.state.history[this.state.historySnapshot] === undefined) return ;
+        const newData = JSON.parse(JSON.stringify(this.state.history[this.state.historySnapshot].rows)).map( ({uniqueLP, ...others}) => others);
         return newData;
     }
-    
-    /**
-     * Method responsible for sending changed files i.e. metadata and data files to the server. The method is executed after "SAVE CHANGES" button click.
-     * @method
-     */
-    /*
-    sendFilesToServer = () => {
-        const tmpMetaData = JSON.stringify(this.prepareMetadataFileBeforeSendingToServer());
-        const tmpData = JSON.stringify(this.prepareDataFileBeforeSendingToServer());
+
+    handleChangeSaveToFileMetaData = (e) => {
         this.setState({
-            isLoading: true,
-        }, () => {
-        fetch(`http://localhost:8080/projects/${this.props.project.result.id}/metadata`, {
-            method: 'PUT',
-            body: tmpMetaData,
-        }).then(response => {
-            console.log(response)
-            return response.json()
-        }).then(result => {
-            console.log("Wynik dzialania response.json():")
-            console.log(result)
-        }).catch(err => {
-            console.log(err)
-        }).then(() => {
-
-            fetch(`http://localhost:8080/projects/${this.props.project.result.id}/data`, {
-                method: 'PUT',
-                body: tmpData,
-            }).then(response => {
-                console.log(response)
-                return response.json()
-            }).then(result => {
-                console.log("Wynik dzialania response.json():")
-                console.log(result)
-
-                if(this._isMounted) {
-                    this.setState({
-                        dataModified: false,
-                        isLoading: false,
-                    })
-                }
-            }).catch(err => {
-                console.log(err)
-                if(this._isMounted) {
-                    this.setState({
-                        isLoading: false,
-                    })
-                }
-            })
-        })
-        })
-
-    }*/
-
-    /**
-     * Method responsible for setting the value of the chosen file type ("Data","Metadata","Both") in the save to file dialog. The dialog is accessible through the "SAVE TO FILE" button.
-     * @method
-     * @param {Event} e indicates the event on the radio button, from which the value of the chosen file type is selected. 
-     */
-    handleChangeSaveToFileWhichFile = (e) => {
-        this.setState({
-            saveToFileWhichFile: e.target.value,
+          saveToFileMetaData: e.target.checked
         })
     }
 
-    /**
-     * Method responsible for setting the value of the chosen file format ("JSON","CSV") in the save to file dialog. The dialog is accessible through the "SAVE TO FILE" button.
-     * @method
-     * @param {Event} e indicates the event on the radio button, from which the value of the chosen file format is selected. 
-     */
-    handleChangeSaveToFileWhichFormat = (e) => {
+    handleChangeSaveToFileData = (e) => {
         this.setState({
-            saveToFileWhichFormat: e.target.value,
+            saveToFileData: e.target.value
+        })
+    }
+
+    handleChangeSaveToFileCsvHeader = (e) => {
+        this.setState({
+            saveToFileCsvHeader: e.target.checked
+        })
+    }
+
+    getSelectedSaveToFileCsvSeparator = (selected) => {
+        this.setState({
+            saveToFileCsvSeparator: selected
         })
     }
 
@@ -932,8 +1099,10 @@ class DisplayData extends React.Component {
     closeOnSaveToFile = () => {
         this.setState({
             isOpenedSaveToFile: false,
-            saveToFileWhichFile: '',
-            saveToFileWhichFormat: '',
+            saveToFileMetaData: false,
+            saveToFileData: '',
+            saveToFileCsvHeader: false,
+            saveToFileCsvSeparator: '',
         })
     }
 
@@ -957,33 +1126,124 @@ class DisplayData extends React.Component {
      * @returns {Array}
      */
     saveToFile = () => {
-        if(this.state.saveToFileWhichFormat === "json") {
-            if(this.state.saveToFileWhichFile === "data") this.saveToJsonFile(this.prepareDataFileBeforeSendingToServer(), "data.json");
-            else if(this.state.saveToFileWhichFile === "metadata") this.saveToJsonFile(this.prepareMetadataFileBeforeSendingToServer(), "metadata.json");
-            else if(this.state.saveToFileWhichFile === "both") {
-                this.saveToJsonFile(this.prepareMetadataFileBeforeSendingToServer(), "metadata.json");
-                this.saveToJsonFile(this.prepareDataFileBeforeSendingToServer(), "data.json");                
-            }
-        } else if(this.state.saveToFileWhichFormat === "csv") {
-            if(this.state.saveToFileWhichFile === "data") this.saveToCSVFile();
-            else if(this.state.saveToFileWhichFile === "metadata") this.saveToJsonFile(this.prepareMetadataFileBeforeSendingToServer(), "metadata.json");
-            else if(this.state.saveToFileWhichFile === "both") {
-                this.saveToCSVFile();
-                this.saveToJsonFile(this.prepareMetadataFileBeforeSendingToServer(), "metadata.json");
-            }
+        if(this.state.saveToFileMetaData) {
+            this.saveToJsonFile(this.prepareMetadataFileBeforeSendingToServer(), this.props.project.result.name + "_metadata.json");
         }
+        if(this.state.saveToFileData === 'json') {
+            this.saveToJsonFile(this.prepareDataFileBeforeSendingToServer(), this.props.project.result.name + "_data.json");
+        } else if(this.state.saveToFileData === 'csv') {
+            let separator = " ";
+            if(this.state.saveToFileCsvSeparator === "Tab") separator = "%09";
+            else if(this.state.saveToFileCsvSeparator === "Semicolon") separator = ";";
+            else if(this.state.saveToFileCsvSeparator === "Comma") separator = ",";
+            //else it is space
+            this.saveToCSVFile(this.props.project.result.name + "_data.csv", this.state.saveToFileCsvHeader, separator);
+        }
+
         this.setState({
             isOpenedSaveToFile: false,
-            saveToFileWhichFile: '',
-            saveToFileWhichFormat: '',
+            saveToFileMetaData: false,
+            saveToFileData: '',
+            saveToFileCsvHeader: false,
+            saveToFileCsvSeparator: '',
         })
     } 
 
-    saveToCSVFile = () => {
-        this.setState({
-            isOpenedSaveToFile: false,
-        })
+    saveToCSVFile = (name, header, separator) => {
+        console.log("Otrzymalem:")
+        console.log(header);
+        console.log(separator);
+        console.log("Wszedlem do funkcji pobierania danych PUT")
+        let x = true;
+        if(x) { //modified?
+            let filename = name;
+            let link = `http://localhost:8080/projects/${this.props.project.result.id}/data/download`;
+            link += `?format=csv`;
+            link += `&separator=${separator}`;
+            link += `&header=${header}`;
+            console.log(link)
 
+            let formData = new FormData();
+            formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
+            formData.append('data', JSON.stringify(this.prepareDataFileBeforeSendingToServer()));
+
+            console.log("Poczatek - co wysylam:")
+            console.log(JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()))
+            console.log(JSON.stringify(this.prepareDataFileBeforeSendingToServer()));
+            console.log("Koniec - co wysylam")
+            fetch(link, {
+                method: 'PUT',
+                body: formData
+            }).then(response => {
+                console.log(response)
+                if(response.status === 200) { 
+                    filename =  response.headers.get('Content-Disposition').split('filename=')[1];
+                    response.blob().then(result => {
+                        console.log("Result of response.blob():")
+                        console.log(result)
+                        const url = window.URL.createObjectURL(result);
+                        const b = document.createElement('a');
+                        b.href = url;
+                        b.download = filename;
+                        b.click();
+                    }).catch(err => {
+                        console.log(err)
+                    }) 
+                } else {
+                    response.json().then(result => {
+                        console.log("Result of response.json():")
+                        console.log(result)
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+            
+        } else {
+            console.log("Wszedlem do funkcji pobierania danych GET")
+            let filename = name;
+
+            let link = `http://localhost:8080/projects//${this.props.project.result.id}/data/download`;
+            link += `?format=csv`;
+            link += `&separator=${separator}`;
+            link += `&header=${header}`;
+    
+            console.log(link)
+    
+            fetch(link, {
+                method: 'GET'
+            }).then(response => {
+                console.log(response)
+                if(response.status === 200) {
+                    filename =  response.headers.get('Content-Disposition').split('filename=')[1];
+                    response.blob().then(result => {
+                        console.log("Result of response.blob():")
+                        console.log(result)
+                        const url = window.URL.createObjectURL(result);
+                        const b = document.createElement('a');
+                        b.href = url;
+                        b.download = filename;
+                        document.body.appendChild(b);
+                        b.click();
+                        document.body.removeChild(b);
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                } else {
+                    response.json().then(result => {
+                        console.log("Result of response.json():")
+                        console.log(result)
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+
+        }
     }
 
     saveToJsonFile = (data, filename) => {
@@ -995,14 +1255,16 @@ class DisplayData extends React.Component {
         a.style = "display: none";
         document.body.appendChild(a);
         a.click();
-
         document.body.removeChild(a);
     }
 
 
     getColumns() {
-        const newColumns = this.state.columns.filter(x => x.visible !== false);
-        return newColumns;
+        if(this.state.history[this.state.historySnapshot] !== undefined) {
+            const newColumns = this.state.history[this.state.historySnapshot].columns.filter(x => x.visible !== false);
+            return newColumns;
+        }
+        return [];
     }
 
     EmptyRowsView = () => {
@@ -1052,10 +1314,11 @@ class DisplayData extends React.Component {
     }
 
     closeOpenedColumnHeaderMenu = (selected) => {
-        if(selected !== undefined) {
-            let cols = [...this.state.columns];
-            for(let i=0; i<this.state.columns.length; i++) {
-                if(this.state.columns[i].key === this.state.columnKeyOfHeaderMenuOpened) {
+        if(selected !== undefined) {            
+            let history = [...this.state.history];
+            let cols = [...history[this.state.historySnapshot].columns];
+            for(let i=0; i<cols.length; i++) {
+                if(cols[i].key === this.state.columnKeyOfHeaderMenuOpened) {
                     let col = {...cols[i]};
                     let didIRemoveColumn = false;
                     if(selected === "Mark attribute as: inactive" || selected === "Mark attribute as: active") {
@@ -1066,15 +1329,20 @@ class DisplayData extends React.Component {
                         didIRemoveColumn = true;
                     }
 
+                    const tmpHistory = history.slice(0, this.state.historySnapshot+1);
+                    tmpHistory.push({rows: history[this.state.historySnapshot].rows, columns: cols});
+                    if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                     this.setState({
-                        columns: cols,
+                        dataModified: true,
                         isColumnHeaderMenuOpened: null,
                         columnKeyOfHeaderMenuOpened: -1,
-                    },() => {if(!didIRemoveColumn) this.setHeaderColorAndStyle(cols[i],i)});
+                        history: tmpHistory, 
+                        historySnapshot: tmpHistory.length-1
+                    },() => {if(!didIRemoveColumn) this.setHeaderColorAndStyle(cols[i],i,false)});
                     
                     break;
                 }
-            }            
+            }
         } else {
             this.setState({
                 isColumnHeaderMenuOpened: null,
@@ -1084,8 +1352,8 @@ class DisplayData extends React.Component {
     }
 
     attributeAlreadyExists = (name) => {
-        for(let i in this.state.columns) {
-            if(this.state.columns[i].name === name) {
+        for(let i in this.state.history[this.state.historySnapshot].columns) {
+            if(this.state.history[this.state.historySnapshot].columns[i].name === name) {
                 return true;
             }
         }
@@ -1093,8 +1361,8 @@ class DisplayData extends React.Component {
     }
 
     attributeAlreadyExistAndIsDifferentThanSelected(name) {
-        for(let i in this.state.columns) {
-            if(this.state.columns[i].name === name && this.state.editAttributeSelected !== name) {
+        for(let i in this.state.history[this.state.historySnapshot].columns) {
+            if(this.state.history[this.state.historySnapshot].columns[i].name === name && this.state.editAttributeSelected !== name) {
                 return true;
             }
         }
@@ -1112,7 +1380,7 @@ class DisplayData extends React.Component {
         let error = ''
 
         //name validation (restricted + already exist)
-        if(name === "uniqueLP" || name === "key") error = "You have chosen restricted name for the attribute! Please choose other name.";
+        if(name === "uniqueLP" || name === "key" || name === "uniqueLP2") error = "You have chosen restricted name for the attribute! Please choose other name.";
 
         if(isOnAddMethod) { //add new column
             if(this.attributeAlreadyExists(name)) error = "The attribute with the same name ("+name+") already exists! Please choose other name.";
@@ -1198,7 +1466,7 @@ class DisplayData extends React.Component {
         return attribute;
     }
 
-    setHeaderColorAndStyle = (column, idx) => {
+    setHeaderColorAndStyle = (column, idx, changeWidth) => {
         if(document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes !== undefined) {
             const tmp = document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes;
             if((column.type !== undefined || column.identifierType !== undefined) && !(/<\/?[a-z][\s\S]*>/i.test(column.type))) { //make sure attribute type doesn't contain html tags
@@ -1234,20 +1502,29 @@ class DisplayData extends React.Component {
                 }
             }
 
-        let cols = [...this.state.columns];
-        let newColumn = {...column};
-        if(column.type !== undefined) newColumn.width = Math.max(120, 20 + 10*column.name.length, 20+10*(column.type.length + 9));
-        else if(column.identifierType !== undefined) newColumn.width = Math.max(120, 20 + 10*column.name.length, 20+10*(column.identifierType.length + 9));
-        else newColumn.width = 120;
-        for(let i=0; i<cols.length; i++) {
-            if(cols[i].key === column.key) {
-                cols[i] = newColumn;
-                break;
+            if(changeWidth) {
+                let history = [...this.state.history];
+
+                let cols = [...history[this.state.historySnapshot].columns];
+                let newColumn = {...column};
+                if(column.type !== undefined) newColumn.width = Math.max(120, 20 + 10*column.name.length, 20+10*(column.type.length + 9));
+                else if(column.identifierType !== undefined) newColumn.width = Math.max(120, 20 + 10*column.name.length, 20+10*(column.identifierType.length + 9));
+                else newColumn.width = 120;
+                for(let i=0; i<cols.length; i++) {
+                    if(cols[i].key === column.key) {
+                        cols[i] = newColumn;
+                        break;
+                    }
+                }
+
+                let newHistoryCols = {...history[this.state.historySnapshot]};
+                newHistoryCols.columns = cols;
+                history[this.state.historySnapshot] = newHistoryCols;
+
+                this.setState({
+                    history: history
+                })
             }
-        }
-        this.setState({
-            columns: cols,
-        })
         }
     }
 
@@ -1272,13 +1549,13 @@ class DisplayData extends React.Component {
         }
     }
 
-    setHeaderColorAndStyleAndRightClick = (column, idx) => {
-        this.setHeaderColorAndStyle(column, idx);
+    setHeaderColorAndStyleAndRightClick = (column, idx, changeWidth) => {
+        this.setHeaderColorAndStyle(column, idx, changeWidth);
         this.setHeaderRightClick(column, idx);
     }
     
     setRowsAndHeaderColorAndStyleAndRightClick = (column, idx, isNewColumn) => {
-        let nextRows = [...this.state.rows];
+        let nextRows = JSON.parse(JSON.stringify(this.state.history[this.state.historySnapshot].rows));
         if(isNewColumn) {
             for(let i in nextRows) {
                 nextRows[i][column.key] = "?";
@@ -1308,9 +1585,14 @@ class DisplayData extends React.Component {
             }
         }
         
+        let history = [...this.state.history];
+        let newHistory = {...history[this.state.historySnapshot]};
+        newHistory.rows = nextRows;
+        history[this.state.historySnapshot] = newHistory;
+
         this.setState({
-            rows: nextRows,
-        }, () => this.setHeaderColorAndStyleAndRightClick(column, idx)) 
+            history: history,
+        }, () => {this.setHeaderColorAndStyleAndRightClick(column, idx, true)}) 
         
     }
 
@@ -1321,19 +1603,30 @@ class DisplayData extends React.Component {
         if(validationOk) {
             const newColumn = this.createColumn(e.target.attributeName.value.trim(), e.target.attributeIsActive.checked, this.state.attributeTypeSelected, 
                 this.state.missingValueTypeSelected, this.state.identifierTypeSelected, this.state.attributePreferenceTypeSelected, this.state.valueTypeSelected, this.state.attributesDomainElements);
+            
+            this.setState( (prevState) => {
+                let tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
+                let cols = [...tmpHistory[prevState.historySnapshot].columns];
 
-            this.setState( (prevState) => ({
-                dataModified: true,
-                isOpenedAddAttribute: false,
-                attributeTypeSelected: '',
-                attributePreferenceTypeSelected: '',
-                valueTypeSelected: '',
-                identifierTypeSelected: '',
-                missingValueTypeSelected: '',
-                attributesDomainElements: [],
-                columns: [...prevState.columns, newColumn]
-            }),() => this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.columns[this.state.columns.length-1], this.state.columns.length-1, true)
-            );   
+                tmpHistory.push({rows: tmpHistory[prevState.historySnapshot].rows, columns: [...cols, newColumn]});
+                if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
+
+                return {
+                    dataModified: true,
+                    isOpenedAddAttribute: false,
+                    attributeTypeSelected: '',
+                    attributePreferenceTypeSelected: '',
+                    valueTypeSelected: '',
+                    identifierTypeSelected: '',
+                    missingValueTypeSelected: '',
+                    attributesDomainElements: [],
+                    history: tmpHistory,
+                    historySnapshot: tmpHistory.length-1,
+                    }
+                },() => {this.setRowsAndHeaderColorAndStyleAndRightClick(
+                    this.state.history[this.state.historySnapshot].columns[this.state.history[this.state.historySnapshot].columns.length-1], 
+                    this.state.history[this.state.historySnapshot].columns.length-1, true)}
+                );   
         } else {
             this.setState({
                 isOpenedNotification: true,
@@ -1350,7 +1643,7 @@ class DisplayData extends React.Component {
             key="attributeIsActive"
             style={{justifyContent: "space-evenly"}}
         />)
-        tmp.push(<ValidationTextField label="Name" size="small" fullWidth required variant="outlined" id="attributeName" key="attributeName" defaultValue="" />)
+        tmp.push(<ValidationTextField autoComplete="off" label="Name" size="small" fullWidth required variant="outlined" id="attributeName" key="attributeName" defaultValue="" />)
         tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key="attributeType" displayName={"Type"} items={["Identification","Description","Condition","Decision"]}/>)
 
         if(this.state.attributeTypeSelected !== "Identification") {
@@ -1388,12 +1681,13 @@ class DisplayData extends React.Component {
 
     applyOnEditAttributes = (e) => {
         e.preventDefault();
-        let cols = [...this.state.columns];
+        let history = [...this.state.history];
+        let cols = [...history[this.state.historySnapshot].columns];
         let i=0;
         for(i=0; i<cols.length; i++) {
             if(cols[i].name === this.state.editAttributeSelected) break;
         }
-        let col = {...cols[i]} //{...cols[i]} //copy all attributes
+        let col = {editable:true, sortable:true, resizable:true, filterable:true, draggable: true, visible: true}
 
         const validationOk = this.validateOnAddAndEditAttribute(false,e.target.attributeName.value.trim(), this.state.attributeTypeSelected, this.state.missingValueTypeSelected,
             this.state.identifierTypeSelected, this.state.attributePreferenceTypeSelected, this.state.valueTypeSelected, this.state.attributesDomainElements)
@@ -1424,6 +1718,9 @@ class DisplayData extends React.Component {
             }
 
             cols[i] = col;
+            const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
+            tmpHistory.push({rows: this.state.history[this.state.historySnapshot].rows, columns: cols});
+            if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
             
             this.setState({
                 dataModified: true,
@@ -1435,8 +1732,9 @@ class DisplayData extends React.Component {
                 identifierTypeSelected: '',
                 missingValueTypeSelected: '',
                 attributesDomainElements: [],
-                columns: cols,
-            },() => this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.columns[i], i, false)
+                history: tmpHistory,
+                historySnapshot: tmpHistory.length-1
+            },() => this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, false)
             );   
         } else {
             this.setState({
@@ -1447,9 +1745,11 @@ class DisplayData extends React.Component {
 
     displayListOfAttributesForModification = () => {
        const tmp = [];
-        for(let i=0; i<this.state.columns.length; i++) {
-            if(this.state.columns[i].key !== "uniqueLP") {
-                tmp.push(this.state.columns[i]);
+       if(this.state.history[this.state.historySnapshot] !== undefined) {
+            for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
+                if(this.state.history[this.state.historySnapshot].columns[i].key !== "uniqueLP") {
+                    tmp.push(this.state.history[this.state.historySnapshot].columns[i]);
+                }
             }
         }
         
@@ -1458,7 +1758,12 @@ class DisplayData extends React.Component {
 
     displayFieldsOfSelectedAttribute = () => {
         let attribute;
-        for(let i=0; i<this.state.columns.length; i++) {if(this.state.editAttributeSelected === this.state.columns[i].name) { attribute = {...this.state.columns[i]}; break;}}
+        for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
+            if(this.state.editAttributeSelected === this.state.history[this.state.historySnapshot].columns[i].name) { 
+                attribute = {...this.state.history[this.state.historySnapshot].columns[i]};
+                break;
+            }
+        }
         
         const tmp = [];
         
@@ -1469,7 +1774,7 @@ class DisplayData extends React.Component {
             key={"attributeIsActive"+attribute.name}
             style={{justifyContent: "space-evenly"}}
         />)
-        tmp.push(<ValidationTextField label="Name" fullWidth required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
+        tmp.push(<ValidationTextField autoComplete="off" label="Name" fullWidth required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
 
         if((this.state.attributeTypeSelected === '' && this.state.valueTypeSelected === '') || (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected.toLowerCase() === attribute.valueType)   /*|| (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected === '') //nothing has changed
             || (this.state.attributeTypeSelected === '' && this.state.valueTypeSelected.toLowerCase() === attribute.valueType) || (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected.toLowerCase() === attribute.valueType) */
@@ -1538,12 +1843,12 @@ class DisplayData extends React.Component {
     displayColumnHeaderMenu = () => {
         if(this.state.isColumnHeaderMenuOpened && this.state.columnKeyOfHeaderMenuOpened !== "uniqueLP") { //don't touch No. column
             const tmp = [];
-            for(let i=0; i<this.state.columns.length; i++) {
-                if(this.state.columns[i].key === this.state.columnKeyOfHeaderMenuOpened) {
-                    if(this.state.columns[i].identifierType === undefined) {
-                        if(this.state.columns[i].active)
+            for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
+                if(this.state.history[this.state.historySnapshot].columns[i].key === this.state.columnKeyOfHeaderMenuOpened) {
+                    if(this.state.history[this.state.historySnapshot].columns[i].identifierType === undefined) {
+                        if(this.state.history[this.state.historySnapshot].columns[i].active)
                             tmp.push("Mark attribute as: inactive");
-                        else if(this.state.columns[i].active === false)
+                        else if(this.state.history[this.state.historySnapshot].columns[i].active === false)
                             tmp.push("Mark attribute as: active");
                     }
 
@@ -1558,25 +1863,10 @@ class DisplayData extends React.Component {
         return null;
     }
 
-    displayRadioButtonsAccordinglyToChosenFile = () => {
-        if(this.state.saveToFileWhichFile === "data" || this.state.saveToFileWhichFile === "both") {
-            return(
-                <RadioGroup className={"radio-button-group-save-file"} aria-label="format" name="format" value={this.state.saveToFileWhichFormat} onChange={this.handleChangeSaveToFileWhichFormat}>
-                    <FormControlLabel value="csv" control={<Radio style={{color: defaultPrimaryColor}}/>} label="CSV" />
-                    <FormControlLabel value="json" control={<Radio style={{color: defaultPrimaryColor}} />} label="JSON" />
-                </RadioGroup>
-            )
-        } else if(this.state.saveToFileWhichFile === "metadata") {
-            return(
-                <RadioGroup className={"radio-button-group-save-file"} aria-label="format" name="format" value={this.state.saveToFileWhichFormat} onChange={this.handleChangeSaveToFileWhichFormat}>
-                    <FormControlLabel value="json" control={<Radio style={{color: defaultPrimaryColor}} />} label="JSON" />
-                </RadioGroup>
-            )
-        }
-    }
-
     onCellSelected = (coord) => {
         const {rowIdx, Idx} = coord;
+        /*   this.grid.openCellEditor(rowIdx, idx); */
+        
     }
 
     handleChangeBinarize = (e) => {
@@ -1592,25 +1882,72 @@ class DisplayData extends React.Component {
     }
 
     onColumnHeaderDragDrop = (source, target) => {
-        const newColumns = [...this.state.columns];
-        const columnSourceIndex = this.state.columns.findIndex((i) => i.key === source);
-        const columnTargetIndex = this.state.columns.findIndex((i) => i.key === target);
+        const history = [...this.state.history];
+        const newColumns = [...history[this.state.historySnapshot].columns];
+        const columnSourceIndex = this.state.history[this.state.historySnapshot].columns.findIndex((i) => i.key === source);
+        const columnTargetIndex = this.state.history[this.state.historySnapshot].columns.findIndex((i) => i.key === target);
         newColumns.splice(columnTargetIndex,0,newColumns.splice(columnSourceIndex, 1)[0]);
-           
+        
+        const newHistoryCols = {...history[this.state.historySnapshot]}
+        newHistoryCols.columns = newColumns;
+        history[this.state.historySnapshot] = newHistoryCols;
+
         const emptyColumns = [];
-        this.setState({ columns: emptyColumns });
+        this.setState({ columns: emptyColumns, history: [{rows: [], columns: []}] });
         this.setState({ 
-            columns: newColumns
-        }, () => this.state.columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx))
+            dataModified: true,
+            history: history,
+        }, () => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false))
         )        
     };
+
+    onBack = () => {
+        this.setState( prevState => {
+            if(prevState.historySnapshot > 0) {
+                return {
+                    historySnapshot: prevState.historySnapshot-1,
+                    dataModified: true,
+                }
+            }
+        },() => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false)))
+    }
+
+    onRedo = () => {
+        this.setState( prevState => {
+            if(prevState.historySnapshot < prevState.history.length-1) {
+                return {
+                    historySnapshot: prevState.historySnapshot+1,
+                    dataModified: true,
+                }
+            }
+        },() => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false)))
+    }
+
+    onColumnResize = (columnIdx, newWidth) => {
+        //In this method columnIdx = 0 means column with checkboxes,
+        //so to get first column from history one have to subtract 1
+        let history = [...this.state.history];
+
+        let cols = [...history[this.state.historySnapshot].columns];
+        let column = {...cols[columnIdx-1]};
+        if(newWidth > 80) column.width = newWidth;
+        else column.width = 80;
+        
+        cols[columnIdx-1] = column;
+        history[this.state.historySnapshot].columns = cols;
+
+        this.setState({
+            history: history
+        })
+    }
 
     /**
      * Method responsible for rendering everything
      */
-    render() {        
+    render() {   
+        const classes = this.props.classes;
         return (
-            <div>      
+            <div style={{height: "0px", flexGrow: 0.93}} className={classes.root}>      
                 <DraggableContainer onHeaderDrop={this.onColumnHeaderDragDrop}>   
                 <ReactDataGrid
                     ref={(node) => this.grid = node}
@@ -1621,10 +1958,11 @@ class DisplayData extends React.Component {
                     onGridSort = {this.onGridSort}
                     enableCellSelect={true}
                     onCellSelected={this.onCellSelected}
-                    getValidFilterValues={columnKey => this.getValidFilterValues(this.state.rows, columnKey)}
+                    getValidFilterValues={columnKey => this.getValidFilterValues(this.state.history[this.state.historySnapshot].rows, columnKey)}
                     toolbar={<EditDataFilterButton enableFilter={true} > 
                             < EditDataButtons deleteRow={this.deleteSelectedRows} insertRow={this.insertRow} 
-                                    /*sendFilesToServer={this.sendFilesToServer} */ saveToFileDialog={this.openOnSaveToFile} onAddAttribute={this.onAddAttribute} 
+                                    saveToFileDialog={this.openOnSaveToFile} onAddAttribute={this.onAddAttribute} 
+                                    onBack={this.onBack} onRedo={this.onRedo} historySnapshot={this.state.historySnapshot} historyLength={this.state.history.length}
                                     onEditAttributes={this.onEditAttributes} openOnTransform={this.openOnTransform} setProjectSettings={this.setProjectSettings}/> 
                             </EditDataFilterButton> }
                     onAddFilter={this.handleFilterChange}
@@ -1642,10 +1980,12 @@ class DisplayData extends React.Component {
                             }
                         }
                     }}
-                    minHeight={600}
+                    onColumnResize={this.onColumnResize}
+                    minHeight={1400}
                     rowHeight={heightOfRow}
                     rowScrollTimeout={200}
                     headerRowHeight={heightOfHeaderRow}
+                    editorPortalTarget={document.getElementsByClassName("react-grid-Canvas")[0]}
                     contextMenu={
                         <RightClickContextMenu
                           onRowDelete={(e, { rowIdx }) => this.deleteRowByRowIdx(rowIdx)}
@@ -1681,7 +2021,11 @@ class DisplayData extends React.Component {
                     <DialogTitle id="edit-attributes-dialog">{"Edit attributes"}</DialogTitle>
                     <form onSubmit={this.applyOnEditAttributes}>
                     <DialogContent>
-                            Choose attribute to edit. <br/> Please note that you can apply changes only to the selected attribute.
+                        {this.state.history[this.state.historySnapshot].columns.length === 1? 
+                        <span> There are no attributes to edit! </span> :
+                        <span> Choose attribute to edit. <br/> Please note that you can apply changes only to the selected attribute. </span>
+                        }
+                        
                         <div className="editAttributesWrapper">
                         <div className="nicelyInColumn">
                             <StyledList component="nav" aria-label="display attributes" id="edit-attributes-list"> 
@@ -1710,19 +2054,54 @@ class DisplayData extends React.Component {
                 <StyledDialog fullWidth={true} maxWidth={"sm"} open={this.state.isOpenedSaveToFile} onClose={this.closeOnSaveToFile} aria-labelledby="save-files-dialog">
                     <DialogTitle id="save-files-dialog">{"Choose type and format to be saved in."}</DialogTitle>
                     <DialogContent>
-                        When selected "Both" the first downloaded file will be "Metadata" <br/> and then the second one "Data" 
-                    <RadioGroup className={"radio-button-group-save-file"} aria-label="file" name="file" value={this.state.saveToFileWhichFile} onChange={this.handleChangeSaveToFileWhichFile}>
-                        <FormControlLabel value="data" control={<Radio style={{color: defaultPrimaryColor}}/>} label="Data" />
-                        <FormControlLabel value="metadata" control={<Radio style={{color: defaultPrimaryColor}} />} label="Metadata" />
-                        <FormControlLabel value="both" control={<Radio style={{color: defaultPrimaryColor}}/>} label="Both" />
-                    </RadioGroup>
-                    {this.displayRadioButtonsAccordinglyToChosenFile()}
-                    
+                        <span>Select appropriate checkboxes to download the file/files</span> <br/><br/>
+                        <div style={{display: "flex"}}>
+                            <div style={{flex: "1"}}>
+                                <span style={{display: "flex", justifyContent: "center"}}>Metadata</span>
+                                <FormControlLabel style={{display: "flex", justifyContent: "center"}}
+                                    control={<Checkbox style={{color: defaultPrimaryColor}} name="metadata" 
+                                    onChange={this.handleChangeSaveToFileMetaData}/>}
+                                    label="JSON"
+                                    labelPlacement="end"
+                                />
+                            </div>
+                            
+                            <Divider orientation="vertical" variant="fullWidth" flexItem
+                            style={{backgroundColor: defaultPrimaryColor, flex: "0 0 1px"}}/>
+                            
+                            <div style={{flex: "1"}}>
+                                <span style={{display: "flex", justifyContent: "center"}}>Data</span>
+                                <div style={{display: "flex", justifyContent: "center" }}>
+                                    <RadioGroup row={true} aria-label="file" name="file" value={this.state.saveToFileData} 
+                                    onChange={this.handleChangeSaveToFileData}>
+                                    <FormControlLabel value="json" control={<Radio style={{color: defaultPrimaryColor}}/>} label="JSON" />
+                                    <FormControlLabel value="csv" control={<Radio style={{color: defaultPrimaryColor}}/>} label="CSV" />
+                                    </RadioGroup>
+                                </div>
+                                {
+                                    this.state.saveToFileData === "csv" && <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                                    <Tooltip title="Save data with header row" placement="bottom">
+                                    <FormControlLabel 
+                                        control={<Checkbox style={{color: defaultPrimaryColor}} name="csvHeader" 
+                                        onChange={this.handleChangeSaveToFileCsvHeader}/>}
+                                        label="Header?"
+                                        labelPlacement="end"
+                                    />
+                                    </Tooltip>
+                                    <DropDownForAttributes getSelected={this.getSelectedSaveToFileCsvSeparator} 
+                                        name={"saveToFileSeparator"} key="saveToFileSeparator" displayName={"Separator"} 
+                                        items={["Tab","Semicolon","Comma","Space"]}
+                                    />
+                                    </div>
+                                }
+                            </div>
+                        </div>
                     </DialogContent>
                     <DialogActions>
                         <StyledButton onClick={this.closeOnSaveToFile} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
                         <StyledButton onClick={this.saveToFile} themeVariant={"primary"} variant={"outlined"} autoFocus
-                            disabled={!(this.state.saveToFileWhichFormat!=='' && this.state.saveToFileWhichFile!=='')}> 
+                            disabled={!((this.state.saveToFileMetaData && this.state.saveToFileData==='') || (this.state.saveToFileData==='json') ||
+                                        (this.state.saveToFileData!=='' && this.state.saveToFileCsvSeparator!==''))}> 
                             Ok 
                         </StyledButton>
                     </DialogActions>
@@ -1738,7 +2117,7 @@ class DisplayData extends React.Component {
                         control={<Checkbox defaultChecked={false} style={{color: defaultPrimaryColor}} name="binarize" onChange={this.handleChangeBinarize}/>}
                         label="Binarize"
                         labelPlacement="start"
-                        key="attributeIsActive"
+                        key="Binarize"
                     />
                     </Tooltip>
                     
@@ -1752,7 +2131,7 @@ class DisplayData extends React.Component {
                 </StyledDialog>
 
               
-                {this.state.isLoading ? <RuleWorkLoadingIcon size={60}/> : null }
+                {this.state.isLoading ? <RuleWorkLoadingIcon color="primary" /> : null }
             </div>
         )
     }
@@ -1762,9 +2141,5 @@ DisplayData.propTypes = {
     project: PropTypes.any.isRequired,
     updateProject: PropTypes.func.isRequired,
 };
-
-DisplayData.defaultProps = {
-    //project: {informationTable: '2541bed3-63f3-4b88-88ba-543a2bb54f60', name: '', files: []},
-};
   
-export default DisplayData;
+export default withStyles(StyledReactDataGrid)(DisplayData);

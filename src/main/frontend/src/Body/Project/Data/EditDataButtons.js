@@ -1,15 +1,13 @@
 import React, { Fragment } from 'react';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
-import SaveIcon from '@material-ui/icons/Save';
 import AddIcon from '@material-ui/icons/Add';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import EditIcon from '@material-ui/icons/Edit';
 import TransformIcon from '@material-ui/icons/Transform';
-import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import RuleWorkTooltip from '../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip';
+import UndoIcon from '@material-ui/icons/Undo';
+import RedoIcon from '@material-ui/icons/Redo';
 
 export default function IconLabelButtons(props) {
     const style = {
@@ -30,7 +28,7 @@ export default function IconLabelButtons(props) {
               variant={"contained"}
               style={style}
             >
-            Add new example
+            Add example
             </StyledButton>
           : <StyledButton
               isIcon={true}
@@ -108,18 +106,6 @@ export default function IconLabelButtons(props) {
           }
         </RuleWorkTooltip>
 
-{/*
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          startIcon={<SaveIcon />}
-          onClick={() => props.sendFilesToServer()}
-        >
-          Save changes
-        </Button>
-*/}
-
         <RuleWorkTooltip title={`Save objects (data) and attributes (metadata) to files`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
@@ -163,6 +149,55 @@ export default function IconLabelButtons(props) {
             </StyledButton>
             }
         </RuleWorkTooltip>
+
+        <RuleWorkTooltip title={`undo changes`}>
+        {props.whichDevice === "desktop" ?
+            <StyledButton
+              disableElevation={true}
+              onClick={() => props.onBack()}
+              startIcon={<UndoIcon />}
+              themeVariant={"primary"}
+              variant={"contained"}
+              style={style}
+              disabled={props.historySnapshot <= 0}
+            >
+              Undo
+            </StyledButton>
+        :   <StyledButton
+              isIcon={true}
+              onClick={() => props.onBack()}
+              style={style}
+              disabled={props.historySnapshot <= 0}
+            >
+              <UndoIcon />
+            </StyledButton>
+            }
+        </RuleWorkTooltip>
+
+        <RuleWorkTooltip title={`redo changes`}>
+        {props.whichDevice === "desktop" ?
+            <StyledButton
+              disableElevation={true}
+              onClick={() => props.onRedo()}
+              startIcon={<RedoIcon />}
+              themeVariant={"primary"}
+              variant={"contained"}
+              style={style}
+              disabled={props.historyLength-props.historySnapshot <= 1}
+            >
+              Redo
+            </StyledButton>
+        :   <StyledButton
+              isIcon={true}
+              onClick={() => props.onRedo()}
+              style={style}
+              disabled={props.historyLength-props.historySnapshot <= 1}
+            >
+              <RedoIcon />
+            </StyledButton>
+            }
+        </RuleWorkTooltip>
+
     </Fragment>
     );
 }

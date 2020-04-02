@@ -6,7 +6,7 @@
     display: none;
 }
 
-@media only screen and (max-width: 1242px) {
+@media only screen and (max-width: 1410px) {
     #rule-work-data-1 {
         display: none;
     }

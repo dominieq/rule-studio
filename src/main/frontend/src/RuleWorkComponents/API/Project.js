@@ -13,6 +13,10 @@ class Project {
         };
         this.dataUpToDate = true;
         this.tabsUpToDate = Array(5.).fill(true);
+        this.dataHistory = {
+            historySnapshot: 0,
+            history: []
+        };
     }
 }
 
