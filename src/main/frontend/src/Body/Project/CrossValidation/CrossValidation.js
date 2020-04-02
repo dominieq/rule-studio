@@ -3,13 +3,13 @@ import PropTypes from "prop-types";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
-import CalculateButton from "../Utils/Calculations/CalculateButton";
+import CalculateButton from "../Utils/Buttons/CalculateButton";
+import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
 import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
-import SettingsButton from "../Utils/Settings/SettingsButton";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";

@@ -3,23 +3,23 @@ import PropTypes from "prop-types";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
-import CalculateButton from "../Utils/Calculations/CalculateButton";
-import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
+import CalculateButton from "../Utils/Buttons/CalculateButton";
+import SettingsButton from "../Utils/Buttons/SettingsButton";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
-import SettingsButton from "../Utils/Settings/SettingsButton";
+import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
+import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import {RulesDialog} from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
+import { RulesDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
-import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
 
 class Rules extends Component {
     constructor(props) {

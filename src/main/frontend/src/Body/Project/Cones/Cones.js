@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import TabBody from "../Utils/TabBody";
-import CalculateButton from "../Utils/Calculations/CalculateButton";
+import CalculateButton from "../Utils/Buttons/CalculateButton";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import Item from "../../../RuleWorkComponents/API/Item";

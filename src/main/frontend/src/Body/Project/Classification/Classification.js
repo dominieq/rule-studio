@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
-import CalculateButton from "../Utils/Calculations/CalculateButton";
+import CalculateButton from "../Utils/Buttons/CalculateButton";
+import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
-import SettingsButton from "../Utils/Settings/SettingsButton";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
