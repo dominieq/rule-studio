@@ -1,14 +1,14 @@
-import React, {Component} from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import Accept from "./Utils/Accept";
 import Cancel from "./Utils/Cancel";
+import SimpleContent from "./Utils/SimpleContent";
+import SimpleDialog from "./Utils/SimpleDialog";
 import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import StyledDialog from "../../RuleWorkComponents/Feedback/StyledDialog";
-import StyledDialogContent from "../../RuleWorkComponents/Feedback/StyledDialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-class DeleteProjectDialog extends Component {
+class DeleteProjectDialog extends PureComponent {
     constructor(props) {
         super(props);
 
@@ -18,7 +18,7 @@ class DeleteProjectDialog extends Component {
         };
     }
 
-    onEntering = () => {
+    onEnter = () => {
         this.setState({
             name: "",
             correct: false,
@@ -29,11 +29,9 @@ class DeleteProjectDialog extends Component {
         this.setState({
             name: event.target.value,
         }, () => {
-            if (this.props.currentName === this.state.name) {
-                this.setState({
-                    correct: true,
-                });
-            }
+            const { currentName } = this.props;
+            const { name } = this.state;
+            if (currentName === name) this.setState({correct: true});
         });
     };
 
@@ -45,38 +43,39 @@ class DeleteProjectDialog extends Component {
         this.props.onClose(true);
     };
 
-    onEnterClick = (event) => {
-        if (event.which === 13) {
+    onEnterKeyPress = (event) => {
+        const { correct } =  this.state;
+        if (event.which === 13 && correct) {
             event.preventDefault();
-            if (this.state.correct) this.onDeleteClick();
+            this.onDeleteClick();
         }
     };
 
     render() {
-        const {name, correct} = this.state;
-        const {children, open, currentName} = this.props;
+        const { name, correct } = this.state;
+        const { children, currentName, open } = this.props;
 
         return (
-            <StyledDialog
+            <SimpleDialog
                 aria-labelledby={"delete-project-dialog"}
-                disableBackdropClick={true}
-                disableEscapeKeyDown={true}
                 maxWidth={"sm"}
-                onEntering={this.onEntering}
-                onKeyPress={this.onEnterClick}
+                onBackdropClick={this.onCancelClick}
+                onEnter={this.onEnter}
+                onEscapeKeyDown={this.onCancelClick}
+                onKeyPress={this.onEnterKeyPress}
                 open={open}
             >
                 <DialogTitle id={"delete-project-dialog"}>
                     Confirm deletion of {currentName}
                 </DialogTitle>
-                <StyledDialogContent>
+                <SimpleContent>
                     <RuleWorkTextField
                         fullWidth={true}
                         onChange={this.onInputChange}
                         outsideLabel={"Type project name"}
                         value={name}
                     />
-                </StyledDialogContent>
+                </SimpleContent>
                 <DialogActions>
                     <Cancel onClick={this.onCancelClick} themeVariant={"primary"} />
                     <Accept
@@ -88,7 +87,7 @@ class DeleteProjectDialog extends Component {
                     </Accept>
                 </DialogActions>
                 {children}
-            </StyledDialog>
+            </SimpleDialog>
         )
     }
 }
