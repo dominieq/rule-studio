@@ -4,12 +4,14 @@ import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
+import MatrixButton from "../Utils/Buttons/MatrixButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
+import MatrixDialog from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
@@ -33,8 +35,11 @@ class Classification extends Component {
             ruleType: "certain",
             typeOfClassifier: "SimpleRuleClassifier",
             selectedItem: null,
-            openDetails: false,
-            openSettings: false,
+            open: {
+                details: false,
+                matrix: false,
+                settings: false,
+            },
             alertProps: undefined,
         };
 
@@ -133,18 +138,6 @@ class Classification extends Component {
             this.props.onTabChange(project, this.state.updated, tabsUpToDate);
         }
     }
-
-    onSettingsClick = () => {
-        this.setState(prevState => ({
-            openSettings: !prevState.openSettings,
-        }));
-    };
-
-    onSettingsClose = () => {
-        this.setState({
-            openSettings: false,
-        });
-    };
 
     onCalculateClick = (event) => {
         event.persist();
@@ -248,17 +241,17 @@ class Classification extends Component {
         this.setState({displayedItems: filteredItems});
     };
 
-    onDetailsOpen = (index) => {
-        this.setState({
-            openDetails: true,
-            selectedItem: this._items[index]
-        });
+    toggleOpen = (name) => {
+        this.setState(({open}) => ({
+            open: {...open, [name]: !open[name]}
+        }));
     };
 
-    onDetailsClose = () => {
-        this.setState({
-            openDetails: false
-        });
+    onDetailsOpen = (index) => {
+        this.setState(({open}) => ({
+            open: {...open, details: true},
+            selectedItem: this._items[index]
+        }));
     };
 
     onSnackbarClose = (event, reason) => {
@@ -317,7 +310,7 @@ class Classification extends Component {
     };
 
     render() {
-        const { loading, displayedItems, selectedItem, openDetails, openSettings, alertProps } = this.state;
+        const { loading, displayedItems, selectedItem, open, alertProps } = this.state;
         const { defaultClassificationResult, typeOfClassifier } = this.state;
 
         return (
@@ -325,7 +318,7 @@ class Classification extends Component {
                 <StyledPaper id={"classification-bar"} paperRef={this.upperBar}>
                     <SettingsButton
                         aria-label={"classification-settings-button"}
-                        onClick={this.onSettingsClick}
+                        onClick={() => this.toggleOpen("settings")}
                         title={"Click to choose rule type"}
                     />
                     <StyledDivider />
@@ -354,13 +347,20 @@ class Classification extends Component {
                             </CalculateButton>
                         </RuleWorkUpload>
                     </RuleWorkButtonGroup>
+                    {Boolean(Object.keys(this._data).length) &&
+                        <MatrixButton
+                            aria-label={"classification-matrix-button"}
+                            onClick={() => this.toggleOpen("matrix")}
+                            style={{marginLeft: 16}}
+                        />
+                    }
                     <span style={{flexGrow: 1}} />
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <RuleWorkDrawer
                     id={"classification-settings"}
-                    open={openSettings}
-                    onClose={this.onSettingsClose}
+                    open={open.settings}
+                    onClose={() => this.toggleOpen("settings")}
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfClassifierSelector
@@ -377,7 +377,7 @@ class Classification extends Component {
                 <TabBody
                     content={this.getListItems(displayedItems)}
                     id={"classification-list"}
-                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems)}
+                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
                     isLoading={loading}
                     ListProps={{
                         onItemSelected: this.onDetailsOpen
@@ -393,9 +393,16 @@ class Classification extends Component {
                 {selectedItem &&
                     <RuleWorkDialog
                         item={selectedItem}
-                        onClose={this.onDetailsClose}
-                        open={openDetails}
+                        onClose={() => this.toggleOpen("details")}
+                        open={open.details}
                         projectResult={this.props.project.result}
+                    />
+                }
+                {Boolean(Object.keys(this._data).length) &&
+                    <MatrixDialog
+                        matrix={this._data.ordinalMisclassificationMatrix.value}
+                        onClose={() => this.toggleOpen("matrix")}
+                        open={open.matrix}
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
