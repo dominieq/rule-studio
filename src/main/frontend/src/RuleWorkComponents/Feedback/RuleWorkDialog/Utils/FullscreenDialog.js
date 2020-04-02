@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
-import StyledDialog from "../../StyledDialog";
+import Dialog from "@material-ui/core/Dialog";
 import Slide from "@material-ui/core/Slide";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -19,7 +19,7 @@ function FullscreenDialog(props) {
     const paperClasses = paperStyles();
 
     return (
-        <StyledDialog
+        <Dialog
             fullScreen={true}
             PaperProps={{
                 classes: {root: paperClasses.root}
@@ -30,7 +30,7 @@ function FullscreenDialog(props) {
             {...other}
         >
             {children}
-        </StyledDialog>
+        </Dialog>
     )
 }
 

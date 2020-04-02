@@ -1,14 +1,14 @@
-import React, {Component} from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import Accept from "./Utils/Accept";
 import Cancel from "./Utils/Cancel"
+import SimpleContent from "./Utils/SimpleContent";
+import SimpleDialog from "./Utils/SimpleDialog";
 import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import StyledDialog from "../../RuleWorkComponents/Feedback/StyledDialog";
-import StyledDialogContent from "../../RuleWorkComponents/Feedback/StyledDialogContent";
 import DialogActions from  "@material-ui/core/DialogActions"
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-class RenameProjectDialog extends Component {
+class RenameProjectDialog extends PureComponent {
     constructor(props) {
         super(props);
 
@@ -27,54 +27,56 @@ class RenameProjectDialog extends Component {
         this.props.onClose();
     };
 
-    onOkClick = () => {
-        this.props.onClose(this.state.name);
+    onAcceptClick = () => {
+        const { name } = this.state;
+        this.props.onClose(name);
     };
 
-    onTextFieldChange = (event) => {
+    onInputChange = (event) => {
         this.setState({
             name: event.target.value,
         })
     };
 
-    onEnterPress = (event) => {
-        if (event.which === 13 && this.state.name) {
+    onEnterKeyPress = (event) => {
+        const { name } = this.state;
+        if (event.which === 13 && name) {
             event.preventDefault();
-            this.onOkClick(this.state.name);
+            this.onAcceptClick();
         }
     };
 
     render() {
-        const name = this.state.name;
-        const {children, open} = this.props;
+        const { name } = this.state;
+        const { children, open } = this.props;
 
         return (
-            <StyledDialog
-                open={open}
-                onEnter={this.onEnter}
-                onKeyPress={this.onEnterPress}
+            <SimpleDialog
                 aria-labelledby={"rename-project-dialog"}
                 maxWidth={"sm"}
-                disableBackdropClick={true}
-                disableEscapeKeyDown={true}
+                onBackdropClick={this.onCancelClick}
+                onEnter={this.onEnter}
+                onEscapeKeyDown={this.onCancelClick}
+                onKeyPress={this.onEnterKeyPress}
+                open={open}
             >
                 <DialogTitle id={"rename-project-dialog"}>
                     Rename project
                 </DialogTitle>
-                <StyledDialogContent>
+                <SimpleContent>
                     <RuleWorkTextField
                         fullWidth={true}
-                        onChange={this.onTextFieldChange}
+                        onChange={this.onInputChange}
                         outsideLabel={"Type new name"}
                         value={name}
                     />
-                </StyledDialogContent>
+                </SimpleContent>
                 <DialogActions>
                     <Cancel onClick={this.onCancelClick} />
-                    <Accept disabled={!name} onClick={this.onOkClick} />
+                    <Accept disabled={!name} onClick={this.onAcceptClick} />
                 </DialogActions>
                 {children}
-            </StyledDialog>
+            </SimpleDialog>
         )
     }
 }

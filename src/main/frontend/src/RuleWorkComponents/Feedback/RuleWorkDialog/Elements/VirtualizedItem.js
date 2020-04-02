@@ -4,7 +4,7 @@ import getAppropriateColor from "../Utils/getAppropriateColor";
 import VirtualizedTable from "../Utils/VirtualizedTable";
 
 function VirtualizedItem(props) {
-    const { informationTable: { attributes, objects }, itemInTableIndex } = props;
+    const { index, informationTable: { attributes, objects } } = props;
 
     const rowCount = attributes.length;
 
@@ -16,7 +16,7 @@ function VirtualizedItem(props) {
         },
         {
             dataKey: "object",
-            label: `Object ${itemInTableIndex + 1}`,
+            label: `Object ${index + 1}`,
             width: 100
         }
     ];
@@ -25,7 +25,7 @@ function VirtualizedItem(props) {
     for (let i = 0; i < attributes.length; i++) {
         rows.push({
             name: attributes[i].name,
-            object: objects[itemInTableIndex][attributes[i].name]
+            object: objects[index][attributes[i].name]
         })
     }
 
@@ -45,8 +45,8 @@ function VirtualizedItem(props) {
 }
 
 VirtualizedItem.propTypes = {
+    index: PropTypes.number.isRequired,
     informationTable: PropTypes.object.isRequired,
-    itemInTableIndex: PropTypes.number.isRequired
 };
 
 export default VirtualizedItem;

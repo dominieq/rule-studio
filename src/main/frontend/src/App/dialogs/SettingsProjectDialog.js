@@ -1,12 +1,12 @@
-import React, {Component} from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-import {withStyles} from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import Accept from "./Utils/Accept";
 import Cancel from "./Utils/Cancel";
+import SimpleContent from "./Utils/SimpleContent"
+import SimpleDialog from "./Utils/SimpleDialog";
 import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import RuleWorkHelper from "../../RuleWorkComponents/Feedback/RuleWorkHelper";
-import StyledDialog from "../../RuleWorkComponents/Feedback/StyledDialog";
-import StyledDialogContent from "../../RuleWorkComponents/Feedback/StyledDialogContent"
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import List from "@material-ui/core/List";
@@ -24,7 +24,7 @@ const SettingsIcons = withStyles({
 }, {name: "MuiListItemIcon"})(props => <ListItemIcon {...props}>{props.children}</ListItemIcon>);
 
 
-class SettingsProjectDialog extends Component {
+class SettingsProjectDialog extends PureComponent {
     constructor(props) {
         super(props);
 
@@ -51,8 +51,16 @@ class SettingsProjectDialog extends Component {
         this.props.onClose({...this.props.settings});
     };
 
+    onEnterKeyPress = (event) => {
+        if (event.which === 13 ) {
+            event.preventDefault();
+            this.onAcceptClick();
+        }
+    };
+
     render() {
-        const attributes = this.props.attributes;
+        const { indexOption } = this.state;
+        const { attributes, children, open } = this.props;
         let options = ["default"];
         if (attributes) {
             for (let i = 0; i < attributes.length; i++) {
@@ -65,18 +73,18 @@ class SettingsProjectDialog extends Component {
         }
 
         return (
-            <StyledDialog
+            <SimpleDialog
                 aria-labelledby={"settings-project-dialog"}
-                disableBackdropClick={true}
-                disableEscapeKeyDown={true}
-                onClose={this.props.onClose}
+                onBackdropClick={this.onCancelClick}
                 onEnter={this.onEnter}
-                open={this.props.open}
+                onEscapeKeyDown={this.onCancelClick}
+                onKeyPress={this.onEnterKeyPress}
+                open={open}
             >
                 <DialogTitle>
                     Customize project settings
                 </DialogTitle>
-                <StyledDialogContent>
+                <SimpleContent>
                     <List style={{width: "100%"}}>
                         <ListItem disableGutters={true}>
                             <SettingsIcons>
@@ -86,7 +94,7 @@ class SettingsProjectDialog extends Component {
                                 onChange={this.onIndexOptionChange}
                                 outsideLabel={"Choose object's visible description"}
                                 select={true}
-                                value={this.state.indexOption}
+                                value={indexOption}
                             >
                                 {options}
                             </RuleWorkTextField>
@@ -95,13 +103,13 @@ class SettingsProjectDialog extends Component {
                             </RuleWorkHelper>
                         </ListItem>
                     </List>
-                </StyledDialogContent>
+                </SimpleContent>
                 <DialogActions>
                     <Cancel onClick={this.onCancelClick} />
                     <Accept disabled={false} onClick={this.onAcceptClick} />
                 </DialogActions>
-                {this.props.children}
-            </StyledDialog>
+                {children}
+            </SimpleDialog>
         );
     }
 }

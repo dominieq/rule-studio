@@ -4,7 +4,7 @@ import RuleWorkHelper from "../../../../RuleWorkComponents/Feedback/RuleWorkHelp
 import RuleWorkSmallBox from "../../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 
-function TypeOfUnionsSelector(props) {
+function TypeOfRulesSelector(props) {
     const { id } = props;
 
     return (
@@ -14,22 +14,22 @@ function TypeOfUnionsSelector(props) {
             </RuleWorkHelper>
             <RuleWorkSmallBox style={{flexGrow: 1, margin: 0}}>
                 <RuleWorkTextField
-                    outsideLabel={"Select type of unions"}
+                    outsideLabel={"Choose type of rules"}
                     select={true}
                     {...props}
                 >
-                    {["monotonic", "standard"]}
+                    {["certain", "possible"]}
                 </RuleWorkTextField>
             </RuleWorkSmallBox>
         </div>
     )
 }
 
-TypeOfUnionsSelector.propTypes = {
+TypeOfRulesSelector.propTypes = {
     disabledChildren: PropTypes.arrayOf(PropTypes.string),
     id: PropTypes.string,
     onChange: PropTypes.func.isRequired,
-    value: PropTypes.string,
+    value: PropTypes.string
 };
 
-export default TypeOfUnionsSelector;
+export default TypeOfRulesSelector;

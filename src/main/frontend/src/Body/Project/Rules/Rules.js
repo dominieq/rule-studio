@@ -1,23 +1,20 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
+import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterNoResults from "../Utils/Filtering/FilterNoResults";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
-import CalculateButton from "../Utils/Calculations/CalculateButton";
-import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
+import CalculateButton from "../Utils/Buttons/CalculateButton";
+import SettingsButton from "../Utils/Buttons/SettingsButton";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
-import SettingsButton from "../Utils/Settings/SettingsButton";
-import SettingsFooter from "../Utils/Settings/SettingsFooter";
+import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
+import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
 import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
-import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import RuleWorkList from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import {RulesDialog} from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
+import { RulesDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
@@ -150,30 +147,6 @@ class Rules extends Component {
     onSettingsClose = () => {
         this.setState({
             openSettings: false,
-        });
-    };
-
-    onRuleType = (event) => {
-        this.setState({
-            changes: event.target.value !== "certain",
-            updated: this.props.project.dataUpToDate,
-            ruleType: event.target.value
-        });
-    };
-
-    onThresholdChange = (threshold) => {
-        this.setState({
-            changes: Boolean(threshold),
-            updated: this.props.project.dataUpToDate,
-            threshold: threshold,
-        });
-    };
-
-    onTypeOfUnionsChange = (event) => {
-        this.setState({
-            changes: event.target.value !== "epsilon",
-            updated: this.props.project.dataUpToDate,
-            typeOfUnions: event.target.value,
         });
     };
 
@@ -382,6 +355,30 @@ class Rules extends Component {
         });
     };
 
+    onRuleTypeChange = (event) => {
+        this.setState({
+            changes: event.target.value !== "certain",
+            updated: this.props.project.dataUpToDate,
+            ruleType: event.target.value
+        });
+    };
+
+    onThresholdChange = (threshold) => {
+        this.setState({
+            changes: Boolean(threshold),
+            updated: this.props.project.dataUpToDate,
+            threshold: threshold,
+        });
+    };
+
+    onTypeOfUnionsChange = (event) => {
+        this.setState({
+            changes: event.target.value !== "epsilon",
+            updated: this.props.project.dataUpToDate,
+            typeOfUnions: event.target.value,
+        });
+    };
+
     onFilterChange = (event) => {
         const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
         this.setState({displayedItems: filteredItems});
@@ -428,7 +425,7 @@ class Rules extends Component {
 
     getListItems = (items) => {
         let listItems = [];
-        if (this._data) {
+        if (this._data && items) {
             for (let i = 0; i < items.length; i++) {
                 const listItem = {
                     id: items[i].id,
@@ -449,8 +446,8 @@ class Rules extends Component {
     };
 
     render() {
-        const {loading, displayedItems, threshold, typeOfUnions, selectedItem, openDetails,
-            openSettings, alertProps} = this.state;
+        const { loading, displayedItems, selectedItem, openDetails, openSettings, alertProps } = this.state;
+        const { ruleType, threshold, typeOfUnions } = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
@@ -501,45 +498,43 @@ class Rules extends Component {
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <RuleWorkDrawer
-                    height={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
-                    id={"rules-settings-drawer"}
+                    id={"rules-settings"}
                     open={openSettings}
+                    onClose={this.onSettingsClose}
+                    placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
-                    <RuleWorkSmallBox id={"rules-union-type-selector"}>
-                        <TypeOfUnionsSelector
-                            onChange={this.onTypeOfUnionsChange}
-                            value={typeOfUnions}
-                        />
-                    </RuleWorkSmallBox>
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
-                    <RuleWorkSmallBox id={"rules-threshold-selector"}>
-                        <ThresholdSelector
-                            onChange={this.onThresholdChange}
-                            value={threshold}
-                        />
-                    </RuleWorkSmallBox>
-                    <SettingsFooter
-                        id={"rules-settings-footer"}
-                        onClose={this.onSettingsClose}
+                    <TypeOfRulesSelector
+                        id={"rules-rule-type-selector"}
+                        onChange={this.onRuleTypeChange}
+                        value={ruleType}
+                    />
+                    <TypeOfUnionsSelector
+                        id={"rules-union-type-selector"}
+                        onChange={this.onTypeOfUnionsChange}
+                        value={typeOfUnions}
+                    />
+                    <ThresholdSelector
+                        id={"rules-threshold-selector"}
+                        onChange={this.onThresholdChange}
+                        value={threshold}
                     />
                 </RuleWorkDrawer>
-                <RuleWorkBox
-                    id={"rules-body"}
-                    style={!openSettings ? {zIndex: 2} : undefined}
-                    styleVariant={"tab-body"}
-                >
-                    {loading ?
-                        <StyledCircularProgress />
-                        :
-                        displayedItems ?
-                            <RuleWorkList onItemSelected={this.onDetailsOpen}>
-                                {this.getListItems(displayedItems)}
-                            </RuleWorkList>
-                            :
-                            <FilterNoResults />
-                    }
-                </RuleWorkBox>
+                <TabBody
+                    content={this.getListItems(displayedItems)}
+                    id={"rules-list"}
+                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
+                    isLoading={loading}
+                    ListProps={{
+                        onItemSelected: this.onDetailsOpen
+                    }}
+                    noFilterResults={!displayedItems}
+                    subheaderContent={[
+                        {
+                            label: "Number of objects",
+                            value: displayedItems && displayedItems.length
+                        }
+                    ]}
+                />
                 {selectedItem &&
                     <RulesDialog
                         item={selectedItem}
