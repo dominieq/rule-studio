@@ -12,7 +12,7 @@ const SimpleContent = withStyles(theme=> ({
         borderTopColor: theme.palette.text.default,
         borderBottomColor: theme.palette.text.default,
     }
-}),{name: "MuiDialogContent"})(props => (
+}),{name: "simple-content"})(props => (
     <DialogContent dividers={true} {...props} />
 ));
 

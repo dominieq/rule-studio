@@ -7,7 +7,7 @@ const SimpleDialog = withStyles( theme => ({
         backgroundColor: theme.palette.paper.background,
         color: theme.palette.paper.text,
     }
-}), {name: "MuiDialog"})(props => (
+}), {name: "simple-dialog"})(props => (
     <Dialog {...props}/>
 ));
 
