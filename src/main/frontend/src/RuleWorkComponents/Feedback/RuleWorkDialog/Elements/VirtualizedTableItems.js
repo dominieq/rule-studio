@@ -47,21 +47,21 @@ const listStyles = makeStyles(theme => ({
 }), {name: "virtualized-list"});
 
 function VirtualizedTableItems(props) {
-    const { headerText, itemInTableIndex, onItemInTableSelected, rowHeight, table } = props;
+    const { headerText, index, itemText, onItemInTableSelected, rowHeight, table } = props;
     const listClasses = listStyles();
 
-    const rowRenderer = ({key, index, style}) => {
+    const rowRenderer = ({key, index: i, style}) => {
         return (
             <ListItem
                 button={true}
                 divider={true}
                 key={key}
-                selected={table[index] === itemInTableIndex}
-                onClick={() => onItemInTableSelected(table[index])}
+                selected={table[i] === index}
+                onClick={() => onItemInTableSelected(table[i])}
                 style={style}
             >
                 <ListItemText
-                    primary={"Object " + (table[index] + 1)}
+                    primary={itemText + " " + (table[i] + 1)}
                     primaryTypographyProps={{className: listClasses.textItem}}
                 />
             </ListItem>
@@ -104,13 +104,15 @@ function VirtualizedTableItems(props) {
 
 VirtualizedTableItems.propTypes = {
     headerText: PropTypes.string,
-    itemInTableIndex: PropTypes.number,
+    index: PropTypes.number,
+    itemText: PropTypes.string,
     onItemInTableSelected: PropTypes.func.isRequired,
     rowHeight: PropTypes.number,
     table: PropTypes.array.isRequired,
 };
 
 VirtualizedTableItems.defaultProps = {
+    itemText: "Object",
     rowHeight: 53,
 };
 

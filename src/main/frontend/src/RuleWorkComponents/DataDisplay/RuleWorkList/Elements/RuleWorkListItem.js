@@ -1,7 +1,7 @@
 import React, {Fragment} from "react";
 import PropTypes from "prop-types";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
-import RuleWorkSmallBox from "../Containers/RuleWorkSmallBox";
+import RuleWorkSmallBox from "../../../Containers/RuleWorkSmallBox";
 import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";
 

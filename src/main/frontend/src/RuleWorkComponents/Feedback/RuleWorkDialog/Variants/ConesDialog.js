@@ -53,7 +53,7 @@ class ConesDialog extends PureComponent {
                     {!Number.isNaN(Number(tableIndex)) &&
                         <VirtualizedTableItems
                             headerText={Object.keys(item.tables)[tableIndex]}
-                            itemInTableIndex={itemInTableIndex}
+                            index={itemInTableIndex}
                             onItemInTableSelected={this.onItemInTableSelected}
                             table={Object.values(item.tables)[tableIndex]}
                         />

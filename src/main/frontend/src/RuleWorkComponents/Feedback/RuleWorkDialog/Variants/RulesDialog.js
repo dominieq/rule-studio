@@ -38,7 +38,7 @@ class RulesDialog extends Component {
                 <div id={"rules-table-content"} style={{display: "flex", flexDirection: "column", width: "20%"}}>
                     <VirtualizedTableItems
                         headerText={"Indices of covered objects"}
-                        itemInTableIndex={itemInTableIndex}
+                        index={itemInTableIndex}
                         onItemInTableSelected={this.onItemInTableSelected}
                         table={item.tables.indicesOfCoveredObjects}
                     />
@@ -46,8 +46,8 @@ class RulesDialog extends Component {
                 <div id={"rules-table-item"} style={{width: "40%"}}>
                     {!Number.isNaN(Number(itemInTableIndex)) &&
                         <VirtualizedItem
+                            index={itemInTableIndex}
                             informationTable={projectResult.informationTable}
-                            itemInTableIndex={itemInTableIndex}
                         />
                     }
                 </div>
