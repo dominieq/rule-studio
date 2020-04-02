@@ -460,7 +460,7 @@ class CrossValidation extends Component {
                     subheaderContent={[
                         {
                             label: "Number of objects",
-                            value: displayedItems.length
+                            value: displayedItems && displayedItems.length
                         }
                     ]}
                 />

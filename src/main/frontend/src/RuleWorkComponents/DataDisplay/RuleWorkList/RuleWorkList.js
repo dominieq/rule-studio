@@ -72,7 +72,7 @@ class RuleWorkList extends Component {
             <Fragment>
                 <StyledPagination
                     count={count}
-                    hidden={children.length < 50 || displayedItems.length < 25}
+                    hidden={children.length <= 50 || displayedItems.length <= 25}
                     id={"top-pagination"}
                     onChange={this.onPageChange}
                     page={selectedPage}
@@ -90,7 +90,7 @@ class RuleWorkList extends Component {
                 </StyledList>
                 <StyledPagination
                     count={count}
-                    hidden={children.length < 50}
+                    hidden={children.length <= 50}
                     id={"bottom-pagination"}
                     onChange={this.onPageChange}
                     page={selectedPage}

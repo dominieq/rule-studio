@@ -289,7 +289,7 @@ class Unions extends Component {
 
     getListItems = (items) => {
         let listItems = [];
-        if (this._data) {
+        if (this._data && items) {
             for (let i = 0; i < items.length; i++) {
                 const listItem = {
                     id: items[i].id,
@@ -365,7 +365,7 @@ class Unions extends Component {
                     subheaderContent={[
                         {
                             label: "Number of objects",
-                            value: displayedItems.length
+                            value: displayedItems && displayedItems.length
                         },
                         {
                             label: "Quality of approximation",
