@@ -13,7 +13,7 @@ import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import MatrixDialog from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
-import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
+import { ClassificationDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog"
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
@@ -280,7 +280,7 @@ class Classification extends Component {
 
                 const traits = {
                     attributes: data.informationTable.attributes.slice(),
-                    values: {...data.informationTable.objects[i]}
+                    objects: data.informationTable.objects.slice()
                 };
                 const tables = {
                     indicesOfCoveringRules: data.indicesOfCoveringRules[i].slice()
@@ -391,11 +391,11 @@ class Classification extends Component {
                     ]}
                 />
                 {selectedItem &&
-                    <RuleWorkDialog
+                    <ClassificationDialog
                         item={selectedItem}
                         onClose={() => this.toggleOpen("details")}
                         open={open.details}
-                        projectResult={this.props.project.result}
+                        ruleSet={this.props.project.result.rules.ruleSet}
                     />
                 }
                 {Boolean(Object.keys(this._data).length) &&
