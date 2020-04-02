@@ -28,7 +28,6 @@ import { withStyles, createStyles } from '@material-ui/core/styles';
 import { DraggableHeader } from 'react-data-grid-addons';
 import PropTypes from 'prop-types';
 import RuleWorkLoadingIcon from './RuleWorkLoadingIcon';
-import StyledDialog from '../../../RuleWorkComponents/Feedback/StyledDialog';
 import StyledButton from '../../../RuleWorkComponents/Inputs/StyledButton';
 import NumericFilter from './NumericFilter';
 import { Divider } from '@material-ui/core';
@@ -41,6 +40,15 @@ const { DraggableContainer } = DraggableHeader;
 const heightOfRow = 40; //50
 const heightOfHeaderRow = 50; //60
 const maxNoOfHistorySteps = 30;
+
+const SimpleDialog = withStyles( theme => ({
+    paper: {
+        backgroundColor: theme.palette.paper.background,
+        color: theme.palette.paper.text,
+    }
+}), {name: "simple-dialog"})(props => (
+    <Dialog {...props}/>
+));
 
 const StyledReactDataGrid = (theme) => createStyles({
     root: {
@@ -1998,7 +2006,7 @@ class DisplayData extends React.Component {
                 />
                 </DraggableContainer>     
                 
-                <StyledDialog open={this.state.isOpenedAddAttribute} fullWidth={true} maxWidth={"xs"} onClose={this.closeOnAddAttribute} aria-labelledby="add-attribute-dialog">
+                <SimpleDialog open={this.state.isOpenedAddAttribute} fullWidth={true} maxWidth={"xs"} onClose={this.closeOnAddAttribute} aria-labelledby="add-attribute-dialog">
                     <DialogTitle id="add-attribute-dialog">{"Add new attribute"}</DialogTitle>
                     <form onSubmit={this.applyOnAddAttribute}>
                     <DialogContent>
@@ -2015,9 +2023,9 @@ class DisplayData extends React.Component {
                         <StyledButton type="submit" themeVariant={"primary"} variant={"outlined"} disabled={false}> Apply </StyledButton>
                     </DialogActions>
                     </form>
-                </StyledDialog>
+                </SimpleDialog>
 
-                <StyledDialog open={this.state.isOpenedEditAttributes} fullWidth={true} maxWidth={"md"} onClose={this.closeOnEditAttributes} aria-labelledby="edit-attributes-dialog">
+                <SimpleDialog open={this.state.isOpenedEditAttributes} fullWidth={true} maxWidth={"md"} onClose={this.closeOnEditAttributes} aria-labelledby="edit-attributes-dialog">
                     <DialogTitle id="edit-attributes-dialog">{"Edit attributes"}</DialogTitle>
                     <form onSubmit={this.applyOnEditAttributes}>
                     <DialogContent>
@@ -2049,9 +2057,9 @@ class DisplayData extends React.Component {
                         <StyledButton type="submit" themeVariant={"primary"} variant={"outlined"} disabled={this.state.editAttributeSelected === ''}> Apply </StyledButton>
                     </DialogActions>
                     </form>
-                </StyledDialog>
+                </SimpleDialog>
 
-                <StyledDialog fullWidth={true} maxWidth={"sm"} open={this.state.isOpenedSaveToFile} onClose={this.closeOnSaveToFile} aria-labelledby="save-files-dialog">
+                <SimpleDialog fullWidth={true} maxWidth={"sm"} open={this.state.isOpenedSaveToFile} onClose={this.closeOnSaveToFile} aria-labelledby="save-files-dialog">
                     <DialogTitle id="save-files-dialog">{"Choose type and format to be saved in."}</DialogTitle>
                     <DialogContent>
                         <span>Select appropriate checkboxes to download the file/files</span> <br/><br/>
@@ -2105,11 +2113,11 @@ class DisplayData extends React.Component {
                             Ok 
                         </StyledButton>
                     </DialogActions>
-                </StyledDialog>
+                </SimpleDialog>
                 
                 {this.displayColumnHeaderMenu()}
 
-                <StyledDialog open={this.state.isOpenedTransform} onClose={this.closeOnTransform} aria-labelledby="transform-warning-dialog">
+                <SimpleDialog open={this.state.isOpenedTransform} onClose={this.closeOnTransform} aria-labelledby="transform-warning-dialog">
                     <DialogTitle id="transform-warning-title">{"Do you want to impose preference orders?"}</DialogTitle>
                     <DialogContent>
                     <Tooltip title="Binarize nominal attributes with 3+ values?" placement="bottom" arrow>
@@ -2128,7 +2136,7 @@ class DisplayData extends React.Component {
                     <StyledButton onClick={this.onTransformAttributes} themeVariant={"primary"} variant={"outlined"} > Submit </StyledButton>
 
                     </DialogActions>
-                </StyledDialog>
+                </SimpleDialog>
 
               
                 {this.state.isLoading ? <RuleWorkLoadingIcon color="primary" /> : null }
