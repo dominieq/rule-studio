@@ -1,5 +1,6 @@
 package pl.put.poznan.rulework.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.dominance.DominanceConeCalculator;
@@ -10,7 +11,11 @@ public class DominanceCones {
     private int numberOfObjects;
     private IntSortedSet[] positiveDCones;
     private IntSortedSet[] negativeDCones;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private IntSortedSet[] positiveInvDCones;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private IntSortedSet[] negativeInvDCones;
 
     public DominanceCones() {
@@ -81,14 +86,23 @@ public class DominanceCones {
         this.numberOfObjects = informationTable.getNumberOfObjects();
 
         this.positiveDCones = new IntSortedSet[this.numberOfObjects];
-        this.negativeDCones = new IntSortedSet[this.numberOfObjects];
-        this.positiveInvDCones = new IntSortedSet[this.numberOfObjects];
-        this.negativeInvDCones = new IntSortedSet[this.numberOfObjects];
-
         calculatePositiveDCones(informationTable);
+        this.negativeDCones = new IntSortedSet[this.numberOfObjects];
         calculateNegativeDCones(informationTable);
-        calculatePositiveInvDCones(informationTable);
-        calculateNegativeInvDCones(informationTable);
+
+        if(DominanceConeCalculator.INSTANCE.positiveDominanceConesEqual(informationTable)) {
+            this.positiveInvDCones = null;
+        } else {
+            this.positiveInvDCones = new IntSortedSet[this.numberOfObjects];
+            calculatePositiveInvDCones(informationTable);
+        }
+
+        if(DominanceConeCalculator.INSTANCE.negativeDominanceConesEqual(informationTable)) {
+            this.negativeInvDCones = null;
+        } else {
+            this.negativeInvDCones = new IntSortedSet[this.numberOfObjects];
+            calculateNegativeInvDCones(informationTable);
+        }
     }
 
     private void calculatePositiveDCones(InformationTable informationTable) {
