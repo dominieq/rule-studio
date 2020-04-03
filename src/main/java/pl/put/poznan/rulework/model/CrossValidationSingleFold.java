@@ -1,5 +1,6 @@
 package pl.put.poznan.rulework.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
 
@@ -22,10 +23,12 @@ public class CrossValidationSingleFold {
         this.validationTable = validationTable;
     }
 
+    @JsonProperty("ruleSet")
     public RuleSetWithComputableCharacteristics getRuleSetWithComputableCharacteristics() {
         return ruleSetWithComputableCharacteristics;
     }
 
+    @JsonProperty("ruleSet")
     public void setRuleSetWithComputableCharacteristics(RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
         this.ruleSetWithComputableCharacteristics = ruleSetWithComputableCharacteristics;
     }
