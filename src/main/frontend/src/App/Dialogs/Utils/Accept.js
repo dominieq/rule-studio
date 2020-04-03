@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 
-function Cancel(props) {
+function Accept(props) {
     const {children, ...other} = props;
 
     return (
@@ -12,19 +12,19 @@ function Cancel(props) {
     )
 }
 
-Cancel.propTypes = {
-    autoFocus: PropTypes.bool,
+Accept.propTypes = {
     children: PropTypes.node,
-    onClick: PropTypes.func,
+    disabled: PropTypes.bool,
+    onClick: PropTypes.func.isRequired,
     themeVariant: PropTypes.oneOf(["inherit", "primary", "secondary"]),
-    variant: PropTypes.oneOf(["text", "outlined", "contained"]),
+    variant: PropTypes.oneOf(["text", "outlined", "contained"])
 };
 
-Cancel.defaultProps = {
-    autoFocus: true,
-    children: "Cancel",
-    themeVariant: "secondary",
+Accept.defaultProps = {
+    children: "Ok",
+    disabled: true,
+    themeVariant: "primary",
     variant: "outlined",
 };
 
-export default Cancel;
+export default Accept;
