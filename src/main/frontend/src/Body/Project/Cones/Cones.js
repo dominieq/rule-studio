@@ -232,12 +232,15 @@ class Cones extends Component {
                     }
                 }
 
-                const tables = {
-                    positiveDCones: data.positiveDCones[i].slice(),
-                    negativeDCones: data.negativeDCones[i].slice(),
-                    positiveInvDCones: data.positiveInvDCones[i].slice(),
-                    negativeInvDCones: data.negativeInvDCones[i].slice(),
-                };
+                const tables = Object.keys(data).map(key => {
+                    if (key !== "numberOfObjects") {
+                        return {
+                            [key]: data[key][i].slice()
+                        }
+                    }
+                }).reduce((previous, current) => {
+                    return {...previous, ...current}
+                });
 
                 const item = new Item(id, name, null, null, tables);
                 items.push(item);
@@ -255,16 +258,12 @@ class Cones extends Component {
                     header: items[i].name,
                     subheader: undefined,
                     content: undefined,
-                    multiContent: [
-                        {
-                            title: "Number of objects in positive dominance cone:",
-                            subtitle: items[i].tables.positiveDCones.length,
-                        },
-                        {
-                            title: "Number of objects in negative dominance cone:",
-                            subtitle: items[i].tables.negativeDCones.length,
+                    multiContent: Object.keys(items[i].tables).map(key => {
+                        return {
+                            title: "Number of objects in " + key,
+                            subtitle: items[i].tables[key].length
                         }
-                    ]
+                    })
                 };
                 listItems.push(listItem)
             }
