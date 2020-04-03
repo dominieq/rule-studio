@@ -21,6 +21,8 @@ import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextFi
 import StyledToggleButton from "../../../RuleWorkComponents/Inputs/StyledToggleButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import MenuItem from "@material-ui/core/MenuItem";
 
 class CrossValidation extends Component {
     constructor(props) {
@@ -34,6 +36,14 @@ class CrossValidation extends Component {
             updated: false,
             loading: false,
             displayedItems: [],
+            parameters: {
+                defaultClassificationResult: "majorityDecisionClass",
+                numberOfFolds: 2,
+                consistencyThreshold: 0,
+                typeOfClassifier: "SimpleRuleClassifier",
+                typeOfRules: "certain",
+                typeOfUnion: "monotonic",
+            },
             defaultClassificationResult: "majorityDecisionClass",
             ruleType: "certain",
             threshold: 0,
@@ -67,15 +77,17 @@ class CrossValidation extends Component {
                 if (response.status === 200) {
                     response.json().then(result => {
                         if (this._isMounted) {
-                            const items = this.getItems(result.crossValidationSingleFolds);
+                            const folds = this.getFolds(result);
+                            const items = this.getItems(folds[0]);
 
                             this._data = result;
                             this._items = items;
-                            this.setState({
-                                displayedItems: items,
+                            this.setState(({parameters}) => ({
+                                displayedItems: items.slice(),
+                                parameters: {...parameters, numberOfFolds: result.numberOfFolds},
                                 foldNumber: result.numberOfFolds,
-                                folds: Array.from(Array(result.numberOfFolds).keys()).map(x => ++x)
-                            });
+                                folds: folds.slice()
+                            }));
                         }
                     }).catch(error => {
                         console.log(error);
@@ -190,17 +202,19 @@ class CrossValidation extends Component {
                         const updated = true;
 
                         if (this._isMounted) {
-                            const items = this.getItems(result.crossValidationSingleFolds);
+                            let folds = this.getFolds(result);
+                            let items = this.getFolds(folds[0]);
 
                             this._data = result;
                             this._items = items;
-                            this.setState({
+                            this.setState(({parameters}) => ({
                                 changes: true,
                                 updated: updated,
-                                displayedItems: items,
+                                displayedItems: items.slice(),
+                                parameters: {...parameters, numberOfFolds: result.numberOfFolds},
                                 foldNumber: result.numberOfFolds,
-                                folds: Array.from(Array(result.numberOfFolds).keys()).map(x => ++x),
-                            });
+                                folds: folds.slice(),
+                            }));
                         } else {
 
                         }
@@ -336,29 +350,82 @@ class CrossValidation extends Component {
         }
     };
 
-    getItems = (data) => {
-        let items = [];
+    getFolds = (data) => {
+        let folds = [];
         if (data) {
-            for (let i = 0; i < data.length; i++) {
-                console.log(data[i]);
+            for ( let i = 0; i < data.numberOfFolds; i++) {
+                folds.push({
+                    index: i,
+                    ...data.crossValidationSingleFolds[i]
+                });
             }
         }
+        return folds;
+    };
+
+    getItems = (data) => {
+        let items = [];
+        if (data && Object.keys(data).length) {
+            const { indexOption } = this.props.project.settings;
+            for (let i = 0; i < data.validationTable.objects.length; i++) {
+                let name = "Object " + (i + 1);
+
+                if (indexOption !== "default") {
+                    if (Object.keys(data.validationTable.objects[i]).includes(indexOption)) {
+                        name = data.validationTable.object[i][indexOption];
+                    }
+                }
+
+                items.push({
+                    id: i,
+                    name: name,
+                    traits: {
+                        attributes:  data.validationTable.attributes,
+                        object: data.validationTable.objects[i],
+                    },
+                    tables: {
+                        indicesOfCoveringRules: data.classificationValidationTable.indicesOfCoveringRules[i],
+                    },
+                })
+            }
+        }
+        console.log(items);
         return items;
     };
 
+    getListItems = (items) => {
+        let listItems = [];
+        if (Array.isArray(items) && items.length) {
+            for ( let i = 0; i < items.length; i++) {
+
+            }
+        }
+        return listItems;
+    };
+
     renderResultsActions = () => {
-        const {foldDisplay, folds, foldIndex} = this.state;
+        const { foldDisplay, folds, foldIndex } = this.state;
 
         if (Array.isArray(folds) && folds.length) {
             return (
                 <Fragment>
                     <RuleWorkTextField
                         onChange={this.onFoldIndexChange}
-                        outsideLabel={"Choose fold"}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment>
+                                    Fold:
+                                </InputAdornment>
+                            )
+                        }}
                         select={true}
                         value={foldIndex}
                     >
-                        {folds}
+                        {folds.map((fold, index) => (
+                            <MenuItem key={index} value={fold.index}>
+                                {fold.index + 1}
+                            </MenuItem>
+                        ))}
                     </RuleWorkTextField>
                     <StyledDivider />
                     <ToggleButtonGroup
@@ -449,7 +516,7 @@ class CrossValidation extends Component {
                     />
                 </RuleWorkDrawer>
                 <TabBody
-                    content={this.getItems(displayedItems)}
+                    content={this.getListItems(displayedItems)}
                     id={"cross-validation-list"}
                     isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
                     isLoading={loading}
