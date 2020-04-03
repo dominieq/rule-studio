@@ -470,15 +470,43 @@ class DisplayData extends React.Component {
             this.setState(prevState => {
                 const rows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
                 const filtered = this.filteredRows();
+                const tmp = Object.entries(updated)[0];
+                const editedCol = prevState.history[prevState.historySnapshot].columns.find(x => x.key === tmp[0])
+                if(editedCol.valueType === "real") { //enable only reals and "?"
+                    if(tmp[1] !== "?" && isNaN(Number(tmp[1]))) {
+                        const message = <span> Cell hasn't been updated. <br/> Column type is: real and you entered value: {tmp[1]}, which is wrong. </span>
+                        return {
+                            isOpenedNotification: true,
+                            addAttributeErrorNotification: message
+                        }
+                    }
+                } else if(editedCol.valueType === "integer") { //enable only integers and "?"
+                    if(tmp[1] !== "?" && (isNaN(Number(tmp[1])) || tmp[1].indexOf(".") !== -1 )) {
+                        const message = <span> Cell hasn't been updated. <br/> Column type is: integer and you entered value: {tmp[1]}, which is wrong. </span>
+                        return {
+                            isOpenedNotification: true,
+                            addAttributeErrorNotification: message
+                        }
+                    }
+                } else if(editedCol.valueType === "enumeration") { //enable only domain elements and "?" - can happen only during ctrl+c, ctrl+v
+                    if(tmp[1] !== "?" && !editedCol.domain.includes(tmp[1])) {
+                        const message = <span> Cell hasn't been updated. <br/> Column type is: enumeration and you entered value: {tmp[1]}, which is wrong. Please check the domain. </span>
+                        return {
+                            isOpenedNotification: true,
+                            addAttributeErrorNotification: message
+                        }
+                    }
+                }
+
                 for (let i = fromRow; i <= toRow; i++) {
                     const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
                     if(fromRow === toRow) //check if any change happend
                     {
-                        const tmp = Object.entries(updated)[0];
                         if(rows[rows_index][tmp[0]] === tmp[1]) {
                             return ;
                         }
                     }
+                    
                     rows[rows_index] = { ...filtered[i], ...updated };
                 }
                 const tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
@@ -2138,6 +2166,10 @@ class DisplayData extends React.Component {
                     </DialogActions>
                 </SimpleDialog>
 
+                {
+                    this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
+                    closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
+                }
               
                 {this.state.isLoading ? <RuleWorkLoadingIcon color="primary" /> : null }
             </div>
