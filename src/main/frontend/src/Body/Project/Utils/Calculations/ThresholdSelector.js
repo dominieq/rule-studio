@@ -60,11 +60,9 @@ class ThresholdSelector extends Component {
     onSliderChange = (event, newValue) => {
         this.setState({
             threshold: newValue,
+        }, () => { 
+            this.props.onChange(this.state.threshold)
         });
-    };
-
-    onSliderMouseUp = () => {
-        this.props.onChange(this.state.threshold);
     };
 
     render() {
@@ -88,7 +86,6 @@ class ThresholdSelector extends Component {
                     max={1.0}
                     min={0.0}
                     onChange={this.onSliderChange}
-                    onMouseUp={this.onSliderMouseUp}
                     step={0.01}
                     style={{marginLeft: 6, marginRight: 24, maxWidth: 72, minWidth: 60}}
                     value={typeof threshold === "number" ? threshold : 0.0}
