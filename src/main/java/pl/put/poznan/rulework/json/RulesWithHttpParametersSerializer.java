@@ -27,9 +27,9 @@ public class RulesWithHttpParametersSerializer extends JsonSerializer<RulesWithH
         jsonGenerator.writeFieldName("ruleSet");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(rulesWithHttpParameters.getRuleSet()));
 
-        if(rulesWithHttpParameters.getTypeOfUnion() != null) {
-            jsonGenerator.writeFieldName("typeOfUnion");
-            jsonGenerator.writeString(rulesWithHttpParameters.getTypeOfUnion().toString());
+        if(rulesWithHttpParameters.getTypeOfUnions() != null) {
+            jsonGenerator.writeFieldName("typeOfUnions");
+            jsonGenerator.writeString(rulesWithHttpParameters.getTypeOfUnions().toString());
         }
 
         if(rulesWithHttpParameters.getConsistencyThreshold() != null) {

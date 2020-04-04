@@ -149,7 +149,7 @@ public class RulesService {
 
     public static void calculateRulesWithHttpParametersInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
         UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
-        if((project.getUnions() == null) || (unionsWithHttpParameters.getTypeOfUnion() != typeOfUnions) || (unionsWithHttpParameters.getConsistencyThreshold() != consistencyThreshold)) {
+        if((project.getUnions() == null) || (unionsWithHttpParameters.getTypeOfUnions() != typeOfUnions) || (unionsWithHttpParameters.getConsistencyThreshold() != consistencyThreshold)) {
             logger.info("Calculating new set of unions");
             UnionsService.calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
 
