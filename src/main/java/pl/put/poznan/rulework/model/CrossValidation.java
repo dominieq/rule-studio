@@ -14,7 +14,7 @@ public class CrossValidation {
     private OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix;
     private UnionType typeOfUnions;
     private Double consistencyThreshold;
-    private RuleType typeOfRule;
+    private RuleType typeOfRules;
     private ClassifierType typeOfClassifier;
     private DefaultClassificationResultType defaultClassificationResult;
 
@@ -24,13 +24,13 @@ public class CrossValidation {
         this.meanOrdinalMisclassificationMatrix = meanOrdinalMisclassificationMatrix;
     }
 
-    public CrossValidation(Integer numberOfFolds, CrossValidationSingleFold[] crossValidationSingleFolds, OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRule, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult) {
+    public CrossValidation(Integer numberOfFolds, CrossValidationSingleFold[] crossValidationSingleFolds, OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult) {
         this.numberOfFolds = numberOfFolds;
         this.crossValidationSingleFolds = crossValidationSingleFolds;
         this.meanOrdinalMisclassificationMatrix = meanOrdinalMisclassificationMatrix;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
-        this.typeOfRule = typeOfRule;
+        this.typeOfRules = typeOfRules;
         this.typeOfClassifier = typeOfClassifier;
         this.defaultClassificationResult = defaultClassificationResult;
     }
@@ -75,12 +75,12 @@ public class CrossValidation {
         this.consistencyThreshold = consistencyThreshold;
     }
 
-    public RuleType getTypeOfRule() {
-        return typeOfRule;
+    public RuleType getTypeOfRules() {
+        return typeOfRules;
     }
 
-    public void setTypeOfRule(RuleType typeOfRule) {
-        this.typeOfRule = typeOfRule;
+    public void setTypeOfRules(RuleType typeOfRules) {
+        this.typeOfRules = typeOfRules;
     }
 
     public ClassifierType getTypeOfClassifier() {
@@ -107,7 +107,7 @@ public class CrossValidation {
                 ", meanOrdinalMisclassificationMatrix=" + meanOrdinalMisclassificationMatrix +
                 ", typeOfUnions=" + typeOfUnions +
                 ", consistencyThreshold=" + consistencyThreshold +
-                ", typeOfRule=" + typeOfRule +
+                ", typeOfRules=" + typeOfRules +
                 ", typeOfClassifier=" + typeOfClassifier +
                 ", defaultClassificationResult=" + defaultClassificationResult +
                 '}';

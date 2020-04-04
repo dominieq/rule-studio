@@ -37,9 +37,9 @@ public class RulesWithHttpParametersSerializer extends JsonSerializer<RulesWithH
             jsonGenerator.writeNumber(rulesWithHttpParameters.getConsistencyThreshold());
         }
 
-        if(rulesWithHttpParameters.getTypeOfRule() != null) {
+        if(rulesWithHttpParameters.getTypeOfRules() != null) {
             jsonGenerator.writeFieldName("typeOfRules");
-            jsonGenerator.writeString(rulesWithHttpParameters.getTypeOfRule().toString());
+            jsonGenerator.writeString(rulesWithHttpParameters.getTypeOfRules().toString());
         }
 
         jsonGenerator.writeEndObject();

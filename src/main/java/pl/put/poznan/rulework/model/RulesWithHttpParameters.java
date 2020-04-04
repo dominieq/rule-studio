@@ -8,7 +8,7 @@ public class RulesWithHttpParameters {
     private RuleSetWithComputableCharacteristics ruleSet;
     private UnionType typeOfUnions;
     private Double consistencyThreshold;
-    private RuleType typeOfRule;
+    private RuleType typeOfRules;
 
     public RulesWithHttpParameters(RuleSetWithComputableCharacteristics rules) {
         this.ruleSet = rules;
@@ -18,7 +18,7 @@ public class RulesWithHttpParameters {
         this.ruleSet = rules;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
-        this.typeOfRule = ruleType;
+        this.typeOfRules = ruleType;
     }
 
     public RuleSetWithComputableCharacteristics getRuleSet() {
@@ -45,12 +45,12 @@ public class RulesWithHttpParameters {
         this.consistencyThreshold = consistencyThreshold;
     }
 
-    public RuleType getTypeOfRule() {
-        return typeOfRule;
+    public RuleType getTypeOfRules() {
+        return typeOfRules;
     }
 
-    public void setTypeOfRule(RuleType typeOfRule) {
-        this.typeOfRule = typeOfRule;
+    public void setTypeOfRules(RuleType typeOfRules) {
+        this.typeOfRules = typeOfRules;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class RulesWithHttpParameters {
                 "ruleSet=" + ruleSet +
                 ", typeOfUnions=" + typeOfUnions +
                 ", consistencyThreshold=" + consistencyThreshold +
-                ", typeOfRule=" + typeOfRule +
+                ", typeOfRules=" + typeOfRules +
                 '}';
     }
 }

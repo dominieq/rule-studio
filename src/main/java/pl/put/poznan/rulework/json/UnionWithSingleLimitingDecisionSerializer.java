@@ -58,15 +58,15 @@ public class UnionWithSingleLimitingDecisionSerializer extends JsonSerializer<Un
         jsonGenerator.writeFieldName("Objects");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getObjects()));
 
-        jsonGenerator.writeFieldName("Union type");
+        jsonGenerator.writeFieldName("unionType");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getUnionType()));
 
         serializeLimitingDecision(unionWithSingleLimitingDecision, jsonGenerator);
 
-        jsonGenerator.writeFieldName("Accuracy of approximation");
+        jsonGenerator.writeFieldName("accuracyOfApproximation");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getAccuracyOfApproximation()));
 
-        jsonGenerator.writeFieldName("Quality of approximation");
+        jsonGenerator.writeFieldName("qualityOfApproximation");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getQualityOfApproximation()));
 
         jsonGenerator.writeEndObject();

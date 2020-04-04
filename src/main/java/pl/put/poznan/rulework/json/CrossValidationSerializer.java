@@ -24,7 +24,7 @@ public class CrossValidationSerializer extends JsonSerializer<CrossValidation> {
 
         jsonGenerator.writeStartObject();
 
-        jsonGenerator.writeFieldName("Number of folds");
+        jsonGenerator.writeFieldName("numberOfFolds");
         jsonGenerator.writeNumber(crossValidation.getNumberOfFolds());
 
         jsonGenerator.writeFieldName("crossValidationSingleFolds");
@@ -161,7 +161,7 @@ public class CrossValidationSerializer extends JsonSerializer<CrossValidation> {
         jsonGenerator.writeNumber(crossValidation.getConsistencyThreshold());
 
         jsonGenerator.writeFieldName("typeOfRules");
-        jsonGenerator.writeString(crossValidation.getTypeOfRule().toString());
+        jsonGenerator.writeString(crossValidation.getTypeOfRules().toString());
 
         jsonGenerator.writeFieldName("typeOfClassifier");
         jsonGenerator.writeString(crossValidation.getTypeOfClassifier().toString());

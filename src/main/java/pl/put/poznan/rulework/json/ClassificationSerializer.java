@@ -33,7 +33,7 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
         jsonGenerator.writeFieldName("decisionsDomain");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getOrderOfDecisions()));
 
-        jsonGenerator.writeFieldName("Indices of covering rules");
+        jsonGenerator.writeFieldName("indicesOfCoveringRules");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getIndicesOfCoveringRules()));
 
         jsonGenerator.writeFieldName("ordinalMisclassificationMatrix");
