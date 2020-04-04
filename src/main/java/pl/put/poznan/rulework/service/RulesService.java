@@ -231,4 +231,12 @@ public class RulesService {
 
         return new Pair<>(project.getName(), resource);
     }
+
+    public Boolean arePossibleRulesAllowed(UUID id)  {
+        logger.info("Id:\t{}", id);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        return project.getInformationTable().isSuitableForInductionOfPossibleRules();
+    }
 }
