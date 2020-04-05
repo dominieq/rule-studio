@@ -266,18 +266,18 @@ class Unions extends Component {
                     const name = data[type][i].unionType.replace("_", " ").toLowerCase()
                         + " " + data[type][i].limitingDecision;
                     const traits = {
-                        accuracyOfApproximation: data[type][i].accuracyOfApproximation,
-                        qualityOfApproximation: data[type][i].qualityOfApproximation,
+                        "Accuracy of approximation": data[type][i].accuracyOfApproximation,
+                        "Quality of approximation": data[type][i].qualityOfApproximation,
                     };
-                    const tables = {
-                        objects: data[type][i].objects.slice(),
-                        lowerApproximation: data[type][i].lowerApproximation.slice(),
-                        upperApproximation: data[type][i].upperApproximation.slice(),
-                        boundary: data[type][i].boundary.slice(),
-                        positiveRegion: data[type][i].positiveRegion.slice(),
-                        negativeRegion: data[type][i].negativeRegion.slice(),
-                        boundaryRegion: data[type][i].boundaryRegion.slice(),
-                    };
+                    const tables = Object.keys(data[type][i]).map(key => {
+                        if (Array.isArray(data[type][i][key])) {
+                            return {
+                                [key]: data[type][i][key]
+                            };
+                        }
+                    }).reduce((previousValue, currentValue) => {
+                        return {...previousValue, ...currentValue};
+                    });
 
                     const item = new Item(id, name, traits, null, tables);
                     items.push(item);
@@ -299,11 +299,11 @@ class Unions extends Component {
                     multiContent: [
                         {
                             title: "Accuracy of approximation:",
-                            subtitle: items[i].traits.accuracyOfApproximation,
+                            subtitle: items[i].traits["Accuracy of approximation"],
                         },
                         {
                             title: "Quality of approximation: ",
-                            subtitle: items[i].traits.qualityOfApproximation,
+                            subtitle: items[i].traits["Quality of approximation"],
                         }
                     ],
                 };

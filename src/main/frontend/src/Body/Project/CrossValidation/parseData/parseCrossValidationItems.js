@@ -1,7 +1,5 @@
 function parseCrossValidationItems(fold, settings) {
     let items = [];
-    console.log(fold);
-    console.log(settings);
     if (fold && Object.keys(fold).length) {
         const { indexOption } = settings;
         for (let i = 0; i < fold.validationTable.objects.length; i++) {
