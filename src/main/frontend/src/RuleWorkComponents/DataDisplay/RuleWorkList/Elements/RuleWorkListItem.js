@@ -104,10 +104,13 @@ RuleWorkListItem.propTypes = {
     divider: PropTypes.bool,
     object: PropTypes.shape({
         id: PropTypes.number,
-        header: PropTypes.string,
-        subheader: PropTypes.string,
-        content: PropTypes.string,
-        multiContent: PropTypes.arrayOf(PropTypes.object)
+        header: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        subheader: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        content: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        multiContent: PropTypes.arrayOf(PropTypes.shape({
+            title: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            subtitle: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+        }))
     }),
     selected: PropTypes.bool,
 };
