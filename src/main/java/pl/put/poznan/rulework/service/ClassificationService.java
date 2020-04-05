@@ -7,6 +7,7 @@ import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.*;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
+import org.rulelearn.types.EvaluationField;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,6 @@ public class ClassificationService {
 
         for(int i = 0; i < ruleSetWithComputableCharacteristics.size(); i++) {
             Rule rule = ruleSetWithComputableCharacteristics.getRule(i);
-            rule.getDecision();
             allDecisions.add(new SimpleDecision(rule.getDecision().getLimitingEvaluation(), rule.getDecision().getAttributeWithContext().getAttributeIndex()));
         }
 
@@ -55,11 +55,14 @@ public class ClassificationService {
 
         ArrayList<Decision> orderedUniqueFullyDeterminedDecisionsList = new ArrayList<Decision>();
 
+        //Similar generating ordered unique fully determined array of decisions, but comparison of decision is done with accuracy to evaluation field (without attribute index)
         //auxiliary variables
         Decision candidateDecision;
         Decision alreadyPresentDecision;
         boolean iterate;
         int decisionIndex;
+        EvaluationField candidateDecisionEvaluationField;
+        EvaluationField alreadyPresentDecisionEvaluationField;
 
         //create sorted list of decisions:
 
@@ -85,8 +88,10 @@ public class ClassificationService {
 
                 while (iterate) {
                     alreadyPresentDecision = orderedUniqueFullyDeterminedDecisionsList.get(decisionIndex);
-                    //candidate decision is equal (identical) to compared decision from the list
-                    if (candidateDecision.equals(alreadyPresentDecision)) {
+                    candidateDecisionEvaluationField = candidateDecision.getEvaluation(candidateDecision.getAttributeIndices().iterator().nextInt());
+                    alreadyPresentDecisionEvaluationField = alreadyPresentDecision.getEvaluation(alreadyPresentDecision.getAttributeIndices().iterator().nextInt());
+                    //candidate decision has identical evaluation field to compared decision from the list
+                    if (candidateDecisionEvaluationField.equals(alreadyPresentDecisionEvaluationField)) {
                         //ignore candidate decision since it is already present in the list of decisions
                         iterate = false;
                     }
