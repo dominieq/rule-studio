@@ -23,7 +23,7 @@ const tableStyles = makeStyles(theme => ({
     tableColumn: {
         alignItems: 'center',
         display: 'flex',
-        flex: "unset !important",
+        flexGrow: "1 !important",
         padding: "8px 16px",
         width: "100%"
     },
