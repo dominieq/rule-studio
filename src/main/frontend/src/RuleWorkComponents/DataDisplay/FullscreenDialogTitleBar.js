@@ -1,9 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {makeStyles} from "@material-ui/core/styles";
-import RuleWorkTooltip from "../../../DataDisplay/RuleWorkTooltip";
-import StyledButton from "../../../Inputs/StyledButton";
-import StyledPaper from "../../../Surfaces/StyledPaper";
+import clsx from "clsx";
+import { makeStyles } from "@material-ui/core/styles";
+import RuleWorkTooltip from "./RuleWorkTooltip";
+import StyledButton from "../Inputs/StyledButton";
+import StyledPaper from "../Surfaces/StyledPaper";
 import Typography from "@material-ui/core/Typography";
 import WindowClose from "mdi-material-ui/WindowClose";
 
@@ -18,25 +19,28 @@ const paperStyles = makeStyles({
         fontWeight: 700,
         marginRight: "auto"
     },
+    flexTitle: {
+        alignItems: "center",
+        display: "flex",
+        minWidth: "fit-content"
+    },
     close: {
         display: "flex",
-        flexDirection: "row",
-        flexWrap: "nowrap",
         alignItems: "center"
     },
     optional: {
         minWidth: "fit-content",
         marginRight: 16
     }
-}, {name: "title-panel"});
+}, {name: "title-bar"});
 
-function TitlePanel(props) {
-    const {children, onClose, title} = props;
+function FullscreenDialogTitleBar(props) {
+    const { children, onClose, title } = props;
     const paperClasses = paperStyles();
 
     return (
         <StyledPaper className={paperClasses.root} elevation={6}>
-            <div className={paperClasses.title}>
+            <div className={clsx(paperClasses.title, {[paperClasses.flexTitle]: Array.isArray(title)})}>
                 {title}
             </div>
             <div className={paperClasses.close}>
@@ -45,7 +49,7 @@ function TitlePanel(props) {
                         {children}
                     </Typography>
                 }
-                <RuleWorkTooltip title={"Close item's details"}>
+                <RuleWorkTooltip title={"Close details"}>
                     <StyledButton
                         isIcon={true}
                         onClick={onClose}
@@ -59,10 +63,10 @@ function TitlePanel(props) {
     )
 }
 
-TitlePanel.propTypes = {
+FullscreenDialogTitleBar.propTypes = {
     children: PropTypes.node,
     onClose: PropTypes.func,
-    title: PropTypes.node.isRequired,
+    title: PropTypes.node,
 };
 
-export default TitlePanel;
+export default FullscreenDialogTitleBar;
