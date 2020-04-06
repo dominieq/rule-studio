@@ -349,9 +349,9 @@ class Classification extends Component {
                     </RuleWorkButtonGroup>
                     {Boolean(Object.keys(this._data).length) &&
                         <MatrixButton
-                            aria-label={"classification-matrix-button"}
                             onClick={() => this.toggleOpen("matrix")}
                             style={{marginLeft: 16}}
+                            title={"Show ordinal misclassification matrix and it's details"}
                         />
                     }
                     <span style={{flexGrow: 1}} />

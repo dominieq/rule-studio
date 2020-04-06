@@ -7,7 +7,6 @@ import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
 import MatrixButton from "../Utils/Buttons/MatrixButton";
-import MatrixDetailsButton from "../Utils/Buttons/MatrixDetailsButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
@@ -56,8 +55,6 @@ class CrossValidation extends Component {
                 details: false,
                 matrixGlobal: false,
                 matrixFold: false,
-                matrixDGlobal: false,
-                matrixDFold: false,
                 settings: false,
             },
             alertProps: undefined,
@@ -321,16 +318,12 @@ class CrossValidation extends Component {
                         />
                     </RuleWorkTooltip>
                     <StyledDivider />
-                    {Array.isArray(folds) && folds.length &&
+                    {Array.isArray(folds) && Boolean(folds.length) &&
                         <Fragment>
                             <p id={"all-folds"} style={{margin: "0 16px 0 0", fontSize: "1.15rem"}}>All folds:</p>
                             <MatrixButton
                                 onClick={() => this.toggleOpen("matrixGlobal")}
-                                style={{marginRight: 8}}
-                            />
-                            <MatrixDetailsButton
-                                title={"Open details of ordinal matrix for all folds"}
-                                onClick={() => this.toggleOpen("matrixDGlobal")}
+                                title={"Show ordinal misclassification matrix for all folds"}
                             />
                             <StyledDivider />
                             <RuleWorkTextField
@@ -354,11 +347,7 @@ class CrossValidation extends Component {
                             <p id={"fold-colon"} style={{margin: "0 16px 0 4px", fontSize: "1.15rem"}}>:</p>
                             <MatrixButton
                                 onClick={() => this.toggleOpen("matrixFold")}
-                                style={{marginRight: 8}}
-                            />
-                            <MatrixDetailsButton
-                                onClick={() => this.toggleOpen("matrixDFold")}
-                                title={`Open details of ordinal matrix for fold ${selected.foldIndex + 1}`}
+                                title={`Open ordinal misclassification matrix for fold ${selected.foldIndex + 1}`}
                             />
                         </Fragment>
                     }
