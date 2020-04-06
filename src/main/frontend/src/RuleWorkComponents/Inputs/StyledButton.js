@@ -5,7 +5,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 
-const useStyles = makeStyles(theme => ({
+const buttonStyles = makeStyles(theme => ({
     text: {
         color: props => ({
             "inherit": "inherit",
@@ -48,19 +48,22 @@ const useStyles = makeStyles(theme => ({
 }), {name: "styled-button"});
 
 function StyledButton(props) {
-    const {children, classes: propsClasses, classname, isIcon, themeVariant, variant, ...other} = props;
-    const classes = {...useStyles(props), ...propsClasses};
+    const { className, isIcon, themeVariant, variant, ...other } = props;
+    const buttonClasses = buttonStyles({themeVariant: themeVariant});
 
     return (
         <Fragment>
             {isIcon ?
-               <IconButton className={clsx(classes.icon, classname)} {...other}>
-                   {children}
-               </IconButton>
+               <IconButton
+                   className={clsx(buttonClasses.icon, className)}
+                   {...other}
+               />
                 :
-                <Button className={clsx(classes[variant], classname)} variant={variant} {...other}>
-                    {children}
-                </Button>
+                <Button
+                    className={clsx(buttonClasses[variant], className)}
+                    variant={variant}
+                    {...other}
+                />
             }
         </Fragment>
     )
@@ -69,7 +72,7 @@ function StyledButton(props) {
 StyledButton.propTypes = {
     children: PropTypes.node,
     classes: PropTypes.object,
-    classname: PropTypes.string,
+    className: PropTypes.string,
     isIcon: PropTypes.bool,
     themeVariant: PropTypes.oneOf(["inherit", "primary", "secondary"]),
     variant: PropTypes.oneOf(["text", "outlined", "contained"]),
