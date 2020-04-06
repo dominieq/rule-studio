@@ -3,8 +3,12 @@ import PropTypes from "prop-types";
 import getAppropriateColor from "../Utils/getAppropriateColor";
 import VirtualizedTable from "../../../DataDisplay/VirtualizedTable";
 
-function VirtualizedItem(props) {
-    const { index, informationTable: { attributes, objects } } = props;
+function ObjectTable(props) {
+    const {
+        informationTable: { attributes, objects },
+        objectHeader,
+        objectIndex
+    } = props;
 
     const rowCount = attributes.length;
 
@@ -16,7 +20,7 @@ function VirtualizedItem(props) {
         },
         {
             dataKey: "object",
-            label: `Object ${index + 1}`,
+            label: objectHeader ? objectHeader : `Object ${objectIndex + 1}`,
             width: 100
         }
     ];
@@ -25,28 +29,24 @@ function VirtualizedItem(props) {
     for (let i = 0; i < attributes.length; i++) {
         rows.push({
             name: attributes[i].name,
-            object: objects[index][attributes[i].name]
+            object: objects[objectIndex][attributes[i].name]
         })
     }
-
-    const setRowsStyle = ({index}) => {
-        if (index >= 0) return getAppropriateColor(attributes[index]);
-    };
 
     return (
         <VirtualizedTable
             columns={columns}
             rowCount={rowCount}
             rowGetter={({ index }) => rows[index]}
-            rowStyle={setRowsStyle}
+            rowStyle={({index}) => index >= 0 && getAppropriateColor(attributes[index])}
         />
     )
-
 }
 
-VirtualizedItem.propTypes = {
-    index: PropTypes.number.isRequired,
+ObjectTable.propTypes = {
     informationTable: PropTypes.object.isRequired,
+    objectIndex: PropTypes.number.isRequired,
+    objectHeader: PropTypes.string,
 };
 
-export default VirtualizedItem;
+export default ObjectTable;

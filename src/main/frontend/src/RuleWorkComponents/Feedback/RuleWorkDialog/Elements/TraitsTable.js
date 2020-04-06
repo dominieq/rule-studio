@@ -6,12 +6,12 @@ const columns = [
     {
         dataKey: "key",
         label: "Name",
-        width: 200,
+        width: 100,
     },
     {
         dataKey: "value",
         label: "Value",
-        width: 200,
+        width: 100,
     }
 ];
 
@@ -27,25 +27,20 @@ const getRows = (traits) => {
     return rows;
 };
 
-function VirtualizedTraits(props) {
-    const {traits} = props;
+function TraitsTable(props) {
+    const { traits } = props;
 
     return (
         <VirtualizedTable
+            columns={columns}
             rowCount={Object.keys(traits).length}
             rowGetter={({ index }) => getRows(traits)[index]}
-            columns={columns}
         />
     )
 }
 
-// Expected props:
-// traits (required) <-- object containing characteristics of selected item
-
-// Example of props:
-/* traits = {accuracyOfApproximation: 0.17234567898765} */
-VirtualizedTraits.propTypes = {
+TraitsTable.propTypes = {
     traits: PropTypes.object.isRequired,
 };
 
-export default VirtualizedTraits;
+export default TraitsTable;

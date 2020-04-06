@@ -4,8 +4,14 @@ import getAppropriateColor from "../Utils/getAppropriateColor";
 import getAppropriateSign from "../Utils/getAppropriateSign";
 import VirtualizedTable from "../../../DataDisplay/VirtualizedTable";
 
-function VirtualizedComparison(props) {
-    const { informationTable: { attributes, objects }, itemIndex, itemInTableIndex } = props;
+function ObjectsComparisonTable(props) {
+    const {
+        informationTable: { attributes, objects },
+        objectHeader,
+        objectIndex,
+        objectInTableHeader,
+        objectInTableIndex
+    } = props;
 
     const rowCount = attributes.length;
 
@@ -17,7 +23,7 @@ function VirtualizedComparison(props) {
         },
         {
             dataKey: 'object-left',
-            label: `Object ${itemIndex + 1}`,
+            label: objectHeader ? objectHeader : `Object ${objectIndex + 1}`,
             width: 50,
         },
         {
@@ -27,7 +33,7 @@ function VirtualizedComparison(props) {
         },
         {
             dataKey: 'object-right',
-            label: `Object ${itemInTableIndex + 1}`,
+            label: objectInTableHeader ? objectInTableHeader : `Object ${objectInTableIndex + 1}`,
             width: 50,
         }
     ];
@@ -36,34 +42,28 @@ function VirtualizedComparison(props) {
     for (let i = 0; i < attributes.length; i++) {
         rows.push({
             name: attributes[i].name,
-            'object-left': objects[itemIndex][attributes[i].name],
-            'object-right': objects[itemInTableIndex][attributes[i].name],
-            relation: getAppropriateSign(objects[itemIndex], objects[itemInTableIndex], attributes[i]),
+            'object-left': objects[objectIndex][attributes[i].name],
+            relation: getAppropriateSign(objects[objectIndex], objects[objectInTableIndex], attributes[i]),
+            'object-right': objects[objectInTableIndex][attributes[i].name],
         });
     }
-
-    const setRowsStyle = ({index}) => {
-        if(index >= 0) return getAppropriateColor(attributes[index]);
-    };
 
     return (
         <VirtualizedTable
             columns={columns}
             rowCount={rowCount}
             rowGetter={({ index }) => rows[index]}
-            rowStyle={setRowsStyle}
+            rowStyle={({index}) => index >= 0 && getAppropriateColor(attributes[index])}
         />
     );
 }
 
-// Expected props:
-// itemIndex (required) <-- index of an item selected in RuleWorkList inside ProjectTabs
-// itemInTableIndex (required) <-- index of an item from one of tables
-// informationTable (required) <-- informationTable from project
-VirtualizedComparison.propTypes = {
+ObjectsComparisonTable.propTypes = {
     informationTable: PropTypes.object.isRequired,
-    itemIndex: PropTypes.number.isRequired,
-    itemInTableIndex: PropTypes.number.isRequired,
+    objectHeader: PropTypes.string,
+    objectIndex: PropTypes.number.isRequired,
+    objectInTableHeader: PropTypes.string,
+    objectInTableIndex: PropTypes.number.isRequired,
 };
 
-export default VirtualizedComparison;
+export default ObjectsComparisonTable;
