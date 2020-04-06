@@ -12,7 +12,7 @@ const StyledList = withStyles(theme=> ({
         maxWidth: "75%",
         minWidth: "50%",
     }
-}), {name: "rule-work-list"})(props => <List {...props} />);
+}), {name: "result-list"})(props => <List {...props} />);
 
 class RuleWorkList extends Component {
     constructor(props) {

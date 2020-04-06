@@ -1,6 +1,6 @@
 import React, {Fragment} from "react";
 import PropTypes from "prop-types";
-import {makeStyles, withStyles} from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import RuleWorkSmallBox from "../../../Containers/RuleWorkSmallBox";
 import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";
@@ -11,7 +11,7 @@ const StyledListItem = withStyles({
         alignItems: "flex-start",
         width: "100%"
     }
-}, {name: "rule-work-list-item"})(props => <ListItem {...props} />);
+}, {name: "result-list-item"})(props => <ListItem {...props} />);
 
 const useStyles = makeStyles(theme => ({
     row: {
@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     multiContentSubtitle: {
         color: theme.palette.button.secondary,
     }
-}), {name: "rule-work-list-item"});
+}), {name: "result-list-item"});
 
 function RuleWorkListItem(props) {
     const {classes: propsClasses, object, ...other} = props;
