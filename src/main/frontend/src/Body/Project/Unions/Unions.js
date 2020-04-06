@@ -260,9 +260,10 @@ class Unions extends Component {
     getItems = (data) => {
         let items = [];
         if (data) {
+            let counter = 0;
             for (let type of ["downwardUnions", "upwardUnions"]) {
                 for (let i = 0; i < data[type].length; i++) {
-                    const id = i;
+                    const id = counter;
                     const name = data[type][i].unionType.replace("_", " ").toLowerCase()
                         + " " + data[type][i].limitingDecision;
                     const traits = {
@@ -281,6 +282,7 @@ class Unions extends Component {
 
                     const item = new Item(id, name, traits, null, tables);
                     items.push(item);
+                    counter++;
                 }
             }
         }

@@ -304,6 +304,7 @@ class Cones extends Component {
                 {selectedItem &&
                     <ConesDialog
                         item={selectedItem}
+                        items={this._items}
                         onClose={this.onDetailsClose}
                         open={openDetails}
                         projectResult={this.props.project.result}
