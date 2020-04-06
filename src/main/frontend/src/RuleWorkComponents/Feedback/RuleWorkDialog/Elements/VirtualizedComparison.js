@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import getAppropriateColor from "../Utils/getAppropriateColor";
 import getAppropriateSign from "../Utils/getAppropriateSign";
-import VirtualizedTable from "../Utils/VirtualizedTable";
+import VirtualizedTable from "../../../DataDisplay/VirtualizedTable";
 
 function VirtualizedComparison(props) {
     const { informationTable: { attributes, objects }, itemIndex, itemInTableIndex } = props;

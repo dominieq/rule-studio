@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import VirtualizedTable from "../Utils/VirtualizedTable";
+import VirtualizedTable from "../../../DataDisplay/VirtualizedTable";
 
 const columns = [
     {

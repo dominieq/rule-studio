@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import getAppropriateColor from "../Utils/getAppropriateColor";
-import VirtualizedTable from "../Utils/VirtualizedTable";
+import VirtualizedTable from "../../../DataDisplay/VirtualizedTable";
 
 function VirtualizedItem(props) {
     const { index, informationTable: { attributes, objects } } = props;
