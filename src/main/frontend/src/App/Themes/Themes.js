@@ -1,6 +1,18 @@
 import {createMuiTheme} from "@material-ui/core/styles";
 
+const typography = {
+    typography: {
+        subheader: {
+            fontSize: 12,
+            fontWeight: 900,
+            letterSpacing: "0.05rem",
+            textTransform: "uppercase",
+        },
+    }
+};
+
 export const LightTheme = createMuiTheme({
+    ...typography,
     palette: {
         appbar: {
             background:"#98FB98",
@@ -131,6 +143,7 @@ export const LightTheme = createMuiTheme({
 });
 
 export const DarkTheme = createMuiTheme({
+    ...typography,
     palette: {
         appbar: {
             background: "#66FF66",

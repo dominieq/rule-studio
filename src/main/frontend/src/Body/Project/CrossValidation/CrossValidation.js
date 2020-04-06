@@ -1,13 +1,13 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
+import { parseMatrixTraits } from "../Utils/parseData";
 import fetchCrossValidation from "./fetchFunctions/fetchCrossValidation";
-import TabBody from "../Utils/TabBody";
 import { parseCrossValidationFolds, parseCrossValidationItems, parseCrossValidationListItems } from "./parseData";
+import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
 import MatrixButton from "../Utils/Buttons/MatrixButton";
-import MatrixDetailsButton from "../Utils/Buttons/MatrixDetailsButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
@@ -17,6 +17,7 @@ import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
+import MatrixDialog from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
 import { CrossValidationDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
@@ -30,7 +31,7 @@ class CrossValidation extends Component {
     constructor(props) {
         super(props);
 
-        this._data = {};
+        this._data = null;
 
         this.state = {
             changes: false,
@@ -56,8 +57,6 @@ class CrossValidation extends Component {
                 details: false,
                 matrixGlobal: false,
                 matrixFold: false,
-                matrixDGlobal: false,
-                matrixDFold: false,
                 settings: false,
             },
             alertProps: undefined,
@@ -304,6 +303,8 @@ class CrossValidation extends Component {
     render() {
         const { alertProps, folds, displayedItems, loading, open, parameters, selected } = this.state;
 
+        console.log(this._data);
+
         return (
             <RuleWorkBox id={"rule-work-cross-validation"} styleVariant={"tab"}>
                 <StyledPaper id={"cross-validation-bar"} paperRef={this.upperBar}>
@@ -321,16 +322,12 @@ class CrossValidation extends Component {
                         />
                     </RuleWorkTooltip>
                     <StyledDivider />
-                    {Array.isArray(folds) && folds.length &&
+                    {Array.isArray(folds) && Boolean(folds.length) &&
                         <Fragment>
                             <p id={"all-folds"} style={{margin: "0 16px 0 0", fontSize: "1.15rem"}}>All folds:</p>
                             <MatrixButton
                                 onClick={() => this.toggleOpen("matrixGlobal")}
-                                style={{marginRight: 8}}
-                            />
-                            <MatrixDetailsButton
-                                title={"Open details of ordinal matrix for all folds"}
-                                onClick={() => this.toggleOpen("matrixDGlobal")}
+                                title={"Show ordinal misclassification matrix for all folds"}
                             />
                             <StyledDivider />
                             <RuleWorkTextField
@@ -354,11 +351,7 @@ class CrossValidation extends Component {
                             <p id={"fold-colon"} style={{margin: "0 16px 0 4px", fontSize: "1.15rem"}}>:</p>
                             <MatrixButton
                                 onClick={() => this.toggleOpen("matrixFold")}
-                                style={{marginRight: 8}}
-                            />
-                            <MatrixDetailsButton
-                                onClick={() => this.toggleOpen("matrixDFold")}
-                                title={`Open details of ordinal matrix for fold ${selected.foldIndex + 1}`}
+                                title={`Open ordinal misclassification matrix for fold ${selected.foldIndex + 1}`}
                             />
                         </Fragment>
                     }
@@ -436,6 +429,27 @@ class CrossValidation extends Component {
                         open={open.details}
                         ruleSet={folds[selected.foldIndex].ruleSet}
                     />
+                }
+                {this._data &&
+                    <MatrixDialog
+                        disableDeviation={false}
+                        matrix={parseMatrixTraits(this._data.meanOrdinalMisclassificationMatrix)}
+                        onClose={() => this.toggleOpen("matrixGlobal")}
+                        open={open.matrixGlobal}
+                        title={"Mean ordinal misclassification matrix, it's deviation and details"}
+                    />
+                }
+                {Array.isArray(folds) && Boolean(folds.length) &&
+                <MatrixDialog
+                    matrix={
+                        parseMatrixTraits(
+                            folds[selected.foldIndex].classificationValidationTable.ordinalMisclassificationMatrix
+                        )
+                    }
+                    onClose={() => this.toggleOpen("matrixFold")}
+                    open={open.matrixFold}
+                    title={`Fold ${selected.foldIndex}: Ordinal misclassification matrix, it's deviation and details`}
+                />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>

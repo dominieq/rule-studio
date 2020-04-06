@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
+import { parseMatrixTraits } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -23,8 +24,8 @@ class Classification extends Component {
     constructor(props) {
         super(props);
 
-        this._data = {};
-        this._items = [];
+        this._data = null;
+        this._items = null;
 
         this.state = {
             changes: false,
@@ -347,11 +348,11 @@ class Classification extends Component {
                             </CalculateButton>
                         </RuleWorkUpload>
                     </RuleWorkButtonGroup>
-                    {Boolean(Object.keys(this._data).length) &&
+                    {this._data &&
                         <MatrixButton
-                            aria-label={"classification-matrix-button"}
                             onClick={() => this.toggleOpen("matrix")}
                             style={{marginLeft: 16}}
+                            title={"Show ordinal misclassification matrix and it's details"}
                         />
                     }
                     <span style={{flexGrow: 1}} />
@@ -398,14 +399,15 @@ class Classification extends Component {
                         ruleSet={this.props.project.result.rules.ruleSet}
                     />
                 }
-                {Boolean(Object.keys(this._data).length) &&
+                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
+                {this._data &&
                     <MatrixDialog
-                        matrix={this._data.ordinalMisclassificationMatrix.value}
+                        matrix={parseMatrixTraits(this._data.ordinalMisclassificationMatrix)}
                         onClose={() => this.toggleOpen("matrix")}
                         open={open.matrix}
+                        title={"Ordinal misclassification matrix and it's details"}
                     />
                 }
-                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )
     }

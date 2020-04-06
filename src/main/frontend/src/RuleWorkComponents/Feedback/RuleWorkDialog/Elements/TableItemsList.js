@@ -19,11 +19,9 @@ const listStyles = makeStyles(theme => ({
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
-        wordBreak: "normal",
         '&:hover': {
             overflow: "visible",
             whiteSpace: "unset",
-            wordBreak: "break-word",
         }
     },
     header: {
@@ -36,9 +34,7 @@ const listStyles = makeStyles(theme => ({
         lineHeight: "initial"
     },
     headerText: {
-        fontSize: "inherit",
-        fontWeight: 900,
-        letterSpacing: "0.05rem"
+        ...theme.typography.subheader,
     },
     listWrapper: {
         flexGrow: 1,
@@ -46,8 +42,8 @@ const listStyles = makeStyles(theme => ({
     },
 }), {name: "virtualized-list"});
 
-function VirtualizedTableItems(props) {
-    const { headerText, index, itemText, onItemInTableSelected, rowHeight, table } = props;
+function TableItemsList(props) {
+    const { headerText, itemIndex, itemText, onItemInTableSelected, rowHeight, table } = props;
     const listClasses = listStyles();
 
     const rowRenderer = ({key, index: i, style}) => {
@@ -56,7 +52,7 @@ function VirtualizedTableItems(props) {
                 button={true}
                 divider={true}
                 key={key}
-                selected={table[i] === index}
+                selected={table[i] === itemIndex}
                 onClick={() => onItemInTableSelected(table[i])}
                 style={style}
             >
@@ -102,18 +98,18 @@ function VirtualizedTableItems(props) {
 // rowHeight (optional)
 // table (required) <-- array of integers (object indices) from chosen data table
 
-VirtualizedTableItems.propTypes = {
+TableItemsList.propTypes = {
     headerText: PropTypes.string,
-    index: PropTypes.number,
+    itemIndex: PropTypes.number,
     itemText: PropTypes.string,
-    onItemInTableSelected: PropTypes.func.isRequired,
+    onItemInTableSelected: PropTypes.func,
     rowHeight: PropTypes.number,
     table: PropTypes.array.isRequired,
 };
 
-VirtualizedTableItems.defaultProps = {
+TableItemsList.defaultProps = {
     itemText: "Object",
     rowHeight: 53,
 };
 
-export default VirtualizedTableItems;
+export default TableItemsList;

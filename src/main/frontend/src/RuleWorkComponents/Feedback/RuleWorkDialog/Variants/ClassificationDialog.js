@@ -1,9 +1,9 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
 import RuleWorkDialog from "../RuleWorkDialog";
-import VirtualizedItem from "../Elements/VirtualizedItem";
-import VirtualizedTableItems from "../Elements/VirtualizedTableItems";
-import VirtualizedTraits from "../Elements/VirtualizedTraits";
+import ObjectTable from "../Elements/ObjectTable";
+import TableItemsList from "../Elements/TableItemsList";
+import TraitsTable from "../Elements/TraitsTable";
 
 class ClassificationDialog extends PureComponent {
     constructor(props) {
@@ -21,7 +21,6 @@ class ClassificationDialog extends PureComponent {
     };
 
     onItemInTableSelected = (index) => {
-        console.log(index);
         this.setState({
             itemInTableIndex: index
         });
@@ -34,15 +33,16 @@ class ClassificationDialog extends PureComponent {
         return (
             <RuleWorkDialog onEnter={this.onEnter} title={"Selected item: " + item.name} {...other}>
                 <div id={"classification-object"} style={{width: "40%"}}>
-                    <VirtualizedItem
-                        index={item.id}
+                    <ObjectTable
                         informationTable={item.traits}
+                        objectIndex={item.id}
+                        objectHeader={item.name}
                     />
                 </div>
                 <div id={"classification-rules"} style={{display: "flex", flexDirection: "column", width: "15%"}}>
-                    <VirtualizedTableItems
+                    <TableItemsList
                         headerText={"Indices of covering rules"}
-                        index={itemInTableIndex}
+                        itemIndex={itemInTableIndex}
                         itemText={"Rule"}
                         onItemInTableSelected={this.onItemInTableSelected}
                         table={item.tables.indicesOfCoveringRules}
@@ -50,7 +50,7 @@ class ClassificationDialog extends PureComponent {
                 </div>
                 <div id={"classification-rules-traits"} style={{width: "40%"}}>
                     {!Number.isNaN(Number(itemInTableIndex)) &&
-                        <VirtualizedTraits
+                        <TraitsTable
                             traits={ruleSet[itemInTableIndex].ruleCharacteristics}
                         />
                     }
@@ -61,12 +61,16 @@ class ClassificationDialog extends PureComponent {
 }
 
 ClassificationDialog.propTypes = {
-    item: PropTypes.exact({
-        id: PropTypes.number,
-        name: PropTypes.string,
-        traits: PropTypes.object,
-        actions: PropTypes.object,
-        tables: PropTypes.object
+    item: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        traits: PropTypes.shape({
+            attributes: PropTypes.arrayOf(PropTypes.object),
+            objects: PropTypes.arrayOf(PropTypes.object)
+        }).isRequired,
+        tables: PropTypes.shape({
+            indicesOfCoveringRules: PropTypes.arrayOf(PropTypes.number)
+        }).isRequired
     }),
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,

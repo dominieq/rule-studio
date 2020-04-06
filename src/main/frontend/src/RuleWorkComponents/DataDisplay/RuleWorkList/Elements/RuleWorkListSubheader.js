@@ -10,7 +10,7 @@ const subheaderStyles = makeStyles(theme => ({
         borderBottom: `1px solid ${theme.palette.list.text}`,
         display: "flex",
         flexWrap: "wrap",
-        fontSize: 12,
+        fontSize: theme.typography.subheader.fontSize,
         lineHeight: "unset",
         padding: "8px 16px",
         '& > div ~ div': {
@@ -20,7 +20,7 @@ const subheaderStyles = makeStyles(theme => ({
             marginLeft: 8
         }
     }
-}), {name: "MuiListSubheader"});
+}), {name: "result-list-subheader"});
 
 const textStyles = makeStyles(theme => ({
     parameterCell: {
@@ -34,8 +34,8 @@ const textStyles = makeStyles(theme => ({
     label: {
         color: theme.palette.button.primary,
         marginRight: 8,
-        letterSpacing: "0.06em",
-        textTransform: "uppercase",
+        letterSpacing: theme.typography.subheader.letterSpacing,
+        textTransform: theme.typography.subheader.textTransform,
     },
     value: {
         color: theme.palette.button.secondary,
