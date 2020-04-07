@@ -12,17 +12,20 @@ const useStyles = makeStyles({
         justifyContent: "center",
     },
     tab: {
-        flexGrow: 1,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "flex-start",
+        flexGrow: 1,
+        height: "100%",
+        overflow: "hidden",
     },
     "tab-body": {
-        margin: "2.5%",
-        flexGrow: 1,
+        alignItems: "center",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center"
+        flexGrow: 1,
+        marginTop: "2.5%",
+        padding: "0 2.5% 2.5%",
+        overflow: "auto",
     },
 }, {name: "rule-work"});
 
