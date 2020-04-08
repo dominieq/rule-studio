@@ -21,7 +21,7 @@ RuleWorkDialog.propTypes = {
     children: PropTypes.node,
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,
-    title: PropTypes.string,
+    title: PropTypes.node,
 };
 
 export default RuleWorkDialog;

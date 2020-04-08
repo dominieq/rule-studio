@@ -22,7 +22,10 @@ const paperStyles = makeStyles({
     flexTitle: {
         alignItems: "center",
         display: "flex",
-        minWidth: "fit-content"
+        minWidth: "fit-content",
+        '& > div ~ div': {
+            marginLeft: 8,
+        },
     },
     close: {
         display: "flex",
@@ -40,7 +43,7 @@ function FullscreenDialogTitleBar(props) {
 
     return (
         <StyledPaper className={paperClasses.root} elevation={6}>
-            <div className={clsx(paperClasses.title, {[paperClasses.flexTitle]: Array.isArray(title)})}>
+            <div className={clsx(paperClasses.title, {[paperClasses.flexTitle]: React.isValidElement(title)})}>
                 {title}
             </div>
             <div className={paperClasses.close}>
