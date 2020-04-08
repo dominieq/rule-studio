@@ -28,11 +28,19 @@ function ColouredTitle(props) {
     const { text } = props;
     const titleClasses = titleStyles();
 
+    const AND = (a, b) => {
+        return a && b;
+    };
+
+    const XOR = (a, b) => {
+        return (a || b) && !(a && b);
+    };
+
     return (
         <Fragment>
             {text.map((element, index) => (
                 <Fragment key={index}>
-                    {Object.keys(element).length === 2 &&
+                    {AND(Object.keys(element).includes("primary"), Object.keys(element).includes("secondary")) &&
                         <div id={"flex-box-" + index} className={titleClasses.flexBox}>
                             <div
                                 id={"element-primary-" + index}
@@ -48,7 +56,7 @@ function ColouredTitle(props) {
                             </div>
                         </div>
                     }
-                    {Object.keys(element).length === 1 &&
+                    {XOR(Object.keys(element).includes("primary"), Object.keys(element).includes("secondary")) &&
                         <div
                             id={"element-" + Object.keys(element)[0] + "-" + index}
                             className={clsx(titleClasses.element, titleClasses[Object.keys(element)[0]])}
@@ -65,8 +73,9 @@ function ColouredTitle(props) {
 ColouredTitle.propTypes = {
     text: PropTypes.arrayOf(
         PropTypes.shape({
-            primary: PropTypes.string,
-            secondary: PropTypes.string,
+            primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            toString: PropTypes.func,
         }).isRequired
     )
 };
