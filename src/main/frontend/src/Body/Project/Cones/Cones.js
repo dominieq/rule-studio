@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
+import { parseConesItems, parseConesListItems } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
-import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox"
 import { ConesDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
@@ -14,13 +14,12 @@ class Cones extends Component {
     constructor(props) {
         super(props);
 
-        this._data = {};
-        this._items = [];
-
         this.state = {
             changes: false,
             updated: false,
             loading: false,
+            data: null,
+            items: null,
             displayedItems: [],
             selectedItem: null,
             openDetails: false,
@@ -44,11 +43,12 @@ class Cones extends Component {
                 if (response.status === 200) {
                     response.json().then(result => {
                         if (this._isMounted) {
-                            const items = this.getItems(result);
+                            const { result: { informationTable: { objects } }, settings } = project;
+                            const items = parseConesItems(result, objects, settings);
 
-                            this._data = result;
-                            this._items = items;
                             this.setState({
+                                data: result,
+                                items: items,
                                 displayedItems: items,
                             });
                         }
@@ -92,8 +92,14 @@ class Cones extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
+            const { data } = this.state;
+            const { result: { informationTable: { objects } }, settings } = this.props.project;
+
+            let newItems = parseConesItems(data, objects, settings);
+
             this.setState({
-                displayedItems: this.getItems(this._data)
+                items: newItems,
+                displayedItems: newItems
             });
         }
     }
@@ -103,9 +109,9 @@ class Cones extends Component {
 
         if (this.state.changes) {
             let project = {...this.props.project};
+
             if (Object.keys(this._data).length) {
                 project.result.dominanceCones = this._data;
-                project.result.calculatedDominanceCones = true;
             }
 
             let tabsUpToDate = this.props.project.tabsUpToDate.slice();
@@ -135,18 +141,18 @@ class Cones extends Component {
                         const updated = true;
 
                         if (this._isMounted) {
-                            const items = this.getItems(result);
+                            const { result: { informationTable: { objects } }, settings } = project;
+                            const items = parseConesItems(result, objects, settings);
 
-                            this._data = result;
-                            this._items = items;
                             this.setState({
                                 changes: true,
                                 updated: updated,
+                                data: result,
+                                items: items,
                                 displayedItems: items,
                             });
                         } else {
                             project.result.dominanceCones = result;
-                            project.result.calculatedDominanceCones = updated;
 
                             let tabsUpToDate = this.props.project.tabsUpToDate.slice();
                             tabsUpToDate[this.props.value] = updated;
@@ -190,14 +196,20 @@ class Cones extends Component {
     };
 
     onFilterChange = (event) => {
-        const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
-        this.setState({displayedItems: filteredItems});
+        const { items } = this.state;
+        const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+
+        this.setState({
+            displayedItems: filteredItems
+        });
     };
 
     onDetailsOpen = (index) => {
+        const { items } = this.state;
+
         this.setState({
             openDetails: true,
-            selectedItem: this._items[index],
+            selectedItem: items[index],
         })
     };
 
@@ -215,84 +227,39 @@ class Cones extends Component {
         }
     };
 
-    getItems = (data) => {
-        let items = [];
-
-        if (data) {
-            const indexOption = this.props.project.settings.indexOption;
-            const objects = [...this.props.project.result.informationTable.objects];
-
-            for (let i = 0; i < data.numberOfObjects; i++) {
-                const id = i;
-                let name = "Object " + (i + 1);
-
-                if (indexOption !== "default") {
-                    if (Object.keys(objects[i]).includes(indexOption)) {
-                        name = objects[i][indexOption];
-                    }
-                }
-
-                const tables = Object.keys(data).map(key => {
-                    if (key !== "numberOfObjects") {
-                        return {
-                            [key]: data[key][i].slice()
-                        }
-                    }
-                }).reduce((previous, current) => {
-                    return {...previous, ...current}
-                });
-
-                const item = new Item(id, name, null, null, tables);
-                items.push(item);
-            }
-        }
-        return items;
-    };
-
-    getListItems = (items) => {
-        let listItems = [];
-        if (this._data && items) {
-            for (let i = 0; i < items.length; i++) {
-                const listItem = {
-                    id: items[i].id,
-                    header: items[i].name,
-                    subheader: undefined,
-                    content: undefined,
-                    multiContent: Object.keys(items[i].tables).map(key => {
-                        return {
-                            title: "Number of objects in " + key,
-                            subtitle: items[i].tables[key].length
-                        }
-                    })
-                };
-                listItems.push(listItem)
-            }
-        }
-        return listItems;
-    };
-
     render() {
-        const {loading, displayedItems, openDetails, selectedItem, alertProps} = this.state;
+        const {
+            loading,
+            items,
+            displayedItems,
+            openDetails,
+            selectedItem,
+            alertProps
+        } = this.state;
+
+        const {
+            project: { result }
+        } = this.props;
 
         return (
             <RuleWorkBox id={"rule-work-cones"} styleVariant={"tab"}>
                 <StyledPaper id={"cones-bar"} paperRef={this.upperBar}>
                     <CalculateButton
                         aria-label={"cones-calculate-button"}
-                        disabled={!this.props.project || loading}
+                        disabled={loading}
                         onClick={this.onCalculateClick}
                     />
                     <span style={{flexGrow: 1}}/>
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <TabBody
-                    content={this.getListItems(displayedItems)}
+                    content={parseConesListItems(displayedItems)}
                     id={"cones-list"}
+                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
                     isLoading={loading}
                     ListProps={{
                         onItemSelected: this.onDetailsOpen
                     }}
-                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
                     noFilterResults={!displayedItems}
                     subheaderContent={[
                         {
@@ -304,10 +271,10 @@ class Cones extends Component {
                 {selectedItem &&
                     <ConesDialog
                         item={selectedItem}
-                        items={this._items}
+                        items={items}
                         onClose={this.onDetailsClose}
                         open={openDetails}
-                        projectResult={this.props.project.result}
+                        projectResult={result}
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
