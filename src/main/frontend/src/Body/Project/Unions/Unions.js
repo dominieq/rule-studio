@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
+import { parseUnionsItems, parseUnionsListItems } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -7,7 +8,6 @@ import CalculateButton from "../Utils/Buttons/CalculateButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
-import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
@@ -20,19 +20,22 @@ class Unions extends Component {
     constructor(props) {
         super(props);
 
-        this._data = [];
-        this._items = [];
-
         this.state = {
             changes: false,
             updated: false,
             loading: false,
+            data: null,
+            items: null,
             displayedItems: [],
-            threshold: 0,
-            typeOfUnions: "monotonic",
+            parameters: {
+                consistencyThreshold: 0,
+                typeOfUnions: "monotonic"
+            },
             selectedItem: null,
-            openDetails: false,
-            openSettings: false,
+            open: {
+                details: false,
+                settings: false
+            },
             alertProps: undefined,
         };
 
@@ -53,12 +56,16 @@ class Unions extends Component {
                 if (response.status === 200) {
                     response.json().then(result => {
                         if (this._isMounted) {
-                            const items = this.getItems(result);
+                            const items = parseUnionsItems(result);
 
-                            this._data = result;
-                            this._items = items;
                             this.setState({
-                                displayedItems: items
+                                data: result,
+                                items: items,
+                                displayedItems: items,
+                                parameters: {
+                                    consistencyThreshold: result.consistencyThreshold,
+                                    typeOfUnions: result.typeOfUnions.toLowerCase()
+                                }
                             });
                         }
                     }).catch(error => {
@@ -94,11 +101,7 @@ class Unions extends Component {
                     });
                 }
             }).finally(() => {
-                this.setState({
-                    loading: false,
-                    threshold: this.props.project.threshold,
-                    typeOfUnions: this.props.project.typeOfUnions
-                });
+                if (this._isMounted) this.setState({loading: false});
             });
         });
     }
@@ -106,64 +109,40 @@ class Unions extends Component {
     componentWillUnmount() {
         this._isMounted = false;
 
-        if (this.state.changes) {
+        const {
+            changes,
+            updated,
+            data,
+            parameters: { consistencyThreshold, typeOfUnions }
+        } = this.state;
+
+        if (changes) {
             let project = {...this.props.project};
-            if (Object.keys(this._data).length) {
-                project.result.unionsWithSingleLimitingDecision = this._data;
-                project.result.calculatedUnionsWithSingleLimitingDecision = true;
-            }
-            project.threshold = this.state.threshold;
-            project.typeOfUnions = this.state.typeOfUnions;
 
-            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
-            tabsUpToDate[this.props.value] = this.state.updated;
+            project.result.unionsWithSingleLimitingDecision = data;
+            project.threshold = consistencyThreshold;
+            project.typeOfUnions = typeOfUnions;
 
-            this.props.onTabChange(project, this.state.updated, tabsUpToDate);
+            let tabsUpToDate = project.tabsUpToDate.slice();
+            tabsUpToDate[this.props.value] = updated;
+
+            this.props.onTabChange(project, updated, tabsUpToDate);
         }
     }
 
-    onSettingsClick = () => {
-        this.setState(prevState => ({
-            openSettings: !prevState.openSettings,
-        }));
-    };
-
-    onSettingsClose = () => {
-        this.setState({
-            openSettings: false,
-        });
-    };
-
-    onThresholdChange = (threshold) => {
-        this.setState({
-            changes: Boolean(threshold),
-            updated: this.props.project.dataUpToDate,
-            threshold: threshold,
-        });
-    };
-
-    onUnionTypeChange = (event) => {
-        this.setState({
-            changes: event.target.value !== "epsilon",
-            updated: this.props.project.dataUpToDate,
-            typeOfUnions: event.target.value,
-        });
-    };
-
     onCountUnionsClick = () => {
         let project = {...this.props.project};
-        const threshold = this.state.threshold;
-        const typeOfUnions = this.state.typeOfUnions;
+        const { parameters: { consistencyThreshold, typeOfUnions } } = this.state;
 
         this.setState({
             loading: true,
         }, () => {
             let link = `http://localhost:8080/projects/${project.result.id}/unions`;
-            if (project.dataUpToDate) link = link + `?typeOfUnions=${typeOfUnions}&consistencyThreshold=${threshold}`;
+            if (project.dataUpToDate) link = link + `?typeOfUnions=${typeOfUnions}&consistencyThreshold=${consistencyThreshold}`;
 
             let data = new FormData();
             data.append("typeOfUnions", typeOfUnions);
-            data.append("consistencyThreshold", threshold);
+            data.append("consistencyThreshold", consistencyThreshold);
             data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
             data.append("data", JSON.stringify(project.result.informationTable.objects));
 
@@ -177,20 +156,23 @@ class Unions extends Component {
                         const updated = true;
 
                         if (this._isMounted) {
-                            const items = this.getItems(result);
+                            const items = parseUnionsItems(result);
 
-                            this._data = result;
-                            this._items = items;
                             this.setState({
                                 changes: true,
                                 updated: updated,
+                                data: result,
+                                items: items,
                                 displayedItems: items,
+                                parameters: {
+                                    consistencyThreshold: result.consistencyThreshold,
+                                    typeOfUnions: result.typeOfUnions.toLowerCase()
+                                }
                             });
                         } else {
                             project.result.unionsWithSingleLimitingDecision = result;
-                            project.result.calculatedUnionsWithSingleLimitingDecision = updated;
 
-                            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
+                            let tabsUpToDate = project.tabsUpToDate.slice();
                             tabsUpToDate[this.props.value] = updated;
 
                             this.props.onTabChange(project, updated, tabsUpToDate);
@@ -231,21 +213,44 @@ class Unions extends Component {
         });
     };
 
-    onFilterChange = (event) => {
-        const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
-        this.setState({displayedItems: filteredItems});
+    toggleOpen = (name) => {
+        this.setState(({open}) => ({
+            open: {...open, [name]: !open[name]}
+        }));
     };
 
     onDetailsOpen = (index) => {
-        this.setState({
-            openDetails: true,
-            selectedItem: this._items[index],
-        });
+        const { items } = this.state;
+
+        this.setState(({open}) => ({
+            open: {...open, details: true, settings: false},
+            selectedItem: items[index],
+        }));
     };
 
-    onDetailsClose = () => {
+    onConsistencyThresholdChange = (threshold) => {
+        this.setState(({parameters}) => ({
+            changes: Boolean(threshold),
+            updated: this.props.project.dataUpToDate,
+            parameters: {...parameters, consistencyThreshold: threshold},
+        }));
+    };
+
+    onTypeOfUnionsChange = (event) => {
+        this.setState(({parameters}) => ({
+            changes: event.target.value !== "epsilon",
+            updated: this.props.project.dataUpToDate,
+            parameters: {...parameters, typeOfUnions: event.target.value},
+        }));
+    };
+
+    onFilterChange = (event) => {
+        const { items } = this.state;
+        const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+
         this.setState({
-            openDetails: false
+            items: items,
+            displayedItems: filteredItems
         });
     };
 
@@ -257,81 +262,32 @@ class Unions extends Component {
         }
     };
 
-    getItems = (data) => {
-        let items = [];
-        if (data) {
-            let counter = 0;
-            for (let type of ["downwardUnions", "upwardUnions"]) {
-                for (let i = 0; i < data[type].length; i++) {
-                    const id = counter;
-                    const name = data[type][i].unionType.replace("_", " ").toLowerCase()
-                        + " " + data[type][i].limitingDecision;
-                    const traits = {
-                        "Accuracy of approximation": data[type][i].accuracyOfApproximation,
-                        "Quality of approximation": data[type][i].qualityOfApproximation,
-                    };
-                    const tables = Object.keys(data[type][i]).map(key => {
-                        if (Array.isArray(data[type][i][key])) {
-                            return {
-                                [key]: data[type][i][key]
-                            };
-                        }
-                    }).reduce((previousValue, currentValue) => {
-                        return {...previousValue, ...currentValue};
-                    });
-
-                    const item = new Item(id, name, traits, null, tables);
-                    items.push(item);
-                    counter++;
-                }
-            }
-        }
-        return items;
-    };
-
-    getListItems = (items) => {
-        let listItems = [];
-        if (this._data && items) {
-            for (let i = 0; i < items.length; i++) {
-                const listItem = {
-                    id: items[i].id,
-                    header: items[i].name,
-                    subheader: undefined,
-                    content: undefined,
-                    multiContent: [
-                        {
-                            title: "Accuracy of approximation:",
-                            subtitle: items[i].traits["Accuracy of approximation"],
-                        },
-                        {
-                            title: "Quality of approximation: ",
-                            subtitle: items[i].traits["Quality of approximation"],
-                        }
-                    ],
-                };
-                listItems.push(listItem);
-            }
-        }
-        return listItems;
-    };
-
     render() {
-        const {loading, displayedItems, threshold, typeOfUnions, selectedItem, openDetails,
-            openSettings, alertProps} = this.state;
+        const {
+            loading,
+            data,
+            displayedItems,
+            parameters: { consistencyThreshold, typeOfUnions },
+            selectedItem,
+            open,
+            alertProps
+        } = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-unions"} styleVariant={"tab"}>
                 <StyledPaper id={"unions-bar"} paperRef={this.upperBar}>
                     <SettingsButton
                         aria-label={"unions-settings-button"}
-                        onClick={this.onSettingsClick}
+                        onClick={() => this.toggleOpen("settings")}
                         title={"Click to choose consistency & type of unions"}
                     />
                     <StyledDivider />
-                    <RuleWorkTooltip title={`Calculate with threshold ${threshold}`}>
+                    <RuleWorkTooltip
+                        title={`Calculate with threshold ${consistencyThreshold} & ${typeOfUnions} unions`}
+                    >
                         <CalculateButton
                             aria-label={"unions-calculate-button"}
-                            disabled={!this.props.project || loading}
+                            disabled={loading}
                             onClick={this.onCountUnionsClick}
                         />
                     </RuleWorkTooltip>
@@ -340,23 +296,23 @@ class Unions extends Component {
                 </StyledPaper>
                 <RuleWorkDrawer
                     id={"unions-settings"}
-                    onClose={this.onSettingsClose}
-                    open={openSettings}
+                    onClose={() => this.toggleOpen("settings")}
+                    open={open.settings}
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfUnionsSelector
                         id={"unions-union-type-selector"}
-                        onChange={this.onUnionTypeChange}
+                        onChange={this.onTypeOfUnionsChange}
                         value={typeOfUnions}
                     />
                     <ThresholdSelector
                         id={"unions-threshold-selector"}
-                        onChange={this.onThresholdChange}
-                        value={threshold}
+                        onChange={this.onConsistencyThresholdChange}
+                        value={consistencyThreshold}
                     />
                 </RuleWorkDrawer>
                 <TabBody
-                    content={this.getListItems(displayedItems)}
+                    content={parseUnionsListItems(displayedItems)}
                     id={"unions-list"}
                     isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
                     isLoading={loading}
@@ -366,20 +322,20 @@ class Unions extends Component {
                     noFilterResults={!displayedItems}
                     subheaderContent={[
                         {
-                            label: "Number of objects",
-                            value: displayedItems && displayedItems.length
+                            label: "Number of unions:",
+                            value: displayedItems ? displayedItems.length : undefined
                         },
                         {
-                            label: "Quality of approximation",
-                            value: this._data.qualityOfApproximation
+                            label: "Quality of classification:",
+                            value: data ? data.qualityOfApproximation : undefined
                         }
                     ]}
                 />
                 {selectedItem &&
                     <UnionsDialog
                         item={selectedItem}
-                        onClose={this.onDetailsClose}
-                        open={openDetails}
+                        onClose={() => this.toggleOpen("details")}
+                        open={open.details}
                         projectResult={this.props.project.result}
                     />
                 }
