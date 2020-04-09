@@ -107,17 +107,21 @@ class Cones extends Component {
     componentWillUnmount() {
         this._isMounted = false;
 
-        if (this.state.changes) {
+        const {
+            changes,
+            updated,
+            data,
+        } = this.state;
+
+        if (changes) {
             let project = {...this.props.project};
 
-            if (Object.keys(this._data).length) {
-                project.result.dominanceCones = this._data;
-            }
+            project.result.dominanceCones = data;
 
-            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
-            tabsUpToDate[this.props.value] = this.state.updated;
+            let tabsUpToDate = project.tabsUpToDate.slice();
+            tabsUpToDate[this.props.value] = updated;
 
-            this.props.onTabChange(project, this.state.updated, tabsUpToDate);
+            this.props.onTabChange(project, updated, tabsUpToDate);
         }
     }
 
