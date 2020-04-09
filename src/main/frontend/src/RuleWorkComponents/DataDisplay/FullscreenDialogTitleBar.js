@@ -62,7 +62,7 @@ const paperStyles = makeStyles(theme => ({
 }), {name: "title-bar"});
 
 function FullscreenDialogTitleBar(props) {
-    const { children, onClose, title } = props;
+    const { onClose, optional, title } = props;
 
     const paperClasses = paperStyles();
     const titleIsArray = React.isValidElement(title);
@@ -99,9 +99,9 @@ function FullscreenDialogTitleBar(props) {
                 {title}
             </div>
             <div className={clsx(paperClasses.close, paperClasses.closeSticky)}>
-                {children &&
+                {optional &&
                     <Typography className={paperClasses.optional} component={"div"} variant={"button"}>
-                        {children}
+                        {optional}
                     </Typography>
                 }
                 <RuleWorkTooltip title={"Close details"}>
@@ -119,9 +119,8 @@ function FullscreenDialogTitleBar(props) {
 }
 
 FullscreenDialogTitleBar.propTypes = {
-    children: PropTypes.node,
-    isWide: PropTypes.bool,
     onClose: PropTypes.func,
+    optional: PropTypes.node,
     title: PropTypes.node,
 };
 
