@@ -5,8 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const titleStyles = makeStyles(theme => ({
     element: {
-        height: "fit-content",
-        width: "fit-content",
+        minWidth: "fit-content",
     },
     flexBox: {
         display: "flex",
