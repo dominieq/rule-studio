@@ -12,7 +12,7 @@ function parseRulesItems(data) {
                     conditions: parseConditions(data.ruleSet[i].rule.conditions)
                 },
                 traits: {
-                    "Type": data.ruleSet[i].rule.type[0] + data.ruleSet[i].rule.type.slice(1).toLowerCase(),
+                    "Type": data.ruleSet[i].rule.type.toLowerCase(),
                     ...data.ruleSet[i].ruleCharacteristics
                 },
                 tables: {

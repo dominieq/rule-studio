@@ -15,7 +15,7 @@ function parseRulesListItems(items) {
                     }).join(" \u2227 ");
                 }).join(" \u2228 "),
                 subheader: "Type: " + items[i].traits["Type"],
-                content: undefined,
+                content: "Support: " + items[i].traits["Support"] + ` (with strength ${items[i].traits["Strength"]})`,
                 multiContent: items[i].name.conditions.map(condition => (
                     {
                         title: condition.primary,
