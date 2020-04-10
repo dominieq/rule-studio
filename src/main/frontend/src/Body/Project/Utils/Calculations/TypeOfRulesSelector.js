@@ -14,7 +14,7 @@ function TypeOfRulesSelector(props) {
             </RuleWorkHelper>
             <RuleWorkSmallBox style={{flexGrow: 1, margin: 0}}>
                 <RuleWorkTextField
-                    outsideLabel={"Choose type of rules"}
+                    outsideLabel={"Select type of rules"}
                     select={true}
                     {...props}
                 >

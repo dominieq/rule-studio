@@ -77,7 +77,7 @@ class ThresholdSelector extends Component {
                     <RuleWorkTextField
                         onBlur={this.onInputBlur}
                         onChange={this.onInputChange}
-                        outsideLabel={"Choose threshold"}
+                        outsideLabel={"Choose consistency threshold"}
                         style={{marginRight: 6, maxWidth: 72, minWidth: 60}}
                         value={threshold}
                     />
