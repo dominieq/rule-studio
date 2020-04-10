@@ -96,8 +96,7 @@ class Cones extends Component {
             fetchCones(
                 project.result.id, method, data
             ).then(result => {
-                if (this._isMounted && result) {
-
+                if (result) {
                     if (this._isMounted) {
                         const { result: { informationTable: { objects } }, settings } = project;
                         const items = parseConesItems(result, objects, settings);
@@ -112,7 +111,6 @@ class Cones extends Component {
                     project.result.dominanceCones = result;
                     project.dataUpToDate = true;
                     project.tabsUpToDate[this.props.value] = true;
-
                     this.props.onTabChange(project);
                 }
             }).catch(error => {
