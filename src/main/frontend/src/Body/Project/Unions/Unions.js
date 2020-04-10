@@ -30,6 +30,7 @@ class Unions extends Component {
                 consistencyThreshold: 0,
                 typeOfUnions: "monotonic"
             },
+            parametersSaved: true,
             selectedItem: null,
             open: {
                 details: false,
@@ -53,6 +54,7 @@ class Unions extends Component {
             ).then(result => {
                 if (this._isMounted && result) {
                     const items = parseUnionsItems(result);
+                    const { project: { parametersSaved } } = this.props;
 
                     this.setState({
                         data: result,
@@ -61,7 +63,8 @@ class Unions extends Component {
                         parameters: {
                             consistencyThreshold: result.consistencyThreshold,
                             typeOfUnions: result.typeOfUnions.toLowerCase()
-                        }
+                        },
+                        parametersSaved: parametersSaved
                     });
                 }
             }).catch(error => {
@@ -70,13 +73,14 @@ class Unions extends Component {
                 }
             }).finally(() => {
                 if (this._isMounted) {
-                    this.setState({
+                    const { parametersSaved } = this.state;
+                    const { project: { parameters: { consistencyThreshold, typeOfUnions } } } = this.props;
+
+                    this.setState(({parameters}) => ({
                         loading: false,
-                        parameters: {
-                            consistencyThreshold: this.props.project.threshold,
-                            typeOfUnions: this.props.project.typeOfUnions
-                        }
-                    });
+                        parameters: parametersSaved ?
+                            parameters : { ...parameters, ...{ consistencyThreshold, typeOfUnions } }
+                    }));
                 }
             });
         });
@@ -84,13 +88,16 @@ class Unions extends Component {
 
     componentWillUnmount() {
         this._isMounted = false;
+        const { parametersSaved } = this.state;
 
-        const { parameters: { consistencyThreshold, typeOfUnions } } = this.state;
-        let project = {...this.props.project};
+        if (!parametersSaved) {
+            const { parameters } = this.state;
+            let project = {...this.props.project};
 
-        project.threshold = consistencyThreshold;
-        project.typeOfUnions = typeOfUnions;
-        this.props.onTabChange(project);
+            project.parameters = { ...project.parameters, ...parameters }
+            project.parametersSaved = parametersSaved;
+            this.props.onTabChange(project);
+        }
     }
 
     onCountUnionsClick = () => {
@@ -130,14 +137,16 @@ class Unions extends Component {
                                 consistencyThreshold: result.consistencyThreshold,
                                 typeOfUnions: result.typeOfUnions.toLowerCase()
                             },
+                            parametersSaved: true,
                         });
                     }
 
                     project.result.unions = result;
                     project.dataUpToDate = true;
                     project.tabsUpToDate[this.props.value] = true;
-                    project.threshold = result.consistencyThreshold;
-                    project.typeOfUnions = result.typeOfUnions.toLowerCase();
+                    project.parameters.consistencyThreshold = result.consistencyThreshold;
+                    project.parameters.typeOfUnions = result.typeOfUnions.toLowerCase();
+                    project.parametersSaved = true;
                     this.props.onTabChange(project);
                 }
             }).catch(error => {
@@ -170,12 +179,14 @@ class Unions extends Component {
     onConsistencyThresholdChange = (threshold) => {
         this.setState(({parameters}) => ({
             parameters: {...parameters, consistencyThreshold: threshold},
+            parametersSaved: false
         }));
     };
 
     onTypeOfUnionsChange = (event) => {
         this.setState(({parameters}) => ({
             parameters: {...parameters, typeOfUnions: event.target.value},
+            parametersSaved: false
         }));
     };
 
