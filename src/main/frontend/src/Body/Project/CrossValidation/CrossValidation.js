@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { parseMatrixTraits } from "../Utils/parseData";
 import fetchCrossValidation from "./fetchFunctions/fetchCrossValidation";
-import { parseCrossValidationFolds, parseCrossValidationItems, parseCrossValidationListItems } from "./parseData";
+import { parseCrossValidationFolds, parseCrossValidationItems, parseCrossValidationListItems } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -31,12 +31,11 @@ class CrossValidation extends Component {
     constructor(props) {
         super(props);
 
-        this._data = null;
-
         this.state = {
             changes: false,
             updated: false,
             loading: false,
+            data: null,
             folds: null,
             items: null,
             displayedItems: [],
@@ -48,7 +47,6 @@ class CrossValidation extends Component {
                 typeOfRules: "certain",
                 typeOfUnions: "monotonic",
             },
-            parametersUpToDate: true,
             selected: {
                 foldIndex: 0,
                 item: null,
@@ -74,16 +72,13 @@ class CrossValidation extends Component {
             const { project } = this.props;
 
             fetchCrossValidation(
-                project.result.id,
-                'GET',
-                null,
-                404
+                project.result.id, 'GET', null, 404
             ).then(result => {
                 if (this._isMounted && result) {
-                    this._data = result;
                     let folds = parseCrossValidationFolds(result);
 
                     this.setState(({parameters}) => ({
+                        data: result,
                         folds: folds,
                         parameters: {...parameters, numberOfFolds: result.numberOfFolds},
                     }), () => {
@@ -122,14 +117,13 @@ class CrossValidation extends Component {
     componentWillUnmount() {
         this._isMounted = false;
 
-        if (this.state.changes) {
+        const { changes, updated, data } = this.state;
+
+        if (changes) {
             let project = {...this.props.project};
+            project.result.crossValidation = data;
 
-            if (Object.keys(this._data).length) {
-                project.result.crossValidation = this._data;
-            }
-
-            const { parameters, foldDisplay, foldIndex } = this.state;
+            const { parameters, selected: { foldIndex } } = this.state;
 
             project.threshold = parameters.consistencyThreshold;
             project.defaultClassificationResult = parameters.defaultClassificationResult;
@@ -137,13 +131,12 @@ class CrossValidation extends Component {
             project.typeOfClassifier = parameters.typeOfClassifier;
             project.ruleType = parameters.typeOfRules;
             project.typeOfUnions = parameters.typeOfUnions;
-            project.foldDisplay = foldDisplay;
             project.foldIndex = foldIndex;
 
-            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
-            tabsUpToDate[this.props.value] = this.state.updated;
+            let tabsUpToDate = project.tabsUpToDate.slice();
+            tabsUpToDate[this.props.value] = updated;
 
-            this.props.onTabChange(project, this.state.updated, tabsUpToDate);
+            this.props.onTabChange(project, updated, tabsUpToDate);
         }
     }
 
@@ -164,18 +157,16 @@ class CrossValidation extends Component {
             }
 
             fetchCrossValidation(
-                project.result.id,
-                project.dataUpToDate ? "PUT" : "POST",
-                data,
+                project.result.id, project.dataUpToDate ? "PUT" : "POST", data,
             ).then(result => {
                 if (this._isMounted && result) {
                     const updated = true;
                     let folds = parseCrossValidationFolds(result);
 
-                    this._data = result;
                     this.setState(({parameters}) => ({
                         changes: true,
                         updated: updated,
+                        data: result,
                         folds: folds,
                         parameters: {...parameters, numberOfFolds: result.numberOfFolds},
                     }), () => {
@@ -208,7 +199,7 @@ class CrossValidation extends Component {
 
     onItemSelected = (index) => {
         this.setState(({items, open, selected}) => ({
-            open: {...open, details: true},
+            open: {...open, details: true, settings: false},
             selected: {...selected, item: items[index]}
         }));
     };
@@ -301,9 +292,7 @@ class CrossValidation extends Component {
     };
 
     render() {
-        const { alertProps, folds, displayedItems, loading, open, parameters, selected } = this.state;
-
-        console.log(this._data);
+        const { alertProps, data, folds, displayedItems, loading, open, parameters, selected } = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-cross-validation"} styleVariant={"tab"}>
@@ -409,15 +398,15 @@ class CrossValidation extends Component {
                     noFilterResults={!displayedItems}
                     subheaderContent={[
                         {
-                            label: "Fold",
+                            label: "Fold:",
                             value: selected.foldIndex + 1
                         },
                         {
-                            label: "Number of objects",
+                            label: "Number of objects:",
                             value: displayedItems && displayedItems.length
                         },
                         {
-                            label: "Total number of rules",
+                            label: "Total number of rules:",
                             value: folds && folds[selected.foldIndex].ruleSet.length
                         }
                     ]}
@@ -430,26 +419,26 @@ class CrossValidation extends Component {
                         ruleSet={folds[selected.foldIndex].ruleSet}
                     />
                 }
-                {this._data &&
+                {data &&
                     <MatrixDialog
                         disableDeviation={false}
-                        matrix={parseMatrixTraits(this._data.meanOrdinalMisclassificationMatrix)}
+                        matrix={parseMatrixTraits(data.meanOrdinalMisclassificationMatrix)}
                         onClose={() => this.toggleOpen("matrixGlobal")}
                         open={open.matrixGlobal}
                         title={"Mean ordinal misclassification matrix, it's deviation and details"}
                     />
                 }
                 {Array.isArray(folds) && Boolean(folds.length) &&
-                <MatrixDialog
-                    matrix={
-                        parseMatrixTraits(
-                            folds[selected.foldIndex].classificationValidationTable.ordinalMisclassificationMatrix
-                        )
-                    }
-                    onClose={() => this.toggleOpen("matrixFold")}
-                    open={open.matrixFold}
-                    title={`Fold ${selected.foldIndex}: Ordinal misclassification matrix, it's deviation and details`}
-                />
+                    <MatrixDialog
+                        matrix={
+                            parseMatrixTraits(
+                                folds[selected.foldIndex].classificationValidationTable.ordinalMisclassificationMatrix
+                            )
+                        }
+                        onClose={() => this.toggleOpen("matrixFold")}
+                        open={open.matrixFold}
+                        title={`Fold ${selected.foldIndex}: Ordinal misclassification matrix, it's deviation and details`}
+                    />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>

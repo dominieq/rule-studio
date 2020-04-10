@@ -1,5 +1,6 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
+import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 import RuleWorkDialog from "../RuleWorkDialog";
 import ObjectTable from "../Elements/ObjectTable";
 import TableItemsList from "../Elements/TableItemsList";
@@ -26,18 +27,36 @@ class CrossValidationDialog extends PureComponent {
         });
     };
 
+    getCrossValidationTitle = () => {
+        const { item } = this.props;
+
+        return (
+            <ColouredTitle
+                text={[
+                    { primary: "Selected object:" },
+                    { ...item.name }
+                ]}
+            />
+        )
+    }
+
     render() {
         const { itemInTableIndex } = this.state;
         const { item, ruleSet, ...other } = this.props;
-        const { attributes, objects } = item.traits;
+        const { attributes, objects, suggestedDecision } = item.traits;
 
         return (
-            <RuleWorkDialog onExited={this.onExited} title={"Selected object: " + item.name} {...other}>
+            <RuleWorkDialog
+                onExited={this.onExited}
+                optional={"Suggested decision: " + suggestedDecision}
+                title={this.getCrossValidationTitle()}
+                {...other}
+            >
                 <div id={"cross-validation-item-details"}>
                     <ObjectTable
                         informationTable={{attributes, objects}}
                         objectIndex={item.id}
-                        objectHeader={item.name}
+                        objectHeader={item.name.toString()}
                     />
                 </div>
                 <div id={"cross-validation-rules-table"} style={{display: "flex", flexDirection: "column"}}>
@@ -62,18 +81,21 @@ class CrossValidationDialog extends PureComponent {
 }
 
 CrossValidationDialog.propTypes = {
-    item: PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
+    item: PropTypes.exact({
+        id: PropTypes.number,
+        name: PropTypes.shape({
+            primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            toString: PropTypes.func
+        }),
         traits: PropTypes.exact({
             attributes: PropTypes.arrayOf(PropTypes.object),
             objects: PropTypes.arrayOf(PropTypes.object),
             suggestedDecision: PropTypes.string
-        }).isRequired,
-        actions: PropTypes.object,
+        }),
         tables: PropTypes.exact({
             indicesOfCoveringRules: PropTypes.arrayOf(PropTypes.number)
-        }).isRequired
+        })
     }),
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,

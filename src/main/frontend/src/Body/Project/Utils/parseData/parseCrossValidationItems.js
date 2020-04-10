@@ -1,13 +1,24 @@
 function parseCrossValidationItems(fold, settings) {
     let items = [];
-    if (fold && Object.keys(fold).length) {
-        const { indexOption } = settings;
-        for (let i = 0; i < fold.validationTable.objects.length; i++) {
-            let name = "Object " + (i + 1);
 
-            if (indexOption !== "default") {
-                if (Object.keys(fold.validationTable.objects[i]).includes(indexOption)) {
-                    name = fold.validationTable.objects[i][indexOption];
+    if (fold && Object.keys(fold).length) {
+        for (let i = 0; i < fold.validationTable.objects.length; i++) {
+            let name = {
+                primary: "Object",
+                secondary: i + 1,
+                toString() {
+                    return this.primary + " " + this.secondary;
+                }
+            };
+
+            if (Object.keys(settings).includes("indexOption") && settings.indexOption !== "default") {
+                if (Object.keys(fold.validationTable.objects[i]).includes(settings.indexOption)) {
+                    name = {
+                        secondary: fold.validationTable.objects[i][settings.indexOption],
+                        toString() {
+                            return this.secondary;
+                        }
+                    };
                 }
             }
 
@@ -24,6 +35,7 @@ function parseCrossValidationItems(fold, settings) {
             });
         }
     }
+
     return items;
 }
 
