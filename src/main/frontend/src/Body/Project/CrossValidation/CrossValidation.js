@@ -1,9 +1,13 @@
-import React, {Component, Fragment} from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
+import { parseMatrixTraits } from "../Utils/parseData";
+import fetchCrossValidation from "./fetchFunctions/fetchCrossValidation";
+import { parseCrossValidationFolds, parseCrossValidationItems, parseCrossValidationListItems } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
+import MatrixButton from "../Utils/Buttons/MatrixButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
@@ -13,39 +17,46 @@ import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
+import MatrixDialog from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import RuleWorkDialog from "../../../RuleWorkComponents/Feedback/RuleWorkDialog/RuleWorkDialog"
+import { CrossValidationDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import StyledToggleButton from "../../../RuleWorkComponents/Inputs/StyledToggleButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import MenuItem from "@material-ui/core/MenuItem";
 
 class CrossValidation extends Component {
     constructor(props) {
         super(props);
 
-        this._data = {};
-        this._items = [];
-
         this.state = {
             changes: false,
             updated: false,
             loading: false,
+            data: null,
+            folds: null,
+            items: null,
             displayedItems: [],
-            defaultClassificationResult: "majorityDecisionClass",
-            ruleType: "certain",
-            threshold: 0,
-            typeOfClassifier: "SimpleRuleClassifier",
-            typeOfUnions: "monotonic",
-            foldDisplay: 0,
-            foldIndex: 0,
-            foldNumber: 2,
-            folds: [],
-            selectedItem: null,
-            openDetails: false,
-            openSettings: false,
+            parameters: {
+                consistencyThreshold: 0,
+                defaultClassificationResult: "majorityDecisionClass",
+                numberOfFolds: 2,
+                typeOfClassifier: "SimpleRuleClassifier",
+                typeOfRules: "certain",
+                typeOfUnions: "monotonic",
+            },
+            selected: {
+                foldIndex: 0,
+                item: null,
+            },
+            open: {
+                details: false,
+                matrixGlobal: false,
+                matrixFold: false,
+                settings: false,
+            },
             alertProps: undefined,
         };
 
@@ -58,274 +69,218 @@ class CrossValidation extends Component {
         this.setState({
             loading: true,
         }, () => {
-            const project = {...this.props.project};
+            const { project } = this.props;
 
-            let msg, title = "";
-            fetch(`http://localhost:8080/projects/${project.result.id}/crossValidation`, {
-                method: 'GET'
-            }).then(response => {
-                if (response.status === 200) {
-                    response.json().then(result => {
-                        if (this._isMounted) {
-                            const items = this.getItems(result.crossValidationSingleFolds);
+            fetchCrossValidation(
+                project.result.id, 'GET', null, 404
+            ).then(result => {
+                if (this._isMounted && result) {
+                    let folds = parseCrossValidationFolds(result);
 
-                            this._data = result;
-                            this._items = items;
-                            this.setState({
-                                displayedItems: items,
-                                foldNumber: result.numberOfFolds,
-                                folds: Array.from(Array(result.numberOfFolds).keys()).map(x => ++x)
-                            });
-                        }
-                    }).catch(error => {
-                        console.log(error);
-                    });
-                } else {
-                    response.json().then(result => {
-                        if (this._isMounted) {
-                            msg = "ERROR " + result.status + " " + result.message;
-                            title = "Something went wrong! Couldn't calculate cross-validation :(";
-                            let alertProps = {message: msg, open: true, title: title, severity: "warning"};
-                            this.setState({
-                                alertProps: response.status !== 404 ? alertProps : undefined
-                            });
-                        }
-                    }).catch(() => {
-                        if (this._isMounted) {
-                            msg = "Something went wrong! Couldn't calculate cross-validation :(";
-                            title = "ERROR " + response.status;
-                            let alertProps = {message: msg, open: true, title: title, severity: "error"};
-                            this.setState({
-                                alertProps: response.status !== 404 ? alertProps : undefined
-                            });
-                        }
+                    this.setState(({parameters}) => ({
+                        data: result,
+                        folds: folds,
+                        parameters: {...parameters, numberOfFolds: result.numberOfFolds},
+                    }), () => {
+                        const { folds, selected: { foldIndex } } = this.state;
+                        let items = parseCrossValidationItems(folds[foldIndex], project.settings);
+
+                        this.setState({
+                            items: items,
+                            displayedItems: items,
+                        });
                     });
                 }
             }).catch(error => {
-                console.log(error);
-                if (this._isMounted) {
-                    msg = "Server error! Couldn't calculate classification :(";
-                    this.setState({
-                        alertProps: {message: msg, open: true, severity: "error"}
-                    });
+                if ( this._isMounted ) {
+                    this.setState({alertProps: error});
                 }
             }).finally(() => {
-                this.setState({
-                    loading: false,
-                    defaultClassificationResult: this.props.project.defaultClassificationResult,
-                    ruleType: this.props.project.ruleType,
-                    threshold: this.props.project.threshold,
-                    typeOfClassifier: this.props.project.typeOfClassifier,
-                    typeOfUnions: this.props.project.typeOfUnions,
-                    foldDisplay: this.props.project.foldDisplay,
-                    foldIndex: this.props.project.foldIndex,
-                });
+                if ( this._isMounted ) {
+                    this.setState({loading: false});
+                }
             });
         });
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
+            const { folds, selected: { foldIndex } } = this.state;
+            const { project } = this.props;
+
+            this.setState({
+                displayedItems: [...parseCrossValidationItems(folds[foldIndex], project.settings)]
+            });
+        }
     }
 
     componentWillUnmount() {
         this._isMounted = false;
 
-        if (this.state.changes) {
+        const { changes, updated, data } = this.state;
+
+        if (changes) {
             let project = {...this.props.project};
+            project.result.crossValidation = data;
 
-            if (Object.keys(this._data).length) {
-                project.result.crossValidation = this._data;
-            }
+            const { parameters, selected: { foldIndex } } = this.state;
 
-            project.defaultClassificationResult = this.state.defaultClassificationResult;
-            project.ruleType = this.state.ruleType;
-            project.threshold = this.state.threshold;
-            project.typeOfUnions = this.state.typeOfUnions;
-            project.typeOfClassifier = this.state.typeOfClassifier;
-            project.foldDisplay = this.state.foldDisplay;
-            project.foldIndex = this.state.foldIndex;
-            project.foldNumber = this.state.foldNumber;
+            project.threshold = parameters.consistencyThreshold;
+            project.defaultClassificationResult = parameters.defaultClassificationResult;
+            project.foldNumber = parameters.numberOfFolds;
+            project.typeOfClassifier = parameters.typeOfClassifier;
+            project.ruleType = parameters.typeOfRules;
+            project.typeOfUnions = parameters.typeOfUnions;
+            project.foldIndex = foldIndex;
 
-            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
-            tabsUpToDate[this.props.value] = this.state.updated;
+            let tabsUpToDate = project.tabsUpToDate.slice();
+            tabsUpToDate[this.props.value] = updated;
 
-            this.props.onTabChange(project, this.state.updated, tabsUpToDate);
+            this.props.onTabChange(project, updated, tabsUpToDate);
         }
     }
-
-    onSettingsClick = () => {
-        this.setState(prevState => ({
-            openSettings: !prevState.openSettings,
-        }));
-    };
-
-    onSettingsClose = () => {
-        this.setState({
-            openSettings: false,
-        });
-    };
 
     onCalculateClick = () => {
         this.setState({
             loading: true,
         }, () => {
             let project = {...this.props.project};
+            const { parameters } = this.state;
 
             let data = new FormData();
-            data.append("defaultClassificationResult", this.state.defaultClassificationResult);
-            data.append("consistencyThreshold", this.state.threshold);
-            data.append("typeOfClassifier", this.state.typeOfClassifier);
-            data.append("typeOfRules", this.state.ruleType);
-            data.append("typeOfUnions", this.state.typeOfUnions);
-            data.append("numberOfFolds", this.state.foldNumber);
+            Object.keys(parameters).map(key => {
+                data.append(key, parameters[key])
+            });
             if (!project.dataUpToDate) {
                 data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
                 data.append("data", JSON.stringify(project.result.informationTable.objects));
             }
 
-            let msg, title = "";
-            fetch(`http://localhost:8080/projects/${project.result.id}/crossValidation`, {
-                method: project.dataUpToDate ? "PUT" : "POST",
-                body: data
-            }).then(response => {
-                if (response.status === 200) {
-                    response.json().then(result => {
-                        const updated = true;
+            fetchCrossValidation(
+                project.result.id, project.dataUpToDate ? "PUT" : "POST", data,
+            ).then(result => {
+                if (this._isMounted && result) {
+                    const updated = true;
+                    let folds = parseCrossValidationFolds(result);
 
-                        if (this._isMounted) {
-                            const items = this.getItems(result.crossValidationSingleFolds);
+                    this.setState(({parameters}) => ({
+                        changes: true,
+                        updated: updated,
+                        data: result,
+                        folds: folds,
+                        parameters: {...parameters, numberOfFolds: result.numberOfFolds},
+                    }), () => {
+                        const { folds, selected: { foldIndex } } = this.state;
+                        let items = parseCrossValidationItems(folds[foldIndex], project.settings);
 
-                            this._data = result;
-                            this._items = items;
-                            this.setState({
-                                changes: true,
-                                updated: updated,
-                                displayedItems: items,
-                                foldNumber: result.numberOfFolds,
-                                folds: Array.from(Array(result.numberOfFolds).keys()).map(x => ++x),
-                            });
-                        } else {
-
-                        }
-                    }).catch(error => {
-                        console.log(error);
-                    });
-                } else {
-                    response.json().then(result => {
-                        if (this._isMounted) {
-                            msg = "ERROR " + result.status + " " + result.message;
-                            title = "Something went wrong! Couldn't calculate cross-validation :(";
-                            this.setState({
-                                alertProps: {message: msg, open: true, title: title, severity: "warning"}
-                            });
-                        }
-                    }).catch(() => {
-                        if (this._isMounted) {
-                            msg = "Something went wrong! Couldn't calculate cross-validation :(";
-                            title = "ERROR " + response.status;
-                            this.setState({
-                                alertProps: {message: msg, open: true, title: title, severity: "error"}
-                            });
-                        }
+                        this.setState({
+                            items: items,
+                            displayedItems: items,
+                        });
                     });
                 }
             }).catch(error => {
-                console.log(error);
-                if (this._isMounted) {
-                    msg = "Server error! Couldn't calculate cross-validation :(";
-                    this.setState({
-                        alertProps: {message: msg, open: true, severity: "error"}
-                    });
+                if ( this._isMounted ) {
+                    this.setState({alertProps: error});
                 }
             }).finally(() => {
-                if (this._isMounted) this.setState({loading: false});
+                if ( this._isMounted ) {
+                    this.setState({loading: false});
+                }
             });
         });
+    };
+
+    toggleOpen = (name) => {
+        this.setState(({open}) => ({
+            open: {...open, [name]: !open[name]}
+        }));
+    };
+
+    onItemSelected = (index) => {
+        this.setState(({items, open, selected}) => ({
+            open: {...open, details: true, settings: false},
+            selected: {...selected, item: items[index]}
+        }));
     };
 
     onDefaultClassificationResultChange = (event) => {
-        this.setState({
+        this.setState(({parameters}) => ({
             changes: event.target.value !== "majorityDecisionClass",
             updated: this.props.project.dataUpToDate,
-            defaultClassificationResult: event.target.value
-        });
+            parameters: {...parameters, defaultClassificationResult: event.target.value},
+        }));
     };
 
-    onRuleTypeChange = (event) => {
-        this.setState({
+    onTypeOfRulesChange = (event) => {
+        this.setState(({parameters}) => ({
             changes: event.target.value !== "certain",
             updated: this.props.project.dataUpToDate,
-            ruleType: event.target.value
-        });
+            parameters: {...parameters, typeOfRules: event.target.value},
+        }));
     };
 
-    onThresholdChange = (threshold) => {
-        this.setState({
+    onConsistencyThresholdChange = (threshold) => {
+        this.setState(({parameters}) => ({
             changes: Boolean(threshold),
             updated: this.props.project.dataUpToDate,
-            threshold: threshold
-        });
+            parameters: {...parameters, consistencyThreshold: threshold},
+        }));
     };
 
-    onTypeOfClassifier = (event) => {
-        this.setState({
+    onTypeOfClassifierChange = (event) => {
+        this.setState(({parameters}) => ({
             changes: event.target.value !== "SimpleRuleClassifier",
             updated: this.props.project.dataUpToDate,
-            typeOfClassifier: event.target.value
-        });
+            parameters: {...parameters, typeOfClassifier: event.target.value},
+        }));
     };
 
-    onTypeOfUnions = (event) => {
-        this.setState({
+    onTypeOfUnionsChange = (event) => {
+        this.setState(({parameters}) => ({
             changes: event.target.value !== "monotonic",
             updated: this.props.project.dataUpToDate,
-            typeOfUnions: event.target.value
-        });
+            parameters: {...parameters, typeOfUnions: event.target.value},
+        }));
     };
 
-    onFoldNumberChange = (event) => {
+    onNumberOfFoldsChange = (event) => {
         const input = event.target.value;
 
         if (!isNaN(input)) {
-            this.setState({
-                changes: Number(input) !== 1,
+            this.setState(({parameters}) => ({
+                changes: Number(input) !== 2,
                 updated: this.props.project.dataUpToDate,
-                foldNumber: Number(input),
-            });
+                parameters: {...parameters, numberOfFolds: Number(input)},
+            }));
         }
     };
 
     onFoldIndexChange = (event) => {
-        this.setState({
+        const { project } = this.props;
+        this.setState(({ selected }) => ({
             changes: Boolean(event.target.value),
-            updated: this.props.project.dataUpToDate,
-            foldIndex: event.target.value,
-        })
-    };
+            updated: project.dataUpToDate,
+            selected: {...selected, foldIndex: Number(event.target.value)},
+        }), () => {
+            const { folds, selected: { foldIndex }} = this.state;
+            let items = parseCrossValidationItems(folds[foldIndex], project.settings);
 
-    onFoldDisplayChange = (event, newDisplay) => {
-        if (typeof newDisplay !== 'number') return;
-
-        this.setState({
-            changes: Boolean(newDisplay),
-            updated: this.props.project.dataUpToDate,
-            foldDisplay: newDisplay,
+            this.setState({
+                items: items,
+                displayedItems: items,
+            });
         });
     };
 
     onFilterChange = (event) => {
-        const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
-        this.setState({displayedItems: filteredItems});
-    };
+        const { items } = this.state;
+        const filteredItems = filterFunction(event.target.value.toString(), items.slice());
 
-    onDetailsOpen = (index) => {
-        this.setState({
-            openDetails: true,
-            selectedItem: this._items[index],
-        });
-    };
-
-    onDetailsClose = () => {
-        this.setState({
-            openDetails: false
-        });
+        this.setState(({selected}) => ({
+            displayedItems: filteredItems,
+            selected: {...selected, item: null}
+        }));
     };
 
     onSnackbarClose = (event, reason) => {
@@ -336,140 +291,153 @@ class CrossValidation extends Component {
         }
     };
 
-    getItems = (data) => {
-        let items = [];
-        if (data) {
-            for (let i = 0; i < data.length; i++) {
-                console.log(data[i]);
-            }
-        }
-        return items;
-    };
-
-    renderResultsActions = () => {
-        const {foldDisplay, folds, foldIndex} = this.state;
-
-        if (Array.isArray(folds) && folds.length) {
-            return (
-                <Fragment>
-                    <RuleWorkTextField
-                        onChange={this.onFoldIndexChange}
-                        outsideLabel={"Choose fold"}
-                        select={true}
-                        value={foldIndex}
-                    >
-                        {folds}
-                    </RuleWorkTextField>
-                    <StyledDivider />
-                    <ToggleButtonGroup
-                        aria-label={"display-toggle-button-group"}
-                        exclusive={true}
-                        onChange={this.onFoldDisplayChange}
-                        value={foldDisplay}
-                    >
-                        <StyledToggleButton value={0}>
-                            Details of training set
-                        </StyledToggleButton>
-                        <StyledToggleButton value={1}>
-                            Error matrix
-                        </StyledToggleButton>
-                        <StyledToggleButton value={2}>
-                            Mean error matrix
-                        </StyledToggleButton>
-                    </ToggleButtonGroup>
-                </Fragment>
-            )
-        } else {
-            return null;
-        }
-    };
-
     render() {
-        const { loading, displayedItems, foldNumber, selectedItem, openDetails, openSettings, alertProps } = this.state;
-        const { defaultClassificationResult, ruleType, threshold, typeOfClassifier, typeOfUnions } = this.state;
+        const { alertProps, data, folds, displayedItems, loading, open, parameters, selected } = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-cross-validation"} styleVariant={"tab"}>
                 <StyledPaper id={"cross-validation-bar"} paperRef={this.upperBar}>
                     <SettingsButton
                         aria-label={"cross-validation-settings-button"}
-                        onClick={this.onSettingsClick}
-                        title={"Click to customize number of folds"}
+                        onClick={() => this.toggleOpen("settings")}
+                        title={"Click to customize parameters"}
                     />
                     <StyledDivider />
-                    <RuleWorkTooltip title={`Current number of folds: ${foldNumber}`}>
+                    <RuleWorkTooltip title={`Current number of folds: ${parameters.numberOfFolds}`}>
                         <CalculateButton
                             aria-label={"cross-validation-calculate-button"}
-                            disabled={!this.props.project || loading}
+                            disabled={loading}
                             onClick={this.onCalculateClick}
                         />
                     </RuleWorkTooltip>
+                    <StyledDivider />
+                    {Array.isArray(folds) && Boolean(folds.length) &&
+                        <Fragment>
+                            <p id={"all-folds"} style={{margin: "0 16px 0 0", fontSize: "1.15rem"}}>All folds:</p>
+                            <MatrixButton
+                                onClick={() => this.toggleOpen("matrixGlobal")}
+                                title={"Show ordinal misclassification matrix for all folds"}
+                            />
+                            <StyledDivider />
+                            <RuleWorkTextField
+                                onChange={this.onFoldIndexChange}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment>
+                                            Fold:
+                                        </InputAdornment>
+                                    )
+                                }}
+                                select={true}
+                                value={selected.foldIndex}
+                            >
+                                {folds.map((fold, index) => (
+                                    <MenuItem key={index} value={fold.index}>
+                                        {fold.index + 1}
+                                    </MenuItem>
+                                ))}
+                            </RuleWorkTextField>
+                            <p id={"fold-colon"} style={{margin: "0 16px 0 4px", fontSize: "1.15rem"}}>:</p>
+                            <MatrixButton
+                                onClick={() => this.toggleOpen("matrixFold")}
+                                title={`Open ordinal misclassification matrix for fold ${selected.foldIndex + 1}`}
+                            />
+                        </Fragment>
+                    }
                     <span style={{flexGrow: 1}} />
-                    {this.renderResultsActions()}
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <RuleWorkDrawer
                     id={"cross-validation-settings"}
-                    open={openSettings}
-                    onClose={this.onSettingsClose}
+                    open={open.settings}
+                    onClose={() => this.toggleOpen("settings")}
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <RuleWorkSmallBox id={"fold-number-selector"} >
                         <RuleWorkTextField
-                            onChange={this.onFoldNumberChange}
+                            onChange={this.onNumberOfFoldsChange}
                             outsideLabel={"Choose number of folds"}
                             style={{maxWidth: 72}}
-                            value={foldNumber}
+                            value={parameters.numberOfFolds}
                         />
                     </RuleWorkSmallBox>
                     <TypeOfUnionsSelector
                         id={"cross-validation-union-type-selector"}
-                        onChange={this.onTypeOfUnions}
-                        value={typeOfUnions}
+                        onChange={this.onTypeOfUnionsChange}
+                        value={parameters.typeOfUnions}
                     />
                     <ThresholdSelector
                         id={"cross-validation-threshold-selector"}
-                        onChange={this.onThresholdChange}
-                        value={threshold}
+                        onChange={this.onConsistencyThresholdChange}
+                        value={parameters.consistencyThreshold}
                     />
                     <TypeOfRulesSelector
                         id={"cross-validation-rule-type-selector"}
-                        onChange={this.onRuleTypeChange}
-                        value={ruleType}
+                        onChange={this.onTypeOfRulesChange}
+                        value={parameters.typeOfRules}
                     />
                     <TypeOfClassifierSelector
                         id={"cross-validation-classifier-type-selector"}
-                        onChange={this.onTypeOfClassifier}
-                        value={typeOfClassifier}
+                        onChange={this.onTypeOfClassifierChange}
+                        value={parameters.typeOfClassifier}
                     />
                     <DefaultClassificationResultSelector
                         id={"cross-validation-default-classification-result-selector"}
                         onChange={this.onDefaultClassificationResultChange}
-                        value={defaultClassificationResult}
+                        value={parameters.defaultClassificationResult}
                     />
                 </RuleWorkDrawer>
                 <TabBody
-                    content={this.getItems(displayedItems)}
+                    content={parseCrossValidationListItems(displayedItems)}
                     id={"cross-validation-list"}
                     isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
                     isLoading={loading}
                     ListProps={{
-                        onItemSelected: this.onDetailsOpen
+                        onItemSelected: this.onItemSelected
                     }}
                     noFilterResults={!displayedItems}
                     subheaderContent={[
                         {
-                            label: "Number of objects",
+                            label: "Fold:",
+                            value: selected.foldIndex + 1
+                        },
+                        {
+                            label: "Number of objects:",
                             value: displayedItems && displayedItems.length
+                        },
+                        {
+                            label: "Total number of rules:",
+                            value: folds && folds[selected.foldIndex].ruleSet.length
                         }
                     ]}
                 />
-                {selectedItem &&
-                    <RuleWorkDialog
-                        item={selectedItem}
-                        onClose={this.onDetailsClose}
-                        open={openDetails}
-                        projectResult={this.props.project.result}
+                {selected.item &&
+                    <CrossValidationDialog
+                        item={selected.item}
+                        onClose={() => this.toggleOpen("details")}
+                        open={open.details}
+                        ruleSet={folds[selected.foldIndex].ruleSet}
+                    />
+                }
+                {data &&
+                    <MatrixDialog
+                        disableDeviation={false}
+                        matrix={parseMatrixTraits(data.meanOrdinalMisclassificationMatrix)}
+                        onClose={() => this.toggleOpen("matrixGlobal")}
+                        open={open.matrixGlobal}
+                        title={"Mean ordinal misclassification matrix, it's deviation and details"}
+                    />
+                }
+                {Array.isArray(folds) && Boolean(folds.length) &&
+                    <MatrixDialog
+                        matrix={
+                            parseMatrixTraits(
+                                folds[selected.foldIndex].classificationValidationTable.ordinalMisclassificationMatrix
+                            )
+                        }
+                        onClose={() => this.toggleOpen("matrixFold")}
+                        open={open.matrixFold}
+                        title={`Fold ${selected.foldIndex}: Ordinal misclassification matrix, it's deviation and details`}
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />

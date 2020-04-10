@@ -6,19 +6,19 @@ import pl.put.poznan.rulework.enums.UnionType;
 
 public class RulesWithHttpParameters {
     private RuleSetWithComputableCharacteristics ruleSet;
-    private UnionType typeOfUnion;
+    private UnionType typeOfUnions;
     private Double consistencyThreshold;
-    private RuleType typeOfRule;
+    private RuleType typeOfRules;
 
     public RulesWithHttpParameters(RuleSetWithComputableCharacteristics rules) {
         this.ruleSet = rules;
     }
 
-    public RulesWithHttpParameters(RuleSetWithComputableCharacteristics rules, UnionType typeOfUnion, Double consistencyThreshold, RuleType ruleType) {
+    public RulesWithHttpParameters(RuleSetWithComputableCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType) {
         this.ruleSet = rules;
-        this.typeOfUnion = typeOfUnion;
+        this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
-        this.typeOfRule = ruleType;
+        this.typeOfRules = ruleType;
     }
 
     public RuleSetWithComputableCharacteristics getRuleSet() {
@@ -29,12 +29,12 @@ public class RulesWithHttpParameters {
         this.ruleSet = ruleSet;
     }
 
-    public UnionType getTypeOfUnion() {
-        return typeOfUnion;
+    public UnionType getTypeOfUnions() {
+        return typeOfUnions;
     }
 
-    public void setTypeOfUnion(UnionType typeOfUnion) {
-        this.typeOfUnion = typeOfUnion;
+    public void setTypeOfUnions(UnionType typeOfUnions) {
+        this.typeOfUnions = typeOfUnions;
     }
 
     public Double getConsistencyThreshold() {
@@ -45,21 +45,21 @@ public class RulesWithHttpParameters {
         this.consistencyThreshold = consistencyThreshold;
     }
 
-    public RuleType getTypeOfRule() {
-        return typeOfRule;
+    public RuleType getTypeOfRules() {
+        return typeOfRules;
     }
 
-    public void setTypeOfRule(RuleType typeOfRule) {
-        this.typeOfRule = typeOfRule;
+    public void setTypeOfRules(RuleType typeOfRules) {
+        this.typeOfRules = typeOfRules;
     }
 
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
                 "ruleSet=" + ruleSet +
-                ", typeOfUnion=" + typeOfUnion +
+                ", typeOfUnions=" + typeOfUnions +
                 ", consistencyThreshold=" + consistencyThreshold +
-                ", typeOfRUle=" + typeOfRule +
+                ", typeOfRules=" + typeOfRules +
                 '}';
     }
 }

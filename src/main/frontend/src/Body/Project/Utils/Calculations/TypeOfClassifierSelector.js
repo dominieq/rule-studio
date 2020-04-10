@@ -34,7 +34,7 @@ function TypeOfClassifierSelector(props) {
             </RuleWorkHelper>
             <RuleWorkSmallBox style={{flexGrow: 1, margin: 0}}>
                 <RuleWorkTextField
-                    outsideLabel={"Choose type of classifier"}
+                    outsideLabel={"Select type of classifier"}
                     select={true}
                     {...props}
                 >

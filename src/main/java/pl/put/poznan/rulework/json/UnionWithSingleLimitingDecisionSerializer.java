@@ -37,25 +37,25 @@ public class UnionWithSingleLimitingDecisionSerializer extends JsonSerializer<Un
 
         jsonGenerator.writeStartObject();
 
-        jsonGenerator.writeFieldName("lowerApproximation");
+        jsonGenerator.writeFieldName("Lower approximation");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getLowerApproximation()));
 
-        jsonGenerator.writeFieldName("upperApproximation");
+        jsonGenerator.writeFieldName("Upper approximation");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getUpperApproximation()));
 
-        jsonGenerator.writeFieldName("boundary");
+        jsonGenerator.writeFieldName("Boundary");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getBoundary()));
 
-        jsonGenerator.writeFieldName("positiveRegion");
+        jsonGenerator.writeFieldName("Positive region");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getPositiveRegion()));
 
-        jsonGenerator.writeFieldName("negativeRegion");
+        jsonGenerator.writeFieldName("Negative region");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getNegativeRegion()));
 
-        jsonGenerator.writeFieldName("boundaryRegion");
+        jsonGenerator.writeFieldName("Boundary region");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getBoundaryRegion()));
 
-        jsonGenerator.writeFieldName("objects");
+        jsonGenerator.writeFieldName("Objects");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getObjects()));
 
         jsonGenerator.writeFieldName("unionType");

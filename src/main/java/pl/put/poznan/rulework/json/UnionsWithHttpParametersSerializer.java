@@ -37,8 +37,8 @@ public class UnionsWithHttpParametersSerializer extends JsonSerializer<UnionsWit
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionsWithSingleLimitingDecision.getUpwardUnions()));
 
 
-        jsonGenerator.writeFieldName("typeOfUnion");
-        jsonGenerator.writeString(unionsWithHttpParameters.getTypeOfUnion().toString());
+        jsonGenerator.writeFieldName("typeOfUnions");
+        jsonGenerator.writeString(unionsWithHttpParameters.getTypeOfUnions().toString());
 
         jsonGenerator.writeFieldName("consistencyThreshold");
         jsonGenerator.writeNumber(unionsWithHttpParameters.getConsistencyThreshold());

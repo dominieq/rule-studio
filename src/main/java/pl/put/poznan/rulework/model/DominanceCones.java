@@ -1,6 +1,7 @@
 package pl.put.poznan.rulework.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.dominance.DominanceConeCalculator;
@@ -9,13 +10,19 @@ import java.util.Arrays;
 
 public class DominanceCones {
     private int numberOfObjects;
+
+    @JsonProperty("Positive dominance cone")
     private IntSortedSet[] positiveDCones;
+
+    @JsonProperty("Negative dominance cone")
     private IntSortedSet[] negativeDCones;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("Positive inverse dominance cone")
     private IntSortedSet[] positiveInvDCones;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("Negative inverse dominance cone")
     private IntSortedSet[] negativeInvDCones;
 
     public DominanceCones() {
