@@ -1,5 +1,6 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
+import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 import RuleWorkDialog from "../RuleWorkDialog";
 import TablesList from "../Elements/TablesList";
 import ObjectsComparisonTable from "../Elements/ObjectsComparisonTable";
@@ -35,12 +36,24 @@ class ConesDialog extends PureComponent {
         });
     };
 
+    getConesTitle = () => {
+        const { item } = this.props;
+        return (
+            <ColouredTitle
+                text={[
+                    { primary: "Selected item:" },
+                    { ...item.name }
+                ]}
+            />
+        );
+    };
+
     render() {
         const { tableIndex, itemInTableIndex } = this.state;
         const { item, items, projectResult, ...other } = this.props;
 
         return (
-            <RuleWorkDialog onExited={this.onExited} title={"Selected item: " + item.name} {...other}>
+            <RuleWorkDialog onExited={this.onExited} title={this.getConesTitle()} {...other}>
                 <div id={"cones-tables"}>
                     <TablesList
                         headerText={"Dominance cones"}
@@ -64,9 +77,9 @@ class ConesDialog extends PureComponent {
                         <ObjectsComparisonTable
                             informationTable={projectResult.informationTable}
                             objectIndex={item.id}
-                            objectHeader={item.name}
+                            objectHeader={item.name.toString()}
                             objectInTableIndex={itemInTableIndex}
-                            objectInTableHeader={items ? items[itemInTableIndex].name : undefined}
+                            objectInTableHeader={items ? items[itemInTableIndex].name.toString() : undefined}
                         />
                     }
                 </div>
@@ -78,7 +91,11 @@ class ConesDialog extends PureComponent {
 ConesDialog.propTypes = {
     item: PropTypes.shape({
         id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
+        name: PropTypes.shape({
+            primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            toString: PropTypes.func
+        }).isRequired,
         traits: PropTypes.object,
         tables: PropTypes.shape({
             'Positive dominance cone': PropTypes.arrayOf(PropTypes.number),
@@ -87,17 +104,7 @@ ConesDialog.propTypes = {
             'Negative inverse dominance cone': PropTypes.arrayOf(PropTypes.number),
         }).isRequired
     }),
-    items: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        traits: PropTypes.object,
-        tables: PropTypes.shape({
-            'Positive dominance cone': PropTypes.arrayOf(PropTypes.number),
-            'Negative dominance cone': PropTypes.arrayOf(PropTypes.number),
-            'Positive inverse dominance cone': PropTypes.arrayOf(PropTypes.number),
-            'Negative inverse dominance cone': PropTypes.arrayOf(PropTypes.number),
-        }).isRequired
-    })),
+    items: PropTypes.arrayOf(PropTypes.object),
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func,
     projectResult: PropTypes.object,

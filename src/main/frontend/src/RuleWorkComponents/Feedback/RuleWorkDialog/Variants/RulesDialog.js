@@ -1,11 +1,12 @@
-import React, {Component} from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
+import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 import RuleWorkDialog from "../RuleWorkDialog";
-import TraitsTable from "../Elements/TraitsTable";
-import TableItemsList from "../Elements/TableItemsList";
 import ObjectTable from "../Elements/ObjectTable";
+import TableItemsList from "../Elements/TableItemsList";
+import TraitsTable from "../Elements/TraitsTable";
 
-class RulesDialog extends Component {
+class RulesDialog extends PureComponent {
     constructor(props) {
         super(props);
 
@@ -26,12 +27,76 @@ class RulesDialog extends Component {
         });
     };
 
+    getDecisions = (decisions) => {
+        let titleDecisions = [];
+        for (let i = 0; i < decisions.length; i++) {
+            let and = [];
+            for (let j = 0; j < decisions[i].length; j++) {
+                if ( decisions[i].length > 1 ) {
+                    and.push(
+                        { primary: "(" },
+                        { ...decisions[i][j] },
+                        { primary: ")" },
+                    );
+                    if ( j + 1 < decisions[i].length ) {
+                        and.push({ secondary: "\u2227" });
+                    }
+                } else {
+                    and.push({ ...decisions[i][j] });
+                }
+            }
+            if ( decisions.length > 1 ) {
+                and.unshift({ primary: "[" });
+                and.push({ primary: "]" });
+                if ( i + 1 < decisions.length ) {
+                    and.push({ secondary: "\u2228" });
+                }
+            }
+            titleDecisions.push(...and);
+        }
+        return titleDecisions;
+    };
+
+    getConditions = (conditions) => {
+        let titleConditions = [];
+        for (let i = 0; i < conditions.length; i++) {
+            if ( conditions.length > 1) {
+                titleConditions.push(
+                    { primary: "(" },
+                    { ...conditions[i] },
+                    { primary: ")" }
+                );
+                if ( i + 1 < conditions.length) {
+                    titleConditions.push({ secondary: "\u2228" });
+                }
+            } else {
+                titleConditions.push({ ...conditions[i] });
+            }
+        }
+        return titleConditions;
+    };
+
+    getRulesTitle = () => {
+        const { item } = this.props;
+
+        return (
+            <ColouredTitle
+                text={[
+                    { primary: "Selected rule: " },
+                    ...this.getDecisions(item.name.decisions),
+                    { secondary: "\u2190" },
+                    ...this.getConditions(item.name.conditions)
+                ]}
+            />
+        );
+    };
+
     render() {
         const { itemInTableIndex } = this.state;
         const { item, items, projectResult, ...other } = this.props;
 
         return (
-            <RuleWorkDialog onExited={this.onExited} title={"Selected rule: " + item.name} {...other}>
+            <RuleWorkDialog onExited={this.onExited} title={this.getRulesTitle()} {...other}>
                 <div id={"rules-traits"}>
                     <TraitsTable
                         traits={item.traits}
@@ -60,13 +125,27 @@ class RulesDialog extends Component {
 }
 
 RulesDialog.propTypes = {
-    item: PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        traits: PropTypes.object.isRequired,
-        tables: PropTypes.shape({
+    item: PropTypes.exact({
+        id: PropTypes.number,
+        name: PropTypes.exact({
+            decisions: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.shape({
+                primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+                secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+                toString: PropTypes.func,
+                withBraces: PropTypes.func,
+            }))),
+            conditions: PropTypes.arrayOf(PropTypes.shape({
+                primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+                secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+                toString: PropTypes.func,
+            }))
+        }),
+        traits: PropTypes.shape({
+            "Type": PropTypes.string.isRequired
+        }),
+        tables: PropTypes.exact({
             indicesOfCoveredObjects: PropTypes.arrayOf(PropTypes.number)
-        }).isRequired
+        })
     }),
     items: PropTypes.arrayOf(PropTypes.object),
     open: PropTypes.bool.isRequired,

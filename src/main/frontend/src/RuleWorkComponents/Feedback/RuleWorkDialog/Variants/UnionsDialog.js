@@ -1,10 +1,11 @@
-import React, {PureComponent} from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import RuleWorkDialog from "../RuleWorkDialog";
-import TablesList from "../Elements/TablesList";
-import TableItemsList from "../Elements/TableItemsList";
-import TraitsTable from "../Elements/TraitsTable";
 import ObjectTable from "../Elements/ObjectTable";
+import TableItemsList from "../Elements/TableItemsList";
+import TablesList from "../Elements/TablesList";
+import TraitsTable from "../Elements/TraitsTable";
+import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 
 class UnionsDialog extends PureComponent {
     constructor(props) {
@@ -36,12 +37,25 @@ class UnionsDialog extends PureComponent {
         });
     };
 
+    getUnionsTitle = () => {
+        const { item } = this.props;
+
+        return (
+            <ColouredTitle
+                text={[
+                    { primary: "Selected union:"},
+                    { ...item.name }
+                ]}
+            />
+        )
+    };
+
     render() {
         const { tableIndex, itemInTableIndex } = this.state;
         const { item, items, projectResult, ...other}  = this.props;
 
         return (
-            <RuleWorkDialog onExited={this.onExited} title={"Selected item: " + item.name} {...other}>
+            <RuleWorkDialog onExited={this.onExited} title={this.getUnionsTitle()} {...other}>
                 <div id={"unions-tables"}>
                     <TablesList
                         headerText={"Union's characteristics"}
@@ -71,7 +85,7 @@ class UnionsDialog extends PureComponent {
                             <ObjectTable
                                 informationTable={projectResult.informationTable}
                                 objectIndex={itemInTableIndex}
-                                objectHeader={items ? items[itemInTableIndex].name : undefined}
+                                objectHeader={items ? items[itemInTableIndex].name.toString() : undefined}
                             />
                         }
                     </div>
@@ -82,14 +96,18 @@ class UnionsDialog extends PureComponent {
 }
 
 UnionsDialog.propTypes = {
-    item: PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        traits: PropTypes.shape({
+    item: PropTypes.exact({
+        id: PropTypes.number,
+        name: PropTypes.shape({
+            primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            toString: PropTypes.func
+        }),
+        traits: PropTypes.exact({
             'Accuracy of approximation': PropTypes.number,
             'Quality of approximation': PropTypes.number,
-        }).isRequired,
-        tables: PropTypes.shape({
+        }),
+        tables: PropTypes.exact({
             'Lower approximation': PropTypes.arrayOf(PropTypes.number),
             'Upper approximation': PropTypes.arrayOf(PropTypes.number),
             'Boundary': PropTypes.arrayOf(PropTypes.number),
@@ -97,7 +115,7 @@ UnionsDialog.propTypes = {
             'Negative region': PropTypes.arrayOf(PropTypes.number),
             'Boundary region': PropTypes.arrayOf(PropTypes.number),
             'Objects': PropTypes.arrayOf(PropTypes.number)
-        }).isRequired
+        })
     }),
     items: PropTypes.arrayOf(PropTypes.object),
     onClose: PropTypes.func,

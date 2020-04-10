@@ -1,5 +1,6 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
+import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 import RuleWorkDialog from "../RuleWorkDialog";
 import ObjectTable from "../Elements/ObjectTable";
 import TableItemsList from "../Elements/TableItemsList";
@@ -26,17 +27,35 @@ class ClassificationDialog extends PureComponent {
         });
     };
 
+    getClassificationTitle = () => {
+        const { item } = this.props;
+
+        return (
+            <ColouredTitle
+                text={[
+                    { primary: "Selected item:"},
+                    { ...item.name }
+                ]}
+            />
+        );
+    };
+
     render() {
         const { itemInTableIndex } = this.state;
         const { item, ruleSet, ...other } = this.props;
 
         return (
-            <RuleWorkDialog onEnter={this.onEnter} title={"Selected item: " + item.name} {...other}>
+            <RuleWorkDialog
+                onEnter={this.onEnter}
+                optional={"Suggested decision: " + item.traits.suggestedDecision}
+                title={this.getClassificationTitle()}
+                {...other}
+            >
                 <div id={"classification-object"} style={{width: "40%"}}>
                     <ObjectTable
                         informationTable={item.traits}
                         objectIndex={item.id}
-                        objectHeader={item.name}
+                        objectHeader={item.name.toString()}
                     />
                 </div>
                 <div id={"classification-rules"} style={{display: "flex", flexDirection: "column", width: "15%"}}>
@@ -61,16 +80,21 @@ class ClassificationDialog extends PureComponent {
 }
 
 ClassificationDialog.propTypes = {
-    item: PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
+    item: PropTypes.exact({
+        id: PropTypes.number,
+        name: PropTypes.shape({
+            primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            toString: PropTypes.func
+        }),
         traits: PropTypes.shape({
             attributes: PropTypes.arrayOf(PropTypes.object),
-            objects: PropTypes.arrayOf(PropTypes.object)
-        }).isRequired,
+            objects: PropTypes.arrayOf(PropTypes.object),
+            suggestedDecision: PropTypes.string,
+        }),
         tables: PropTypes.shape({
             indicesOfCoveringRules: PropTypes.arrayOf(PropTypes.number)
-        }).isRequired
+        })
     }),
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,

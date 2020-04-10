@@ -60,11 +60,6 @@ function RuleWorkListItem(props) {
             }
             {(object.content || object.multiContent) &&
                 <RuleWorkSmallBox styleVariant={"multi-row"}>
-                    {object.content &&
-                        <Typography className={classes.content} component={"p"} variant={"subtitle2"}>
-                            {object.content}
-                        </Typography>
-                    }
                     {object.multiContent &&
                         <Fragment>
                             {object.multiContent.map((item, index) => (
@@ -82,6 +77,11 @@ function RuleWorkListItem(props) {
                                 </RuleWorkSmallBox>
                             ))}
                         </Fragment>
+                    }
+                    {object.content &&
+                        <Typography className={classes.content} component={"p"} variant={"subtitle2"}>
+                            {object.content}
+                        </Typography>
                     }
                 </RuleWorkSmallBox>
             }
