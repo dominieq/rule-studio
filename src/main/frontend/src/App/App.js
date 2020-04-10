@@ -77,10 +77,10 @@ class App extends Component {
     onDataChanges = (project) => {
         let tabsUpToDate = [
             !project.result.dominanceCones,
-            !project.result.unionsWithSingleLimitingDecision,
-            !project.result.ruleSetWithComputableCharacteristics || project.externalRules,
+            !project.result.unions,
+            !project.result.rules || project.externalRules,
             !project.result.classification || project.externalRules,
-            !project.result.crossValidation || project.externalRules,
+            !project.result.crossValidation,
         ];
         this.setState(({currentProject, projects}) => ({
             projects: [
@@ -102,9 +102,7 @@ class App extends Component {
                 ...projects.slice(0, currentProject),
                 {
                     ...projects[currentProject],
-                    ...project,
-                    dataUpToDate: dataUpToDate,
-                    tabsUpToDate: tabsUpToDate
+                    ...project
                 },
                 ...projects.slice(currentProject + 1)
             ],
