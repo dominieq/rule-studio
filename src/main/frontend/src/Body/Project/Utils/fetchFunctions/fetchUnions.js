@@ -1,4 +1,4 @@
-import { handleResponse } from "./utilFunctions";
+import { responseJson } from "./utilFunctions";
 
 async function fetchUnions(projectId, method, data, ignoreStatus) {
     let query = ""
@@ -15,7 +15,7 @@ async function fetchUnions(projectId, method, data, ignoreStatus) {
         return null;
     });
 
-    return await handleResponse(response, ignoreStatus);
+    return await responseJson(response, ignoreStatus);
 }
 
 export default fetchUnions;
