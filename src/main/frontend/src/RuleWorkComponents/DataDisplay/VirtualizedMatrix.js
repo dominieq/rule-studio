@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
+import TextWithHoverTooltip from "./TextWithHoverTooltip";
 import { AutoSizer, Grid } from "react-virtualized";
 
 const matrixStyles = makeStyles(theme => ({
@@ -15,7 +16,6 @@ const matrixStyles = makeStyles(theme => ({
         color: theme.palette.button.secondary,
         display: "flex",
         justifyContent: "center",
-        padding: 16
     }
 }), {name: "virtualized-matrix"});
 
@@ -26,7 +26,9 @@ function VirtualizedMatrix(props) {
     const cellRenderer = ({columnIndex, key, rowIndex, style}) => {
         return (
             <div className={matrixClasses.cell} key={key} style={style}>
-                {matrix[rowIndex][columnIndex]}
+                <TextWithHoverTooltip
+                    text={matrix[rowIndex][columnIndex]}
+                />
             </div>
         )
     };
