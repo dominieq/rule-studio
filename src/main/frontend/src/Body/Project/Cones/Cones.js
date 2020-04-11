@@ -38,7 +38,6 @@ class Cones extends Component {
             fetchCones(
                 project.result.id, "GET", null, 404
             ).then(result => {
-                console.log("Hello there")
                 if (this._isMounted && result) {
                     const { result: { informationTable: { objects } }, settings } = project;
                     const items = parseConesItems(result, objects, settings);
@@ -54,7 +53,6 @@ class Cones extends Component {
                     this.setState({alertProps: error});
                 }
             }).finally(() => {
-                console.log("General Kenobi")
                 if (this._isMounted) {
                     this.setState({loading: false})
                 }
