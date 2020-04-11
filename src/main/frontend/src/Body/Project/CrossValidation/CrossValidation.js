@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { parseMatrixTraits } from "../Utils/parseData";
-import fetchCrossValidation from "./fetchFunctions/fetchCrossValidation";
+import { createFormData, fetchCrossValidation, parseCrossValidationParams } from "../Utils/fetchFunctions";
 import { parseCrossValidationFolds, parseCrossValidationItems, parseCrossValidationListItems } from "../Utils/parseData";
+import { parseMatrixTraits } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -32,8 +32,6 @@ class CrossValidation extends Component {
         super(props);
 
         this.state = {
-            changes: false,
-            updated: false,
             loading: false,
             data: null,
             folds: null,
@@ -47,6 +45,7 @@ class CrossValidation extends Component {
                 typeOfRules: "certain",
                 typeOfUnions: "monotonic",
             },
+            parametersSaved: true,
             selected: {
                 foldIndex: 0,
                 item: null,
@@ -75,15 +74,19 @@ class CrossValidation extends Component {
                 project.result.id, 'GET', null, 404
             ).then(result => {
                 if (this._isMounted && result) {
+                    const { project: { parametersSaved, settings } } = this.props
+
                     let folds = parseCrossValidationFolds(result);
+                    let resultParams = parseCrossValidationParams(result);
 
                     this.setState(({parameters}) => ({
                         data: result,
                         folds: folds,
-                        parameters: {...parameters, numberOfFolds: result.numberOfFolds},
+                        parameters: {...parameters, ...resultParams},
+                        parametersSaved: parametersSaved
                     }), () => {
                         const { folds, selected: { foldIndex } } = this.state;
-                        let items = parseCrossValidationItems(folds[foldIndex], project.settings);
+                        let items = parseCrossValidationItems(folds[foldIndex], settings);
 
                         this.setState({
                             items: items,
@@ -97,7 +100,13 @@ class CrossValidation extends Component {
                 }
             }).finally(() => {
                 if ( this._isMounted ) {
-                    this.setState({loading: false});
+                    const { parametersSaved } = this.state;
+                    const { project: { parameters: propsParameters } } = this.props;
+
+                    this.setState(({parameters}) => ({
+                        loading: false,
+                        parameters: parametersSaved ? parameters : { ...parameters, ...propsParameters }
+                    }));
                 }
             });
         });
@@ -116,27 +125,16 @@ class CrossValidation extends Component {
 
     componentWillUnmount() {
         this._isMounted = false;
+        const { parametersSaved } = this.state;
 
-        const { changes, updated, data } = this.state;
-
-        if (changes) {
+        if (!parametersSaved) {
             let project = {...this.props.project};
-            project.result.crossValidation = data;
-
             const { parameters, selected: { foldIndex } } = this.state;
 
-            project.threshold = parameters.consistencyThreshold;
-            project.defaultClassificationResult = parameters.defaultClassificationResult;
-            project.foldNumber = parameters.numberOfFolds;
-            project.typeOfClassifier = parameters.typeOfClassifier;
-            project.ruleType = parameters.typeOfRules;
-            project.typeOfUnions = parameters.typeOfUnions;
+            project.parameters = { ...project.parameters, ...parameters }
+            project.parametersSaved = parametersSaved;
             project.foldIndex = foldIndex;
-
-            let tabsUpToDate = project.tabsUpToDate.slice();
-            tabsUpToDate[this.props.value] = updated;
-
-            this.props.onTabChange(project, updated, tabsUpToDate);
+            this.props.onTabChange(project);
         }
     }
 
@@ -147,38 +145,41 @@ class CrossValidation extends Component {
             let project = {...this.props.project};
             const { parameters } = this.state;
 
-            let data = new FormData();
-            Object.keys(parameters).map(key => {
-                data.append(key, parameters[key])
-            });
-            if (!project.dataUpToDate) {
-                data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-                data.append("data", JSON.stringify(project.result.informationTable.objects));
-            }
+            let method = project.dataUpToDate ? "PUT" : "POST";
+            let data = createFormData(parameters, project);
 
             fetchCrossValidation(
-                project.result.id, project.dataUpToDate ? "PUT" : "POST", data,
+                project.result.id, method, data, []
             ).then(result => {
-                if (this._isMounted && result) {
-                    const updated = true;
-                    let folds = parseCrossValidationFolds(result);
-
-                    this.setState(({parameters}) => ({
-                        changes: true,
-                        updated: updated,
-                        data: result,
-                        folds: folds,
-                        parameters: {...parameters, numberOfFolds: result.numberOfFolds},
-                    }), () => {
-                        const { folds, selected: { foldIndex } } = this.state;
-                        let items = parseCrossValidationItems(folds[foldIndex], project.settings);
+                if (result) {
+                    if (this._isMounted) {
+                        let folds = parseCrossValidationFolds(result);
 
                         this.setState({
-                            items: items,
-                            displayedItems: items,
+                            data: result,
+                            folds: folds,
+                            parametersSaved: true
+                        }, () => {
+                            const { folds, selected: { foldIndex } } = this.state;
+                            let items = parseCrossValidationItems(folds[foldIndex], project.settings);
+
+                            this.setState({
+                                items: items,
+                                displayedItems: items,
+                            });
                         });
-                    });
+                    }
+
+                    project.result.crossValidation = result;
+                    project.dataUpToDate = true;
+                    project.tabsUpToDate[this.props.value] = true;
+
+                    let resultParameters = parseCrossValidationParams(result);
+                    project.parameters = { ...project.parameters, ...resultParameters };
+                    project.parametersSaved = true;
+                    this.props.onTabChange(project);
                 }
+
             }).catch(error => {
                 if ( this._isMounted ) {
                     this.setState({alertProps: error});
@@ -206,41 +207,36 @@ class CrossValidation extends Component {
 
     onDefaultClassificationResultChange = (event) => {
         this.setState(({parameters}) => ({
-            changes: event.target.value !== "majorityDecisionClass",
-            updated: this.props.project.dataUpToDate,
             parameters: {...parameters, defaultClassificationResult: event.target.value},
+            parametersSaved: false
         }));
     };
 
     onTypeOfRulesChange = (event) => {
         this.setState(({parameters}) => ({
-            changes: event.target.value !== "certain",
-            updated: this.props.project.dataUpToDate,
             parameters: {...parameters, typeOfRules: event.target.value},
+            parametersSaved: false
         }));
     };
 
     onConsistencyThresholdChange = (threshold) => {
         this.setState(({parameters}) => ({
-            changes: Boolean(threshold),
-            updated: this.props.project.dataUpToDate,
             parameters: {...parameters, consistencyThreshold: threshold},
+            parametersSaved: false
         }));
     };
 
     onTypeOfClassifierChange = (event) => {
         this.setState(({parameters}) => ({
-            changes: event.target.value !== "SimpleRuleClassifier",
-            updated: this.props.project.dataUpToDate,
             parameters: {...parameters, typeOfClassifier: event.target.value},
+            parametersSaved: false
         }));
     };
 
     onTypeOfUnionsChange = (event) => {
         this.setState(({parameters}) => ({
-            changes: event.target.value !== "monotonic",
-            updated: this.props.project.dataUpToDate,
             parameters: {...parameters, typeOfUnions: event.target.value},
+            parametersSaved: false
         }));
     };
 
@@ -249,9 +245,8 @@ class CrossValidation extends Component {
 
         if (!isNaN(input)) {
             this.setState(({parameters}) => ({
-                changes: Number(input) !== 2,
-                updated: this.props.project.dataUpToDate,
                 parameters: {...parameters, numberOfFolds: Number(input)},
+                parametersSaved: false
             }));
         }
     };
@@ -259,9 +254,8 @@ class CrossValidation extends Component {
     onFoldIndexChange = (event) => {
         const { project } = this.props;
         this.setState(({ selected }) => ({
-            changes: Boolean(event.target.value),
-            updated: project.dataUpToDate,
             selected: {...selected, foldIndex: Number(event.target.value)},
+            parametersSaved: false
         }), () => {
             const { folds, selected: { foldIndex }} = this.state;
             let items = parseCrossValidationItems(folds[foldIndex], project.settings);
@@ -437,7 +431,7 @@ class CrossValidation extends Component {
                         }
                         onClose={() => this.toggleOpen("matrixFold")}
                         open={open.matrixFold}
-                        title={`Fold ${selected.foldIndex}: Ordinal misclassification matrix, it's deviation and details`}
+                        title={`Fold ${selected.foldIndex + 1}: Ordinal misclassification matrix, it's deviation and details`}
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
