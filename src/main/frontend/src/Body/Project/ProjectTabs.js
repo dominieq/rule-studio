@@ -78,27 +78,27 @@ class ProjectTabs extends Component {
     };
 
     renderTabLabel = (name, index) => {
-        const updated = this.props.project.tabsUpToDate[index];
-        const externalRulesAlert = this.props.project.externalRules && index > 1 ? <ExternalRulesAlert /> : null;
+        const { project: { externalRules, tabsUpToDate } } = this.props;
+        const externalRulesAlert = externalRules && [2, 3].includes(index);
 
-        if (updated === null || updated) {
+        if (tabsUpToDate[index] === null || tabsUpToDate[index]) {
             return (
                 <Fragment>
-                    {externalRulesAlert}
+                    {externalRulesAlert && <ExternalRulesAlert />}
                     {name}
                 </Fragment>
             );
-        } else if (this.props.project.externalRules && index > 2) {
+        } else if (externalRules && [2, 3].includes(index)) {
             return (
                 <OutdatedRulesAlert>
-                    {externalRulesAlert}
+                    {externalRulesAlert && <ExternalRulesAlert />}
                     {name}
                 </OutdatedRulesAlert>
             );
         } else {
             return (
                 <OutdatedDataAlert>
-                    {externalRulesAlert}
+                    {externalRulesAlert && <ExternalRulesAlert />}
                     {name}
                 </OutdatedDataAlert>
             )
