@@ -3,6 +3,14 @@ const getAppropriateColor = (attribute) => {
         color: "#000"
     };
 
+    if (attribute.type === 'decision') {
+        style = {
+            ...style,
+            fontWeight: 900,
+            textTransform: "uppercase"
+        }
+    }
+
     if(attribute.active === false || attribute.identifierType !== undefined || attribute.type === "description" ) {
         return {
             ...style,

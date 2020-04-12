@@ -7,7 +7,8 @@ import Fade from "@material-ui/core/Fade";
 
 export const PlainText = withStyles({
     root: {
-        fontSize: "unset"
+        fontSize: "unset",
+        fontWeight: "unset",
     }
 }, {name: "text"})(props => <Typography component={"p"} {...props} />);
 
