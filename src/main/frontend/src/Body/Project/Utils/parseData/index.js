@@ -1,3 +1,4 @@
+export {default as getItemName} from "./utilFunctions/getItemName";
 export {default as parseClassificationItems} from "./parseClassificationItems";
 export {default as parseClassificationListItems} from "./parseClassificationListItems";
 export {default as parseConesItems} from "./parseConesItems";
