@@ -46,8 +46,9 @@ function VirtualizedTable(props) {
     const cellRenderer = ({ cellData, dataKey }) => {
         return (
             <Fragment>
-                {Boolean(cellData) &&
+                {cellData &&
                     <TextWithHoverTooltip
+                        roundNumbers={false}
                         text={cellData}
                         TooltipProps={{
                             id: dataKey
@@ -64,7 +65,7 @@ function VirtualizedTable(props) {
     const headerRenderer = ({ label }) => {
         return (
             <Fragment>
-                {Boolean(label) &&
+                {label &&
                     <TextWithHoverTooltip
                         text={label}
                         TypographyProps={{

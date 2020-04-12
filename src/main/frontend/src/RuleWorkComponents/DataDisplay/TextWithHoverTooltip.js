@@ -18,8 +18,17 @@ const wrapperStyles = makeStyles({
 }, {name: "MuiTooltip"});
 
 function TextWithHoverTooltip(props) {
-    const { text, TooltipProps, TypographyProps } = props;
+    const { roundNumbers, TooltipProps, tooltipText, TypographyProps } = props;
+    let { text } = props;
     const wrapperClasses = wrapperStyles();
+
+    let displayedTooltip = text;
+
+    if (typeof text === "number" && roundNumbers) {
+        if (text.toFixed(2).length <= text.toString().length) {
+            text = text.toFixed(2) + "...";
+        }
+    }
 
     return (
         <RuleWorkTooltip
@@ -30,7 +39,7 @@ function TextWithHoverTooltip(props) {
             disableTouchListener={true}
             interactive={true}
             leaveDelay={200}
-            title={text}
+            title={!tooltipText ? displayedTooltip : tooltipText}
             TransitionComponent={Fade}
             {...TooltipProps}
         >
@@ -42,9 +51,15 @@ function TextWithHoverTooltip(props) {
 }
 
 TextWithHoverTooltip.propTypes = {
+    roundNumbers: PropTypes.bool,
     text: PropTypes.node.isRequired,
     TooltipProps: PropTypes.object,
+    tooltipText: PropTypes.node,
     TypographyProps: PropTypes.object,
+};
+
+TextWithHoverTooltip.defaultProps = {
+    roundNumbers: true,
 };
 
 export default TextWithHoverTooltip;

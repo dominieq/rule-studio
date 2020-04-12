@@ -43,23 +43,11 @@ class MatrixDialog extends React.PureComponent {
     };
 
     render() {
-        const {
-            heightMatrix,
-            widthMatrix,
-            heightDeviation,
-            widthDeviation,
-        } = this.state;
-
-        const {
-            cellDimensions,
-            disableDeviation,
-            matrix,
-            open,
-            onClose,
-            title
-        } = this.props;
+        const { heightMatrix, widthMatrix, heightDeviation, widthDeviation } = this.state;
+        const { cellDimensions, disableDeviation, matrix, open, onClose, title } = this.props;
 
         const numberOfColumns = disableDeviation ? 2 : 3;
+        const displayedTraits = disableDeviation ? this.prepareTraitsWithoutDeviation(matrix.traits) : matrix.traits;
 
         return (
             <FullscreenDialog open={open} onEntered={this.onEntered} onClose={onClose}>
@@ -100,7 +88,7 @@ class MatrixDialog extends React.PureComponent {
                                 alignItems: "center",
                                 display: "flex",
                                 justifyContent: "center",
-                                maxWidth: `${90 / numberOfColumns}`,
+                                maxWidth: `${90 / numberOfColumns}%`,
                                 width: widthDeviation
                             }}
                         >
@@ -127,19 +115,12 @@ class MatrixDialog extends React.PureComponent {
                             width: `calc(90% - ${widthMatrix + widthDeviation}px)`
                         }}
                     >
-                        <TraitsTable
-                            ratio={0.9}
-                            traits={
-                                disableDeviation ? this.prepareTraitsWithoutDeviation(matrix.traits) : matrix.traits
-                            }
-                        />
+                        <TraitsTable ratio={0.9} traits={displayedTraits} />
                     </div>
                 </MultiColDialogContent>
             </FullscreenDialog>
-
         )
     }
-
 }
 
 MatrixDialog.propTypes = {
