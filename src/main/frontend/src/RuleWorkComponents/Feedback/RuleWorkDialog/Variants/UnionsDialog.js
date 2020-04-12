@@ -1,11 +1,12 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
+import { getItemName } from "../../../../Body/Project/Utils/parseData";
+import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 import RuleWorkDialog from "../RuleWorkDialog";
 import ObjectTable from "../Elements/ObjectTable";
 import TableItemsList from "../Elements/TableItemsList";
 import TablesList from "../Elements/TablesList";
 import TraitsTable from "../Elements/TraitsTable";
-import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 
 class UnionsDialog extends PureComponent {
     constructor(props) {
@@ -50,9 +51,19 @@ class UnionsDialog extends PureComponent {
         )
     };
 
+    getName = (index) => {
+        const { projectResult: { informationTable: { objects } }, settings } = this.props;
+
+        if (objects && settings) {
+            return getItemName(index, objects, settings).toString();
+        } else {
+            return undefined;
+        }
+    }
+
     render() {
         const { tableIndex, itemInTableIndex } = this.state;
-        const { item, items, projectResult, ...other}  = this.props;
+        const { item, projectResult, ...other}  = this.props;
 
         return (
             <RuleWorkDialog onExited={this.onExited} title={this.getUnionsTitle()} {...other}>
@@ -67,6 +78,7 @@ class UnionsDialog extends PureComponent {
                 <div id={"unions-table-content"} style={{display: "flex", flexDirection: "column"}}>
                     {!Number.isNaN(Number(tableIndex)) &&
                         <TableItemsList
+                            getName={this.getName}
                             headerText={Object.keys(item.tables)[tableIndex]}
                             itemIndex={itemInTableIndex}
                             onItemInTableSelected={this.onItemInTableSelected}
@@ -85,7 +97,7 @@ class UnionsDialog extends PureComponent {
                             <ObjectTable
                                 informationTable={projectResult.informationTable}
                                 objectIndex={itemInTableIndex}
-                                objectHeader={items ? items[itemInTableIndex].name.toString() : undefined}
+                                objectHeader={this.getName(itemInTableIndex).toString()}
                             />
                         }
                     </div>
@@ -117,10 +129,12 @@ UnionsDialog.propTypes = {
             'Objects': PropTypes.arrayOf(PropTypes.number)
         })
     }),
-    items: PropTypes.arrayOf(PropTypes.object),
     onClose: PropTypes.func,
     open: PropTypes.bool,
     projectResult: PropTypes.object.isRequired,
+    settings: PropTypes.shape({
+        indexOption: PropTypes.string.isRequired
+    })
 };
 
 export default UnionsDialog;

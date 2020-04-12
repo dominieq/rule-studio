@@ -209,15 +209,8 @@ class Unions extends Component {
     };
 
     render() {
-        const {
-            loading,
-            data,
-            displayedItems,
-            parameters: { consistencyThreshold, typeOfUnions },
-            selectedItem,
-            open,
-            alertProps
-        } = this.state;
+        const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
+        const { project: { result, settings } } = this.props;
 
         return (
             <RuleWorkBox id={"rule-work-unions"} styleVariant={"tab"}>
@@ -229,7 +222,8 @@ class Unions extends Component {
                     />
                     <StyledDivider />
                     <RuleWorkTooltip
-                        title={`Calculate with threshold ${consistencyThreshold} & ${typeOfUnions} unions`}
+                        title={`Calculate with threshold ${parameters.consistencyThreshold} 
+                        & ${parameters.typeOfUnions} unions`}
                     >
                         <CalculateButton
                             aria-label={"unions-calculate-button"}
@@ -249,12 +243,12 @@ class Unions extends Component {
                     <TypeOfUnionsSelector
                         id={"unions-union-type-selector"}
                         onChange={this.onTypeOfUnionsChange}
-                        value={typeOfUnions}
+                        value={parameters.typeOfUnions}
                     />
                     <ThresholdSelector
                         id={"unions-threshold-selector"}
                         onChange={this.onConsistencyThresholdChange}
-                        value={consistencyThreshold}
+                        value={parameters.consistencyThreshold}
                     />
                 </RuleWorkDrawer>
                 <TabBody
@@ -282,7 +276,8 @@ class Unions extends Component {
                         item={selectedItem}
                         onClose={() => this.toggleOpen("details")}
                         open={open.details}
-                        projectResult={this.props.project.result}
+                        projectResult={result}
+                        settings={settings}
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />

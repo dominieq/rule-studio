@@ -281,6 +281,7 @@ class Rules extends Component {
 
     render() {
         const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
+        const { project: { result, settings } } = this.props;
 
         return (
             <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
@@ -375,7 +376,8 @@ class Rules extends Component {
                         item={selectedItem}
                         onClose={() => this.toggleOpen("details")}
                         open={open.details}
-                        projectResult={this.props.project.result}
+                        projectResult={result}
+                        settings={settings}
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
