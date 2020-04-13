@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import TextWithHoverTooltip from "./TextWithHoverTooltip";
-import { AutoSizer, Grid } from "react-virtualized";
+import { AutoSizer, MultiGrid } from "react-virtualized";
 
 const matrixStyles = makeStyles(theme => ({
     root: {
@@ -19,8 +19,24 @@ const matrixStyles = makeStyles(theme => ({
     }
 }), {name: "virtualized-matrix"});
 
+export const estimateMatrixHeight = (matrix, cellHeight = 64) => {
+    if (Array.isArray(matrix) && matrix.length) {
+        return matrix.length * cellHeight;
+    } else {
+        return 0;
+    }
+};
+
+export const estimateMatrixWidth = (matrix, cellWidth = 64) => {
+    if (Array.isArray(matrix) && matrix.length) {
+        return matrix[0].length * cellWidth;
+    } else {
+        return 0;
+    }
+};
+
 function VirtualizedMatrix(props) {
-    const { cellDimensions, gridRef, matrix } = props;
+    const { cellDimensions, matrix } = props;
     const matrixClasses = matrixStyles();
 
     const cellRenderer = ({columnIndex, key, rowIndex, style}) => {
@@ -36,13 +52,15 @@ function VirtualizedMatrix(props) {
     return (
         <AutoSizer>
             {({height, width}) => (
-                <Grid
+                <MultiGrid
                     cellRenderer={cellRenderer}
-                    className={matrixClasses.root}
+                    classNameBottomLeftGrid={matrixClasses.root}
+                    classNameBottomRightGrid={matrixClasses.root}
+                    classNameTopLeftGrid={matrixClasses.root}
+                    classNameTopRightGrid={matrixClasses.root}
                     columnCount={matrix[0].length}
                     columnWidth={Number.isNaN(Number(cellDimensions)) ? cellDimensions.x : cellDimensions}
                     height={height}
-                    ref={gridRef}
                     rowCount={matrix.length}
                     rowHeight={Number.isNaN(Number(cellDimensions)) ? cellDimensions.y : cellDimensions}
                     width={width}
@@ -60,7 +78,6 @@ VirtualizedMatrix.propTypes = {
             y: PropTypes.number
         })
     ]),
-    gridRef: PropTypes.object,
     matrix: PropTypes.arrayOf(PropTypes.array),
 };
 

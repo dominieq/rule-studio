@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import VirtualizedMatrix from "./VirtualizedMatrix";
+import VirtualizedMatrix, { estimateMatrixHeight, estimateMatrixWidth } from "./VirtualizedMatrix";
 import TraitsTable from "../Feedback/RuleWorkDialog/Elements/TraitsTable";
 import FullscreenDialog from "./FullscreenDialog";
 import FullscreenDialogTitleBar from "./FullscreenDialogTitleBar";
@@ -16,17 +16,16 @@ class MatrixDialog extends React.PureComponent {
             heightDeviation: 0,
             widthDeviation: 0,
         };
-
-        this.matrixRef = React.createRef();
-        this.deviationRef = React.createRef();
     }
 
     onEntered = () => {
+        const { disableDeviation, matrix: { value, deviation } } = this.props;
+
         this.setState({
-            heightMatrix: this.matrixRef.current ? this.matrixRef.current.getTotalRowsHeight() : 0,
-            widthMatrix: this.matrixRef.current ? this.matrixRef.current.getTotalColumnsWidth() : 0,
-            heightDeviation: this.deviationRef.current ? this.deviationRef.current.getTotalRowsHeight() : 0,
-            widthDeviation: this.deviationRef.current ? this.deviationRef.current.getTotalColumnsWidth() : 0,
+            heightMatrix: estimateMatrixHeight(value),
+            widthMatrix: estimateMatrixWidth(value),
+            heightDeviation: !disableDeviation ? estimateMatrixHeight(deviation) : 0,
+            widthDeviation: !disableDeviation ? estimateMatrixWidth(deviation) : 0,
         });
     };
 
@@ -76,7 +75,6 @@ class MatrixDialog extends React.PureComponent {
                         >
                             <VirtualizedMatrix
                                 cellDimensions={cellDimensions}
-                                gridRef={this.matrixRef}
                                 matrix={matrix.value}
                             />
                         </div>
@@ -102,7 +100,6 @@ class MatrixDialog extends React.PureComponent {
                             >
                                 <VirtualizedMatrix
                                     cellDimensions={cellDimensions}
-                                    gridRef={this.deviationRef}
                                     matrix={matrix.deviation}
                                 />
                             </div>
