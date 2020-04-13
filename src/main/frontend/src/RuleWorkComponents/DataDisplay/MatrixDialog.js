@@ -5,6 +5,7 @@ import TraitsTable from "../Feedback/RuleWorkDialog/Elements/TraitsTable";
 import FullscreenDialog from "./FullscreenDialog";
 import FullscreenDialogTitleBar from "./FullscreenDialogTitleBar";
 import MultiColDialogContent from "./MultiColDialogContent";
+import TextWithHoverTooltip from "./TextWithHoverTooltip";
 
 class MatrixDialog extends React.PureComponent {
     constructor(props) {
@@ -16,6 +17,44 @@ class MatrixDialog extends React.PureComponent {
             heightDeviation: 0,
             widthDeviation: 0,
         };
+    }
+
+    getTooltip = (abbrev) => {
+        switch(abbrev) {
+            case "gmean": return { text: "GMean", tooltip: "Geometric Mean"};
+            case "mae": return { text: "MAE", tooltip: "Mean Absolute Error"};
+            case "rmse": return { text: "RMSE", tooltip: "Root Mean Square Error"}
+        }
+    }
+
+    cellRenderer = ({cellData, dataKey}) => {
+        const abbrevs = ["gmean", "mae", "rmse"];
+
+        let displayedText = cellData;
+        let displayedTooltip = cellData
+        if (abbrevs.includes(cellData)) {
+            let tooltip = this.getTooltip(cellData);
+            displayedText = tooltip.text;
+            displayedTooltip = tooltip.tooltip;
+        }
+
+        return (
+            <React.Fragment>
+                {cellData &&
+                    <TextWithHoverTooltip
+                        roundNumbers={false}
+                        text={displayedText}
+                        TooltipProps={{
+                            id: dataKey
+                        }}
+                        tooltipTitle={displayedTooltip}
+                        TypographyProps={{
+                            style: {cursor: "default"}
+                        }}
+                    />
+                }
+            </React.Fragment>
+        )
     }
 
     onEntered = () => {
@@ -112,7 +151,7 @@ class MatrixDialog extends React.PureComponent {
                             width: `calc(90% - ${widthMatrix + widthDeviation}px)`
                         }}
                     >
-                        <TraitsTable ratio={0.9} traits={displayedTraits} />
+                        <TraitsTable cellRenderer={this.cellRenderer} ratio={0.9} traits={displayedTraits} />
                     </div>
                 </MultiColDialogContent>
             </FullscreenDialog>

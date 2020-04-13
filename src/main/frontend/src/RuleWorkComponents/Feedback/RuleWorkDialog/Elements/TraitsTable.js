@@ -3,11 +3,7 @@ import PropTypes from "prop-types";
 import VirtualizedTable from "../../../DataDisplay/VirtualizedTable";
 
 function TraitsTable(props) {
-    const {
-        ratio,
-        traits,
-        widthOffset
-    } = props;
+    const { ratio, traits, widthOffset, ...other } = props;
 
     const rowCount = Object.keys(traits).length;
 
@@ -41,11 +37,13 @@ function TraitsTable(props) {
             columns={columns}
             rowCount={rowCount}
             rowGetter={({ index }) => getRows()[index]}
+            {...other}
         />
     )
 }
 
 TraitsTable.propTypes = {
+    cellRenderer: PropTypes.func,
     ratio: PropTypes.number,
     traits: PropTypes.object.isRequired,
     widthOffset: PropTypes.number,
