@@ -10,20 +10,28 @@ export const PlainText = withStyles({
         fontSize: "unset",
         fontWeight: "unset",
     }
-}, {name: "text"})(props => <Typography component={"p"} {...props} />);
+}, {name: "plain-text"})(props => <Typography component={"p"} {...props} />);
 
 const wrapperStyles = makeStyles({
     wrapper: {
         overflow: "hidden"
+    },
+    wrapperFlex: {
+        alignItems: "center",
+        display: "flex",
+        overflow: "hidden",
+        '& > p ~ p': {
+            marginLeft: 4
+        }
     }
-}, {name: "MuiTooltip"});
+}, {name: "text-with-hover-tooltip"});
 
 function TextWithHoverTooltip(props) {
-    const { roundNumbers, TooltipProps, tooltipText, TypographyProps } = props;
+    const { children, roundNumbers, TooltipProps, tooltipTitle, TypographyProps } = props;
     let { text } = props;
     const wrapperClasses = wrapperStyles();
 
-    let displayedTooltip = text;
+    let displayedTitle = text;
 
     if (typeof text === "number" && roundNumbers) {
         if (text.toFixed(2).length <= text.toString().length) {
@@ -33,29 +41,34 @@ function TextWithHoverTooltip(props) {
 
     return (
         <RuleWorkTooltip
-            classes={{wrapper: wrapperClasses.wrapper}}
+            classes={{wrapper: children ? wrapperClasses.wrapperFlex : wrapperClasses.wrapper}}
             enterDelay={1500}
             enterNextDelay={1500}
             disableFocusListener={true}
             disableTouchListener={true}
             interactive={true}
             leaveDelay={200}
-            title={!tooltipText ? displayedTooltip : tooltipText}
+            title={!tooltipTitle ? displayedTitle : tooltipTitle}
             TransitionComponent={Fade}
             {...TooltipProps}
         >
-            <PlainText noWrap={true} {...TypographyProps}>
-                {text}
-            </PlainText>
+            {!children ?
+                <PlainText noWrap={true} {...TypographyProps}>
+                    {text}
+                </PlainText>
+                :
+                children
+            }
         </RuleWorkTooltip>
     )
 }
 
 TextWithHoverTooltip.propTypes = {
+    children: PropTypes.node,
     roundNumbers: PropTypes.bool,
     text: PropTypes.node.isRequired,
     TooltipProps: PropTypes.object,
-    tooltipText: PropTypes.node,
+    tooltipTitle: PropTypes.node,
     TypographyProps: PropTypes.object,
 };
 
