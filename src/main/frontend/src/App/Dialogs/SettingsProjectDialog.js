@@ -6,7 +6,7 @@ import Cancel from "./Utils/Cancel";
 import SimpleContent from "./Utils/SimpleContent"
 import SimpleDialog from "./Utils/SimpleDialog";
 import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import RuleWorkHelper from "../../RuleWorkComponents/Feedback/RuleWorkHelper";
+import CircleHelper from "../../RuleWorkComponents/Feedback/CircleHelper";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import List from "@material-ui/core/List";
@@ -80,11 +80,12 @@ class SettingsProjectDialog extends PureComponent {
                 onEscapeKeyDown={this.onCancelClick}
                 onKeyPress={this.onEnterKeyPress}
                 open={open}
+
             >
                 <DialogTitle>
                     Customize project settings
                 </DialogTitle>
-                <SimpleContent>
+                <SimpleContent style={{overflow: "hidden"}}>
                     <List style={{width: "100%"}}>
                         <ListItem disableGutters={true}>
                             <SettingsIcons>
@@ -98,9 +99,15 @@ class SettingsProjectDialog extends PureComponent {
                             >
                                 {options}
                             </RuleWorkTextField>
-                            <RuleWorkHelper style={{marginLeft: 16}} >
-                                Sets names of objects that will be displayed in tabs.
-                            </RuleWorkHelper>
+                            <CircleHelper
+                                title={"Sets names of objects that will be displayed in tabs."}
+                                TooltipProps={{
+                                    placement: "top-start"
+                                }}
+                                WrapperProps={{
+                                    style: {marginLeft: 16}
+                                }}
+                            />
                         </ListItem>
                     </List>
                 </SimpleContent>

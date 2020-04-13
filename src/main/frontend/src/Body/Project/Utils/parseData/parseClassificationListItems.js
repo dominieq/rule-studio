@@ -7,7 +7,7 @@ function parseClassificationListItems(items) {
                 id: items[i].id,
                 header: items[i].name.toString(),
                 subheader: "Suggested decision: " + items[i].traits.suggestedDecision,
-                content: "Is covered by " + items[i].tables.indicesOfCoveringRules.length + " rules"
+                content: "Covered by " + items[i].tables.indicesOfCoveringRules.length + " rules"
             };
             listItems.push(listItem)
         }

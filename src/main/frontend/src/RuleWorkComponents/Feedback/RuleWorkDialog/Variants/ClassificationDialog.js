@@ -94,7 +94,8 @@ ClassificationDialog.propTypes = {
         }),
         tables: PropTypes.shape({
             indicesOfCoveringRules: PropTypes.arrayOf(PropTypes.number)
-        })
+        }),
+        toFilter: PropTypes.func
     }),
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,

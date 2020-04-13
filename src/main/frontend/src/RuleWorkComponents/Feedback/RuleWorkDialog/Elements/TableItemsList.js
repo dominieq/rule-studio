@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import Typography from "@material-ui/core/Typography";
 import { AutoSizer, List } from "react-virtualized";
+import TextWithHoverTooltip from "../../../DataDisplay/TextWithHoverTooltip";
 
 const listStyles = makeStyles(theme => ({
     root: {
@@ -46,19 +46,28 @@ function TableItemsList(props) {
     const { headerText, itemIndex, itemText, onItemInTableSelected, rowHeight, table } = props;
     const listClasses = listStyles();
 
-    const rowRenderer = ({key, index: i, style}) => {
+    const rowRenderer = ({key, index, style}) => {
+        let primary = itemText + " " + (table[index] + 1);
+
+        if (typeof props.getName === "function") {
+            primary = props.getName(table[index]);
+        }
+
         return (
             <ListItem
                 button={true}
                 divider={true}
                 key={key}
-                selected={table[i] === itemIndex}
-                onClick={() => onItemInTableSelected(table[i])}
+                selected={table[index] === itemIndex}
+                onClick={() => onItemInTableSelected(table[index])}
                 style={style}
             >
-                <ListItemText
-                    primary={itemText + " " + (table[i] + 1)}
-                    primaryTypographyProps={{className: listClasses.textItem}}
+                <TextWithHoverTooltip
+                    text={primary}
+                    TooltipProps={{
+                        id: key,
+                        placement: "right"
+                    }}
                 />
             </ListItem>
         )
@@ -99,6 +108,7 @@ function TableItemsList(props) {
 // table (required) <-- array of integers (object indices) from chosen data table
 
 TableItemsList.propTypes = {
+    getName: PropTypes.func,
     headerText: PropTypes.string,
     itemIndex: PropTypes.number,
     itemText: PropTypes.string,

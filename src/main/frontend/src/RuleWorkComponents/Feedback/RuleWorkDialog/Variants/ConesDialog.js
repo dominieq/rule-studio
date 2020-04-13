@@ -48,13 +48,18 @@ class ConesDialog extends PureComponent {
         );
     };
 
+    getName = (index) => {
+        const { items } = this.props;
+        return items[index].name.toString();
+    };
+
     render() {
         const { tableIndex, itemInTableIndex } = this.state;
         const { item, items, projectResult, ...other } = this.props;
 
         return (
             <RuleWorkDialog onExited={this.onExited} title={this.getConesTitle()} {...other}>
-                <div id={"cones-tables"}>
+                <div id={"cones-tables"} style={{width: "22.5%"}}>
                     <TablesList
                         headerText={"Dominance cones"}
                         onTableSelected={this.onTableSelected}
@@ -62,9 +67,10 @@ class ConesDialog extends PureComponent {
                         tables={item.tables}
                     />
                 </div>
-                <div id={"cones-table-content"} style={{display: "flex", flexDirection: "column", width: "15%"}}>
+                <div id={"cones-table-content"} style={{display: "flex", flexDirection: "column", width: "22.5%"}}>
                     {!Number.isNaN(Number(tableIndex)) &&
                         <TableItemsList
+                            getName={this.getName}
                             headerText={Object.keys(item.tables)[tableIndex]}
                             itemIndex={itemInTableIndex}
                             onItemInTableSelected={this.onItemInTableSelected}
@@ -89,20 +95,20 @@ class ConesDialog extends PureComponent {
 }
 
 ConesDialog.propTypes = {
-    item: PropTypes.shape({
-        id: PropTypes.number.isRequired,
+    item: PropTypes.exact({
+        id: PropTypes.number,
         name: PropTypes.shape({
             primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
             secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
             toString: PropTypes.func
-        }).isRequired,
-        traits: PropTypes.object,
+        }),
         tables: PropTypes.shape({
             'Positive dominance cone': PropTypes.arrayOf(PropTypes.number),
             'Negative dominance cone': PropTypes.arrayOf(PropTypes.number),
             'Positive inverse dominance cone': PropTypes.arrayOf(PropTypes.number),
             'Negative inverse dominance cone': PropTypes.arrayOf(PropTypes.number),
-        }).isRequired
+        }),
+        toFilter: PropTypes.func
     }),
     items: PropTypes.arrayOf(PropTypes.object),
     open: PropTypes.bool.isRequired,

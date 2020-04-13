@@ -1,30 +1,13 @@
+import { getItemName } from "./utilFunctions";
+
 function parseCrossValidationItems(fold, settings) {
     let items = [];
 
     if (fold && Object.keys(fold).length) {
         for (let i = 0; i < fold.validationTable.objects.length; i++) {
-            let name = {
-                primary: "Object",
-                secondary: i + 1,
-                toString() {
-                    return this.primary + " " + this.secondary;
-                }
-            };
-
-            if (Object.keys(settings).includes("indexOption") && settings.indexOption !== "default") {
-                if (Object.keys(fold.validationTable.objects[i]).includes(settings.indexOption)) {
-                    name = {
-                        secondary: fold.validationTable.objects[i][settings.indexOption],
-                        toString() {
-                            return this.secondary;
-                        }
-                    };
-                }
-            }
-
             items.push({
                 id: i,
-                name: name,
+                name: getItemName(i, fold.validationTable.objects, settings),
                 traits: {
                     ...fold.validationTable,
                     ...fold.classificationValidationTable.classificationResults[i]
@@ -32,6 +15,13 @@ function parseCrossValidationItems(fold, settings) {
                 tables: {
                     indicesOfCoveringRules: fold.classificationValidationTable.indicesOfCoveringRules[i],
                 },
+                toFilter() {
+                    return [
+                        this.name.toString().toLowerCase(),
+                        "suggested decision " + this.traits.suggestedDecision,
+                        "covered by " + this.tables.indicesOfCoveringRules.length + " rules"
+                    ]
+                }
             });
         }
     }
@@ -39,4 +29,4 @@ function parseCrossValidationItems(fold, settings) {
     return items;
 }
 
-export default parseCrossValidationItems
+export default parseCrossValidationItems;

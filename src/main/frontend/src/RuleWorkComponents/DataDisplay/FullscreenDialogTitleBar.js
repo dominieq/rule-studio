@@ -15,7 +15,6 @@ const paperStyles = makeStyles(theme => ({
     },
     rootOverflow: {
         overflow: "hidden",
-        whiteSpace: "nowrap",
         '&:hover': {
             overflow: "auto",
         },
@@ -23,23 +22,28 @@ const paperStyles = makeStyles(theme => ({
             height: 8,
         },
         '&::-webkit-scrollbar-thumb': {
-            backgroundClip: "content-box",
-            backgroundColor: theme.palette.paper.text,
+            backgroundColor: theme.palette.button.contained.background,
+            borderRadius: 4,
+            '&:hover': {
+                backgroundColor: theme.palette.button.contained.backgroundAction,
+            }
         },
         '&::-webkit-scrollbar-track': {
             "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.3)",
+            borderRadius: 4
         }
     },
     title: {
         fontSize: 20,
         fontWeight: 700,
         marginRight: "auto",
-        paddingRight: 8
+        paddingRight: 8,
     },
     flexTitle: {
         alignItems: "center",
         display: "flex",
         minWidth: "fit-content",
+        whiteSpace: "nowrap",
         '& > div ~ div': {
             marginLeft: 8,
         },
@@ -67,9 +71,15 @@ function FullscreenDialogTitleBar(props) {
     const paperClasses = paperStyles();
     const titleIsArray = React.isValidElement(title);
 
-    const onWheel = (event) => {
-        //event.preventDefault();
+    const onMouseEnter = () => {
+        document.getElementById("title-bar").style.overflow = "hidden";
+    }
 
+    const onMouseLeave = () => {
+        document.getElementById("title-bar").style.overflow = "";
+    }
+
+    const onWheel = (event) => {
         let bar = document.getElementById("title-bar");
         let barScrollPosition = document.getElementById("title-bar").scrollLeft;
 
@@ -106,8 +116,11 @@ function FullscreenDialogTitleBar(props) {
                 }
                 <RuleWorkTooltip title={"Close details"}>
                     <StyledButton
+                        aria-label={"close-button"}
                         isIcon={true}
                         onClick={onClose}
+                        onMouseEnter={onMouseEnter}
+                        onMouseLeave={onMouseLeave}
                         themeVariant={"secondary"}
                     >
                         <WindowClose />

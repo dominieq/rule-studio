@@ -1,5 +1,6 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
+import { getItemName } from "../../../../Body/Project/Utils/parseData";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 import RuleWorkDialog from "../RuleWorkDialog";
 import ObjectTable from "../Elements/ObjectTable";
@@ -91,9 +92,19 @@ class RulesDialog extends PureComponent {
         );
     };
 
+    getName = (index) => {
+        const { projectResult: { informationTable: { objects } }, settings } = this.props;
+
+        if (objects && settings) {
+            return getItemName(index, objects, settings).toString();
+        } else {
+            return undefined;
+        }
+    }
+
     render() {
         const { itemInTableIndex } = this.state;
-        const { item, items, projectResult, ...other } = this.props;
+        const { item, projectResult, ...other } = this.props;
 
         return (
             <RuleWorkDialog onExited={this.onExited} title={this.getRulesTitle()} {...other}>
@@ -104,6 +115,7 @@ class RulesDialog extends PureComponent {
                 </div>
                 <div id={"rules-table-content"} style={{display: "flex", flexDirection: "column", width: "20%"}}>
                     <TableItemsList
+                        getName={this.getName}
                         headerText={"Indices of covered objects"}
                         itemIndex={itemInTableIndex}
                         onItemInTableSelected={this.onItemInTableSelected}
@@ -115,7 +127,7 @@ class RulesDialog extends PureComponent {
                         <ObjectTable
                             informationTable={projectResult.informationTable}
                             objectIndex={itemInTableIndex}
-                            objectHeader={items ? items[itemInTableIndex].name : undefined}
+                            objectHeader={this.getName(itemInTableIndex).toString()}
                         />
                     }
                 </div>
@@ -138,19 +150,25 @@ RulesDialog.propTypes = {
                 primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
                 secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
                 toString: PropTypes.func,
-            }))
+            })),
+            decisionsToString: PropTypes.func,
+            conditionsToString: PropTypes.func,
+            toString: PropTypes.func
         }),
         traits: PropTypes.shape({
             "Type": PropTypes.string.isRequired
         }),
         tables: PropTypes.exact({
             indicesOfCoveredObjects: PropTypes.arrayOf(PropTypes.number)
-        })
+        }),
+        toFilter: PropTypes.func
     }),
-    items: PropTypes.arrayOf(PropTypes.object),
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func,
     projectResult: PropTypes.object.isRequired,
+    settings: PropTypes.shape({
+        indexOption: PropTypes.string.isRequired
+    })
 };
 
 export default RulesDialog;

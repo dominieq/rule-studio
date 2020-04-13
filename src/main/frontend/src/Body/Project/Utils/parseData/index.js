@@ -1,3 +1,5 @@
+export {default as getItemName} from "./utilFunctions/getItemName";
+export {default as getRelationSign} from "./utilFunctions/getRelationSign";
 export {default as parseClassificationItems} from "./parseClassificationItems";
 export {default as parseClassificationListItems} from "./parseClassificationListItems";
 export {default as parseConesItems} from "./parseConesItems";

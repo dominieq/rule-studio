@@ -124,12 +124,16 @@ class Cones extends Component {
     };
 
     onFilterChange = (event) => {
-        const { items } = this.state;
-        const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+        const { loading } = this.state;
 
-        this.setState({
-            displayedItems: filteredItems
-        });
+        if (!loading) {
+            const { items } = this.state;
+            const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+
+            this.setState({
+                displayedItems: filteredItems
+            });
+        }
     };
 
     onDetailsOpen = (index) => {
@@ -181,7 +185,7 @@ class Cones extends Component {
                     noFilterResults={!displayedItems}
                     subheaderContent={[
                         {
-                            label: "Number of objects",
+                            label: "Number of objects:",
                             value: displayedItems && displayedItems.length
                         }
                     ]}

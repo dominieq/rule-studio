@@ -5,15 +5,7 @@ function parseRulesListItems(items) {
         for (let i = 0; i < items.length; i++) {
             listItems.push({
                 id: items[i].id,
-                header: items[i].name.decisions.map(and => {
-                    return and.map(decision => {
-                        if (and.length > 1) {
-                            return decision.withBraces();
-                        } else {
-                            return decision.toString();
-                        }
-                    }).join(" \u2227 ");
-                }).join(" \u2228 "),
+                header: items[i].name.decisionsToString(),
                 subheader: "Type: " + items[i].traits["Type"],
                 content: "Support: " + items[i].traits["Support"] + ` (with strength ${items[i].traits["Strength"]})`,
                 multiContent: items[i].name.conditions.map(condition => (
