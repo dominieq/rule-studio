@@ -177,27 +177,39 @@ class Unions extends Component {
     };
 
     onConsistencyThresholdChange = (threshold) => {
-        this.setState(({parameters}) => ({
-            parameters: {...parameters, consistencyThreshold: threshold},
-            parametersSaved: false
-        }));
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, consistencyThreshold: threshold},
+                parametersSaved: false
+            }));
+        }
     };
 
     onTypeOfUnionsChange = (event) => {
-        this.setState(({parameters}) => ({
-            parameters: {...parameters, typeOfUnions: event.target.value},
-            parametersSaved: false
-        }));
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfUnions: event.target.value},
+                parametersSaved: false
+            }));
+        }
     };
 
     onFilterChange = (event) => {
-        const { items } = this.state;
-        const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+        const { loading } = this.state;
 
-        this.setState({
-            items: items,
-            displayedItems: filteredItems
-        });
+        if (!loading) {
+            const { items } = this.state;
+            const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+
+            this.setState({
+                items: items,
+                displayedItems: filteredItems
+            });
+        }
     };
 
     onSnackbarClose = (event, reason) => {

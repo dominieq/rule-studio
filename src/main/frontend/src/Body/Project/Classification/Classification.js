@@ -183,26 +183,38 @@ class Classification extends Component {
     };
 
     onDefaultClassificationResultChange = (event) => {
-        this.setState(({parameters}) => ({
-            parameters: {...parameters, defaultClassificationResult: event.target.value},
-            parametersSaved: false
-        }));
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, defaultClassificationResult: event.target.value},
+                parametersSaved: false
+            }));
+        }
     };
 
     onClassifierTypeChange = (event) => {
-        this.setState(({parameters}) => ({
-            parameters: {...parameters, typeOfClassifier: event.target.value},
-            parametersSaved: false
-        }));
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfClassifier: event.target.value},
+                parametersSaved: false
+            }));
+        }
     };
 
     onFilterChange = (event) => {
-        const { items } = this.state;
-        const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+        const { loading } = this.state;
 
-        this.setState({
-            displayedItems: filteredItems
-        });
+        if (!loading) {
+            const { items } = this.state;
+            const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+
+            this.setState({
+                displayedItems: filteredItems
+            });
+        }
     };
 
     toggleOpen = (name) => {
@@ -303,7 +315,7 @@ class Classification extends Component {
                     noFilterResults={!displayedItems}
                     subheaderContent={[
                         {
-                            label: "Number of objects",
+                            label: "Number of objects:",
                             value: displayedItems && displayedItems.length,
                         }
                     ]}

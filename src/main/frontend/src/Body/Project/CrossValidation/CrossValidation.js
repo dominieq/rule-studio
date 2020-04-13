@@ -206,44 +206,65 @@ class CrossValidation extends Component {
     };
 
     onDefaultClassificationResultChange = (event) => {
-        this.setState(({parameters}) => ({
-            parameters: {...parameters, defaultClassificationResult: event.target.value},
-            parametersSaved: false
-        }));
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, defaultClassificationResult: event.target.value},
+                parametersSaved: false
+            }));
+        }
     };
 
     onTypeOfRulesChange = (event) => {
-        this.setState(({parameters}) => ({
-            parameters: {...parameters, typeOfRules: event.target.value},
-            parametersSaved: false
-        }));
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfRules: event.target.value},
+                parametersSaved: false
+            }));
+        }
     };
 
     onConsistencyThresholdChange = (threshold) => {
-        this.setState(({parameters}) => ({
-            parameters: {...parameters, consistencyThreshold: threshold},
-            parametersSaved: false
-        }));
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, consistencyThreshold: threshold},
+                parametersSaved: false
+            }));
+        }
     };
 
     onTypeOfClassifierChange = (event) => {
-        this.setState(({parameters}) => ({
-            parameters: {...parameters, typeOfClassifier: event.target.value},
-            parametersSaved: false
-        }));
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfClassifier: event.target.value},
+                parametersSaved: false
+            }));
+        }
     };
 
     onTypeOfUnionsChange = (event) => {
-        this.setState(({parameters}) => ({
-            parameters: {...parameters, typeOfUnions: event.target.value},
-            parametersSaved: false
-        }));
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfUnions: event.target.value},
+                parametersSaved: false
+            }));
+        }
     };
 
     onNumberOfFoldsChange = (event) => {
+        const { loading } = this.state;
         const input = event.target.value;
 
-        if (!isNaN(input)) {
+        if (!loading && !isNaN(input)) {
             this.setState(({parameters}) => ({
                 parameters: {...parameters, numberOfFolds: Number(input)},
                 parametersSaved: false
@@ -252,29 +273,37 @@ class CrossValidation extends Component {
     };
 
     onFoldIndexChange = (event) => {
-        const { project } = this.props;
-        this.setState(({ selected }) => ({
-            selected: {...selected, foldIndex: Number(event.target.value)},
-            parametersSaved: false
-        }), () => {
-            const { folds, selected: { foldIndex }} = this.state;
-            let items = parseCrossValidationItems(folds[foldIndex], project.settings);
+        const { loading } = this.state;
 
-            this.setState({
-                items: items,
-                displayedItems: items,
+        if (!loading) {
+            const { project } = this.props;
+            this.setState(({ selected }) => ({
+                selected: {...selected, foldIndex: Number(event.target.value)},
+                parametersSaved: false
+            }), () => {
+                const { folds, selected: { foldIndex }} = this.state;
+                let items = parseCrossValidationItems(folds[foldIndex], project.settings);
+
+                this.setState({
+                    items: items,
+                    displayedItems: items,
+                });
             });
-        });
+        }
     };
 
     onFilterChange = (event) => {
-        const { items } = this.state;
-        const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+        const { loading } = this.state;
 
-        this.setState(({selected}) => ({
-            displayedItems: filteredItems,
-            selected: {...selected, item: null}
-        }));
+        if (!loading) {
+            const { items } = this.state;
+            const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+
+            this.setState(({selected}) => ({
+                displayedItems: filteredItems,
+                selected: {...selected, item: null}
+            }));
+        }
     };
 
     onSnackbarClose = (event, reason) => {
