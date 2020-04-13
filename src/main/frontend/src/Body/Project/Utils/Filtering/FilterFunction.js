@@ -1,22 +1,37 @@
+import { getRelationSign } from "../parseData";
+
+const relationSigns = ["<=", ">="];
+
 const filterFunction = (filterText, items) => {
     if (filterText === "") {
         return items;
     } else {
-        const filters = filterText.toString().toLowerCase().split(" ");
+        let filters = filterText.toString().toLowerCase().split(" ");
 
         let displayedItems = [];
         for (let i = 0; i < items.length; i++) {
             const object = {...items[i]};
-            let objectName = object.name.toString().toLowerCase();
+            let objectFeatures = object.toFilter();
 
-            let matchName, matchTraits = true;
-            for (let j = 0; j < filters.length; j++) {
-                if (!objectName.includes(filters[j])) {
-                    matchName = false;
-                    break
+            let matchAll = false;
+            for (let j = 0; j < objectFeatures.length; j++) {
+                let match = true
+                for  (let k = 0; k < filters.length; k++) {
+                    if (relationSigns.includes(filters[k])) {
+                        filters[k] = getRelationSign(filters[k]);
+                    }
+
+                    if(!objectFeatures[j].includes(filters[k])) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) {
+                    matchAll = true;
+                    break;
                 }
             }
-            if (matchName || matchTraits) {
+            if (matchAll) {
                 displayedItems = [...displayedItems, object];
             }
         }

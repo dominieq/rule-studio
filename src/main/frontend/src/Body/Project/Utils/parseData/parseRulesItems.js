@@ -40,6 +40,14 @@ function parseRulesItems(data) {
                 },
                 tables: {
                     indicesOfCoveredObjects: data.ruleSet[i].indicesOfCoveredObjects.slice(),
+                },
+                toFilter() {
+                    return [
+                        this.name.decisionsToString().toLowerCase(),
+                        ...this.name.conditions.map(condition => {
+                            return condition.toString().toLowerCase()
+                        })
+                    ]
                 }
             });
         }

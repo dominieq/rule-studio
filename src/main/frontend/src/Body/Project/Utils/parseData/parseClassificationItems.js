@@ -15,6 +15,13 @@ function parseClassificationItems(data, settings) {
                 },
                 tables: {
                     indicesOfCoveringRules: data.indicesOfCoveringRules[i].slice()
+                },
+                toFilter() {
+                    return [
+                        this.name.toString().toLowerCase(),
+                        "suggested decision " + this.traits.suggestedDecision,
+                        "covered by " + this.tables.indicesOfCoveringRules.length + " rules"
+                    ]
                 }
             });
         }

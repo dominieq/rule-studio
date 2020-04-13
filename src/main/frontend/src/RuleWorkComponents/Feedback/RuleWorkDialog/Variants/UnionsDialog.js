@@ -127,7 +127,8 @@ UnionsDialog.propTypes = {
             'Negative region': PropTypes.arrayOf(PropTypes.number),
             'Boundary region': PropTypes.arrayOf(PropTypes.number),
             'Objects': PropTypes.arrayOf(PropTypes.number)
-        })
+        }),
+        toFilter: PropTypes.func
     }),
     onClose: PropTypes.func,
     open: PropTypes.bool,

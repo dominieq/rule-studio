@@ -95,7 +95,8 @@ CrossValidationDialog.propTypes = {
         }),
         tables: PropTypes.exact({
             indicesOfCoveringRules: PropTypes.arrayOf(PropTypes.number)
-        })
+        }),
+        toFilter: PropTypes.func
     }),
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,

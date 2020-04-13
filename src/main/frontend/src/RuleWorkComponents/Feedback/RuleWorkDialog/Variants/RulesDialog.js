@@ -150,14 +150,18 @@ RulesDialog.propTypes = {
                 primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
                 secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
                 toString: PropTypes.func,
-            }))
+            })),
+            decisionsToString: PropTypes.func,
+            conditionsToString: PropTypes.func,
+            toString: PropTypes.func
         }),
         traits: PropTypes.shape({
             "Type": PropTypes.string.isRequired
         }),
         tables: PropTypes.exact({
             indicesOfCoveredObjects: PropTypes.arrayOf(PropTypes.number)
-        })
+        }),
+        toFilter: PropTypes.func
     }),
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func,

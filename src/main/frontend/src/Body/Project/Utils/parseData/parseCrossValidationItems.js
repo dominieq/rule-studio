@@ -15,6 +15,13 @@ function parseCrossValidationItems(fold, settings) {
                 tables: {
                     indicesOfCoveringRules: fold.classificationValidationTable.indicesOfCoveringRules[i],
                 },
+                toFilter() {
+                    return [
+                        this.name.toString().toLowerCase(),
+                        "suggested decision " + this.traits.suggestedDecision,
+                        "covered by " + this.tables.indicesOfCoveringRules.length + " rules"
+                    ]
+                }
             });
         }
     }

@@ -95,20 +95,20 @@ class ConesDialog extends PureComponent {
 }
 
 ConesDialog.propTypes = {
-    item: PropTypes.shape({
-        id: PropTypes.number.isRequired,
+    item: PropTypes.exact({
+        id: PropTypes.number,
         name: PropTypes.shape({
             primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
             secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
             toString: PropTypes.func
-        }).isRequired,
-        traits: PropTypes.object,
+        }),
         tables: PropTypes.shape({
             'Positive dominance cone': PropTypes.arrayOf(PropTypes.number),
             'Negative dominance cone': PropTypes.arrayOf(PropTypes.number),
             'Positive inverse dominance cone': PropTypes.arrayOf(PropTypes.number),
             'Negative inverse dominance cone': PropTypes.arrayOf(PropTypes.number),
-        }).isRequired
+        }),
+        toFilter: PropTypes.func
     }),
     items: PropTypes.arrayOf(PropTypes.object),
     open: PropTypes.bool.isRequired,

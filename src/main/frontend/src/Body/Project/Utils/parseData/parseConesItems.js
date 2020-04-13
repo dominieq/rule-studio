@@ -16,7 +16,15 @@ function parseConesItems(data, objects, settings) {
                     }
                 }).reduce((previous, current) => {
                     return {...previous, ...current}
-                })
+                }),
+                toFilter() {
+                    return [
+                        this.name.toString().toLowerCase(),
+                        ...Object.keys(this.tables).map(key => {
+                            return key.toLowerCase() + " " + this.tables[key].length
+                        }),
+                    ]
+                }
             });
         }
     }
