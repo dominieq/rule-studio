@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { addSubheaders } from "../../Body/Project/Utils/parseData";
 import VirtualizedMatrix, { estimateMatrixHeight, estimateMatrixWidth } from "./VirtualizedMatrix";
 import TraitsTable from "../Feedback/RuleWorkDialog/Elements/TraitsTable";
 import FullscreenDialog from "./FullscreenDialog";
@@ -82,7 +83,7 @@ class MatrixDialog extends React.PureComponent {
 
     render() {
         const { heightMatrix, widthMatrix, heightDeviation, widthDeviation } = this.state;
-        const { cellDimensions, disableDeviation, matrix, open, onClose, title } = this.props;
+        const { cellDimensions, disableDeviation, matrix, open, onClose, subheaders, title } = this.props;
 
         const numberOfColumns = disableDeviation ? 2 : 3;
         const displayedTraits = disableDeviation ? this.prepareTraitsWithoutDeviation(matrix.traits) : matrix.traits;
@@ -114,7 +115,7 @@ class MatrixDialog extends React.PureComponent {
                         >
                             <VirtualizedMatrix
                                 cellDimensions={cellDimensions}
-                                matrix={matrix.value}
+                                matrix={addSubheaders(subheaders, matrix.value)}
                             />
                         </div>
                     </div>
@@ -139,7 +140,7 @@ class MatrixDialog extends React.PureComponent {
                             >
                                 <VirtualizedMatrix
                                     cellDimensions={cellDimensions}
-                                    matrix={matrix.deviation}
+                                    matrix={addSubheaders(subheaders, matrix.deviation)}
                                 />
                             </div>
                         </div>
@@ -176,6 +177,7 @@ MatrixDialog.propTypes = {
     }),
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,
+    subheaders: PropTypes.arrayOf(PropTypes.object),
     title: PropTypes.string.isRequired,
 };
 

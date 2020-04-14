@@ -330,9 +330,10 @@ class Classification extends Component {
                 }
                 {data &&
                     <MatrixDialog
-                        matrix={parseMatrixTraits(data.ordinalMisclassificationMatrix)}
+                        matrix={parseMatrix(data.ordinalMisclassificationMatrix)}
                         onClose={() => this.toggleOpen("matrix")}
                         open={open.matrix}
+                        subheaders={data.decisionsDomain}
                         title={"Ordinal misclassification matrix and it's details"}
                     />
                 }

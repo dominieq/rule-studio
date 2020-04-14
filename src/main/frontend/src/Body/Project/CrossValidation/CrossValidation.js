@@ -445,21 +445,27 @@ class CrossValidation extends Component {
                 {data &&
                     <MatrixDialog
                         disableDeviation={false}
-                        matrix={parseMatrixTraits(data.meanOrdinalMisclassificationMatrix)}
+                        matrix={parseMatrix(data.meanOrdinalMisclassificationMatrix)}
                         onClose={() => this.toggleOpen("matrixGlobal")}
                         open={open.matrixGlobal}
+                        subheaders={
+                            folds[selected.foldIndex].classificationValidationTable.decisionsDomain
+                        }
                         title={"Mean ordinal misclassification matrix, it's deviation and details"}
                     />
                 }
                 {Array.isArray(folds) && Boolean(folds.length) &&
                     <MatrixDialog
                         matrix={
-                            parseMatrixTraits(
+                            parseMatrix(
                                 folds[selected.foldIndex].classificationValidationTable.ordinalMisclassificationMatrix
                             )
                         }
                         onClose={() => this.toggleOpen("matrixFold")}
                         open={open.matrixFold}
+                        subheaders={
+                            folds[selected.foldIndex].classificationValidationTable.decisionsDomain
+                        }
                         title={`Fold ${selected.foldIndex + 1}: Ordinal misclassification matrix, it's deviation and details`}
                     />
                 }
