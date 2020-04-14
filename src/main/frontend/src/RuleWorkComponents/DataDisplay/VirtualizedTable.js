@@ -40,10 +40,10 @@ const tableStyles = makeStyles(theme => ({
 }), {name: "virtualized-table"});
 
 function VirtualizedTable(props) {
-    const { classes, columns, rowHeight, headerHeight, ...tableProps } = props;
+    const { cellRenderer, classes, columns, rowHeight, headerRender, headerHeight, ...tableProps } = props;
     const tableClasses = {...tableStyles(), ...classes};
 
-    const cellRenderer = ({ cellData, dataKey }) => {
+    const cellRendererDefault = ({ cellData, dataKey }) => {
         return (
             <Fragment>
                 {cellData &&
@@ -62,7 +62,7 @@ function VirtualizedTable(props) {
         );
     };
 
-    const headerRenderer = ({ label }) => {
+    const headerRendererDefault = ({ label }) => {
         return (
             <Fragment>
                 {label &&
@@ -94,10 +94,14 @@ function VirtualizedTable(props) {
                     {columns.map(({ dataKey, ...other }) => {
                         return (
                             <Column
-                                cellRenderer={cellRenderer}
+                                cellRenderer={
+                                    typeof cellRenderer === "function" ? cellRenderer : cellRendererDefault
+                                }
                                 className={tableClasses.tableColumn}
                                 dataKey={dataKey}
-                                headerRenderer={headerRenderer}
+                                headerRenderer={
+                                    typeof headerRender === "function" ? headerRender : headerRendererDefault
+                                }
                                 key={dataKey}
                                 {...other}
                             />
@@ -110,6 +114,7 @@ function VirtualizedTable(props) {
 }
 
 VirtualizedTable.propTypes = {
+    cellRenderer: PropTypes.func,
     classes: PropTypes.object,
     columns: PropTypes.arrayOf(
         PropTypes.shape({
@@ -119,6 +124,7 @@ VirtualizedTable.propTypes = {
         }),
     ).isRequired,
     headerHeight: PropTypes.number,
+    headerRender: PropTypes.func,
     onRowClick: PropTypes.func,
     rowCount: PropTypes.number.isRequired,
     rowGetter: PropTypes.func.isRequired,

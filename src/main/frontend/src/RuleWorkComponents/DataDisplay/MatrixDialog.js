@@ -1,10 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import VirtualizedMatrix from "./VirtualizedMatrix";
+import { addSubheaders } from "../../Body/Project/Utils/parseData";
+import VirtualizedMatrix, { estimateMatrixHeight, estimateMatrixWidth } from "./VirtualizedMatrix";
 import TraitsTable from "../Feedback/RuleWorkDialog/Elements/TraitsTable";
 import FullscreenDialog from "./FullscreenDialog";
 import FullscreenDialogTitleBar from "./FullscreenDialogTitleBar";
 import MultiColDialogContent from "./MultiColDialogContent";
+import TextWithHoverTooltip from "./TextWithHoverTooltip";
 
 class MatrixDialog extends React.PureComponent {
     constructor(props) {
@@ -16,17 +18,54 @@ class MatrixDialog extends React.PureComponent {
             heightDeviation: 0,
             widthDeviation: 0,
         };
+    }
 
-        this.matrixRef = React.createRef();
-        this.deviationRef = React.createRef();
+    getTooltip = (abbrev) => {
+        switch(abbrev) {
+            case "gmean": return { text: "GMean", tooltip: "Geometric Mean"};
+            case "mae": return { text: "MAE", tooltip: "Mean Absolute Error"};
+            case "rmse": return { text: "RMSE", tooltip: "Root Mean Square Error"}
+        }
+    }
+
+    cellRenderer = ({cellData, dataKey}) => {
+        const abbrevs = ["gmean", "mae", "rmse"];
+
+        let displayedText = cellData;
+        let displayedTooltip = cellData
+        if (abbrevs.includes(cellData)) {
+            let tooltip = this.getTooltip(cellData);
+            displayedText = tooltip.text;
+            displayedTooltip = tooltip.tooltip;
+        }
+
+        return (
+            <React.Fragment>
+                {cellData &&
+                    <TextWithHoverTooltip
+                        roundNumbers={false}
+                        text={displayedText}
+                        TooltipProps={{
+                            id: dataKey
+                        }}
+                        tooltipTitle={displayedTooltip}
+                        TypographyProps={{
+                            style: {cursor: "default"}
+                        }}
+                    />
+                }
+            </React.Fragment>
+        )
     }
 
     onEntered = () => {
+        const { disableDeviation, matrix: { value, deviation } } = this.props;
+
         this.setState({
-            heightMatrix: this.matrixRef.current ? this.matrixRef.current.getTotalRowsHeight() : 0,
-            widthMatrix: this.matrixRef.current ? this.matrixRef.current.getTotalColumnsWidth() : 0,
-            heightDeviation: this.deviationRef.current ? this.deviationRef.current.getTotalRowsHeight() : 0,
-            widthDeviation: this.deviationRef.current ? this.deviationRef.current.getTotalColumnsWidth() : 0,
+            heightMatrix: estimateMatrixHeight(value),
+            widthMatrix: estimateMatrixWidth(value),
+            heightDeviation: !disableDeviation ? estimateMatrixHeight(deviation) : 0,
+            widthDeviation: !disableDeviation ? estimateMatrixWidth(deviation) : 0,
         });
     };
 
@@ -44,7 +83,7 @@ class MatrixDialog extends React.PureComponent {
 
     render() {
         const { heightMatrix, widthMatrix, heightDeviation, widthDeviation } = this.state;
-        const { cellDimensions, disableDeviation, matrix, open, onClose, title } = this.props;
+        const { cellDimensions, disableDeviation, matrix, open, onClose, subheaders, title } = this.props;
 
         const numberOfColumns = disableDeviation ? 2 : 3;
         const displayedTraits = disableDeviation ? this.prepareTraitsWithoutDeviation(matrix.traits) : matrix.traits;
@@ -76,8 +115,7 @@ class MatrixDialog extends React.PureComponent {
                         >
                             <VirtualizedMatrix
                                 cellDimensions={cellDimensions}
-                                gridRef={this.matrixRef}
-                                matrix={matrix.value}
+                                matrix={addSubheaders(subheaders, matrix.value)}
                             />
                         </div>
                     </div>
@@ -102,8 +140,7 @@ class MatrixDialog extends React.PureComponent {
                             >
                                 <VirtualizedMatrix
                                     cellDimensions={cellDimensions}
-                                    gridRef={this.deviationRef}
-                                    matrix={matrix.deviation}
+                                    matrix={addSubheaders(subheaders, matrix.deviation)}
                                 />
                             </div>
                         </div>
@@ -115,7 +152,7 @@ class MatrixDialog extends React.PureComponent {
                             width: `calc(90% - ${widthMatrix + widthDeviation}px)`
                         }}
                     >
-                        <TraitsTable ratio={0.9} traits={displayedTraits} />
+                        <TraitsTable cellRenderer={this.cellRenderer} ratio={0.9} traits={displayedTraits} />
                     </div>
                 </MultiColDialogContent>
             </FullscreenDialog>
@@ -140,6 +177,7 @@ MatrixDialog.propTypes = {
     }),
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,
+    subheaders: PropTypes.arrayOf(PropTypes.object),
     title: PropTypes.string.isRequired,
 };
 
