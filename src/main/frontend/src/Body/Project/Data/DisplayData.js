@@ -1596,13 +1596,13 @@ class DisplayData extends React.Component {
         this.setHeaderRightClick(column, idx);
     }
     
-    setRowsAndHeaderColorAndStyleAndRightClick = (column, idx, isNewColumn) => {
+    setRowsAndHeaderColorAndStyleAndRightClick = (column, idx, ifIsNewColumnElseOldColumn) => {
         let nextRows = JSON.parse(JSON.stringify(this.state.history[this.state.historySnapshot].rows));
-        if(isNewColumn) {
+        if(typeof ifIsNewColumnElseOldColumn === "boolean") {
             for(let i in nextRows) {
                 nextRows[i][column.key] = "?";
             }
-        } else {
+        } else if(ifIsNewColumnElseOldColumn.valueType !== column.valueType) {
             if(column.valueType === "enumeration") {
                 for(let i in nextRows) {
                     if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
@@ -1758,7 +1758,7 @@ class DisplayData extends React.Component {
                     col.filterRenderer = NumericFilter;
                 }
             }
-
+            const oldColumn = {...cols[i]};
             cols[i] = col;
             const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
             tmpHistory.push({rows: this.state.history[this.state.historySnapshot].rows, columns: cols});
@@ -1776,7 +1776,7 @@ class DisplayData extends React.Component {
                 attributesDomainElements: [],
                 history: tmpHistory,
                 historySnapshot: tmpHistory.length-1
-            },() => this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, false)
+            },() => this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, oldColumn)
             );   
         } else {
             this.setState({
