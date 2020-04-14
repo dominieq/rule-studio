@@ -951,8 +951,11 @@ class DisplayData extends React.Component {
                         response.json().then(result => {
                             console.log("Error 404.")
                             console.log(result.message)
+                            const message = <span> Error 404. <br/> {result.message} </span>
                             if(this._isMounted) {
                                 this.setState({
+                                    isOpenedNotification: true,
+                                    addAttributeErrorNotification: message,
                                     isLoading: false,
                                 })
                             }
@@ -1031,8 +1034,11 @@ class DisplayData extends React.Component {
                         response.json().then(result => {
                             console.log("Error 404.")
                             console.log(result.message)
+                            const message = <span> Error 404. <br/> {result.message} </span>
                             if(this._isMounted) {
                                 this.setState({
+                                    isOpenedNotification: true,
+		                            addAttributeErrorNotification: message,
                                     isLoading: false,
                                 })
                             }
