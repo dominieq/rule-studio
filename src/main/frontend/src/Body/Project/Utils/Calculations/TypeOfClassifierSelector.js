@@ -1,42 +1,53 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { calculationStyles } from "./styles";
 import RuleWorkSmallBox from "../../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import RuleWorkHelper from "../../../../RuleWorkComponents/Feedback/RuleWorkHelper";
+import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
 import MenuItem from "@material-ui/core/MenuItem";
 
 const classifiers = [
     {
         label: "Simple Rule Classifier (avg)",
-        value: "SimpleRuleClassifier"
+        value: "SimpleRuleClassifier",
+        helper: ""
     },
     {
         label: "Simple Rule Classifier (mode)",
-        value: "SimpleOptimizingCountingRuleClassifier"
+        value: "SimpleOptimizingCountingRuleClassifier",
+        helper: ""
     },
     {
         label: "Scoring Rule Classifier",
         value: "ScoringRuleClassifierScore",
+        helper: ""
     },
     {
         label: "Hybrid Scoring Rule Classifier",
-        value: "ScoringRuleClassifierHybrid"
+        value: "ScoringRuleClassifierHybrid",
+        helper: ""
     }
 ];
 
 function TypeOfClassifierSelector(props) {
-    const { id } = props;
+    const { CircleHelperProps, id, TextFieldProps, ...other } = props;
+    const calculationClasses = calculationStyles();
 
     return (
-        <div id={id} style={{display: "flex", alignItems: "center", margin: "4px 0"}}>
-            <RuleWorkHelper style={{marginRight: 16}}>
-                {"Add more information to tooltip"}
-            </RuleWorkHelper>
-            <RuleWorkSmallBox style={{flexGrow: 1, margin: 0}}>
+        <div id={id} className={calculationClasses.drawerRow}>
+            <CircleHelper
+                title={"Add more information to tooltip"}
+                WrapperProps={{
+                    style: {marginRight: 16}
+                }}
+                {...CircleHelperProps}
+            />
+            <RuleWorkSmallBox className={calculationClasses.inputElement}>
                 <RuleWorkTextField
-                    outsideLabel={"Choose type of classifier"}
+                    outsideLabel={"Select type of classifier"}
                     select={true}
-                    {...props}
+                    {...TextFieldProps}
+                    {...other}
                 >
                     {classifiers.map((option, index) => (
                         <MenuItem key={index} value={option.value}>
@@ -50,9 +61,11 @@ function TypeOfClassifierSelector(props) {
 }
 
 TypeOfClassifierSelector.propTypes = {
+    CircleHelperProps: PropTypes.object,
     disabledChildren: PropTypes.arrayOf(PropTypes.string),
     id: PropTypes.string,
     onChange: PropTypes.func.isRequired,
+    TextFieldProps: PropTypes.object,
     value: PropTypes.string,
 };
 

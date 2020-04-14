@@ -1,5 +1,7 @@
 package pl.put.poznan.rulework.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.dominance.DominanceConeCalculator;
@@ -8,9 +10,19 @@ import java.util.Arrays;
 
 public class DominanceCones {
     private int numberOfObjects;
+
+    @JsonProperty("Positive dominance cone")
     private IntSortedSet[] positiveDCones;
+
+    @JsonProperty("Negative dominance cone")
     private IntSortedSet[] negativeDCones;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("Positive inverse dominance cone")
     private IntSortedSet[] positiveInvDCones;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("Negative inverse dominance cone")
     private IntSortedSet[] negativeInvDCones;
 
     public DominanceCones() {
@@ -81,14 +93,23 @@ public class DominanceCones {
         this.numberOfObjects = informationTable.getNumberOfObjects();
 
         this.positiveDCones = new IntSortedSet[this.numberOfObjects];
-        this.negativeDCones = new IntSortedSet[this.numberOfObjects];
-        this.positiveInvDCones = new IntSortedSet[this.numberOfObjects];
-        this.negativeInvDCones = new IntSortedSet[this.numberOfObjects];
-
         calculatePositiveDCones(informationTable);
+        this.negativeDCones = new IntSortedSet[this.numberOfObjects];
         calculateNegativeDCones(informationTable);
-        calculatePositiveInvDCones(informationTable);
-        calculateNegativeInvDCones(informationTable);
+
+        if(DominanceConeCalculator.INSTANCE.positiveDominanceConesEqual(informationTable)) {
+            this.positiveInvDCones = null;
+        } else {
+            this.positiveInvDCones = new IntSortedSet[this.numberOfObjects];
+            calculatePositiveInvDCones(informationTable);
+        }
+
+        if(DominanceConeCalculator.INSTANCE.negativeDominanceConesEqual(informationTable)) {
+            this.negativeInvDCones = null;
+        } else {
+            this.negativeInvDCones = new IntSortedSet[this.numberOfObjects];
+            calculateNegativeInvDCones(informationTable);
+        }
     }
 
     private void calculatePositiveDCones(InformationTable informationTable) {

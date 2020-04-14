@@ -1,5 +1,7 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { fetchClassification, parseClassificationParams } from "../Utils/fetchFunctions";
+import { parseClassificationItems, parseClassificationListItems, parseMatrixTraits } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -8,7 +10,6 @@ import MatrixButton from "../Utils/Buttons/MatrixButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
-import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import MatrixDialog from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
@@ -23,17 +24,18 @@ class Classification extends Component {
     constructor(props) {
         super(props);
 
-        this._data = {};
-        this._items = [];
-
         this.state = {
             changes: false,
             updated: false,
             loading: false,
+            data: null,
+            items: null,
             displayedItems: [],
-            defaultClassificationResult: "majorityDecisionClass",
-            ruleType: "certain",
-            typeOfClassifier: "SimpleRuleClassifier",
+            parameters: {
+                defaultClassificationResult: "majorityDecisionClass",
+                typeOfClassifier: "SimpleRuleClassifier",
+            },
+            parametersSaved: true,
             selectedItem: null,
             open: {
                 details: false,
@@ -53,102 +55,87 @@ class Classification extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let msg, title = "";
-            fetch(`http://localhost:8080/projects/${project.result.id}/classification`, {
-                method: "GET"
-            }).then(response => {
-                if (response.status === 200) {
-                    response.json().then(result => {
-                        if (this._isMounted) {
-                            const items = this.getItems(result);
+            fetchClassification(
+                project.result.id, "GET", null, 404
+            ).then(result => {
+                if (result && this._isMounted) {
+                    const { project: { parametersSaved, settings } } = this.props;
 
-                            this._data = result;
-                            this._items = items;
-                            this.setState({
-                                displayedItems: items,
-                            });
-                        }
-                    }).catch(error => {
-                        console.log(error);
-                    });
-                } else {
-                    response.json().then(result => {
-                        if (this._isMounted) {
-                            msg = "ERROR " + result.status + ": " + result.message;
-                            title = "Something went wrong! Couldn't load classification :(";
-                            let alertProps = {message: msg, open: true, title: title, severity: "warning"};
-                            this.setState({
-                                alertProps: result.status !== 404 ? alertProps : undefined
-                            });
-                        }
-                    }).catch(() => {
-                        if (this._isMounted) {
-                            msg = "Something went wrong! Couldn't load classification :(";
-                            title = "ERROR " + response.status;
-                            let alertProps = {message: msg, open: true, title: title, severity: "error"};
-                            this.setState({
-                                alertProps: response.status !== 404 ? alertProps : undefined,
-                            });
-                        }
-                    });
+                    const items = parseClassificationItems(result, settings);
+                    const resultParameters = parseClassificationParams(result);
+
+                    this.setState(({parameters}) => ({
+                        data: result,
+                        items: items,
+                        displayedItems: items,
+                        parameters: { ...parameters, ...resultParameters },
+                        parametersSaved: parametersSaved
+                    }));
                 }
             }).catch(error => {
-                console.log(error);
                 if (this._isMounted) {
-                    msg = "Server error! Couldn't load classification :(";
-                    this.setState({
-                        alertProps: {message: msg, open: true, variant: "error"}
-                    });
+                    this.setState({alertProps: error});
                 }
             }).finally(() => {
-                this.setState({
-                    loading: false,
-                    defaultClassificationResult: this.props.project.defaultClassificationResult,
-                    ruleType: this.props.project.ruleType,
-                    typeOfClassifier: this.props.project.typeOfClassifier
-                });
+                if (this._isMounted) {
+                    const { parametersSaved } = this.state;
+                    const { project: { parameters: {
+                        defaultClassificationResult,
+                        typeOfClassifier
+                    }}} = this.props;
+
+                    this.setState(({parameters}) => ({
+                        loading: false,
+                        parameters: parametersSaved ?
+                            parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier } }
+                    }));
+                }
             });
         });
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
+            const { data } = this.state;
+            const { project } = this.props;
+
+            let newItems = parseClassificationItems(data, project.settings);
+
             this.setState({
-                displayedItems: [...this.getItems(this._data)]
+                items: newItems,
+                displayedItems: newItems
             });
         }
     }
 
     componentWillUnmount() {
         this._isMounted = false;
+        const { parametersSaved } = this.state;
 
-        if (this.state.changes) {
+        if (!parametersSaved) {
             let project = {...this.props.project};
-            if (Object.keys(this._data).length) {
-                project.result.classification = this._data;
-            }
+            const { parameters } = this.state;
 
-            project.defaultClassificationResult = this.state.defaultClassificationResult;
-            project.ruleType = this.state.ruleType;
-            project.typeOfClassifier = this.state.typeOfClassifier;
-
-            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
-            tabsUpToDate[this.props.value] = this.state.updated;
-
-            this.props.onTabChange(project, this.state.updated, tabsUpToDate);
+            project.parameters = { ...project.parameters, ...parameters };
+            project.parametersSaved = parametersSaved;
+            this.props.onTabChange(project);
         }
     }
 
     onCalculateClick = (event) => {
         event.persist();
+        const externalFile = Boolean(event.target.files);
         let project = {...this.props.project};
-        const { defaultClassificationResult, ruleType, typeOfClassifier } = this.state;
+        const { parameters: { defaultClassificationResult, typeOfClassifier } } = this.state;
 
+        let method = project.dataUpToDate || event.target.files ? "PUT" : "POST"
         let data = new FormData();
         data.append("defaultClassificationResult", defaultClassificationResult);
-        data.append("typeOfRules", ruleType);
         data.append("typeOfClassifier", typeOfClassifier);
-        if (event.target.files) data.append("data", event.target.files[0]);
+
+        if (event.target.files) {
+            data.append("data", event.target.files[0]);
+        }
         if (!project.dataUpToDate && !event.target.files) {
             data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
             data.append("data", JSON.stringify(project.result.informationTable.objects));
@@ -157,88 +144,77 @@ class Classification extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let msg, title = "";
-            fetch(`http://localhost:8080/projects/${project.result.id}/classification`, {
-                method: project.dataUpToDate || event.target.files ? "PUT" : "POST",
-                body: data,
-            }).then(response => {
-                if (response.status === 200) {
-                    response.json().then(result => {
-                        const updated = true;
+            fetchClassification(
+                project.result.id, method, data, []
+            ).then(result => {
+                if (result) {
+                    project = {...this.props.project};
+                    if (this._isMounted) {
+                        const items = parseClassificationItems(result, project.settings);
 
-                        if (this._isMounted) {
-                            const items = this.getItems(result);
+                        this.setState({
+                            data: result,
+                            items: items,
+                            displayedItems: items,
+                            parametersSaved: true,
+                        });
+                    }
 
-                            this._data = result;
-                            this._items = items;
-                            this.setState({
-                                changes: true,
-                                updated: updated,
-                                displayedItems: items,
-                            });
-                        } else {
-                            project.result.classification = result;
+                    project.result.classification = result;
+                    project.dataUpToDate = externalFile ? project.dataUpToDate : true;
+                    project.tabsUpToDate[this.props.value] = true;
 
-                            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
-                            tabsUpToDate[this.props.value] = updated;
+                    const resultParameters = parseClassificationParams(result);
+                    project.parameters = { ...project.parameters, ...resultParameters}
+                    project.parametersSaved = true;
 
-                            this.props.onTabChange(project, updated, tabsUpToDate);
-                        }
-                    }).catch(error => {
-                        console.log(error);
-                    });
-                } else {
-                    response.json().then(result => {
-                        if (this._isMounted) {
-                            msg = "ERROR " + result.status + ": " + result.message;
-                            title = "Something went wrong! Couldn't calculate classification :(";
-                            this.setState({
-                                alertProps: {message: msg, open: true, title: title, severity: "warning"}
-                            })
-                        }
-                    }).catch(() => {
-                        if (this._isMounted) {
-                            msg = "Something went wrong! Couldn't calculate classification :(";
-                            title = "ERROR " + response.status;
-                            this.setState({
-                                alertProps: {message: msg, open: true, title: title, severity: "error"}
-                            });
-                        }
-                    })
+                    this.props.onTabChange(project);
                 }
             }).catch(error => {
-                console.log(error);
                 if (this._isMounted) {
-                    msg = "Server error! Couldn't calculate classification :(";
-                    this.setState({
-                        alertProps: {message: msg, open: true, severity: "error"}
-                    });
+                    this.setState({alertProps: error});
                 }
             }).finally(() => {
-                if (this._isMounted) this.setState({loading: false});
+                if (this._isMounted) {
+                    this.setState({loading: false});
+                }
             });
         });
     };
 
     onDefaultClassificationResultChange = (event) => {
-        this.setState({
-            changes: event.target.value !== "majorityDecisionClass",
-            updated: this.props.project.dataUpToDate,
-            defaultClassificationResult: event.target.value
-        });
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, defaultClassificationResult: event.target.value},
+                parametersSaved: false
+            }));
+        }
     };
 
     onClassifierTypeChange = (event) => {
-        this.setState({
-            changes: event.target.value !== "SimpleRuleClassifier",
-            updated: this.props.project.dataUpToDate,
-            typeOfClassifier: event.target.value
-        });
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfClassifier: event.target.value},
+                parametersSaved: false
+            }));
+        }
     };
 
     onFilterChange = (event) => {
-        const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
-        this.setState({displayedItems: filteredItems});
+        const { loading } = this.state;
+
+        if (!loading) {
+            const { items } = this.state;
+            const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+
+            this.setState({
+                displayedItems: filteredItems
+            });
+        }
     };
 
     toggleOpen = (name) => {
@@ -248,9 +224,11 @@ class Classification extends Component {
     };
 
     onDetailsOpen = (index) => {
+        const { items } = this.state;
+
         this.setState(({open}) => ({
-            open: {...open, details: true},
-            selectedItem: this._items[index]
+            open: {...open, details: true, settings: false},
+            selectedItem: items[index]
         }));
     };
 
@@ -262,56 +240,8 @@ class Classification extends Component {
         }
     };
 
-    getItems = (data) => {
-        let items = [];
-        if (Object.keys(data).length) {
-            const indexOption = this.props.project.settings.indexOption;
-            const objects = this.props.project.result.informationTable.objects.slice();
-
-            for (let i = 0; i < data.classificationResults.length; i++) {
-                const id = i;
-                let name = "Object " + (i + 1);
-
-                if (indexOption !== "default") {
-                    if (Object.keys(objects[i]).includes(indexOption)) {
-                        name = objects[i][indexOption];
-                    }
-                }
-
-                const traits = {
-                    attributes: data.informationTable.attributes.slice(),
-                    objects: data.informationTable.objects.slice()
-                };
-                const tables = {
-                    indicesOfCoveringRules: data.indicesOfCoveringRules[i].slice()
-                };
-                const item = new Item(id, name, traits, null, tables);
-                items.push(item);
-            }
-        }
-        return items;
-    };
-
-    getListItems = (items) => {
-        let listItems = [];
-        if (this._data && items) {
-
-            for (let i = 0; i < items.length; i++) {
-                const listItem = {
-                    id: items[i].id,
-                    header: items[i].name,
-                    subheader: "Suggested decision: " + this._data.classificationResults[items[i].id].suggestedDecision,
-                    content: "Is covered by " + items[i].tables.indicesOfCoveringRules.length + " rules"
-                };
-                listItems.push(listItem)
-            }
-        }
-        return listItems;
-    };
-
     render() {
-        const { loading, displayedItems, selectedItem, open, alertProps } = this.state;
-        const { defaultClassificationResult, typeOfClassifier } = this.state;
+        const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-classification"} styleVariant={"tab"}>
@@ -319,7 +249,7 @@ class Classification extends Component {
                     <SettingsButton
                         aria-label={"classification-settings-button"}
                         onClick={() => this.toggleOpen("settings")}
-                        title={"Click to choose rule type"}
+                        title={"Click to select parameters"}
                     />
                     <StyledDivider />
                     <RuleWorkButtonGroup
@@ -328,7 +258,7 @@ class Classification extends Component {
                     >
                         <CalculateButton
                             aria-label={"classify-current-file"}
-                            disabled={!this.props.project || loading}
+                            disabled={loading}
                             onClick={this.onCalculateClick}
                         >
                             Classify current data
@@ -340,18 +270,18 @@ class Classification extends Component {
                         >
                             <CalculateButton
                                 aria-label={"classify-new-file"}
-                                disabled={!this.props.project || loading}
+                                disabled={loading}
                                 component={"span"}
                             >
                                 Choose new data & classify
                             </CalculateButton>
                         </RuleWorkUpload>
                     </RuleWorkButtonGroup>
-                    {Boolean(Object.keys(this._data).length) &&
+                    {data &&
                         <MatrixButton
-                            aria-label={"classification-matrix-button"}
                             onClick={() => this.toggleOpen("matrix")}
                             style={{marginLeft: 16}}
+                            title={"Show ordinal misclassification matrix and it's details"}
                         />
                     }
                     <span style={{flexGrow: 1}} />
@@ -366,16 +296,16 @@ class Classification extends Component {
                     <TypeOfClassifierSelector
                         id={"classification-classifier-type-selector"}
                         onChange={this.onClassifierTypeChange}
-                        value={typeOfClassifier}
+                        value={parameters.typeOfClassifier}
                     />
                     <DefaultClassificationResultSelector
                         id={"classification-default-classification-result-selector"}
                         onChange={this.onDefaultClassificationResultChange}
-                        value={defaultClassificationResult}
+                        value={parameters.defaultClassificationResult}
                     />
                 </RuleWorkDrawer>
                 <TabBody
-                    content={this.getListItems(displayedItems)}
+                    content={parseClassificationListItems(displayedItems)}
                     id={"classification-list"}
                     isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
                     isLoading={loading}
@@ -385,7 +315,7 @@ class Classification extends Component {
                     noFilterResults={!displayedItems}
                     subheaderContent={[
                         {
-                            label: "Number of objects",
+                            label: "Number of objects:",
                             value: displayedItems && displayedItems.length,
                         }
                     ]}
@@ -398,11 +328,12 @@ class Classification extends Component {
                         ruleSet={this.props.project.result.rules.ruleSet}
                     />
                 }
-                {Boolean(Object.keys(this._data).length) &&
+                {data &&
                     <MatrixDialog
-                        matrix={this._data.ordinalMisclassificationMatrix.value}
+                        matrix={parseMatrixTraits(data.ordinalMisclassificationMatrix)}
                         onClose={() => this.toggleOpen("matrix")}
                         open={open.matrix}
+                        title={"Ordinal misclassification matrix and it's details"}
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />

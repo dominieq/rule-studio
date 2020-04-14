@@ -474,7 +474,7 @@ class DisplayData extends React.Component {
                 const editedCol = prevState.history[prevState.historySnapshot].columns.find(x => x.key === tmp[0])
                 if(editedCol.valueType === "real") { //enable only reals and "?"
                     if(tmp[1] !== "?" && isNaN(Number(tmp[1]))) {
-                        const message = <span> Cell hasn't been updated. <br/> Column type is: real and you entered value: {tmp[1]}, which is wrong. </span>
+                        const message = <span> Cell hasn't been updated. <br/> Column type is: real and you entered value: {tmp[1]}, which is invalid. </span>
                         return {
                             isOpenedNotification: true,
                             addAttributeErrorNotification: message
@@ -482,7 +482,7 @@ class DisplayData extends React.Component {
                     }
                 } else if(editedCol.valueType === "integer") { //enable only integers and "?"
                     if(tmp[1] !== "?" && (isNaN(Number(tmp[1])) || tmp[1].indexOf(".") !== -1 )) {
-                        const message = <span> Cell hasn't been updated. <br/> Column type is: integer and you entered value: {tmp[1]}, which is wrong. </span>
+                        const message = <span> Cell hasn't been updated. <br/> Column type is: integer and you entered value: {tmp[1]}, which is invalid. </span>
                         return {
                             isOpenedNotification: true,
                             addAttributeErrorNotification: message
@@ -490,7 +490,7 @@ class DisplayData extends React.Component {
                     }
                 } else if(editedCol.valueType === "enumeration") { //enable only domain elements and "?" - can happen only during ctrl+c, ctrl+v
                     if(tmp[1] !== "?" && !editedCol.domain.includes(tmp[1])) {
-                        const message = <span> Cell hasn't been updated. <br/> Column type is: enumeration and you entered value: {tmp[1]}, which is wrong. Please check the domain. </span>
+                        const message = <span> Cell hasn't been updated. <br/> Column type is: enumeration and you entered value: {tmp[1]}, which is invalid. Please check the domain. </span>
                         return {
                             isOpenedNotification: true,
                             addAttributeErrorNotification: message
@@ -2057,7 +2057,7 @@ class DisplayData extends React.Component {
                     <DialogTitle id="edit-attributes-dialog">{"Edit attributes"}</DialogTitle>
                     <form onSubmit={this.applyOnEditAttributes}>
                     <DialogContent>
-                        {this.state.history[this.state.historySnapshot].columns.length === 1? 
+                        {this.state.history[this.state.historySnapshot].columns !== undefined && this.state.history[this.state.historySnapshot].columns.length === 1? 
                         <span> There are no attributes to edit! </span> :
                         <span> Choose attribute to edit. <br/> Please note that you can apply changes only to the selected attribute. </span>
                         }

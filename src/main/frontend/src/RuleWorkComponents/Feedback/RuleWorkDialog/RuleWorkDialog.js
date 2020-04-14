@@ -1,18 +1,18 @@
 import React from 'react';
 import PropTypes from "prop-types";
-import FullscreenDialog from "./Utils/FullscreenDialog";
-import MultiColumnContent from "./Utils/MultiColumnContent";
-import TitlePanel from "./Utils/TitlePanel";
+import FullscreenDialog from "../../DataDisplay/FullscreenDialog";
+import MultiColDialogContent from "../../DataDisplay/MultiColDialogContent";
+import FullscreenDialogTitleBar from "../../DataDisplay/FullscreenDialogTitleBar";
 
 function RuleWorkDialog(props) {
-    const {children, onClose, open, title, ...other} = props;
+    const {children, onClose, open, optional, title, ...other} = props;
 
     return (
         <FullscreenDialog onClose={onClose} open={open} {...other}>
-            <TitlePanel onClose={onClose} title={title}/>
-            <MultiColumnContent>
+            <FullscreenDialogTitleBar onClose={onClose} optional={optional} title={title}/>
+            <MultiColDialogContent>
                 {children}
-            </MultiColumnContent>
+            </MultiColDialogContent>
         </FullscreenDialog>
     );
 }
@@ -21,7 +21,8 @@ RuleWorkDialog.propTypes = {
     children: PropTypes.node,
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,
-    title: PropTypes.string,
+    optional: PropTypes.node,
+    title: PropTypes.node,
 };
 
 export default RuleWorkDialog;

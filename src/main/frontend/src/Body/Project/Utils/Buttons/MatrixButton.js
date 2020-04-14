@@ -5,12 +5,15 @@ import RuleWorkTooltip from "../../../../RuleWorkComponents/DataDisplay/RuleWork
 import Matrix from "mdi-material-ui/Matrix";
 
 function MatrixButton(props) {
+    const {title, ...other} = props;
+    
     return (
-        <RuleWorkTooltip id={"matrix-button-tooltip"} title={"Show misclassification matrix"}>
+        <RuleWorkTooltip id={"matrix-button-tooltip"} title={title}>
             <StyledButton
+                aria-label={"matrix-button"}
                 isIcon={true}
                 themeVariant={"secondary"}
-                {...props}
+                {...other}
             >
                 <Matrix />
             </StyledButton>
@@ -21,6 +24,7 @@ function MatrixButton(props) {
 
 MatrixButton.propTypes = {
     onClick: PropTypes.func,
+    title: PropTypes.string.isRequired,
 };
 
 export default MatrixButton;

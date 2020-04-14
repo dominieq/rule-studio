@@ -13,10 +13,10 @@ const useStyles = makeStyles(theme => ({
     wrapper: {
 
     }
-}), {name: "MuiTooltip"});
+}), {name: "custom-tooltip"});
 
 function DefaultElement(props, ref) {
-    const {children, isDisabled, ...other} = props;
+    const {children, ...other} = props;
 
     return (
         <div ref={ref} {...other}>
@@ -28,35 +28,53 @@ function DefaultElement(props, ref) {
 const DefaultForwardRef = React.forwardRef(DefaultElement);
 
 function RuleWorkTooltip(props) {
-    const {children, classes: propsClasses, isCustom, ...other} = props;
+    const {children, classes: propsClasses, ...other} = props;
     const classes = {...useStyles(), ...propsClasses};
 
     return (
         <Tooltip classes={{tooltip: classes.tooltip}} {...other}>
-            {isCustom ?
-                <DefaultForwardRef className={classes.wrapper}>
-                    {children}
-                </DefaultForwardRef>
-                :
+            <DefaultForwardRef className={classes.wrapper}>
                 {children}
-            }
+            </DefaultForwardRef>
         </Tooltip>
     )
 }
 
 RuleWorkTooltip.propTypes = {
     arrow: PropTypes.bool,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     classes: PropTypes.object,
+    disableFocusListener: PropTypes.bool,
+    disableHoverListener: PropTypes.bool,
+    disableTouchListener: PropTypes.bool,
     enterDelay: PropTypes.number,
+    enterNextDelay: PropTypes.number,
+    enterTouchDelay: PropTypes.number,
     id: PropTypes.string,
-    isCustom: PropTypes.bool,
+    interactive: PropTypes.bool,
     leaveDelay: PropTypes.number,
-    title: PropTypes.string.isRequired,
-};
-
-RuleWorkTooltip.defaultProps = {
-    isCustom: true,
+    leaveTouchDelay: PropTypes.number,
+    onClose: PropTypes.func,
+    onOpen: PropTypes.func,
+    open: PropTypes.bool,
+    placement: PropTypes.oneOf([
+        "bottom-end",
+        "bottom-start",
+        "bottom",
+        "left-start",
+        "left-end",
+        "left",
+        "right-start",
+        "right-end",
+        "right",
+        "top-start",
+        "top-end",
+        "top"
+    ]),
+    PopperProps: PropTypes.object,
+    title: PropTypes.node.isRequired,
+    TransitionComponent: PropTypes.elementType,
+    TransitionProps: PropTypes.object,
 };
 
 export default RuleWorkTooltip;

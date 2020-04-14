@@ -88,13 +88,13 @@ class ProjectMenu extends Component {
 
         let primaryText = projects[0];
         if (currentProject > 0) {
-            primaryText = "Active project " + projects[currentProject].result.name;
+            primaryText = "Active project :";
         }
 
         let displayedProjects = projects.slice(1);
 
         return (
-            <RuleWorkSmallBox id={"project-menu"} style={{flexGrow: 1}}>
+            <RuleWorkSmallBox id={"project-menu"} style={{flexGrow: 1, margin: "0 16px"}}>
                 <List component={"nav"} disablePadding={true}>
                     <ListItem
                         aria-controls={"project-menu"}
@@ -104,7 +104,14 @@ class ProjectMenu extends Component {
                         ref={this.list}
                         style={{borderRadius: 4}}
                     >
-                        <Typography color={"inherit"} variant={"button"}>{primaryText}</Typography>
+                        <Typography color={"inherit"} style={{marginRight: 8}} variant={"button"}>
+                            {primaryText}
+                        </Typography>
+                        {currentProject > 0 &&
+                            <Typography color={"inherit"}>
+                                {projects[currentProject].result.name}
+                            </Typography>
+                        }
                     </ListItem>
                 </List>
                 {Boolean(displayedProjects.length) &&
@@ -131,7 +138,8 @@ class ProjectMenu extends Component {
                             <MenuItem
                                 key={index}
                                 selected={index === currentProject}
-                                onClick={event => this.onMenuItemClick(event, index)}>
+                                onClick={event => this.onMenuItemClick(event, index)}
+                            >
                                 {project.result.name}
                             </MenuItem>
                         ))}

@@ -1,10 +1,25 @@
-import React from "react";
+import React, {useEffect} from "react";
 import PropTypes from "prop-types";
 import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Magnify from "mdi-material-ui/Magnify";
 
 function FilterTextField(props) {
+    let timer = null;
+
+    const startTime = (event) => {
+        event.persist();
+
+        clearTimeout(timer)
+        timer = setTimeout(() => props.onChange(event), 300);
+    };
+
+    useEffect(() => {
+        return () => {
+            clearTimeout(timer)
+        }
+    });
+
     return (
         <RuleWorkTextField
             type={"search"}
@@ -16,7 +31,7 @@ function FilterTextField(props) {
                     </InputAdornment>
                 )
             }}
-            {...props}
+            onChange={startTime}
         />
     )
 }
