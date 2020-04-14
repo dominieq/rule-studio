@@ -82,14 +82,13 @@ class Rules extends Component {
                     const { parametersSaved } = this.state;
                     const { project: { parameters: {
                         consistencyThreshold,
-                        typeOfRules,
-                        typeOfUnions
+                        typeOfRules
                     }}} = this.props;
 
                     this.setState(({parameters}) => ({
                         loading: false,
                         parameters: parametersSaved ?
-                            parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules, typeOfUnions } }
+                            parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules } }
                     }));
                 }
             });
@@ -104,7 +103,11 @@ class Rules extends Component {
             const { parameters } = this.state;
             let project = {...this.props.project};
 
-            project.parameters = { ...project.parameters, ...parameters };
+            project.parameters = {
+                ...project.parameters,
+                consistencyThreshold: parameters.consistencyThreshold,
+                typeOfRules: parameters.typeOfRules
+            };
             project.parametersSaved = parametersSaved;
             this.props.onTabChange(project);
         }
@@ -156,7 +159,11 @@ class Rules extends Component {
 
                     const newParameters = parseRulesParams(result);
 
-                    project.parameters = { ...project.parameters, ...newParameters };
+                    project.parameters = {
+                        ...project.parameters,
+                        consistencyThreshold: newParameters.consistencyThreshold,
+                        typeOfRules: newParameters.typeOfRules
+                    };
                     project.parametersSaved = true;
                     this.props.onTabChange(project);
                 }
@@ -356,11 +363,13 @@ class Rules extends Component {
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfRulesSelector
+
                         id={"rules-rule-type-selector"}
                         onChange={this.onTypeOfRulesChange}
                         value={parameters.typeOfRules}
                     />
                     <TypeOfUnionsSelector
+                        disabledChildren={["standard"]}
                         id={"rules-union-type-selector"}
                         onChange={this.onTypeOfUnionsChange}
                         value={parameters.typeOfUnions}

@@ -18,7 +18,7 @@ const measures = [
 ]
 
 function TypeOfUnionsSelector(props) {
-    const { CircleHelperProps, id, TextFieldProps, ...other } = props;
+    const { CircleHelperProps, id, disabledChildren, TextFieldProps, ...other } = props;
     const calculationClasses = calculationStyles();
 
     return (
@@ -38,7 +38,11 @@ function TypeOfUnionsSelector(props) {
                     {...other}
                 >
                     {measures.map((option, index) => (
-                        <MenuItem key={index} value={option.value}>
+                        <MenuItem
+                            key={index}
+                            disabled={disabledChildren ? disabledChildren.includes(option.value) : false}
+                            value={option.value}
+                        >
                             {option.label}
                         </MenuItem>
                     ))}
