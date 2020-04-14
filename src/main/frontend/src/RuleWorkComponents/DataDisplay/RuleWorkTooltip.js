@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import clsx from "clsx";
 import {makeStyles} from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 
@@ -29,7 +30,22 @@ const DefaultForwardRef = React.forwardRef(DefaultElement);
 
 function RuleWorkTooltip(props) {
     const {children, classes: propsClasses, ...other} = props;
-    const classes = {...useStyles(), ...propsClasses};
+    let classes = useStyles();
+
+    if (propsClasses) {
+        classes = {
+            ...classes,
+            ...Object.keys(propsClasses).map(key => {
+                if (Object.keys(classes).includes(key)) {
+                    return {[key]: clsx(classes[key], propsClasses[key])};
+                } else {
+                    return {...propsClasses[key]};
+                }
+            }).reduce((previousValue, currentValue) => {
+                return { ...previousValue, ...currentValue };
+            })
+        };
+    }
 
     return (
         <Tooltip classes={{tooltip: classes.tooltip}} {...other}>
