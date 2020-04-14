@@ -3,7 +3,6 @@ import SearchIcon from '@material-ui/icons/Search';
 import './EditDataButtons.css';
 import RuleWorkTooltip from '../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip';
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 
 class EditDataFilterButton extends React.Component {
@@ -48,7 +47,7 @@ class EditDataFilterButton extends React.Component {
     render() {
         return(
             <Fragment>
-                <RuleWorkBox id={"rule-work-data-1"} styleVariant={"tab"}>
+                <div id={"rule-work-data-1"} className={"rule-work-data-toolbar"}>
                     <StyledPaper
                         id={"rule-work-data-1-bar"}
                         paperRef={this.upperBar}
@@ -59,9 +58,9 @@ class EditDataFilterButton extends React.Component {
                         {this.renderToggleFilterButton("desktop")}
                         {this.getAppropriateButtonsBar("desktop")}
                     </StyledPaper>
-                </RuleWorkBox>
+                </div>
 
-                <RuleWorkBox id={"rule-work-data-2"} styleVariant={"tab"}>
+                <div id={"rule-work-data-2"} className={"rule-work-data-toolbar"}>
                     <StyledPaper
                         id={"rule-work-data-2-bar"}
                         paperRef={this.upperBar}
@@ -72,8 +71,7 @@ class EditDataFilterButton extends React.Component {
                         {this.renderToggleFilterButton("mobile")}
                         {this.getAppropriateButtonsBar("mobile")}
                     </StyledPaper>
-                </RuleWorkBox>
-
+                </div>
             </Fragment>
         )
     }
