@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { fetchClassification, parseClassificationParams } from "../Utils/fetchFunctions";
-import { parseClassificationItems, parseClassificationListItems, parseMatrixTraits } from "../Utils/parseData";
+import { parseClassificationItems, parseClassificationListItems, parseMatrix } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";

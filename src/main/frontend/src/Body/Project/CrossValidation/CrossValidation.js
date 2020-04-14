@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { createFormData, fetchCrossValidation, parseCrossValidationParams } from "../Utils/fetchFunctions";
 import { parseCrossValidationFolds, parseCrossValidationItems, parseCrossValidationListItems } from "../Utils/parseData";
-import { parseMatrixTraits } from "../Utils/parseData";
+import { parseMatrix } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
