@@ -3,19 +3,19 @@ import PropTypes from "prop-types";
 import VirtualizedTable from "../../../DataDisplay/VirtualizedTable";
 
 function TraitsTable(props) {
-    const { ratio, traits, widthOffset, ...other } = props;
+    const { columnsLabels, ratio, traits, widthOffset, ...other } = props;
 
     const rowCount = Object.keys(traits).length;
 
     const columns = [
         {
             dataKey: "key",
-            label: "Name",
+            label: columnsLabels.key,
             width: widthOffset * ratio,
         },
         {
             dataKey: "value",
-            label: "Value",
+            label: columnsLabels.value,
             width: widthOffset * (1 - ratio),
         }
     ];
@@ -44,12 +44,20 @@ function TraitsTable(props) {
 
 TraitsTable.propTypes = {
     cellRenderer: PropTypes.func,
+    columnsLabels: PropTypes.exact({
+        key: PropTypes.string,
+        value: PropTypes.string
+    }),
     ratio: PropTypes.number,
     traits: PropTypes.object.isRequired,
     widthOffset: PropTypes.number,
 };
 
 TraitsTable.defaultProps = {
+    columnsLabels: {
+        key: "Characteristic",
+        value: "Value"
+    },
     ratio: 0.5,
     widthOffset: 200,
 };

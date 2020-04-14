@@ -152,7 +152,12 @@ class MatrixDialog extends React.PureComponent {
                             width: `calc(90% - ${widthMatrix + widthDeviation}px)`
                         }}
                     >
-                        <TraitsTable cellRenderer={this.cellRenderer} ratio={0.9} traits={displayedTraits} />
+                        <TraitsTable
+                            cellRenderer={this.cellRenderer}
+                            columnsLabels={{key: "Name", value: "Value"}}
+                            ratio={0.9}
+                            traits={displayedTraits}
+                        />
                     </div>
                 </MultiColDialogContent>
             </FullscreenDialog>
