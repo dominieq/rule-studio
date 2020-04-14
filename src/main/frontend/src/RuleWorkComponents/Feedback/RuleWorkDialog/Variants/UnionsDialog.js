@@ -44,8 +44,8 @@ class UnionsDialog extends PureComponent {
         return (
             <ColouredTitle
                 text={[
-                    { primary: "Selected union:"},
-                    { ...item.name }
+                    { primary: "Selected union:" },
+                    { ...item.name, brackets: false }
                 ]}
             />
         )

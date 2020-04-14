@@ -51,7 +51,7 @@ class CrossValidationDialog extends PureComponent {
             <ColouredTitle
                 text={[
                     { primary: "Selected object:" },
-                    { ...item.name }
+                    { ...item.name, brackets: false, }
                 ]}
             />
         )
