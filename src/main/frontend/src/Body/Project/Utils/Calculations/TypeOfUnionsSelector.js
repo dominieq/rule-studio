@@ -4,6 +4,18 @@ import { calculationStyles } from "./styles";
 import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
 import RuleWorkSmallBox from "../../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import MenuItem from "@material-ui/core/MenuItem";
+
+const measures = [
+    {
+        label: "epsilon",
+        value: "monotonic"
+    },
+    {
+        label: "rough membership",
+        value: "standard"
+    }
+]
 
 function TypeOfUnionsSelector(props) {
     const { CircleHelperProps, id, TextFieldProps, ...other } = props;
@@ -20,12 +32,16 @@ function TypeOfUnionsSelector(props) {
             />
             <RuleWorkSmallBox className={calculationClasses.inputElement}>
                 <RuleWorkTextField
-                    outsideLabel={"Select type of unions"}
+                    outsideLabel={"Select consistency measure"}
                     select={true}
                     {...TextFieldProps}
                     {...other}
                 >
-                    {["monotonic", "standard"]}
+                    {measures.map((option, index) => (
+                        <MenuItem key={index} value={option.value}>
+                            {option.label}
+                        </MenuItem>
+                    ))}
                 </RuleWorkTextField>
             </RuleWorkSmallBox>
         </div>
