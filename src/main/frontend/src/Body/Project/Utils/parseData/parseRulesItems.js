@@ -20,7 +20,12 @@ function parseRulesItems(data) {
                         this.name.decisionsToString().toLowerCase(),
                         ...this.name.conditions.map(condition => {
                             return condition.toString().toLowerCase()
-                        })
+                        }),
+                        "support " + this.traits["Support"],
+                        "strength " + this.traits["Strength"],
+                        "confidence " + this.traits["Confidence"],
+                        "coverage factor " + this.traits["Coverage factor"],
+                        "epsilon measure " + this.traits["Epsilon measure"]
                     ]
                 }
             });
