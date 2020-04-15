@@ -82,17 +82,41 @@ class Rules extends Component {
                     const { parametersSaved } = this.state;
                     const { project: { parameters: {
                         consistencyThreshold,
-                        typeOfRules
+                        typeOfRules,
+                        typeOfUnions
                     }}} = this.props;
 
                     this.setState(({parameters}) => ({
                         loading: false,
                         parameters: parametersSaved ?
-                            parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules } }
+                            parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules, typeOfUnions } }
                     }));
                 }
             });
         });
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { parameters: prevParameters } = prevState;
+        const { parameters } = this.state;
+
+        if (parameters.typeOfUnions !== 'monotonic') {
+            if (parameters.consistencyThreshold === 1) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 0, typeOfUnions: "monotonic" }
+                }));
+            } else {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, typeOfUnions: "monotonic" }
+                }));
+            }
+        }
+
+        if  (parameters.typeOfRules !== prevParameters.typeOfRules && parameters.typeOfRules === "possible") {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, consistencyThreshold: 0 }
+            }));
+        }
     }
 
     componentWillUnmount() {
@@ -363,7 +387,6 @@ class Rules extends Component {
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfRulesSelector
-
                         id={"rules-rule-type-selector"}
                         onChange={this.onTypeOfRulesChange}
                         value={parameters.typeOfRules}
@@ -376,6 +399,7 @@ class Rules extends Component {
                     />
                     <ThresholdSelector
                         id={"rules-threshold-selector"}
+                        keepChanges={parameters.typeOfRules !== 'possible'}
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}
                     />

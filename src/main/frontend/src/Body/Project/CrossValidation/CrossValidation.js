@@ -121,6 +121,27 @@ class CrossValidation extends Component {
                 displayedItems: [...parseCrossValidationItems(folds[foldIndex], project.settings)]
             });
         }
+
+        const { parameters: prevParameters } = prevState;
+        const { parameters } = this.state;
+
+        if (parameters.typeOfUnions !== "monotonic") {
+            if (parameters.consistencyThreshold === 1) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 0, typeOfUnions: "monotonic" }
+                }))
+            } else {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, typeOfUnions: "monotonic" }
+                }));
+            }
+        }
+
+        if (prevParameters.typeOfRules !== parameters.typeOfRules && parameters.typeOfRules === "possible") {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, consistencyThreshold: 0}
+            }));
+        }
     }
 
     componentWillUnmount() {
@@ -131,7 +152,11 @@ class CrossValidation extends Component {
             let project = {...this.props.project};
             const { parameters, selected: { foldIndex } } = this.state;
 
-            project.parameters = { ...project.parameters, ...parameters }
+            project.parameters = {
+                ...project.parameters,
+                ...parameters,
+                typeOfUnions: project.parameters.typeOfUnions
+            };
             project.parametersSaved = parametersSaved;
             project.foldIndex = foldIndex;
             this.props.onTabChange(project);
@@ -175,7 +200,11 @@ class CrossValidation extends Component {
                     project.tabsUpToDate[this.props.value] = true;
 
                     let resultParameters = parseCrossValidationParams(result);
-                    project.parameters = { ...project.parameters, ...resultParameters };
+                    project.parameters = {
+                        ...project.parameters,
+                        ...resultParameters,
+                        typeOfUnions: project.parameters.typeOfUnions
+                    };
                     project.parametersSaved = true;
                     this.props.onTabChange(project);
                 }
@@ -384,20 +413,22 @@ class CrossValidation extends Component {
                             value={parameters.numberOfFolds}
                         />
                     </RuleWorkSmallBox>
+                    <TypeOfRulesSelector
+                        id={"cross-validation-rule-type-selector"}
+                        onChange={this.onTypeOfRulesChange}
+                        value={parameters.typeOfRules}
+                    />
                     <TypeOfUnionsSelector
+                        disabledChildren={["standard"]}
                         id={"cross-validation-union-type-selector"}
                         onChange={this.onTypeOfUnionsChange}
                         value={parameters.typeOfUnions}
                     />
                     <ThresholdSelector
+                        keepChanges={parameters.typeOfRules !== "possible"}
                         id={"cross-validation-threshold-selector"}
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}
-                    />
-                    <TypeOfRulesSelector
-                        id={"cross-validation-rule-type-selector"}
-                        onChange={this.onTypeOfRulesChange}
-                        value={parameters.typeOfRules}
                     />
                     <TypeOfClassifierSelector
                         id={"cross-validation-classifier-type-selector"}
@@ -425,7 +456,7 @@ class CrossValidation extends Component {
                             value: selected.foldIndex + 1
                         },
                         {
-                            label: "Number of objects:",
+                            label: "Number of test objects:",
                             value: displayedItems && displayedItems.length
                         },
                         {

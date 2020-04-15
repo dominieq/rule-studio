@@ -86,6 +86,23 @@ class Unions extends Component {
         });
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { parameters: prevParameters } = prevState;
+        const { parameters } = this.state;
+
+        if ( prevParameters.typeOfUnions !== parameters.typeOfUnions) {
+            if ( parameters.typeOfUnions === "monotonic" && parameters.consistencyThreshold === 1) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 0}
+                }));
+            } else if ( parameters.typeOfUnions === "standard" && parameters.consistencyThreshold === 0) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 1}
+                }));
+            }
+        }
+    }
+
     componentWillUnmount() {
         this._isMounted = false;
         const { parametersSaved } = this.state;
