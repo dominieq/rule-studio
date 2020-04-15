@@ -79,6 +79,7 @@ class FileSelectZone extends Component {
                             aria-label={"upload-" + variant}
                             isIcon={true}
                             component={"span"}
+                            themeVariant={"primary"}
                         >
                             <FileUpload/>
                         </StyledButton>

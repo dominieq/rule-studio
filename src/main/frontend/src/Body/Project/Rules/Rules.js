@@ -361,6 +361,7 @@ class Rules extends Component {
                                 disabled={loading}
                                 isIcon={true}
                                 component={"span"}
+                                themeVariant={"primary"}
                             >
                                 <CloudUploadIcon />
                             </StyledButton>
@@ -373,6 +374,7 @@ class Rules extends Component {
                             disabled={!Boolean(data) || loading}
                             isIcon={true}
                             onClick={this.onSaveFileClick}
+                            themeVariant={"primary"}
                         >
                             <SaveIcon />
                         </StyledButton>

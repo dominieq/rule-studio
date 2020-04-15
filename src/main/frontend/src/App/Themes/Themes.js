@@ -27,7 +27,7 @@ export const LightTheme = createMuiTheme( {
             contained: {
                 background: "#2196F3",
                 backgroundAction: "#1769AA",
-                text: "#FFF",
+                text: "#000",
             }
         },
         chip: {
@@ -48,7 +48,7 @@ export const LightTheme = createMuiTheme( {
         },
         popper: {
             background: "#4DABF5",
-            text: "#FFF",
+            text: "#000",
         },
         slider: {
             main: "#4DABF5",
