@@ -164,6 +164,8 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
         jsonGenerator.writeFieldName("defaultClassificationResult");
         jsonGenerator.writeString(classification.getDefaultClassificationResult().toString());
 
+        jsonGenerator.writeBooleanField("externalData", classification.isExternalData());
+
         jsonGenerator.writeEndObject();
     }
 }

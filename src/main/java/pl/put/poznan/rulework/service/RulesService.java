@@ -148,18 +148,19 @@ public class RulesService {
     }
 
     public static void calculateRulesWithHttpParametersInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
+        UnionsService.calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
         UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
-        if((project.getUnions() == null) || (unionsWithHttpParameters.getTypeOfUnions() != typeOfUnions) || (unionsWithHttpParameters.getConsistencyThreshold() != consistencyThreshold)) {
-            logger.info("Calculating new set of unions");
-            UnionsService.calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
 
-            unionsWithHttpParameters = project.getUnions();
+        RulesWithHttpParameters rules = project.getRules();
+        if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (rules.getConsistencyThreshold() != consistencyThreshold) || (rules.getTypeOfRules() != typeOfRules)) {
+            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = calculateRuleSetWithComputableCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
+            rules = new RulesWithHttpParameters(ruleSetWithComputableCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, false);
+
+            project.setRules(rules);
+            project.setCurrentRules(true);
+        } else {
+            logger.info("Rules are already calculated with given configuration, skipping current calculation.");
         }
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = calculateRuleSetWithComputableCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
-
-        RulesWithHttpParameters rules = new RulesWithHttpParameters(ruleSetWithComputableCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules);
-
-        project.setRules(rules);
     }
 
     public RulesWithHttpParameters getRules(UUID id) {

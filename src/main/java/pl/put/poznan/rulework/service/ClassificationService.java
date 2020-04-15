@@ -309,6 +309,7 @@ public class ClassificationService {
 
         Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithComputableCharacteristics, informationTable);
         Classification classification = calculateClassification(informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics, orderOfDecisions);
+        classification.setExternalData(true);
         project.setClassification(classification);
 
         return classification;

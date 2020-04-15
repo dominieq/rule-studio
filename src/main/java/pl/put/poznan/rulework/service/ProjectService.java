@@ -27,7 +27,7 @@ public class ProjectService {
     ProjectsContainer projectsContainer;
 
     public static Project getProjectFromProjectsContainer(ProjectsContainer projectsContainer, UUID id) {
-        Project project = projectsContainer.getProjectHashMap().get(id);
+        Project project = projectsContainer.getProject(id);
         if(project == null) {
             ProjectNotFoundException ex = new ProjectNotFoundException(id);
             logger.error(ex.getMessage());
@@ -96,7 +96,7 @@ public class ProjectService {
         if(rulesFile != null) { //load rules from file
             attributes = informationTable.getAttributes();
             RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.parseComputableRules(rulesFile, attributes);
-            project.setRules(new RulesWithHttpParameters(ruleSetWithComputableCharacteristics));
+            project.setRules(new RulesWithHttpParameters(ruleSetWithComputableCharacteristics, true));
         }
 
         return project;
@@ -116,7 +116,7 @@ public class ProjectService {
     public void deleteProject(UUID id) {
         logger.info("Id:\t" + id);
 
-        Project project = projectsContainer.getProjectHashMap().remove(id);
+        Project project = projectsContainer.removeProject(id);
 
         if(project == null) {
             ProjectNotFoundException ex = new ProjectNotFoundException(id);
