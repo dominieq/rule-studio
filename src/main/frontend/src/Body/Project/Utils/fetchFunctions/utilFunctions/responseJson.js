@@ -1,13 +1,10 @@
 import handleNotOk from "./handleNotOk";
 
-async function responseJson(response, ignore) {
+async function responseJson(response) {
     if (response.status === 200) {
-        return response.json().catch(error => {
-            console.log(error);
-            return null;
-        });
+        return response.json().catch(() => null);
     } else {
-        return await handleNotOk(response, ignore);
+        return await handleNotOk(response);
     }
 }
 
