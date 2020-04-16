@@ -1,18 +1,30 @@
-async function handleNotOk(response, ignore) {
-    const result = await response.json().catch(error => {
-        console.log(error);
-        return null;
-    });
+async function handleNotOk(response) {
+    const result = await response.json().catch(() => null);
 
-    let msg = result.message;
-    if (Array.isArray(ignore) && ignore.length) {
-        if (!ignore.includes(result.status)) {
-            throw {message: msg, open: true, severity: "warning"};
+    if (result) {
+        if (result.status === 404) {
+            throw { message: result.message, open: true, severity: "info" }
+
+        } else {
+            let httpStatus = Math.trunc(result.status / 100);
+            let severity;
+
+            switch (httpStatus) {
+                case 4: {
+                    severity = "error";
+                    break;
+                }
+                case 5: {
+                    severity = "warning";
+                    break;
+                }
+                default: severity = "info";
+            }
+
+            throw { message: result.message, open: true, severity: severity }
         }
-    } else if (typeof ignore === 'number') {
-        if (ignore !== result.status) {
-            throw {message: msg, open: true, severity: "warning"};
-        }
+    } else {
+        return null;
     }
 }
 

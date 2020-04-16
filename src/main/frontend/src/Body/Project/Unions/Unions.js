@@ -42,48 +42,55 @@ class Unions extends Component {
         this.upperBar = React.createRef();
     }
 
+    getUnions = () => {
+        const { project } = this.props;
+
+        fetchUnions(
+            project.result.id, "GET", null
+        ).then(result => {
+            if (this._isMounted && result) {
+                const items = parseUnionsItems(result);
+                const { project: { parametersSaved } } = this.props;
+
+                this.setState({
+                    data: result,
+                    items: items,
+                    displayedItems: items,
+                    parameters: {
+                        consistencyThreshold: result.consistencyThreshold,
+                        typeOfUnions: result.typeOfUnions.toLowerCase()
+                    },
+                    parametersSaved: parametersSaved
+                });
+            }
+        }).catch(error => {
+            if (this._isMounted) {
+                this.setState({
+                    data: null,
+                    items: null,
+                    displayedItems: [],
+                    selectedItems: null,
+                    alertProps: error
+                });
+            }
+        }).finally(() => {
+            if (this._isMounted) {
+                const { parametersSaved } = this.state;
+                const { project: { parameters: { consistencyThreshold, typeOfUnions } } } = this.props;
+
+                this.setState(({parameters}) => ({
+                    loading: false,
+                    parameters: parametersSaved ?
+                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfUnions } }
+                }));
+            }
+        });
+    };
+
     componentDidMount() {
         this._isMounted = true;
-        const project = {...this.props.project};
 
-        this.setState({
-            loading: true,
-        }, () => {
-            fetchUnions(
-                project.result.id, "GET", null, 404
-            ).then(result => {
-                if (this._isMounted && result) {
-                    const items = parseUnionsItems(result);
-                    const { project: { parametersSaved } } = this.props;
-
-                    this.setState({
-                        data: result,
-                        items: items,
-                        displayedItems: items,
-                        parameters: {
-                            consistencyThreshold: result.consistencyThreshold,
-                            typeOfUnions: result.typeOfUnions.toLowerCase()
-                        },
-                        parametersSaved: parametersSaved
-                    });
-                }
-            }).catch(error => {
-                if (this._isMounted) {
-                    this.setState({alertProps: error})
-                }
-            }).finally(() => {
-                if (this._isMounted) {
-                    const { parametersSaved } = this.state;
-                    const { project: { parameters: { consistencyThreshold, typeOfUnions } } } = this.props;
-
-                    this.setState(({parameters}) => ({
-                        loading: false,
-                        parameters: parametersSaved ?
-                            parameters : { ...parameters, ...{ consistencyThreshold, typeOfUnions } }
-                    }));
-                }
-            });
-        });
+        this.setState({ loading: true }, this.getUnions);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -100,6 +107,10 @@ class Unions extends Component {
                     parameters: { ...parameters, consistencyThreshold: 1}
                 }));
             }
+        }
+
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            this.setState({ loading: true }, this.getUnions);
         }
     }
 
