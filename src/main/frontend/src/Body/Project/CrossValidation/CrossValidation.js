@@ -457,7 +457,7 @@ class CrossValidation extends Component {
                         },
                         {
                             label: "Number of test objects:",
-                            value: displayedItems && displayedItems.length
+                            value: folds && folds[selected.foldIndex].numberOfTestObjects,
                         },
                         {
                             label: "Total number of rules:",
