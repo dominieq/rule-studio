@@ -50,8 +50,8 @@ public class DataService {
             reader = new InputStreamReader(dataFile.getInputStream());
             informationTable = objectParser.parseObjects(reader);
         } else {
-            WrongParameterException ex = new WrongParameterException(String.format("Unrecognized format of data file:\t%s", dataFile.getContentType()));
-            logger.error(ex.getMessage());
+            WrongParameterException ex = new WrongParameterException(String.format("Wrong file. Data should be a valid json or csv file."));
+            logger.error("Unrecognized format of data file:\t%s", dataFile.getContentType());
             throw ex;
         }
 

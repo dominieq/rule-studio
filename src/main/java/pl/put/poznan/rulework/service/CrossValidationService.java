@@ -65,7 +65,7 @@ public class CrossValidationService {
 
         CrossValidation crossValidation = project.getCrossValidation();
         if(crossValidation == null) {
-            EmptyResponseException ex = new EmptyResponseException("Cross-validation", id);
+            EmptyResponseException ex = new EmptyResponseException("Cross-validation hasn’t been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }

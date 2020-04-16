@@ -40,7 +40,7 @@ public class DominanceConesService {
 
         DominanceCones dominanceCones = project.getDominanceCones();
         if(dominanceCones == null) {
-            EmptyResponseException ex = new EmptyResponseException("Dominance cones", id);
+            EmptyResponseException ex = new EmptyResponseException("Dominance cones haven’t been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }

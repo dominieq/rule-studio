@@ -29,7 +29,7 @@ public class ProjectService {
     public static Project getProjectFromProjectsContainer(ProjectsContainer projectsContainer, UUID id) {
         Project project = projectsContainer.getProject(id);
         if(project == null) {
-            ProjectNotFoundException ex = new ProjectNotFoundException(id);
+            ProjectNotFoundException ex = new ProjectNotFoundException();
             logger.error(ex.getMessage());
             throw ex;
         }
@@ -119,7 +119,7 @@ public class ProjectService {
         Project project = projectsContainer.removeProject(id);
 
         if(project == null) {
-            ProjectNotFoundException ex = new ProjectNotFoundException(id);
+            ProjectNotFoundException ex = new ProjectNotFoundException();
             logger.error(ex.getMessage());
             throw ex;
         }

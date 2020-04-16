@@ -74,7 +74,7 @@ public class UnionsService {
 
         UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
         if(unionsWithHttpParameters == null) {
-            EmptyResponseException ex = new EmptyResponseException("Unions", id);
+            EmptyResponseException ex = new EmptyResponseException("Unions haven’t been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }

@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.enums.RuleType;
 import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
+import pl.put.poznan.rulework.exception.NoRulesException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 import pl.put.poznan.rulework.model.RulesWithHttpParameters;
@@ -170,7 +171,7 @@ public class RulesService {
 
         RulesWithHttpParameters rules = project.getRules();
         if(rules == null) {
-            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+            EmptyResponseException ex = new EmptyResponseException("There is no rules in project to show.");
             logger.error(ex.getMessage());
             throw ex;
         }
@@ -217,13 +218,13 @@ public class RulesService {
 
         RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
 
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRules().getRuleSet();
-        if(ruleSetWithComputableCharacteristics == null) {
-            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+        if(project.getRules() == null) {
+            NoRulesException ex = new NoRulesException("There is no rules in project to download.");
             logger.error(ex.getMessage());
             throw ex;
         }
 
+        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRules().getRuleSet();
         String ruleMLString = ruleMLBuilder.toRuleMLString(ruleSetWithComputableCharacteristics, 1);
 
         InputStream is = new ByteArrayInputStream(ruleMLString.getBytes());
