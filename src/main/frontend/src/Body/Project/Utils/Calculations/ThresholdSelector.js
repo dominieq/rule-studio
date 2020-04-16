@@ -27,13 +27,15 @@ class ThresholdSelector extends Component {
     }
 
     onInputChange = (event) => {
+        if (!this.props.keepChanges) return;
+
         let input = event.target.value.toString();
         if (input.includes(",")) {
             input = input.replace(",", ".");
         }
 
         if (!isNaN(Number(input)) && input.length < 5) {
-            const regEx = new RegExp(/^[01]\.\D*$/);
+            const regEx = new RegExp(/^[01]\.[0-9]*$/);
             const typingInProgress = input === "" || regEx.test(input);
             this.setState({
                 threshold: typingInProgress ? input : Number(input),
@@ -58,11 +60,15 @@ class ThresholdSelector extends Component {
     };
 
     onSliderChange = (event, newValue) => {
+        if (!this.props.keepChanges) return;
+
         this.setState({
             threshold: newValue,
-        }, () => { 
-            this.props.onChange(this.state.threshold)
         });
+    };
+
+    onSliderMouseUp = () => {
+        this.props.onChange(this.state.threshold);
     };
 
     render() {
@@ -91,6 +97,7 @@ class ThresholdSelector extends Component {
                     max={1.0}
                     min={0.0}
                     onChange={this.onSliderChange}
+                    onMouseUp={this.onSliderMouseUp}
                     step={0.01}
                     style={{marginLeft: 6, marginRight: 24, maxWidth: 72, minWidth: 60}}
                     value={typeof threshold === "number" ? threshold : 0.0}
@@ -104,11 +111,16 @@ class ThresholdSelector extends Component {
 ThresholdSelector.propTypes = {
     CircleHelperProps: PropTypes.object,
     id: PropTypes.string,
+    keepChanges: PropTypes.bool,
     onChange: PropTypes.func,
     SliderProps: PropTypes.object,
     TextFieldProps: PropTypes.object,
     value: PropTypes.any,
 
+};
+
+ThresholdSelector.defaultProps = {
+    keepChanges: true
 };
 
 export default ThresholdSelector

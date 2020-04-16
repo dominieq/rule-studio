@@ -9,23 +9,19 @@ import MenuItem from "@material-ui/core/MenuItem";
 const classifiers = [
     {
         label: "Simple Rule Classifier (avg)",
-        value: "SimpleRuleClassifier",
-        helper: ""
+        value: "SimpleRuleClassifier"
     },
     {
         label: "Simple Rule Classifier (mode)",
-        value: "SimpleOptimizingCountingRuleClassifier",
-        helper: ""
+        value: "SimpleOptimizingCountingRuleClassifier"
     },
     {
         label: "Scoring Rule Classifier",
-        value: "ScoringRuleClassifierScore",
-        helper: ""
+        value: "ScoringRuleClassifierScore"
     },
     {
         label: "Hybrid Scoring Rule Classifier",
-        value: "ScoringRuleClassifierHybrid",
-        helper: ""
+        value: "ScoringRuleClassifierHybrid"
     }
 ];
 

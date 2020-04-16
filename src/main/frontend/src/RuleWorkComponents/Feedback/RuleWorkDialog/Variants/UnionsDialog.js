@@ -44,8 +44,8 @@ class UnionsDialog extends PureComponent {
         return (
             <ColouredTitle
                 text={[
-                    { primary: "Selected union:"},
-                    { ...item.name }
+                    { primary: "Selected union:" },
+                    { ...item.name, brackets: false }
                 ]}
             />
         )
@@ -89,6 +89,7 @@ class UnionsDialog extends PureComponent {
                 <div id={"unions-table-item"} style={{display: "flex", flexDirection: "column"}}>
                     <div style={{minHeight: "30%"}}>
                         <TraitsTable
+                            columnsLabels={{key: "Name", value: "Value"}}
                             traits={item.traits}
                         />
                     </div>

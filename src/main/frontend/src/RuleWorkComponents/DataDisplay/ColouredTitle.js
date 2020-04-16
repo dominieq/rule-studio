@@ -10,7 +10,7 @@ const titleStyles = makeStyles(theme => ({
     flexBox: {
         display: "flex",
         alignItems: "center",
-        '& > div:first-child': {
+        '& > div:first-of-type': {
             marginRight: 4,
         },
     },
@@ -41,6 +41,9 @@ function ColouredTitle(props) {
                 <Fragment key={index}>
                     {AND(Object.keys(element).includes("primary"), Object.keys(element).includes("secondary")) &&
                         <div id={"flex-box-" + index} className={titleClasses.flexBox}>
+                            {element.brackets &&
+                                <span className={titleClasses.primary}>(</span>
+                            }
                             <div
                                 id={"element-primary-" + index}
                                 className={clsx(titleClasses.element, titleClasses.primary)}
@@ -53,6 +56,9 @@ function ColouredTitle(props) {
                             >
                                 {element.secondary}
                             </div>
+                            {element.brackets &&
+                                <span className={titleClasses.primary}>)</span>
+                            }
                         </div>
                     }
                     {XOR(Object.keys(element).includes("primary"), Object.keys(element).includes("secondary")) &&
@@ -74,6 +80,7 @@ ColouredTitle.propTypes = {
         PropTypes.shape({
             primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
             secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            brackets: PropTypes.bool,
             toString: PropTypes.func,
         }).isRequired
     )

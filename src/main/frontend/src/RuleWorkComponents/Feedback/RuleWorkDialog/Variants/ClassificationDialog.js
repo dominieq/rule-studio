@@ -51,7 +51,7 @@ class ClassificationDialog extends PureComponent {
             <ColouredTitle
                 text={[
                     { primary: "Selected item:"},
-                    { ...item.name }
+                    { ...item.name, brackets: false, }
                 ]}
             />
         );

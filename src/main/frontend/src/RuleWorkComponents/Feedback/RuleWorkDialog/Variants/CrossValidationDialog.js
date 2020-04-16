@@ -44,6 +44,19 @@ class CrossValidationDialog extends PureComponent {
         });
     };
 
+    getOriginalDecision = () => {
+        const { item: { id, traits: { attributes, objects } } } = this.props;
+
+        for (let i = 0; i < attributes.length; i++) {
+            if (attributes[i].type === 'decision') {
+                console.log()
+                return "Original decision: " + objects[id][attributes[i].name];
+            }
+        }
+
+        return "";
+    }
+
     getCrossValidationTitle = () => {
         const { item } = this.props;
 
@@ -51,7 +64,7 @@ class CrossValidationDialog extends PureComponent {
             <ColouredTitle
                 text={[
                     { primary: "Selected object:" },
-                    { ...item.name }
+                    { ...item.name, brackets: false, }
                 ]}
             />
         )
@@ -62,11 +75,13 @@ class CrossValidationDialog extends PureComponent {
         const { item, ruleSet, ...other } = this.props;
         const { attributes, objects, suggestedDecision } = item.traits;
 
+        let originalDecision = this.getOriginalDecision();
+
         return (
             <RuleWorkDialog
                 onEntered={this.onEntered}
                 onExited={this.onExited}
-                optional={"Suggested decision: " + suggestedDecision}
+                optional={originalDecision + " Suggested decision: " + suggestedDecision}
                 title={this.getCrossValidationTitle()}
                 {...other}
             >

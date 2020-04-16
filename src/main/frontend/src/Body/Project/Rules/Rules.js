@@ -96,6 +96,29 @@ class Rules extends Component {
         });
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { parameters: prevParameters } = prevState;
+        const { parameters } = this.state;
+
+        if (parameters.typeOfUnions !== 'monotonic') {
+            if (parameters.consistencyThreshold === 1) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 0, typeOfUnions: "monotonic" }
+                }));
+            } else {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, typeOfUnions: "monotonic" }
+                }));
+            }
+        }
+
+        if  (parameters.typeOfRules !== prevParameters.typeOfRules && parameters.typeOfRules === "possible") {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, consistencyThreshold: 0 }
+            }));
+        }
+    }
+
     componentWillUnmount() {
         this._isMounted = false;
         const { parametersSaved } = this.state;
@@ -104,7 +127,11 @@ class Rules extends Component {
             const { parameters } = this.state;
             let project = {...this.props.project};
 
-            project.parameters = { ...project.parameters, ...parameters };
+            project.parameters = {
+                ...project.parameters,
+                consistencyThreshold: parameters.consistencyThreshold,
+                typeOfRules: parameters.typeOfRules
+            };
             project.parametersSaved = parametersSaved;
             this.props.onTabChange(project);
         }
@@ -156,7 +183,11 @@ class Rules extends Component {
 
                     const newParameters = parseRulesParams(result);
 
-                    project.parameters = { ...project.parameters, ...newParameters };
+                    project.parameters = {
+                        ...project.parameters,
+                        consistencyThreshold: newParameters.consistencyThreshold,
+                        typeOfRules: newParameters.typeOfRules
+                    };
                     project.parametersSaved = true;
                     this.props.onTabChange(project);
                 }
@@ -330,6 +361,7 @@ class Rules extends Component {
                                 disabled={loading}
                                 isIcon={true}
                                 component={"span"}
+                                themeVariant={"primary"}
                             >
                                 <CloudUploadIcon />
                             </StyledButton>
@@ -342,6 +374,7 @@ class Rules extends Component {
                             disabled={!Boolean(data) || loading}
                             isIcon={true}
                             onClick={this.onSaveFileClick}
+                            themeVariant={"primary"}
                         >
                             <SaveIcon />
                         </StyledButton>
@@ -361,12 +394,14 @@ class Rules extends Component {
                         value={parameters.typeOfRules}
                     />
                     <TypeOfUnionsSelector
+                        disabledChildren={["standard"]}
                         id={"rules-union-type-selector"}
                         onChange={this.onTypeOfUnionsChange}
                         value={parameters.typeOfUnions}
                     />
                     <ThresholdSelector
                         id={"rules-threshold-selector"}
+                        keepChanges={parameters.typeOfRules !== 'possible'}
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}
                     />
