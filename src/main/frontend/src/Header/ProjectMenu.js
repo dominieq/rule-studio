@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import RuleWorkSmallBox from "../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkTooltip from "../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
 import StyledButton from "../RuleWorkComponents/Inputs/StyledButton";
+import StyledDivider from "../RuleWorkComponents/DataDisplay/StyledDivider";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";
@@ -30,7 +31,7 @@ function ProjectMenu(props) {
 
     let primaryText = projects[0];
     if (currentProject > 0) {
-        primaryText = "Active project :";
+        primaryText = "Active project -";
     }
 
     let displayedProjects = projects.slice(1);
@@ -87,17 +88,23 @@ function ProjectMenu(props) {
     };
 
     return (
-        <RuleWorkSmallBox id={"project-menu"} style={{flexGrow: 1, margin: "0 16px"}}>
+        <RuleWorkSmallBox id={"project-menu"} style={{flexGrow: 1}}>
+            <StyledDivider />
             <List component={"nav"} disablePadding={true}>
                 <ListItem
                     aria-controls={"project-menu"}
                     aria-haspopup={"true"}
                     button={true}
+                    disableGutters={true}
                     onClick={onListItemClick}
                     ref={list}
-                    style={{borderRadius: 4}}
+                    style={{
+                        borderRadius: 4,
+                        paddingLeft: 8,
+                        paddingRight: 8
+                    }}
                 >
-                    <Typography color={"inherit"} style={{marginRight: 8}} variant={"button"}>
+                    <Typography style={{marginRight: "0.25em"}} color={"inherit"} variant={"button"}>
                         {primaryText}
                     </Typography>
                     {currentProject > 0 &&
@@ -142,6 +149,7 @@ function ProjectMenu(props) {
                 </Menu>
             }
             {renderProjectButtons()}
+            <StyledDivider />
         </RuleWorkSmallBox>
     );
 }
