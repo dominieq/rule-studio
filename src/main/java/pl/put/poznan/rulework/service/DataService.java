@@ -21,6 +21,8 @@ import pl.put.poznan.rulework.model.ProjectsContainer;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,7 +35,12 @@ public class DataService {
 
     public static InformationTable informationTableFromMultipartFileData(MultipartFile dataFile, Attribute[] attributes, Character separator, Boolean header) throws IOException {
         Reader reader;
-        InformationTable informationTable =  new InformationTable(new Attribute[0], new ArrayList<>());
+        InformationTable informationTable = new InformationTable(new Attribute[0], new ArrayList<>());
+        List<String> csvMimeType = Arrays.asList(
+                "text/csv",
+                "application/vnd.ms-excel",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
 
         if (dataFile.getContentType().equals("application/json")) {
             logger.info("Data type is json");
@@ -41,8 +48,8 @@ public class DataService {
             reader = new InputStreamReader(dataFile.getInputStream());
             informationTable = objectParser.parseObjects(reader);
 
-        } else if (dataFile.getContentType().equals("application/vnd.ms-excel")) {
-            logger.info("Data type is csv");
+        } else if (csvMimeType.contains(dataFile.getContentType())) {
+            logger.info("Data type is csv (" + dataFile.getContentType() + ")");
             org.rulelearn.data.csv.ObjectParser objectParser = new org.rulelearn.data.csv.ObjectParser.Builder(attributes).
                     separator(separator).
                     header(header).
