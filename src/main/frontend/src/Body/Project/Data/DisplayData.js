@@ -1731,7 +1731,7 @@ class DisplayData extends React.Component {
         tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key="attributeType" displayName={"Type"} items={["identification","description","condition","decision"]}/>)
 
         if(this.state.attributeTypeSelected !== "identification") {
-            tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key="missingValueType" displayName={"Missing value type"} missingVal={true} defaultValue="mv2" items={["mv1.5","mv2"]}/>)
+            tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key="missingValueType" displayName={"Missing value type"} missingVal={true} defaultValue="mv2" items={["1.5","2"]}/>)
             tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributePreferenceType} name={"attributePreferenceType"} key="attributePreferenceType" displayName={"Preference type"} items={["none","cost","gain"]}/>)
             tmp.push(<DropDownForAttributes getSelected={this.getSelectedValueType} name={"valueType"} displayName={"Value type"} key="valueType" items={["integer","real","enumeration"]}/>)
             if(this.state.valueTypeSelected === "enumeration")
@@ -1878,10 +1878,10 @@ class DisplayData extends React.Component {
                 tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} defaultValue={attribute.type} displayName={"Type"} items={["identification","description","condition","decision"]}/>)
 
                 if(attribute.missingValueType === "mv2") {
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} displayName={"Missing value type"} defaultValue="mv2" items={["mv1.5","mv2"]}/>)
+                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} displayName={"Missing value type"} missingVal={true} defaultValue="mv2" items={["1.5","2"]}/>)
                 }
                 else {
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} displayName={"Missing value type"} defaultValue="mv1.5" items={["mv1.5","mv2"]}/>)
+                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} displayName={"Missing value type"} missingVal={true} defaultValue="mv1.5" items={["1.5","2"]}/>)
                 }
                 
                 tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributePreferenceType} name={"attributePreferenceType"} key={"attributePreferenceType"+attribute.name} defaultValue={attribute.preferenceType} displayName={"Preference type"} items={["none","cost","gain"]}/>)
@@ -1901,7 +1901,7 @@ class DisplayData extends React.Component {
             
             if(this.state.attributeTypeSelected !== "identification") {
                 tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} displayName={"Type"} items={["identification","description","condition","decision"]}/>)
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} defaultValue="mv2" displayName={"Missing value type"} items={["mv1.5","mv2"]}/>)
+                tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} missingVal={true}  defaultValue="mv2" displayName={"Missing value type"} items={["1.5","2"]}/>)
                 tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributePreferenceType} name={"attributePreferenceType"} key={"attributePreferenceType"+attribute.name} displayName={"Preference type"} items={["none","cost","gain"]}/>)
                 tmp.push(<DropDownForAttributes getSelected={this.getSelectedValueType} name={"valueType"} displayName={"Value type"} key={"valueType"+attribute.name} items={["integer","real","enumeration"]}/>)
                 if(this.state.valueTypeSelected === "enumeration")
