@@ -50,17 +50,17 @@ public class RuleCharacteristicsSerializer extends JsonSerializer<RuleCharacteri
         writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getSupport(), "Support");
         writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getStrength(), "Strength");
         writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getConfidence(), "Confidence");
-        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getCoverageFactor(), "CoverageFactor");
+        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getCoverageFactor(), "Coverage factor");
         writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getCoverage(), "Coverage");
-        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getNegativeCoverage(), "NegativeCoverage");
-        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getEpsilon(), "EpsilonMeasure");
-        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getEpsilonPrime(), "EpsilonPrimeMeasure");
-        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getFConfirmation(), "f-ConfirmationMeasure");
-        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getAConfirmation(), "A-ConfirmationMeasure");
-        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getZConfirmation(), "Z-ConfirmationMeasure");
-        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getLConfirmation(), "l-ConfirmationMeasure");
-        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getC1Confirmation(), "c1-ConfirmationMeasure");
-        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getSConfirmation(), "s-ConfirmationMeasure");
+        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getNegativeCoverage(), "Negative coverage");
+        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getEpsilon(), "Epsilon measure");
+        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getEpsilonPrime(), "Epsilon prime measure");
+        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getFConfirmation(), "f-confirmation measure");
+        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getAConfirmation(), "A-confirmation measure");
+        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getZConfirmation(), "Z-confirmation measure");
+        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getLConfirmation(), "l-confirmation measure");
+        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getC1Confirmation(), "c1-confirmation measure");
+        writeCharateristic(jsonGenerator, () -> ruleCharacteristics.getSConfirmation(), "s-confirmation measure");
 
         jsonGenerator.writeEndObject();
     }
