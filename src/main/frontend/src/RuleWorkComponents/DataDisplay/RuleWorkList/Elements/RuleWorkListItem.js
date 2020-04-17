@@ -1,6 +1,6 @@
 import React, {Fragment} from "react";
 import PropTypes from "prop-types";
-import {makeStyles, withStyles} from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import RuleWorkSmallBox from "../../../Containers/RuleWorkSmallBox";
 import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";
@@ -11,7 +11,7 @@ const StyledListItem = withStyles({
         alignItems: "flex-start",
         width: "100%"
     }
-}, {name: "rule-work-list-item"})(props => <ListItem {...props} />);
+}, {name: "result-list-item"})(props => <ListItem {...props} />);
 
 const useStyles = makeStyles(theme => ({
     row: {
@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     multiContentSubtitle: {
         color: theme.palette.button.secondary,
     }
-}), {name: "rule-work-list-item"});
+}), {name: "result-list-item"});
 
 function RuleWorkListItem(props) {
     const {classes: propsClasses, object, ...other} = props;
@@ -60,11 +60,6 @@ function RuleWorkListItem(props) {
             }
             {(object.content || object.multiContent) &&
                 <RuleWorkSmallBox styleVariant={"multi-row"}>
-                    {object.content &&
-                        <Typography className={classes.content} component={"p"} variant={"subtitle2"}>
-                            {object.content}
-                        </Typography>
-                    }
                     {object.multiContent &&
                         <Fragment>
                             {object.multiContent.map((item, index) => (
@@ -82,6 +77,11 @@ function RuleWorkListItem(props) {
                                 </RuleWorkSmallBox>
                             ))}
                         </Fragment>
+                    }
+                    {object.content &&
+                        <Typography className={classes.content} component={"p"} variant={"subtitle2"}>
+                            {object.content}
+                        </Typography>
                     }
                 </RuleWorkSmallBox>
             }
@@ -104,10 +104,13 @@ RuleWorkListItem.propTypes = {
     divider: PropTypes.bool,
     object: PropTypes.shape({
         id: PropTypes.number,
-        header: PropTypes.string,
-        subheader: PropTypes.string,
-        content: PropTypes.string,
-        multiContent: PropTypes.arrayOf(PropTypes.object)
+        header: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        subheader: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        content: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        multiContent: PropTypes.arrayOf(PropTypes.shape({
+            title: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            subtitle: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+        }))
     }),
     selected: PropTypes.bool,
 };

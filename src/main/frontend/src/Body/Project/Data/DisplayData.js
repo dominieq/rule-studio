@@ -474,7 +474,7 @@ class DisplayData extends React.Component {
                 const editedCol = prevState.history[prevState.historySnapshot].columns.find(x => x.key === tmp[0])
                 if(editedCol.valueType === "real") { //enable only reals and "?"
                     if(tmp[1] !== "?" && isNaN(Number(tmp[1]))) {
-                        const message = <span> Cell hasn't been updated. <br/> Column type is: real and you entered value: {tmp[1]}, which is invalid. </span>
+                        const message = <span> Cell hasn't been updated. <br/> Column type: real <br/> The entered value: {tmp[1]}, which is invalid. </span>
                         return {
                             isOpenedNotification: true,
                             addAttributeErrorNotification: message
@@ -482,7 +482,7 @@ class DisplayData extends React.Component {
                     }
                 } else if(editedCol.valueType === "integer") { //enable only integers and "?"
                     if(tmp[1] !== "?" && (isNaN(Number(tmp[1])) || tmp[1].indexOf(".") !== -1 )) {
-                        const message = <span> Cell hasn't been updated. <br/> Column type is: integer and you entered value: {tmp[1]}, which is invalid. </span>
+                        const message = <span> Cell hasn't been updated. <br/> Column type: integer <br/> The entered value: {tmp[1]}, which is invalid. </span>
                         return {
                             isOpenedNotification: true,
                             addAttributeErrorNotification: message
@@ -490,7 +490,7 @@ class DisplayData extends React.Component {
                     }
                 } else if(editedCol.valueType === "enumeration") { //enable only domain elements and "?" - can happen only during ctrl+c, ctrl+v
                     if(tmp[1] !== "?" && !editedCol.domain.includes(tmp[1])) {
-                        const message = <span> Cell hasn't been updated. <br/> Column type is: enumeration and you entered value: {tmp[1]}, which is invalid. Please check the domain. </span>
+                        const message = <span> Cell hasn't been updated. <br/> Column type: enumeration <br/> The entered value: {tmp[1]}, which is invalid. Please check the domain. </span>
                         return {
                             isOpenedNotification: true,
                             addAttributeErrorNotification: message
@@ -951,8 +951,11 @@ class DisplayData extends React.Component {
                         response.json().then(result => {
                             console.log("Error 404.")
                             console.log(result.message)
+                            const message = <span> Error 404. <br/> {result.message} </span>
                             if(this._isMounted) {
                                 this.setState({
+                                    isOpenedNotification: true,
+                                    addAttributeErrorNotification: message,
                                     isLoading: false,
                                 })
                             }
@@ -1031,8 +1034,11 @@ class DisplayData extends React.Component {
                         response.json().then(result => {
                             console.log("Error 404.")
                             console.log(result.message)
+                            const message = <span> Error 404. <br/> {result.message} </span>
                             if(this._isMounted) {
                                 this.setState({
+                                    isOpenedNotification: true,
+		                            addAttributeErrorNotification: message,
                                     isLoading: false,
                                 })
                             }
@@ -1589,36 +1595,78 @@ class DisplayData extends React.Component {
         this.setHeaderColorAndStyle(column, idx, changeWidth);
         this.setHeaderRightClick(column, idx);
     }
+
+    renameKeyInObject = (oldName, newName, {[oldName]: old, ...others}) => ({
+        [newName]: old,
+        ...others
+    })
     
-    setRowsAndHeaderColorAndStyleAndRightClick = (column, idx, isNewColumn) => {
+    setRowsAndHeaderColorAndStyleAndRightClick = (column, idx, ifIsNewColumnElseOldColumn) => {
         let nextRows = JSON.parse(JSON.stringify(this.state.history[this.state.historySnapshot].rows));
-        if(isNewColumn) {
+        if(typeof ifIsNewColumnElseOldColumn === "boolean") { //new column fill with "?"
             for(let i in nextRows) {
                 nextRows[i][column.key] = "?";
             }
-        } else {
-            if(column.valueType === "enumeration") {
-                for(let i in nextRows) {
-                    if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
+        } else { //editing column
+
+            //both name and valueType of the column has been changed
+            if(ifIsNewColumnElseOldColumn.name !== column.name && ifIsNewColumnElseOldColumn.valueType !== column.valueType) {
+                if(column.valueType === "enumeration") { 
+                    for(let i in nextRows) {
+                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
+                        nextRows[i][column.key] = nextRows[i][column.key].toString();
+                        if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
+                    }
+                } else if(column.valueType === "integer") {
+                    for(let i in nextRows) {
+                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
+                        let tmp = parseInt(nextRows[i][column.key],10);
+                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
+                        else nextRows[i][column.key] = tmp;
+                    }
+                } else if(column.valueType === "real") {
+                    for(let i in nextRows) {
+                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
+                        let tmp = parseFloat(nextRows[i][column.key]);
+                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
+                        else nextRows[i][column.key] = tmp;
+                    }
+                } else {
+                    for(let i in nextRows) {
+                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
+                        nextRows[i][column.key] = "?";
+                    }
                 }
-            }
-            else if(column.valueType === "integer") {
-                for(let i in nextRows) {
-                    let tmp = parseInt(nextRows[i][column.key],10);
-                if(isNaN(tmp)) nextRows[i][column.key] = "?";
-                else nextRows[i][column.key] = tmp;
+            // column valueType has been changed so check the content of each row
+            } else if(ifIsNewColumnElseOldColumn.valueType !== column.valueType) {
+                if(column.valueType === "enumeration") {
+                    for(let i in nextRows) {
+                        if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
+                    }
                 }
-            } else if(column.valueType === "real") {
-                for(let i in nextRows) {
-                    let tmp = parseFloat(nextRows[i][column.key]);
-                if(isNaN(tmp)) nextRows[i][column.key] = "?";
-                else nextRows[i][column.key] = tmp;
+                else if(column.valueType === "integer") {
+                    for(let i in nextRows) {
+                        let tmp = parseInt(nextRows[i][column.key],10);
+                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
+                        else nextRows[i][column.key] = tmp;
+                    }
+                } else if(column.valueType === "real") {
+                    for(let i in nextRows) {
+                        let tmp = parseFloat(nextRows[i][column.key]);
+                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
+                        else nextRows[i][column.key] = tmp;
+                    }
+                } else {
+                    for(let i in nextRows) {
+                        nextRows[i][column.key] = "?";
+                    }
                 }
-            } else {
+            //column name has been changed (rename all keys in rows)
+            } else if(ifIsNewColumnElseOldColumn.name !== column.name) {
                 for(let i in nextRows) {
-                    nextRows[i][column.key] = "?";
+                    nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
                 }
-            }
+            }             
         }
         
         let history = [...this.state.history];
@@ -1752,7 +1800,7 @@ class DisplayData extends React.Component {
                     col.filterRenderer = NumericFilter;
                 }
             }
-
+            const oldColumn = {...cols[i]};
             cols[i] = col;
             const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
             tmpHistory.push({rows: this.state.history[this.state.historySnapshot].rows, columns: cols});
@@ -1770,7 +1818,7 @@ class DisplayData extends React.Component {
                 attributesDomainElements: [],
                 history: tmpHistory,
                 historySnapshot: tmpHistory.length-1
-            },() => this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, false)
+            },() => this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, oldColumn)
             );   
         } else {
             this.setState({
@@ -1928,8 +1976,7 @@ class DisplayData extends React.Component {
         newHistoryCols.columns = newColumns;
         history[this.state.historySnapshot] = newHistoryCols;
 
-        const emptyColumns = [];
-        this.setState({ columns: emptyColumns, history: [{rows: [], columns: []}] });
+        this.setState({ history: [{rows: [], columns: []}] });
         this.setState({ 
             dataModified: true,
             history: history,

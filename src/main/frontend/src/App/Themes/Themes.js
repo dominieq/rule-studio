@@ -1,56 +1,68 @@
 import {createMuiTheme} from "@material-ui/core/styles";
 
-export const LightTheme = createMuiTheme({
+const typography = {
+    typography: {
+        subheader: {
+            fontSize: 12,
+            fontWeight: 900,
+            letterSpacing: "0.05rem",
+            textTransform: "uppercase",
+        },
+    }
+};
+
+export const LightTheme = createMuiTheme( {
+    ...typography,
     palette: {
         appbar: {
-            background:"#98FB98",
-            text: "#2A3439"
+            background:"#1769AA",
+            text: "#FFF"
         },
         background: {
-            default: "#F0FFF0",
+            default: "#D3D3D3",
         },
         button: {
-            primary: "#2A3439",
-            secondary: "#FB9898",
+            primary: "#2196f3",
+            secondary: "#f50057",
             contained: {
-                background: "#A6E6A8",
-                backgroundAction: "#6ACC6E",
-                text: "#2A3439",
+                background: "#2196F3",
+                backgroundAction: "#1769AA",
+                text: "#000",
             }
         },
         chip: {
-            background: "#32CD32",
-            text: "#2A3439",
+            background: "#1769AA",
+            text: "#FFF",
         },
         list: {
-            background: "#ABFAA9",
-            text: "#2A3439",
+            background: "#FFF",
+            text: "#000",
             subheader: {
-                background: "#545F66",
-                text: "#ABFAA9"
+                background: "#4DABF5",
+                text: "#FFF"
             }
         },
         paper: {
-            background: "#98FB98",
-            text: "#2A3439",
+            background: "#FFF",
+            text: "#000",
         },
         popper: {
-            background: "#98FB98",
-            text: "#2A3439",
+            background: "#4DABF5",
+            text: "#000",
         },
         slider: {
-            main: "#ABFAA9",
-            rail: "#2A3439"
+            main: "#4DABF5",
+            rail: "#F5F5F5"
         },
         tab: {
-            background: "#98FB98",
-            backgroundAction: "rgb(102,255,102, 0.3)",
-            text: "#2A3439",
-            textAction: "rgb(84,95,102, 0.8)",
-            textIdle: "#2A3439",
+            background: "#FFF",
+            backgroundAction: "#E8E8E8",
+            text: "#000",
+            textAction: "#000",
+            textIdle: "#000",
         },
         text: {
-            default: "#545F66",
+            default: "#000",
         },
         reactDataGrid: {
             cell: {
@@ -131,6 +143,7 @@ export const LightTheme = createMuiTheme({
 });
 
 export const DarkTheme = createMuiTheme({
+    ...typography,
     palette: {
         appbar: {
             background: "#66FF66",

@@ -1,8 +1,10 @@
-import React, {Component, Fragment} from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import { makeStyles } from "@material-ui/core/styles";
 import RuleWorkSmallBox from "../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkTooltip from "../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
 import StyledButton from "../RuleWorkComponents/Inputs/StyledButton";
+import StyledDivider from "../RuleWorkComponents/DataDisplay/StyledDivider";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";
@@ -13,46 +15,49 @@ import RenameBox from "mdi-material-ui/RenameBox";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import {mdiCog} from "@mdi/js";
 
-class ProjectMenu extends Component {
-    constructor(props) {
-        super(props);
+const menuStyles = makeStyles(theme => ({
+    list: {
+        backgroundColor: theme.palette.popper.background,
+        color: theme.palette.popper.text
+    }
+}), {name: "MuiMenu"});
 
-        this.state = {
-            anchorE1: null,
-        };
+function ProjectMenu(props) {
+    const [anchorE1, setAnchorE1] = useState(null);
+    const list = useRef(null);
+    const menuClasses = menuStyles();
 
-        this.list = React.createRef();
+    const { currentProject, projects } = props;
+
+    let primaryText = projects[0];
+    if (currentProject > 0) {
+        primaryText = "Active project -";
     }
 
-    onListItemClick = (event) => {
-        this.setState({
-            anchorE1: event.currentTarget,
-        });
+    let displayedProjects = projects.slice(1);
+
+    const onListItemClick = (event) => {
+        setAnchorE1(event.currentTarget);
     };
 
-    onMenuItemClick = (event, index) => {
-        this.setState({
-            anchorE1: null,
-        }, () => {
-            this.props.onProjectClick(index);
-        });
+    const onMenuItemClick = (event, index) => {
+        setAnchorE1(null);
+        props.onProjectClick(index);
     };
 
-    onMenuClose = () => {
-        this.setState({
-            anchorE1: null,
-        });
+    const onMenuClose = () => {
+        setAnchorE1(null);
     };
 
-    renderProjectButtons = () => {
-        if (this.props.currentProject > 0) {
+    const renderProjectButtons = () => {
+        if (props.currentProject > 0) {
             return (
                 <Fragment>
                     <RuleWorkTooltip title={"Project settings"}>
                         <StyledButton
                             aria-label={"project-settings"}
                             isIcon={true}
-                            onClick={() => this.props.onDialogOpen("settingsDialog")}
+                            onClick={() => props.onDialogOpen("settingsDialog")}
                         >
                             <SvgIcon><path d={mdiCog} /></SvgIcon>
                         </StyledButton>
@@ -61,7 +66,7 @@ class ProjectMenu extends Component {
                         <StyledButton
                             aria-label={"rename-project-button"}
                             isIcon={true}
-                            onClick={() => this.props.onDialogOpen("renameDialog")}
+                            onClick={() => props.onDialogOpen("renameDialog")}
                         >
                             <RenameBox />
                         </StyledButton>
@@ -71,7 +76,7 @@ class ProjectMenu extends Component {
                         <StyledButton
                             aria-label={"delete-project-button"}
                             isIcon={true}
-                            onClick={() => this.props.onDialogOpen("deleteDialog")}>
+                            onClick={() => props.onDialogOpen("deleteDialog")}>
                             <DeleteIcon />
                         </StyledButton>
                     </RuleWorkTooltip>
@@ -82,65 +87,71 @@ class ProjectMenu extends Component {
         }
     };
 
-    render() {
-        const anchorE1 = this.state.anchorE1;
-        const {currentProject, projects} = this.props;
-
-        let primaryText = projects[0];
-        if (currentProject > 0) {
-            primaryText = "Active project " + projects[currentProject].result.name;
-        }
-
-        let displayedProjects = projects.slice(1);
-
-        return (
-            <RuleWorkSmallBox id={"project-menu"} style={{flexGrow: 1}}>
-                <List component={"nav"} disablePadding={true}>
-                    <ListItem
-                        aria-controls={"project-menu"}
-                        aria-haspopup={"true"}
-                        button={true}
-                        onClick={this.onListItemClick}
-                        ref={this.list}
-                        style={{borderRadius: 4}}
-                    >
-                        <Typography color={"inherit"} variant={"button"}>{primaryText}</Typography>
-                    </ListItem>
-                </List>
-                {Boolean(displayedProjects.length) &&
-                    <Menu
-                        anchorEl={anchorE1}
-                        anchorOrigin={{
-                            horizontal: "center",
-                            vertical: "bottom"
-                        }}
-                        getContentAnchorEl={null}
-                        id={"project-menu"}
-                        keepMounted={true}
-                        onClose={this.onMenuClose}
-                        open={Boolean(anchorE1)}
-                        PaperProps={{
-                            style: {minWidth: this.list.current.offsetWidth}
-                        }}
-                        transformOrigin={{
-                            horizontal: "center",
-                            vertical: "top",
-                        }}
-                    >
-                        {displayedProjects.map((project, index) => (
-                            <MenuItem
-                                key={index}
-                                selected={index === currentProject}
-                                onClick={event => this.onMenuItemClick(event, index)}>
-                                {project.result.name}
-                            </MenuItem>
-                        ))}
-                    </Menu>
-                }
-                {this.renderProjectButtons()}
-            </RuleWorkSmallBox>
-        )
-    }
+    return (
+        <RuleWorkSmallBox id={"project-menu"} style={{flexGrow: 1}}>
+            <StyledDivider />
+            <List component={"nav"} disablePadding={true}>
+                <ListItem
+                    aria-controls={"project-menu"}
+                    aria-haspopup={"true"}
+                    button={true}
+                    disableGutters={true}
+                    onClick={onListItemClick}
+                    ref={list}
+                    style={{
+                        borderRadius: 4,
+                        paddingLeft: 8,
+                        paddingRight: 8
+                    }}
+                >
+                    <Typography style={{marginRight: "0.25em"}} color={"inherit"} variant={"button"}>
+                        {primaryText}
+                    </Typography>
+                    {currentProject > 0 &&
+                        <Typography color={"inherit"}>
+                            {projects[currentProject].result.name}
+                        </Typography>
+                    }
+                </ListItem>
+            </List>
+            {Boolean(displayedProjects.length) &&
+                <Menu
+                    anchorEl={anchorE1}
+                    anchorOrigin={{
+                        horizontal: "center",
+                        vertical: "bottom"
+                    }}
+                    classes={{
+                        list: menuClasses.list
+                    }}
+                    getContentAnchorEl={null}
+                    id={"project-menu"}
+                    keepMounted={true}
+                    onClose={onMenuClose}
+                    open={Boolean(anchorE1)}
+                    PaperProps={{
+                        style: {minWidth: list.current.offsetWidth}
+                    }}
+                    transformOrigin={{
+                        horizontal: "center",
+                        vertical: "top",
+                    }}
+                >
+                    {displayedProjects.map((project, index) => (
+                        <MenuItem
+                            key={index}
+                            selected={index === currentProject}
+                            onClick={event => onMenuItemClick(event, index)}
+                        >
+                            {project.result.name}
+                        </MenuItem>
+                    ))}
+                </Menu>
+            }
+            {renderProjectButtons()}
+            <StyledDivider />
+        </RuleWorkSmallBox>
+    );
 }
 
 ProjectMenu.propTypes = {

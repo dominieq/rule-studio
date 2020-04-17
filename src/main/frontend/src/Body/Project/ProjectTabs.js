@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from "@material-ui/core/styles";
 import Classification from "./Classification/Classification";
@@ -47,13 +47,22 @@ const StyledTab = withStyles(theme => ({
 
 }), {name: "MuiTab"})(props => <Tab {...props} disableRipple={true} /> );
 
-class ProjectTabs extends Component {
+class ProjectTabs extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
             selected: 0,
-        }
+        };
+    }
+
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        const { selected } = this.state;
+
+        const selectionChanged = nextState.selected !== selected;
+        const projectChanged = nextProps.project.result.id !== this.props.project.result.id;
+
+        return selectionChanged || projectChanged;
     }
 
     onTabChange = (event, newValue) => {
@@ -78,27 +87,27 @@ class ProjectTabs extends Component {
     };
 
     renderTabLabel = (name, index) => {
-        const updated = this.props.project.tabsUpToDate[index];
-        const externalRulesAlert = this.props.project.externalRules && index > 1 ? <ExternalRulesAlert /> : null;
+        const { project: { externalRules, tabsUpToDate } } = this.props;
+        const externalRulesAlert = externalRules && [2, 3].includes(index);
 
-        if (updated === null || updated) {
+        if (tabsUpToDate[index] === null || tabsUpToDate[index]) {
             return (
                 <Fragment>
-                    {externalRulesAlert}
+                    {externalRulesAlert && <ExternalRulesAlert />}
                     {name}
                 </Fragment>
             );
-        } else if (this.props.project.externalRules && index > 2) {
+        } else if (externalRules && [2, 3].includes(index)) {
             return (
                 <OutdatedRulesAlert>
-                    {externalRulesAlert}
+                    {externalRulesAlert && <ExternalRulesAlert />}
                     {name}
                 </OutdatedRulesAlert>
             );
         } else {
             return (
                 <OutdatedDataAlert>
-                    {externalRulesAlert}
+                    {externalRulesAlert && <ExternalRulesAlert />}
                     {name}
                 </OutdatedDataAlert>
             )
@@ -106,7 +115,7 @@ class ProjectTabs extends Component {
     };
 
     render() {
-        const selected = this.state.selected;
+        const { selected } = this.state;
 
         return (
             <Fragment>

@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
+import { downloadRules, fetchRules, parseRulesParams, uploadRules } from "../Utils/fetchFunctions";
+import { parseRulesItems, parseRulesListItems } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -8,7 +10,6 @@ import SettingsButton from "../Utils/Buttons/SettingsButton";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
-import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
@@ -25,209 +26,190 @@ class Rules extends Component {
     constructor(props) {
         super(props);
 
-        this._data = {};
-        this._items = [];
-
         this.state = {
-            changes: false,
-            updated: false,
             loading: false,
+            data: null,
+            items: null,
             displayedItems: [],
             externalRules: false,
-            ruleType: "certain",
-            threshold: 0,
-            typeOfUnions: "monotonic",
+            parameters: {
+                consistencyThreshold: 0,
+                typeOfRules: "certain",
+                typeOfUnions: "monotonic"
+            },
             selectedItem: null,
-            openDetails: false,
-            openSettings: false,
+            open: {
+                details: false,
+                settings: false
+            },
             alertProps: undefined,
         };
 
         this.upperBar = React.createRef();
     }
 
+    getRules = () => {
+        const { project } = this.props;
+
+        fetchRules(
+            project.result.id, "GET", null
+        ).then(result => {
+            if (result && this._isMounted) {
+                const { project: { externalRules, parametersSaved } } = this.props;
+
+                const items = parseRulesItems(result);
+                const resultParameters = parseRulesParams(result);
+
+                this.setState(({parameters}) => ({
+                    data: result,
+                    items: items,
+                    displayedItems: items,
+                    externalRules: externalRules,
+                    parameters: { ...parameters, ...resultParameters},
+                    parametersSaved: parametersSaved
+                }));
+            }
+        }).catch(error => {
+            if (this._isMounted) {
+                this.setState({
+                    data: null,
+                    items: null,
+                    displayedItems: [],
+                    selectedItem: null,
+                    alertProps: error
+                });
+            }
+        }).finally(() => {
+            if (this._isMounted) {
+                const { parametersSaved } = this.state;
+                const { project: { parameters: {
+                    consistencyThreshold,
+                    typeOfRules,
+                    typeOfUnions
+                }}} = this.props;
+
+                this.setState(({parameters}) => ({
+                    loading: false,
+                    parameters: parametersSaved ?
+                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules, typeOfUnions } }
+                }));
+            }
+        });
+    };
+
     componentDidMount() {
         this._isMounted = true;
-        const project = {...this.props.project};
-        console.log(project);
-        this.setState({
-            loading: true,
-        }, () => {
-            let msg, title = "";
-            fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
-                method: "GET",
-            }).then(response => {
-                if (response.status === 200) {
-                    response.json().then(result => {
-                        if (this._isMounted) {
-                            const items = this.getItems(result.ruleSet);
 
-                            this._data = result.ruleSet;
-                            this._items = items;
-                            this.setState({
-                                displayedItems: items,
-                            });
-                        }
-                    }).catch(error => {
-                        console.log(error);
-                    });
-                } else {
-                    response.json().then(result => {
-                        if (this._isMounted) {
-                            msg = "ERROR " + result.status + " " + result.message;
-                            title = "Something went wrong! Couldn't load rules :(";
-                            let alertProps = {message: msg, open: true, title: title, severity: "warning"};
-                            this.setState({
-                                alertProps: result.status !== 404 ? alertProps : undefined
-                            });
-                        }
-                    }).catch(() => {
-                        if (this._isMounted) {
-                            msg = "Something went wrong! Couldn't load rules :(";
-                            title = {title: "ERROR " + response.status};
-                            let alertProps = {message: msg, open: true, title: title, severity: "error"};
-                            this.setState({
-                                alertProps: response.status !== 404 ? alertProps : undefined
-                            });
-                        }
-                    });
-                }
-            }).catch(error => {
-                console.log(error);
-                if (this._isMounted) {
-                    msg = "Server error! Couldn't load rules :( ";
-                    this.setState({
-                        alertProps: {message: msg, open: true, severity: "error"}
-                    });
-                }
-            }).finally(() => {
-                this.setState({
-                    loading: false,
-                    externalRules: this.props.project.externalRules,
-                    ruleType: this.props.project.ruleType,
-                    threshold: this.props.project.threshold,
-                    typeOfUnions: this.props.project.typeOfUnions
-                });
-            });
-        });
+        this.setState({ loading: true }, this.getRules);
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { parameters: prevParameters } = prevState;
+        const { parameters } = this.state;
+
+        if (parameters.typeOfUnions !== 'monotonic') {
+            if (parameters.consistencyThreshold === 1) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 0, typeOfUnions: "monotonic" }
+                }));
+            } else {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, typeOfUnions: "monotonic" }
+                }));
+            }
+        }
+
+        if  (parameters.typeOfRules !== prevParameters.typeOfRules && parameters.typeOfRules === "possible") {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, consistencyThreshold: 0 }
+            }));
+        }
+
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            this.setState({ loading: true }, this.getRules);
+        }
     }
 
     componentWillUnmount() {
         this._isMounted = false;
+        const { parametersSaved } = this.state;
 
-        if (this.state.changes) {
+        if ( !parametersSaved ) {
+            const { parameters } = this.state;
             let project = {...this.props.project};
-            if (Object.keys(this._data).length) {
-                project.result.ruleSetWithComputableCharacteristics = this._data;
-            }
-            project.externalRules = this.state.externalRules;
-            project.ruleType = this.state.ruleType;
-            project.threshold = this.state.threshold;
-            project.typeOfUnions = this.state.typeOfUnions;
 
-            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
-            tabsUpToDate[this.props.value] = this.state.updated;
-
-            if (this.state.externalRules) {
-                tabsUpToDate[this.props.value] = null;
-                tabsUpToDate[this.props.value + 1] = !this.props.project.result.classification;
-                tabsUpToDate[this.props.value + 2] = !this.props.project.result.crossValidation;
-            }
-
-            this.props.onTabChange(project, this.state.updated, tabsUpToDate);
+            project.parameters = {
+                ...project.parameters,
+                consistencyThreshold: parameters.consistencyThreshold,
+                typeOfRules: parameters.typeOfRules
+            };
+            project.parametersSaved = parametersSaved;
+            this.props.onTabChange(project);
         }
     }
 
-    onSettingsClick = () => {
-        this.setState(prevState => ({
-            openSettings: !prevState.openSettings,
-        }));
-    };
-
-    onSettingsClose = () => {
-        this.setState({
-            openSettings: false,
-        });
-    };
-
     onCalculateClick = () => {
+        let project = {...this.props.project};
+        const { parameters } = this.state;
+
         this.setState({
             loading: true,
         }, () => {
-            let project = {...this.props.project};
-            const {ruleType, threshold, typeOfUnions} = this.state;
-
+            let method = project.dataUpToDate ? "PUT" : "POST";
             let data = new FormData();
-            data.append("typeOfUnions", typeOfUnions);
-            data.append("consistencyThreshold", threshold);
-            data.append("typeOfRules", ruleType);
+
+            Object.keys(parameters).map(key => {
+                data.append(key, parameters[key]);
+            });
 
             if (!project.dataUpToDate) {
                 data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
                 data.append("data", JSON.stringify(project.result.informationTable.objects));
             }
 
-            let msg, title = "";
-            fetch(`http://localhost:8080/projects/${project.result.id}/rules`, {
-                method: project.dataUpToDate ? "PUT" : "POST",
-                body: data
-            }).then(response => {
-                if (response.status === 200) {
-                    response.json().then(result => {
-                        const updated = true;
+            fetchRules(
+                project.result.id, method, data
+            ).then(result => {
+                if (result) {
+                    if (this._isMounted) {
+                        const items = parseRulesItems(result);
 
-                        if (this._isMounted) {
-                            const items = this.getItems(result.ruleSet);
+                        this.setState({
+                            externalRules: false,
+                            data: result,
+                            items: items,
+                            displayedItems: items,
+                            parametersSaved: true,
+                        });
+                    }
 
-                            this._data = result.ruleSet;
-                            this._items = items;
-                            this.setState({
-                                changes: true,
-                                updated: updated,
-                                externalRules: false,
-                                displayedItems: items,
-                            });
-                        } else {
-                            project.ruleSetWithComputableCharacteristics = result;
-                            project.externalRules = false;
+                    project.result.rules = result;
+                    project.dataUpToDate = true;
 
-                            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
-                            tabsUpToDate[this.props.value] = updated;
+                    let nand = !(project.result.classification && project.externalRules);
+                    project.tabsUpToDate[this.props.value] = true;
+                    project.tabsUpToDate[this.props.value + 1] = project.tabsUpToDate[this.props.value + 1] && nand;
 
-                            this.props.onTabChange(project, updated, tabsUpToDate);
-                        }
-                    }).catch(error => {
-                        console.log(error);
-                    })
-                } else {
-                    response.json().then(result => {
-                        if (this._isMounted) {
-                            msg = "ERROR " + result.status + ": " + result.message;
-                            title = "Something went wrong! Couldn't calculate rules :(";
-                            this.setState({
-                                alertProps: {message: msg, open: true, title: title, severity: "warning"}
-                            });
-                        }
-                    }).catch(() => {
-                        if (this._isMounted) {
-                            msg = "Something went wrong! Couldn't calculate rules :(";
-                            title = "ERROR " + response.status;
-                            this.setState({
-                                alertProps: {message: msg, open: true, title: title, severity: "error"}
-                            });
-                        }
-                    });
+                    project.externalRules = false;
+
+                    const newParameters = parseRulesParams(result);
+
+                    project.parameters = {
+                        ...project.parameters,
+                        consistencyThreshold: newParameters.consistencyThreshold,
+                        typeOfRules: newParameters.typeOfRules
+                    };
+                    project.parametersSaved = true;
+                    this.props.onTabChange(project);
                 }
             }).catch(error => {
-                console.log(error);
                 if (this._isMounted) {
-                    msg = "Server error! Couldn't calculate rules :(";
-                    this.setState({
-                        alertProps: {message: msg, open: true, severity: "error"},
-                    });
+                    this.setState({alertProps: error});
                 }
             }).finally(() => {
-                if (this._isMounted) this.setState({loading: false});
+                if (this._isMounted) {
+                    this.setState({loading: false});
+                }
             });
         });
     };
@@ -242,159 +224,109 @@ class Rules extends Component {
             this.setState({
                 loading: true,
             }, () => {
-                let msg, title = "";
-                fetch(`http://localhost:8080/projects/${project.result.id}`, {
-                    method: "POST",
-                    body: data,
-                }).then(response => {
-                    if (response.status === 200) {
-                        response.json().then(result => {
-                            if (this._isMounted) {
-                                const items = this.getItems(result.rules.ruleSet);
+                uploadRules(
+                    project.result.id, data
+                ).then(result => {
+                    if (result) {
+                        if (this._isMounted) {
+                            const items = parseRulesItems(result.rules);
 
-                                this._data = result.rules.ruleSet;
-                                this._items = items;
-                                this.setState({
-                                    changes: true,
-                                    updated: this.props.project.dataUpToDate,
-                                    externalRules: true,
-                                    displayedItems: items,
-                                });
-                            } else {
-                                project.ruleSetWithComputableCharacteristics = result.rules.ruleSet;
-                                project.externalRules = true;
+                            this.setState({
+                                data: result,
+                                items: items,
+                                displayedItems: items,
+                                externalRules: true,
+                            });
+                        }
 
-                                let tabsUpToDate = this.props.project.tabsUpToDate.slice();
-                                tabsUpToDate[this.props.value] = null;
-                                tabsUpToDate[this.props.value] = !this.props.project.result.classification;
-                                tabsUpToDate[this.props.value] = !this.props.project.result.crossValidation;
-
-                                this.props.onTabChange(project, this.props.project.dataUpToDate, tabsUpToDate);
-                            }
-                        }).catch(error => {
-                            console.log(error);
-                        });
-                    } else {
-                        response.json().then(result => {
-                            if (this._isMounted) {
-                                msg = "error: " + result.status + " " + result.message;
-                                title = "Something went wrong. Couldn't upload rules :(";
-                                this.setState({
-                                    alertProps: {message: msg, open: true, title: title, severity: "warning"}
-                                });
-                            }
-                        }).catch(() => {
-                            if (this._isMounted) {
-                                msg = "Something went wrong! Couldn't upload rules :(";
-                                title = "ERROR " + response.status;
-                                this.setState({
-                                    alertProps: {message: msg, open: true, title: title, severity: "error"}
-                                });
-                            }
-                        });
+                        project.result.rules = result.rules;
+                        project.externalRules = true;
+                        project.tabsUpToDate[this.props.value] = null;
+                        project.tabsUpToDate[this.props.value + 1] = !project.result.classification;
+                        this.props.onTabChange(project);
                     }
                 }).catch(error => {
-                    console.log(error);
                     if (this._isMounted) {
-                        msg = "Server error! Couldn't upload rules :(";
-                        this.setState({
-                            alertProps: {message: msg, open: true, severity: "error"}
-                        });
+                        this.setState({alertProps: error});
                     }
                 }).finally(() => {
-                    if (this._isMounted) this.setState({loading: false});
+                    if (this._isMounted) {
+                        this.setState({loading: false});
+                    }
                 });
             });
         }
     };
 
     onSaveFileClick = () => {
-        const project = this.props.project;
-        let msg, title = "";
+        const { project } = this.props;
 
-        fetch(`http://localhost:8080/projects/${project.result.id}/rules/download`, {
-            method: "GET",
-        }).then(response => {
-            if(response.status === 200) {
-                const filename =  response.headers.get('Content-Disposition').split('filename=')[1];
-
-                response.blob().then(result => {
-                    let url = window.URL.createObjectURL(result);
-                    let link = document.createElement('a');
-                    link.href = url;
-                    link.download = filename;
-                    link.click();
-                }).catch(error => {
-                    console.log(error);
-                });
-            } else {
-                response.json().then(result => {
-                    if (this._isMounted) {
-                        msg = "ERROR: " + result.status + " " + result.message;
-                        title = "Something went wrong! Couldn't download rules :(";
-                        this.setState({
-                            alertProps: {message: msg, open: true, title: title, severity: "warning"},
-                        });
-                    }
-                }).catch(() => {
-                    msg = "Something went wrong! Couldn't download rules :(";
-                    title = "ERROR " + response.status;
-                    this.setState({
-                        alertProps: {message: msg, open: true, title: title, severity: "error"}
-                    })
-                });
-            }
-        }).catch(error => {
-            console.log(error);
+        downloadRules( project.result.id ).catch(error => {
             if (this._isMounted) {
-                msg = "Server error! Couldn't download rules :( ";
-                this.setState({
-                    alertProps: {message: msg, open: true, severity: "error"},
-                });
+                this.setState({alertProps: error});
             }
         });
     };
 
-    onRuleTypeChange = (event) => {
-        this.setState({
-            changes: event.target.value !== "certain",
-            updated: this.props.project.dataUpToDate,
-            ruleType: event.target.value
-        });
-    };
-
-    onThresholdChange = (threshold) => {
-        this.setState({
-            changes: Boolean(threshold),
-            updated: this.props.project.dataUpToDate,
-            threshold: threshold,
-        });
-    };
-
-    onTypeOfUnionsChange = (event) => {
-        this.setState({
-            changes: event.target.value !== "epsilon",
-            updated: this.props.project.dataUpToDate,
-            typeOfUnions: event.target.value,
-        });
-    };
-
-    onFilterChange = (event) => {
-        const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
-        this.setState({displayedItems: filteredItems});
+    toggleOpen = (name) => {
+        this.setState(({open}) => ({
+            open: {...open, [name]: !open[name]}
+        }));
     };
 
     onDetailsOpen = (index) => {
-        this.setState({
-            openDetails: true,
-            selectedItem: this._items[index]
-        });
+        const { items } = this.state;
+
+        this.setState(({open}) => ({
+            open: {...open, details: true, settings: false},
+            selectedItem: items[index]
+        }));
     };
 
-    onDetailsClose = () => {
-        this.setState({
-            openDetails: false
-        });
+    onConsistencyThresholdChange = (threshold) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, consistencyThreshold: threshold},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onTypeOfRulesChange = (event) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfRules: event.target.value},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onTypeOfUnionsChange = (event) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfUnions: event.target.value},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onFilterChange = (event) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            const { items } = this.state;
+            const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+
+            this.setState({
+                displayedItems: filteredItems
+            });
+        }
     };
 
     onSnackbarClose = (event, reason) => {
@@ -405,63 +337,25 @@ class Rules extends Component {
         }
     };
 
-    getItems = (data) => {
-        let items = [];
-        if (data) {
-            for (let i = 0; i < data.length; i++) {
-                const id = i;
-                const name = data[i].rule.decisions[0][0].toString;
-                const traits = {...data[i].ruleCharacteristics};
-                const tables = {
-                    indicesOfCoveredObjects: data[i].indicesOfCoveredObjects.slice(),
-                };
-
-                const item = new Item(id, name, traits, null, tables);
-                items.push(item);
-            }
-        }
-        return items;
-    };
-
-    getListItems = (items) => {
-        let listItems = [];
-        if (this._data && items) {
-            for (let i = 0; i < items.length; i++) {
-                const listItem = {
-                    id: items[i].id,
-                    header: this._data[items[i].id].rule.decisions[0][0].toString,
-                    subheader: "Type: " + this._data[items[i].id].rule.type.toLowerCase(),
-                    content: undefined,
-                    multiContent: this._data[items[i].id].rule.conditions.map(condition => (
-                        {
-                            title: condition.attributeName,
-                            subtitle: condition.relationSymbol + " " + condition.limitingEvaluation,
-                        }
-                    )),
-                };
-                listItems.push(listItem);
-            }
-        }
-        return listItems;
-    };
-
     render() {
-        const { loading, displayedItems, selectedItem, openDetails, openSettings, alertProps } = this.state;
-        const { ruleType, threshold, typeOfUnions } = this.state;
+        const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
+        const { project: { result, settings } } = this.props;
 
         return (
             <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
                 <StyledPaper id={"rules-bar"} paperRef={this.upperBar}>
                     <SettingsButton
                         aria-label={"rules-settings-button"}
-                        onClick={this.onSettingsClick}
-                        title={"Click to choose consistency & type of unions"}
+                        onClick={() => this.toggleOpen("settings")}
+                        title={"Click to choose consistency threshold, type of unions & rules"}
                     />
                     <StyledDivider />
-                    <RuleWorkTooltip title={`Calculate with threshold ${threshold}`}>
+                    <RuleWorkTooltip
+                        title={`Calculate with consistency threshold ${parameters.consistencyThreshold}`}
+                    >
                         <CalculateButton
                             aria-label={"rules-calculate-button"}
-                            disabled={!this.props.project || loading}
+                            disabled={loading}
                             onClick={this.onCalculateClick}
                         />
                     </RuleWorkTooltip>
@@ -469,15 +363,16 @@ class Rules extends Component {
                     <RuleWorkTooltip title={"Upload file"}>
                         <RuleWorkUpload
                             accept={".xml"}
-                            disabled={!this.props.project || loading}
+                            disabled={loading}
                             id={"rules-upload-button"}
                             onChange={this.onUploadFileChanged}
                         >
                             <StyledButton
                                 aria-label={"rules-upload-button"}
-                                disabled={!this.props.project || loading}
+                                disabled={loading}
                                 isIcon={true}
                                 component={"span"}
+                                themeVariant={"primary"}
                             >
                                 <CloudUploadIcon />
                             </StyledButton>
@@ -487,9 +382,10 @@ class Rules extends Component {
                     <RuleWorkTooltip title={"Save file"}>
                         <StyledButton
                             aria-label={"rules-save-button"}
-                            disabled={!this.props.project || !this.state.displayedItems || loading}
+                            disabled={!Boolean(data) || loading}
                             isIcon={true}
                             onClick={this.onSaveFileClick}
+                            themeVariant={"primary"}
                         >
                             <SaveIcon />
                         </StyledButton>
@@ -499,28 +395,30 @@ class Rules extends Component {
                 </StyledPaper>
                 <RuleWorkDrawer
                     id={"rules-settings"}
-                    open={openSettings}
-                    onClose={this.onSettingsClose}
+                    open={open.settings}
+                    onClose={() => this.toggleOpen("settings")}
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfRulesSelector
                         id={"rules-rule-type-selector"}
-                        onChange={this.onRuleTypeChange}
-                        value={ruleType}
+                        onChange={this.onTypeOfRulesChange}
+                        value={parameters.typeOfRules}
                     />
                     <TypeOfUnionsSelector
+                        disabledChildren={["standard"]}
                         id={"rules-union-type-selector"}
                         onChange={this.onTypeOfUnionsChange}
-                        value={typeOfUnions}
+                        value={parameters.typeOfUnions}
                     />
                     <ThresholdSelector
                         id={"rules-threshold-selector"}
-                        onChange={this.onThresholdChange}
-                        value={threshold}
+                        keepChanges={parameters.typeOfRules !== 'possible'}
+                        onChange={this.onConsistencyThresholdChange}
+                        value={parameters.consistencyThreshold}
                     />
                 </RuleWorkDrawer>
                 <TabBody
-                    content={this.getListItems(displayedItems)}
+                    content={parseRulesListItems(displayedItems)}
                     id={"rules-list"}
                     isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
                     isLoading={loading}
@@ -530,7 +428,7 @@ class Rules extends Component {
                     noFilterResults={!displayedItems}
                     subheaderContent={[
                         {
-                            label: "Number of objects",
+                            label: "Number of rules:",
                             value: displayedItems && displayedItems.length
                         }
                     ]}
@@ -538,9 +436,10 @@ class Rules extends Component {
                 {selectedItem &&
                     <RulesDialog
                         item={selectedItem}
-                        onClose={this.onDetailsClose}
-                        open={openDetails}
-                        projectResult={this.props.project.result}
+                        onClose={() => this.toggleOpen("details")}
+                        open={open.details}
+                        projectResult={result}
+                        settings={settings}
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />

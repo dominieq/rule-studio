@@ -1,67 +1,168 @@
-import React, {useRef, useState} from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import { makeStyles } from "@material-ui/core/styles";
-import VirtualizedMatrix from "./VirtualizedMatrix";
-import Dialog from "@material-ui/core/Dialog";
-import Paper from "@material-ui/core/Paper";
-import Draggable from "react-draggable";
+import { addSubheaders } from "../../Body/Project/Utils/parseData";
+import VirtualizedMatrix, { estimateMatrixHeight, estimateMatrixWidth } from "./VirtualizedMatrix";
+import TraitsTable from "../Feedback/RuleWorkDialog/Elements/TraitsTable";
+import FullscreenDialog from "./FullscreenDialog";
+import FullscreenDialogTitleBar from "./FullscreenDialogTitleBar";
+import MultiColDialogContent from "./MultiColDialogContent";
+import TextWithHoverTooltip from "./TextWithHoverTooltip";
 
-function PaperComponent(props) {
-    return (
-        <Draggable handle={"#draggable-matrix"}>
-            <Paper {...props} />
-        </Draggable>
-    )
-}
+class MatrixDialog extends React.PureComponent {
+    constructor(props) {
+        super(props);
 
-const dialogStyles = makeStyles(theme => ({
-    paper: {
-        backgroundColor: theme.palette.background.default,
-        maxHeight: "calc(75% - 64px)",
-        padding: 16,
-        '&:hover': {
-            cursor: "grab",
-        },
-        '&:active': {
-            cursor: "grabbing",
-        },
+        this.state = {
+            heightMatrix: 0,
+            widthMatrix: 0,
+            heightDeviation: 0,
+            widthDeviation: 0,
+        };
     }
-}), {name: "matrix-dialog"});
 
-function MatrixDialog(props) {
-    const { cellDimensions, matrix, ...other } = props;
-    const dialogClasses = dialogStyles();
-    const [height, setHeight] = useState(0);
-    const [width, setWidth] = useState(0);
-    const matrixRef = useRef(null);
+    getTooltip = (abbrev) => {
+        switch(abbrev) {
+            case "gmean": return { text: "GMean", tooltip: "Geometric Mean"};
+            case "mae": return { text: "MAE", tooltip: "Mean Absolute Error"};
+            case "rmse": return { text: "RMSE", tooltip: "Root Mean Square Error"}
+        }
+    }
 
-    const onEnter = () => {
-        setHeight(matrixRef.current.getTotalRowsHeight());
-        setWidth(matrixRef.current.getTotalColumnsWidth());
+    cellRenderer = ({cellData, dataKey}) => {
+        const abbrevs = ["gmean", "mae", "rmse"];
+
+        let displayedText = cellData;
+        let displayedTooltip = cellData
+        if (abbrevs.includes(cellData)) {
+            let tooltip = this.getTooltip(cellData);
+            displayedText = tooltip.text;
+            displayedTooltip = tooltip.tooltip;
+        }
+
+        return (
+            <React.Fragment>
+                {cellData &&
+                    <TextWithHoverTooltip
+                        roundNumbers={false}
+                        text={displayedText}
+                        TooltipProps={{
+                            id: dataKey
+                        }}
+                        tooltipTitle={displayedTooltip}
+                        TypographyProps={{
+                            style: {cursor: "default"}
+                        }}
+                    />
+                }
+            </React.Fragment>
+        )
+    }
+
+    onEntered = () => {
+        const { disableDeviation, matrix: { value, deviation } } = this.props;
+
+        this.setState({
+            heightMatrix: estimateMatrixHeight(value),
+            widthMatrix: estimateMatrixWidth(value),
+            heightDeviation: !disableDeviation ? estimateMatrixHeight(deviation) : 0,
+            widthDeviation: !disableDeviation ? estimateMatrixWidth(deviation) : 0,
+        });
     };
 
-    return (
-        <Dialog
-            maxWidth={false}
-            onEnter={onEnter}
-            PaperComponent={PaperComponent}
-            PaperProps={{
-                className: dialogClasses.paper,
-                id: "draggable-matrix",
-                style: {
-                    height: height + 32,
-                    width: width + 32
-                },
-            }}
-            {...other}
-        >
-            <VirtualizedMatrix
-                cellDimensions={cellDimensions}
-                gridRef={matrixRef}
-                matrix={matrix}
-            />
-        </Dialog>
-    )
+    prepareTraitsWithoutDeviation = (traits) => {
+        return  Object.keys(traits).map(key => {
+            if (!key.toLowerCase().includes("deviation")) {
+                return {
+                    [key]: traits[key]
+                };
+            }
+        }).reduce((previousValue, currentValue) => {
+            return {...previousValue, ...currentValue};
+        });
+    };
+
+    render() {
+        const { heightMatrix, widthMatrix, heightDeviation, widthDeviation } = this.state;
+        const { cellDimensions, disableDeviation, matrix, open, onClose, subheaders, title } = this.props;
+
+        const numberOfColumns = disableDeviation ? 2 : 3;
+        const displayedTraits = disableDeviation ? this.prepareTraitsWithoutDeviation(matrix.traits) : matrix.traits;
+
+        return (
+            <FullscreenDialog open={open} onEntered={this.onEntered} onClose={onClose}>
+                <FullscreenDialogTitleBar
+                    onClose={onClose}
+                    title={title}
+                />
+                <MultiColDialogContent numberOfColumns={numberOfColumns}>
+                    <div
+                        id={"ordinal-misclassification-matrix-value"}
+                        style={{
+                            alignItems: "center",
+                            display: "flex",
+                            justifyContent: "center",
+                            maxWidth: `${90 / numberOfColumns}%`,
+                            width: widthMatrix
+                        }}
+                    >
+                        <div
+                            id={"value-floating-box"}
+                            style={{
+                                height: heightMatrix,
+                                maxHeight: "100%",
+                                width: "100%"
+                            }}
+                        >
+                            <VirtualizedMatrix
+                                cellDimensions={cellDimensions}
+                                matrix={addSubheaders(subheaders, matrix.value)}
+                            />
+                        </div>
+                    </div>
+                    {!disableDeviation &&
+                        <div
+                            id={"ordinal-misclassification-matrix-deviation"}
+                            style={{
+                                alignItems: "center",
+                                display: "flex",
+                                justifyContent: "center",
+                                maxWidth: `${90 / numberOfColumns}%`,
+                                width: widthDeviation
+                            }}
+                        >
+                            <div
+                                id={"deviation-floating-box"}
+                                style={{
+                                    height: heightDeviation,
+                                    maxHeight: "100%",
+                                    width: "100%",
+                                }}
+                            >
+                                <VirtualizedMatrix
+                                    cellDimensions={cellDimensions}
+                                    matrix={addSubheaders(subheaders, matrix.deviation)}
+                                />
+                            </div>
+                        </div>
+                    }
+                    <div
+                        id={"ordinal-misclassification-matrix-details"}
+                        style={{
+                            minWidth: `${90 / numberOfColumns}%`,
+                            width: `calc(90% - ${widthMatrix + widthDeviation}px)`
+                        }}
+                    >
+                        <TraitsTable
+                            cellRenderer={this.cellRenderer}
+                            columnsLabels={{key: "Name", value: "Value"}}
+                            ratio={0.9}
+                            traits={displayedTraits}
+                        />
+                    </div>
+                </MultiColDialogContent>
+            </FullscreenDialog>
+        )
+    }
 }
 
 MatrixDialog.propTypes = {
@@ -72,10 +173,21 @@ MatrixDialog.propTypes = {
             y: PropTypes.number,
         })
     ]),
-    deviation: PropTypes.arrayOf(PropTypes.array),
-    matrix: PropTypes.arrayOf(PropTypes.array),
+    disableDeviation: PropTypes.bool,
+    matrix: PropTypes.shape({
+        value: PropTypes.arrayOf(PropTypes.array).isRequired,
+        deviation: PropTypes.arrayOf(PropTypes.array),
+        traits: PropTypes.object.isRequired,
+        tables: PropTypes.object,
+    }),
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,
+    subheaders: PropTypes.arrayOf(PropTypes.object),
+    title: PropTypes.string.isRequired,
+};
+
+MatrixDialog.defaultProps = {
+    disableDeviation: true,
 };
 
 export default MatrixDialog;

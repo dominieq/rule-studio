@@ -1,5 +1,7 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
+import { fetchUnions } from "../Utils/fetchFunctions";
+import { parseUnionsItems, parseUnionsListItems } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -7,7 +9,6 @@ import CalculateButton from "../Utils/Buttons/CalculateButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
-import Item from "../../../RuleWorkComponents/API/Item";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
@@ -20,233 +21,223 @@ class Unions extends Component {
     constructor(props) {
         super(props);
 
-        this._data = [];
-        this._items = [];
-
         this.state = {
-            changes: false,
-            updated: false,
             loading: false,
+            data: null,
+            items: null,
             displayedItems: [],
-            threshold: 0,
-            typeOfUnions: "monotonic",
+            parameters: {
+                consistencyThreshold: 0,
+                typeOfUnions: "monotonic"
+            },
+            parametersSaved: true,
             selectedItem: null,
-            openDetails: false,
-            openSettings: false,
+            open: {
+                details: false,
+                settings: false
+            },
             alertProps: undefined,
         };
 
         this.upperBar = React.createRef();
     }
 
+    getUnions = () => {
+        const { project } = this.props;
+
+        fetchUnions(
+            project.result.id, "GET", null
+        ).then(result => {
+            if (this._isMounted && result) {
+                const items = parseUnionsItems(result);
+                const { project: { parametersSaved } } = this.props;
+
+                this.setState({
+                    data: result,
+                    items: items,
+                    displayedItems: items,
+                    parameters: {
+                        consistencyThreshold: result.consistencyThreshold,
+                        typeOfUnions: result.typeOfUnions.toLowerCase()
+                    },
+                    parametersSaved: parametersSaved
+                });
+            }
+        }).catch(error => {
+            if (this._isMounted) {
+                this.setState({
+                    data: null,
+                    items: null,
+                    displayedItems: [],
+                    selectedItems: null,
+                    alertProps: error
+                });
+            }
+        }).finally(() => {
+            if (this._isMounted) {
+                const { parametersSaved } = this.state;
+                const { project: { parameters: { consistencyThreshold, typeOfUnions } } } = this.props;
+
+                this.setState(({parameters}) => ({
+                    loading: false,
+                    parameters: parametersSaved ?
+                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfUnions } }
+                }));
+            }
+        });
+    };
+
     componentDidMount() {
         this._isMounted = true;
-        const project = {...this.props.project};
 
-        this.setState({
-            loading: true,
-        }, () => {
-            let msg, title = "";
-            fetch(`http://localhost:8080/projects/${project.result.id}/unions`, {
-                method: "GET",
-            }).then(response => {
-                if (response.status === 200) {
-                    response.json().then(result => {
-                        if (this._isMounted) {
-                            const items = this.getItems(result);
+        this.setState({ loading: true }, this.getUnions);
+    }
 
-                            this._data = result;
-                            this._items = items;
-                            this.setState({
-                                displayedItems: items
-                            });
-                        }
-                    }).catch(error => {
-                        console.log(error);
-                    });
-                } else {
-                    response.json().then(result => {
-                        if (this._isMounted) {
-                            msg = "ERROR " + result.status + ": " + result.message;
-                            title = "Something went wrong! Couldn't load unions :(";
-                            let alertProps = {message: msg, open: true, title: title, severity: "warning"};
-                            this.setState({
-                                alertProps: result.status !== 404 ? alertProps : undefined
-                            });
-                        }
-                    }).catch(() => {
-                        if (this._isMounted) {
-                            msg = "Something went wrong! Couldn't load unions :(";
-                            title = "ERROR " + response.status;
-                            let alertProps = {message: msg, open: true, title: title, severity: "error"};
-                            this.setState({
-                                alertProps: response.status !== 404 ? alertProps : undefined
-                            });
-                        }
-                    });
-                }
-            }).catch(error => {
-                console.log(error);
-                if (this._isMounted) {
-                    msg = "Server error! Couldn't load unions :(";
-                    this.setState({
-                        alertProps: {message: msg, open: true, severity: "error"},
-                    });
-                }
-            }).finally(() => {
-                this.setState({
-                    loading: false,
-                    threshold: this.props.project.threshold,
-                    typeOfUnions: this.props.project.typeOfUnions
-                });
-            });
-        });
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { parameters: prevParameters } = prevState;
+        const { parameters } = this.state;
+
+        if ( prevParameters.typeOfUnions !== parameters.typeOfUnions) {
+            if ( parameters.typeOfUnions === "monotonic" && parameters.consistencyThreshold === 1) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 0}
+                }));
+            } else if ( parameters.typeOfUnions === "standard" && parameters.consistencyThreshold === 0) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 1}
+                }));
+            }
+        }
+
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            this.setState({ loading: true }, this.getUnions);
+        }
     }
 
     componentWillUnmount() {
         this._isMounted = false;
+        const { parametersSaved } = this.state;
 
-        if (this.state.changes) {
+        if (!parametersSaved) {
+            const { parameters } = this.state;
             let project = {...this.props.project};
-            if (Object.keys(this._data).length) {
-                project.result.unionsWithSingleLimitingDecision = this._data;
-                project.result.calculatedUnionsWithSingleLimitingDecision = true;
-            }
-            project.threshold = this.state.threshold;
-            project.typeOfUnions = this.state.typeOfUnions;
 
-            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
-            tabsUpToDate[this.props.value] = this.state.updated;
-
-            this.props.onTabChange(project, this.state.updated, tabsUpToDate);
+            project.parameters = { ...project.parameters, ...parameters }
+            project.parametersSaved = parametersSaved;
+            this.props.onTabChange(project);
         }
     }
 
-    onSettingsClick = () => {
-        this.setState(prevState => ({
-            openSettings: !prevState.openSettings,
-        }));
-    };
-
-    onSettingsClose = () => {
-        this.setState({
-            openSettings: false,
-        });
-    };
-
-    onThresholdChange = (threshold) => {
-        this.setState({
-            changes: Boolean(threshold),
-            updated: this.props.project.dataUpToDate,
-            threshold: threshold,
-        });
-    };
-
-    onUnionTypeChange = (event) => {
-        this.setState({
-            changes: event.target.value !== "epsilon",
-            updated: this.props.project.dataUpToDate,
-            typeOfUnions: event.target.value,
-        });
-    };
-
     onCountUnionsClick = () => {
         let project = {...this.props.project};
-        const threshold = this.state.threshold;
-        const typeOfUnions = this.state.typeOfUnions;
+        const { parameters: { consistencyThreshold, typeOfUnions } } = this.state;
 
         this.setState({
             loading: true,
         }, () => {
-            let link = `http://localhost:8080/projects/${project.result.id}/unions`;
-            if (project.dataUpToDate) link = link + `?typeOfUnions=${typeOfUnions}&consistencyThreshold=${threshold}`;
-
+            let method = project.dataUpToDate ? "PUT" : "POST";
             let data = new FormData();
-            data.append("typeOfUnions", typeOfUnions);
-            data.append("consistencyThreshold", threshold);
-            data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-            data.append("data", JSON.stringify(project.result.informationTable.objects));
 
-            let msg, title = "";
-            fetch(link, {
-                method: project.dataUpToDate ? "PUT" : "POST",
-                body: project.dataUpToDate ? null : data
-            }).then(response => {
-                if (response.status === 200) {
-                    response.json().then(result => {
-                        const updated = true;
+            if ( !project.dataUpToDate ) {
+                data.append("typeOfUnions", typeOfUnions)
+                data.append("consistencyThreshold", consistencyThreshold)
+                data.append("metadata", JSON.stringify(project.result.informationTable.attributes))
+                data.append("data", JSON.stringify(project.result.informationTable.objects));
+            } else {
+                data = {
+                    consistencyThreshold: consistencyThreshold,
+                    typeOfUnions: typeOfUnions
+                };
+            }
 
-                        if (this._isMounted) {
-                            const items = this.getItems(result);
+            fetchUnions(
+                project.result.id, method, data
+            ).then(result => {
+                if (result) {
+                    if (this._isMounted) {
+                        const items = parseUnionsItems(result);
 
-                            this._data = result;
-                            this._items = items;
-                            this.setState({
-                                changes: true,
-                                updated: updated,
-                                displayedItems: items,
-                            });
-                        } else {
-                            project.result.unionsWithSingleLimitingDecision = result;
-                            project.result.calculatedUnionsWithSingleLimitingDecision = updated;
+                        this.setState({
+                            data: result,
+                            items: items,
+                            displayedItems: items,
+                            parameters: {
+                                consistencyThreshold: result.consistencyThreshold,
+                                typeOfUnions: result.typeOfUnions.toLowerCase()
+                            },
+                            parametersSaved: true,
+                        });
+                    }
 
-                            let tabsUpToDate = this.props.project.tabsUpToDate.slice();
-                            tabsUpToDate[this.props.value] = updated;
-
-                            this.props.onTabChange(project, updated, tabsUpToDate);
-                        }
-                    }).catch(error => {
-                        console.log(error);
-                    });
-                } else {
-                    response.json().then(result => {
-                        if (this._isMounted) {
-                            msg = "ERROR " + result.status + ": " + result.message;
-                            title = "Something went wrong! Couldn't calculate unions :(";
-                            this.setState({
-                                alertProps: {message: msg, open: true, title: title, severity: "warning"}
-                            });
-                        }
-                    }).catch(() => {
-                        if (this._isMounted) {
-                            msg = "Something went wrong! Couldn't calculate unions :(";
-                            title = "ERROR " + response.status;
-                            this.setState({
-                                alertProps: {message: msg, open: true, title: title, severity: "error"}
-                            });
-                        }
-                    });
+                    project.result.unions = result;
+                    project.dataUpToDate = true;
+                    project.tabsUpToDate[this.props.value] = true;
+                    project.parameters.consistencyThreshold = result.consistencyThreshold;
+                    project.parameters.typeOfUnions = result.typeOfUnions.toLowerCase();
+                    project.parametersSaved = true;
+                    this.props.onTabChange(project);
                 }
             }).catch(error => {
-                console.log(error);
                 if (this._isMounted) {
-                    msg = "Server error! Couldn't calculate unions :(";
-                    this.setState({
-                        alertProps: {message: msg, open: true, severity: "error"}
-                    });
+                    this.setState({alertProps: error});
                 }
             }).finally(() => {
-                if (this._isMounted) this.setState({loading: false});
+                if (this._isMounted) {
+                    this.setState({loading: false});
+                }
             });
         });
     };
 
-    onFilterChange = (event) => {
-        const filteredItems = filterFunction(event.target.value.toString(), this._items.slice(0));
-        this.setState({displayedItems: filteredItems});
+    toggleOpen = (name) => {
+        this.setState(({open}) => ({
+            open: {...open, [name]: !open[name]}
+        }));
     };
 
     onDetailsOpen = (index) => {
-        this.setState({
-            openDetails: true,
-            selectedItem: this._items[index],
-        });
+        const { items } = this.state;
+
+        this.setState(({open}) => ({
+            open: {...open, details: true, settings: false},
+            selectedItem: items[index],
+        }));
     };
 
-    onDetailsClose = () => {
-        this.setState({
-            openDetails: false
-        });
+    onConsistencyThresholdChange = (threshold) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, consistencyThreshold: threshold},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onTypeOfUnionsChange = (event) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfUnions: event.target.value},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onFilterChange = (event) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            const { items } = this.state;
+            const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+
+            this.setState({
+                items: items,
+                displayedItems: filteredItems
+            });
+        }
     };
 
     onSnackbarClose = (event, reason) => {
@@ -257,79 +248,26 @@ class Unions extends Component {
         }
     };
 
-    getItems = (data) => {
-        let items = [];
-        if (data) {
-            for (let type of ["downwardUnions", "upwardUnions"]) {
-                for (let i = 0; i < data[type].length; i++) {
-                    const id = i;
-                    const name = data[type][i].unionType.replace("_", " ").toLowerCase()
-                        + " " + data[type][i].limitingDecision;
-                    const traits = {
-                        accuracyOfApproximation: data[type][i].accuracyOfApproximation,
-                        qualityOfApproximation: data[type][i].qualityOfApproximation,
-                    };
-                    const tables = {
-                        objects: data[type][i].objects.slice(),
-                        lowerApproximation: data[type][i].lowerApproximation.slice(),
-                        upperApproximation: data[type][i].upperApproximation.slice(),
-                        boundary: data[type][i].boundary.slice(),
-                        positiveRegion: data[type][i].positiveRegion.slice(),
-                        negativeRegion: data[type][i].negativeRegion.slice(),
-                        boundaryRegion: data[type][i].boundaryRegion.slice(),
-                    };
-
-                    const item = new Item(id, name, traits, null, tables);
-                    items.push(item);
-                }
-            }
-        }
-        return items;
-    };
-
-    getListItems = (items) => {
-        let listItems = [];
-        if (this._data && items) {
-            for (let i = 0; i < items.length; i++) {
-                const listItem = {
-                    id: items[i].id,
-                    header: items[i].name,
-                    subheader: undefined,
-                    content: undefined,
-                    multiContent: [
-                        {
-                            title: "Accuracy of approximation:",
-                            subtitle: items[i].traits.accuracyOfApproximation,
-                        },
-                        {
-                            title: "Quality of approximation: ",
-                            subtitle: items[i].traits.qualityOfApproximation,
-                        }
-                    ],
-                };
-                listItems.push(listItem);
-            }
-        }
-        return listItems;
-    };
-
     render() {
-        const {loading, displayedItems, threshold, typeOfUnions, selectedItem, openDetails,
-            openSettings, alertProps} = this.state;
+        const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
+        const { project: { result, settings } } = this.props;
 
         return (
             <RuleWorkBox id={"rule-work-unions"} styleVariant={"tab"}>
                 <StyledPaper id={"unions-bar"} paperRef={this.upperBar}>
                     <SettingsButton
                         aria-label={"unions-settings-button"}
-                        onClick={this.onSettingsClick}
+                        onClick={() => this.toggleOpen("settings")}
                         title={"Click to choose consistency & type of unions"}
                     />
                     <StyledDivider />
-                    <RuleWorkTooltip title={`Calculate with threshold ${threshold}`}>
+                    <RuleWorkTooltip
+                        title={`Calculate with threshold ${parameters.consistencyThreshold} 
+                        & ${parameters.typeOfUnions} unions`}
+                    >
                         <CalculateButton
                             aria-label={"unions-calculate-button"}
-                            disabled={!this.props.project || loading}
+                            disabled={loading}
                             onClick={this.onCountUnionsClick}
                         />
                     </RuleWorkTooltip>
@@ -338,23 +276,23 @@ class Unions extends Component {
                 </StyledPaper>
                 <RuleWorkDrawer
                     id={"unions-settings"}
-                    onClose={this.onSettingsClose}
-                    open={openSettings}
+                    onClose={() => this.toggleOpen("settings")}
+                    open={open.settings}
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfUnionsSelector
                         id={"unions-union-type-selector"}
-                        onChange={this.onUnionTypeChange}
-                        value={typeOfUnions}
+                        onChange={this.onTypeOfUnionsChange}
+                        value={parameters.typeOfUnions}
                     />
                     <ThresholdSelector
                         id={"unions-threshold-selector"}
-                        onChange={this.onThresholdChange}
-                        value={threshold}
+                        onChange={this.onConsistencyThresholdChange}
+                        value={parameters.consistencyThreshold}
                     />
                 </RuleWorkDrawer>
                 <TabBody
-                    content={this.getListItems(displayedItems)}
+                    content={parseUnionsListItems(displayedItems)}
                     id={"unions-list"}
                     isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
                     isLoading={loading}
@@ -364,21 +302,22 @@ class Unions extends Component {
                     noFilterResults={!displayedItems}
                     subheaderContent={[
                         {
-                            label: "Number of objects",
-                            value: displayedItems && displayedItems.length
+                            label: "Number of unions:",
+                            value: displayedItems ? displayedItems.length : undefined
                         },
                         {
-                            label: "Quality of approximation",
-                            value: this._data.qualityOfApproximation
+                            label: "Quality of classification:",
+                            value: data ? data.qualityOfApproximation : undefined
                         }
                     ]}
                 />
                 {selectedItem &&
                     <UnionsDialog
                         item={selectedItem}
-                        onClose={this.onDetailsClose}
-                        open={openDetails}
-                        projectResult={this.props.project.result}
+                        onClose={() => this.toggleOpen("details")}
+                        open={open.details}
+                        projectResult={result}
+                        settings={settings}
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />

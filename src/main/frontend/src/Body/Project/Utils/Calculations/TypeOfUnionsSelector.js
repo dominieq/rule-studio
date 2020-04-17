@@ -1,24 +1,51 @@
 import React from "react";
 import PropTypes from "prop-types";
-import RuleWorkHelper from "../../../../RuleWorkComponents/Feedback/RuleWorkHelper";
+import { calculationStyles } from "./styles";
+import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
 import RuleWorkSmallBox from "../../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import MenuItem from "@material-ui/core/MenuItem";
+
+const measures = [
+    {
+        label: "epsilon",
+        value: "monotonic"
+    },
+    {
+        label: "rough membership",
+        value: "standard"
+    }
+]
 
 function TypeOfUnionsSelector(props) {
-    const { id } = props;
+    const { CircleHelperProps, id, disabledChildren, TextFieldProps, ...other } = props;
+    const calculationClasses = calculationStyles();
 
     return (
-        <div id={id} style={{display: "flex", alignItems: "center", margin: "4px 0"}}>
-            <RuleWorkHelper style={{marginRight: 16}}>
-                {"Add more information to tooltip"}
-            </RuleWorkHelper>
-            <RuleWorkSmallBox style={{flexGrow: 1, margin: 0}}>
+        <div id={id} className={calculationClasses.drawerRow}>
+            <CircleHelper
+                title={"Add more information to tooltip"}
+                WrapperProps={{
+                    style: {marginRight: 16}
+                }}
+                {...CircleHelperProps}
+            />
+            <RuleWorkSmallBox className={calculationClasses.inputElement}>
                 <RuleWorkTextField
-                    outsideLabel={"Select type of unions"}
+                    outsideLabel={"Select consistency measure"}
                     select={true}
-                    {...props}
+                    {...TextFieldProps}
+                    {...other}
                 >
-                    {["monotonic", "standard"]}
+                    {measures.map((option, index) => (
+                        <MenuItem
+                            key={index}
+                            disabled={disabledChildren ? disabledChildren.includes(option.value) : false}
+                            value={option.value}
+                        >
+                            {option.label}
+                        </MenuItem>
+                    ))}
                 </RuleWorkTextField>
             </RuleWorkSmallBox>
         </div>
@@ -26,9 +53,11 @@ function TypeOfUnionsSelector(props) {
 }
 
 TypeOfUnionsSelector.propTypes = {
+    CircleHelperProps: PropTypes.object,
     disabledChildren: PropTypes.arrayOf(PropTypes.string),
     id: PropTypes.string,
     onChange: PropTypes.func.isRequired,
+    TextFieldProps: PropTypes.object,
     value: PropTypes.string,
 };
 
