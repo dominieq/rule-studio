@@ -3,7 +3,7 @@ package pl.put.poznan.rulework.service;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
+import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.sampling.CrossValidator;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
@@ -44,12 +44,12 @@ public class CrossValidationService {
             InformationTable validationTable = folds.get(i).getValidationTable();
 
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsService.calculateUnionsWithSingleLimitingDecision(trainingTable, typeOfUnions, consistencyThreshold);
-            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.calculateRuleSetWithComputableCharacteristics(unionsWithSingleLimitingDecision, typeOfRules);
-            Classification classificationValidationTable = ClassificationService.calculateClassification(validationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics, orderOfDecisions);
+            RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.calculateRuleSetWithCharacteristics(unionsWithSingleLimitingDecision, typeOfRules);
+            Classification classificationValidationTable = ClassificationService.calculateClassification(trainingTable, validationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
 
             foldOrdinalMisclassificationMatrix[i] = classificationValidationTable.getOrdinalMisclassificationMatrix();
 
-            crossValidationSingleFolds[i] = new CrossValidationSingleFold(validationTable, ruleSetWithComputableCharacteristics, classificationValidationTable, trainingTable.getNumberOfObjects());
+            crossValidationSingleFolds[i] = new CrossValidationSingleFold(validationTable, ruleSetWithCharacteristics, classificationValidationTable, trainingTable.getNumberOfObjects());
         }
 
         OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, foldOrdinalMisclassificationMatrix);

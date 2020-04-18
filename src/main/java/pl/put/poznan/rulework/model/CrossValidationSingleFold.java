@@ -2,17 +2,17 @@ package pl.put.poznan.rulework.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
+import org.rulelearn.rules.RuleSetWithCharacteristics;
 
 public class CrossValidationSingleFold {
     private InformationTable validationTable;
-    private RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics;
+    private RuleSetWithCharacteristics ruleSetWithCharacteristics;
     private Classification classificationValidationTable;
     private Integer numberOfLearningObjects;
 
-    public CrossValidationSingleFold(InformationTable validationTable, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics, Classification classificationValidationTable, Integer numberOfLearningObjects) {
+    public CrossValidationSingleFold(InformationTable validationTable, RuleSetWithCharacteristics ruleSetWithCharacteristics, Classification classificationValidationTable, Integer numberOfLearningObjects) {
         this.validationTable = validationTable;
-        this.ruleSetWithComputableCharacteristics = ruleSetWithComputableCharacteristics;
+        this.ruleSetWithCharacteristics = ruleSetWithCharacteristics;
         this.classificationValidationTable = classificationValidationTable;
         this.numberOfLearningObjects = numberOfLearningObjects;
     }
@@ -26,13 +26,13 @@ public class CrossValidationSingleFold {
     }
 
     @JsonProperty("ruleSet")
-    public RuleSetWithComputableCharacteristics getRuleSetWithComputableCharacteristics() {
-        return ruleSetWithComputableCharacteristics;
+    public RuleSetWithCharacteristics getRuleSetWithCharacteristics() {
+        return ruleSetWithCharacteristics;
     }
 
     @JsonProperty("ruleSet")
-    public void setRuleSetWithComputableCharacteristics(RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics) {
-        this.ruleSetWithComputableCharacteristics = ruleSetWithComputableCharacteristics;
+    public void setRuleSetWithCharacteristics(RuleSetWithCharacteristics ruleSetWithCharacteristics) {
+        this.ruleSetWithCharacteristics = ruleSetWithCharacteristics;
     }
 
     public Classification getClassificationValidationTable() {

@@ -95,8 +95,8 @@ public class ProjectService {
 
         if(rulesFile != null) { //load rules from file
             attributes = informationTable.getAttributes();
-            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.parseComputableRules(rulesFile, attributes);
-            project.setRules(new RulesWithHttpParameters(ruleSetWithComputableCharacteristics, true));
+            RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
+            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, true));
         }
 
         return project;
