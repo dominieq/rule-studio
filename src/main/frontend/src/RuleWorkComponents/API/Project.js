@@ -4,7 +4,8 @@ class Project {
 
         this.dataUpToDate = true;
         this.tabsUpToDate = Array(5.).fill(true);
-        this.externalRules = false;
+        this.externalRules = result.rules ? result.rules.externalRules : false;
+        this.externalData = result.classification ? result.classification.externalData : false;
 
         this.parameters = {
             consistencyThreshold: 0,
