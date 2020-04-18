@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from "@material-ui/core/styles";
 import Classification from "./Classification/Classification";
@@ -47,13 +47,22 @@ const StyledTab = withStyles(theme => ({
 
 }), {name: "MuiTab"})(props => <Tab {...props} disableRipple={true} /> );
 
-class ProjectTabs extends Component {
+class ProjectTabs extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
             selected: 0,
-        }
+        };
+    }
+
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        const { selected } = this.state;
+
+        const selectionChanged = nextState.selected !== selected;
+        const projectChanged = nextProps.project.result.id !== this.props.project.result.id;
+
+        return selectionChanged || projectChanged;
     }
 
     onTabChange = (event, newValue) => {
@@ -106,7 +115,7 @@ class ProjectTabs extends Component {
     };
 
     render() {
-        const selected = this.state.selected;
+        const { selected } = this.state;
 
         return (
             <Fragment>

@@ -28,36 +28,43 @@ class Cones extends Component {
         this.upperBar = React.createRef();
     }
 
+    getData = () => {
+        const { project } = this.props;
+
+        fetchCones(
+            project.result.id, "GET", null
+        ).then(result => {
+            if (result && this._isMounted) {
+                const { result: { informationTable: { objects } }, settings } = project;
+                const items = parseConesItems(result, objects, settings);
+
+                this.setState({
+                    data: result,
+                    items: items,
+                    displayedItems: items,
+                });
+            }
+        }).catch(error => {
+            if (this._isMounted) {
+                this.setState({
+                    data: null,
+                    items: null,
+                    displayedItems: [],
+                    selectedItem: null,
+                    alertProps: error
+                });
+            }
+        }).finally(() => {
+            if (this._isMounted) {
+                this.setState({loading: false})
+            }
+        });
+    }
+
     componentDidMount() {
         this._isMounted = true;
-        const project = {...this.props.project};
 
-        this.setState({
-            loading: true,
-        }, () => {
-            fetchCones(
-                project.result.id, "GET", null, 404
-            ).then(result => {
-                if (this._isMounted && result) {
-                    const { result: { informationTable: { objects } }, settings } = project;
-                    const items = parseConesItems(result, objects, settings);
-
-                    this.setState({
-                        data: result,
-                        items: items,
-                        displayedItems: items,
-                    });
-                }
-            }).catch(error => {
-                if (this._isMounted) {
-                    this.setState({alertProps: error});
-                }
-            }).finally(() => {
-                if (this._isMounted) {
-                    this.setState({loading: false})
-                }
-            })
-        });
+        this.setState({ loading: true }, this.getData);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -71,6 +78,10 @@ class Cones extends Component {
                 items: newItems,
                 displayedItems: newItems
             });
+        }
+
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            this.setState({ loading: true }, this.getData);
         }
     }
 
@@ -86,6 +97,7 @@ class Cones extends Component {
         }, () => {
             let method = project.dataUpToDate ? "PUT" : "POST"
             let data = new FormData();
+
             if ( !project.dataUpToDate ) {
                 data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
                 data.append("data", JSON.stringify(project.result.informationTable.objects));

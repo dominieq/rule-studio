@@ -48,52 +48,59 @@ class Rules extends Component {
         this.upperBar = React.createRef();
     }
 
-    componentDidMount() {
-        this._isMounted = true;
+    getRules = () => {
         const { project } = this.props;
 
-        this.setState({
-            loading: true,
-        }, () => {
-            fetchRules(
-                project.result.id, "GET", null, 404
-            ).then(result => {
-                if (result && this._isMounted) {
-                    const { project: { externalRules, parametersSaved } } = this.props;
+        fetchRules(
+            project.result.id, "GET", null
+        ).then(result => {
+            if (result && this._isMounted) {
+                const { project: { externalRules, parametersSaved } } = this.props;
 
-                    const items = parseRulesItems(result);
-                    const resultParameters = parseRulesParams(result);
+                const items = parseRulesItems(result);
+                const resultParameters = parseRulesParams(result);
 
-                    this.setState(({parameters}) => ({
-                        data: result,
-                        items: items,
-                        displayedItems: items,
-                        externalRules: externalRules,
-                        parameters: { ...parameters, ...resultParameters},
-                        parametersSaved: parametersSaved
-                    }));
-                }
-            }).catch(error => {
-                if (this._isMounted) {
-                    this.setState({alertProps: error});
-                }
-            }).finally(() => {
-                if (this._isMounted) {
-                    const { parametersSaved } = this.state;
-                    const { project: { parameters: {
-                        consistencyThreshold,
-                        typeOfRules,
-                        typeOfUnions
-                    }}} = this.props;
+                this.setState(({parameters}) => ({
+                    data: result,
+                    items: items,
+                    displayedItems: items,
+                    externalRules: externalRules,
+                    parameters: { ...parameters, ...resultParameters},
+                    parametersSaved: parametersSaved
+                }));
+            }
+        }).catch(error => {
+            if (this._isMounted) {
+                this.setState({
+                    data: null,
+                    items: null,
+                    displayedItems: [],
+                    selectedItem: null,
+                    alertProps: error
+                });
+            }
+        }).finally(() => {
+            if (this._isMounted) {
+                const { parametersSaved } = this.state;
+                const { project: { parameters: {
+                    consistencyThreshold,
+                    typeOfRules,
+                    typeOfUnions
+                }}} = this.props;
 
-                    this.setState(({parameters}) => ({
-                        loading: false,
-                        parameters: parametersSaved ?
-                            parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules, typeOfUnions } }
-                    }));
-                }
-            });
+                this.setState(({parameters}) => ({
+                    loading: false,
+                    parameters: parametersSaved ?
+                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules, typeOfUnions } }
+                }));
+            }
         });
+    };
+
+    componentDidMount() {
+        this._isMounted = true;
+
+        this.setState({ loading: true }, this.getRules);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -116,6 +123,10 @@ class Rules extends Component {
             this.setState(({parameters}) => ({
                 parameters: { ...parameters, consistencyThreshold: 0 }
             }));
+        }
+
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            this.setState({ loading: true }, this.getRules);
         }
     }
 

@@ -18,10 +18,10 @@ function parseRulesListItems(items) {
                 header: items[i].name.decisionsToString(),
                 subheader: "Type: " + items[i].traits["Type"],
                 content: "Support: " + items[i].traits["Support"] +
-                    ` (Strength: ${getFixed(items[i].traits["Strength"])},` +
-                    ` Confidence: ${getFixed(items[i].traits["Confidence"])},` +
-                    ` Coverage factor: ${getFixed(items[i].traits["CoverageFactor"])},` +
-                    ` Epsilon measure: ${getFixed(items[i].traits["EpsilonMeasure"])})`,
+                    ` | Strength: ${getFixed(items[i].traits["Strength"])}` +
+                    ` | Confidence: ${getFixed(items[i].traits["Confidence"])}` +
+                    ` | Coverage factor: ${getFixed(items[i].traits["Coverage factor"])}` +
+                    ` | Epsilon measure: ${getFixed(items[i].traits["Epsilon measure"])}`,
                 multiContent: items[i].name.conditions.map(condition => (
                     {
                         title: condition.primary,

@@ -48,50 +48,57 @@ class Classification extends Component {
         this.upperBar = React.createRef();
     }
 
-    componentDidMount() {
-        this._isMounted = true;
+    getClassification = () => {
         const { project } = this.props;
 
-        this.setState({
-            loading: true,
-        }, () => {
-            fetchClassification(
-                project.result.id, "GET", null, 404
-            ).then(result => {
-                if (result && this._isMounted) {
-                    const { project: { parametersSaved, settings } } = this.props;
+        fetchClassification(
+            project.result.id, "GET", null
+        ).then(result => {
+            if (result && this._isMounted) {
+                const { project: { parametersSaved, settings } } = this.props;
 
-                    const items = parseClassificationItems(result, settings);
-                    const resultParameters = parseClassificationParams(result);
+                const items = parseClassificationItems(result, settings);
+                const resultParameters = parseClassificationParams(result);
 
-                    this.setState(({parameters}) => ({
-                        data: result,
-                        items: items,
-                        displayedItems: items,
-                        parameters: { ...parameters, ...resultParameters },
-                        parametersSaved: parametersSaved
-                    }));
-                }
-            }).catch(error => {
-                if (this._isMounted) {
-                    this.setState({alertProps: error});
-                }
-            }).finally(() => {
-                if (this._isMounted) {
-                    const { parametersSaved } = this.state;
-                    const { project: { parameters: {
-                        defaultClassificationResult,
-                        typeOfClassifier
-                    }}} = this.props;
+                this.setState(({parameters}) => ({
+                    data: result,
+                    items: items,
+                    displayedItems: items,
+                    parameters: { ...parameters, ...resultParameters },
+                    parametersSaved: parametersSaved
+                }));
+            }
+        }).catch(error => {
+            if (this._isMounted) {
+                this.setState({
+                    data: null,
+                    items: null,
+                    displayedItems: [],
+                    selectedItem: null,
+                    alertProps: error
+                });
+            }
+        }).finally(() => {
+            if (this._isMounted) {
+                const { parametersSaved } = this.state;
+                const { project: { parameters: {
+                    defaultClassificationResult,
+                    typeOfClassifier
+                }}} = this.props;
 
-                    this.setState(({parameters}) => ({
-                        loading: false,
-                        parameters: parametersSaved ?
-                            parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier } }
-                    }));
-                }
-            });
+                this.setState(({parameters}) => ({
+                    loading: false,
+                    parameters: parametersSaved ?
+                        parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier } }
+                }));
+            }
         });
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+
+        this.setState({ loading: true }, this.getClassification);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -105,6 +112,10 @@ class Classification extends Component {
                 items: newItems,
                 displayedItems: newItems
             });
+        }
+
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            this.setState({ loading: true}, this.getClassification);
         }
     }
 
@@ -145,7 +156,7 @@ class Classification extends Component {
             loading: true,
         }, () => {
             fetchClassification(
-                project.result.id, method, data, []
+                project.result.id, method, data
             ).then(result => {
                 if (result) {
                     project = {...this.props.project};

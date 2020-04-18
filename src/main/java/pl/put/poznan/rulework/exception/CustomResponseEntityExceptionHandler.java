@@ -15,7 +15,7 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     public void projectNotFoundException(
             ProjectNotFoundException ex,
             HttpServletResponse response) throws IOException {
-        response.sendError(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        response.sendError(HttpStatus.NOT_ACCEPTABLE.value(), ex.getMessage());
     }
 
     @ExceptionHandler(EmptyResponseException.class)
@@ -30,5 +30,12 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
             WrongParameterException ex,
             HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.UNPROCESSABLE_ENTITY.value(), ex.getMessage());
+    }
+
+    @ExceptionHandler(NoRulesException.class)
+    public void noRulesException(
+            NoRulesException ex,
+            HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 }

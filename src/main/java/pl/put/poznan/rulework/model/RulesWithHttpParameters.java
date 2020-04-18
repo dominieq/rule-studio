@@ -9,16 +9,19 @@ public class RulesWithHttpParameters {
     private UnionType typeOfUnions;
     private Double consistencyThreshold;
     private RuleType typeOfRules;
+    private boolean externalRules;
 
-    public RulesWithHttpParameters(RuleSetWithComputableCharacteristics rules) {
+    public RulesWithHttpParameters(RuleSetWithComputableCharacteristics rules, Boolean externalRules) {
         this.ruleSet = rules;
+        this.externalRules = externalRules;
     }
 
-    public RulesWithHttpParameters(RuleSetWithComputableCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType) {
+    public RulesWithHttpParameters(RuleSetWithComputableCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, Boolean externalRules) {
         this.ruleSet = rules;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
         this.typeOfRules = ruleType;
+        this.externalRules = externalRules;
     }
 
     public RuleSetWithComputableCharacteristics getRuleSet() {
@@ -53,6 +56,14 @@ public class RulesWithHttpParameters {
         this.typeOfRules = typeOfRules;
     }
 
+    public boolean isExternalRules() {
+        return externalRules;
+    }
+
+    public void setExternalRules(boolean externalRules) {
+        this.externalRules = externalRules;
+    }
+
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
@@ -60,6 +71,7 @@ public class RulesWithHttpParameters {
                 ", typeOfUnions=" + typeOfUnions +
                 ", consistencyThreshold=" + consistencyThreshold +
                 ", typeOfRules=" + typeOfRules +
+                ", externalRules=" + externalRules +
                 '}';
     }
 }

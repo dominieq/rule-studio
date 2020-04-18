@@ -62,54 +62,61 @@ class CrossValidation extends Component {
         this.upperBar = React.createRef();
     }
 
+    getCrossValidation = () => {
+        const { project } = this.props;
+
+        fetchCrossValidation(
+            project.result.id, 'GET', null
+        ).then(result => {
+            if (this._isMounted && result) {
+                const { project: { parametersSaved, settings } } = this.props
+
+                let folds = parseCrossValidationFolds(result);
+                let resultParams = parseCrossValidationParams(result);
+
+                this.setState(({parameters}) => ({
+                    data: result,
+                    folds: folds,
+                    parameters: {...parameters, ...resultParams},
+                    parametersSaved: parametersSaved
+                }), () => {
+                    const { folds, selected: { foldIndex } } = this.state;
+                    let items = parseCrossValidationItems(folds[foldIndex], settings);
+
+                    this.setState({
+                        items: items,
+                        displayedItems: items,
+                    });
+                });
+            }
+        }).catch(error => {
+            if ( this._isMounted ) {
+                this.setState(({selected}) => ({
+                    data: null,
+                    folds: null,
+                    items: null,
+                    displayedItems: [],
+                    selected: { ...selected, item: null },
+                    alertProps: error
+                }));
+            }
+        }).finally(() => {
+            if ( this._isMounted ) {
+                const { parametersSaved } = this.state;
+                const { project: { parameters: propsParameters } } = this.props;
+
+                this.setState(({parameters}) => ({
+                    loading: false,
+                    parameters: parametersSaved ? parameters : { ...parameters, ...propsParameters }
+                }));
+            }
+        });
+    }
+
     componentDidMount() {
         this._isMounted = true;
 
-        this.setState({
-            loading: true,
-        }, () => {
-            const { project } = this.props;
-
-            fetchCrossValidation(
-                project.result.id, 'GET', null, 404
-            ).then(result => {
-                if (this._isMounted && result) {
-                    const { project: { parametersSaved, settings } } = this.props
-
-                    let folds = parseCrossValidationFolds(result);
-                    let resultParams = parseCrossValidationParams(result);
-
-                    this.setState(({parameters}) => ({
-                        data: result,
-                        folds: folds,
-                        parameters: {...parameters, ...resultParams},
-                        parametersSaved: parametersSaved
-                    }), () => {
-                        const { folds, selected: { foldIndex } } = this.state;
-                        let items = parseCrossValidationItems(folds[foldIndex], settings);
-
-                        this.setState({
-                            items: items,
-                            displayedItems: items,
-                        });
-                    });
-                }
-            }).catch(error => {
-                if ( this._isMounted ) {
-                    this.setState({alertProps: error});
-                }
-            }).finally(() => {
-                if ( this._isMounted ) {
-                    const { parametersSaved } = this.state;
-                    const { project: { parameters: propsParameters } } = this.props;
-
-                    this.setState(({parameters}) => ({
-                        loading: false,
-                        parameters: parametersSaved ? parameters : { ...parameters, ...propsParameters }
-                    }));
-                }
-            });
-        });
+        this.setState({ loading: true }, this.getCrossValidation);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -141,6 +148,10 @@ class CrossValidation extends Component {
             this.setState(({parameters}) => ({
                 parameters: { ...parameters, consistencyThreshold: 0}
             }));
+        }
+
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            this.setState({ loading: true }, this.getCrossValidation);
         }
     }
 
@@ -174,7 +185,7 @@ class CrossValidation extends Component {
             let data = createFormData(parameters, project);
 
             fetchCrossValidation(
-                project.result.id, method, data, []
+                project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -456,12 +467,16 @@ class CrossValidation extends Component {
                             value: selected.foldIndex + 1
                         },
                         {
-                            label: "Number of test objects:",
-                            value: folds && folds[selected.foldIndex].numberOfTestObjects,
+                            label: "Training objects:",
+                            value: folds && folds[selected.foldIndex].numberOfLearningObjects
                         },
                         {
-                            label: "Total number of rules:",
+                            label: "Rules:",
                             value: folds && folds[selected.foldIndex].ruleSet.length
+                        },
+                        {
+                            label: "Test objects:",
+                            value: folds && folds[selected.foldIndex].numberOfTestObjects,
                         }
                     ]}
                 />

@@ -49,7 +49,7 @@ public class CrossValidationService {
 
             foldOrdinalMisclassificationMatrix[i] = classificationValidationTable.getOrdinalMisclassificationMatrix();
 
-            crossValidationSingleFolds[i] = new CrossValidationSingleFold(validationTable, ruleSetWithComputableCharacteristics, classificationValidationTable);
+            crossValidationSingleFolds[i] = new CrossValidationSingleFold(validationTable, ruleSetWithComputableCharacteristics, classificationValidationTable, trainingTable.getNumberOfObjects());
         }
 
         OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, foldOrdinalMisclassificationMatrix);
@@ -65,7 +65,7 @@ public class CrossValidationService {
 
         CrossValidation crossValidation = project.getCrossValidation();
         if(crossValidation == null) {
-            EmptyResponseException ex = new EmptyResponseException("Cross-validation", id);
+            EmptyResponseException ex = new EmptyResponseException("Cross-validation hasn’t been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }

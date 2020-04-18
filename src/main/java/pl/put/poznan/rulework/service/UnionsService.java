@@ -53,12 +53,18 @@ public class UnionsService {
     }
 
     public static void calculateUnionsWithHttpParametersInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold) {
-        UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(project.getInformationTable(), typeOfUnions, consistencyThreshold);
+        UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
 
-        UnionsWithHttpParameters unionsWithHttpParameters = new UnionsWithHttpParameters(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold);
+        if((!project.isCurrentUnionsWithSingleLimitingDecision()) || (unionsWithHttpParameters.getTypeOfUnions() != typeOfUnions) || (unionsWithHttpParameters.getConsistencyThreshold() != consistencyThreshold)) {
+            UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(project.getInformationTable(), typeOfUnions, consistencyThreshold);
 
-        project.setUnions(unionsWithHttpParameters);
-        project.setCalculatedUnionsWithSingleLimitingDecision(true);
+            unionsWithHttpParameters = new UnionsWithHttpParameters(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold);
+
+            project.setUnions(unionsWithHttpParameters);
+            project.setCurrentUnionsWithSingleLimitingDecision(true);
+        } else {
+            logger.info("Unions are already calculated with given configuration, skipping current calculation.");
+        }
     }
 
     public UnionsWithHttpParameters getUnions(UUID id) {
@@ -68,7 +74,7 @@ public class UnionsService {
 
         UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
         if(unionsWithHttpParameters == null) {
-            EmptyResponseException ex = new EmptyResponseException("Unions", id);
+            EmptyResponseException ex = new EmptyResponseException("Unions haven’t been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }

@@ -16,23 +16,26 @@ public class Project {
     private Classification classification;
     private CrossValidation crossValidation;
 
-    private boolean calculatedDominanceCones;
-    private boolean calculatedUnionsWithSingleLimitingDecision;
+    private boolean currentDominanceCones;
+    private boolean currentUnionsWithSingleLimitingDecision;
+    private boolean currentRules;
 
     public Project(String name) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.informationTable = new InformationTable(new Attribute[0], new ArrayList<>());
-        this.calculatedDominanceCones = false;
-        this.calculatedUnionsWithSingleLimitingDecision = false;
+        this.currentDominanceCones = false;
+        this.currentUnionsWithSingleLimitingDecision = false;
+        this.currentRules = false;
     }
 
     public Project(String name, InformationTable informationTable) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.informationTable = informationTable;
-        this.calculatedDominanceCones = false;
-        this.calculatedUnionsWithSingleLimitingDecision = false;
+        this.currentDominanceCones = false;
+        this.currentUnionsWithSingleLimitingDecision = false;
+        this.currentRules = false;
     }
 
     public UUID getId() {
@@ -57,8 +60,9 @@ public class Project {
 
     public void setInformationTable(InformationTable informationTable) {
         this.informationTable = informationTable;
-        this.setCalculatedDominanceCones(false);
-        this.setCalculatedUnionsWithSingleLimitingDecision(false);
+        this.setCurrentDominanceCones(false);
+        this.setCurrentUnionsWithSingleLimitingDecision(false);
+        this.setCurrentRules(false);
     }
 
     public DominanceCones getDominanceCones() {
@@ -77,20 +81,28 @@ public class Project {
         this.unions = unions;
     }
 
-    public boolean isCalculatedDominanceCones() {
-        return calculatedDominanceCones;
+    public boolean isCurrentDominanceCones() {
+        return currentDominanceCones;
     }
 
-    public void setCalculatedDominanceCones(boolean calculatedDominanceCones) {
-        this.calculatedDominanceCones = calculatedDominanceCones;
+    public void setCurrentDominanceCones(boolean currentDominanceCones) {
+        this.currentDominanceCones = currentDominanceCones;
     }
 
-    public boolean isCalculatedUnionsWithSingleLimitingDecision() {
-        return calculatedUnionsWithSingleLimitingDecision;
+    public boolean isCurrentUnionsWithSingleLimitingDecision() {
+        return currentUnionsWithSingleLimitingDecision;
     }
 
-    public void setCalculatedUnionsWithSingleLimitingDecision(boolean calculatedUnionsWithSingleLimitingDecision) {
-        this.calculatedUnionsWithSingleLimitingDecision = calculatedUnionsWithSingleLimitingDecision;
+    public void setCurrentUnionsWithSingleLimitingDecision(boolean currentUnionsWithSingleLimitingDecision) {
+        this.currentUnionsWithSingleLimitingDecision = currentUnionsWithSingleLimitingDecision;
+    }
+
+    public boolean isCurrentRules() {
+        return currentRules;
+    }
+
+    public void setCurrentRules(boolean currentRules) {
+        this.currentRules = currentRules;
     }
 
     public RulesWithHttpParameters getRules() {
@@ -128,8 +140,8 @@ public class Project {
                 ", rules=" + rules +
                 ", classification=" + classification +
                 ", crossValidation=" + crossValidation +
-                ", calculatedDominanceCones=" + calculatedDominanceCones +
-                ", calculatedUnionsWithSingleLimitingDecision=" + calculatedUnionsWithSingleLimitingDecision +
+                ", currentDominanceCones=" + currentDominanceCones +
+                ", currentUnionsWithSingleLimitingDecision=" + currentUnionsWithSingleLimitingDecision +
                 '}';
     }
 }

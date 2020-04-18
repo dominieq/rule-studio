@@ -81,7 +81,7 @@ class CrossValidationDialog extends PureComponent {
             <RuleWorkDialog
                 onEntered={this.onEntered}
                 onExited={this.onExited}
-                optional={originalDecision + " Suggested decision: " + suggestedDecision}
+                optional={originalDecision + " | Suggested decision: " + suggestedDecision}
                 title={this.getCrossValidationTitle()}
                 {...other}
             >
