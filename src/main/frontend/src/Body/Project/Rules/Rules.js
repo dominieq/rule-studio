@@ -55,7 +55,7 @@ class Rules extends Component {
             project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
-                const { project: { externalRules, parametersSaved } } = this.props;
+                const { project: { parametersSaved } } = this.props;
 
                 const items = parseRulesItems(result);
                 const resultParameters = parseRulesParams(result);
@@ -64,7 +64,7 @@ class Rules extends Component {
                     data: result,
                     items: items,
                     displayedItems: items,
-                    externalRules: externalRules,
+                    externalRules: result.externalRules,
                     parameters: { ...parameters, ...resultParameters},
                     parametersSaved: parametersSaved
                 }));
@@ -175,22 +175,18 @@ class Rules extends Component {
                         const items = parseRulesItems(result);
 
                         this.setState({
-                            externalRules: false,
                             data: result,
                             items: items,
                             displayedItems: items,
+                            externalRules: result.externalRules,
                             parametersSaved: true,
                         });
                     }
 
                     project.result.rules = result;
                     project.dataUpToDate = true;
-
-                    let nand = !(project.result.classification && project.externalRules);
                     project.tabsUpToDate[this.props.value] = true;
-                    project.tabsUpToDate[this.props.value + 1] = project.tabsUpToDate[this.props.value + 1] && nand;
-
-                    project.externalRules = false;
+                    project.externalRules = result.externalRules;
 
                     const newParameters = parseRulesParams(result);
 
@@ -235,14 +231,12 @@ class Rules extends Component {
                                 data: result,
                                 items: items,
                                 displayedItems: items,
-                                externalRules: true,
+                                externalRules: result.rules.externalRules,
                             });
                         }
 
                         project.result.rules = result.rules;
-                        project.externalRules = true;
-                        project.tabsUpToDate[this.props.value] = null;
-                        project.tabsUpToDate[this.props.value + 1] = !project.result.classification;
+                        project.externalRules = result.rules.externalRules;
                         this.props.onTabChange(project);
                     }
                 }).catch(error => {

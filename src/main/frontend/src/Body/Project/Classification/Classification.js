@@ -25,12 +25,11 @@ class Classification extends Component {
         super(props);
 
         this.state = {
-            changes: false,
-            updated: false,
             loading: false,
             data: null,
             items: null,
             displayedItems: [],
+            externalData: false,
             parameters: {
                 defaultClassificationResult: "majorityDecisionClass",
                 typeOfClassifier: "SimpleRuleClassifier",
@@ -64,6 +63,7 @@ class Classification extends Component {
                     data: result,
                     items: items,
                     displayedItems: items,
+                    externalData: result.externalData,
                     parameters: { ...parameters, ...resultParameters },
                     parametersSaved: parametersSaved
                 }));
@@ -135,7 +135,6 @@ class Classification extends Component {
 
     onCalculateClick = (event) => {
         event.persist();
-        const externalFile = Boolean(event.target.files);
         let project = {...this.props.project};
         const { parameters: { defaultClassificationResult, typeOfClassifier } } = this.state;
 
@@ -167,18 +166,22 @@ class Classification extends Component {
                             data: result,
                             items: items,
                             displayedItems: items,
+                            externalData: result.externalData,
                             parametersSaved: true,
                         });
                     }
 
                     project.result.classification = result;
-                    project.dataUpToDate = externalFile ? project.dataUpToDate : true;
-                    project.tabsUpToDate[this.props.value] = true;
+                    project.dataUpToDate = result.externalData ?
+                        project.dataUpToDate : true;
+                    project.tabsUpToDate[this.props.value] = result.externalData ?
+                        project.tabsUpToDate[this.props.value] : true;
+                    project.externalData = result.externalData;
 
                     const resultParameters = parseClassificationParams(result);
+
                     project.parameters = { ...project.parameters, ...resultParameters}
                     project.parametersSaved = true;
-
                     this.props.onTabChange(project);
                 }
             }).catch(error => {
