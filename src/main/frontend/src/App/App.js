@@ -73,8 +73,8 @@ class App extends Component {
         let tabsUpToDate = [
             !project.result.dominanceCones,
             !project.result.unions,
-            !project.result.rules || project.externalRules,
-            !project.result.classification || project.externalRules,
+            !project.result.rules,
+            !project.result.classification,
             !project.result.crossValidation,
         ];
         this.setState(({currentProject, projects}) => ({
