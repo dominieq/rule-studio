@@ -1,11 +1,16 @@
 const getFixed = (number) => {
-    let result = Number(number).toFixed(3);
 
-    if (Number(result) * 2 === result * 2) {
-        result = Number(result);
+    if (Number.isInteger(Number(number))) {
+        return Number(number);
+    } else {
+        let result = Number(number).toFixed(3);
+
+        if (Number.isInteger(Number(result))) {
+            return Number(number).toExponential(3);
+        } else {
+            return Number(result);
+        }
     }
-
-    return result;
 };
 
 function parseRulesListItems(items) {
