@@ -6,12 +6,12 @@ import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles(theme => ({
     tooltip: {
-        backgroundColor: theme.palette.paper.text,
-        border: `1px solid ${theme.palette.background.default}`,
-        color: theme.palette.background.default,
+        backgroundColor: theme.palette.popper.background,
+        boxShadow: theme.shadows[6],
+        color: theme.palette.popper.text,
     },
     arrow: {
-        color: theme.palette.paper.text
+        color: theme.palette.popper.background
     },
     wrapper: {
 
