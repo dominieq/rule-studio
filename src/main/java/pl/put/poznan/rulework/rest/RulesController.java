@@ -73,7 +73,7 @@ public class RulesController {
         String projectName = p.getKey();
         Resource resource = p.getValue();
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_rules.xml")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " rules.xml")
                 .body(resource);
     }
 
