@@ -86,10 +86,7 @@ function CircleHelper(props) {
                         onClick={onTooltipOpen}
                         {...AvatarProps}
                     >
-                        <HelpCircle
-                            className={classes[size + "Icon"]}
-                            color={"inherit"}
-                        />
+                        <HelpCircle className={classes[size + "Icon"]} />
                     </Avatar>
                 </RuleWorkTooltip>
             </div>
