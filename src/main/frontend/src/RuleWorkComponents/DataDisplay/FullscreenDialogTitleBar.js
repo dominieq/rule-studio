@@ -8,15 +8,16 @@ import StyledPaper from "../Surfaces/StyledPaper";
 import Typography from "@material-ui/core/Typography";
 import WindowClose from "mdi-material-ui/WindowClose";
 
-const paperStyles = makeStyles(theme => ({
+const useStyles = makeStyles(theme => ({
     root: {
         flex: "0 0 auto",
         padding: "16px 0 16px 24px",
     },
     rootOverflow: {
-        overflow: "hidden",
+        overflowX: "hidden",
+        overflowY: "hidden",
         '&:hover': {
-            overflow: "auto",
+            overflowX: "auto",
         },
         '&::-webkit-scrollbar': {
             height: 8,
@@ -60,23 +61,36 @@ const paperStyles = makeStyles(theme => ({
         right: 0,
     },
     optional: {
+        fontSize: "smaller",
         minWidth: "fit-content",
         marginRight: 16
+    },
+    optionalFlex: {
+        display: "flex",
+        flexDirection: "column",
+        '& > *': {
+            lineHeight: 1,
+            textAlign: "right"
+        },
+        '& > *:not(:first-child)': {
+            marginTop: "1em",
+        }
     }
 }), {name: "title-bar"});
 
 function FullscreenDialogTitleBar(props) {
     const { onClose, optional, title } = props;
 
-    const paperClasses = paperStyles();
+    const classes = useStyles();
     const titleIsArray = React.isValidElement(title);
+    const optionalIsArray = React.isValidElement(optional);
 
     const onMouseEnter = () => {
-        document.getElementById("title-bar").style.overflow = "hidden";
+        document.getElementById("title-bar").style.overflowX = "hidden";
     }
 
     const onMouseLeave = () => {
-        document.getElementById("title-bar").style.overflow = "";
+        document.getElementById("title-bar").style.overflowX = "";
     }
 
     const onWheel = (event) => {
@@ -100,17 +114,21 @@ function FullscreenDialogTitleBar(props) {
 
     return (
         <StyledPaper
-            className={clsx(paperClasses.root, paperClasses.rootOverflow)}
+            className={clsx(classes.root, classes.rootOverflow)}
             elevation={6}
             id={"title-bar"}
             onWheel={onWheel}
         >
-            <div className={clsx(paperClasses.title, {[paperClasses.flexTitle]: titleIsArray})}>
+            <div className={clsx(classes.title, {[classes.flexTitle]: titleIsArray})}>
                 {title}
             </div>
-            <div className={clsx(paperClasses.close, paperClasses.closeSticky)}>
+            <div className={clsx(classes.close, classes.closeSticky)}>
                 {optional &&
-                    <Typography className={paperClasses.optional} component={"div"} variant={"button"}>
+                    <Typography
+                        className={clsx(classes.optional, {[classes.optionalFlex]: optionalIsArray})}
+                        component={"div"}
+                        variant={"button"}
+                    >
                         {optional}
                     </Typography>
                 }
