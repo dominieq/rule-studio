@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import { mergeClasses } from "../utilFunctions";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles(theme => ({
@@ -17,8 +18,11 @@ const useStyles = makeStyles(theme => ({
 }), {name: "MuiCircularProgress"});
 
 function StyledCircularProgress(props) {
-    const {classes: propsClasses, className, useWrapper, ...other} = props;
-    const classes = {...useStyles(), ...propsClasses};
+    const { classes: propsClasses, className, useWrapper, ...other } = props;
+    let classes = useStyles();
+
+    if (propsClasses) classes = mergeClasses(classes, propsClasses);
+
     const {wrapper, ...otherClasses} = classes;
 
     return (

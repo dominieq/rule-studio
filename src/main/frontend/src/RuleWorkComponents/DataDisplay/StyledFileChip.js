@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import { mergeClasses } from "../utilFunctions";
 import Chip from "@material-ui/core/Chip";
 
 const useStyles = makeStyles(theme => ({
@@ -25,7 +26,9 @@ const useStyles = makeStyles(theme => ({
 
 function StyledFileChip(props) {
     const {classes: propsClasses, ...other} = props;
-    const classes = {...useStyles(), ...propsClasses};
+    const classes = useStyles();
+
+    if (propsClasses) mergeClasses(classes, propsClasses);
 
     return (
         <Chip classes={classes} {...other} />
