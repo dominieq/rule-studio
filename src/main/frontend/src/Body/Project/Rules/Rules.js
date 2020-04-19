@@ -403,12 +403,14 @@ class Rules extends Component {
                         id={"rules-union-type-selector"}
                         onChange={this.onTypeOfUnionsChange}
                         value={parameters.typeOfUnions}
+                        variant={"extended"}
                     />
                     <ThresholdSelector
                         id={"rules-threshold-selector"}
                         keepChanges={parameters.typeOfRules !== 'possible'}
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}
+                        variant={"extended"}
                     />
                 </RuleWorkDrawer>
                 <TabBody

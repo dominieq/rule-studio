@@ -1,15 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from "clsx";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles(theme => ({
     tooltip: {
         backgroundColor: theme.palette.paper.text,
-        border: "1px solid",
-        borderColor: theme.palette.background.default,
+        border: `1px solid ${theme.palette.background.default}`,
         color: theme.palette.background.default,
+    },
+    arrow: {
+        color: theme.palette.paper.text
     },
     wrapper: {
 
@@ -48,7 +50,7 @@ function RuleWorkTooltip(props) {
     }
 
     return (
-        <Tooltip classes={{tooltip: classes.tooltip}} {...other}>
+        <Tooltip classes={{tooltip: classes.tooltip, arrow: classes.arrow}} {...other}>
             <DefaultForwardRef className={classes.wrapper}>
                 {children}
             </DefaultForwardRef>

@@ -5,6 +5,24 @@ import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTex
 import StyledSlider from "../../../../RuleWorkComponents/Inputs/StyledSlider";
 import RuleWorkSmallBox from "../../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 
+const tooltip = {
+    mainSimple: "Consistency threshold is used when calculating lower approximations of unions of ordered decision classes " +
+        "according to the Variable Consistency Dominance-based Rough Set Approach (VC-DRSA). " +
+        "In VC-DRSA, an object y, belonging to a union of ordered decision classes X, " +
+        "is considered to belong to the lower approximation of X if selected consistency measure, " +
+        "calculated with respect to y and X, satisfies considered consistency threshold t. " +
+        "Note that for a gain-type consistency measure, like rough membership, one checks if measure’s value is \u2265 t. " +
+        "However, for a cost-type consistency measure, like epsilon, one checks if measure’s value is \u2264 t.",
+    mainExtended: "Consistency threshold is used when calculating lower approximations of unions of ordered decision classes " +
+        "according to the Variable Consistency Dominance-based Rough Set Approach (VC-DRSA) ), " +
+        "and then, when inducing decision rules. " +
+        "In VC-DRSA, an object y, belonging to a union of ordered decision classes X, " +
+        "is considered to belong to the lower approximation of X if selected consistency measure, " +
+        "calculated with respect to y and X, satisfies considered consistency threshold t. " +
+        "Note that for a gain-type consistency measure, like rough membership, one checks if measure’s value is \u2265 t. " +
+        "However, for a cost-type consistency measure, like epsilon, one checks if measure’s value is \u2264 t.",
+};
+
 class ThresholdSelector extends Component {
     constructor(props) {
         super(props);
@@ -73,11 +91,22 @@ class ThresholdSelector extends Component {
 
     render() {
         const { threshold } = this.state;
-        const { CircleHelperProps, id, SliderProps, TextFieldProps } = this.props;
+        const { CircleHelperProps, id, SliderProps, TextFieldProps, variant } = this.props;
+
         return (
             <div id={id} style={{display: "flex", alignItems: "center", margin: "4px 0"}}>
                 <CircleHelper
-                    title={"Add more information to tooltip"}
+                    title={
+                        <p id={"main"} style={{margin: 0, textAlign: "justify"}}>
+                            {tooltip["main" + variant[0].toUpperCase() + variant.slice(1)]}
+                        </p>
+                    }
+                    TooltipProps={{
+                        placement: "right-start",
+                        PopperProps: {
+                            disablePortal: false
+                        }
+                    }}
                     WrapperProps={{
                         style: {marginRight: 16}
                     }}
@@ -116,11 +145,12 @@ ThresholdSelector.propTypes = {
     SliderProps: PropTypes.object,
     TextFieldProps: PropTypes.object,
     value: PropTypes.any,
-
+    variant: PropTypes.oneOf(["simple", "extended"])
 };
 
 ThresholdSelector.defaultProps = {
-    keepChanges: true
+    keepChanges: true,
+    variant: "simple"
 };
 
 export default ThresholdSelector

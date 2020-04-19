@@ -133,6 +133,7 @@ class Import extends Component{
                                 accept={".json"}
                                 onInputChange={this.onInputChange}
                                 onInputDelete={this.onInputDelete}
+                                title={"A file defining structure of attributes"}
                             />
                             <CollapsibleDivider
                                 onClick={this.onExpandClick}
