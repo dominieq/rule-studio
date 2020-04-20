@@ -49,8 +49,7 @@ class CrossValidationDialog extends PureComponent {
 
         for (let i = 0; i < attributes.length; i++) {
             if (attributes[i].type === 'decision') {
-                console.log()
-                return "Original decision: " + objects[id][attributes[i].name];
+                return objects[id][attributes[i].name];
             }
         }
 
@@ -81,7 +80,16 @@ class CrossValidationDialog extends PureComponent {
             <RuleWorkDialog
                 onEntered={this.onEntered}
                 onExited={this.onExited}
-                optional={originalDecision + " | Suggested decision: " + suggestedDecision}
+                optional={
+                    <React.Fragment>
+                        <span id={"original-decision"}>
+                            {"Original decision: " + originalDecision}
+                        </span>
+                        <span id={"suggested-decision"}>
+                            {"Suggested decision: " + suggestedDecision}
+                        </span>
+                    </React.Fragment>
+                }
                 title={this.getCrossValidationTitle()}
                 {...other}
             >

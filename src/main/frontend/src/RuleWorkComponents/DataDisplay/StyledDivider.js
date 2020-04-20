@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles"
+import { mergeClasses } from "../utilFunctions";
 import Divider from "@material-ui/core/Divider";
 
 const useStyles = makeStyles(theme => ({
@@ -18,7 +19,9 @@ const useStyles = makeStyles(theme => ({
 
 function StyledDivider(props) {
     const {classes: propsClasses, className, styleVariant, ...other} = props;
-    const classes = {...useStyles(), ...propsClasses};
+    let classes = useStyles();
+
+    if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
         <Divider className={clsx(classes[styleVariant], className)} {...other} />

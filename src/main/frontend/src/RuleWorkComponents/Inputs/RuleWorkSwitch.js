@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import { mergeClasses } from "../utilFunctions";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import StyledSwitch from "./StyledSwitch";
 
@@ -14,7 +15,9 @@ const labelStyles = makeStyles({
 
 function RuleWorkSwitch(props) {
     const {classes: propsClasses, label, ...other} = props;
-    const classes = {...labelStyles(), ...propsClasses};
+    let classes = labelStyles();
+
+    if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
         <FormControlLabel

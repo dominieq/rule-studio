@@ -52,7 +52,7 @@ export const estimateMatrixWidth = (matrix, cellWidth = 64) => {
 };
 
 function VirtualizedMatrix(props) {
-    const { cellDimensions, matrix } = props;
+    const { cellDimensions, matrix, type } = props;
     const matrixClasses = matrixStyles();
 
     const cellRenderer = ({columnIndex, key, rowIndex, style}) => {
@@ -73,11 +73,27 @@ function VirtualizedMatrix(props) {
                 }
                 {columnIndex + rowIndex === 0 &&
                     <CircleHelper
-                        title={"Columns: suggested decisions Rows: original decisions"}
+                        multiRow={true}
+                        title={
+                            <React.Fragment>
+                                <span id={"tile"} style={{textAlign: "center"}}>
+                                    <b>{type}</b>
+                                </span>
+                                <span id={"columns"} style={{textAlign: "left"}}>
+                                    <b>Columns:</b>
+                                    {" suggested decisions"}
+                                </span>
+                                <span id={"rows"} style={{textAlign: "left"}}>
+                                    <b>Rows:</b>
+                                    {" original decisions"}
+                                </span>
+                            </React.Fragment>
+                            }
                         TooltipProps={{
-                            classes: {tooltip: matrixClasses.tooltip},
                             placement: "top",
-                            PopperProps: {disablePortal: false}
+                            PopperProps: {
+                                disablePortal: false
+                            }
                         }}
                     />
                 }
@@ -117,10 +133,11 @@ VirtualizedMatrix.propTypes = {
         })
     ]),
     matrix: PropTypes.arrayOf(PropTypes.array),
+    type: PropTypes.oneOf(["Value", "Deviation"])
 };
 
 VirtualizedMatrix.defaultProps = {
-    cellDimensions: 64
+    cellDimensions: 64,
 };
 
 export default VirtualizedMatrix;

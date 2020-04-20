@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import { mergeClasses } from "../utilFunctions";
 
 const useStyles = makeStyles({
     row: {
@@ -24,7 +25,9 @@ const useStyles = makeStyles({
 
 function RuleWorkSmallBox(props) {
     const {children, classes: propsClasses, className, styleVariant, ...other} = props;
-    const classes = {...useStyles(), ...propsClasses};
+    let classes = useStyles();
+
+    if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
         <div className={clsx(classes[styleVariant], className)} {...other}>
