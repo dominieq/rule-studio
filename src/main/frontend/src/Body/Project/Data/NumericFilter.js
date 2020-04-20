@@ -79,9 +79,9 @@ class NumericFilter extends React.Component {
         }
 
         const obj = list[key];
-        if (obj.indexOf('-') > 0) { // handle dash
-          const begin = parseFloat(obj.split('-')[0]);
-          const end = parseFloat(obj.split('-')[1]);
+        if (obj.indexOf(':') > 0) { // handle colon
+          const begin = parseFloat(obj.split(':')[0]);
+          const end = parseFloat(obj.split(':')[1]);
           rules.push({ type: RuleType.Range, begin: begin, end: end });
         } else if (obj.indexOf('>') > -1) { // handle greater than
           const begin = parseFloat(obj.split('>')[1]);
@@ -99,7 +99,7 @@ class NumericFilter extends React.Component {
   }
 
   handleKeyPress(e) { // Validate the input
-    const regex = '>|<|-|,|([0-9?.])';
+    const regex = '>|<|:|,|([0-9?.\-])';
     const result = RegExp(regex).test(e.key);
     if (result === false) {
       e.preventDefault();
@@ -123,12 +123,12 @@ class NumericFilter extends React.Component {
       cursor: 'help'
     };
 
-    const tooltipText = 'Input Methods: Range (x-y), Greater than (>x), Less than (<y). Separator , stands for OR';
+    const tooltipText = 'Input Methods: Value (x), Range (x:y), Greater than (>x), Less than (<y). Separator , stands for OR';
 
     return (
       <div>
         <div style={columnStyle}>
-          <input key={inputKey} type="text" placeholder="e.g. 3,10-15,>20" className="form-control input-sm" onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
+          <input key={inputKey} type="text" placeholder="e.g. 3,10:15,>20" className="form-control input-sm" onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
         </div>
         <div className="input-sm">
           <span className="badge" style={badgeStyle} title={tooltipText}>?</span>
