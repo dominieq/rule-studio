@@ -204,11 +204,11 @@ public class ClassificationService {
                 break;
             case SCORING_RULE_CLASSIFIER_SCORE:
                 simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, testingInformationTable);
-                classifier = new ScoringRuleClassifier(ruleSetWithCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.SCORE);
+                classifier = new ScoringRuleClassifier(ruleSetWithCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.SCORE, learningInformationTable);
                 break;
             case SCORING_RULE_CLASSIFIER_HYBRID:
                 simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, testingInformationTable);
-                classifier = new ScoringRuleClassifier(ruleSetWithCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.HYBRID);
+                classifier = new ScoringRuleClassifier(ruleSetWithCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.HYBRID, learningInformationTable);
                 break;
             default:
                 WrongParameterException ex = new WrongParameterException(String.format("Given type of classifier \"%s\" is unrecognized.", typeOfClassifier));
