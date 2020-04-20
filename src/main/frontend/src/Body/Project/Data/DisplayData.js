@@ -360,7 +360,7 @@ class DisplayData extends React.Component {
      * @returns {Array}
      */
     prepareMetaDataFromImport = (metadata) => {
-        const tmp = [{key: "uniqueLP", name: "No.", sortable: true, resizable: true, filterable: true, draggable: true, sortDescendingFirst: true, width: 160, filterRenderer: NumericFilter, visible: true}];
+        const tmp = [{key: "uniqueLP", name: "No.", sortable: true, resizable: true, filterable: true, draggable: true, sortDescendingFirst: true, width: 160, filterRenderer: NumericFilter, visible: true, temp: false}];
         
         for(let el in metadata) {
             if(metadata[el].name === "uniqueLP") { //restricted name (brute force change the first letter to uppercase)
@@ -1968,18 +1968,23 @@ class DisplayData extends React.Component {
     onColumnHeaderDragDrop = (source, target) => {
         const history = [...this.state.history];
         const newColumns = [...history[this.state.historySnapshot].columns];
-        const columnSourceIndex = this.state.history[this.state.historySnapshot].columns.findIndex((i) => i.key === source);
-        const columnTargetIndex = this.state.history[this.state.historySnapshot].columns.findIndex((i) => i.key === target);
+        const columnSourceIndex = history[this.state.historySnapshot].columns.findIndex((i) => i.key === source);
+        const columnTargetIndex = history[this.state.historySnapshot].columns.findIndex((i) => i.key === target);
+        const uniqueLPIdx = history[this.state.historySnapshot].columns.findIndex((i) => i.key === "uniqueLP");
         newColumns.splice(columnTargetIndex,0,newColumns.splice(columnSourceIndex, 1)[0]);
         
-        const newHistoryCols = {...history[this.state.historySnapshot]}
-        newHistoryCols.columns = newColumns;
-        history[this.state.historySnapshot] = newHistoryCols;
-
-        this.setState({ history: [{rows: [], columns: []}] });
+        let col = {...newColumns[uniqueLPIdx]};
+        col.temp = !col.temp;
+        newColumns[uniqueLPIdx] = col;
+    
+        const tmpHistory = history.slice(0, this.state.historySnapshot+1);
+        tmpHistory.push({rows: this.state.history[this.state.historySnapshot].rows, columns: newColumns});
+        if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
+    
         this.setState({ 
             dataModified: true,
-            history: history,
+            history: tmpHistory,
+            historySnapshot: tmpHistory.length-1
         }, () => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false))
         )        
     };
