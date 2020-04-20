@@ -24,8 +24,8 @@ function parseRulesListItems(items) {
                 subheader: "Type: " + items[i].traits["Type"],
                 content: "Support: " + items[i].traits["Support"] +
                     ` | Strength: ${getFixed(items[i].traits["Strength"])}` +
-                    ` | Confidence: ${getFixed(items[i].traits["Confidence"])}` +
                     ` | Coverage factor: ${getFixed(items[i].traits["Coverage factor"])}` +
+                    ` | Confidence: ${getFixed(items[i].traits["Confidence"])}` +
                     ` | Epsilon measure: ${getFixed(items[i].traits["Epsilon measure"])}`,
                 multiContent: items[i].name.conditions.map(condition => (
                     {

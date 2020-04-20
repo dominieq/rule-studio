@@ -133,7 +133,7 @@ VirtualizedMatrix.propTypes = {
         })
     ]),
     matrix: PropTypes.arrayOf(PropTypes.array),
-    type: PropTypes.oneOf(["Value", "Deviation"])
+    type: PropTypes.oneOf(["Misclassification matrix", "Deviations"])
 };
 
 VirtualizedMatrix.defaultProps = {
