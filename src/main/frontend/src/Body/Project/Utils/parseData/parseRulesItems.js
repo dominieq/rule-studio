@@ -13,7 +13,8 @@ function parseRulesItems(data) {
                     ...data.ruleSet[i].ruleCharacteristics
                 },
                 tables: {
-                    indicesOfCoveredObjects: data.ruleSet[i].indicesOfCoveredObjects.slice(),
+                    indicesOfCoveredObjects: Array.isArray(data.ruleSet[i].indicesOfCoveredObjects) ?
+                        data.ruleSet[i].indicesOfCoveredObjects.slice() : [],
                 },
                 toFilter() {
                     return [
