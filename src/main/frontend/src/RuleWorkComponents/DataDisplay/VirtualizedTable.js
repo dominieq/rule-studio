@@ -28,7 +28,6 @@ const tableStyles = makeStyles(theme => ({
         width: "100%"
     },
     headerColumn: {
-        justifyContent: "center",
         overflow: "hidden"
     },
     headerCell: {
