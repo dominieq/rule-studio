@@ -2,6 +2,7 @@ package pl.put.poznan.rulework.model;
 
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
+import pl.put.poznan.rulework.exception.NoDataException;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -23,7 +24,7 @@ public class Project {
     public Project(String name) {
         this.id = UUID.randomUUID();
         this.name = name;
-        this.informationTable = new InformationTable(new Attribute[0], new ArrayList<>());
+        this.informationTable = null;
         this.currentDominanceCones = false;
         this.currentUnionsWithSingleLimitingDecision = false;
         this.currentRules = false;

@@ -18,9 +18,9 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
         response.sendError(HttpStatus.NOT_ACCEPTABLE.value(), ex.getMessage());
     }
 
-    @ExceptionHandler(EmptyResponseException.class)
+    @ExceptionHandler({EmptyResponseException.class, NoRulesException.class, NoDataException.class})
     public void emptyResponseException(
-            EmptyResponseException ex,
+            RuntimeException ex,
             HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
@@ -30,12 +30,5 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
             WrongParameterException ex,
             HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.UNPROCESSABLE_ENTITY.value(), ex.getMessage());
-    }
-
-    @ExceptionHandler(NoRulesException.class)
-    public void noRulesException(
-            NoRulesException ex,
-            HttpServletResponse response) throws IOException {
-        response.sendError(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 }

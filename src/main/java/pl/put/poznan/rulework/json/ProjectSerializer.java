@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.jackson.JsonComponent;
+import pl.put.poznan.rulework.exception.NoDataException;
 import pl.put.poznan.rulework.model.Project;
 
 import java.io.IOException;
@@ -31,7 +32,12 @@ public class ProjectSerializer extends JsonSerializer<Project> {
         jsonGenerator.writeString(project.getName());
 
         jsonGenerator.writeFieldName("informationTable");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getInformationTable()));
+        try {
+            jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getInformationTable()));
+        }
+        catch (NoDataException ex) {
+            jsonGenerator.writeNull();
+        }
 
         jsonGenerator.writeFieldName("dominanceCones");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getDominanceCones()));

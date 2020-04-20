@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.enums.ClassifierType;
 import pl.put.poznan.rulework.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
+import pl.put.poznan.rulework.exception.NoDataException;
 import pl.put.poznan.rulework.exception.NoRulesException;
 import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Classification;
@@ -251,7 +252,7 @@ public class ClassificationService {
 
         Classification classification = project.getClassification();
         if(classification == null) {
-            EmptyResponseException ex = new EmptyResponseException("Classification hasn’t been calculated.");
+            EmptyResponseException ex = new EmptyResponseException("Classification hasn't been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }
@@ -266,7 +267,13 @@ public class ClassificationService {
         logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
         InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no data in project. Couldn't reclassify.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
 
         if(project.getRules() == null) {
             NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
@@ -298,8 +305,21 @@ public class ClassificationService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        Attribute[] attributes = project.getInformationTable().getAttributes();
-        InformationTable informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
+        InformationTable projectInformationTable = project.getInformationTable();
+        if(projectInformationTable == null) {
+            NoDataException ex = new NoDataException("There is no data in project. Couldn't classify data from file.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        Attribute[] attributes = projectInformationTable.getAttributes();
+        if(attributes == null) {
+            NoDataException ex = new NoDataException("There is no metadata in project. Couldn't read classified data from file.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
 
         if(project.getRules() == null) {
             NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
@@ -308,8 +328,8 @@ public class ClassificationService {
         }
         RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
 
-        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, informationTable);
-        Classification classification = calculateClassification(project.getInformationTable(), informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
+        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);
+        Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
         classification.setExternalData(true);
         project.setClassification(classification);
 

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.exception.NoDataException;
 import pl.put.poznan.rulework.exception.ProjectNotFoundException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
@@ -85,6 +86,11 @@ public class ProjectService {
 
         if(dataFile != null) { //load new data from file
             attributes = informationTable.getAttributes();
+            if(attributes == null) {
+                NoDataException ex = new NoDataException("There is no metadata in project. Couldn't read data file.");
+                logger.error(ex.getMessage());
+                throw ex;
+            }
             informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
         }
 
@@ -95,6 +101,11 @@ public class ProjectService {
 
         if(rulesFile != null) { //load rules from file
             attributes = informationTable.getAttributes();
+            if(attributes == null) {
+                NoDataException ex = new NoDataException("There is no metadata in project. Couldn't read rules file.");
+                logger.error(ex.getMessage());
+                throw ex;
+            }
             RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
             project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, true));
         }

@@ -15,6 +15,7 @@ import pl.put.poznan.rulework.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulework.enums.RuleType;
 import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
+import pl.put.poznan.rulework.exception.NoDataException;
 import pl.put.poznan.rulework.model.*;
 
 import java.io.IOException;
@@ -65,7 +66,7 @@ public class CrossValidationService {
 
         CrossValidation crossValidation = project.getCrossValidation();
         if(crossValidation == null) {
-            EmptyResponseException ex = new EmptyResponseException("Cross-validation hasn’t been calculated.");
+            EmptyResponseException ex = new EmptyResponseException("Cross-validation hasn't been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }
@@ -85,7 +86,14 @@ public class CrossValidationService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds);
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no data in project. Couldn't make cross-validation.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        CrossValidation crossValidation = calculateCrossValidation(informationTable, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds);
 
         project.setCrossValidation(crossValidation);
 
@@ -109,7 +117,7 @@ public class CrossValidationService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds);
+        CrossValidation crossValidation = calculateCrossValidation(informationTable, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds);
 
         project.setCrossValidation(crossValidation);
 

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
+import pl.put.poznan.rulework.exception.NoDataException;
 import pl.put.poznan.rulework.model.DominanceCones;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
@@ -23,6 +24,13 @@ public class DominanceConesService {
 
     private void calculateDominanceCones(Project project) {
         if(!project.isCurrentDominanceCones()) {
+            InformationTable informationTable = project.getInformationTable();
+            if(informationTable == null) {
+                NoDataException ex = new NoDataException("There is no data in project. Couldn't calculate dominance cones.");
+                logger.error(ex.getMessage());
+                throw ex;
+            }
+
             DominanceCones dominanceCones = new DominanceCones();
             dominanceCones.calculateDCones(project.getInformationTable());
 
@@ -40,7 +48,7 @@ public class DominanceConesService {
 
         DominanceCones dominanceCones = project.getDominanceCones();
         if(dominanceCones == null) {
-            EmptyResponseException ex = new EmptyResponseException("Dominance cones haven’t been calculated.");
+            EmptyResponseException ex = new EmptyResponseException("Dominance cones haven't been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }
