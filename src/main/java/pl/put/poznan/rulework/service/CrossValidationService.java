@@ -3,7 +3,7 @@ package pl.put.poznan.rulework.service;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
+import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.sampling.CrossValidator;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
@@ -15,6 +15,7 @@ import pl.put.poznan.rulework.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulework.enums.RuleType;
 import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
+import pl.put.poznan.rulework.exception.NoDataException;
 import pl.put.poznan.rulework.model.*;
 
 import java.io.IOException;
@@ -44,12 +45,12 @@ public class CrossValidationService {
             InformationTable validationTable = folds.get(i).getValidationTable();
 
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsService.calculateUnionsWithSingleLimitingDecision(trainingTable, typeOfUnions, consistencyThreshold);
-            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.calculateRuleSetWithComputableCharacteristics(unionsWithSingleLimitingDecision, typeOfRules);
-            Classification classificationValidationTable = ClassificationService.calculateClassification(validationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics, orderOfDecisions);
+            RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.calculateRuleSetWithCharacteristics(unionsWithSingleLimitingDecision, typeOfRules);
+            Classification classificationValidationTable = ClassificationService.calculateClassification(trainingTable, validationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
 
             foldOrdinalMisclassificationMatrix[i] = classificationValidationTable.getOrdinalMisclassificationMatrix();
 
-            crossValidationSingleFolds[i] = new CrossValidationSingleFold(validationTable, ruleSetWithComputableCharacteristics, classificationValidationTable, trainingTable.getNumberOfObjects());
+            crossValidationSingleFolds[i] = new CrossValidationSingleFold(validationTable, ruleSetWithCharacteristics, classificationValidationTable, trainingTable.getNumberOfObjects());
         }
 
         OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, foldOrdinalMisclassificationMatrix);
@@ -65,7 +66,7 @@ public class CrossValidationService {
 
         CrossValidation crossValidation = project.getCrossValidation();
         if(crossValidation == null) {
-            EmptyResponseException ex = new EmptyResponseException("Cross-validation hasn’t been calculated.");
+            EmptyResponseException ex = new EmptyResponseException("Cross-validation hasn't been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }
@@ -85,7 +86,14 @@ public class CrossValidationService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds);
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no data in project. Couldn't make cross-validation.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        CrossValidation crossValidation = calculateCrossValidation(informationTable, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds);
 
         project.setCrossValidation(crossValidation);
 
@@ -109,7 +117,7 @@ public class CrossValidationService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        CrossValidation crossValidation = calculateCrossValidation(project.getInformationTable(), typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds);
+        CrossValidation crossValidation = calculateCrossValidation(informationTable, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds);
 
         project.setCrossValidation(crossValidation);
 

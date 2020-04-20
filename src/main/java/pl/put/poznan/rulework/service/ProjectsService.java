@@ -65,8 +65,8 @@ public class ProjectsService {
 
 
         if(rulesFile != null) { //load rules from file
-            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.parseComputableRules(rulesFile, attributes);
-            project.setRules(new RulesWithHttpParameters(ruleSetWithComputableCharacteristics, true));
+            RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
+            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, true));
         }
 
 

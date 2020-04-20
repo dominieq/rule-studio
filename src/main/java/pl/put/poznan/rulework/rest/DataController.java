@@ -68,7 +68,7 @@ public class DataController {
             resource = p.getValue();
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_data.json")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.json")
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .body(resource);
         } else {
@@ -77,7 +77,7 @@ public class DataController {
             resource = p.getValue();
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_data.csv")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.csv")
                     .header(HttpHeaders.CONTENT_TYPE, "text/csv")
                     .body(resource);
         }
@@ -103,7 +103,7 @@ public class DataController {
             resource = p.getValue();
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_data.json")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.json")
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .body(resource);
         } else {
@@ -112,7 +112,7 @@ public class DataController {
             resource = p.getValue();
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_data.csv")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.csv")
                     .header(HttpHeaders.CONTENT_TYPE, "text/csv")
                     .body(resource);
         }

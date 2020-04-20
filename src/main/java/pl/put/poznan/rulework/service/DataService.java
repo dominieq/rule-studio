@@ -15,6 +15,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.exception.NoDataException;
 import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
@@ -109,8 +110,15 @@ public class DataService {
 
         StringWriter objectsWriter = new StringWriter();
         InformationTableWriter itw = new InformationTableWriter(false);
-        itw.writeObjects(project.getInformationTable(), objectsWriter);
 
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no objects in project. Couldn't get them.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        itw.writeObjects(informationTable, objectsWriter);
 
         return objectsWriter.toString();
     }
@@ -121,10 +129,17 @@ public class DataService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        Attribute[] attributes = project.getInformationTable().getAttributes();
-        InformationTable informationTable = informationTableFromStringData(data, attributes);
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no metadata in project. Couldn't pass new data.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
 
-        project.setInformationTable(informationTable);
+        Attribute[] attributes = informationTable.getAttributes();
+        InformationTable newInformationTable = informationTableFromStringData(data, attributes);
+
+        project.setInformationTable(newInformationTable);
         logger.info(project.toString());
 
         return project;
@@ -160,7 +175,14 @@ public class DataService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InputStreamResource resource = produceJsonResource(project.getInformationTable());
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no data in project. Couldn't download objects.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        InputStreamResource resource = produceJsonResource(informationTable);
 
         return new Pair<>(project.getName(), resource);
     }
@@ -173,7 +195,14 @@ public class DataService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InputStreamResource resource = produceCsvResource(project.getInformationTable(), separator, header);
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no data in project. Couldn't download objects.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        InputStreamResource resource = produceCsvResource(informationTable, separator, header);
 
         return new Pair<>(project.getName(), resource);
     }
