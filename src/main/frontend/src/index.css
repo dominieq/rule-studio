@@ -1,8 +1,8 @@
 html {
     height: 100%;
-    width: 100%;
     margin: 0;
-    position: relative;
+    position: absolute;
+    width: 100%;
 }
 
 body {
@@ -10,10 +10,11 @@ body {
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
         sans-serif;
     height: 100%;
-    width: 100%;
-    padding: 0 !important;
     margin: 0;
+    padding: 0 !important;
+    position: absolute;
     text-align: center;
+    width: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -23,19 +24,10 @@ code {
         monospace;
 }
 
-html button:focus {
-    outline: none;
-}
-
 #root {
-    min-height: 100%;
-    min-width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-}
-
-.MuiPopover-root .MuiList-root {
-    background-color: #ABFAA9;
-    border: 1px solid #66FF66;
+    height: 100%;
+    position: absolute;
+    width: 100%;
 }

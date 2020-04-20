@@ -3,21 +3,34 @@ package pl.put.poznan.rulework.model;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 
 @Component
 public class ProjectsContainer {
-    private HashMap<UUID, Project> projectHashMap;
+    private LinkedHashMap<UUID, Project> projectHashMap;
 
     public ProjectsContainer() {
-        projectHashMap = new HashMap<>();
+        projectHashMap = new LinkedHashMap<>();
     }
 
-    public HashMap<UUID, Project> getProjectHashMap() {
+    public LinkedHashMap<UUID, Project> getProjectHashMap() {
         return projectHashMap;
     }
 
-    public void setProjectHashMap(HashMap<UUID, Project> projectHashMap) {
+    public void setProjectHashMap(LinkedHashMap<UUID, Project> projectHashMap) {
         this.projectHashMap = projectHashMap;
+    }
+
+    public void addProject(Project project) {
+        projectHashMap.put(project.getId(), project);
+    }
+
+    public Project getProject(UUID id) {
+        return projectHashMap.get(id);
+    }
+
+    public Project removeProject(UUID id) {
+        return projectHashMap.remove(id);
     }
 }

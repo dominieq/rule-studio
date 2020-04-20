@@ -1,6 +1,7 @@
 import React, {Fragment} from "react";
 import PropTypes from "prop-types";
-import {makeStyles, withStyles} from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { mergeClasses } from "../../../utilFunctions";
 import RuleWorkSmallBox from "../../../Containers/RuleWorkSmallBox";
 import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";
@@ -11,21 +12,29 @@ const StyledListItem = withStyles({
         alignItems: "flex-start",
         width: "100%"
     }
-}, {name: "rule-work-list-item"})(props => <ListItem {...props} />);
+}, {name: "result-list-item"})(props => <ListItem {...props} />);
 
 const useStyles = makeStyles(theme => ({
     row: {
-        justifyContent: "flex-start"
+        justifyContent: "flex-start",
+        margin: 0
     },
     headerWrapper: {
+        justifyContent: "unset",
         margin: 0,
         width: "100%",
     },
     header: {
-        color: theme.palette.button.secondary
+        color: theme.palette.button.secondary,
+        marginRight: "auto"
     },
     subheader: {
         color: theme.palette.button.primary
+    },
+    contentWrapper: {
+        '& > *:not(:first-child)': {
+            marginTop: 8,
+        }
     },
     content: {
         color: theme.palette.button.primary
@@ -35,53 +44,59 @@ const useStyles = makeStyles(theme => ({
     },
     multiContentSubtitle: {
         color: theme.palette.button.secondary,
+    },
+    divider: {
+        marginTop: 0,
+        marginBottom: 4,
     }
-}), {name: "rule-work-list-item"});
+}), {name: "result-list-item"});
 
 function RuleWorkListItem(props) {
-    const {classes: propsClasses, object, ...other} = props;
-    const classes = {...useStyles(), ...propsClasses};
+    const { classes: propsClasses, object, ...other } = props;
+    let classes = useStyles();
+
+    if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
         <StyledListItem {...other}>
             {(object.header || object.subheader) &&
-                <RuleWorkSmallBox className={classes.headerWrapper}>
+                <RuleWorkSmallBox classes={{row: classes.headerWrapper}}>
                     {object.header &&
-                        <Typography className={classes.header} component={"p"} variant={"button"}>
+                        <Typography className={classes.header} variant={"button"}>
                             {object.header}
                         </Typography>
                     }
                     {object.subheader &&
-                        <Typography className={classes.subheader} component={"p"} variant={"overline"}>
+                        <Typography className={classes.subheader} variant={"overline"}>
                             {object.subheader}
                         </Typography>
                     }
                 </RuleWorkSmallBox>
             }
             {(object.content || object.multiContent) &&
-                <RuleWorkSmallBox styleVariant={"multi-row"}>
-                    {object.content &&
-                        <Typography className={classes.content} component={"p"} variant={"subtitle2"}>
-                            {object.content}
-                        </Typography>
-                    }
+                <RuleWorkSmallBox classes={{["multi-row"]: classes.contentWrapper}} styleVariant={"multi-row"}>
                     {object.multiContent &&
                         <Fragment>
                             {object.multiContent.map((item, index) => (
-                                <RuleWorkSmallBox  key={index} className={classes.row}>
+                                <RuleWorkSmallBox  key={index} classes={{row: classes.row}}>
                                     {item.title &&
-                                        <Typography className={classes.multiContentTitle} component={"p"}>
+                                        <Typography className={classes.multiContentTitle}>
                                             {item.title}
                                         </Typography>
                                     }
                                     {item.subtitle &&
-                                        <Typography className={classes.multiContentSubtitle} component={"p"}>
+                                        <Typography className={classes.multiContentSubtitle}>
                                             {item.subtitle}
                                         </Typography>
                                     }
                                 </RuleWorkSmallBox>
                             ))}
                         </Fragment>
+                    }
+                    {object.content &&
+                        <Typography className={classes.content} component={"p"} variant={"body2"}>
+                            {object.content}
+                        </Typography>
                     }
                 </RuleWorkSmallBox>
             }
@@ -104,10 +119,13 @@ RuleWorkListItem.propTypes = {
     divider: PropTypes.bool,
     object: PropTypes.shape({
         id: PropTypes.number,
-        header: PropTypes.string,
-        subheader: PropTypes.string,
-        content: PropTypes.string,
-        multiContent: PropTypes.arrayOf(PropTypes.object)
+        header: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        subheader: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        content: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        multiContent: PropTypes.arrayOf(PropTypes.shape({
+            title: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            subtitle: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+        }))
     }),
     selected: PropTypes.bool,
 };

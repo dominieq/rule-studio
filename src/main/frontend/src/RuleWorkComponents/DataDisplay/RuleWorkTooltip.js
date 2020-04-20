@@ -1,22 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import { mergeClasses } from "../utilFunctions";
 import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles(theme => ({
     tooltip: {
-        backgroundColor: theme.palette.paper.text,
-        border: "1px solid",
-        borderColor: theme.palette.background.default,
-        color: theme.palette.background.default,
+        backgroundColor: theme.palette.popper.background,
+        boxShadow: theme.shadows[6],
+        color: theme.palette.popper.text,
+    },
+    arrow: {
+        color: theme.palette.popper.background
     },
     wrapper: {
 
     }
-}), {name: "MuiTooltip"});
+}), {name: "custom-tooltip"});
 
 function DefaultElement(props, ref) {
-    const {children, isDisabled, ...other} = props;
+    const {children, ...other} = props;
 
     return (
         <div ref={ref} {...other}>
@@ -28,35 +31,55 @@ function DefaultElement(props, ref) {
 const DefaultForwardRef = React.forwardRef(DefaultElement);
 
 function RuleWorkTooltip(props) {
-    const {children, classes: propsClasses, isCustom, ...other} = props;
-    const classes = {...useStyles(), ...propsClasses};
+    const {children, classes: propsClasses, ...other} = props;
+    let classes = useStyles();
+
+    if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
-        <Tooltip classes={{tooltip: classes.tooltip}} {...other}>
-            {isCustom ?
-                <DefaultForwardRef className={classes.wrapper}>
-                    {children}
-                </DefaultForwardRef>
-                :
+        <Tooltip classes={{tooltip: classes.tooltip, arrow: classes.arrow}} {...other}>
+            <DefaultForwardRef className={classes.wrapper}>
                 {children}
-            }
+            </DefaultForwardRef>
         </Tooltip>
     )
 }
 
 RuleWorkTooltip.propTypes = {
     arrow: PropTypes.bool,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     classes: PropTypes.object,
+    disableFocusListener: PropTypes.bool,
+    disableHoverListener: PropTypes.bool,
+    disableTouchListener: PropTypes.bool,
     enterDelay: PropTypes.number,
+    enterNextDelay: PropTypes.number,
+    enterTouchDelay: PropTypes.number,
     id: PropTypes.string,
-    isCustom: PropTypes.bool,
+    interactive: PropTypes.bool,
     leaveDelay: PropTypes.number,
-    title: PropTypes.string.isRequired,
-};
-
-RuleWorkTooltip.defaultProps = {
-    isCustom: true,
+    leaveTouchDelay: PropTypes.number,
+    onClose: PropTypes.func,
+    onOpen: PropTypes.func,
+    open: PropTypes.bool,
+    placement: PropTypes.oneOf([
+        "bottom-end",
+        "bottom-start",
+        "bottom",
+        "left-start",
+        "left-end",
+        "left",
+        "right-start",
+        "right-end",
+        "right",
+        "top-start",
+        "top-end",
+        "top"
+    ]),
+    PopperProps: PropTypes.object,
+    title: PropTypes.node.isRequired,
+    TransitionComponent: PropTypes.elementType,
+    TransitionProps: PropTypes.object,
 };
 
 export default RuleWorkTooltip;

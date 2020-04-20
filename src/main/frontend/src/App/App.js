@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { fetchProject, fetchProjects } from "./fetchFunctions";
 import Header from "../Header/Header";
 import ProjectMenu from "../Header/ProjectMenu";
 import Help from '../Body/Help/Help';
@@ -41,35 +42,29 @@ class App extends Component {
             loading: true,
             loadingTitle: "Loading projects",
         }, () => {
-            let msg = "";
-            fetch("http://localhost:8080/projects", {
-                method: 'GET',
-            }).then(response => {
-                if (response.status === 200) {
-                    response.json().then(result => {
-                        if (!result.isEmpty) {
-                            this.setState(({projects}) => ({
-                                projects: [
-                                    ...projects,
-                                    ...result.map(item => new Project(item))
-                                ]
-                            }));
-                        }
-                    }).catch(error => {
-                        console.log(error);
-                    });
+            fetchProjects(
+                "GET", null
+            ).then(result => {
+                if (Array.isArray(result)) {
+                    this.setState(({projects}) => ({
+                        projects: [
+                            ...projects,
+                            ...result.map(item => new Project(item))
+                        ]
+                    }));
                 } else {
-                    msg = "Something went wrong! Couldn't load projects :(";
-                    this.handleNegativeResponse(response, msg);
+                    this.setState({
+                        alertProps: {
+                            message: "Server isn't responding :(",
+                            open: true,
+                            severity: "error"
+                        }
+                    });
                 }
             }).catch(error => {
-                console.log(error);
-                msg = "Server error! Couldn't load projects :(";
-                this.setState({
-                    alertProps: {message: msg, open: true, severity: "error"}
-                });
+                this.setState({ alertProps: error });
             }).finally(() => {
-                this.setState({loading: false});
+                this.setState({ loading: false });
             });
         });
     };
@@ -77,10 +72,10 @@ class App extends Component {
     onDataChanges = (project) => {
         let tabsUpToDate = [
             !project.result.dominanceCones,
-            !project.result.unionsWithSingleLimitingDecision,
-            !project.result.ruleSetWithComputableCharacteristics || project.externalRules,
-            !project.result.classification || project.externalRules,
-            !project.result.crossValidation || project.externalRules,
+            !project.result.unions,
+            !project.result.rules,
+            !project.result.classification,
+            !project.result.crossValidation,
         ];
         this.setState(({currentProject, projects}) => ({
             projects: [
@@ -96,15 +91,13 @@ class App extends Component {
         }));
     };
 
-    onTabChanges = (project, dataUpToDate, tabsUpToDate) => {
+    onTabChanges = (project) => {
         this.setState(({currentProject, projects}) => ({
             projects: [
                 ...projects.slice(0, currentProject),
                 {
                     ...projects[currentProject],
-                    ...project,
-                    dataUpToDate: dataUpToDate,
-                    tabsUpToDate: tabsUpToDate
+                    ...project
                 },
                 ...projects.slice(currentProject + 1)
             ],
@@ -146,11 +139,13 @@ class App extends Component {
     };
 
     onFilesAccepted = (name, files) => {
-        let msg = "";
         if (!this.isNameUnique(name)) {
-            msg = "Project name already exists :(";
             this.setState({
-                alertProps: {open: true, message: msg, severity: "warning"}
+                alertProps: {
+                    message: "Project name already exists :(",
+                    open: true,
+                    severity: "warning"
+                }
             });
         } else {
             this.setState({
@@ -158,39 +153,29 @@ class App extends Component {
                 loadingTitle: "Creating project"
             }, () => {
                 let data = new FormData();
-                data.append("name", name);
-                for (let i = 0; i < files.length; i++) {
-                    data.append(files[i].type, files[i].file);
-                }
 
-                fetch("http://localhost:8080/projects", {
-                    method: 'POST',
-                    body: data,
-                }).then(response => {
-                    if (response.status === 200) {
-                        response.json().then(result => {
-                            msg = `${result.name} has been created!`;
-                            this.setState(({projects}) => ({
-                                body: "Project",
-                                currentProject: projects.length,
-                                projects: [...projects, new Project(result)],
-                                alertProps: {open: true, message: msg, severity: "success"}
-                            }));
-                        }).catch(error => {
-                            console.log(error);
-                        });
-                    } else {
-                        msg = "Something went wrong! Couldn't create project from given data :(";
-                        this.handleNegativeResponse(response, msg);
+                data.append("name", name);
+                files.map(file => data.append(file.type, file.file));
+
+                fetchProjects(
+                    "POST", data
+                ).then(result => {
+                    if (result) {
+                        this.setState(({projects}) => ({
+                            body: "Project",
+                            currentProject: projects.length,
+                            projects: [...projects, new Project(result)],
+                            alertProps: {
+                                message: `${result.name} has been created!`,
+                                open: true,
+                                severity: "success"
+                            }
+                        }));
                     }
                 }).catch(error => {
-                    console.log(error);
-                    msg = "Server error! Couldn't create project from given data :(";
-                    this.setState({
-                        alertProps: {message: msg, open: true, severity: "error"}
-                    });
+                    this.setState({ alertProps: error });
                 }).finally(() => {
-                    this.setState({loading: false});
+                    this.setState({ loading: false });
                 });
             });
         }
@@ -214,127 +199,99 @@ class App extends Component {
     };
 
     onDeleteDialogClose = (action) => {
-        const currentProject = this.state.currentProject;
+        const { currentProject, projects } = this.state;
+
         if (action && currentProject !== -1) {
             this.setState({
                 loading: true,
                 loadingTitle: "Deleting project"
             }, () => {
-                const projects = this.state.projects.slice(0);
 
-                let msg = "";
-                fetch(`http://localhost:8080/projects/${projects[currentProject].result.id}`, {
-                    method: 'DELETE',
-                }).then(response => {
-                    const removedProject = this.state.projects[currentProject].result.name;
-                    if (response.status === 204) {
-                        msg = `${removedProject} has been successfully deleted!`;
+                fetchProject(
+                    projects[currentProject].result.id, "DELETE", null
+                ).then(() => {
+                    const removedProject = projects[currentProject].result.name;
 
-                        this.setState(({projects, currentProject}) => ({
-                            body: "Home",
-                            currentProject: -1,
-                            projects: [
-                                ...projects.slice(0, currentProject),
-                                ...projects.slice(currentProject + 1)
-                            ],
-                            alertProps: {open: true, message: msg, severity: "success"}
-                        }));
-                    } else {
-                        msg = `Couldn't delete project ${removedProject} :(`;
-                        this.setState({
-                            alertProps: {message: msg, open: true,  severity: "error"}
-                        });
-                    }
+                    this.setState(({projects, currentProject}) => ({
+                        body: "Home",
+                        currentProject: -1,
+                        projects: [
+                            ...projects.slice(0, currentProject),
+                            ...projects.slice(currentProject + 1)
+                        ],
+                        alertProps: {
+                            message: `${removedProject} has been successfully deleted!`,
+                            open: true,
+                            severity: "success"
+                        }
+                    }));
                 }).catch(error => {
-                    console.log(error);
-                    msg = "Server error! Couldn't delete project :(";
-                    this.setState({
-                        alertProps: {message: msg, open: true,  severity: "error"}
-                    });
+                    this.setState({ alertProps: error });
                 }).finally(() => {
-                    this.setState({loading: false});
+                    this.setState({ loading: false });
                 });
             });
         }
-        this.setState(({open}) => ({open: {...open, deleteDialog: false}}));
+
+        this.setState(({open}) => ({
+            open: {...open, deleteDialog: false}
+        }));
     };
 
     onRenameDialogClose = (name) => {
         if (name) {
-            let msg = "";
             if (this.isNameUnique(name)) {
+                const { currentProject, projects } = this.state;
+
                 this.setState({
                     loading: true,
                     loadingTitle: "Modifying project name"
                 }, () => {
-                    const currentProject = this.state.currentProject;
-                    const projects = this.state.projects.slice(0);
-
                     let data = new FormData();
                     data.append("name", name);
 
-                    fetch(`http://localhost:8080/projects/${projects[currentProject].result.id}`, {
-                        method: "PATCH",
-                        body: data,
-                    }).then(response => {
-                        if (response.status === 200) {
-                            response.json().then(result => {
-                                msg = "Project name changed successfully!";
-                                this.setState(({currentProject, projects}) => ({
-                                    projects: [
-                                        ...projects.slice(0, currentProject),
-                                        {...projects[currentProject], result: result},
-                                        ...projects.slice(currentProject + 1)
-                                    ],
-                                    alertProps: {message: msg, open: true, severity: "success"},
-                                }));
-                            }).catch(error => {
-                                console.log(error);
-                            })
-                        } else {
-                            msg = "Something went wrong! Couldn't change name :(";
-                            this.handleNegativeResponse(response, msg);
+                    fetchProject(
+                        projects[currentProject].result.id, "PATCH", data
+                    ).then(result => {
+                        if (result) {
+                            this.setState(({currentProject, projects}) => ({
+                                projects: [
+                                    ...projects.slice(0, currentProject),
+                                    {...projects[currentProject], result: result},
+                                    ...projects.slice(currentProject + 1)
+                                ],
+                                alertProps: {
+                                    message: "Project name changed successfully!",
+                                    open: true,
+                                    severity: "success"
+                                },
+                            }));
                         }
                     }).catch(error => {
-                        console.log(error);
-                        msg = "Serve error! Couldn't change name :(";
-                        this.setState({
-                            alertProps: {message: msg, open: true, severity: "error"}
-                        })
+                        this.setState({ alertProps: error });
                     }).finally(() => {
-                        this.setState({loading: false});
+                        this.setState({ loading: false });
                     });
                 });
             } else {
-                msg = "Project name already exists!";
                 this.setState({
-                    alertProps: {message: msg, open: true, severity: 'warning'}
+                    alertProps: {
+                        message: "Project name already exists!",
+                        open: true,
+                        severity: 'warning'
+                    }
                 });
                 return;
             }
         }
-        this.setState(({open}) => ({open: {...open, renameDialog: false}}))
-    };
 
-    handleNegativeResponse = (response, msg) => {
-        let title = "";
-        response.json().then(result => {
-            title = "ERROR " + result.status + " " + result.message;
-            this.setState({
-                alertProps: {message: msg, open: true, title: title, severity: "error"}
-            });
-        }).catch(() => {
-            title = "ERROR " + response.status;
-            this.setState({
-                alertProps: {message: msg, open: true, title: title, severity: "error"}
-            });
-        });
+        this.setState(({open}) => ({
+            open: {...open, renameDialog: false}
+        }));
     };
 
     isNameUnique = (name) => {
-        const projects = this.state.projects.slice(0);
-        const renameDialog = this.state.open.renameDialog;
-        const currentProject = this.state.currentProject;
+        const { currentProject, open: { renameDialog }, projects } = this.state;
 
         for (let i = 0; i < projects.length; i++) {
             if (projects[i].result.name === name) {

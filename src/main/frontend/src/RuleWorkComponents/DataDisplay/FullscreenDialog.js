@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
 import Slide from "@material-ui/core/Slide";
 
@@ -35,7 +35,7 @@ function FullscreenDialog(props) {
 }
 
 FullscreenDialog.propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,
 };

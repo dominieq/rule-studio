@@ -15,6 +15,8 @@ import pl.put.poznan.rulework.model.RulesWithHttpParameters;
 import pl.put.poznan.rulework.service.RulesService;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 @CrossOrigin(exposedHeaders = {"Content-Disposition"})
@@ -71,7 +73,15 @@ public class RulesController {
         String projectName = p.getKey();
         Resource resource = p.getValue();
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_rules.xml")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " rules.xml")
                 .body(resource);
+    }
+
+    @RequestMapping(value = "/arePossibleRulesAllowed", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Boolean>> arePossibleRulesAllowed(
+            @PathVariable("id") UUID id) throws IOException {
+        logger.info("Checking if possible rules are allowed");
+        Boolean result = rulesService.arePossibleRulesAllowed(id);
+        return ResponseEntity.ok(Collections.singletonMap("arePossibleRulesAllowed", result));
     }
 }

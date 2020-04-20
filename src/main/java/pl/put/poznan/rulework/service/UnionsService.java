@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
+import pl.put.poznan.rulework.exception.NoDataException;
 import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
@@ -53,12 +54,25 @@ public class UnionsService {
     }
 
     public static void calculateUnionsWithHttpParametersInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold) {
-        UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(project.getInformationTable(), typeOfUnions, consistencyThreshold);
+        UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
 
-        UnionsWithHttpParameters unionsWithHttpParameters = new UnionsWithHttpParameters(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold);
+        if((!project.isCurrentUnionsWithSingleLimitingDecision()) || (unionsWithHttpParameters.getTypeOfUnions() != typeOfUnions) || (unionsWithHttpParameters.getConsistencyThreshold() != consistencyThreshold)) {
+            InformationTable informationTable = project.getInformationTable();
+            if(informationTable == null) {
+                NoDataException ex = new NoDataException("There is no data in project. Couldn't calculate unions.");
+                logger.error(ex.getMessage());
+                throw ex;
+            }
 
-        project.setUnions(unionsWithHttpParameters);
-        project.setCalculatedUnionsWithSingleLimitingDecision(true);
+            UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(informationTable, typeOfUnions, consistencyThreshold);
+
+            unionsWithHttpParameters = new UnionsWithHttpParameters(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold);
+
+            project.setUnions(unionsWithHttpParameters);
+            project.setCurrentUnionsWithSingleLimitingDecision(true);
+        } else {
+            logger.info("Unions are already calculated with given configuration, skipping current calculation.");
+        }
     }
 
     public UnionsWithHttpParameters getUnions(UUID id) {
@@ -68,7 +82,7 @@ public class UnionsService {
 
         UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
         if(unionsWithHttpParameters == null) {
-            EmptyResponseException ex = new EmptyResponseException("Unions", id);
+            EmptyResponseException ex = new EmptyResponseException("Unions haven't been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }

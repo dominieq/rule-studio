@@ -1,40 +1,43 @@
 package pl.put.poznan.rulework.model;
 
-import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
+import org.rulelearn.rules.RuleSetWithCharacteristics;
 import pl.put.poznan.rulework.enums.RuleType;
 import pl.put.poznan.rulework.enums.UnionType;
 
 public class RulesWithHttpParameters {
-    private RuleSetWithComputableCharacteristics ruleSet;
-    private UnionType typeOfUnion;
+    private RuleSetWithCharacteristics ruleSet;
+    private UnionType typeOfUnions;
     private Double consistencyThreshold;
-    private RuleType typeOfRule;
+    private RuleType typeOfRules;
+    private boolean externalRules;
 
-    public RulesWithHttpParameters(RuleSetWithComputableCharacteristics rules) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, Boolean externalRules) {
         this.ruleSet = rules;
+        this.externalRules = externalRules;
     }
 
-    public RulesWithHttpParameters(RuleSetWithComputableCharacteristics rules, UnionType typeOfUnion, Double consistencyThreshold, RuleType ruleType) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, Boolean externalRules) {
         this.ruleSet = rules;
-        this.typeOfUnion = typeOfUnion;
+        this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
-        this.typeOfRule = ruleType;
+        this.typeOfRules = ruleType;
+        this.externalRules = externalRules;
     }
 
-    public RuleSetWithComputableCharacteristics getRuleSet() {
+    public RuleSetWithCharacteristics getRuleSet() {
         return ruleSet;
     }
 
-    public void setRuleSet(RuleSetWithComputableCharacteristics ruleSet) {
+    public void setRuleSet(RuleSetWithCharacteristics ruleSet) {
         this.ruleSet = ruleSet;
     }
 
-    public UnionType getTypeOfUnion() {
-        return typeOfUnion;
+    public UnionType getTypeOfUnions() {
+        return typeOfUnions;
     }
 
-    public void setTypeOfUnion(UnionType typeOfUnion) {
-        this.typeOfUnion = typeOfUnion;
+    public void setTypeOfUnions(UnionType typeOfUnions) {
+        this.typeOfUnions = typeOfUnions;
     }
 
     public Double getConsistencyThreshold() {
@@ -45,21 +48,30 @@ public class RulesWithHttpParameters {
         this.consistencyThreshold = consistencyThreshold;
     }
 
-    public RuleType getTypeOfRule() {
-        return typeOfRule;
+    public RuleType getTypeOfRules() {
+        return typeOfRules;
     }
 
-    public void setTypeOfRule(RuleType typeOfRule) {
-        this.typeOfRule = typeOfRule;
+    public void setTypeOfRules(RuleType typeOfRules) {
+        this.typeOfRules = typeOfRules;
+    }
+
+    public boolean isExternalRules() {
+        return externalRules;
+    }
+
+    public void setExternalRules(boolean externalRules) {
+        this.externalRules = externalRules;
     }
 
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
                 "ruleSet=" + ruleSet +
-                ", typeOfUnion=" + typeOfUnion +
+                ", typeOfUnions=" + typeOfUnions +
                 ", consistencyThreshold=" + consistencyThreshold +
-                ", typeOfRUle=" + typeOfRule +
+                ", typeOfRules=" + typeOfRules +
+                ", externalRules=" + externalRules +
                 '}';
     }
 }

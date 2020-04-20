@@ -29,6 +29,10 @@ class Import extends Component{
         });
     };
 
+    onProjectNameFocus = (event) => {
+        event.target.select();
+    }
+
     onCheckboxChange = () => {
         this.setState( prevState => ({
             checked: !prevState.checked,
@@ -109,6 +113,7 @@ class Import extends Component{
                         <RuleWorkTextField
                             fullWidth={true}
                             onChange={this.onProjectNameChange}
+                            onFocus={this.onProjectNameFocus}
                             outsideLabel={"Project name"}
                             value={name}
                         />
@@ -128,6 +133,7 @@ class Import extends Component{
                                 accept={".json"}
                                 onInputChange={this.onInputChange}
                                 onInputDelete={this.onInputDelete}
+                                title={"A file defining structure of attributes"}
                             />
                             <CollapsibleDivider
                                 onClick={this.onExpandClick}

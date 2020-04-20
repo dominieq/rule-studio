@@ -3,6 +3,7 @@ import PutRules from './DemoRules/PutRules'
 import GetRules from './DemoRules/GetRules'
 import PostRules from './DemoRules/PostRules'
 import Download from './DemoRules/Download'
+import ArePossibleRulesAllowed from './DemoRules/ArePossibleRulesAllowed'
 
 class DemoRules extends Component {
 
@@ -15,6 +16,7 @@ class DemoRules extends Component {
                 <PutRules></PutRules>
                 <PostRules></PostRules>
                 <Download></Download>
+                <ArePossibleRulesAllowed></ArePossibleRulesAllowed>
             </div>
         )
     }

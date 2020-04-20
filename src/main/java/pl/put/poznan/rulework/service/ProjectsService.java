@@ -23,17 +23,13 @@ public class ProjectsService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private void addProjectToProjectsContainer(Project project) {
-        projectsContainer.getProjectHashMap().put(project.getId(), project);
-    }
-
     public ArrayList<Project> getProjects() {
         return new ArrayList<Project>(projectsContainer.getProjectHashMap().values());
     }
 
     private Project createEmptyProject(String name) {
         Project project = new Project(name);
-        addProjectToProjectsContainer(project);
+        projectsContainer.addProject(project);
         return project;
     }
 
@@ -69,12 +65,12 @@ public class ProjectsService {
 
 
         if(rulesFile != null) { //load rules from file
-            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = RulesService.parseComputableRules(rulesFile, attributes);
-            project.setRules(new RulesWithHttpParameters(ruleSetWithComputableCharacteristics));
+            RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
+            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, true));
         }
 
 
-        projectsContainer.getProjectHashMap().put(project.getId(), project);
+        projectsContainer.addProject(project);
         logger.info(project.toString());
         return project;
     }

@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.enums.RuleType;
 import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
+import pl.put.poznan.rulework.exception.NoRulesException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 import pl.put.poznan.rulework.model.RulesWithHttpParameters;
@@ -93,7 +94,7 @@ public class RulesService {
         return ruleSetWithCharacteristics;
     }
 
-    public static RuleSetWithComputableCharacteristics calculateRuleSetWithComputableCharacteristics(Unions unions, RuleType typeOfRules) {
+    public static RuleSetWithCharacteristics calculateRuleSetWithCharacteristics(Unions unions, RuleType typeOfRules) {
         RuleInducerComponents ruleInducerComponents = null;
 
         ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
@@ -101,7 +102,7 @@ public class RulesService {
         ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 
         RuleSetWithComputableCharacteristics rules = null;
-        RuleSetWithComputableCharacteristics resultSet = null;
+        RuleSetWithCharacteristics resultSet = null;
 
 
         if((typeOfRules == RuleType.POSSIBLE) || (typeOfRules == RuleType.BOTH)) {
@@ -114,7 +115,7 @@ public class RulesService {
 
             rules = (new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
             rules.calculateAllCharacteristics();
-            resultSet = RuleSetWithComputableCharacteristics.join(resultSet, rules);
+            resultSet = RuleSetWithCharacteristics.join(resultSet, rules);
         }
 
 
@@ -136,30 +137,31 @@ public class RulesService {
             if(resultSet == null) {
                 resultSet = rules;
             } else {
-                resultSet = RuleSetWithComputableCharacteristics.join(resultSet, rules);
+                resultSet = RuleSetWithCharacteristics.join(resultSet, rules);
             }
 
             rules = (new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
             rules.calculateAllCharacteristics();
-            resultSet = RuleSetWithComputableCharacteristics.join(resultSet, rules);
+            resultSet = RuleSetWithCharacteristics.join(resultSet, rules);
         }
 
         return resultSet;
     }
 
     public static void calculateRulesWithHttpParametersInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
+        UnionsService.calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
         UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
-        if((project.getUnions() == null) || (unionsWithHttpParameters.getTypeOfUnion() != typeOfUnions) || (unionsWithHttpParameters.getConsistencyThreshold() != consistencyThreshold)) {
-            logger.info("Calculating new set of unions");
-            UnionsService.calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
 
-            unionsWithHttpParameters = project.getUnions();
+        RulesWithHttpParameters rules = project.getRules();
+        if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (rules.getConsistencyThreshold() != consistencyThreshold) || (rules.getTypeOfRules() != typeOfRules)) {
+            RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
+            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, false);
+
+            project.setRules(rules);
+            project.setCurrentRules(true);
+        } else {
+            logger.info("Rules are already calculated with given configuration, skipping current calculation.");
         }
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = calculateRuleSetWithComputableCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
-
-        RulesWithHttpParameters rules = new RulesWithHttpParameters(ruleSetWithComputableCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules);
-
-        project.setRules(rules);
     }
 
     public RulesWithHttpParameters getRules(UUID id) {
@@ -169,12 +171,12 @@ public class RulesService {
 
         RulesWithHttpParameters rules = project.getRules();
         if(rules == null) {
-            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+            EmptyResponseException ex = new EmptyResponseException("There are no rules in project to show.");
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        logger.debug("ruleSetWithComputableCharacteristics:\t{}", rules.toString());
+        logger.debug("rulesWithHttpParameters:\t{}", rules.toString());
         return rules;
     }
 
@@ -216,19 +218,27 @@ public class RulesService {
 
         RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
 
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRules().getRuleSet();
-        if(ruleSetWithComputableCharacteristics == null) {
-            EmptyResponseException ex = new EmptyResponseException("Rules", id);
+        if(project.getRules() == null) {
+            NoRulesException ex = new NoRulesException("There are no rules in this project.");
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        String ruleMLString = ruleMLBuilder.toRuleMLString(ruleSetWithComputableCharacteristics, 1);
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
+        String ruleMLString = ruleMLBuilder.toRuleMLString(ruleSetWithCharacteristics, 1);
 
         InputStream is = new ByteArrayInputStream(ruleMLString.getBytes());
 
         InputStreamResource resource = new InputStreamResource(is);
 
         return new Pair<>(project.getName(), resource);
+    }
+
+    public Boolean arePossibleRulesAllowed(UUID id)  {
+        logger.info("Id:\t{}", id);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        return project.getInformationTable().isSuitableForInductionOfPossibleRules();
     }
 }

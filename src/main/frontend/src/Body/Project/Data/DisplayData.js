@@ -360,7 +360,7 @@ class DisplayData extends React.Component {
      * @returns {Array}
      */
     prepareMetaDataFromImport = (metadata) => {
-        const tmp = [{key: "uniqueLP", name: "No.", sortable: true, resizable: true, filterable: true, draggable: true, sortDescendingFirst: true, width: 160, filterRenderer: NumericFilter, visible: true}];
+        const tmp = [{key: "uniqueLP", name: "No.", sortable: true, resizable: true, filterable: true, draggable: true, sortDescendingFirst: true, width: 160, filterRenderer: NumericFilter, visible: true, temp: false}];
         
         for(let el in metadata) {
             if(metadata[el].name === "uniqueLP") { //restricted name (brute force change the first letter to uppercase)
@@ -474,7 +474,7 @@ class DisplayData extends React.Component {
                 const editedCol = prevState.history[prevState.historySnapshot].columns.find(x => x.key === tmp[0])
                 if(editedCol.valueType === "real") { //enable only reals and "?"
                     if(tmp[1] !== "?" && isNaN(Number(tmp[1]))) {
-                        const message = <span> Cell hasn't been updated. <br/> Column type is: real and you entered value: {tmp[1]}, which is invalid. </span>
+                        const message = <span> Cell hasn't been updated. <br/> Column type: real <br/> The entered value: {tmp[1]}, which is invalid. </span>
                         return {
                             isOpenedNotification: true,
                             addAttributeErrorNotification: message
@@ -482,7 +482,7 @@ class DisplayData extends React.Component {
                     }
                 } else if(editedCol.valueType === "integer") { //enable only integers and "?"
                     if(tmp[1] !== "?" && (isNaN(Number(tmp[1])) || tmp[1].indexOf(".") !== -1 )) {
-                        const message = <span> Cell hasn't been updated. <br/> Column type is: integer and you entered value: {tmp[1]}, which is invalid. </span>
+                        const message = <span> Cell hasn't been updated. <br/> Column type: integer <br/> The entered value: {tmp[1]}, which is invalid. </span>
                         return {
                             isOpenedNotification: true,
                             addAttributeErrorNotification: message
@@ -490,7 +490,7 @@ class DisplayData extends React.Component {
                     }
                 } else if(editedCol.valueType === "enumeration") { //enable only domain elements and "?" - can happen only during ctrl+c, ctrl+v
                     if(tmp[1] !== "?" && !editedCol.domain.includes(tmp[1])) {
-                        const message = <span> Cell hasn't been updated. <br/> Column type is: enumeration and you entered value: {tmp[1]}, which is invalid. Please check the domain. </span>
+                        const message = <span> Cell hasn't been updated. <br/> Column type: enumeration <br/> The entered value: {tmp[1]}, which is invalid. Please check the domain. </span>
                         return {
                             isOpenedNotification: true,
                             addAttributeErrorNotification: message
@@ -951,8 +951,11 @@ class DisplayData extends React.Component {
                         response.json().then(result => {
                             console.log("Error 404.")
                             console.log(result.message)
+                            const message = <span> Error 404. <br/> {result.message} </span>
                             if(this._isMounted) {
                                 this.setState({
+                                    isOpenedNotification: true,
+                                    addAttributeErrorNotification: message,
                                     isLoading: false,
                                 })
                             }
@@ -1031,8 +1034,11 @@ class DisplayData extends React.Component {
                         response.json().then(result => {
                             console.log("Error 404.")
                             console.log(result.message)
+                            const message = <span> Error 404. <br/> {result.message} </span>
                             if(this._isMounted) {
                                 this.setState({
+                                    isOpenedNotification: true,
+		                            addAttributeErrorNotification: message,
                                     isLoading: false,
                                 })
                             }
@@ -1169,9 +1175,9 @@ class DisplayData extends React.Component {
             this.saveToJsonFile(this.prepareDataFileBeforeSendingToServer(), this.props.project.result.name + "_data.json");
         } else if(this.state.saveToFileData === 'csv') {
             let separator = " ";
-            if(this.state.saveToFileCsvSeparator === "Tab") separator = "%09";
-            else if(this.state.saveToFileCsvSeparator === "Semicolon") separator = ";";
-            else if(this.state.saveToFileCsvSeparator === "Comma") separator = ",";
+            if(this.state.saveToFileCsvSeparator === "tab") separator = "%09";
+            else if(this.state.saveToFileCsvSeparator === "semicolon") separator = ";";
+            else if(this.state.saveToFileCsvSeparator === "comma") separator = ",";
             //else it is space
             this.saveToCSVFile(this.props.project.result.name + "_data.csv", this.state.saveToFileCsvHeader, separator);
         }
@@ -1427,7 +1433,7 @@ class DisplayData extends React.Component {
             //type validation
             if(type === '') error = "You didn't select any attribute type! Please select any.";
             
-            else if(type !== "Identification") {
+            else if(type !== "identification") {
                 //preference type validation
                 if(preferenceType === '') error = "You didn't select any attribute preference type! Please select any.";
 
@@ -1435,7 +1441,7 @@ class DisplayData extends React.Component {
                 else if(valueType === '') error = "You didn't select any value type! Please select any.";
 
                 //enumeration validation
-                else if(valueType === "Enumeration") {
+                else if(valueType === "enumeration") {
                     if(domain.length === 0) error = "You have chosen enumeration type, but didn't provide any domain! Please add the domain to your enumeration value type.";
 
                     for(let i=0; i<domain.length; i++) {
@@ -1481,14 +1487,14 @@ class DisplayData extends React.Component {
         attribute.key = name;
         attribute.name = name;
         attribute.active = active;
-        if(type === "Identification") {
+        if(type === "identification") {
             attribute.identifierType = identifierType.toLowerCase();
         }
         else {
             attribute.type = type.toLowerCase();
             attribute.preferenceType = preferenceType.toLowerCase();
             attribute.valueType = valueType.toLowerCase();
-            if(mvType === "MV 2") attribute.missingValueType = "mv2";
+            if(mvType === "mv2") attribute.missingValueType = "mv2";
             else attribute.missingValueType = "mv1.5";
             
             if(attribute.valueType === "enumeration") {
@@ -1589,36 +1595,78 @@ class DisplayData extends React.Component {
         this.setHeaderColorAndStyle(column, idx, changeWidth);
         this.setHeaderRightClick(column, idx);
     }
+
+    renameKeyInObject = (oldName, newName, {[oldName]: old, ...others}) => ({
+        [newName]: old,
+        ...others
+    })
     
-    setRowsAndHeaderColorAndStyleAndRightClick = (column, idx, isNewColumn) => {
+    setRowsAndHeaderColorAndStyleAndRightClick = (column, idx, ifIsNewColumnElseOldColumn) => {
         let nextRows = JSON.parse(JSON.stringify(this.state.history[this.state.historySnapshot].rows));
-        if(isNewColumn) {
+        if(typeof ifIsNewColumnElseOldColumn === "boolean") { //new column fill with "?"
             for(let i in nextRows) {
                 nextRows[i][column.key] = "?";
             }
-        } else {
-            if(column.valueType === "enumeration") {
-                for(let i in nextRows) {
-                    if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
+        } else { //editing column
+
+            //both name and valueType of the column has been changed
+            if(ifIsNewColumnElseOldColumn.name !== column.name && ifIsNewColumnElseOldColumn.valueType !== column.valueType) {
+                if(column.valueType === "enumeration") { 
+                    for(let i in nextRows) {
+                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
+                        nextRows[i][column.key] = nextRows[i][column.key].toString();
+                        if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
+                    }
+                } else if(column.valueType === "integer") {
+                    for(let i in nextRows) {
+                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
+                        let tmp = parseInt(nextRows[i][column.key],10);
+                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
+                        else nextRows[i][column.key] = tmp;
+                    }
+                } else if(column.valueType === "real") {
+                    for(let i in nextRows) {
+                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
+                        let tmp = parseFloat(nextRows[i][column.key]);
+                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
+                        else nextRows[i][column.key] = tmp;
+                    }
+                } else {
+                    for(let i in nextRows) {
+                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
+                        nextRows[i][column.key] = "?";
+                    }
                 }
-            }
-            else if(column.valueType === "integer") {
-                for(let i in nextRows) {
-                    let tmp = parseInt(nextRows[i][column.key],10);
-                if(isNaN(tmp)) nextRows[i][column.key] = "?";
-                else nextRows[i][column.key] = tmp;
+            // column valueType has been changed so check the content of each row
+            } else if(ifIsNewColumnElseOldColumn.valueType !== column.valueType) {
+                if(column.valueType === "enumeration") {
+                    for(let i in nextRows) {
+                        if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
+                    }
                 }
-            } else if(column.valueType === "real") {
-                for(let i in nextRows) {
-                    let tmp = parseFloat(nextRows[i][column.key]);
-                if(isNaN(tmp)) nextRows[i][column.key] = "?";
-                else nextRows[i][column.key] = tmp;
+                else if(column.valueType === "integer") {
+                    for(let i in nextRows) {
+                        let tmp = parseInt(nextRows[i][column.key],10);
+                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
+                        else nextRows[i][column.key] = tmp;
+                    }
+                } else if(column.valueType === "real") {
+                    for(let i in nextRows) {
+                        let tmp = parseFloat(nextRows[i][column.key]);
+                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
+                        else nextRows[i][column.key] = tmp;
+                    }
+                } else {
+                    for(let i in nextRows) {
+                        nextRows[i][column.key] = "?";
+                    }
                 }
-            } else {
+            //column name has been changed (rename all keys in rows)
+            } else if(ifIsNewColumnElseOldColumn.name !== column.name) {
                 for(let i in nextRows) {
-                    nextRows[i][column.key] = "?";
+                    nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
                 }
-            }
+            }             
         }
         
         let history = [...this.state.history];
@@ -1680,18 +1728,18 @@ class DisplayData extends React.Component {
             style={{justifyContent: "space-evenly"}}
         />)
         tmp.push(<ValidationTextField autoComplete="off" label="Name" size="small" fullWidth required variant="outlined" id="attributeName" key="attributeName" defaultValue="" />)
-        tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key="attributeType" displayName={"Type"} items={["Identification","Description","Condition","Decision"]}/>)
+        tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key="attributeType" displayName={"Type"} items={["identification","description","condition","decision"]}/>)
 
-        if(this.state.attributeTypeSelected !== "Identification") {
-            tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key="missingValueType" displayName={"Missing value type"} defaultValue="MV 2" items={["MV 1.5","MV 2"]}/>)
-            tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributePreferenceType} name={"attributePreferenceType"} key="attributePreferenceType" displayName={"Preference type"} items={["None","Cost","Gain"]}/>)
-            tmp.push(<DropDownForAttributes getSelected={this.getSelectedValueType} name={"valueType"} displayName={"Value type"} key="valueType" items={["Integer","Real","Enumeration"]}/>)
-            if(this.state.valueTypeSelected === "Enumeration")
+        if(this.state.attributeTypeSelected !== "identification") {
+            tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key="missingValueType" displayName={"Missing value type"} missingVal={true} defaultValue="mv2" items={["1.5","2"]}/>)
+            tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributePreferenceType} name={"attributePreferenceType"} key="attributePreferenceType" displayName={"Preference type"} items={["none","cost","gain"]}/>)
+            tmp.push(<DropDownForAttributes getSelected={this.getSelectedValueType} name={"valueType"} displayName={"Value type"} key="valueType" items={["integer","real","enumeration"]}/>)
+            if(this.state.valueTypeSelected === "enumeration")
             {
                 tmp.push(<div className="attributeDomainWrapper" key="attributeDomainWrapper"><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements}/> </div> </div>)
             }
-        } else if(this.state.attributeTypeSelected === "Identification") { 
-            tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} displayName={"Identifier type"} key="identifierType" items={["UUID","Text"]}/>)
+        } else if(this.state.attributeTypeSelected === "identification") { 
+            tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} displayName={"Identifier type"} key="identifierType" items={["uuid","text"]}/>)
         }
       
         if(tmp.length !== 0) return tmp;
@@ -1732,7 +1780,7 @@ class DisplayData extends React.Component {
             col.key = e.target.attributeName.value.trim();
             col.name = e.target.attributeName.value.trim();
             col.active = e.target.attributeIsActive.checked;
-            if(this.state.attributeTypeSelected === "Identification") {
+            if(this.state.attributeTypeSelected === "identification") {
                 col.identifierType = this.state.identifierTypeSelected.toLowerCase();
                 col.type = undefined;
             } else {
@@ -1740,7 +1788,7 @@ class DisplayData extends React.Component {
                 col.type = this.state.attributeTypeSelected.toLowerCase();
                 col.preferenceType = this.state.attributePreferenceTypeSelected.toLowerCase();
                 col.valueType = this.state.valueTypeSelected.toLowerCase();
-                if(this.state.missingValueTypeSelected === "MV 2") col.missingValueType = "mv2";
+                if(this.state.missingValueTypeSelected === "mv2") col.missingValueType = "mv2";
                 else col.missingValueType = "mv1.5";
 
                 if(col.valueType === "enumeration") {
@@ -1752,7 +1800,7 @@ class DisplayData extends React.Component {
                     col.filterRenderer = NumericFilter;
                 }
             }
-
+            const oldColumn = {...cols[i]};
             cols[i] = col;
             const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
             tmpHistory.push({rows: this.state.history[this.state.historySnapshot].rows, columns: cols});
@@ -1770,7 +1818,7 @@ class DisplayData extends React.Component {
                 attributesDomainElements: [],
                 history: tmpHistory,
                 historySnapshot: tmpHistory.length-1
-            },() => this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, false)
+            },() => this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, oldColumn)
             );   
         } else {
             this.setState({
@@ -1814,31 +1862,31 @@ class DisplayData extends React.Component {
 
         if((this.state.attributeTypeSelected === '' && this.state.valueTypeSelected === '') || (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected.toLowerCase() === attribute.valueType)   /*|| (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected === '') //nothing has changed
             || (this.state.attributeTypeSelected === '' && this.state.valueTypeSelected.toLowerCase() === attribute.valueType) || (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected.toLowerCase() === attribute.valueType) */
-            || (this.state.attributeTypeSelected === 'Identification' && attribute.preferenceType === undefined)) { 
+            || (this.state.attributeTypeSelected === 'identification' && attribute.preferenceType === undefined)) { 
 
             if(attribute.identifierType !== '' && attribute.type === undefined) { //if it's identifier attribute
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} defaultValue={"Identification"} displayName={"Type"} items={["Identification","Description","Condition","Decision"]}/>) 
+                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} defaultValue={"identification"} displayName={"Type"} items={["identification","description","condition","decision"]}/>) 
                 
                 if(attribute.identifierType.toLowerCase() === 'uuid') {
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} key={"identifierType"+attribute.name} defaultValue={"UUID"} displayName={"Identifier type"}  items={["UUID","Text"]}/>)
+                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} key={"identifierType"+attribute.name} defaultValue={"uuid"} displayName={"Identifier type"}  items={["uuid","text"]}/>)
                 }
                 else { 
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} key={"identifierType"+attribute.name} defaultValue={"Text"} displayName={"Identifier type"}  items={["UUID","Text"]}/>) 
+                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} key={"identifierType"+attribute.name} defaultValue={"text"} displayName={"Identifier type"}  items={["uuid","text"]}/>) 
                 }
             } else { //it's not identifier attribute
                 
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} defaultValue={attribute.type.charAt(0).toUpperCase() + attribute.type.slice(1)} displayName={"Type"} items={["Identification","Description","Condition","Decision"]}/>)
+                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} defaultValue={attribute.type} displayName={"Type"} items={["identification","description","condition","decision"]}/>)
 
                 if(attribute.missingValueType === "mv2") {
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} displayName={"Missing value type"} defaultValue="MV 2" items={["MV 1.5","MV 2"]}/>)
+                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} displayName={"Missing value type"} missingVal={true} defaultValue="mv2" items={["1.5","2"]}/>)
                 }
                 else {
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} displayName={"Missing value type"} defaultValue="MV 1.5" items={["MV 1.5","MV 2"]}/>)
+                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} displayName={"Missing value type"} missingVal={true} defaultValue="mv1.5" items={["1.5","2"]}/>)
                 }
                 
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributePreferenceType} name={"attributePreferenceType"} key={"attributePreferenceType"+attribute.name} defaultValue={attribute.preferenceType.charAt(0).toUpperCase() + attribute.preferenceType.slice(1)} displayName={"Preference type"} items={["None","Cost","Gain"]}/>)
+                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributePreferenceType} name={"attributePreferenceType"} key={"attributePreferenceType"+attribute.name} defaultValue={attribute.preferenceType} displayName={"Preference type"} items={["none","cost","gain"]}/>)
 
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedValueType} name={"valueType"} displayName={"Value type"} key={"valueType"+attribute.name} defaultValue={attribute.valueType.charAt(0).toUpperCase() + attribute.valueType.slice(1)} items={["Integer","Real","Enumeration"]}/>)
+                tmp.push(<DropDownForAttributes getSelected={this.getSelectedValueType} name={"valueType"} displayName={"Value type"} key={"valueType"+attribute.name} defaultValue={attribute.valueType} items={["integer","real","enumeration"]}/>)
 
                 if(attribute.valueType === "enumeration")
                 {
@@ -1851,21 +1899,21 @@ class DisplayData extends React.Component {
             }
         } else if(this.state.attributeTypeSelected !== attribute.type) { //attribute type has changed (everything under it - rerender with empty values)
             
-            if(this.state.attributeTypeSelected !== "Identification") {
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} displayName={"Type"} items={["Identification","Description","Condition","Decision"]}/>)
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} defaultValue="MV 2" displayName={"Missing value type"} items={["MV 1.5","MV 2"]}/>)
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributePreferenceType} name={"attributePreferenceType"} key={"attributePreferenceType"+attribute.name} displayName={"Preference type"} items={["None","Cost","Gain"]}/>)
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedValueType} name={"valueType"} displayName={"Value type"} key={"valueType"+attribute.name} items={["Integer","Real","Enumeration"]}/>)
-                if(this.state.valueTypeSelected === "Enumeration")
+            if(this.state.attributeTypeSelected !== "identification") {
+                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} displayName={"Type"} items={["identification","description","condition","decision"]}/>)
+                tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} missingVal={true}  defaultValue="mv2" displayName={"Missing value type"} items={["1.5","2"]}/>)
+                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributePreferenceType} name={"attributePreferenceType"} key={"attributePreferenceType"+attribute.name} displayName={"Preference type"} items={["none","cost","gain"]}/>)
+                tmp.push(<DropDownForAttributes getSelected={this.getSelectedValueType} name={"valueType"} displayName={"Value type"} key={"valueType"+attribute.name} items={["integer","real","enumeration"]}/>)
+                if(this.state.valueTypeSelected === "enumeration")
                 {
                     tmp.push(<div className="attributeDomainWrapper" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements}/> </div> </div>)
                 }
-            } else if(this.state.attributeTypeSelected === "Identification") { 
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} displayName={"Type"} defaultValue={"Identification"} items={["Identification","Description","Condition","Decision"]}/>)
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} displayName={"Identifier type"} key={"identifierType"+attribute.name} items={["UUID","Text"]}/>)
+            } else if(this.state.attributeTypeSelected === "identification") { 
+                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} displayName={"Type"} defaultValue={"identification"} items={["identification","description","condition","decision"]}/>)
+                tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} displayName={"Identifier type"} key={"identifierType"+attribute.name} items={["uuid","text"]}/>)
             }
         } else if(this.state.valueTypeSelected !== attribute.valueType) {
-            if(this.state.valueTypeSelected === "Enumeration")
+            if(this.state.valueTypeSelected === "enumeration")
             {
                 tmp.push(<div className="attributeDomainWrapper" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements}/> </div> </div>)
             }
@@ -1920,19 +1968,23 @@ class DisplayData extends React.Component {
     onColumnHeaderDragDrop = (source, target) => {
         const history = [...this.state.history];
         const newColumns = [...history[this.state.historySnapshot].columns];
-        const columnSourceIndex = this.state.history[this.state.historySnapshot].columns.findIndex((i) => i.key === source);
-        const columnTargetIndex = this.state.history[this.state.historySnapshot].columns.findIndex((i) => i.key === target);
+        const columnSourceIndex = history[this.state.historySnapshot].columns.findIndex((i) => i.key === source);
+        const columnTargetIndex = history[this.state.historySnapshot].columns.findIndex((i) => i.key === target);
+        const uniqueLPIdx = history[this.state.historySnapshot].columns.findIndex((i) => i.key === "uniqueLP");
         newColumns.splice(columnTargetIndex,0,newColumns.splice(columnSourceIndex, 1)[0]);
         
-        const newHistoryCols = {...history[this.state.historySnapshot]}
-        newHistoryCols.columns = newColumns;
-        history[this.state.historySnapshot] = newHistoryCols;
-
-        const emptyColumns = [];
-        this.setState({ columns: emptyColumns, history: [{rows: [], columns: []}] });
+        let col = {...newColumns[uniqueLPIdx]};
+        col.temp = !col.temp;
+        newColumns[uniqueLPIdx] = col;
+    
+        const tmpHistory = history.slice(0, this.state.historySnapshot+1);
+        tmpHistory.push({rows: this.state.history[this.state.historySnapshot].rows, columns: newColumns});
+        if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
+    
         this.setState({ 
             dataModified: true,
-            history: history,
+            history: tmpHistory,
+            historySnapshot: tmpHistory.length-1
         }, () => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false))
         )        
     };
@@ -2126,7 +2178,7 @@ class DisplayData extends React.Component {
                                     </Tooltip>
                                     <DropDownForAttributes getSelected={this.getSelectedSaveToFileCsvSeparator} 
                                         name={"saveToFileSeparator"} key="saveToFileSeparator" displayName={"Separator"} 
-                                        items={["Tab","Semicolon","Comma","Space"]}
+                                        items={["tab","semicolon","comma","space"]}
                                     />
                                     </div>
                                 }

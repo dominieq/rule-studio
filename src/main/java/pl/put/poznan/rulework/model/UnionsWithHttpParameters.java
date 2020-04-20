@@ -5,12 +5,12 @@ import pl.put.poznan.rulework.enums.UnionType;
 
 public class UnionsWithHttpParameters {
     private UnionsWithSingleLimitingDecision unions;
-    private UnionType typeOfUnion;
+    private UnionType typeOfUnions;
     private Double consistencyThreshold;
 
-    public UnionsWithHttpParameters(UnionsWithSingleLimitingDecision unions, UnionType typeOfUnion, Double consistencyThreshold) {
+    public UnionsWithHttpParameters(UnionsWithSingleLimitingDecision unions, UnionType typeOfUnions, Double consistencyThreshold) {
         this.unions = unions;
-        this.typeOfUnion = typeOfUnion;
+        this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
     }
 
@@ -22,12 +22,12 @@ public class UnionsWithHttpParameters {
         this.unions = unions;
     }
 
-    public UnionType getTypeOfUnion() {
-        return typeOfUnion;
+    public UnionType getTypeOfUnions() {
+        return typeOfUnions;
     }
 
-    public void setTypeOfUnion(UnionType typeOfUnion) {
-        this.typeOfUnion = typeOfUnion;
+    public void setTypeOfUnions(UnionType typeOfUnions) {
+        this.typeOfUnions = typeOfUnions;
     }
 
     public Double getConsistencyThreshold() {
@@ -42,7 +42,7 @@ public class UnionsWithHttpParameters {
     public String toString() {
         return "UnionsWithHttpParameters{" +
                 "unions=" + unions +
-                ", typeOfUnion=" + typeOfUnion +
+                ", typeOfUnions=" + typeOfUnions +
                 ", consistencyThreshold=" + consistencyThreshold +
                 '}';
     }

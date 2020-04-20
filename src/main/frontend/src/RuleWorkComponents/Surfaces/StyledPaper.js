@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import { mergeClasses } from "../utilFunctions";
 import Paper from "@material-ui/core/Paper";
 
 const useStyles = makeStyles(theme => ({
@@ -10,10 +11,10 @@ const useStyles = makeStyles(theme => ({
         color: theme.palette.paper.text,
     },
     bar: {
-        position: "relative",
-        padding: "2px 16px",
-        display: "flex",
         alignItems: "center",
+        display: "flex",
+        padding: "2px 16px",
+        position: "relative",
         zIndex: theme.zIndex.appBar,
     },
     panel: {
@@ -30,15 +31,21 @@ const useStyles = makeStyles(theme => ({
         color: theme.palette.popper.text,
         marginTop: 1,
     }
-}), {name: "rule-work"});
+}), {name: "styled"});
 
 function StyledPaper(props) {
-    const {children, classes: propsClasses, className, styleVariant, paperRef, ...other} = props;
-    const classes = {...useStyles(), ...propsClasses};
+    const { children, classes: propsClasses, className, styleVariant, paperRef, ...other } = props;
+    let classes = useStyles();
+
+    if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
             <Paper
-                className={clsx(classes.paper, classes[styleVariant], className)}
+                className={clsx(
+                    classes.paper,
+                    classes[styleVariant],
+                    className
+                )}
                 {...paperRef ? {ref: paperRef} : null}
                 {...other}
             >

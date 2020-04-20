@@ -1,3 +1,10 @@
+.rule-work-data-toolbar {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
 #rule-work-data-1 {
     display: flex;
 }
@@ -6,7 +13,7 @@
     display: none;
 }
 
-@media only screen and (max-width: 1410px) {
+@media only screen and (max-width: 1413px) {
     #rule-work-data-1 {
         display: none;
     }

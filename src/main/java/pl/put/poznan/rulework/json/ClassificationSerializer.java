@@ -41,50 +41,11 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
 
         jsonGenerator.writeStartObject();
 
-        jsonGenerator.writeFieldName("deviationOfAccuracy");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfAccuracy());
-
-        jsonGenerator.writeFieldName("deviationOfNumberObjectsWithAssignedDecision");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberObjectsWithAssignedDecision());
-
-        jsonGenerator.writeFieldName("deviationOfNumberOfCorrectAssignments");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfCorrectAssignments());
-
-        jsonGenerator.writeFieldName("deviationOfNumberOfIncorrectAssignments");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfIncorrectAssignments());
-
-        jsonGenerator.writeFieldName("deviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions());
-
-        jsonGenerator.writeFieldName("deviationOfNumberOfUnknownAssignments");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfUnknownAssignments());
-
-        jsonGenerator.writeFieldName("deviationOfNumberOfUnknownOriginalDecisions");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfUnknownOriginalDecisions());
-
-        jsonGenerator.writeFieldName("numberObjectsWithAssignedDecision");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberObjectsWithAssignedDecision());
-
-        jsonGenerator.writeFieldName("numberOfCorrectAssignments");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfCorrectAssignments());
-
-        jsonGenerator.writeFieldName("numberOfIncorrectAssignments");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfIncorrectAssignments());
-
-        jsonGenerator.writeFieldName("numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions());
-
-        jsonGenerator.writeFieldName("numberOfUnknownAssignments");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfUnknownAssignments());
-
-        jsonGenerator.writeFieldName("numberOfUnknownOriginalDecisions");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfUnknownOriginalDecisions());
-
-        jsonGenerator.writeFieldName("accuracy");
+        jsonGenerator.writeFieldName("Accuracy");
         jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getAccuracy());
 
-        jsonGenerator.writeFieldName("gmean");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getGmean());
+        jsonGenerator.writeFieldName("Deviation of accuracy");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfAccuracy());
 
         jsonGenerator.writeFieldName("mae");
         jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getMAE());
@@ -92,68 +53,106 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
         jsonGenerator.writeFieldName("rmse");
         jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getRMSE());
 
-        jsonGenerator.writeFieldName("rmse");
-        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getRMSE());
+        jsonGenerator.writeFieldName("gmean");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getGmean());
 
-        jsonGenerator.writeFieldName("deviationOfNumberOfUnknownAssignedDecisions");
+        jsonGenerator.writeFieldName("Number of correct assignments");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfCorrectAssignments());
+
+        jsonGenerator.writeFieldName("Deviation of number of correct assignments");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfCorrectAssignments());
+
+        jsonGenerator.writeFieldName("Number of incorrect assignments");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfIncorrectAssignments());
+
+        jsonGenerator.writeFieldName("Deviation of number of incorrect assignments");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfIncorrectAssignments());
+
+        jsonGenerator.writeFieldName("Number of objects with assigned decision");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberObjectsWithAssignedDecision());
+
+        jsonGenerator.writeFieldName("Deviation of number objects with assigned decision");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberObjectsWithAssignedDecision());
+
+        jsonGenerator.writeFieldName("Number of unknown original decisions");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfUnknownOriginalDecisions());
+
+        jsonGenerator.writeFieldName("Deviation of number of unknown original decisions");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfUnknownOriginalDecisions());
+
+        jsonGenerator.writeFieldName("Number of unknown assignments");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfUnknownAssignments());
+
+        jsonGenerator.writeFieldName("Deviation of number of unknown assignments");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfUnknownAssignments());
+
+        jsonGenerator.writeFieldName("Number of unknown assigned decisions for unknown original decisions");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions());
+
+        jsonGenerator.writeFieldName("Deviation of number of unknown assigned decisions for unknown original decisions");
+        jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions());
+
+        Decision[] orderOfDecision = classification.getOrderOfDecisions();
+
+        jsonGenerator.writeFieldName("True positive rate");
         jsonGenerator.writeStartArray();
-        for(Decision decision : classification.getOrderOfDecisions()) {
-            jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfUnknownAssignedDecisions(decision));
+        for(Decision decision : orderOfDecision) {
+            jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getTruePositiveRate(decision));
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeFieldName("deviationOfNumberOfUnknownOriginalDecisions");
+        jsonGenerator.writeFieldName("Deviation of true positive rate");
         jsonGenerator.writeStartArray();
-        for(Decision decision : classification.getOrderOfDecisions()) {
-            jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfUnknownOriginalDecisions(decision));
-        }
-        jsonGenerator.writeEndArray();
-
-        jsonGenerator.writeFieldName("deviationOfTruePositiveRate");
-        jsonGenerator.writeStartArray();
-        for(Decision decision : classification.getOrderOfDecisions()) {
+        for(Decision decision : orderOfDecision) {
             jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfTruePositiveRate(decision));
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeFieldName("deviationOfValue");
+        jsonGenerator.writeFieldName("Number of unknown original decisions for a given assigned decision");
         jsonGenerator.writeStartArray();
-        for(Decision originalDecision : classification.getOrderOfDecisions()) {
-            jsonGenerator.writeStartArray();
-            for(Decision assignedDecision : classification.getOrderOfDecisions()) {
-                jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfValue(originalDecision, assignedDecision));
-            }
-            jsonGenerator.writeEndArray();
-        }
-        jsonGenerator.writeEndArray();
-
-        jsonGenerator.writeFieldName("numberOfUnknownAssignedDecisions");
-        jsonGenerator.writeStartArray();
-        for(Decision decision : classification.getOrderOfDecisions()) {
-            jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfUnknownAssignedDecisions(decision));
-        }
-        jsonGenerator.writeEndArray();
-
-        jsonGenerator.writeFieldName("numberOfUnknownOriginalDecisions");
-        jsonGenerator.writeStartArray();
-        for(Decision decision : classification.getOrderOfDecisions()) {
+        for(Decision decision : orderOfDecision) {
             jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfUnknownOriginalDecisions(decision));
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeFieldName("truePositiveRate");
+        jsonGenerator.writeFieldName("Deviation of number of unknown original decisions for a given assigned decision");
         jsonGenerator.writeStartArray();
-        for(Decision decision : classification.getOrderOfDecisions()) {
-            jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getTruePositiveRate(decision));
+        for(Decision decision : orderOfDecision) {
+            jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfUnknownOriginalDecisions(decision));
+        }
+        jsonGenerator.writeEndArray();
+
+        jsonGenerator.writeFieldName("Number of unknown assigned decisions for a given original decision");
+        jsonGenerator.writeStartArray();
+        for(Decision decision : orderOfDecision) {
+            jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getNumberOfUnknownAssignedDecisions(decision));
+        }
+        jsonGenerator.writeEndArray();
+
+        jsonGenerator.writeFieldName("Deviation of number of unknown assigned decisions for a given original decision");
+        jsonGenerator.writeStartArray();
+        for(Decision decision : orderOfDecision) {
+            jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfNumberOfUnknownAssignedDecisions(decision));
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeFieldName("value");
         jsonGenerator.writeStartArray();
-        for(Decision originalDecision : classification.getOrderOfDecisions()) {
+        for(Decision originalDecision : orderOfDecision) {
             jsonGenerator.writeStartArray();
-            for(Decision assignedDecision : classification.getOrderOfDecisions()) {
+            for(Decision assignedDecision : orderOfDecision) {
                 jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getValue(originalDecision, assignedDecision));
+            }
+            jsonGenerator.writeEndArray();
+        }
+        jsonGenerator.writeEndArray();
+
+        jsonGenerator.writeFieldName("Deviation of value");
+        jsonGenerator.writeStartArray();
+        for(Decision originalDecision : orderOfDecision) {
+            jsonGenerator.writeStartArray();
+            for(Decision assignedDecision : orderOfDecision) {
+                jsonGenerator.writeNumber(ordinalMisclassificationMatrix.getDeviationOfValue(originalDecision, assignedDecision));
             }
             jsonGenerator.writeEndArray();
         }
@@ -166,6 +165,8 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
 
         jsonGenerator.writeFieldName("defaultClassificationResult");
         jsonGenerator.writeString(classification.getDefaultClassificationResult().toString());
+
+        jsonGenerator.writeBooleanField("externalData", classification.isExternalData());
 
         jsonGenerator.writeEndObject();
     }

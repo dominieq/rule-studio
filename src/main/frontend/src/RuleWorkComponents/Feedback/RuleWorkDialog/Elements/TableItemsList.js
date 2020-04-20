@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import Typography from "@material-ui/core/Typography";
 import { AutoSizer, List } from "react-virtualized";
+import TextWithHoverTooltip from "../../../DataDisplay/TextWithHoverTooltip";
 
 const listStyles = makeStyles(theme => ({
     root: {
@@ -19,11 +19,9 @@ const listStyles = makeStyles(theme => ({
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
-        wordBreak: "normal",
         '&:hover': {
             overflow: "visible",
             whiteSpace: "unset",
-            wordBreak: "break-word",
         }
     },
     header: {
@@ -36,9 +34,7 @@ const listStyles = makeStyles(theme => ({
         lineHeight: "initial"
     },
     headerText: {
-        fontSize: "inherit",
-        fontWeight: 900,
-        letterSpacing: "0.05rem"
+        ...theme.typography.subheader,
     },
     listWrapper: {
         flexGrow: 1,
@@ -46,23 +42,32 @@ const listStyles = makeStyles(theme => ({
     },
 }), {name: "virtualized-list"});
 
-function VirtualizedTableItems(props) {
-    const { headerText, index, itemText, onItemInTableSelected, rowHeight, table } = props;
+function TableItemsList(props) {
+    const { headerText, itemIndex, itemText, onItemInTableSelected, rowHeight, table } = props;
     const listClasses = listStyles();
 
-    const rowRenderer = ({key, index: i, style}) => {
+    const rowRenderer = ({key, index, style}) => {
+        let primary = itemText + " " + (table[index] + 1);
+
+        if (typeof props.getName === "function") {
+            primary = props.getName(table[index]);
+        }
+
         return (
             <ListItem
                 button={true}
                 divider={true}
                 key={key}
-                selected={table[i] === index}
-                onClick={() => onItemInTableSelected(table[i])}
+                selected={table[index] === itemIndex}
+                onClick={() => onItemInTableSelected(table[index])}
                 style={style}
             >
-                <ListItemText
-                    primary={itemText + " " + (table[i] + 1)}
-                    primaryTypographyProps={{className: listClasses.textItem}}
+                <TextWithHoverTooltip
+                    text={primary}
+                    TooltipProps={{
+                        id: key,
+                        placement: "right"
+                    }}
                 />
             </ListItem>
         )
@@ -102,18 +107,19 @@ function VirtualizedTableItems(props) {
 // rowHeight (optional)
 // table (required) <-- array of integers (object indices) from chosen data table
 
-VirtualizedTableItems.propTypes = {
+TableItemsList.propTypes = {
+    getName: PropTypes.func,
     headerText: PropTypes.string,
-    index: PropTypes.number,
+    itemIndex: PropTypes.number,
     itemText: PropTypes.string,
-    onItemInTableSelected: PropTypes.func.isRequired,
+    onItemInTableSelected: PropTypes.func,
     rowHeight: PropTypes.number,
     table: PropTypes.array.isRequired,
 };
 
-VirtualizedTableItems.defaultProps = {
+TableItemsList.defaultProps = {
     itemText: "Object",
     rowHeight: 53,
 };
 
-export default VirtualizedTableItems;
+export default TableItemsList;

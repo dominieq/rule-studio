@@ -12,6 +12,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.exception.NoDataException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
@@ -54,7 +55,14 @@ public class MetadataService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        return project.getInformationTable().getAttributes();
+        InformationTable informationTable = project.getInformationTable();
+        if (informationTable == null) {
+            NoDataException ex = new NoDataException("There is no metadata in project. Couldn't get it.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        return informationTable.getAttributes();
     }
 
     public Project putMetadata(UUID id, String metadata) throws IOException {
@@ -91,7 +99,14 @@ public class MetadataService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InputStreamResource resource = produceJsonResource(project.getInformationTable());
+        InformationTable informationTable = project.getInformationTable();
+        if (informationTable == null) {
+            NoDataException ex = new NoDataException("There is no metadata in project. Couldn't download it.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        InputStreamResource resource = produceJsonResource(informationTable);
 
         return new Pair<>(project.getName(), resource);
     }

@@ -1,5 +1,6 @@
-import React, {Component} from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { makeStyles } from "@material-ui/core/styles";
 import RuleWorkTooltip from "../../RuleWorkComponents/DataDisplay/RuleWorkTooltip"
 import StyledFileChip from "../../RuleWorkComponents/DataDisplay/StyledFileChip";
 import RuleWorkUpload from "../../RuleWorkComponents/Inputs/RuleWorkUpload";
@@ -8,96 +9,120 @@ import Skeleton from "@material-ui/lab/Skeleton";
 import Typography from "@material-ui/core/Typography";
 import DeleteCircle from "mdi-material-ui/DeleteCircle"
 import FileUpload from "mdi-material-ui/FileUpload";
-import "./FileSelectZone.css"
 
-class FileSelectZone extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            file: null,
-        };
+const useStyles = makeStyles({
+    root: {
+        alignItems: "center",
+        display: "flex",
+        justifyContent: "space-between",
+        padding: "5px 0"
+    },
+    tooltip: {
+        display: "flex",
+        flexDirection: "column",
+        '& > *:not(:first-child)': {
+            marginTop: "1em"
+        }
+    },
+    tooltipTitle: {
+        margin: 0,
+        textAlign: "center"
+    },
+    tooltipDesc: {
+        margin: 0,
+        textAlign: "justify"
     }
+}, {name: "file-select-zone"})
 
-    onInputChange = (event) => {
+function FileSelectZone(props)  {
+    const [file, setFile] = useState(null);
+    const classes = useStyles();
+    const { accept, title, variant } = props;
+
+    const onInputChange = (event) => {
         if (event.target.files.length !== 1) return;
 
         const uploadedFile = event.target.files[0];
-        this.setState({
+
+        setFile(uploadedFile);
+        props.onInputChange({
             file: uploadedFile,
-        }, () => {
-            const message = {file: uploadedFile, type: this.props.variant};
-            this.props.onInputChange(message);
+            type: variant
         });
     };
 
-    onInputDelete = () => {
-        const file = this.state.file;
-        this.setState({
-            file: null,
-        }, () => {
-            const message = {file: file, type: this.props.variant};
-            this.props.onInputDelete(message);
-        })
+    const onInputDelete = () => {
+        props.onInputDelete({
+            file: file,
+            type: variant
+        });
+        setFile(null);
     };
 
-    renderFile = (file) => {
-        if (file) {
-            return (
+    return (
+        <div className={classes.root}>
+            <Typography style={{marginRight: 8, minWidth: "fit-content"}}>
+                {"Choose " + variant + " file: "}
+            </Typography>
+            {file ?
                 <StyledFileChip
                     clickable={true}
                     deleteIcon={<DeleteCircle />}
                     label={file.name}
-                    onDelete={this.onInputDelete}
+                    onDelete={onInputDelete}
                     size={"small"}
                 />
-            )
-        } else {
-            return (
-                <Skeleton animation={"wave"}/>
-            )
-        }
-    };
-
-    render() {
-        const {variant, accept} = this.props;
-        const file = this.state.file;
-
-        return (
-            <div className={"file-select-zone"}>
-                <Typography component={"p"}>
-                    {"Choose " + variant + " file: "}
-                </Typography>
-                {this.renderFile(file)}
-                <RuleWorkTooltip title={"Upload " + variant}>
-                    <RuleWorkUpload
-                        accept={accept}
-                        id={"upload-" + variant}
-                        onChange={this.onInputChange}
+                :
+                <Skeleton
+                    animation={"wave"}
+                    width={"100%"}
+                />
+            }
+            <RuleWorkTooltip
+                arrow={true}
+                classes={{tooltip: classes.tooltip}}
+                placement={"right"}
+                title={
+                    <React.Fragment>
+                        <p className={classes.tooltipTitle} id={"title"}>
+                            <b>{"Upload " + variant}</b>
+                        </p>
+                        {title &&
+                            <p className={classes.tooltipDesc} id={"desc"}>
+                                {title}
+                            </p>
+                        }
+                    </React.Fragment>
+                }
+            >
+                <RuleWorkUpload
+                    accept={accept}
+                    id={"upload-" + variant}
+                    onChange={onInputChange}
+                >
+                    <StyledButton
+                        aria-label={"upload-" + variant}
+                        isIcon={true}
+                        component={"span"}
+                        themeVariant={"primary"}
                     >
-                        <StyledButton
-                            aria-label={"upload-" + variant}
-                            isIcon={true}
-                            component={"span"}
-                        >
-                            <FileUpload/>
-                        </StyledButton>
-                    </RuleWorkUpload>
-                </RuleWorkTooltip>
-            </div>
-        );
-    }
+                        <FileUpload/>
+                    </StyledButton>
+                </RuleWorkUpload>
+            </RuleWorkTooltip>
+        </div>
+    );
 }
 
 FileSelectZone.propTypes = {
-    variant: PropTypes.oneOf(["metadata", "data", "rules"]).isRequired,
     accept: PropTypes.string,
-    onInputChange: PropTypes.func.isRequired,
-    onInputDelete: PropTypes.func.isRequired,
+    onInputChange: PropTypes.func,
+    onInputDelete: PropTypes.func,
+    title: PropTypes.node,
+    variant: PropTypes.oneOf(["metadata", "data", "rules"])
 };
 
 FileSelectZone.defaultProps = {
-    variant: "metadata",
     accept: ".json,.xml,.csv"
 };
 

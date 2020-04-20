@@ -71,7 +71,10 @@ export default function SimpleSelect(props) {
           onChange={handleChange}
           labelWidth={labelWidth}
         >
-        {props.items.map((x,index) => { return <MenuItem key={index} value={x}>{x}</MenuItem>})}
+        {props.items.map((x,index) => { 
+          if(props.missingVal) return <MenuItem style={{display: "inherit"}} key={index} value={`mv${x}`}>mv<sub>{x}</sub></MenuItem>
+          return <MenuItem key={index} value={x}>{x}</MenuItem>
+          })}
         </Select>
       </FormControl>
       

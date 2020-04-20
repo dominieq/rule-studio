@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from "@material-ui/core/styles";
 import Classification from "./Classification/Classification";
@@ -47,13 +47,13 @@ const StyledTab = withStyles(theme => ({
 
 }), {name: "MuiTab"})(props => <Tab {...props} disableRipple={true} /> );
 
-class ProjectTabs extends Component {
+class ProjectTabs extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            selected: 0,
-        }
+            selected: 0
+        };
     }
 
     onTabChange = (event, newValue) => {
@@ -77,59 +77,80 @@ class ProjectTabs extends Component {
         })
     };
 
-    renderTabLabel = (name, index) => {
-        const updated = this.props.project.tabsUpToDate[index];
-        const externalRulesAlert = this.props.project.externalRules && index > 1 ? <ExternalRulesAlert /> : null;
+    renderSimpleTabLabel = (name, index) => {
+        const { project: { tabsUpToDate } } = this.props;
 
-        if (updated === null || updated) {
-            return (
-                <Fragment>
-                    {externalRulesAlert}
-                    {name}
-                </Fragment>
-            );
-        } else if (this.props.project.externalRules && index > 2) {
-            return (
-                <OutdatedRulesAlert>
-                    {externalRulesAlert}
-                    {name}
-                </OutdatedRulesAlert>
-            );
+        if (tabsUpToDate[index]) {
+            return name;
         } else {
             return (
                 <OutdatedDataAlert>
-                    {externalRulesAlert}
                     {name}
                 </OutdatedDataAlert>
-            )
+            );
+        }
+    };
+
+    renderRulesTabLabel = () => {
+        const { project: { externalRules, tabsUpToDate } } = this.props;
+
+        if (externalRules) {
+            return (
+                <Fragment>
+                    <ExternalRulesAlert />
+                    {"Rules"}
+                </Fragment>
+            );
+        } else if (!tabsUpToDate[2]) {
+            return (
+                <OutdatedDataAlert>
+                    {"Rules"}
+                </OutdatedDataAlert>
+            );
+        } else {
+            return "Rules";
+        }
+    };
+
+    renderClassificationTabLabel = () => {
+        const { project: { externalData, tabsUpToDate} } = this.props;
+
+        if (tabsUpToDate[3] || externalData) {
+            return "Classification";
+        } else if (!tabsUpToDate[3] && !externalData) {
+            return (
+                <OutdatedDataAlert>
+                    {"Classification"}
+                </OutdatedDataAlert>
+            );
         }
     };
 
     render() {
-        const selected = this.state.selected;
+        const { selected } = this.state;
 
         return (
             <Fragment>
                 <StyledTabs aria-label={"project tabs"} centered={true} onChange={this.onTabChange} value={selected}>
                     <StyledTab label={"Data"} {...this.getTabProps(0)} />
                     <StyledTab
-                        label={this.renderTabLabel("Dominance cones", 0)}
+                        label={this.renderSimpleTabLabel("Dominance cones", 0)}
                         {...this.getTabProps(1)}
                     />
                     <StyledTab
-                        label={this.renderTabLabel("Class unions" , 1)}
+                        label={this.renderSimpleTabLabel("Class unions" , 1)}
                         {...this.getTabProps(2)}
                     />
                     <StyledTab
-                        label={this.renderTabLabel("Rules", 2)}
+                        label={this.renderRulesTabLabel()}
                         {...this.getTabProps(3)}
                     />
                     <StyledTab
-                        label={this.renderTabLabel("Classification", 3)}
+                        label={this.renderClassificationTabLabel()}
                         {...this.getTabProps(4)}
                     />
                     <StyledTab
-                        label={this.renderTabLabel("Cross-validation", 4)}
+                        label={this.renderSimpleTabLabel("Cross-Validation", 4)}
                         {...this.getTabProps(5)}
                     />
                 </StyledTabs>
