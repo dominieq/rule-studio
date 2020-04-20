@@ -87,7 +87,7 @@ class ThresholdSelector extends Component {
 
     onSliderChangeCommitted = (event, newValue) => {
         this.props.onChange(this.state.threshold);
-    }
+    };
 
     render() {
         const { threshold } = this.state;
