@@ -219,7 +219,7 @@ public class RulesService {
         RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
 
         if(project.getRules() == null) {
-            NoRulesException ex = new NoRulesException("There are no rules in project to download.");
+            NoRulesException ex = new NoRulesException("There are no rules in this project.");
             logger.error(ex.getMessage());
             throw ex;
         }
