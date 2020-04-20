@@ -102,28 +102,28 @@ public class CrossValidationSerializer extends JsonSerializer<CrossValidation> {
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeFieldName("Number of unknown original decisions");
+        jsonGenerator.writeFieldName("Number of unknown original decisions for a given assigned decision");
         jsonGenerator.writeStartArray();
         for(Decision decision : orderOfDecision) {
             jsonGenerator.writeNumber(meanOrdinalMisclassificationMatrix.getNumberOfUnknownOriginalDecisions(decision));
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeFieldName("Deviation of number of unknown original decisions");
+        jsonGenerator.writeFieldName("Deviation of number of unknown original decisions for a given assigned decision");
         jsonGenerator.writeStartArray();
         for(Decision decision : orderOfDecision) {
             jsonGenerator.writeNumber(meanOrdinalMisclassificationMatrix.getDeviationOfNumberOfUnknownOriginalDecisions(decision));
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeFieldName("Number of unknown assigned decisions");
+        jsonGenerator.writeFieldName("Number of unknown assigned decisions for a given original decision");
         jsonGenerator.writeStartArray();
         for(Decision decision : orderOfDecision) {
             jsonGenerator.writeNumber(meanOrdinalMisclassificationMatrix.getNumberOfUnknownAssignedDecisions(decision));
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeFieldName("Deviation of number of unknown assigned decisions");
+        jsonGenerator.writeFieldName("Deviation of number of unknown assigned decisions for a given original decision");
         jsonGenerator.writeStartArray();
         for(Decision decision : orderOfDecision) {
             jsonGenerator.writeNumber(meanOrdinalMisclassificationMatrix.getDeviationOfNumberOfUnknownAssignedDecisions(decision));
