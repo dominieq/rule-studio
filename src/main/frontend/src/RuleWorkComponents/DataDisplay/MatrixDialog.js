@@ -116,7 +116,7 @@ class MatrixDialog extends React.PureComponent {
                             <VirtualizedMatrix
                                 cellDimensions={cellDimensions}
                                 matrix={addSubheaders(subheaders, matrix.value)}
-                                type={"Value"}
+                                type={"Misclassification matrix"}
                             />
                         </div>
                     </div>
@@ -142,7 +142,7 @@ class MatrixDialog extends React.PureComponent {
                                 <VirtualizedMatrix
                                     cellDimensions={cellDimensions}
                                     matrix={addSubheaders(subheaders, matrix.deviation)}
-                                    type={"Deviation"}
+                                    type={"Deviations"}
                                 />
                             </div>
                         </div>

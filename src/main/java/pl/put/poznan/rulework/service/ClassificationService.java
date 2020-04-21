@@ -6,7 +6,7 @@ import org.rulelearn.classification.*;
 import org.rulelearn.core.TernaryLogicValue;
 import org.rulelearn.data.*;
 import org.rulelearn.rules.Rule;
-import org.rulelearn.rules.RuleSetWithComputableCharacteristics;
+import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.types.EvaluationField;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.enums.ClassifierType;
 import pl.put.poznan.rulework.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
+import pl.put.poznan.rulework.exception.NoDataException;
 import pl.put.poznan.rulework.exception.NoRulesException;
 import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Classification;
@@ -36,7 +37,7 @@ public class ClassificationService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private static Decision[] induceOrderedUniqueFullyDeterminedDecisions(RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics, InformationTable informationTable) {
+    private static Decision[] induceOrderedUniqueFullyDeterminedDecisions(RuleSetWithCharacteristics ruleSetWithCharacteristics, InformationTable informationTable) {
         List<Decision> allDecisions = new ArrayList<>();
 
         Decision[] informationTableDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
@@ -44,8 +45,8 @@ public class ClassificationService {
             allDecisions.add(informationTableDecisions[i]);
         }
 
-        for(int i = 0; i < ruleSetWithComputableCharacteristics.size(); i++) {
-            Rule rule = ruleSetWithComputableCharacteristics.getRule(i);
+        for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+            Rule rule = ruleSetWithCharacteristics.getRule(i);
             allDecisions.add(new SimpleDecision(rule.getDecision().getLimitingEvaluation(), rule.getDecision().getAttributeWithContext().getAttributeIndex()));
         }
 
@@ -179,11 +180,11 @@ public class ClassificationService {
         return simpleClassificationResult;
     }
 
-    public static Classification calculateClassification(InformationTable informationTable, ClassifierType typeOfClassifier, DefaultClassificationResultType typeOfDefaultClassificationResult, RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics, Decision[] orderOfDecisions) {
+    public static Classification calculateClassification(InformationTable learningInformationTable, InformationTable testingInformationTable, ClassifierType typeOfClassifier, DefaultClassificationResultType typeOfDefaultClassificationResult, RuleSetWithCharacteristics ruleSetWithCharacteristics, Decision[] orderOfDecisions) {
         if(logger.isDebugEnabled()) {
-            logger.debug("RuleSet size = {}", ruleSetWithComputableCharacteristics.size());
-            for(int i = 0; i < ruleSetWithComputableCharacteristics.size(); i++) {
-                logger.debug("\tRegula nr {}:\t{}", i, ruleSetWithComputableCharacteristics.getRule(i));
+            logger.debug("RuleSet size = {}", ruleSetWithCharacteristics.size());
+            for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
+                logger.debug("\tRegula nr {}:\t{}", i, ruleSetWithCharacteristics.getRule(i));
             }
         }
 
@@ -194,20 +195,20 @@ public class ClassificationService {
 
         switch (typeOfClassifier) {
             case SIMPLE_RULE_CLASSIFIER:
-                simpleClassificationResult = createDefaultSimpleClassificationResult(typeOfDefaultClassificationResult, informationTable);
-                classifier = new SimpleRuleClassifier(ruleSetWithComputableCharacteristics, simpleClassificationResult);
+                simpleClassificationResult = createDefaultSimpleClassificationResult(typeOfDefaultClassificationResult, testingInformationTable);
+                classifier = new SimpleRuleClassifier(ruleSetWithCharacteristics, simpleClassificationResult);
                 break;
             case SIMPLE_OPTIMIZING_COUNTING_RULE_CLASSIFIER:
-                simpleClassificationResult = createDefaultSimpleClassificationResult(typeOfDefaultClassificationResult, informationTable);
-                classifier = new SimpleOptimizingCountingRuleClassifier(ruleSetWithComputableCharacteristics, simpleClassificationResult);
+                simpleClassificationResult = createDefaultSimpleClassificationResult(typeOfDefaultClassificationResult, testingInformationTable);
+                classifier = new SimpleOptimizingCountingRuleClassifier(ruleSetWithCharacteristics, simpleClassificationResult, learningInformationTable);
                 break;
             case SCORING_RULE_CLASSIFIER_SCORE:
-                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, informationTable);
-                classifier = new ScoringRuleClassifier(ruleSetWithComputableCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.SCORE);
+                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, testingInformationTable);
+                classifier = new ScoringRuleClassifier(ruleSetWithCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.SCORE);
                 break;
             case SCORING_RULE_CLASSIFIER_HYBRID:
-                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, informationTable);
-                classifier = new ScoringRuleClassifier(ruleSetWithComputableCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.HYBRID);
+                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, testingInformationTable);
+                classifier = new ScoringRuleClassifier(ruleSetWithCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.HYBRID);
                 break;
             default:
                 WrongParameterException ex = new WrongParameterException(String.format("Given type of classifier \"%s\" is unrecognized.", typeOfClassifier));
@@ -216,20 +217,20 @@ public class ClassificationService {
         }
 
         int objectIndex;
-        int objectCount = informationTable.getNumberOfObjects();
+        int objectCount = testingInformationTable.getNumberOfObjects();
         IntList[] indicesOfCoveringRules = new IntList[objectCount];
 
         ClassificationResult[] classificationResults = new ClassificationResult[objectCount];
         for (objectIndex = 0; objectIndex < classificationResults.length; objectIndex++) {
             indicesOfCoveringRules[objectIndex] = new IntArrayList();
-            classificationResults[objectIndex] = classifier.classify(objectIndex, informationTable, indicesOfCoveringRules[objectIndex]);
+            classificationResults[objectIndex] = classifier.classify(objectIndex, testingInformationTable, indicesOfCoveringRules[objectIndex]);
         }
 
         if(logger.isDebugEnabled()) {
             for(objectIndex = 0; objectIndex < objectCount; objectIndex++) {
-                logger.debug("Obiekt nr {}:\t{}", objectIndex, informationTable.getFields(objectIndex).toString());
+                logger.debug("Obiekt nr {}:\t{}", objectIndex, testingInformationTable.getFields(objectIndex).toString());
                 for(int ruleIndex = 0; ruleIndex < indicesOfCoveringRules[objectIndex].size(); ruleIndex++) {
-                    logger.debug("\tRegula nr {}:\t{}", ruleIndex, ruleSetWithComputableCharacteristics.getRule(indicesOfCoveringRules[objectIndex].getInt(ruleIndex)));
+                    logger.debug("\tRegula nr {}:\t{}", ruleIndex, ruleSetWithCharacteristics.getRule(indicesOfCoveringRules[objectIndex].getInt(ruleIndex)));
                 }
             }
         }
@@ -238,9 +239,9 @@ public class ClassificationService {
         for(int i = 0; i < classificationResults.length; i++) {
             suggestedDecisions[i] = classificationResults[i].getSuggestedDecision();
         }
-        OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, informationTable.getDecisions(), suggestedDecisions);
+        OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, testingInformationTable.getDecisions(), suggestedDecisions);
 
-        Classification classification = new Classification(classificationResults, informationTable, orderOfDecisions, indicesOfCoveringRules, ordinalMisclassificationMatrix, typeOfClassifier, typeOfDefaultClassificationResult);
+        Classification classification = new Classification(classificationResults, testingInformationTable, orderOfDecisions, indicesOfCoveringRules, ordinalMisclassificationMatrix, typeOfClassifier, typeOfDefaultClassificationResult);
         return classification;
     }
 
@@ -251,7 +252,7 @@ public class ClassificationService {
 
         Classification classification = project.getClassification();
         if(classification == null) {
-            EmptyResponseException ex = new EmptyResponseException("Classification hasn’t been calculated.");
+            EmptyResponseException ex = new EmptyResponseException("Classification hasn't been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }
@@ -266,17 +267,23 @@ public class ClassificationService {
         logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
         InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no data in project. Couldn't reclassify.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
 
         if(project.getRules() == null) {
             NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
             logger.error(ex.getMessage());
             throw ex;
         }
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRules().getRuleSet();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
 
-        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithComputableCharacteristics, informationTable);
-        Classification classification = calculateClassification(informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics, orderOfDecisions);
+        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, informationTable);
+        Classification classification = calculateClassification(informationTable, informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
         project.setClassification(classification);
 
         return classification;
@@ -298,18 +305,31 @@ public class ClassificationService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        Attribute[] attributes = project.getInformationTable().getAttributes();
-        InformationTable informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
+        InformationTable projectInformationTable = project.getInformationTable();
+        if(projectInformationTable == null) {
+            NoDataException ex = new NoDataException("There is no data in project. Couldn't classify data from file.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        Attribute[] attributes = projectInformationTable.getAttributes();
+        if(attributes == null) {
+            NoDataException ex = new NoDataException("There is no metadata in project. Couldn't read classified data from file.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
 
         if(project.getRules() == null) {
             NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
             logger.error(ex.getMessage());
             throw ex;
         }
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRules().getRuleSet();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
 
-        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithComputableCharacteristics, informationTable);
-        Classification classification = calculateClassification(informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics, orderOfDecisions);
+        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);
+        Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
         classification.setExternalData(true);
         project.setClassification(classification);
 
@@ -333,10 +353,10 @@ public class ClassificationService {
             logger.error(ex.getMessage());
             throw ex;
         }
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRules().getRuleSet();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
 
-        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithComputableCharacteristics, informationTable);
-        Classification classification = calculateClassification(informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithComputableCharacteristics, orderOfDecisions);
+        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, informationTable);
+        Classification classification = calculateClassification(informationTable, informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
         project.setClassification(classification);
 
         return classification;

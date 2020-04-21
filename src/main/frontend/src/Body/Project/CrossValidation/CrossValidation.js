@@ -497,7 +497,7 @@ class CrossValidation extends Component {
                         subheaders={
                             folds[selected.foldIndex].classificationValidationTable.decisionsDomain
                         }
-                        title={"Mean ordinal misclassification matrix, it's deviation and details"}
+                        title={"Mean ordinal misclassification matrix, deviations and details"}
                     />
                 }
                 {Array.isArray(folds) && Boolean(folds.length) &&

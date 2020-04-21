@@ -94,7 +94,7 @@ public class RulesService {
         return ruleSetWithCharacteristics;
     }
 
-    public static RuleSetWithComputableCharacteristics calculateRuleSetWithComputableCharacteristics(Unions unions, RuleType typeOfRules) {
+    public static RuleSetWithCharacteristics calculateRuleSetWithCharacteristics(Unions unions, RuleType typeOfRules) {
         RuleInducerComponents ruleInducerComponents = null;
 
         ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
@@ -102,7 +102,7 @@ public class RulesService {
         ApproximatedSetRuleDecisionsProvider unionRuleDecisionsProvider = new UnionWithSingleLimitingDecisionRuleDecisionsProvider();
 
         RuleSetWithComputableCharacteristics rules = null;
-        RuleSetWithComputableCharacteristics resultSet = null;
+        RuleSetWithCharacteristics resultSet = null;
 
 
         if((typeOfRules == RuleType.POSSIBLE) || (typeOfRules == RuleType.BOTH)) {
@@ -115,7 +115,7 @@ public class RulesService {
 
             rules = (new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
             rules.calculateAllCharacteristics();
-            resultSet = RuleSetWithComputableCharacteristics.join(resultSet, rules);
+            resultSet = RuleSetWithCharacteristics.join(resultSet, rules);
         }
 
 
@@ -137,12 +137,12 @@ public class RulesService {
             if(resultSet == null) {
                 resultSet = rules;
             } else {
-                resultSet = RuleSetWithComputableCharacteristics.join(resultSet, rules);
+                resultSet = RuleSetWithCharacteristics.join(resultSet, rules);
             }
 
             rules = (new VCDomLEM(ruleInducerComponents, unionAtMostProvider, unionRuleDecisionsProvider)).generateRules();
             rules.calculateAllCharacteristics();
-            resultSet = RuleSetWithComputableCharacteristics.join(resultSet, rules);
+            resultSet = RuleSetWithCharacteristics.join(resultSet, rules);
         }
 
         return resultSet;
@@ -154,8 +154,8 @@ public class RulesService {
 
         RulesWithHttpParameters rules = project.getRules();
         if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (rules.getConsistencyThreshold() != consistencyThreshold) || (rules.getTypeOfRules() != typeOfRules)) {
-            RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = calculateRuleSetWithComputableCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
-            rules = new RulesWithHttpParameters(ruleSetWithComputableCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, false);
+            RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
+            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, false);
 
             project.setRules(rules);
             project.setCurrentRules(true);
@@ -171,12 +171,12 @@ public class RulesService {
 
         RulesWithHttpParameters rules = project.getRules();
         if(rules == null) {
-            EmptyResponseException ex = new EmptyResponseException("There is no rules in project to show.");
+            EmptyResponseException ex = new EmptyResponseException("There are no rules in project to show.");
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        logger.debug("ruleSetWithComputableCharacteristics:\t{}", rules.toString());
+        logger.debug("rulesWithHttpParameters:\t{}", rules.toString());
         return rules;
     }
 
@@ -219,13 +219,13 @@ public class RulesService {
         RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
 
         if(project.getRules() == null) {
-            NoRulesException ex = new NoRulesException("There is no rules in project to download.");
+            NoRulesException ex = new NoRulesException("There are no rules in this project.");
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        RuleSetWithComputableCharacteristics ruleSetWithComputableCharacteristics = project.getRules().getRuleSet();
-        String ruleMLString = ruleMLBuilder.toRuleMLString(ruleSetWithComputableCharacteristics, 1);
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
+        String ruleMLString = ruleMLBuilder.toRuleMLString(ruleSetWithCharacteristics, 1);
 
         InputStream is = new ByteArrayInputStream(ruleMLString.getBytes());
 

@@ -53,7 +53,7 @@ class CrossValidationDialog extends PureComponent {
             }
         }
 
-        return "";
+        return "?";
     }
 
     getCrossValidationTitle = () => {
