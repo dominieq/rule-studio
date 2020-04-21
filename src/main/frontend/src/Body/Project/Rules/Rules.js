@@ -19,8 +19,10 @@ import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import SvgIcon from "@material-ui/core/SvgIcon";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
+import { mdiTextBox } from '@mdi/js';
 
 class Rules extends Component {
     constructor(props) {
@@ -252,7 +254,7 @@ class Rules extends Component {
         }
     };
 
-    onSaveFileClick = () => {
+    onSaveRulesToXMLClick = () => {
         const { project } = this.props;
 
         downloadRules( project.result.id ).catch(error => {
@@ -260,6 +262,10 @@ class Rules extends Component {
                 this.setState({alertProps: error});
             }
         });
+    };
+
+    onSaveRulesToTXTClick = () => {
+        console.log("Saving to TXT");
     };
 
     toggleOpen = (name) => {
@@ -373,15 +379,27 @@ class Rules extends Component {
                         </RuleWorkUpload>
                     </RuleWorkTooltip>
                     <StyledDivider />
-                    <RuleWorkTooltip title={"Save file"}>
+                    <RuleWorkTooltip title={"Save rules to RuleML"}>
                         <StyledButton
-                            aria-label={"rules-save-button"}
+                            aria-label={"rules-save-to-xml-button"}
                             disabled={!Boolean(data) || loading}
                             isIcon={true}
-                            onClick={this.onSaveFileClick}
+                            onClick={this.onSaveRulesToXMLClick}
                             themeVariant={"primary"}
                         >
                             <SaveIcon />
+                        </StyledButton>
+                    </RuleWorkTooltip>
+                    <StyledDivider />
+                    <RuleWorkTooltip title={"Save rules to TXT"}>
+                        <StyledButton
+                            aria-label={"rules-save-to-txt-button"}
+                            disabled={!Boolean(data) || loading}
+                            isIcon={true}
+                            onClick={this.onSaveRulesToTXTClick}
+                            themeVariant={"primary"}
+                        >
+                            <SvgIcon><path d={mdiTextBox} /></SvgIcon>
                         </StyledButton>
                     </RuleWorkTooltip>
                     <span style={{flexGrow: 1}} />

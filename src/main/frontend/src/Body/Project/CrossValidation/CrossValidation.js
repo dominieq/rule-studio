@@ -23,9 +23,11 @@ import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkToo
 import { CrossValidationDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
+import Sigma from "mdi-material-ui/Sigma";
 
 class CrossValidation extends Component {
     constructor(props) {
@@ -52,7 +54,8 @@ class CrossValidation extends Component {
             },
             open: {
                 details: false,
-                matrixGlobal: false,
+                matrixMean: false,
+                matrixSum: false,
                 matrixFold: false,
                 settings: false,
             },
@@ -378,9 +381,19 @@ class CrossValidation extends Component {
                         <Fragment>
                             <p id={"all-folds"} style={{margin: "0 16px 0 0", fontSize: "1.15rem"}}>All folds:</p>
                             <MatrixButton
-                                onClick={() => this.toggleOpen("matrixGlobal")}
-                                title={"Show ordinal misclassification matrix for all folds"}
+                                onClick={() => this.toggleOpen("matrixMean")}
+                                title={"Show mean ordinal misclassification matrix"}
                             />
+                            <RuleWorkTooltip title={"Show sum ordinal misclassification matrix"}>
+                                <StyledButton
+                                    aria-label={"sum-matrix-button"}
+                                    isIcon={true}
+                                    onClick={() => this.toggleOpen("matrixSum")}
+                                    themeVariant={"secondary"}
+                                >
+                                    <Sigma />
+                                </StyledButton>
+                            </RuleWorkTooltip>
                             <StyledDivider />
                             <RuleWorkTextField
                                 onChange={this.onFoldIndexChange}
@@ -492,8 +505,8 @@ class CrossValidation extends Component {
                     <MatrixDialog
                         disableDeviation={false}
                         matrix={parseMatrix(data.meanOrdinalMisclassificationMatrix)}
-                        onClose={() => this.toggleOpen("matrixGlobal")}
-                        open={open.matrixGlobal}
+                        onClose={() => this.toggleOpen("matrixMean")}
+                        open={open.matrixMean}
                         subheaders={
                             folds[selected.foldIndex].classificationValidationTable.decisionsDomain
                         }
