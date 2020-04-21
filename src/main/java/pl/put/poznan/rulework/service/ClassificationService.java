@@ -37,6 +37,17 @@ public class ClassificationService {
     @Autowired
     ProjectsContainer projectsContainer;
 
+    public static Classification getClassificationFromProject(Project project) {
+        Classification classification = project.getClassification();
+        if(classification == null) {
+            EmptyResponseException ex = new EmptyResponseException("Classification hasn't been calculated.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        return classification;
+    }
+
     private static Decision[] induceOrderedUniqueFullyDeterminedDecisions(RuleSetWithCharacteristics ruleSetWithCharacteristics, InformationTable informationTable) {
         List<Decision> allDecisions = new ArrayList<>();
 
@@ -250,12 +261,7 @@ public class ClassificationService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        Classification classification = project.getClassification();
-        if(classification == null) {
-            EmptyResponseException ex = new EmptyResponseException("Classification hasn't been calculated.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        Classification classification = getClassificationFromProject(project);
 
         logger.debug("classification:\t{}", classification);
         return classification;

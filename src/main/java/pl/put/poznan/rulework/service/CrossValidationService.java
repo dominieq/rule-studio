@@ -31,6 +31,17 @@ public class CrossValidationService {
     @Autowired
     ProjectsContainer projectsContainer;
 
+    public static CrossValidation getCrossValidationFromProject(Project project) {
+        CrossValidation crossValidation = project.getCrossValidation();
+        if(crossValidation == null) {
+            EmptyResponseException ex = new EmptyResponseException("Cross-validation hasn't been calculated.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        return crossValidation;
+    }
+
     private CrossValidation calculateCrossValidation(InformationTable informationTable, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult, Integer numberOfFolds) {
         CrossValidationSingleFold crossValidationSingleFolds[] = new CrossValidationSingleFold[numberOfFolds];
         Decision[] orderOfDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
@@ -65,12 +76,7 @@ public class CrossValidationService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        CrossValidation crossValidation = project.getCrossValidation();
-        if(crossValidation == null) {
-            EmptyResponseException ex = new EmptyResponseException("Cross-validation hasn't been calculated.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        CrossValidation crossValidation = getCrossValidationFromProject(project);
 
         logger.debug("crossValidation:\t{}", crossValidation.toString());
         return crossValidation;
