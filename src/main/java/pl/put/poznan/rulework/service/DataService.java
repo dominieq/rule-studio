@@ -140,7 +140,7 @@ public class DataService {
         InformationTable newInformationTable = informationTableFromStringData(data, attributes);
 
         project.setInformationTable(newInformationTable);
-        logger.info(project.toString());
+        logger.debug(project.toString());
 
         return project;
     }

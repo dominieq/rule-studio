@@ -62,7 +62,9 @@ public class MetadataService {
             throw ex;
         }
 
-        return informationTable.getAttributes();
+        Attribute[] result = informationTable.getAttributes();
+        logger.debug(result.toString());
+        return result;
     }
 
     public Project putMetadata(UUID id, String metadata) throws IOException {
@@ -77,7 +79,7 @@ public class MetadataService {
         InformationTable informationTable = new InformationTable(attributes, new ArrayList<>());
 
         project.setInformationTable(informationTable);
-        logger.info(project.toString());
+        logger.debug(project.toString());
 
         return project;
     }
