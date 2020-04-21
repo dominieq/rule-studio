@@ -1,12 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { addSubheaders } from "../../Body/Project/Utils/parseData";
-import VirtualizedMatrix, { estimateMatrixHeight, estimateMatrixWidth } from "./VirtualizedMatrix";
-import TraitsTable from "../Feedback/RuleWorkDialog/Elements/TraitsTable";
-import FullscreenDialog from "./FullscreenDialog";
-import FullscreenDialogTitleBar from "./FullscreenDialogTitleBar";
-import MultiColDialogContent from "./MultiColDialogContent";
-import TextWithHoverTooltip from "./TextWithHoverTooltip";
+import { addSubheaders } from "../../../Body/Project/Utils/parseData";
+import { CenteredColumn } from "./Elements";
+import VirtualizedMatrix, { estimateMatrixHeight, estimateMatrixWidth } from "../VirtualizedMatrix";
+import { estimateTableHeight } from "../VirtualizedTable";
+import TraitsTable from "../../Feedback/RuleWorkDialog/Elements/TraitsTable";
+import FullscreenDialog from "../FullscreenDialog";
+import FullscreenDialogTitleBar from "../FullscreenDialogTitleBar";
+import MultiColDialogContent from "../MultiColDialogContent";
+import TextWithHoverTooltip from "../TextWithHoverTooltip";
 
 class MatrixDialog extends React.PureComponent {
     constructor(props) {
@@ -17,6 +19,7 @@ class MatrixDialog extends React.PureComponent {
             widthMatrix: 0,
             heightDeviation: 0,
             widthDeviation: 0,
+            heightTraits: 0
         };
     }
 
@@ -59,13 +62,19 @@ class MatrixDialog extends React.PureComponent {
     }
 
     onEntered = () => {
-        const { disableDeviation, matrix: { value, deviation } } = this.props;
+        const { disableDeviation, matrix: { value, deviation, traits } } = this.props;
+
+        let displayedTraits = traits;
+        if (disableDeviation) {
+            displayedTraits = this.prepareTraitsWithoutDeviation(traits);
+        }
 
         this.setState({
             heightMatrix: estimateMatrixHeight(value),
             widthMatrix: estimateMatrixWidth(value),
             heightDeviation: !disableDeviation ? estimateMatrixHeight(deviation) : 0,
             widthDeviation: !disableDeviation ? estimateMatrixWidth(deviation) : 0,
+            heightTraits: estimateTableHeight(Object.keys(displayedTraits))
         });
     };
 
@@ -82,7 +91,7 @@ class MatrixDialog extends React.PureComponent {
     };
 
     render() {
-        const { heightMatrix, widthMatrix, heightDeviation, widthDeviation } = this.state;
+        const { heightMatrix, widthMatrix, heightDeviation, widthDeviation, heightTraits } = this.state;
         const { cellDimensions, disableDeviation, matrix, open, onClose, subheaders, title } = this.props;
 
         const numberOfColumns = disableDeviation ? 2 : 3;
@@ -95,64 +104,34 @@ class MatrixDialog extends React.PureComponent {
                     title={title}
                 />
                 <MultiColDialogContent numberOfColumns={numberOfColumns}>
-                    <div
-                        id={"ordinal-misclassification-matrix-value"}
-                        style={{
-                            alignItems: "center",
-                            display: "flex",
-                            justifyContent: "center",
-                            maxWidth: `${90 / numberOfColumns}%`,
-                            width: widthMatrix
-                        }}
+                    <CenteredColumn
+                        height={heightMatrix}
+                        maxWidth={`${90 / numberOfColumns}%`}
+                        width={widthMatrix}
                     >
-                        <div
-                            id={"value-floating-box"}
-                            style={{
-                                height: heightMatrix,
-                                maxHeight: "100%",
-                                width: "100%"
-                            }}
+                        <VirtualizedMatrix
+                            cellDimensions={cellDimensions}
+                            matrix={addSubheaders(subheaders, matrix.value)}
+                            type={"Misclassification matrix"}
+                        />
+                    </CenteredColumn>
+                    {!disableDeviation &&
+                        <CenteredColumn
+                            height={heightDeviation}
+                            maxWidth={`${90 / numberOfColumns}%`}
+                            width={widthDeviation}
                         >
                             <VirtualizedMatrix
                                 cellDimensions={cellDimensions}
-                                matrix={addSubheaders(subheaders, matrix.value)}
-                                type={"Misclassification matrix"}
+                                matrix={addSubheaders(subheaders, matrix.deviation)}
+                                type={"Deviations"}
                             />
-                        </div>
-                    </div>
-                    {!disableDeviation &&
-                        <div
-                            id={"ordinal-misclassification-matrix-deviation"}
-                            style={{
-                                alignItems: "center",
-                                display: "flex",
-                                justifyContent: "center",
-                                maxWidth: `${90 / numberOfColumns}%`,
-                                width: widthDeviation
-                            }}
-                        >
-                            <div
-                                id={"deviation-floating-box"}
-                                style={{
-                                    height: heightDeviation,
-                                    maxHeight: "100%",
-                                    width: "100%",
-                                }}
-                            >
-                                <VirtualizedMatrix
-                                    cellDimensions={cellDimensions}
-                                    matrix={addSubheaders(subheaders, matrix.deviation)}
-                                    type={"Deviations"}
-                                />
-                            </div>
-                        </div>
+                        </CenteredColumn>
                     }
-                    <div
-                        id={"ordinal-misclassification-matrix-details"}
-                        style={{
-                            minWidth: `${90 / numberOfColumns}%`,
-                            width: `calc(90% - ${widthMatrix + widthDeviation}px)`
-                        }}
+                    <CenteredColumn
+                        height={heightTraits}
+                        minWidth={`${90 / numberOfColumns}%`}
+                        width={`calc(90% - ${widthMatrix + widthDeviation}px)`}
                     >
                         <TraitsTable
                             cellRenderer={this.cellRenderer}
@@ -160,7 +139,7 @@ class MatrixDialog extends React.PureComponent {
                             ratio={0.9}
                             traits={displayedTraits}
                         />
-                    </div>
+                    </CenteredColumn>
                 </MultiColDialogContent>
             </FullscreenDialog>
         )
