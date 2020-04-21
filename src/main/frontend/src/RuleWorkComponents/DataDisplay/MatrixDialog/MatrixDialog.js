@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
 import { addSubheaders } from "../../../Body/Project/Utils/parseData";
 import { CenteredColumn } from "./Elements";
 import VirtualizedMatrix, { estimateMatrixHeight, estimateMatrixWidth } from "../VirtualizedMatrix";
@@ -9,17 +10,30 @@ import FullscreenDialog from "../FullscreenDialog";
 import FullscreenDialogTitleBar from "../FullscreenDialogTitleBar";
 import MultiColDialogContent from "../MultiColDialogContent";
 import TextWithHoverTooltip from "../TextWithHoverTooltip";
+import Fade from "@material-ui/core/Fade";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+
+const StyledMenu = withStyles(theme => ({
+    list: {
+        backgroundColor: theme.palette.popper.background,
+        color: theme.palette.popper.text
+    }
+}), {name: "MuiMenu"})(props => <Menu {...props} />);
 
 class MatrixDialog extends React.PureComponent {
     constructor(props) {
         super(props);
 
         this.state = {
-            heightMatrix: 0,
-            widthMatrix: 0,
             heightDeviation: 0,
+            heightMatrix: 0,
+            heightTraits: 0,
+            mouseX: null,
+            mouseY: null,
             widthDeviation: 0,
-            heightTraits: 0
+            widthMatrix: 0,
+            type: "",
         };
     }
 
@@ -36,6 +50,7 @@ class MatrixDialog extends React.PureComponent {
 
         let displayedText = cellData;
         let displayedTooltip = cellData
+
         if (abbrevs.includes(cellData)) {
             let tooltip = this.getTooltip(cellData);
             displayedText = tooltip.text;
@@ -61,7 +76,25 @@ class MatrixDialog extends React.PureComponent {
         )
     }
 
-    onEntered = () => {
+    onContextMenuOpen = (event, type) => {
+        event.preventDefault();
+
+        this.setState({
+            mouseX: event.clientX - 2,
+            mouseY: event.clientY - 4,
+            type: type
+        });
+    };
+
+    onContextMenuClose = () => {
+        this.setState({
+            mouseX: null,
+            mouseY: null,
+            type: ""
+        });
+    };
+
+    onEntering = () => {
         const { disableDeviation, matrix: { value, deviation, traits } } = this.props;
 
         let displayedTraits = traits;
@@ -78,6 +111,13 @@ class MatrixDialog extends React.PureComponent {
         });
     };
 
+    onSave = () => {
+        const { type } = this.state;
+
+        console.log("Saving " + type);
+        this.onContextMenuClose();
+    };
+
     prepareTraitsWithoutDeviation = (traits) => {
         return  Object.keys(traits).map(key => {
             if (!key.toLowerCase().includes("deviation")) {
@@ -91,14 +131,32 @@ class MatrixDialog extends React.PureComponent {
     };
 
     render() {
-        const { heightMatrix, widthMatrix, heightDeviation, widthDeviation, heightTraits } = this.state;
-        const { cellDimensions, disableDeviation, matrix, open, onClose, subheaders, title } = this.props;
+        const {
+            heightDeviation,
+            heightMatrix,
+            heightTraits,
+            mouseX,
+            mouseY,
+            widthDeviation,
+            widthMatrix,
+            type
+        } = this.state;
+
+        const {
+            cellDimensions,
+            disableDeviation,
+            matrix,
+            open,
+            onClose,
+            subheaders,
+            title
+        } = this.props;
 
         const numberOfColumns = disableDeviation ? 2 : 3;
         const displayedTraits = disableDeviation ? this.prepareTraitsWithoutDeviation(matrix.traits) : matrix.traits;
 
         return (
-            <FullscreenDialog open={open} onEntered={this.onEntered} onClose={onClose}>
+            <FullscreenDialog open={open} onEntering={this.onEntering} onClose={onClose}>
                 <FullscreenDialogTitleBar
                     onClose={onClose}
                     title={title}
@@ -106,6 +164,9 @@ class MatrixDialog extends React.PureComponent {
                 <MultiColDialogContent numberOfColumns={numberOfColumns}>
                     <CenteredColumn
                         height={heightMatrix}
+                        InnerWrapperProps={{
+                            onContextMenu: event => this.onContextMenuOpen(event, "value")
+                        }}
                         maxWidth={`${90 / numberOfColumns}%`}
                         width={widthMatrix}
                     >
@@ -118,6 +179,9 @@ class MatrixDialog extends React.PureComponent {
                     {!disableDeviation &&
                         <CenteredColumn
                             height={heightDeviation}
+                            InnerWrapperProps={{
+                                onContextMenu: event => this.onContextMenuOpen(event, "deviations")
+                            }}
                             maxWidth={`${90 / numberOfColumns}%`}
                             width={widthDeviation}
                         >
@@ -141,6 +205,20 @@ class MatrixDialog extends React.PureComponent {
                         />
                     </CenteredColumn>
                 </MultiColDialogContent>
+                <StyledMenu
+                    anchorPosition={
+                       mouseX !== null && mouseY !== null
+                        ? { top: mouseY, left: mouseX }
+                        : undefined
+                    }
+                    anchorReference={"anchorPosition"}
+                    keepMounted={true}
+                    onClose={this.onContextMenuClose}
+                    open={mouseY !== null}
+                    TransitionComponent={Fade}
+                >
+                    <MenuItem onClick={this.onSave}>Save {type}</MenuItem>
+                </StyledMenu>
             </FullscreenDialog>
         )
     }
@@ -164,7 +242,9 @@ MatrixDialog.propTypes = {
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,
     subheaders: PropTypes.arrayOf(PropTypes.object),
-    title: PropTypes.string.isRequired,
+    saveValue: PropTypes.func,
+    saveDeviations: PropTypes.func,
+    title: PropTypes.string.isRequired
 };
 
 MatrixDialog.defaultProps = {
