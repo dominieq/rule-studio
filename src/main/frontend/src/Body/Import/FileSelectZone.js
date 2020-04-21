@@ -9,14 +9,9 @@ import Skeleton from "@material-ui/lab/Skeleton";
 import Typography from "@material-ui/core/Typography";
 import DeleteCircle from "mdi-material-ui/DeleteCircle"
 import FileUpload from "mdi-material-ui/FileUpload";
+import styles from "./styles/FileSelectZone.module.css";
 
 const useStyles = makeStyles({
-    root: {
-        alignItems: "center",
-        display: "flex",
-        justifyContent: "space-between",
-        padding: "5px 0"
-    },
     tooltip: {
         display: "flex",
         flexDirection: "column",
@@ -60,8 +55,8 @@ function FileSelectZone(props)  {
     };
 
     return (
-        <div className={classes.root}>
-            <Typography style={{marginRight: 8, minWidth: "fit-content"}}>
+        <div className={styles.Root}>
+            <Typography className={styles.Label} style={{marginRight: 8}}>
                 {"Choose " + variant + " file: "}
             </Typography>
             {file ?
@@ -84,11 +79,11 @@ function FileSelectZone(props)  {
                 placement={"right"}
                 title={
                     <React.Fragment>
-                        <p className={classes.tooltipTitle} id={"title"}>
+                        <p aria-label={"title"} className={classes.tooltipTitle} >
                             <b>{"Upload " + variant}</b>
                         </p>
                         {title &&
-                            <p className={classes.tooltipDesc} id={"desc"}>
+                            <p aria-label={"desc"} className={classes.tooltipDesc} >
                                 {title}
                             </p>
                         }
