@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { fetchProject, fetchProjects } from "./fetchFunctions";
 import Header from "../Header/Header";
-import ProjectMenu from "../Header/ProjectMenu";
+import { ProjectMenu } from "../Header/Elements";
 import Help from '../Body/Help/Help';
 import Home from "../Body/Home/Home";
 import Import from "../Body/Import/Import";
