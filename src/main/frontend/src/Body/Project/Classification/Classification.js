@@ -19,6 +19,9 @@ import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
+import GetApp from "@material-ui/icons/GetApp";
 
 class Classification extends Component {
     constructor(props) {
@@ -362,7 +365,23 @@ class Classification extends Component {
                         open={open.matrix}
                         subheaders={data.decisionsDomain}
                         saveMatrix={this.onSaveToFile}
-                        title={"Ordinal misclassification matrix and it's details"}
+                        title={
+                            <React.Fragment>
+                                <RuleWorkTooltip title={"Download matrix (txt)"}>
+                                    <StyledButton
+                                        aria-label={"download matrix"}
+                                        isIcon={true}
+                                        onClick={this.onSaveToFile}
+                                        themeVariant={"primary"}
+                                    >
+                                        <GetApp />
+                                    </StyledButton>
+                                </RuleWorkTooltip>
+                                <span style={{marginLeft: 8}}>
+                                    Ordinal misclassification matrix and details
+                                </span>
+                            </React.Fragment>
+                        }
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />

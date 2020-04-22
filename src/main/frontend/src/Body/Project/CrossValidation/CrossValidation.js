@@ -28,7 +28,9 @@ import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
+import GetApp from "@material-ui/icons/GetApp";
 import Sigma from "mdi-material-ui/Sigma";
+import SwapVert from "@material-ui/icons/SwapVert";
 
 class CrossValidation extends Component {
     constructor(props) {
@@ -253,6 +255,16 @@ class CrossValidation extends Component {
         }));
     };
 
+    swapMatrix = (from, to) => {
+       this.setState(({open}) => ({
+           open: { ...open, [from]: false }
+       }), () => {
+           this.setState(({open}) => ({
+               open: { ...open, [to]: true }
+           }));
+       });
+    };
+
     onItemSelected = (index) => {
         this.setState(({items, open, selected}) => ({
             open: {...open, details: true, settings: false},
@@ -415,6 +427,7 @@ class CrossValidation extends Component {
                     <StyledDivider margin={16} />
                     {Array.isArray(folds) && Boolean(folds.length) &&
                         <Fragment>
+                            {/* Part regarding all folds */}
                             <p id={"all-folds"} style={{margin: "0 16px 0 0", fontSize: "1.15rem"}}>All folds:</p>
                             <MatrixButton
                                 onClick={() => this.toggleOpen("matrixMean")}
@@ -431,6 +444,7 @@ class CrossValidation extends Component {
                                 </StyledButton>
                             </RuleWorkTooltip>
                             <StyledDivider margin={16} />
+                            {/* Part regarding specific fold */}
                             <RuleWorkTextField
                                 onChange={this.onFoldIndexChange}
                                 InputProps={{
@@ -558,7 +572,34 @@ class CrossValidation extends Component {
                         subheaders={
                             folds[selected.foldIndex].classificationValidationTable.decisionsDomain
                         }
-                        title={"Mean ordinal misclassification matrix, deviations and details"}
+                        title={
+                            <React.Fragment>
+                                <RuleWorkTooltip title={"Go to sum ordinal misclassification matrix"}>
+                                    <StyledButton
+                                        aria-label={"swap to sum"}
+                                        isIcon={true}
+                                        onClick={() => this.swapMatrix("matrixMean", "matrixSum")}
+                                        themeVariant={"secondary"}
+                                    >
+                                        <SwapVert />
+                                    </StyledButton>
+                                </RuleWorkTooltip>
+                                <StyledDivider margin={4} />
+                                <RuleWorkTooltip title={"Download mean matrix (txt)"} WrapperComponent={'span'}>
+                                    <StyledButton
+                                        aria-label={"mean-download-button"}
+                                        isIcon={true}
+                                        onClick={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
+                                        themeVariant={"primary"}
+                                    >
+                                        <GetApp />
+                                    </StyledButton>
+                                </RuleWorkTooltip>
+                                <span style={{marginLeft: 8}}>
+                                    Mean ordinal misclassification matrix, deviations and details
+                                </span>
+                            </React.Fragment>
+                        }
                     />
                 }
                 {data &&
@@ -570,7 +611,35 @@ class CrossValidation extends Component {
                         subheaders={
                             folds[selected.foldIndex].classificationValidationTable.decisionsDomain
                         }
-                        title={"Sum ordinal misclassification matrix, deviations and details"}
+                        title={
+                            <React.Fragment>
+                                <RuleWorkTooltip title={"Go to mean ordinal misclassification matrix"}>
+                                    <StyledButton
+                                        aria-label={"swap to mean"}
+                                        isIcon={true}
+                                        onClick={() => this.swapMatrix("matrixSum", "matrixMean")}
+                                        themeVariant={"secondary"}
+                                    >
+                                        <SwapVert />
+                                    </StyledButton>
+                                </RuleWorkTooltip>
+                                <StyledDivider margin={4} />
+                                <RuleWorkTooltip title={"Download sum matrix (txt)"} WrapperComponent={"span"}>
+                                    <StyledButton
+                                        aria-label={"sum-download-button"}
+                                        isIcon={true}
+                                        onClick={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
+                                        themeVariant={"primary"}
+                                    >
+                                        <GetApp />
+                                    </StyledButton>
+                                </RuleWorkTooltip>
+                                <span style={{marginLeft: 8}}>
+                                    Sum ordinal misclassification matrix, deviations and details
+                                </span>
+                            </React.Fragment>
+
+                        }
                     />
                 }
                 {Array.isArray(folds) && Boolean(folds.length) &&
@@ -591,7 +660,29 @@ class CrossValidation extends Component {
                         subheaders={
                             folds[selected.foldIndex].classificationValidationTable.decisionsDomain
                         }
-                        title={`Fold ${selected.foldIndex + 1}: Ordinal misclassification matrix, it's deviation and details`}
+                        title={
+                            <React.Fragment>
+                                <RuleWorkTooltip title={`Download fold ${selected.foldIndex + 1} matrix (txt)`}>
+                                    <StyledButton
+                                        aria-label={"fold-download-button"}
+                                        isIcon={true}
+                                        onClick={() => {
+                                            this.onSaveToFile({
+                                                typeOfMatrix: "crossValidationFold",
+                                                numberOfFold: selected.foldIndex
+                                            });
+                                        }}
+                                        themeVariant={"primary"}
+                                    >
+                                        <GetApp />
+                                    </StyledButton>
+                                </RuleWorkTooltip>
+                                <span style={{marginLeft: 8}}>
+                                    {`Fold ${selected.foldIndex + 1}: 
+                                    Ordinal misclassification matrix, it's deviation and details`}
+                                </span>
+                            </React.Fragment>
+                        }
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
