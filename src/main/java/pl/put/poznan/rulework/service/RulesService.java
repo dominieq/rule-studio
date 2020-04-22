@@ -93,6 +93,7 @@ public class RulesService {
         Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
         RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
 
+        logger.info("LearningInformationTableHash:\t{}", ruleSetWithCharacteristics.getLearningInformationTableHash());
         return ruleSetWithCharacteristics;
     }
 
@@ -147,6 +148,7 @@ public class RulesService {
             resultSet = RuleSetWithCharacteristics.join(resultSet, rules);
         }
 
+        resultSet.setLearningInformationTableHash(unions.getInformationTable().getHash());
         return resultSet;
     }
 
