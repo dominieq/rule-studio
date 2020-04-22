@@ -32,6 +32,13 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
         response.sendError(HttpStatus.UNPROCESSABLE_ENTITY.value(), ex.getMessage());
     }
 
+    @ExceptionHandler(NotSuitableForInductionOfPossibleRulesException.class)
+    public void notSuitableForInductionOfPossibleRulesException(
+            NotSuitableForInductionOfPossibleRulesException ex,
+            HttpServletResponse response) throws IOException {
+        response.sendError(460, ex.getMessage());
+    }
+
     @ExceptionHandler(NoHashInRuleSetException.class)
     public void noHashInRuleSetException(
             NoHashInRuleSetException ex,
