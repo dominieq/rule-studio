@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { createFormData, fetchCrossValidation, parseCrossValidationParams } from "../Utils/fetchFunctions";
+import { createFormData, downloadMatrix, fetchCrossValidation, parseCrossValidationParams } from "../Utils/fetchFunctions";
 import { parseCrossValidationFolds, parseCrossValidationItems, parseCrossValidationListItems } from "../Utils/parseData";
 import { parseMatrix } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
@@ -234,6 +234,16 @@ class CrossValidation extends Component {
                     this.setState({loading: false});
                 }
             });
+        });
+    };
+
+    onSaveToFile = (data) => {
+        const { project } = this.props;
+
+        downloadMatrix( project.result.id, data ).catch(error => {
+            if (this._isMounted) {
+                this.setState({ alertProps: error });
+            }
         });
     };
 
@@ -544,10 +554,23 @@ class CrossValidation extends Component {
                         matrix={parseMatrix(data.meanOrdinalMisclassificationMatrix)}
                         onClose={() => this.toggleOpen("matrixMean")}
                         open={open.matrixMean}
+                        saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
                         subheaders={
                             folds[selected.foldIndex].classificationValidationTable.decisionsDomain
                         }
                         title={"Mean ordinal misclassification matrix, deviations and details"}
+                    />
+                }
+                {data &&
+                    <MatrixDialog
+                        matrix={parseMatrix(data.sumOrdinalMisclassificationMatrix)}
+                        onClose={() => this.toggleOpen("matrixSum")}
+                        open={open.matrixSum}
+                        saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
+                        subheaders={
+                            folds[selected.foldIndex].classificationValidationTable.decisionsDomain
+                        }
+                        title={"Sum ordinal misclassification matrix, deviations and details"}
                     />
                 }
                 {Array.isArray(folds) && Boolean(folds.length) &&
@@ -559,6 +582,12 @@ class CrossValidation extends Component {
                         }
                         onClose={() => this.toggleOpen("matrixFold")}
                         open={open.matrixFold}
+                        saveMatrix={() => {
+                            this.onSaveToFile({
+                                typeOfMatrix: "crossValidationFold",
+                                numberOfFold: selected.foldIndex
+                            });
+                        }}
                         subheaders={
                             folds[selected.foldIndex].classificationValidationTable.decisionsDomain
                         }

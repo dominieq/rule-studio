@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { fetchClassification, parseClassificationParams } from "../Utils/fetchFunctions";
+import { downloadMatrix, fetchClassification, parseClassificationParams } from "../Utils/fetchFunctions";
 import { parseClassificationItems, parseClassificationListItems, parseMatrix } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
@@ -196,6 +196,17 @@ class Classification extends Component {
         });
     };
 
+    onSaveToFile = () => {
+        const { project } = this.props;
+        let data = {typeOfMatrix: "classification"}
+
+        downloadMatrix( project.result.id, data ).catch(error => {
+            if (this._isMounted) {
+                this.setState({ alertProps: error });
+            }
+        });
+    };
+
     onDefaultClassificationResultChange = (event) => {
         const { loading } = this.state;
 
@@ -350,6 +361,7 @@ class Classification extends Component {
                         onClose={() => this.toggleOpen("matrix")}
                         open={open.matrix}
                         subheaders={data.decisionsDomain}
+                        saveMatrix={this.onSaveToFile}
                         title={"Ordinal misclassification matrix and it's details"}
                     />
                 }
