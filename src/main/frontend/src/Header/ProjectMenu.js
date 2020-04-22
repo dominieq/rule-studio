@@ -89,7 +89,7 @@ function ProjectMenu(props) {
 
     return (
         <RuleWorkSmallBox id={"project-menu"} style={{flexGrow: 1}}>
-            <StyledDivider />
+            <StyledDivider margin={16} />
             <List component={"nav"} disablePadding={true}>
                 <ListItem
                     aria-controls={"project-menu"}
@@ -149,7 +149,7 @@ function ProjectMenu(props) {
                 </Menu>
             }
             {renderProjectButtons()}
-            <StyledDivider />
+            <StyledDivider margin={16} />
         </RuleWorkSmallBox>
     );
 }

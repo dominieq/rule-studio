@@ -276,7 +276,7 @@ class Classification extends Component {
                         onClick={() => this.toggleOpen("settings")}
                         title={"Click to select parameters"}
                     />
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkButtonGroup
                         id={"classification-button-group"}
                         options={["Classify current data", "Choose new data & classify"]}

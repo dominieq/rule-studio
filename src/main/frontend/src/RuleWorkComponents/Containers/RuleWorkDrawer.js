@@ -57,7 +57,12 @@ function RuleWorkDrawer(props) {
                 <Fragment key={index}>
                     {child}
                     {index !== childrenArray.length - 1 && dividers &&
-                        <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                        <StyledDivider
+                            color={"secondary"}
+                            flexItem={false}
+                            margin={12}
+                            orientation={"horizontal"}
+                        />
                     }
                 </Fragment>
             ))}

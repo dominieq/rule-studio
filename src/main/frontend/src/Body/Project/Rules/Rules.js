@@ -357,7 +357,7 @@ class Rules extends Component {
                         onClick={() => this.toggleOpen("settings")}
                         title={"Click to choose consistency threshold, type of unions & rules"}
                     />
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip
                         title={`Calculate with consistency threshold ${parameters.consistencyThreshold}`}
                     >
@@ -367,7 +367,7 @@ class Rules extends Component {
                             onClick={this.onCalculateClick}
                         />
                     </RuleWorkTooltip>
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip title={"Upload file"}>
                         <RuleWorkUpload
                             accept={".xml"}
@@ -386,7 +386,7 @@ class Rules extends Component {
                             </StyledButton>
                         </RuleWorkUpload>
                     </RuleWorkTooltip>
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip title={"Save rules to RuleML"}>
                         <StyledButton
                             aria-label={"rules-save-to-xml-button"}
@@ -398,7 +398,7 @@ class Rules extends Component {
                             <SaveIcon />
                         </StyledButton>
                     </RuleWorkTooltip>
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip title={"Save rules to TXT"}>
                         <StyledButton
                             aria-label={"rules-save-to-txt-button"}

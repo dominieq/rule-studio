@@ -118,7 +118,12 @@ class Import extends Component{
                             value={name}
                         />
                     </RuleWorkSmallBox>
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                    <StyledDivider
+                        color={"secondary"}
+                        flexItem={false}
+                        margin={12}
+                        orientation={"horizontal"}
+                    />
                     <RuleWorkSmallBox>
                         <RuleWorkSwitch
                             label={"Create project with metadata"}
@@ -157,7 +162,13 @@ class Import extends Component{
                             </Collapse>
                         </RuleWorkSmallBox>
                     </Collapse>
-                    <StyledDivider hidden={!expand} orientation={"horizontal"} styleVariant={"panel"} />
+                    <StyledDivider
+                        color={"secondary"}
+                        flexItem={false}
+                        hidden={!expand}
+                        margin={12}
+                        orientation={"horizontal"}
+                    />
                     <RuleWorkSmallBox styleVariant={"footer"}>
                         <StyledButton
                             id={"footer-accept-button"}

@@ -404,7 +404,7 @@ class CrossValidation extends Component {
                         onClick={() => this.toggleOpen("settings")}
                         title={"Click to customize parameters"}
                     />
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip title={`Current number of folds: ${parameters.numberOfFolds}`}>
                         <CalculateButton
                             aria-label={"cross-validation-calculate-button"}
@@ -412,7 +412,7 @@ class CrossValidation extends Component {
                             onClick={this.onCalculateClick}
                         />
                     </RuleWorkTooltip>
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     {Array.isArray(folds) && Boolean(folds.length) &&
                         <Fragment>
                             <p id={"all-folds"} style={{margin: "0 16px 0 0", fontSize: "1.15rem"}}>All folds:</p>
@@ -430,7 +430,7 @@ class CrossValidation extends Component {
                                     <Sigma />
                                 </StyledButton>
                             </RuleWorkTooltip>
-                            <StyledDivider />
+                            <StyledDivider margin={16} />
                             <RuleWorkTextField
                                 onChange={this.onFoldIndexChange}
                                 InputProps={{
