@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
 import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import StyledSlider from "../../../../RuleWorkComponents/Inputs/StyledSlider";
-import RuleWorkSmallBox from "../../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
+import styles from "./styles/Calculations.module.css";
 
 const tooltip = {
     mainSimple: "Consistency threshold is used when calculating lower approximations of unions of ordered decision classes " +
@@ -85,16 +85,16 @@ class ThresholdSelector extends Component {
         });
     };
 
-    onSliderChangeCommitted = (event, newValue) => {
+    onSliderChangeCommitted = () => {
         this.props.onChange(this.state.threshold);
     };
 
     render() {
         const { threshold } = this.state;
-        const { CircleHelperProps, id, SliderProps, TextFieldProps, variant } = this.props;
+        const { CircleHelperProps, SliderProps, TextFieldProps, variant } = this.props;
 
         return (
-            <div id={id} style={{display: "flex", alignItems: "center", margin: "4px 0"}}>
+            <div aria-label={"outer wrapper"} className={styles.OuterWrapper}>
                 <CircleHelper
                     title={
                         <p id={"main"} style={{margin: 0, textAlign: "justify"}}>
@@ -108,27 +108,27 @@ class ThresholdSelector extends Component {
                         }
                     }}
                     WrapperProps={{
-                        style: {marginRight: 16}
+                        style: { marginRight: 16 }
                     }}
                     {...CircleHelperProps}
                 />
-                <RuleWorkSmallBox style={{flexGrow: 1, margin: 0}}>
+                <div aria-label={"inner wrapper"} className={styles.InnerWrapper} style={{marginRight: 16}}>
                     <RuleWorkTextField
                         onBlur={this.onInputBlur}
                         onChange={this.onInputChange}
                         outsideLabel={"Choose consistency threshold"}
-                        style={{marginRight: 6, maxWidth: 72, minWidth: 60}}
+                        style={{ maxWidth: 72, minWidth: 60 }}
                         value={threshold}
                         {...TextFieldProps}
                     />
-                </RuleWorkSmallBox>
+                </div>
                 <StyledSlider
                     max={1.0}
                     min={0.0}
                     onChange={this.onSliderChange}
                     onChangeCommitted={this.onSliderChangeCommitted}
                     step={0.01}
-                    style={{marginLeft: 6, marginRight: 24, maxWidth: 72, minWidth: 60}}
+                    style={{ marginRight: 24, maxWidth: 72, minWidth: 60}}
                     value={typeof threshold === "number" ? threshold : 0.0}
                     {...SliderProps}
                 />
@@ -139,7 +139,6 @@ class ThresholdSelector extends Component {
 
 ThresholdSelector.propTypes = {
     CircleHelperProps: PropTypes.object,
-    id: PropTypes.string,
     keepChanges: PropTypes.bool,
     onChange: PropTypes.func,
     SliderProps: PropTypes.object,

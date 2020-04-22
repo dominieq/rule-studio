@@ -1,11 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import { calculationStyles } from "./styles";
 import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
-import RuleWorkSmallBox from "../../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import MenuItem from "@material-ui/core/MenuItem";
+import styles from "./styles/Calculations.module.css"
 
 const tooltip = {
     mainSimple: "Consistency measure is used when calculating lower approximations of unions of ordered decision classes " +
@@ -43,12 +42,11 @@ const tooltipStyles = makeStyles({
 }, {name: "multi-row-tooltip"})
 
 function TypeOfUnionsSelector(props) {
-    const { CircleHelperProps, id, disabledChildren, TextFieldProps, variant, ...other } = props;
-    const calculationClasses = calculationStyles();
+    const { CircleHelperProps, TextFieldProps: { disabledChildren, ...other }, variant } = props;
     const tooltipClasses = tooltipStyles();
 
     return (
-        <div id={id} className={calculationClasses.drawerRow}>
+        <div aria-label={"outer wrapper"} className={styles.OuterWrapper}>
             <CircleHelper
                 multiRow={true}
                 title={
@@ -77,11 +75,10 @@ function TypeOfUnionsSelector(props) {
                 }}
                 {...CircleHelperProps}
             />
-            <RuleWorkSmallBox className={calculationClasses.inputElement}>
+            <div aria-label={"inner wrapper"} className={styles.InnerWrapper}>
                 <RuleWorkTextField
                     outsideLabel={"Select consistency measure"}
                     select={true}
-                    {...TextFieldProps}
                     {...other}
                 >
                     {measures.map((option, index) => (
@@ -94,18 +91,18 @@ function TypeOfUnionsSelector(props) {
                         </MenuItem>
                     ))}
                 </RuleWorkTextField>
-            </RuleWorkSmallBox>
+            </div>
         </div>
     )
 }
 
 TypeOfUnionsSelector.propTypes = {
     CircleHelperProps: PropTypes.object,
-    disabledChildren: PropTypes.arrayOf(PropTypes.string),
-    id: PropTypes.string,
-    onChange: PropTypes.func.isRequired,
-    TextFieldProps: PropTypes.object,
-    value: PropTypes.string,
+    TextFieldProps: PropTypes.shape({
+        disabledChildren: PropTypes.arrayOf(PropTypes.string),
+        onChange: PropTypes.func,
+        value: PropTypes.string
+    }),
     variant: PropTypes.oneOf(["simple", "extended"])
 };
 

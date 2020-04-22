@@ -12,7 +12,7 @@ import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultCl
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
-import MatrixDialog from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
+import { MatrixDialog } from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import { ClassificationDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog"
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
@@ -308,14 +308,16 @@ class Classification extends Component {
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfClassifierSelector
-                        id={"classification-classifier-type-selector"}
-                        onChange={this.onClassifierTypeChange}
-                        value={parameters.typeOfClassifier}
+                        TextFieldProps={{
+                            onChange: this.onClassifierTypeChange,
+                            value: parameters.typeOfClassifier
+                        }}
                     />
                     <DefaultClassificationResultSelector
-                        id={"classification-default-classification-result-selector"}
-                        onChange={this.onDefaultClassificationResultChange}
-                        value={parameters.defaultClassificationResult}
+                        TextFieldProps={{
+                            onChange: this.onDefaultClassificationResultChange,
+                            value: parameters.defaultClassificationResult
+                        }}
                     />
                 </RuleWorkDrawer>
                 <TabBody

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import { mergeClasses } from "../utilFunctions";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -31,14 +32,14 @@ function DefaultElement(props, ref) {
 const DefaultForwardRef = React.forwardRef(DefaultElement);
 
 function RuleWorkTooltip(props) {
-    const {children, classes: propsClasses, ...other} = props;
+    const { children, className, classes: propsClasses, WrapperProps, ...other } = props;
     let classes = useStyles();
 
     if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
         <Tooltip classes={{tooltip: classes.tooltip, arrow: classes.arrow}} {...other}>
-            <DefaultForwardRef className={classes.wrapper}>
+            <DefaultForwardRef className={clsx(classes.wrapper, className)} {...WrapperProps}>
                 {children}
             </DefaultForwardRef>
         </Tooltip>
@@ -49,6 +50,7 @@ RuleWorkTooltip.propTypes = {
     arrow: PropTypes.bool,
     children: PropTypes.node,
     classes: PropTypes.object,
+    className: PropTypes.string,
     disableFocusListener: PropTypes.bool,
     disableHoverListener: PropTypes.bool,
     disableTouchListener: PropTypes.bool,
@@ -80,6 +82,7 @@ RuleWorkTooltip.propTypes = {
     title: PropTypes.node.isRequired,
     TransitionComponent: PropTypes.elementType,
     TransitionProps: PropTypes.object,
+    WrapperProps: PropTypes.object
 };
 
 export default RuleWorkTooltip;

@@ -10,6 +10,7 @@ import CalculateButton from "../Utils/Buttons/CalculateButton";
 import MatrixButton from "../Utils/Buttons/MatrixButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
+import SeedSelector from "../Utils/Calculations/SeedSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
 import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
@@ -17,15 +18,17 @@ import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
 import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import MatrixDialog from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
+import { MatrixDialog } from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
 import { CrossValidationDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
+import Sigma from "mdi-material-ui/Sigma";
 
 class CrossValidation extends Component {
     constructor(props) {
@@ -41,6 +44,7 @@ class CrossValidation extends Component {
                 consistencyThreshold: 0,
                 defaultClassificationResult: "majorityDecisionClass",
                 numberOfFolds: 2,
+                seed: 0,
                 typeOfClassifier: "SimpleRuleClassifier",
                 typeOfRules: "certain",
                 typeOfUnions: "monotonic",
@@ -52,7 +56,8 @@ class CrossValidation extends Component {
             },
             open: {
                 details: false,
-                matrixGlobal: false,
+                matrixMean: false,
+                matrixSum: false,
                 matrixFold: false,
                 settings: false,
             },
@@ -256,6 +261,30 @@ class CrossValidation extends Component {
         }
     };
 
+    onSeedChange = (event) => {
+        const { loading } = this.state;
+        const input = event.target.value;
+
+        if (!loading && !isNaN(input)) {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, seed: input },
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onSeedRandomize = () => {
+        const { loading } = this.state;
+        const newSeed = Math.round(Math.random() * Math.pow(10, 16));
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, seed: newSeed },
+                parametersSaved: false
+            }));
+        }
+    }
+
     onTypeOfRulesChange = (event) => {
         const { loading } = this.state;
 
@@ -378,9 +407,19 @@ class CrossValidation extends Component {
                         <Fragment>
                             <p id={"all-folds"} style={{margin: "0 16px 0 0", fontSize: "1.15rem"}}>All folds:</p>
                             <MatrixButton
-                                onClick={() => this.toggleOpen("matrixGlobal")}
-                                title={"Show ordinal misclassification matrix for all folds"}
+                                onClick={() => this.toggleOpen("matrixMean")}
+                                title={"Show mean ordinal misclassification matrix"}
                             />
+                            <RuleWorkTooltip title={"Show sum ordinal misclassification matrix"}>
+                                <StyledButton
+                                    aria-label={"sum-matrix-button"}
+                                    isIcon={true}
+                                    onClick={() => this.toggleOpen("matrixSum")}
+                                    themeVariant={"secondary"}
+                                >
+                                    <Sigma />
+                                </StyledButton>
+                            </RuleWorkTooltip>
                             <StyledDivider />
                             <RuleWorkTextField
                                 onChange={this.onFoldIndexChange}
@@ -416,6 +455,43 @@ class CrossValidation extends Component {
                     onClose={() => this.toggleOpen("settings")}
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
+                    <TypeOfRulesSelector
+                        TextFieldProps={{
+                            onChange: this.onTypeOfRulesChange,
+                            value: parameters.typeOfRules
+                        }}
+                    />
+                    <TypeOfUnionsSelector
+                        TextFieldProps={{
+                            disabledChildren: ["standard"],
+                            onChange: this.onTypeOfUnionsChange,
+                            value: parameters.typeOfUnions
+                        }}
+                    />
+                    <ThresholdSelector
+                        keepChanges={parameters.typeOfRules !== "possible"}
+                        onChange={this.onConsistencyThresholdChange}
+                        value={parameters.consistencyThreshold}
+                    />
+                    <TypeOfClassifierSelector
+                        TextFieldProps={{
+                            onChange: this.onTypeOfClassifierChange,
+                            value: parameters.typeOfClassifier
+                        }}
+                    />
+                    <DefaultClassificationResultSelector
+                        TextFieldProps={{
+                            onChange: this.onDefaultClassificationResultChange,
+                            value: parameters.defaultClassificationResult
+                        }}
+                    />
+                    <SeedSelector
+                        randomizeSeed={this.onSeedRandomize}
+                        TextFieldProps={{
+                            onChange: this.onSeedChange,
+                            value: parameters.seed
+                        }}
+                    />
                     <RuleWorkSmallBox id={"fold-number-selector"} >
                         <RuleWorkTextField
                             onChange={this.onNumberOfFoldsChange}
@@ -424,33 +500,7 @@ class CrossValidation extends Component {
                             value={parameters.numberOfFolds}
                         />
                     </RuleWorkSmallBox>
-                    <TypeOfRulesSelector
-                        id={"cross-validation-rule-type-selector"}
-                        onChange={this.onTypeOfRulesChange}
-                        value={parameters.typeOfRules}
-                    />
-                    <TypeOfUnionsSelector
-                        disabledChildren={["standard"]}
-                        id={"cross-validation-union-type-selector"}
-                        onChange={this.onTypeOfUnionsChange}
-                        value={parameters.typeOfUnions}
-                    />
-                    <ThresholdSelector
-                        keepChanges={parameters.typeOfRules !== "possible"}
-                        id={"cross-validation-threshold-selector"}
-                        onChange={this.onConsistencyThresholdChange}
-                        value={parameters.consistencyThreshold}
-                    />
-                    <TypeOfClassifierSelector
-                        id={"cross-validation-classifier-type-selector"}
-                        onChange={this.onTypeOfClassifierChange}
-                        value={parameters.typeOfClassifier}
-                    />
-                    <DefaultClassificationResultSelector
-                        id={"cross-validation-default-classification-result-selector"}
-                        onChange={this.onDefaultClassificationResultChange}
-                        value={parameters.defaultClassificationResult}
-                    />
+
                 </RuleWorkDrawer>
                 <TabBody
                     content={parseCrossValidationListItems(displayedItems)}
@@ -492,8 +542,8 @@ class CrossValidation extends Component {
                     <MatrixDialog
                         disableDeviation={false}
                         matrix={parseMatrix(data.meanOrdinalMisclassificationMatrix)}
-                        onClose={() => this.toggleOpen("matrixGlobal")}
-                        open={open.matrixGlobal}
+                        onClose={() => this.toggleOpen("matrixMean")}
+                        open={open.matrixMean}
                         subheaders={
                             folds[selected.foldIndex].classificationValidationTable.decisionsDomain
                         }

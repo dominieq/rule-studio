@@ -1,11 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import { calculationStyles } from "./styles";
-import RuleWorkSmallBox from "../../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
+import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import MenuItem from "@material-ui/core/MenuItem";
+import styles from "./styles/Calculations.module.css";
 
 const tooltip = {
     main: "Classifier is responsible for classification of each object using induced decision rules that match the object, " +
@@ -43,12 +42,11 @@ const useStyles = makeStyles({
 }, {name: "multi-row-tooltip"});
 
 function TypeOfClassifierSelector(props) {
-    const { CircleHelperProps, id, TextFieldProps, ...other } = props;
-    const calculationClasses = calculationStyles();
+    const { CircleHelperProps, TextFieldProps: { disabledChildren, ...other } } = props;
     const classes = useStyles();
 
     return (
-        <div id={id} className={calculationClasses.drawerRow}>
+        <div aria-label={"outer wrapper"} className={styles.OuterWrapper}>
             <CircleHelper
                 multiRow={true}
                 title={
@@ -85,11 +83,10 @@ function TypeOfClassifierSelector(props) {
                 }}
                 {...CircleHelperProps}
             />
-            <RuleWorkSmallBox className={calculationClasses.inputElement}>
+            <div aria-label={"inner wrapper"} className={styles.InnerWrapper}>
                 <RuleWorkTextField
                     outsideLabel={"Select type of classifier"}
                     select={true}
-                    {...TextFieldProps}
                     {...other}
                 >
                     {classifiers.map((option, index) => (
@@ -98,18 +95,18 @@ function TypeOfClassifierSelector(props) {
                         </MenuItem>
                     ))}
                 </RuleWorkTextField>
-            </RuleWorkSmallBox>
+            </div>
         </div>
     )
 }
 
 TypeOfClassifierSelector.propTypes = {
     CircleHelperProps: PropTypes.object,
-    disabledChildren: PropTypes.arrayOf(PropTypes.string),
-    id: PropTypes.string,
-    onChange: PropTypes.func.isRequired,
-    TextFieldProps: PropTypes.object,
-    value: PropTypes.string,
+    TextFieldProps: PropTypes.shape({
+        disabledChildren: PropTypes.arrayOf(PropTypes.string),
+        onChange: PropTypes.func,
+        value: PropTypes.string
+    })
 };
 
 export default TypeOfClassifierSelector;

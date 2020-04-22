@@ -1,53 +1,46 @@
-import React, {Fragment} from "react";
+import React from "react";
 import PropTypes from "prop-types";
+import clsx from "clsx";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { mergeClasses } from "../../../utilFunctions";
-import RuleWorkSmallBox from "../../../Containers/RuleWorkSmallBox";
 import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";
 
 const StyledListItem = withStyles({
     root: {
-        flexDirection: "column",
         alignItems: "flex-start",
-        width: "100%"
+        flexDirection: "column",
+        width: "100%",
+        '& > *:not(:last-child)': {
+            marginBottom: "0.5rem"
+        }
     }
 }, {name: "result-list-item"})(props => <ListItem {...props} />);
 
 const useStyles = makeStyles(theme => ({
     row: {
-        justifyContent: "flex-start",
-        margin: 0
+        alignItems: "center",
+        display: "flex"
     },
-    headerWrapper: {
-        justifyContent: "unset",
-        margin: 0,
-        width: "100%",
-    },
-    header: {
-        color: theme.palette.button.secondary,
-        marginRight: "auto"
-    },
-    subheader: {
-        color: theme.palette.button.primary
-    },
-    contentWrapper: {
-        '& > *:not(:first-child)': {
-            marginTop: 8,
+    multiRow: {
+        display: "flex",
+        flexDirection: "column",
+        '& > *:not(:last-child)': {
+            marginBottom: "0.25rem"
         }
     },
-    content: {
+    header: {
+        marginRight: "auto",
+        paddingRight: "0.5rem"
+    },
+    subheader: {
+        lineHeight: theme.typography.body1.lineHeight
+    },
+    primary: {
         color: theme.palette.button.primary
     },
-    multiContentTitle: {
-        marginRight: 8
-    },
-    multiContentSubtitle: {
+    secondary: {
         color: theme.palette.button.secondary,
-    },
-    divider: {
-        marginTop: 0,
-        marginBottom: 4,
     }
 }), {name: "result-list-item"});
 
@@ -60,45 +53,41 @@ function RuleWorkListItem(props) {
     return (
         <StyledListItem {...other}>
             {(object.header || object.subheader) &&
-                <RuleWorkSmallBox classes={{row: classes.headerWrapper}}>
+                <div className={classes.row} style={{width: "100%"}}>
                     {object.header &&
-                        <Typography className={classes.header} variant={"button"}>
+                        <Typography className={clsx(classes.header, classes.secondary)}>
                             {object.header}
                         </Typography>
                     }
                     {object.subheader &&
-                        <Typography className={classes.subheader} variant={"overline"}>
+                        <Typography className={clsx(classes.primary, classes.subheader)} variant={"overline"}>
                             {object.subheader}
                         </Typography>
                     }
-                </RuleWorkSmallBox>
+                </div>
             }
-            {(object.content || object.multiContent) &&
-                <RuleWorkSmallBox classes={{["multi-row"]: classes.contentWrapper}} styleVariant={"multi-row"}>
-                    {object.multiContent &&
-                        <Fragment>
-                            {object.multiContent.map((item, index) => (
-                                <RuleWorkSmallBox  key={index} classes={{row: classes.row}}>
-                                    {item.title &&
-                                        <Typography className={classes.multiContentTitle}>
-                                            {item.title}
-                                        </Typography>
-                                    }
-                                    {item.subtitle &&
-                                        <Typography className={classes.multiContentSubtitle}>
-                                            {item.subtitle}
-                                        </Typography>
-                                    }
-                                </RuleWorkSmallBox>
-                            ))}
-                        </Fragment>
-                    }
-                    {object.content &&
-                        <Typography className={classes.content} component={"p"} variant={"body2"}>
-                            {object.content}
-                        </Typography>
-                    }
-                </RuleWorkSmallBox>
+            {object.multiContent &&
+                <div className={classes.multiRow}>
+                    {object.multiContent.map((item, index) => (
+                        <div className={classes.row} key={index}>
+                            {item.title &&
+                                <Typography style={{marginRight: 8}}>
+                                    {item.title}
+                                </Typography>
+                            }
+                            {item.subtitle &&
+                                <Typography className={classes.secondary}>
+                                    {item.subtitle}
+                                </Typography>
+                            }
+                        </div>
+                    ))}
+                </div>
+            }
+            {object.content &&
+                <Typography className={classes.primary} component={"p"} variant={"body2"}>
+                    {object.content}
+                </Typography>
             }
         </StyledListItem>
     )

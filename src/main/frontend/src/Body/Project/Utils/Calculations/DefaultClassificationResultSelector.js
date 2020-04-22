@@ -1,10 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import { calculationStyles } from "./styles";
 import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
-import RuleWorkSmallBox from "../../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import styles from "./styles/Calculations.module.css";
 
 const tooltip = {
     main: "Default classification result is returned by the selected classifier if no rule matches classified object. " +
@@ -21,12 +20,11 @@ const useStyles = makeStyles({
 }, {name: "multi-row-tooltip"});
 
 function DefaultClassificationResultSelector(props) {
-    const { CircleHelperProps, id, TextFieldProps, ...other } = props;
-    const calculationClasses = calculationStyles();
+    const { CircleHelperProps, TextFieldProps: { disabledChildren, ...other } } = props;
     const classes = useStyles();
 
     return (
-        <div id={id} className={calculationClasses.drawerRow}>
+        <div aria-label={"outer wrapper"} className={styles.OuterWrapper}>
             <CircleHelper
                 multiRow={true}
                 title={
@@ -55,28 +53,26 @@ function DefaultClassificationResultSelector(props) {
                 }}
                 {...CircleHelperProps}
             />
-            <RuleWorkSmallBox className={calculationClasses.inputElement}>
+            <div aria-label={"inner wrapper"} className={styles.InnerWrapper}>
                 <RuleWorkTextField
-                    id={id}
                     outsideLabel={"Select default classification result"}
                     select={true}
-                    {...TextFieldProps}
                     {...other}
                 >
                     {["majorityDecisionClass", "medianDecisionClass"]}
                 </RuleWorkTextField>
-            </RuleWorkSmallBox>
+            </div>
         </div>
     )
 }
 
 DefaultClassificationResultSelector.propTypes = {
     CircleHelperProps: PropTypes.object,
-    disabledChildren: PropTypes.arrayOf(PropTypes.string),
-    id: PropTypes.string,
-    onChange: PropTypes.func.isRequired,
-    TextFieldProps: PropTypes.object,
-    value: PropTypes.string,
+    TextFieldProps: PropTypes.shape({
+        disabledChildren: PropTypes.arrayOf(PropTypes.string),
+        onChange: PropTypes.func,
+        value: PropTypes.string
+    })
 };
 
 export default DefaultClassificationResultSelector;

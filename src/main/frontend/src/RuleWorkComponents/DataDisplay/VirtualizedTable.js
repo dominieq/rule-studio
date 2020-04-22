@@ -5,6 +5,10 @@ import TextWithHoverTooltip from "./TextWithHoverTooltip";
 import { makeStyles } from '@material-ui/core/styles';
 import { AutoSizer, Column, Table } from 'react-virtualized';
 
+export const estimateTableHeight = (data, rowHeight = 48) => {
+    return (data.length + 1) * rowHeight;
+};
+
 const tableStyles = makeStyles(theme => ({
     table: {
         '& .ReactVirtualized__Grid__innerScrollContainer': {

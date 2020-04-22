@@ -281,12 +281,12 @@ class Unions extends Component {
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfUnionsSelector
-                        id={"unions-union-type-selector"}
-                        onChange={this.onTypeOfUnionsChange}
-                        value={parameters.typeOfUnions}
+                        TextFieldProps={{
+                            onChange: this.onTypeOfUnionsChange,
+                            value: parameters.typeOfUnions
+                        }}
                     />
                     <ThresholdSelector
-                        id={"unions-threshold-selector"}
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}
                     />

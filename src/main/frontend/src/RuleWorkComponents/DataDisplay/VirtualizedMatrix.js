@@ -31,7 +31,14 @@ const matrixStyles = makeStyles(theme => ({
         color: theme.palette.list.subheader.text
     },
     tooltip: {
-        maxWidth: 175
+        display: "flex",
+        flexDirection: "column",
+        '& > *:first-child': {
+            marginBottom: "1em"
+        },
+        '& > *:last-child': {
+            marginTop: "1em"
+        }
     }
 }), {name: "virtualized-matrix"});
 
@@ -73,23 +80,26 @@ function VirtualizedMatrix(props) {
                 }
                 {columnIndex + rowIndex === 0 &&
                     <CircleHelper
-                        multiRow={true}
                         title={
                             <React.Fragment>
-                                <span id={"tile"} style={{textAlign: "center"}}>
+                                <span aria-label={"tile"} style={{textAlign: "center"}}>
                                     <b>{type}</b>
                                 </span>
-                                <span id={"columns"} style={{textAlign: "left"}}>
+                                <span aria-label={"columns"} style={{textAlign: "left"}}>
                                     <b>Columns:</b>
                                     {" suggested decisions"}
                                 </span>
-                                <span id={"rows"} style={{textAlign: "left"}}>
+                                <span aria-label={"rows"} style={{textAlign: "left"}}>
                                     <b>Rows:</b>
                                     {" original decisions"}
+                                </span>
+                                <span aria-label={"save-info"} style={{textAlign: "left"}}>
+                                    <b>{"Right click to save to file"}</b>
                                 </span>
                             </React.Fragment>
                             }
                         TooltipProps={{
+                            classes: {tooltip: matrixClasses.tooltip},
                             placement: "top",
                             PopperProps: {
                                 disablePortal: false
