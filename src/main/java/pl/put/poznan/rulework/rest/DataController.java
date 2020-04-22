@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.put.poznan.rulework.enums.DataFormat;
+import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.service.DataService;
 
@@ -52,7 +54,7 @@ public class DataController {
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public ResponseEntity<Resource> getDownload(
             @PathVariable("id") UUID id,
-            @RequestParam(name = "format") String format,
+            @RequestParam(name = "format") DataFormat format,
             @RequestParam(name = "separator", defaultValue = ",") String separator,
             @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
         logger.info("Downloading server's data");
@@ -62,31 +64,36 @@ public class DataController {
         String projectName;
         Resource resource;
 
-        if(format.equals("json")) {
-            p = dataService.getDownloadJson(id);
-            projectName = p.getKey();
-            resource = p.getValue();
+        switch (format) {
+            case JSON:
+                p = dataService.getDownloadJson(id);
+                projectName = p.getKey();
+                resource = p.getValue();
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.json")
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .body(resource);
-        } else {
-            p = dataService.getDownloadCsv(id, separator, header);
-            projectName = p.getKey();
-            resource = p.getValue();
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.json")
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .body(resource);
+            case CSV:
+                p = dataService.getDownloadCsv(id, separator, header);
+                projectName = p.getKey();
+                resource = p.getValue();
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.csv")
-                    .header(HttpHeaders.CONTENT_TYPE, "text/csv")
-                    .body(resource);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.csv")
+                        .header(HttpHeaders.CONTENT_TYPE, "text/csv")
+                        .body(resource);
+            default:
+                WrongParameterException ex = new WrongParameterException(String.format("Given format of rules \"%s\" is unrecognized.", format));
+                logger.error(ex.getMessage());
+                throw ex;
         }
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.PUT)
     public ResponseEntity<Resource> putDownload(
             @PathVariable("id") UUID id,
-            @RequestParam(name = "format") String format,
+            @RequestParam(name = "format") DataFormat format,
             @RequestParam(name = "separator", defaultValue = ",") String separator,
             @RequestParam(name = "header", defaultValue = "false") Boolean header,
             @RequestParam(name = "metadata") String metadata,
@@ -97,24 +104,29 @@ public class DataController {
         String projectName;
         Resource resource;
 
-        if(format.equals("json")) {
-            p = dataService.putDownloadJson(id, metadata, data);
-            projectName = p.getKey();
-            resource = p.getValue();
+        switch (format) {
+            case JSON:
+                p = dataService.putDownloadJson(id, metadata, data);
+                projectName = p.getKey();
+                resource = p.getValue();
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.json")
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .body(resource);
-        } else {
-            p = dataService.putDownloadCsv(id, metadata, data, separator, header);
-            projectName = p.getKey();
-            resource = p.getValue();
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.json")
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .body(resource);
+            case CSV:
+                p = dataService.putDownloadCsv(id, metadata, data, separator, header);
+                projectName = p.getKey();
+                resource = p.getValue();
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.csv")
-                    .header(HttpHeaders.CONTENT_TYPE, "text/csv")
-                    .body(resource);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.csv")
+                        .header(HttpHeaders.CONTENT_TYPE, "text/csv")
+                        .body(resource);
+            default:
+                WrongParameterException ex = new WrongParameterException(String.format("Given format of rules \"%s\" is unrecognized.", format));
+                logger.error(ex.getMessage());
+                throw ex;
         }
     }
 }

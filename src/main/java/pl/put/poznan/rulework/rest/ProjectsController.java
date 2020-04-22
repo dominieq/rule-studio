@@ -33,8 +33,6 @@ public class ProjectsController {
 
         logger.info("Getting projects");
         ArrayList<Project> result = projectsService.getProjects();
-
-        logger.info(result.toString());
         return ResponseEntity.ok(result);
     }
 

@@ -21,9 +21,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.enums.RuleType;
+import pl.put.poznan.rulework.enums.RulesFormat;
 import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
 import pl.put.poznan.rulework.exception.NoRulesException;
+import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 import pl.put.poznan.rulework.model.RulesWithHttpParameters;
@@ -211,12 +213,11 @@ public class RulesService {
         return project.getRules();
     }
 
-    public Pair<String, Resource> download(UUID id) throws IOException {
+    public Pair<String, Resource> download(UUID id, RulesFormat rulesFormat) throws IOException {
         logger.info("Id:\t{}", id);
+        logger.info("RulesFormat:\t{}", rulesFormat);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
-
-        RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
 
         if(project.getRules() == null) {
             NoRulesException ex = new NoRulesException("There are no rules in this project.");
@@ -225,10 +226,23 @@ public class RulesService {
         }
 
         RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
-        String ruleMLString = ruleMLBuilder.toRuleMLString(ruleSetWithCharacteristics, 1);
+        String rulesString;
 
-        InputStream is = new ByteArrayInputStream(ruleMLString.getBytes());
+        switch (rulesFormat) {
+            case XML:
+                RuleMLBuilder ruleMLBuilder = new RuleMLBuilder();
+                rulesString = ruleMLBuilder.toRuleMLString(ruleSetWithCharacteristics, 1);
+                break;
+            case TXT:
+                rulesString = ruleSetWithCharacteristics.serialize();
+                break;
+            default:
+                WrongParameterException ex = new WrongParameterException(String.format("Given format of rules \"%s\" is unrecognized.", rulesFormat));
+                logger.error(ex.getMessage());
+                throw ex;
+        }
 
+        InputStream is = new ByteArrayInputStream(rulesString.getBytes());
         InputStreamResource resource = new InputStreamResource(is);
 
         return new Pair<>(project.getName(), resource);

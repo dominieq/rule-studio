@@ -24,7 +24,10 @@ public class ProjectsService {
     ProjectsContainer projectsContainer;
 
     public ArrayList<Project> getProjects() {
-        return new ArrayList<Project>(projectsContainer.getProjectHashMap().values());
+        ArrayList<Project> result = new ArrayList<Project>(projectsContainer.getProjectHashMap().values());
+
+        logger.debug(result.toString());
+        return result;
     }
 
     private Project createEmptyProject(String name) {
@@ -71,7 +74,7 @@ public class ProjectsService {
 
 
         projectsContainer.addProject(project);
-        logger.info(project.toString());
+        logger.debug(project.toString());
         return project;
     }
 }
