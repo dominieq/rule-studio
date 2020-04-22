@@ -308,14 +308,16 @@ class Classification extends Component {
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfClassifierSelector
-                        id={"classification-classifier-type-selector"}
-                        onChange={this.onClassifierTypeChange}
-                        value={parameters.typeOfClassifier}
+                        TextFieldProps={{
+                            onChange: this.onClassifierTypeChange,
+                            value: parameters.typeOfClassifier
+                        }}
                     />
                     <DefaultClassificationResultSelector
-                        id={"classification-default-classification-result-selector"}
-                        onChange={this.onDefaultClassificationResultChange}
-                        value={parameters.defaultClassificationResult}
+                        TextFieldProps={{
+                            onChange: this.onDefaultClassificationResultChange,
+                            value: parameters.defaultClassificationResult
+                        }}
                     />
                 </RuleWorkDrawer>
                 <TabBody

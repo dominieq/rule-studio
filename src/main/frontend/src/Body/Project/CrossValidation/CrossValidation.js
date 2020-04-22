@@ -10,6 +10,7 @@ import CalculateButton from "../Utils/Buttons/CalculateButton";
 import MatrixButton from "../Utils/Buttons/MatrixButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
+import SeedSelector from "../Utils/Calculations/SeedSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
 import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
@@ -43,6 +44,7 @@ class CrossValidation extends Component {
                 consistencyThreshold: 0,
                 defaultClassificationResult: "majorityDecisionClass",
                 numberOfFolds: 2,
+                seed: 0,
                 typeOfClassifier: "SimpleRuleClassifier",
                 typeOfRules: "certain",
                 typeOfUnions: "monotonic",
@@ -259,6 +261,30 @@ class CrossValidation extends Component {
         }
     };
 
+    onSeedChange = (event) => {
+        const { loading } = this.state;
+        const input = event.target.value;
+
+        if (!loading && !isNaN(input)) {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, seed: input },
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onSeedRandomize = () => {
+        const { loading } = this.state;
+        const newSeed = Math.round(Math.random() * Math.pow(10, 16));
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, seed: newSeed },
+                parametersSaved: false
+            }));
+        }
+    }
+
     onTypeOfRulesChange = (event) => {
         const { loading } = this.state;
 
@@ -429,6 +455,43 @@ class CrossValidation extends Component {
                     onClose={() => this.toggleOpen("settings")}
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
+                    <TypeOfRulesSelector
+                        TextFieldProps={{
+                            onChange: this.onTypeOfRulesChange,
+                            value: parameters.typeOfRules
+                        }}
+                    />
+                    <TypeOfUnionsSelector
+                        TextFieldProps={{
+                            disabledChildren: ["standard"],
+                            onChange: this.onTypeOfUnionsChange,
+                            value: parameters.typeOfUnions
+                        }}
+                    />
+                    <ThresholdSelector
+                        keepChanges={parameters.typeOfRules !== "possible"}
+                        onChange={this.onConsistencyThresholdChange}
+                        value={parameters.consistencyThreshold}
+                    />
+                    <TypeOfClassifierSelector
+                        TextFieldProps={{
+                            onChange: this.onTypeOfClassifierChange,
+                            value: parameters.typeOfClassifier
+                        }}
+                    />
+                    <DefaultClassificationResultSelector
+                        TextFieldProps={{
+                            onChange: this.onDefaultClassificationResultChange,
+                            value: parameters.defaultClassificationResult
+                        }}
+                    />
+                    <SeedSelector
+                        randomizeSeed={this.onSeedRandomize}
+                        TextFieldProps={{
+                            onChange: this.onSeedChange,
+                            value: parameters.seed
+                        }}
+                    />
                     <RuleWorkSmallBox id={"fold-number-selector"} >
                         <RuleWorkTextField
                             onChange={this.onNumberOfFoldsChange}
@@ -437,33 +500,7 @@ class CrossValidation extends Component {
                             value={parameters.numberOfFolds}
                         />
                     </RuleWorkSmallBox>
-                    <TypeOfRulesSelector
-                        id={"cross-validation-rule-type-selector"}
-                        onChange={this.onTypeOfRulesChange}
-                        value={parameters.typeOfRules}
-                    />
-                    <TypeOfUnionsSelector
-                        disabledChildren={["standard"]}
-                        id={"cross-validation-union-type-selector"}
-                        onChange={this.onTypeOfUnionsChange}
-                        value={parameters.typeOfUnions}
-                    />
-                    <ThresholdSelector
-                        keepChanges={parameters.typeOfRules !== "possible"}
-                        id={"cross-validation-threshold-selector"}
-                        onChange={this.onConsistencyThresholdChange}
-                        value={parameters.consistencyThreshold}
-                    />
-                    <TypeOfClassifierSelector
-                        id={"cross-validation-classifier-type-selector"}
-                        onChange={this.onTypeOfClassifierChange}
-                        value={parameters.typeOfClassifier}
-                    />
-                    <DefaultClassificationResultSelector
-                        id={"cross-validation-default-classification-result-selector"}
-                        onChange={this.onDefaultClassificationResultChange}
-                        value={parameters.defaultClassificationResult}
-                    />
+
                 </RuleWorkDrawer>
                 <TabBody
                     content={parseCrossValidationListItems(displayedItems)}

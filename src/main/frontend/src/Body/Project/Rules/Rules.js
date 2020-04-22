@@ -412,19 +412,20 @@ class Rules extends Component {
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfRulesSelector
-                        id={"rules-rule-type-selector"}
-                        onChange={this.onTypeOfRulesChange}
-                        value={parameters.typeOfRules}
+                        TextFieldProps={{
+                            onChange: this.onTypeOfRulesChange,
+                            value: parameters.typeOfRules
+                        }}
                     />
                     <TypeOfUnionsSelector
-                        disabledChildren={["standard"]}
-                        id={"rules-union-type-selector"}
-                        onChange={this.onTypeOfUnionsChange}
-                        value={parameters.typeOfUnions}
+                        TextFieldProps={{
+                            disabledChildren: ["standard"],
+                            onChange: this.onTypeOfUnionsChange,
+                            value: parameters.typeOfUnions
+                        }}
                         variant={"extended"}
                     />
                     <ThresholdSelector
-                        id={"rules-threshold-selector"}
                         keepChanges={parameters.typeOfRules !== 'possible'}
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}

@@ -11,6 +11,7 @@ class Project {
             consistencyThreshold: 0,
             defaultClassificationResult: "majorityDecisionClass",
             numberOfFolds: 2,
+            seed: 0,
             typeOfClassifier: "SimpleRuleClassifier",
             typeOfRules: "certain",
             typeOfUnions: "monotonic"
