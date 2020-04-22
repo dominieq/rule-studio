@@ -12,22 +12,34 @@ public class CrossValidation {
     private Integer numberOfFolds;
     private CrossValidationSingleFold crossValidationSingleFolds[];
     private OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix;
+    private OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix;
     private UnionType typeOfUnions;
     private Double consistencyThreshold;
     private RuleType typeOfRules;
     private ClassifierType typeOfClassifier;
     private DefaultClassificationResultType defaultClassificationResult;
 
-    public CrossValidation(Integer numberOfFolds, CrossValidationSingleFold[] crossValidationSingleFolds, OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix) {
+    public CrossValidation(Integer numberOfFolds, CrossValidationSingleFold[] crossValidationSingleFolds, OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix, OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix) {
         this.numberOfFolds = numberOfFolds;
         this.crossValidationSingleFolds = crossValidationSingleFolds;
         this.meanOrdinalMisclassificationMatrix = meanOrdinalMisclassificationMatrix;
+        this.sumOrdinalMisclassificationMatrix = sumOrdinalMisclassificationMatrix;
     }
 
-    public CrossValidation(Integer numberOfFolds, CrossValidationSingleFold[] crossValidationSingleFolds, OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult) {
+    public CrossValidation(
+            Integer numberOfFolds,
+            CrossValidationSingleFold[] crossValidationSingleFolds,
+            OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix,
+            OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix,
+            UnionType typeOfUnions,
+            Double consistencyThreshold, RuleType typeOfRules,
+            ClassifierType typeOfClassifier,
+            DefaultClassificationResultType defaultClassificationResult) {
+
         this.numberOfFolds = numberOfFolds;
         this.crossValidationSingleFolds = crossValidationSingleFolds;
         this.meanOrdinalMisclassificationMatrix = meanOrdinalMisclassificationMatrix;
+        this.sumOrdinalMisclassificationMatrix = sumOrdinalMisclassificationMatrix;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
         this.typeOfRules = typeOfRules;
@@ -57,6 +69,14 @@ public class CrossValidation {
 
     public void setMeanOrdinalMisclassificationMatrix(OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix) {
         this.meanOrdinalMisclassificationMatrix = meanOrdinalMisclassificationMatrix;
+    }
+
+    public OrdinalMisclassificationMatrix getSumOrdinalMisclassificationMatrix() {
+        return sumOrdinalMisclassificationMatrix;
+    }
+
+    public void setSumOrdinalMisclassificationMatrix(OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix) {
+        this.sumOrdinalMisclassificationMatrix = sumOrdinalMisclassificationMatrix;
     }
 
     public UnionType getTypeOfUnions() {
@@ -105,6 +125,7 @@ public class CrossValidation {
                 "numberOfFolds=" + numberOfFolds +
                 ", crossValidationSingleFolds=" + Arrays.toString(crossValidationSingleFolds) +
                 ", meanOrdinalMisclassificationMatrix=" + meanOrdinalMisclassificationMatrix +
+                ", sumOrdinalMisclassificationMatrix=" + sumOrdinalMisclassificationMatrix +
                 ", typeOfUnions=" + typeOfUnions +
                 ", consistencyThreshold=" + consistencyThreshold +
                 ", typeOfRules=" + typeOfRules +

@@ -36,8 +36,6 @@ public class MetadataController {
             @PathVariable("id") UUID id) {
         logger.info("Getting metadata");
         Attribute[] result = metadataService.getMetadata(id);
-
-        logger.info(result.toString());
         return ResponseEntity.ok(result);
     }
 

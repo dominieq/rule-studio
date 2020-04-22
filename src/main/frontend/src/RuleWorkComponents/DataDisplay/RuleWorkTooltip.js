@@ -17,29 +17,28 @@ const useStyles = makeStyles(theme => ({
     wrapper: {
 
     }
-}), {name: "custom-tooltip"});
+}), {name: "CustomTooltip"});
 
 function DefaultElement(props, ref) {
-    const {children, ...other} = props;
-
-    return (
-        <div ref={ref} {...other}>
-            {children}
-        </div>
-    )
+    const { children, component, ...other } = props;
+    return React.createElement(component, {ref, ...other}, children)
 }
 
 const DefaultForwardRef = React.forwardRef(DefaultElement);
 
 function RuleWorkTooltip(props) {
-    const { children, className, classes: propsClasses, WrapperProps, ...other } = props;
+    const { children,  classes: propsClasses, className, WrapperComponent, WrapperProps, ...other } = props;
     let classes = useStyles();
 
     if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
         <Tooltip classes={{tooltip: classes.tooltip, arrow: classes.arrow}} {...other}>
-            <DefaultForwardRef className={clsx(classes.wrapper, className)} {...WrapperProps}>
+            <DefaultForwardRef
+                className={clsx(classes.wrapper, className)}
+                component={WrapperComponent}
+                {...WrapperProps}
+            >
                 {children}
             </DefaultForwardRef>
         </Tooltip>
@@ -82,7 +81,12 @@ RuleWorkTooltip.propTypes = {
     title: PropTypes.node.isRequired,
     TransitionComponent: PropTypes.elementType,
     TransitionProps: PropTypes.object,
+    WrapperComponent: PropTypes.elementType,
     WrapperProps: PropTypes.object
+};
+
+RuleWorkTooltip.defaultProps = {
+    WrapperComponent: 'div'
 };
 
 export default RuleWorkTooltip;

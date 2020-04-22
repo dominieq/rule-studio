@@ -32,8 +32,7 @@ class MatrixDialog extends React.PureComponent {
             mouseX: null,
             mouseY: null,
             widthDeviation: 0,
-            widthMatrix: 0,
-            type: "",
+            widthMatrix: 0
         };
     }
 
@@ -76,21 +75,19 @@ class MatrixDialog extends React.PureComponent {
         )
     }
 
-    onContextMenuOpen = (event, type) => {
+    onContextMenuOpen = (event) => {
         event.preventDefault();
 
         this.setState({
             mouseX: event.clientX - 2,
-            mouseY: event.clientY - 4,
-            type: type
+            mouseY: event.clientY - 4
         });
     };
 
     onContextMenuClose = () => {
         this.setState({
             mouseX: null,
-            mouseY: null,
-            type: ""
+            mouseY: null
         });
     };
 
@@ -112,9 +109,7 @@ class MatrixDialog extends React.PureComponent {
     };
 
     onSave = () => {
-        const { type } = this.state;
-
-        console.log("Saving " + type);
+        this.props.saveMatrix();
         this.onContextMenuClose();
     };
 
@@ -139,7 +134,6 @@ class MatrixDialog extends React.PureComponent {
             mouseY,
             widthDeviation,
             widthMatrix,
-            type
         } = this.state;
 
         const {
@@ -165,7 +159,7 @@ class MatrixDialog extends React.PureComponent {
                     <CenteredColumn
                         height={heightMatrix}
                         InnerWrapperProps={{
-                            onContextMenu: event => this.onContextMenuOpen(event, "value")
+                            onContextMenu: this.onContextMenuOpen
                         }}
                         maxWidth={`${90 / numberOfColumns}%`}
                         width={widthMatrix}
@@ -180,7 +174,7 @@ class MatrixDialog extends React.PureComponent {
                         <CenteredColumn
                             height={heightDeviation}
                             InnerWrapperProps={{
-                                onContextMenu: event => this.onContextMenuOpen(event, "deviations")
+                                onContextMenu: this.onContextMenuOpen
                             }}
                             maxWidth={`${90 / numberOfColumns}%`}
                             width={widthDeviation}
@@ -217,7 +211,7 @@ class MatrixDialog extends React.PureComponent {
                     open={mouseY !== null}
                     TransitionComponent={Fade}
                 >
-                    <MenuItem onClick={this.onSave}>Save {type}</MenuItem>
+                    <MenuItem onClick={this.onSave}>Save to file</MenuItem>
                 </StyledMenu>
             </FullscreenDialog>
         )
@@ -242,9 +236,8 @@ MatrixDialog.propTypes = {
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,
     subheaders: PropTypes.arrayOf(PropTypes.object),
-    saveValue: PropTypes.func,
-    saveDeviations: PropTypes.func,
-    title: PropTypes.string.isRequired
+    saveMatrix: PropTypes.func,
+    title: PropTypes.node.isRequired
 };
 
 MatrixDialog.defaultProps = {

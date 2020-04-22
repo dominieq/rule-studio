@@ -47,10 +47,11 @@ public class CrossValidationController {
             @RequestParam(name = "typeOfRules") RuleType typeOfRules,
             @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
             @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
-            @RequestParam(name = "numberOfFolds") Integer numberOfFolds) {
+            @RequestParam(name = "numberOfFolds") Integer numberOfFolds,
+            @RequestParam(name = "seed", defaultValue = "0") Long seed) {
         logger.info("Putting cross validation...");
 
-        CrossValidation result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds);
+        CrossValidation result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, seed);
 
         return ResponseEntity.ok(result);
     }
@@ -64,11 +65,12 @@ public class CrossValidationController {
             @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
             @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
             @RequestParam(name = "numberOfFolds") Integer numberOfFolds,
+            @RequestParam(name = "seed", defaultValue = "0") Long seed,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting cross validation...");
 
-        CrossValidation result = crossValidationService.postCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, metadata, data);
+        CrossValidation result = crossValidationService.postCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, seed, metadata, data);
 
         return ResponseEntity.ok(result);
     }

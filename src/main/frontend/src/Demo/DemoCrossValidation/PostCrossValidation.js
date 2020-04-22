@@ -12,6 +12,7 @@ class PostCrossValidation extends Component {
             typeOfClassifier: 'SimpleRuleClassifier',
             defaultClassificationResult: 'majorityDecisionClass',
             numberOfFolds: 2,
+            seed: 0,
             metadata: JSON.stringify(
               [
                 {
@@ -168,6 +169,12 @@ class PostCrossValidation extends Component {
         })
     }
 
+    handleSeedChange = (event) => {
+        this.setState({
+            seed: event.target.value
+        })
+    }
+
     postCrossValidation = (event) => {
         event.preventDefault();
 
@@ -178,6 +185,7 @@ class PostCrossValidation extends Component {
         formData.append('typeOfRules', this.state.typeOfRules)
         formData.append('defaultClassificationResult', this.state.defaultClassificationResult)
         formData.append('numberOfFolds', this.state.numberOfFolds)
+        formData.append('seed', this.state.seed)
         formData.append('metadata', this.state.metadata)
         formData.append('data', this.state.data)
 
@@ -256,6 +264,8 @@ class PostCrossValidation extends Component {
                 </select>
                 numberOfFolds->
                 <input type='text' value={this.state.numberOfFolds} onChange={this.handleNumberOfFolds} />
+                seed->
+                <input type='text' value={this.state.seed} onChange={this.handleSeedChange} />
                 <button onClick={this.postCrossValidation}>postCrossValidation</button>
             </div>
         )

@@ -5,7 +5,8 @@ class Download extends Component {
         super(props);
 
         this.state = {
-            id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f'
+            id_projektu: '532bda52-5cab-4725-8023-ccea7b2d612f',
+            format: 'xml'
         }
     }
 
@@ -15,18 +16,31 @@ class Download extends Component {
         })
     }
 
+    handleFormatChange = (event) => {
+        this.setState({
+            format: event.target.value
+        })
+    }
+
     download = (event) => {
         event.preventDefault()
         let filename = "filename";
 
-        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/rules/download`, {
+        var link = `http://localhost:8080/projects/${this.state.id_projektu}/rules/download`;
+        if(this.state.format !== "") {
+            link += `?format=${this.state.format}`;
+        }
+
+        console.log(link)
+
+        fetch(link, {
             method: 'GET'
         }).then(response => {
             console.log(response)
             if(response.status === 200) {
                 filename =  response.headers.get('Content-Disposition').split('filename=')[1];
                 response.blob().then(result => {
-                    console.log("Wynik dzialania response.blob():")
+                    console.log("Result of response.blob():")
                     console.log(result)
                     let url = window.URL.createObjectURL(result);
                     let link = document.createElement('a');
@@ -38,7 +52,7 @@ class Download extends Component {
                 })
             } else {
                 response.json().then(result => {
-                    console.log("Wynik dzialania response.json():")
+                    console.log("Result of response.json():")
                     console.log(result)
                 }).catch(err => {
                     console.log(err)
@@ -54,6 +68,11 @@ class Download extends Component {
             <div>
                 id->
                 <input type='text' value={this.state.id_projektu} onChange={this.handleIdChange} />
+                <label for="rulesFormatDownloadRules">format-></label>
+                <select id="rulesFormatDownloadRules" onChange={this.handleFormatChange}>
+                    <option value="xml">xml</option>
+                    <option value="txt">txt</option>
+                </select>
                 <button onClick={this.download}>download</button>
             </div>
         )

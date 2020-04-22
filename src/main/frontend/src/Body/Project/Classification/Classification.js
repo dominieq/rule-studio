@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { fetchClassification, parseClassificationParams } from "../Utils/fetchFunctions";
+import { downloadMatrix, fetchClassification, parseClassificationParams } from "../Utils/fetchFunctions";
 import { parseClassificationItems, parseClassificationListItems, parseMatrix } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
@@ -19,6 +19,9 @@ import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
+import GetApp from "@material-ui/icons/GetApp";
 
 class Classification extends Component {
     constructor(props) {
@@ -196,6 +199,17 @@ class Classification extends Component {
         });
     };
 
+    onSaveToFile = () => {
+        const { project } = this.props;
+        let data = {typeOfMatrix: "classification"}
+
+        downloadMatrix( project.result.id, data ).catch(error => {
+            if (this._isMounted) {
+                this.setState({ alertProps: error });
+            }
+        });
+    };
+
     onDefaultClassificationResultChange = (event) => {
         const { loading } = this.state;
 
@@ -265,7 +279,7 @@ class Classification extends Component {
                         onClick={() => this.toggleOpen("settings")}
                         title={"Click to select parameters"}
                     />
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkButtonGroup
                         id={"classification-button-group"}
                         options={["Classify current data", "Choose new data & classify"]}
@@ -350,7 +364,24 @@ class Classification extends Component {
                         onClose={() => this.toggleOpen("matrix")}
                         open={open.matrix}
                         subheaders={data.decisionsDomain}
-                        title={"Ordinal misclassification matrix and it's details"}
+                        saveMatrix={this.onSaveToFile}
+                        title={
+                            <React.Fragment>
+                                <RuleWorkTooltip title={"Download matrix (txt)"}>
+                                    <StyledButton
+                                        aria-label={"download matrix"}
+                                        isIcon={true}
+                                        onClick={this.onSaveToFile}
+                                        themeVariant={"primary"}
+                                    >
+                                        <GetApp />
+                                    </StyledButton>
+                                </RuleWorkTooltip>
+                                <span style={{marginLeft: 8}}>
+                                    Ordinal misclassification matrix and details
+                                </span>
+                            </React.Fragment>
+                        }
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />

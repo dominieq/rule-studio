@@ -6,42 +6,50 @@ import { mergeClasses } from "../utilFunctions";
 import Divider from "@material-ui/core/Divider";
 
 const useStyles = makeStyles(theme => ({
-    bar: {
-        margin: "0 16px",
+    primary: {
         backgroundColor: theme.palette.background.default
     },
-    panel: {
-        margin: "12px 0",
-        height: 1,
+    secondary: {
         backgroundColor: theme.palette.paper.text
     }
-}), {name: "styled-divider"});
+}), {name: "CustomDivider"});
 
 function StyledDivider(props) {
-    const {classes: propsClasses, className, styleVariant, ...other} = props;
+    const { color, classes: propsClasses, className, margin, ...other } = props;
     let classes = useStyles();
 
     if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
+    let style = {}
+    if (props.orientation === "horizontal") {
+        style = { ...style, ...{ marginBottom: margin, marginTop: margin } };
+    } else if (props.orientation === "vertical") {
+        style = { ...style, ...{ marginLeft: margin, marginRight: margin } };
+    }
+
     return (
-        <Divider className={clsx(classes[styleVariant], className)} {...other} />
+        <Divider className={clsx(classes[color], className)} style={style} {...other} />
     )
 }
 
 StyledDivider.propTypes = {
+    absolute: PropTypes.bool,
     classes: PropTypes.object,
     className: PropTypes.string,
+    color: PropTypes.oneOf(["primary", "secondary"]),
+    component: PropTypes.elementType,
     flexItem: PropTypes.bool,
+    light: PropTypes.bool,
+    margin: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     orientation: PropTypes.oneOf(["horizontal", "vertical"]),
-    styleVariant: PropTypes.oneOf(["bar", "panel"]),
     variant: PropTypes.oneOf(["fullWidth", "inset", "middle"]),
 };
 
 StyledDivider.defaultProps = {
+    color: "primary",
     flexItem: true,
+    margin: 0,
     orientation: "vertical",
-    styleVariant: "bar",
-    variant: "fullWidth"
 };
 
 export default StyledDivider;

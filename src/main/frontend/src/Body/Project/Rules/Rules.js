@@ -256,8 +256,9 @@ class Rules extends Component {
 
     onSaveRulesToXMLClick = () => {
         const { project } = this.props;
+        let data = { format: "xml" };
 
-        downloadRules( project.result.id ).catch(error => {
+        downloadRules( project.result.id, data ).catch(error => {
             if (this._isMounted) {
                 this.setState({alertProps: error});
             }
@@ -265,7 +266,14 @@ class Rules extends Component {
     };
 
     onSaveRulesToTXTClick = () => {
-        console.log("Saving to TXT");
+        const { project } = this.props;
+        let data = { format: "txt" };
+
+        downloadRules( project.result.id, data ).catch(error => {
+            if (this._isMounted) {
+                this.setState({ alertProps: error });
+            }
+        });
     };
 
     toggleOpen = (name) => {
@@ -349,7 +357,7 @@ class Rules extends Component {
                         onClick={() => this.toggleOpen("settings")}
                         title={"Click to choose consistency threshold, type of unions & rules"}
                     />
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip
                         title={`Calculate with consistency threshold ${parameters.consistencyThreshold}`}
                     >
@@ -359,7 +367,7 @@ class Rules extends Component {
                             onClick={this.onCalculateClick}
                         />
                     </RuleWorkTooltip>
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip title={"Upload file"}>
                         <RuleWorkUpload
                             accept={".xml"}
@@ -378,7 +386,7 @@ class Rules extends Component {
                             </StyledButton>
                         </RuleWorkUpload>
                     </RuleWorkTooltip>
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip title={"Save rules to RuleML"}>
                         <StyledButton
                             aria-label={"rules-save-to-xml-button"}
@@ -390,7 +398,7 @@ class Rules extends Component {
                             <SaveIcon />
                         </StyledButton>
                     </RuleWorkTooltip>
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip title={"Save rules to TXT"}>
                         <StyledButton
                             aria-label={"rules-save-to-txt-button"}

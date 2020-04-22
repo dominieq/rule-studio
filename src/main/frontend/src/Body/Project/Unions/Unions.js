@@ -260,7 +260,7 @@ class Unions extends Component {
                         onClick={() => this.toggleOpen("settings")}
                         title={"Click to choose consistency & type of unions"}
                     />
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip
                         title={`Calculate with threshold ${parameters.consistencyThreshold} 
                         & ${parameters.typeOfUnions} unions`}
