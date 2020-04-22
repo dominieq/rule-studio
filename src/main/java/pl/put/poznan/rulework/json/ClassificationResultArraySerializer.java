@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import org.rulelearn.classification.ClassificationResult;
 import org.rulelearn.classification.SimpleEvaluatedClassificationResult;
 import org.rulelearn.data.SimpleDecision;
-import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EvaluationField;
-import org.rulelearn.types.IntegerField;
-import org.rulelearn.types.RealField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.jackson.JsonComponent;
@@ -32,15 +29,7 @@ public class ClassificationResultArraySerializer extends JsonSerializer<Classifi
 
             jsonGenerator.writeFieldName("suggestedDecision");
             EvaluationField evaluationField = ((SimpleDecision)classificationResult.getSuggestedDecision()).getEvaluation();
-            if(evaluationField instanceof IntegerField) {
-                jsonGenerator.writeNumber(((IntegerField)evaluationField).getValue());
-            } else if (evaluationField instanceof RealField) {
-                jsonGenerator.writeNumber(((RealField)evaluationField).getValue());
-            } else if (evaluationField instanceof EnumerationField) {
-                jsonGenerator.writeString(((EnumerationField)evaluationField).getElement());
-            } else {
-                logger.error("Unrecognized type of EvaluationField");
-            }
+            jsonGenerator.writeString(evaluationField.toString());
 
             if(classificationResult instanceof SimpleEvaluatedClassificationResult) {
                 jsonGenerator.writeFieldName("suggestedDecisionEvaluation");
