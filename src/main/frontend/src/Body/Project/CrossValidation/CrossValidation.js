@@ -10,6 +10,7 @@ import CalculateButton from "../Utils/Buttons/CalculateButton";
 import MatrixButton from "../Utils/Buttons/MatrixButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
+import NumberOfFoldsSelector from "../Utils/Calculations/NumberOfFoldsSelector";
 import SeedSelector from "../Utils/Calculations/SeedSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
@@ -17,7 +18,6 @@ import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
-import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
 import { MatrixDialog } from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
@@ -516,15 +516,12 @@ class CrossValidation extends Component {
                             value: parameters.seed
                         }}
                     />
-                    <RuleWorkSmallBox id={"fold-number-selector"} >
-                        <RuleWorkTextField
-                            onChange={this.onNumberOfFoldsChange}
-                            outsideLabel={"Choose number of folds"}
-                            style={{maxWidth: 72}}
-                            value={parameters.numberOfFolds}
-                        />
-                    </RuleWorkSmallBox>
-
+                    <NumberOfFoldsSelector
+                        TextFieldProps={{
+                            onChange: this.onNumberOfFoldsChange,
+                            value: parameters.numberOfFolds
+                        }}
+                    />
                 </RuleWorkDrawer>
                 <TabBody
                     content={parseCrossValidationListItems(displayedItems)}
