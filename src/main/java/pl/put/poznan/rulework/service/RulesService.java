@@ -25,6 +25,7 @@ import pl.put.poznan.rulework.enums.RulesFormat;
 import pl.put.poznan.rulework.enums.UnionType;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
 import pl.put.poznan.rulework.exception.NoRulesException;
+import pl.put.poznan.rulework.exception.NotSuitableForInductionOfPossibleRulesException;
 import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
@@ -93,10 +94,21 @@ public class RulesService {
         Map.Entry<Integer, RuleSetWithCharacteristics> entry = parsedRules.entrySet().iterator().next();
         RuleSetWithCharacteristics ruleSetWithCharacteristics = entry.getValue();
 
+        logger.info("LearningInformationTableHash:\t{}", ruleSetWithCharacteristics.getLearningInformationTableHash());
         return ruleSetWithCharacteristics;
     }
 
     public static RuleSetWithCharacteristics calculateRuleSetWithCharacteristics(Unions unions, RuleType typeOfRules) {
+        if((typeOfRules == RuleType.POSSIBLE) || (typeOfRules == RuleType.BOTH)) {
+            if(!unions.getInformationTable().isSuitableForInductionOfPossibleRules()) {
+                NotSuitableForInductionOfPossibleRulesException ex = new NotSuitableForInductionOfPossibleRulesException("Creating possible rules is not possible - learning data contain missing attribute values that can lead to non-transitivity of dominance/indiscernibility relation");
+                logger.error(ex.getMessage());
+                throw ex;
+            }
+
+            logger.info("Current learning data is acceptable to create possible rules.");
+        }
+
         RuleInducerComponents ruleInducerComponents = null;
 
         ApproximatedSetProvider unionAtLeastProvider = new UnionProvider(Union.UnionType.AT_LEAST, unions);
@@ -147,6 +159,7 @@ public class RulesService {
             resultSet = RuleSetWithCharacteristics.join(resultSet, rules);
         }
 
+        resultSet.setLearningInformationTableHash(unions.getInformationTable().getHash());
         return resultSet;
     }
 

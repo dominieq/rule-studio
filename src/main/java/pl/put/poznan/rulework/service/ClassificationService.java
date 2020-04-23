@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.enums.ClassifierType;
 import pl.put.poznan.rulework.enums.DefaultClassificationResultType;
-import pl.put.poznan.rulework.exception.EmptyResponseException;
-import pl.put.poznan.rulework.exception.NoDataException;
-import pl.put.poznan.rulework.exception.NoRulesException;
-import pl.put.poznan.rulework.exception.WrongParameterException;
+import pl.put.poznan.rulework.exception.*;
 import pl.put.poznan.rulework.model.Classification;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
@@ -191,6 +188,23 @@ public class ClassificationService {
         return simpleClassificationResult;
     }
 
+    private static void checkLearningInformationTableCompatibility(InformationTable learningInformationTable, RuleSetWithCharacteristics ruleSetWithCharacteristics) {
+        String ruleSetHash = ruleSetWithCharacteristics.getLearningInformationTableHash();
+        if(ruleSetHash == null) {
+            NoHashInRuleSetException ex = new NoHashInRuleSetException("Provided rules set doesn't have learning information table hash. It can't be determined, if this rules set was generated based on given learning information table. Chosen classifier can't be used.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        if(!ruleSetHash.equals(learningInformationTable.getHash())) {
+            IncompatibleLearningInformationTableException ex = new IncompatibleLearningInformationTableException("Data in current project should be a valid training set for existing rules. Access to this set is required to be able to use chosen classifier.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        logger.info("Learning information table and rule set are compatible.");
+    }
+
     public static Classification calculateClassification(InformationTable learningInformationTable, InformationTable testingInformationTable, ClassifierType typeOfClassifier, DefaultClassificationResultType typeOfDefaultClassificationResult, RuleSetWithCharacteristics ruleSetWithCharacteristics, Decision[] orderOfDecisions) {
         if(logger.isDebugEnabled()) {
             logger.debug("RuleSet size = {}", ruleSetWithCharacteristics.size());
@@ -211,14 +225,17 @@ public class ClassificationService {
                 break;
             case SIMPLE_OPTIMIZING_COUNTING_RULE_CLASSIFIER:
                 simpleClassificationResult = createDefaultSimpleClassificationResult(typeOfDefaultClassificationResult, testingInformationTable);
+                checkLearningInformationTableCompatibility(learningInformationTable, ruleSetWithCharacteristics);
                 classifier = new SimpleOptimizingCountingRuleClassifier(ruleSetWithCharacteristics, simpleClassificationResult, learningInformationTable);
                 break;
             case SCORING_RULE_CLASSIFIER_SCORE:
                 simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, testingInformationTable);
+                checkLearningInformationTableCompatibility(learningInformationTable, ruleSetWithCharacteristics);
                 classifier = new ScoringRuleClassifier(ruleSetWithCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.SCORE, learningInformationTable);
                 break;
             case SCORING_RULE_CLASSIFIER_HYBRID:
                 simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, testingInformationTable);
+                checkLearningInformationTableCompatibility(learningInformationTable, ruleSetWithCharacteristics);
                 classifier = new ScoringRuleClassifier(ruleSetWithCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.HYBRID, learningInformationTable);
                 break;
             default:
