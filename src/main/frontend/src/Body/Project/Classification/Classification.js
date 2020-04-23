@@ -7,6 +7,7 @@ import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
 import MatrixButton from "../Utils/Buttons/MatrixButton";
+import MatrixDownloadButton from "../Utils/Buttons/MatrixDownloadButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
@@ -19,9 +20,6 @@ import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import GetApp from "@material-ui/icons/GetApp";
 
 class Classification extends Component {
     constructor(props) {
@@ -367,17 +365,11 @@ class Classification extends Component {
                         saveMatrix={this.onSaveToFile}
                         title={
                             <React.Fragment>
-                                <RuleWorkTooltip title={"Download matrix (txt)"}>
-                                    <StyledButton
-                                        aria-label={"download matrix"}
-                                        isIcon={true}
-                                        onClick={this.onSaveToFile}
-                                        themeVariant={"primary"}
-                                    >
-                                        <GetApp />
-                                    </StyledButton>
-                                </RuleWorkTooltip>
-                                <span style={{marginLeft: 8}}>
+                                <MatrixDownloadButton
+                                    onSave={this.onSaveToFile}
+                                    tooltip={"Download matrix (txt)"}
+                                />
+                                <span aria-label={"matrix title"} style={{paddingLeft: 8}}>
                                     Ordinal misclassification matrix and details
                                 </span>
                             </React.Fragment>
