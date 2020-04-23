@@ -181,6 +181,19 @@ const StyledList = withStyles({
     }
 })(props => <List {...props} />);
 
+const StyledListItemText = withStyles({
+    primary: {
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        '&:hover': {
+            overflow: "visible",
+            whiteSpace: "unset",
+            wordBreak: "break-word"
+        }
+    },
+})(props => <ListItemText {...props} />);
+
 function RightClickContextMenu({
     idx,
     uniqueLP,
@@ -1754,6 +1767,8 @@ class DisplayData extends React.Component {
                 break;
             }
         }
+        
+        const tmpWrapper = [];
         const tmp = [];
         
         tmp.push(<FormControlLabel
@@ -1805,6 +1820,7 @@ class DisplayData extends React.Component {
             else
                 tmp.push(<DropDownForAttributes key={"valueType"+attribute.name} name={"valueType"} getSelected={this.getSelectedValueType} displayName={"Value type"} items={["integer","real","enumeration"]}/>)
 
+            tmpWrapper.push(<div key="attributeFields" className="attributeFields"> {tmp} </div>)
             //display domain for enumeration value type
             if(attribute.valueType === "enumeration" && (this.state.valueTypeSelected === '' || this.state.valueTypeSelected === "enumeration"))
             {
@@ -1812,14 +1828,17 @@ class DisplayData extends React.Component {
                 attribute.domain.forEach( (x, index) => { 
                     if(x !== "?") domain.push({id: index, text: x});
                 })
-                tmp.push(<div className="attributeDomainWrapper" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements} defaultValue={domain}/> </div> </div>)
+                tmpWrapper.push(<div className="attributeDomainWrapper2" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements} defaultValue={domain}/> </div> </div>)
             } else if(this.state.valueTypeSelected === "enumeration") {
-                tmp.push(<div className="attributeDomainWrapper" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements}/> </div> </div>)
+                tmpWrapper.push(<div className="attributeDomainWrapper2" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements}/> </div> </div>)
             }
 
         }
-              
-        return tmp;
+
+        if(tmpWrapper.length === 0)
+            tmpWrapper.push(<div key="attributeFields" className="attributeFields"> {tmp} </div>)
+        
+        return tmpWrapper;
     }
 
     handleListItemClick = (e) => {
@@ -2107,22 +2126,22 @@ class DisplayData extends React.Component {
                         }
                         
                         <div className="editAttributesWrapper">
-                        <div className="nicelyInColumn">
+                        <div className="nicelyInColumn2">
                             <StyledList component="nav" aria-label="display attributes" id="edit-attributes-list"> 
                             {this.displayListOfAttributesForModification().map(x => (
                                 <ListItem button data-value={x.name} key={x.key} selected={this.state.editAttributeSelected === x.name} onClick={this.handleListItemClick} >
-                                    <ListItemText primary={x.name}/>
+                                    <StyledListItemText primary={x.name}/>
                                 </ListItem>))}
                             </StyledList>
                         </div>
-                        <div className="editAttributesValues">
+                        {/*<div className="editAttributesValues">*/}
                             {this.state.editAttributeSelected !== '' ? this.displayEditAttributeFields() : null}    
                             {
                                 this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
                                 closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
                             }                        
-                        </div> 
-                        </div>       
+                        {/*</div> */}
+                        </div>      
                     </DialogContent>
                     <DialogActions>
                         <StyledButton onClick={this.closeOnEditAttributes} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
