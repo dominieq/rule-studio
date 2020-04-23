@@ -1746,6 +1746,82 @@ class DisplayData extends React.Component {
         return ;
     }
 
+    displayEditAttributeFields = () => {
+        let attribute = {};
+        for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
+            if(this.state.editAttributeSelected === this.state.history[this.state.historySnapshot].columns[i].name) { 
+                attribute = {...this.state.history[this.state.historySnapshot].columns[i]};
+                break;
+            }
+        }
+        const tmp = [];
+        
+        tmp.push(<FormControlLabel
+            control={<Checkbox defaultChecked={attribute.active} color="primary" style={{float: "left", width: "65%", color: defaultPrimaryColor}} name="attributeIsActive"/>}
+            label="Active"
+            labelPlacement="start"
+            key={"attributeIsActive"+attribute.name}
+            style={{justifyContent: "space-evenly"}}
+        />)
+
+        //display attribute name
+        tmp.push(<ValidationTextField autoComplete="off" label="Name" fullWidth required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
+        
+        //display attribute type - identification
+        if(this.state.attributeTypeSelected === "identification" || (this.state.attributeTypeSelected === '' && attribute.valueType === undefined)) {
+            tmp.push(<DropDownForAttributes key={"attributeType"+attribute.name} name={"attributeType"} getSelected={this.getSelectedAttributeType} displayName={"Type"} defaultValue={"identification"} items={["identification","description","condition","decision"]}/>)
+            
+            //display identifier type
+            if(attribute.identifierType === 'uuid' || attribute.identifierType === 'text') {
+                tmp.push(<DropDownForAttributes key={"identifierType"+attribute.name} name={"identifierType"} getSelected={this.getSelectedIdentifierType} displayName={"Identifier type"} defaultValue={attribute.identifierType} items={["uuid","text"]}/>)
+            } else {
+                tmp.push(<DropDownForAttributes key={"identifierType"+attribute.name} name={"identifierType"} getSelected={this.getSelectedIdentifierType} displayName={"Identifier type"} items={["uuid","text"]}/>)
+            }
+
+        } else if(this.state.attributeTypeSelected == attribute.type || (this.state.attributeTypeSelected == '' && attribute.type !== undefined)) { //display attribute type - other than identification and the same as before editing 
+            tmp.push(<DropDownForAttributes key={"attributeType"+attribute.name} name={"attributeType"} getSelected={this.getSelectedAttributeType} displayName={"Type"} defaultValue={attribute.type} items={["identification","description","condition","decision"]}/>)
+        } else { //display attribute type - other than identification and other than before editing
+            tmp.push(<DropDownForAttributes key={"attributeType"+attribute.name} name={"attributeType"} getSelected={this.getSelectedAttributeType} displayName={"Type"} items={["identification","description","condition","decision"]}/>)
+        }
+        
+        //it's not identification attribute
+        if((attribute.valueType !== undefined && this.state.attributeTypeSelected === '') || (this.state.attributeTypeSelected !== "identification")) {
+            
+            //display missing value type
+            if(attribute.missingValueType !== undefined) 
+                tmp.push(<DropDownForAttributes key={"missingValueType"+attribute.name} name={"missingValueType"} getSelected={this.getSelectedMissingValueType} displayName={"Missing value type"} missingVal={true} defaultValue={attribute.missingValueType} items={["1.5","2"]}/>)
+            else 
+                tmp.push(<DropDownForAttributes key={"missingValueType"+attribute.name} name={"missingValueType"} getSelected={this.getSelectedMissingValueType} displayName={"Missing value type"} missingVal={true} defaultValue="mv2" items={["1.5","2"]}/>)
+
+            //display preference type
+            if(attribute.preferenceType !== undefined) 
+                tmp.push(<DropDownForAttributes key={"attributePreferenceType"+attribute.name} name={"attributePreferenceType"} getSelected={this.getSelectedAttributePreferenceType} displayName={"Preference type"} defaultValue={attribute.preferenceType} items={["none","cost","gain"]}/>)
+            else
+                tmp.push(<DropDownForAttributes key={"attributePreferenceType"+attribute.name} name={"attributePreferenceType"} getSelected={this.getSelectedAttributePreferenceType} displayName={"Preference type"} items={["none","cost","gain"]}/>)
+
+            //display value type
+            if(attribute.valueType !== undefined)
+                tmp.push(<DropDownForAttributes key={"valueType"+attribute.name} name={"valueType"} getSelected={this.getSelectedValueType} displayName={"Value type"} defaultValue={attribute.valueType} items={["integer","real","enumeration"]}/>)
+            else
+                tmp.push(<DropDownForAttributes key={"valueType"+attribute.name} name={"valueType"} getSelected={this.getSelectedValueType} displayName={"Value type"} items={["integer","real","enumeration"]}/>)
+
+            //display domain for enumeration value type
+            if(attribute.valueType === "enumeration" && (this.state.valueTypeSelected === '' || this.state.valueTypeSelected === "enumeration"))
+            {
+                const domain = [];
+                attribute.domain.forEach( (x, index) => { 
+                    if(x !== "?") domain.push({id: index, text: x});
+                })
+                tmp.push(<div className="attributeDomainWrapper" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements} defaultValue={domain}/> </div> </div>)
+            } else if(this.state.valueTypeSelected === "enumeration") {
+                tmp.push(<div className="attributeDomainWrapper" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements}/> </div> </div>)
+            }
+
+        }
+              
+        return tmp;
+    }
+
     handleListItemClick = (e) => {
         const selectedItem = e.currentTarget.dataset.value;
         this.setState( (prevState) => {
@@ -1839,90 +1915,6 @@ class DisplayData extends React.Component {
         
         return tmp;
     }
-
-    displayFieldsOfSelectedAttribute = () => {
-        let attribute;
-        for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
-            if(this.state.editAttributeSelected === this.state.history[this.state.historySnapshot].columns[i].name) { 
-                attribute = {...this.state.history[this.state.historySnapshot].columns[i]};
-                break;
-            }
-        }
-        
-        const tmp = [];
-        
-        tmp.push(<FormControlLabel
-            control={<Checkbox defaultChecked={attribute.active} color="primary" style={{float: "left", width: "65%", color: defaultPrimaryColor}} name="attributeIsActive"/>}
-            label="Active"
-            labelPlacement="start"
-            key={"attributeIsActive"+attribute.name}
-            style={{justifyContent: "space-evenly"}}
-        />)
-        tmp.push(<ValidationTextField autoComplete="off" label="Name" fullWidth required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
-
-        if((this.state.attributeTypeSelected === '' && this.state.valueTypeSelected === '') || (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected.toLowerCase() === attribute.valueType)   /*|| (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected === '') //nothing has changed
-            || (this.state.attributeTypeSelected === '' && this.state.valueTypeSelected.toLowerCase() === attribute.valueType) || (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected.toLowerCase() === attribute.valueType) */
-            || (this.state.attributeTypeSelected === 'identification' && attribute.preferenceType === undefined)) { 
-
-            if(attribute.identifierType !== '' && attribute.type === undefined) { //if it's identifier attribute
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} defaultValue={"identification"} displayName={"Type"} items={["identification","description","condition","decision"]}/>) 
-                
-                if(attribute.identifierType.toLowerCase() === 'uuid') {
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} key={"identifierType"+attribute.name} defaultValue={"uuid"} displayName={"Identifier type"}  items={["uuid","text"]}/>)
-                }
-                else { 
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} key={"identifierType"+attribute.name} defaultValue={"text"} displayName={"Identifier type"}  items={["uuid","text"]}/>) 
-                }
-            } else { //it's not identifier attribute
-                
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} defaultValue={attribute.type} displayName={"Type"} items={["identification","description","condition","decision"]}/>)
-
-                if(attribute.missingValueType === "mv2") {
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} displayName={"Missing value type"} missingVal={true} defaultValue="mv2" items={["1.5","2"]}/>)
-                }
-                else {
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} displayName={"Missing value type"} missingVal={true} defaultValue="mv1.5" items={["1.5","2"]}/>)
-                }
-                
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributePreferenceType} name={"attributePreferenceType"} key={"attributePreferenceType"+attribute.name} defaultValue={attribute.preferenceType} displayName={"Preference type"} items={["none","cost","gain"]}/>)
-
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedValueType} name={"valueType"} displayName={"Value type"} key={"valueType"+attribute.name} defaultValue={attribute.valueType} items={["integer","real","enumeration"]}/>)
-
-                if(attribute.valueType === "enumeration")
-                {
-                    const domain = [];
-                    attribute.domain.forEach( (x, index) => { 
-                        if(x !== "?") domain.push({id: index, text: x});
-                    })
-                    tmp.push(<div className="attributeDomainWrapper" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements} defaultValue={domain}/> </div> </div>)
-                }
-            }
-        } else if(this.state.attributeTypeSelected !== attribute.type) { //attribute type has changed (everything under it - rerender with empty values)
-            
-            if(this.state.attributeTypeSelected !== "identification") {
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} displayName={"Type"} items={["identification","description","condition","decision"]}/>)
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} missingVal={true}  defaultValue="mv2" displayName={"Missing value type"} items={["1.5","2"]}/>)
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributePreferenceType} name={"attributePreferenceType"} key={"attributePreferenceType"+attribute.name} displayName={"Preference type"} items={["none","cost","gain"]}/>)
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedValueType} name={"valueType"} displayName={"Value type"} key={"valueType"+attribute.name} items={["integer","real","enumeration"]}/>)
-                if(this.state.valueTypeSelected === "enumeration")
-                {
-                    tmp.push(<div className="attributeDomainWrapper" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements}/> </div> </div>)
-                }
-            } else if(this.state.attributeTypeSelected === "identification") { 
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} displayName={"Type"} defaultValue={"identification"} items={["identification","description","condition","decision"]}/>)
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} displayName={"Identifier type"} key={"identifierType"+attribute.name} items={["uuid","text"]}/>)
-            }
-        } else if(this.state.valueTypeSelected !== attribute.valueType) {
-            if(this.state.valueTypeSelected === "enumeration")
-            {
-                tmp.push(<div className="attributeDomainWrapper" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements}/> </div> </div>)
-            }
-        }
-      
-        return tmp;
-    }
-
-    
 
     displayColumnHeaderMenu = () => {
         if(this.state.isColumnHeaderMenuOpened && this.state.columnKeyOfHeaderMenuOpened !== "uniqueLP") { //don't touch No. column
@@ -2124,7 +2116,7 @@ class DisplayData extends React.Component {
                             </StyledList>
                         </div>
                         <div className="editAttributesValues">
-                            {this.state.editAttributeSelected !== '' ? this.displayFieldsOfSelectedAttribute() : null}    
+                            {this.state.editAttributeSelected !== '' ? this.displayEditAttributeFields() : null}    
                             {
                                 this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
                                 closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
