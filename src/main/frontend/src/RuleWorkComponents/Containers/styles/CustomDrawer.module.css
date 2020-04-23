@@ -1,0 +1,6 @@
+.Footer {
+    align-items: center;
+    display: flex;
+    flex-direction: row-reverse;
+    padding-top: 8px;
+}

@@ -1,11 +1,11 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import RuleWorkSmallBox from "./RuleWorkSmallBox";
 import StyledButton from "../Inputs/StyledButton";
 import StyledDivider from "../DataDisplay/StyledDivider";
 import Drawer from "@material-ui/core/Drawer";
-import WindowClose from "mdi-material-ui/WindowClose"
+import WindowClose from "mdi-material-ui/WindowClose";
+import styles from "./styles/CustomDrawer.module.css";
 
 const drawerStyles = makeStyles(theme => ({
     docked: {
@@ -57,26 +57,31 @@ function RuleWorkDrawer(props) {
                 <Fragment key={index}>
                     {child}
                     {index !== childrenArray.length - 1 && dividers &&
-                        <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
+                        <StyledDivider
+                            color={"secondary"}
+                            flexItem={false}
+                            margin={12}
+                            orientation={"horizontal"}
+                        />
                     }
                 </Fragment>
             ))}
             {closeFooter &&
-                <RuleWorkSmallBox
-                    id={props.id + "-footer"}
+                <div
+                    aria-label={"drawer footer"}
+                    className={styles.Footer}
                     style={props.anchor === "right" ? {flexDirection: "unset"} : undefined}
-                    styleVariant={"footer"}
                 >
                     <StyledButton
-                        aria-label={"drawer-close-button"}
-                        aria-labelledby={props.id + "-footer"}
+                        aria-label={"drawer close button"}
+                        aria-labelledby={"drawer footer"}
                         isIcon={true}
                         onClick={onClose}
                         themeVariant={"secondary"}
                     >
                         <WindowClose />
                     </StyledButton>
-                </RuleWorkSmallBox>
+                </div>
             }
         </Drawer>
     )

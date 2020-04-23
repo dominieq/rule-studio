@@ -1,0 +1,11 @@
+.Root {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+
+.Label {
+    min-width: fit-content;
+    min-width: -moz-fit-content;
+}

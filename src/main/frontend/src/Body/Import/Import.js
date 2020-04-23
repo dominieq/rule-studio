@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import FileSelectZone from "./FileSelectZone";
-import RuleWorkBox from "../../RuleWorkComponents/Containers/RuleWorkBox"
-import RuleWorkSmallBox from "../../RuleWorkComponents/Containers/RuleWorkSmallBox"
+import RuleWorkBox from "../../RuleWorkComponents/Containers/RuleWorkBox";
+import CollapsibleDivider from "../../RuleWorkComponents/DataDisplay/CollapsibleDivider";
 import StyledDivider from "../../RuleWorkComponents/DataDisplay/StyledDivider";
+import RuleWorkSwitch from "../../RuleWorkComponents/Inputs/RuleWorkSwitch";
 import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import StyledButton  from "../../RuleWorkComponents/Inputs/StyledButton"
-import CollapsibleDivider from "../../RuleWorkComponents/DataDisplay/CollapsibleDivider";
-import RuleWorkSwitch from "../../RuleWorkComponents/Inputs/RuleWorkSwitch";
 import StyledPaper from "../../RuleWorkComponents/Surfaces/StyledPaper";
 import Collapse from "@material-ui/core/Collapse";
+import styles from "./styles/Import.module.css";
 
 class Import extends Component{
     constructor(props) {
@@ -109,7 +109,7 @@ class Import extends Component{
         return (
             <RuleWorkBox id={"rule-work-import"} onKeyPress={this.onEnterClick} styleVariant={"body"}>
                 <StyledPaper id={"import-panel"} elevation={6} styleVariant={"panel"}>
-                    <RuleWorkSmallBox>
+                    <div aria-label={"text field row"} className={styles.Row}>
                         <RuleWorkTextField
                             fullWidth={true}
                             onChange={this.onProjectNameChange}
@@ -117,29 +117,35 @@ class Import extends Component{
                             outsideLabel={"Project name"}
                             value={name}
                         />
-                    </RuleWorkSmallBox>
-                    <StyledDivider orientation={"horizontal"} styleVariant={"panel"} />
-                    <RuleWorkSmallBox>
+                    </div>
+                    <StyledDivider
+                        color={"secondary"}
+                        flexItem={false}
+                        margin={12}
+                        orientation={"horizontal"}
+                    />
+                    <div aria-label={"switch row"} className={styles.Row} style={{paddingBottom: 8}}>
                         <RuleWorkSwitch
                             label={"Create project with metadata"}
                             checked={checked}
                             onChange={this.onCheckboxChange}
                         />
-                    </RuleWorkSmallBox>
+                    </div>
                     <Collapse in={checked} unmountOnExit={true}>
-                        <RuleWorkSmallBox styleVariant={"multi-row"}>
+                        <div aria-label={"outer collapse"} className={styles.Collapse}>
                             <FileSelectZone
                                 variant={"metadata"}
                                 accept={".json"}
                                 onInputChange={this.onInputChange}
                                 onInputDelete={this.onInputDelete}
+                                title={"A file defining structure of attributes"}
                             />
                             <CollapsibleDivider
                                 onClick={this.onExpandClick}
                                 expanded={expand}
                             />
                             <Collapse in={expand} unmountOnExit={true}>
-                                <RuleWorkSmallBox styleVariant={"multi-row"}>
+                                <div aria-label={"inner collapse"} className={styles.Collapse}>
                                     <FileSelectZone
                                         variant={"data"}
                                         accept={".json,.csv"}
@@ -152,12 +158,18 @@ class Import extends Component{
                                         onInputChange={this.onInputChange}
                                         onInputDelete={this.onInputDelete}
                                     />
-                                </RuleWorkSmallBox>
+                                </div>
                             </Collapse>
-                        </RuleWorkSmallBox>
+                        </div>
                     </Collapse>
-                    <StyledDivider hidden={!expand} orientation={"horizontal"} styleVariant={"panel"} />
-                    <RuleWorkSmallBox styleVariant={"footer"}>
+                    <StyledDivider
+                        color={"secondary"}
+                        flexItem={false}
+                        hidden={!expand}
+                        margin={12}
+                        orientation={"horizontal"}
+                    />
+                    <div aria-label={"footer"} className={styles.Footer}>
                         <StyledButton
                             id={"footer-accept-button"}
                             onClick={this.onAcceptButtonClick}
@@ -175,7 +187,7 @@ class Import extends Component{
                         >
                             Clear
                         </StyledButton>
-                    </RuleWorkSmallBox>
+                    </div>
                 </StyledPaper>
             </RuleWorkBox>
         );

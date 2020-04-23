@@ -31,7 +31,12 @@ class DeleteProjectDialog extends PureComponent {
         }, () => {
             const { currentName } = this.props;
             const { name } = this.state;
-            if (currentName === name) this.setState({correct: true});
+
+            if (currentName === name) {
+                this.setState({ correct: true });
+            } else {
+                this.setState({ correct: false });
+            }
         });
     };
 

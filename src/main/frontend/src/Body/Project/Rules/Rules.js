@@ -19,8 +19,10 @@ import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import SvgIcon from "@material-ui/core/SvgIcon";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
+import { mdiTextBox } from '@mdi/js';
 
 class Rules extends Component {
     constructor(props) {
@@ -55,7 +57,7 @@ class Rules extends Component {
             project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
-                const { project: { externalRules, parametersSaved } } = this.props;
+                const { project: { parametersSaved } } = this.props;
 
                 const items = parseRulesItems(result);
                 const resultParameters = parseRulesParams(result);
@@ -64,7 +66,7 @@ class Rules extends Component {
                     data: result,
                     items: items,
                     displayedItems: items,
-                    externalRules: externalRules,
+                    externalRules: result.externalRules,
                     parameters: { ...parameters, ...resultParameters},
                     parametersSaved: parametersSaved
                 }));
@@ -175,22 +177,18 @@ class Rules extends Component {
                         const items = parseRulesItems(result);
 
                         this.setState({
-                            externalRules: false,
                             data: result,
                             items: items,
                             displayedItems: items,
+                            externalRules: result.externalRules,
                             parametersSaved: true,
                         });
                     }
 
                     project.result.rules = result;
                     project.dataUpToDate = true;
-
-                    let nand = !(project.result.classification && project.externalRules);
                     project.tabsUpToDate[this.props.value] = true;
-                    project.tabsUpToDate[this.props.value + 1] = project.tabsUpToDate[this.props.value + 1] && nand;
-
-                    project.externalRules = false;
+                    project.externalRules = result.externalRules;
 
                     const newParameters = parseRulesParams(result);
 
@@ -235,14 +233,12 @@ class Rules extends Component {
                                 data: result,
                                 items: items,
                                 displayedItems: items,
-                                externalRules: true,
+                                externalRules: result.rules.externalRules,
                             });
                         }
 
                         project.result.rules = result.rules;
-                        project.externalRules = true;
-                        project.tabsUpToDate[this.props.value] = null;
-                        project.tabsUpToDate[this.props.value + 1] = !project.result.classification;
+                        project.externalRules = result.rules.externalRules;
                         this.props.onTabChange(project);
                     }
                 }).catch(error => {
@@ -258,12 +254,24 @@ class Rules extends Component {
         }
     };
 
-    onSaveFileClick = () => {
+    onSaveRulesToXMLClick = () => {
         const { project } = this.props;
+        let data = { format: "xml" };
 
-        downloadRules( project.result.id ).catch(error => {
+        downloadRules( project.result.id, data ).catch(error => {
             if (this._isMounted) {
                 this.setState({alertProps: error});
+            }
+        });
+    };
+
+    onSaveRulesToTXTClick = () => {
+        const { project } = this.props;
+        let data = { format: "txt" };
+
+        downloadRules( project.result.id, data ).catch(error => {
+            if (this._isMounted) {
+                this.setState({ alertProps: error });
             }
         });
     };
@@ -349,7 +357,7 @@ class Rules extends Component {
                         onClick={() => this.toggleOpen("settings")}
                         title={"Click to choose consistency threshold, type of unions & rules"}
                     />
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip
                         title={`Calculate with consistency threshold ${parameters.consistencyThreshold}`}
                     >
@@ -359,7 +367,7 @@ class Rules extends Component {
                             onClick={this.onCalculateClick}
                         />
                     </RuleWorkTooltip>
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip title={"Upload file"}>
                         <RuleWorkUpload
                             accept={".xml"}
@@ -378,16 +386,28 @@ class Rules extends Component {
                             </StyledButton>
                         </RuleWorkUpload>
                     </RuleWorkTooltip>
-                    <StyledDivider />
-                    <RuleWorkTooltip title={"Save file"}>
+                    <StyledDivider margin={16} />
+                    <RuleWorkTooltip title={"Save rules to RuleML"}>
                         <StyledButton
-                            aria-label={"rules-save-button"}
+                            aria-label={"rules-save-to-xml-button"}
                             disabled={!Boolean(data) || loading}
                             isIcon={true}
-                            onClick={this.onSaveFileClick}
+                            onClick={this.onSaveRulesToXMLClick}
                             themeVariant={"primary"}
                         >
                             <SaveIcon />
+                        </StyledButton>
+                    </RuleWorkTooltip>
+                    <StyledDivider margin={16} />
+                    <RuleWorkTooltip title={"Save rules to TXT"}>
+                        <StyledButton
+                            aria-label={"rules-save-to-txt-button"}
+                            disabled={!Boolean(data) || loading}
+                            isIcon={true}
+                            onClick={this.onSaveRulesToTXTClick}
+                            themeVariant={"primary"}
+                        >
+                            <SvgIcon><path d={mdiTextBox} /></SvgIcon>
                         </StyledButton>
                     </RuleWorkTooltip>
                     <span style={{flexGrow: 1}} />
@@ -400,21 +420,24 @@ class Rules extends Component {
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfRulesSelector
-                        id={"rules-rule-type-selector"}
-                        onChange={this.onTypeOfRulesChange}
-                        value={parameters.typeOfRules}
+                        TextFieldProps={{
+                            onChange: this.onTypeOfRulesChange,
+                            value: parameters.typeOfRules
+                        }}
                     />
                     <TypeOfUnionsSelector
-                        disabledChildren={["standard"]}
-                        id={"rules-union-type-selector"}
-                        onChange={this.onTypeOfUnionsChange}
-                        value={parameters.typeOfUnions}
+                        TextFieldProps={{
+                            disabledChildren: ["standard"],
+                            onChange: this.onTypeOfUnionsChange,
+                            value: parameters.typeOfUnions
+                        }}
+                        variant={"extended"}
                     />
                     <ThresholdSelector
-                        id={"rules-threshold-selector"}
                         keepChanges={parameters.typeOfRules !== 'possible'}
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}
+                        variant={"extended"}
                     />
                 </RuleWorkDrawer>
                 <TabBody

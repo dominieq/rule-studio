@@ -18,6 +18,13 @@ const useStyles = makeStyles(theme => ({
             color: theme.palette.button.secondary,
         },
     },
+    multiRow: {
+        display: "flex",
+        flexDirection: "column",
+        '& > *:not(:first-child)': {
+            marginTop: "1em"
+        }
+    },
     small: {
         height: 24,
         width: 24,
@@ -47,7 +54,7 @@ const useStyles = makeStyles(theme => ({
 function CircleHelper(props) {
     const [open, setOpen] = useState(false);
 
-    const { AvatarProps, children, size, title, TooltipProps, WrapperProps } = props;
+    const { AvatarProps, children, multiRow, size, title, TooltipProps, WrapperProps } = props;
     const classes =  useStyles();
 
     const onTooltipOpen = () => {
@@ -62,6 +69,7 @@ function CircleHelper(props) {
         <ClickAwayListener onClickAway={onTooltipClose}>
             <div id={"click-away-wrapper"} {...WrapperProps}>
                 <RuleWorkTooltip
+                    classes={multiRow ? {tooltip: classes.multiRow} : undefined}
                     disableFocusListener={true}
                     disableHoverListener={true}
                     disableTouchListener={true}
@@ -78,10 +86,7 @@ function CircleHelper(props) {
                         onClick={onTooltipOpen}
                         {...AvatarProps}
                     >
-                        <HelpCircle
-                            className={classes[size + "Icon"]}
-                            color={"inherit"}
-                        />
+                        <HelpCircle className={classes[size + "Icon"]} />
                     </Avatar>
                 </RuleWorkTooltip>
             </div>
@@ -93,13 +98,15 @@ function CircleHelper(props) {
 CircleHelper.propTypes = {
     AvatarProps: PropTypes.object,
     children: PropTypes.string,
+    multiRow: PropTypes.bool,
     size: PropTypes.oneOf(["small", "medium", "big"]),
-    title: PropTypes.string.isRequired,
+    title: PropTypes.node.isRequired,
     TooltipProps: PropTypes.object,
     WrapperProps: PropTypes.object,
 };
 
 CircleHelper.defaultProps = {
+    multiRow: false,
     size: "small",
     TooltipProps: {
         placement: "right"

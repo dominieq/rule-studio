@@ -2,16 +2,17 @@ function addSubheaders(subheaders, matrix) {
     let matrixWithSubheaders = [];
 
     if (subheaders && Array.isArray(matrix)) {
-        let numbers = Array.from(Array(subheaders.length + 1).keys());
+        let names = subheaders.map(domain => domain.evaluation.element);
+        names.unshift(0);
 
         matrixWithSubheaders = [
             ...matrixWithSubheaders,
-            numbers,
+            names,
             ...matrix.map(array => { return [...array]; })
         ];
 
         for (let i = 1; i < matrixWithSubheaders.length; i++) {
-            matrixWithSubheaders[i].unshift(numbers[i]);
+            matrixWithSubheaders[i].unshift(names[i]);
         }
     }
 

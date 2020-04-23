@@ -1,0 +1,15 @@
+.OuterWrapper {
+    align-items: center;
+    display: flex;
+    min-width: fit-content;
+    min-width: -moz-fit-content;
+}
+
+.InnerWrapper {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    min-width: fit-content;
+    min-width: -moz-fit-content;
+}

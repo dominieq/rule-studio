@@ -45,7 +45,7 @@ const buttonStyles = makeStyles(theme => ({
             "secondary": theme.palette.button.secondary
         })[props.themeVariant]
     },
-}), {name: "styled-button"});
+}), {name: "CustomButton"});
 
 function StyledButton(props) {
     const { className, isIcon, themeVariant, variant, ...other } = props;

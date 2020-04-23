@@ -44,6 +44,18 @@ class ClassificationDialog extends PureComponent {
         });
     };
 
+    getOriginalDecision = () => {
+        const {item: { id, traits: { attributes, objects } } } = this.props;
+
+        for (let i = 0; i < attributes.length; i++) {
+            if (attributes[i].type === "decision") {
+                return objects[id][attributes[i].name];
+            }
+        }
+
+        return "?"
+    }
+
     getClassificationTitle = () => {
         const { item } = this.props;
 
@@ -61,10 +73,21 @@ class ClassificationDialog extends PureComponent {
         const { itemInTableIndex, ruleTableHeight } = this.state;
         const { item, ruleSet, ...other } = this.props;
 
+        let originalDecision = this.getOriginalDecision();
+
         return (
             <RuleWorkDialog
                 onEnter={this.onEnter}
-                optional={"Suggested decision: " + item.traits.suggestedDecision}
+                optional={
+                    <React.Fragment>
+                        <span id={"original-decision"}>
+                            {"Original decision: " +  originalDecision}
+                        </span>
+                        <span id={"suggested-decision"}>
+                            {"Suggested decision: " + item.traits.suggestedDecision}
+                        </span>
+                    </React.Fragment>
+                }
                 title={this.getClassificationTitle()}
                 {...other}
             >
