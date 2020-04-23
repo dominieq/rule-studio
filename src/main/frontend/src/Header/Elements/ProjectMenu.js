@@ -1,10 +1,9 @@
 import React, { Fragment, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from "@material-ui/core/styles";
-import RuleWorkSmallBox from "../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import RuleWorkTooltip from "../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import StyledButton from "../RuleWorkComponents/Inputs/StyledButton";
-import StyledDivider from "../RuleWorkComponents/DataDisplay/StyledDivider";
+import RuleWorkTooltip from "../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
+import StyledButton from "../../RuleWorkComponents/Inputs/StyledButton";
+import StyledDivider from "../../RuleWorkComponents/DataDisplay/StyledDivider";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";
@@ -14,6 +13,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import RenameBox from "mdi-material-ui/RenameBox";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import {mdiCog} from "@mdi/js";
+import styles from "../styles/ProjectMenu.module.css";
 
 const menuStyles = makeStyles(theme => ({
     list: {
@@ -49,46 +49,8 @@ function ProjectMenu(props) {
         setAnchorE1(null);
     };
 
-    const renderProjectButtons = () => {
-        if (props.currentProject > 0) {
-            return (
-                <Fragment>
-                    <RuleWorkTooltip title={"Project settings"}>
-                        <StyledButton
-                            aria-label={"project-settings"}
-                            isIcon={true}
-                            onClick={() => props.onDialogOpen("settingsDialog")}
-                        >
-                            <SvgIcon><path d={mdiCog} /></SvgIcon>
-                        </StyledButton>
-                    </RuleWorkTooltip>
-                    <RuleWorkTooltip title={"Rename project"}>
-                        <StyledButton
-                            aria-label={"rename-project-button"}
-                            isIcon={true}
-                            onClick={() => props.onDialogOpen("renameDialog")}
-                        >
-                            <RenameBox />
-                        </StyledButton>
-                    </RuleWorkTooltip>
-                    <span style={{flexGrow: 1}} />
-                    <RuleWorkTooltip title={"Delete project"}>
-                        <StyledButton
-                            aria-label={"delete-project-button"}
-                            isIcon={true}
-                            onClick={() => props.onDialogOpen("deleteDialog")}>
-                            <DeleteIcon />
-                        </StyledButton>
-                    </RuleWorkTooltip>
-                </Fragment>
-            )
-        }  else {
-            return <span style={{flexGrow: 1}} />;
-        }
-    };
-
     return (
-        <RuleWorkSmallBox id={"project-menu"} style={{flexGrow: 1}}>
+        <div aria-label={"project-menu"} className={styles.Root}>
             <StyledDivider margin={16} />
             <List component={"nav"} disablePadding={true}>
                 <ListItem
@@ -148,9 +110,41 @@ function ProjectMenu(props) {
                     ))}
                 </Menu>
             }
-            {renderProjectButtons()}
+            {currentProject > 0 ?
+                <Fragment>
+                    <RuleWorkTooltip title={"Project settings"}>
+                        <StyledButton
+                            aria-label={"project-settings"}
+                            isIcon={true}
+                            onClick={() => props.onDialogOpen("settingsDialog")}
+                        >
+                            <SvgIcon><path d={mdiCog} /></SvgIcon>
+                        </StyledButton>
+                    </RuleWorkTooltip>
+                    <RuleWorkTooltip title={"Rename project"}>
+                        <StyledButton
+                            aria-label={"rename-project-button"}
+                            isIcon={true}
+                            onClick={() => props.onDialogOpen("renameDialog")}
+                        >
+                            <RenameBox />
+                        </StyledButton>
+                    </RuleWorkTooltip>
+                    <span style={{ flexGrow: 1 }} />
+                    <RuleWorkTooltip title={"Delete project"}>
+                        <StyledButton
+                            aria-label={"delete-project-button"}
+                            isIcon={true}
+                            onClick={() => props.onDialogOpen("deleteDialog")}>
+                            <DeleteIcon />
+                        </StyledButton>
+                    </RuleWorkTooltip>
+                </Fragment>
+                :
+                <span style={{ flexGrow: 1 }} />
+            }
             <StyledDivider margin={16} />
-        </RuleWorkSmallBox>
+        </div>
     );
 }
 
