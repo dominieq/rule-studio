@@ -101,7 +101,7 @@ public class RulesService {
     public static RuleSetWithCharacteristics calculateRuleSetWithCharacteristics(Unions unions, RuleType typeOfRules) {
         if((typeOfRules == RuleType.POSSIBLE) || (typeOfRules == RuleType.BOTH)) {
             if(!unions.getInformationTable().isSuitableForInductionOfPossibleRules()) {
-                NotSuitableForInductionOfPossibleRulesException ex = new NotSuitableForInductionOfPossibleRulesException("Creating possible rules is not possible - learning data contain missing attribute values that can lead to non-transitivity of dominance/indiscernibility relation");
+                NotSuitableForInductionOfPossibleRulesException ex = new NotSuitableForInductionOfPossibleRulesException("Creating possible rules is not possible - learning data contain missing attribute values that can lead to non-transitivity of dominance/indiscernibility relation.");
                 logger.error(ex.getMessage());
                 throw ex;
             }

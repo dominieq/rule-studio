@@ -36,9 +36,23 @@ public class RuleCharacteristicsSerializer extends JsonSerializer<RuleCharacteri
                 return;
             }
 
+            if((value instanceof Double) && (value.equals(Double.MAX_VALUE))) {
+                logger.info("Value of " + fieldName + " is unknown:\t" + value);
+                jsonGenerator.writeString("-");
+                return;
+            }
+
+            if((value instanceof Integer) && (value.equals(Integer.MIN_VALUE))) {
+                logger.info("Value of " + fieldName + " is unknown:\t" + value);
+                jsonGenerator.writeString("-");
+                return;
+            }
+
             jsonGenerator.writeRawValue(value.toString());
         } catch (UnknownValueException e) {
-            logger.debug(e.getMessage());
+            logger.error(e.getMessage());
+            jsonGenerator.writeFieldName(fieldName);
+            jsonGenerator.writeString("-");
         }
     }
 
