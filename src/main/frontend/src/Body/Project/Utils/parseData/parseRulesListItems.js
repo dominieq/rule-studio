@@ -1,15 +1,18 @@
-const getFixed = (number) => {
-
-    if (Number.isInteger(Number(number))) {
-        return Number(number);
-    } else {
-        let result = Number(number).toFixed(3);
-
-        if (Number.isInteger(Number(result))) {
-            return Number(number).toExponential(3);
+const getFixed = (value) => {
+    if (Number(value)) {
+        if (Number.isInteger(Number(value))) {
+            return Number(value);
         } else {
-            return Number(result);
+            let result = Number(value).toFixed(3);
+
+            if (Number.isInteger(Number(result))) {
+                return Number(value).toExponential(3);
+            } else {
+                return Number(result);
+            }
         }
+    } else {
+        return value;
     }
 };
 
