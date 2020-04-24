@@ -10,7 +10,7 @@ const labelStyles = makeStyles({
         minWidth: "fit-content",
         marginRight: 16
     }
-}, {name: "rule-work"});
+}, {name: "CustomInput"});
 
 const inputStyles = makeStyles(theme => ({
     root: {
@@ -39,7 +39,7 @@ const menuStyles = makeStyles(theme => ({
         backgroundColor: theme.palette.popper.background,
         color: theme.palette.popper.text,
     }
-}), {name: "MuiMenu"});
+}), {name: "CustomMenu"});
 
 function RuleWorkTextField(props) {
     const { children, disabledChildren, outsideLabel, select, ...other } = props;
