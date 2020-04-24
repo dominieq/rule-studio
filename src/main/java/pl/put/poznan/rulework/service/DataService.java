@@ -59,7 +59,7 @@ public class DataService {
             informationTable = objectParser.parseObjects(reader);
         } else {
             WrongParameterException ex = new WrongParameterException(String.format("Wrong file. Data should be a valid json or csv file."));
-            logger.error("Unrecognized format of data file:\t%s", dataFile.getContentType());
+            logger.error("Unrecognized format of data file:\t{}", dataFile.getContentType());
             throw ex;
         }
 
