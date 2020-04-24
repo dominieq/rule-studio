@@ -38,11 +38,12 @@ class ConesDialog extends PureComponent {
 
     getConesTitle = () => {
         const { item } = this.props;
+
         return (
             <ColouredTitle
                 text={[
                     { primary: "Selected item:" },
-                    { ...item.name }
+                    { ...item.name, brackets: false, }
                 ]}
             />
         );

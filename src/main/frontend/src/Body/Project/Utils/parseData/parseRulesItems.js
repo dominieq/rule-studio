@@ -13,14 +13,20 @@ function parseRulesItems(data) {
                     ...data.ruleSet[i].ruleCharacteristics
                 },
                 tables: {
-                    indicesOfCoveredObjects: data.ruleSet[i].indicesOfCoveredObjects.slice(),
+                    indicesOfCoveredObjects: Array.isArray(data.ruleSet[i].indicesOfCoveredObjects) ?
+                        data.ruleSet[i].indicesOfCoveredObjects.slice() : [],
                 },
                 toFilter() {
                     return [
                         this.name.decisionsToString().toLowerCase(),
                         ...this.name.conditions.map(condition => {
                             return condition.toString().toLowerCase()
-                        })
+                        }),
+                        "support " + this.traits["Support"],
+                        "strength " + this.traits["Strength"],
+                        "confidence " + this.traits["Confidence"],
+                        "coverage factor " + this.traits["Coverage factor"],
+                        "epsilon measure " + this.traits["Epsilon measure"]
                     ]
                 }
             });

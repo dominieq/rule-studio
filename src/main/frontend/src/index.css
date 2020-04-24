@@ -31,8 +31,3 @@ code {
     position: absolute;
     width: 100%;
 }
-
-.MuiPopover-root .MuiList-root {
-    background-color: #ABFAA9;
-    border: 1px solid #66FF66;
-}

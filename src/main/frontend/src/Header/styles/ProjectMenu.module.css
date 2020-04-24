@@ -1,0 +1,5 @@
+.Root {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+}

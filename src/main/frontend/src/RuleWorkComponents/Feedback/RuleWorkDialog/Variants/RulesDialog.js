@@ -35,15 +35,13 @@ class RulesDialog extends PureComponent {
             for (let j = 0; j < decisions[i].length; j++) {
                 if ( decisions[i].length > 1 ) {
                     and.push(
-                        { primary: "(" },
-                        { ...decisions[i][j] },
-                        { primary: ")" },
+                        { ...decisions[i][j], brackets: true, },
                     );
                     if ( j + 1 < decisions[i].length ) {
                         and.push({ secondary: "\u2227" });
                     }
                 } else {
-                    and.push({ ...decisions[i][j] });
+                    and.push({ ...decisions[i][j], brackets: false });
                 }
             }
             if ( decisions.length > 1 ) {
@@ -63,15 +61,13 @@ class RulesDialog extends PureComponent {
         for (let i = 0; i < conditions.length; i++) {
             if ( conditions.length > 1) {
                 titleConditions.push(
-                    { primary: "(" },
-                    { ...conditions[i] },
-                    { primary: ")" }
+                    { ...conditions[i], brackets: true },
                 );
                 if ( i + 1 < conditions.length) {
-                    titleConditions.push({ secondary: "\u2228" });
+                    titleConditions.push({ secondary: "\u2227" });
                 }
             } else {
-                titleConditions.push({ ...conditions[i] });
+                titleConditions.push({ ...conditions[i], brackets: false });
             }
         }
         return titleConditions;

@@ -11,7 +11,8 @@ class PutCrossValidation extends Component {
             typeOfRules: 'certain',
             typeOfClassifier: 'SimpleRuleClassifier',
             defaultClassificationResult: 'majorityDecisionClass',
-            numberOfFolds: 10
+            numberOfFolds: 10,
+            seed: 0
         }
     }
 
@@ -56,6 +57,12 @@ class PutCrossValidation extends Component {
             numberOfFolds: event.target.value
         })
     }
+    
+    handleSeedChange = (event) => {
+        this.setState({
+            seed: event.target.value
+        })
+    }
 
     putCrossValidation = (event) => {
         event.preventDefault();
@@ -67,6 +74,7 @@ class PutCrossValidation extends Component {
         formData.append('typeOfClassifier', this.state.typeOfClassifier)
         formData.append('defaultClassificationResult', this.state.defaultClassificationResult)
         formData.append('numberOfFolds', this.state.numberOfFolds)
+        formData.append('seed', this.state.seed)
 
         var link = `http://localhost:8080/projects/${this.state.id_projektu}/crossValidation`;
 
@@ -143,6 +151,8 @@ class PutCrossValidation extends Component {
                 </select>
                 numberOfFolds->
                 <input type='text' value={this.state.numberOfFolds} onChange={this.handleNumberOfFolds} />
+                seed->
+                <input type='text' value={this.state.seed} onChange={this.handleSeedChange} />
                 <button onClick={this.putCrossValidation}>putCrossValidation</button>
             </div>
         )

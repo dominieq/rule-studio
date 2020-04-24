@@ -1,18 +1,19 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { fetchClassification, parseClassificationParams } from "../Utils/fetchFunctions";
-import { parseClassificationItems, parseClassificationListItems, parseMatrixTraits } from "../Utils/parseData";
+import { downloadMatrix, fetchClassification, parseClassificationParams } from "../Utils/fetchFunctions";
+import { parseClassificationItems, parseClassificationListItems, parseMatrix } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
 import MatrixButton from "../Utils/Buttons/MatrixButton";
+import MatrixDownloadButton from "../Utils/Buttons/MatrixDownloadButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
-import MatrixDialog from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
+import { MatrixDialog } from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import { ClassificationDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog"
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
@@ -25,12 +26,11 @@ class Classification extends Component {
         super(props);
 
         this.state = {
-            changes: false,
-            updated: false,
             loading: false,
             data: null,
             items: null,
             displayedItems: [],
+            externalData: false,
             parameters: {
                 defaultClassificationResult: "majorityDecisionClass",
                 typeOfClassifier: "SimpleRuleClassifier",
@@ -48,50 +48,58 @@ class Classification extends Component {
         this.upperBar = React.createRef();
     }
 
-    componentDidMount() {
-        this._isMounted = true;
+    getClassification = () => {
         const { project } = this.props;
 
-        this.setState({
-            loading: true,
-        }, () => {
-            fetchClassification(
-                project.result.id, "GET", null, 404
-            ).then(result => {
-                if (result && this._isMounted) {
-                    const { project: { parametersSaved, settings } } = this.props;
+        fetchClassification(
+            project.result.id, "GET", null
+        ).then(result => {
+            if (result && this._isMounted) {
+                const { project: { parametersSaved, settings } } = this.props;
 
-                    const items = parseClassificationItems(result, settings);
-                    const resultParameters = parseClassificationParams(result);
+                const items = parseClassificationItems(result, settings);
+                const resultParameters = parseClassificationParams(result);
 
-                    this.setState(({parameters}) => ({
-                        data: result,
-                        items: items,
-                        displayedItems: items,
-                        parameters: { ...parameters, ...resultParameters },
-                        parametersSaved: parametersSaved
-                    }));
-                }
-            }).catch(error => {
-                if (this._isMounted) {
-                    this.setState({alertProps: error});
-                }
-            }).finally(() => {
-                if (this._isMounted) {
-                    const { parametersSaved } = this.state;
-                    const { project: { parameters: {
-                        defaultClassificationResult,
-                        typeOfClassifier
-                    }}} = this.props;
+                this.setState(({parameters}) => ({
+                    data: result,
+                    items: items,
+                    displayedItems: items,
+                    externalData: result.externalData,
+                    parameters: { ...parameters, ...resultParameters },
+                    parametersSaved: parametersSaved
+                }));
+            }
+        }).catch(error => {
+            if (this._isMounted) {
+                this.setState({
+                    data: null,
+                    items: null,
+                    displayedItems: [],
+                    selectedItem: null,
+                    alertProps: error
+                });
+            }
+        }).finally(() => {
+            if (this._isMounted) {
+                const { parametersSaved } = this.state;
+                const { project: { parameters: {
+                    defaultClassificationResult,
+                    typeOfClassifier
+                }}} = this.props;
 
-                    this.setState(({parameters}) => ({
-                        loading: false,
-                        parameters: parametersSaved ?
-                            parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier } }
-                    }));
-                }
-            });
+                this.setState(({parameters}) => ({
+                    loading: false,
+                    parameters: parametersSaved ?
+                        parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier } }
+                }));
+            }
         });
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+
+        this.setState({ loading: true }, this.getClassification);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -105,6 +113,10 @@ class Classification extends Component {
                 items: newItems,
                 displayedItems: newItems
             });
+        }
+
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            this.setState({ loading: true}, this.getClassification);
         }
     }
 
@@ -124,7 +136,6 @@ class Classification extends Component {
 
     onCalculateClick = (event) => {
         event.persist();
-        const externalFile = Boolean(event.target.files);
         let project = {...this.props.project};
         const { parameters: { defaultClassificationResult, typeOfClassifier } } = this.state;
 
@@ -145,7 +156,7 @@ class Classification extends Component {
             loading: true,
         }, () => {
             fetchClassification(
-                project.result.id, method, data, []
+                project.result.id, method, data
             ).then(result => {
                 if (result) {
                     project = {...this.props.project};
@@ -156,18 +167,22 @@ class Classification extends Component {
                             data: result,
                             items: items,
                             displayedItems: items,
+                            externalData: result.externalData,
                             parametersSaved: true,
                         });
                     }
 
                     project.result.classification = result;
-                    project.dataUpToDate = externalFile ? project.dataUpToDate : true;
-                    project.tabsUpToDate[this.props.value] = true;
+                    project.dataUpToDate = result.externalData ?
+                        project.dataUpToDate : true;
+                    project.tabsUpToDate[this.props.value] = result.externalData ?
+                        project.tabsUpToDate[this.props.value] : true;
+                    project.externalData = result.externalData;
 
                     const resultParameters = parseClassificationParams(result);
+
                     project.parameters = { ...project.parameters, ...resultParameters}
                     project.parametersSaved = true;
-
                     this.props.onTabChange(project);
                 }
             }).catch(error => {
@@ -179,6 +194,17 @@ class Classification extends Component {
                     this.setState({loading: false});
                 }
             });
+        });
+    };
+
+    onSaveToFile = () => {
+        const { project } = this.props;
+        let data = {typeOfMatrix: "classification"}
+
+        downloadMatrix( project.result.id, data ).catch(error => {
+            if (this._isMounted) {
+                this.setState({ alertProps: error });
+            }
         });
     };
 
@@ -251,7 +277,7 @@ class Classification extends Component {
                         onClick={() => this.toggleOpen("settings")}
                         title={"Click to select parameters"}
                     />
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkButtonGroup
                         id={"classification-button-group"}
                         options={["Classify current data", "Choose new data & classify"]}
@@ -294,14 +320,16 @@ class Classification extends Component {
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfClassifierSelector
-                        id={"classification-classifier-type-selector"}
-                        onChange={this.onClassifierTypeChange}
-                        value={parameters.typeOfClassifier}
+                        TextFieldProps={{
+                            onChange: this.onClassifierTypeChange,
+                            value: parameters.typeOfClassifier
+                        }}
                     />
                     <DefaultClassificationResultSelector
-                        id={"classification-default-classification-result-selector"}
-                        onChange={this.onDefaultClassificationResultChange}
-                        value={parameters.defaultClassificationResult}
+                        TextFieldProps={{
+                            onChange: this.onDefaultClassificationResultChange,
+                            value: parameters.defaultClassificationResult
+                        }}
                     />
                 </RuleWorkDrawer>
                 <TabBody
@@ -330,10 +358,22 @@ class Classification extends Component {
                 }
                 {data &&
                     <MatrixDialog
-                        matrix={parseMatrixTraits(data.ordinalMisclassificationMatrix)}
+                        matrix={parseMatrix(data.ordinalMisclassificationMatrix)}
                         onClose={() => this.toggleOpen("matrix")}
                         open={open.matrix}
-                        title={"Ordinal misclassification matrix and it's details"}
+                        subheaders={data.decisionsDomain}
+                        saveMatrix={this.onSaveToFile}
+                        title={
+                            <React.Fragment>
+                                <MatrixDownloadButton
+                                    onSave={this.onSaveToFile}
+                                    tooltip={"Download matrix (txt)"}
+                                />
+                                <span aria-label={"matrix title"} style={{paddingLeft: 8}}>
+                                    Ordinal misclassification matrix and details
+                                </span>
+                            </React.Fragment>
+                        }
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />

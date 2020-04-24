@@ -4,12 +4,15 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import org.rulelearn.data.Attribute;
+import org.rulelearn.data.InformationTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.jackson.JsonComponent;
 import pl.put.poznan.rulework.model.Project;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 @JsonComponent
 public class ProjectSerializer extends JsonSerializer<Project> {
@@ -31,7 +34,12 @@ public class ProjectSerializer extends JsonSerializer<Project> {
         jsonGenerator.writeString(project.getName());
 
         jsonGenerator.writeFieldName("informationTable");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getInformationTable()));
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            jsonGenerator.writeRawValue(mapper.writeValueAsString(new InformationTable(new Attribute[0], new ArrayList<>())));
+        } else {
+            jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getInformationTable()));
+        }
 
         jsonGenerator.writeFieldName("dominanceCones");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getDominanceCones()));

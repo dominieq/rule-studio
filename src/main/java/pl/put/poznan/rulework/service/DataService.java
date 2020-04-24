@@ -15,12 +15,15 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.exception.NoDataException;
 import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,7 +36,12 @@ public class DataService {
 
     public static InformationTable informationTableFromMultipartFileData(MultipartFile dataFile, Attribute[] attributes, Character separator, Boolean header) throws IOException {
         Reader reader;
-        InformationTable informationTable =  new InformationTable(new Attribute[0], new ArrayList<>());
+        InformationTable informationTable = new InformationTable(new Attribute[0], new ArrayList<>());
+        List<String> csvMimeType = Arrays.asList(
+                "text/csv",
+                "application/vnd.ms-excel",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
 
         if (dataFile.getContentType().equals("application/json")) {
             logger.info("Data type is json");
@@ -41,8 +49,8 @@ public class DataService {
             reader = new InputStreamReader(dataFile.getInputStream());
             informationTable = objectParser.parseObjects(reader);
 
-        } else if (dataFile.getContentType().equals("application/vnd.ms-excel")) {
-            logger.info("Data type is csv");
+        } else if (csvMimeType.contains(dataFile.getContentType())) {
+            logger.info("Data type is csv (" + dataFile.getContentType() + ")");
             org.rulelearn.data.csv.ObjectParser objectParser = new org.rulelearn.data.csv.ObjectParser.Builder(attributes).
                     separator(separator).
                     header(header).
@@ -50,8 +58,8 @@ public class DataService {
             reader = new InputStreamReader(dataFile.getInputStream());
             informationTable = objectParser.parseObjects(reader);
         } else {
-            WrongParameterException ex = new WrongParameterException(String.format("Unrecognized format of data file:\t%s", dataFile.getContentType()));
-            logger.error(ex.getMessage());
+            WrongParameterException ex = new WrongParameterException(String.format("Wrong file. Data should be a valid json or csv file."));
+            logger.error("Unrecognized format of data file:\t%s", dataFile.getContentType());
             throw ex;
         }
 
@@ -102,8 +110,15 @@ public class DataService {
 
         StringWriter objectsWriter = new StringWriter();
         InformationTableWriter itw = new InformationTableWriter(false);
-        itw.writeObjects(project.getInformationTable(), objectsWriter);
 
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no objects in project. Couldn't get them.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        itw.writeObjects(informationTable, objectsWriter);
 
         return objectsWriter.toString();
     }
@@ -114,11 +129,18 @@ public class DataService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        Attribute[] attributes = project.getInformationTable().getAttributes();
-        InformationTable informationTable = informationTableFromStringData(data, attributes);
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no metadata in project. Couldn't pass new data.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
 
-        project.setInformationTable(informationTable);
-        logger.info(project.toString());
+        Attribute[] attributes = informationTable.getAttributes();
+        InformationTable newInformationTable = informationTableFromStringData(data, attributes);
+
+        project.setInformationTable(newInformationTable);
+        logger.debug(project.toString());
 
         return project;
     }
@@ -153,7 +175,14 @@ public class DataService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InputStreamResource resource = produceJsonResource(project.getInformationTable());
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no data in project. Couldn't download objects.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        InputStreamResource resource = produceJsonResource(informationTable);
 
         return new Pair<>(project.getName(), resource);
     }
@@ -166,7 +195,14 @@ public class DataService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InputStreamResource resource = produceCsvResource(project.getInformationTable(), separator, header);
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no data in project. Couldn't download objects.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        InputStreamResource resource = produceCsvResource(informationTable, separator, header);
 
         return new Pair<>(project.getName(), resource);
     }

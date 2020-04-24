@@ -42,48 +42,76 @@ class Unions extends Component {
         this.upperBar = React.createRef();
     }
 
+    getUnions = () => {
+        const { project } = this.props;
+
+        fetchUnions(
+            project.result.id, "GET", null
+        ).then(result => {
+            if (this._isMounted && result) {
+                const items = parseUnionsItems(result);
+                const { project: { parametersSaved } } = this.props;
+
+                this.setState({
+                    data: result,
+                    items: items,
+                    displayedItems: items,
+                    parameters: {
+                        consistencyThreshold: result.consistencyThreshold,
+                        typeOfUnions: result.typeOfUnions.toLowerCase()
+                    },
+                    parametersSaved: parametersSaved
+                });
+            }
+        }).catch(error => {
+            if (this._isMounted) {
+                this.setState({
+                    data: null,
+                    items: null,
+                    displayedItems: [],
+                    selectedItems: null,
+                    alertProps: error
+                });
+            }
+        }).finally(() => {
+            if (this._isMounted) {
+                const { parametersSaved } = this.state;
+                const { project: { parameters: { consistencyThreshold, typeOfUnions } } } = this.props;
+
+                this.setState(({parameters}) => ({
+                    loading: false,
+                    parameters: parametersSaved ?
+                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfUnions } }
+                }));
+            }
+        });
+    };
+
     componentDidMount() {
         this._isMounted = true;
-        const project = {...this.props.project};
 
-        this.setState({
-            loading: true,
-        }, () => {
-            fetchUnions(
-                project.result.id, "GET", null, 404
-            ).then(result => {
-                if (this._isMounted && result) {
-                    const items = parseUnionsItems(result);
-                    const { project: { parametersSaved } } = this.props;
+        this.setState({ loading: true }, this.getUnions);
+    }
 
-                    this.setState({
-                        data: result,
-                        items: items,
-                        displayedItems: items,
-                        parameters: {
-                            consistencyThreshold: result.consistencyThreshold,
-                            typeOfUnions: result.typeOfUnions.toLowerCase()
-                        },
-                        parametersSaved: parametersSaved
-                    });
-                }
-            }).catch(error => {
-                if (this._isMounted) {
-                    this.setState({alertProps: error})
-                }
-            }).finally(() => {
-                if (this._isMounted) {
-                    const { parametersSaved } = this.state;
-                    const { project: { parameters: { consistencyThreshold, typeOfUnions } } } = this.props;
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { parameters: prevParameters } = prevState;
+        const { parameters } = this.state;
 
-                    this.setState(({parameters}) => ({
-                        loading: false,
-                        parameters: parametersSaved ?
-                            parameters : { ...parameters, ...{ consistencyThreshold, typeOfUnions } }
-                    }));
-                }
-            });
-        });
+        if ( prevParameters.typeOfUnions !== parameters.typeOfUnions) {
+            if ( parameters.typeOfUnions === "monotonic" && parameters.consistencyThreshold === 1) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 0}
+                }));
+            } else if ( parameters.typeOfUnions === "standard" && parameters.consistencyThreshold === 0) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 1}
+                }));
+            }
+        }
+
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            this.setState({ loading: true }, this.getUnions);
+        }
     }
 
     componentWillUnmount() {
@@ -232,7 +260,7 @@ class Unions extends Component {
                         onClick={() => this.toggleOpen("settings")}
                         title={"Click to choose consistency & type of unions"}
                     />
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip
                         title={`Calculate with threshold ${parameters.consistencyThreshold} 
                         & ${parameters.typeOfUnions} unions`}
@@ -253,12 +281,12 @@ class Unions extends Component {
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfUnionsSelector
-                        id={"unions-union-type-selector"}
-                        onChange={this.onTypeOfUnionsChange}
-                        value={parameters.typeOfUnions}
+                        TextFieldProps={{
+                            onChange: this.onTypeOfUnionsChange,
+                            value: parameters.typeOfUnions
+                        }}
                     />
                     <ThresholdSelector
-                        id={"unions-threshold-selector"}
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}
                     />

@@ -1,39 +1,44 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {makeStyles} from "@material-ui/core/styles";
+import clsx from "clsx";
+import { makeStyles } from "@material-ui/core/styles";
+import { mergeClasses } from "../utilFunctions";
 import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles(theme => ({
     tooltip: {
-        backgroundColor: theme.palette.paper.text,
-        border: "1px solid",
-        borderColor: theme.palette.background.default,
-        color: theme.palette.background.default,
+        backgroundColor: theme.palette.popper.background,
+        boxShadow: theme.shadows[6],
+        color: theme.palette.popper.text,
+    },
+    arrow: {
+        color: theme.palette.popper.background
     },
     wrapper: {
 
     }
-}), {name: "custom-tooltip"});
+}), {name: "CustomTooltip"});
 
 function DefaultElement(props, ref) {
-    const {children, ...other} = props;
-
-    return (
-        <div ref={ref} {...other}>
-            {children}
-        </div>
-    )
+    const { children, component, ...other } = props;
+    return React.createElement(component, {ref, ...other}, children)
 }
 
 const DefaultForwardRef = React.forwardRef(DefaultElement);
 
 function RuleWorkTooltip(props) {
-    const {children, classes: propsClasses, ...other} = props;
-    const classes = {...useStyles(), ...propsClasses};
+    const { children,  classes: propsClasses, className, WrapperComponent, WrapperProps, ...other } = props;
+    let classes = useStyles();
+
+    if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
-        <Tooltip classes={{tooltip: classes.tooltip}} {...other}>
-            <DefaultForwardRef className={classes.wrapper}>
+        <Tooltip classes={{tooltip: classes.tooltip, arrow: classes.arrow}} {...other}>
+            <DefaultForwardRef
+                className={clsx(classes.wrapper, className)}
+                component={WrapperComponent}
+                {...WrapperProps}
+            >
                 {children}
             </DefaultForwardRef>
         </Tooltip>
@@ -44,6 +49,7 @@ RuleWorkTooltip.propTypes = {
     arrow: PropTypes.bool,
     children: PropTypes.node,
     classes: PropTypes.object,
+    className: PropTypes.string,
     disableFocusListener: PropTypes.bool,
     disableHoverListener: PropTypes.bool,
     disableTouchListener: PropTypes.bool,
@@ -75,6 +81,12 @@ RuleWorkTooltip.propTypes = {
     title: PropTypes.node.isRequired,
     TransitionComponent: PropTypes.elementType,
     TransitionProps: PropTypes.object,
+    WrapperComponent: PropTypes.elementType,
+    WrapperProps: PropTypes.object
+};
+
+RuleWorkTooltip.defaultProps = {
+    WrapperComponent: 'div'
 };
 
 export default RuleWorkTooltip;

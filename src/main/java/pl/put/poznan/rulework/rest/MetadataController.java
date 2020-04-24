@@ -36,8 +36,6 @@ public class MetadataController {
             @PathVariable("id") UUID id) {
         logger.info("Getting metadata");
         Attribute[] result = metadataService.getMetadata(id);
-
-        logger.info(result.toString());
         return ResponseEntity.ok(result);
     }
 
@@ -58,7 +56,7 @@ public class MetadataController {
         String projectName = p.getKey();
         Resource resource = p.getValue();
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_metadata.json")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " metadata.json")
                 .body(resource);
     }
 
@@ -71,7 +69,7 @@ public class MetadataController {
         String projectName = p.getKey();
         Resource resource = p.getValue();
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_metadata.json")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " metadata.json")
                 .body(resource);
     }
 }

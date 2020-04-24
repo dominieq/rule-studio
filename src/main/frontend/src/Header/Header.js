@@ -22,18 +22,18 @@ function Header(props) {
     return (
         <AppBar classes={{colorPrimary: classes.colorPrimary}} position={"relative"}>
             <Toolbar>
-                <StyledButton color={"inherit"} isIcon={true} onClick={() => onBodyChange("Home")}>
+                <StyledButton color={"inherit"} isIcon={true} name={"home"} onClick={() => onBodyChange("Home")}>
                     <HomeIcon />
                 </StyledButton>
-                <StyledButton onClick={() => onBodyChange("Import")}>
+                <StyledButton name={"new project"} onClick={() => onBodyChange("Import")}>
                     New Project
                 </StyledButton>
                 {children}
-                <StyledButton onClick={() => onBodyChange("Help")}>
+                <StyledButton name={"help"} onClick={() => onBodyChange("Help")}>
                     Help
                 </StyledButton>
                 <RuleWorkTooltip title={"Change colors"}>
-                    <StyledButton color={"inherit"} isIcon={true} onClick={onColorsChange}>
+                    <StyledButton color={"inherit"} isIcon={true} name={"change colors"} onClick={onColorsChange}>
                         <Palette />
                     </StyledButton>
                 </RuleWorkTooltip>

@@ -4,6 +4,7 @@ function parseCrossValidationFolds(data) {
         for (let i = 0; i < data.numberOfFolds; i++) {
             folds.push({
                 index: i,
+                numberOfTestObjects: data.crossValidationSingleFolds[i].validationTable.objects.length,
                 ...data.crossValidationSingleFolds[i]
             });
         }

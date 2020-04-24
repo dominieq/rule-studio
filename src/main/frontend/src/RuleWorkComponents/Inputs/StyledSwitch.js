@@ -1,17 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import { mergeClasses } from "../utilFunctions";
 import Switch from "@material-ui/core/Switch";
 
 const switchStyles = makeStyles(theme => ({
     root: {
+        height: 18,
+        marginRight: 8,
+        padding: 0,
         width: 34,
-        height: 20,
-        padding: "0 0 2px",
-        margin: "8px 8px 8px 0",
     },
     switchBase: {
-        padding: 1,
+        padding: 0,
         '&$checked': {
             transform: 'translateX(16px)',
             '& + $track': {
@@ -43,7 +44,9 @@ const switchStyles = makeStyles(theme => ({
 
 export function StyledSwitch(props) {
     const {classes: propsClasses, ...other} = props;
-    const classes = {...switchStyles(), ...propsClasses};
+    let classes = switchStyles();
+
+    if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
         <Switch

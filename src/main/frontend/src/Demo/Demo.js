@@ -9,6 +9,7 @@ import DemoImposePreferenceOrder from './DemoImposePreferenceOrder'
 import DemoRules from './DemoRules'
 import DemoClassification from './DemoClassification'
 import DemoCrossValidation from './DemoCrossValidation'
+import DemoMisclassificationMatrix from './DemoMisclassificationMatrix'
 
 class Demo extends Component {
 
@@ -25,6 +26,7 @@ class Demo extends Component {
                 <DemoRules></DemoRules>
                 <DemoClassification></DemoClassification>
                 <DemoCrossValidation></DemoCrossValidation>
+                <DemoMisclassificationMatrix></DemoMisclassificationMatrix>
             </div>
         )
     }

@@ -19,8 +19,10 @@ import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import SvgIcon from "@material-ui/core/SvgIcon";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
+import { mdiTextBox } from '@mdi/js';
 
 class Rules extends Component {
     constructor(props) {
@@ -48,52 +50,86 @@ class Rules extends Component {
         this.upperBar = React.createRef();
     }
 
-    componentDidMount() {
-        this._isMounted = true;
+    getRules = () => {
         const { project } = this.props;
 
-        this.setState({
-            loading: true,
-        }, () => {
-            fetchRules(
-                project.result.id, "GET", null, 404
-            ).then(result => {
-                if (result && this._isMounted) {
-                    const { project: { externalRules, parametersSaved } } = this.props;
+        fetchRules(
+            project.result.id, "GET", null
+        ).then(result => {
+            if (result && this._isMounted) {
+                const { project: { parametersSaved } } = this.props;
 
-                    const items = parseRulesItems(result);
-                    const resultParameters = parseRulesParams(result);
+                const items = parseRulesItems(result);
+                const resultParameters = parseRulesParams(result);
 
-                    this.setState(({parameters}) => ({
-                        data: result,
-                        items: items,
-                        displayedItems: items,
-                        externalRules: externalRules,
-                        parameters: { ...parameters, ...resultParameters},
-                        parametersSaved: parametersSaved
-                    }));
-                }
-            }).catch(error => {
-                if (this._isMounted) {
-                    this.setState({alertProps: error});
-                }
-            }).finally(() => {
-                if (this._isMounted) {
-                    const { parametersSaved } = this.state;
-                    const { project: { parameters: {
-                        consistencyThreshold,
-                        typeOfRules,
-                        typeOfUnions
-                    }}} = this.props;
+                this.setState(({parameters}) => ({
+                    data: result,
+                    items: items,
+                    displayedItems: items,
+                    externalRules: result.externalRules,
+                    parameters: { ...parameters, ...resultParameters},
+                    parametersSaved: parametersSaved
+                }));
+            }
+        }).catch(error => {
+            if (this._isMounted) {
+                this.setState({
+                    data: null,
+                    items: null,
+                    displayedItems: [],
+                    selectedItem: null,
+                    alertProps: error
+                });
+            }
+        }).finally(() => {
+            if (this._isMounted) {
+                const { parametersSaved } = this.state;
+                const { project: { parameters: {
+                    consistencyThreshold,
+                    typeOfRules,
+                    typeOfUnions
+                }}} = this.props;
 
-                    this.setState(({parameters}) => ({
-                        loading: false,
-                        parameters: parametersSaved ?
-                            parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules, typeOfUnions } }
-                    }));
-                }
-            });
+                this.setState(({parameters}) => ({
+                    loading: false,
+                    parameters: parametersSaved ?
+                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules, typeOfUnions } }
+                }));
+            }
         });
+    };
+
+    componentDidMount() {
+        this._isMounted = true;
+
+        this.setState({ loading: true }, this.getRules);
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { parameters: prevParameters } = prevState;
+        const { parameters } = this.state;
+
+        if (parameters.typeOfUnions !== 'monotonic') {
+            if (parameters.consistencyThreshold === 1) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 0, typeOfUnions: "monotonic" }
+                }));
+            } else {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, typeOfUnions: "monotonic" }
+                }));
+            }
+        }
+
+        if  (parameters.typeOfRules !== prevParameters.typeOfRules && parameters.typeOfRules === "possible") {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, consistencyThreshold: 0 }
+            }));
+        }
+
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            this.setState({ loading: true }, this.getRules);
+        }
     }
 
     componentWillUnmount() {
@@ -104,7 +140,11 @@ class Rules extends Component {
             const { parameters } = this.state;
             let project = {...this.props.project};
 
-            project.parameters = { ...project.parameters, ...parameters };
+            project.parameters = {
+                ...project.parameters,
+                consistencyThreshold: parameters.consistencyThreshold,
+                typeOfRules: parameters.typeOfRules
+            };
             project.parametersSaved = parametersSaved;
             this.props.onTabChange(project);
         }
@@ -137,26 +177,26 @@ class Rules extends Component {
                         const items = parseRulesItems(result);
 
                         this.setState({
-                            externalRules: false,
                             data: result,
                             items: items,
                             displayedItems: items,
+                            externalRules: result.externalRules,
                             parametersSaved: true,
                         });
                     }
 
                     project.result.rules = result;
                     project.dataUpToDate = true;
-
-                    let nand = !(project.result.classification && project.externalRules);
                     project.tabsUpToDate[this.props.value] = true;
-                    project.tabsUpToDate[this.props.value + 1] = project.tabsUpToDate[this.props.value + 1] && nand;
-
-                    project.externalRules = false;
+                    project.externalRules = result.externalRules;
 
                     const newParameters = parseRulesParams(result);
 
-                    project.parameters = { ...project.parameters, ...newParameters };
+                    project.parameters = {
+                        ...project.parameters,
+                        consistencyThreshold: newParameters.consistencyThreshold,
+                        typeOfRules: newParameters.typeOfRules
+                    };
                     project.parametersSaved = true;
                     this.props.onTabChange(project);
                 }
@@ -193,14 +233,12 @@ class Rules extends Component {
                                 data: result,
                                 items: items,
                                 displayedItems: items,
-                                externalRules: true,
+                                externalRules: result.rules.externalRules,
                             });
                         }
 
                         project.result.rules = result.rules;
-                        project.externalRules = true;
-                        project.tabsUpToDate[this.props.value] = null;
-                        project.tabsUpToDate[this.props.value + 1] = !project.result.classification;
+                        project.externalRules = result.rules.externalRules;
                         this.props.onTabChange(project);
                     }
                 }).catch(error => {
@@ -216,12 +254,24 @@ class Rules extends Component {
         }
     };
 
-    onSaveFileClick = () => {
+    onSaveRulesToXMLClick = () => {
         const { project } = this.props;
+        let data = { format: "xml" };
 
-        downloadRules( project.result.id ).catch(error => {
+        downloadRules( project.result.id, data ).catch(error => {
             if (this._isMounted) {
                 this.setState({alertProps: error});
+            }
+        });
+    };
+
+    onSaveRulesToTXTClick = () => {
+        const { project } = this.props;
+        let data = { format: "txt" };
+
+        downloadRules( project.result.id, data ).catch(error => {
+            if (this._isMounted) {
+                this.setState({ alertProps: error });
             }
         });
     };
@@ -307,7 +357,7 @@ class Rules extends Component {
                         onClick={() => this.toggleOpen("settings")}
                         title={"Click to choose consistency threshold, type of unions & rules"}
                     />
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip
                         title={`Calculate with consistency threshold ${parameters.consistencyThreshold}`}
                     >
@@ -317,7 +367,7 @@ class Rules extends Component {
                             onClick={this.onCalculateClick}
                         />
                     </RuleWorkTooltip>
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip title={"Upload file"}>
                         <RuleWorkUpload
                             accept={".xml"}
@@ -330,20 +380,34 @@ class Rules extends Component {
                                 disabled={loading}
                                 isIcon={true}
                                 component={"span"}
+                                themeVariant={"primary"}
                             >
                                 <CloudUploadIcon />
                             </StyledButton>
                         </RuleWorkUpload>
                     </RuleWorkTooltip>
-                    <StyledDivider />
-                    <RuleWorkTooltip title={"Save file"}>
+                    <StyledDivider margin={16} />
+                    <RuleWorkTooltip title={"Save rules to RuleML"}>
                         <StyledButton
-                            aria-label={"rules-save-button"}
+                            aria-label={"rules-save-to-xml-button"}
                             disabled={!Boolean(data) || loading}
                             isIcon={true}
-                            onClick={this.onSaveFileClick}
+                            onClick={this.onSaveRulesToXMLClick}
+                            themeVariant={"primary"}
                         >
                             <SaveIcon />
+                        </StyledButton>
+                    </RuleWorkTooltip>
+                    <StyledDivider margin={16} />
+                    <RuleWorkTooltip title={"Save rules to TXT"}>
+                        <StyledButton
+                            aria-label={"rules-save-to-txt-button"}
+                            disabled={!Boolean(data) || loading}
+                            isIcon={true}
+                            onClick={this.onSaveRulesToTXTClick}
+                            themeVariant={"primary"}
+                        >
+                            <SvgIcon><path d={mdiTextBox} /></SvgIcon>
                         </StyledButton>
                     </RuleWorkTooltip>
                     <span style={{flexGrow: 1}} />
@@ -356,19 +420,24 @@ class Rules extends Component {
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfRulesSelector
-                        id={"rules-rule-type-selector"}
-                        onChange={this.onTypeOfRulesChange}
-                        value={parameters.typeOfRules}
+                        TextFieldProps={{
+                            onChange: this.onTypeOfRulesChange,
+                            value: parameters.typeOfRules
+                        }}
                     />
                     <TypeOfUnionsSelector
-                        id={"rules-union-type-selector"}
-                        onChange={this.onTypeOfUnionsChange}
-                        value={parameters.typeOfUnions}
+                        TextFieldProps={{
+                            disabledChildren: ["standard"],
+                            onChange: this.onTypeOfUnionsChange,
+                            value: parameters.typeOfUnions
+                        }}
+                        variant={"extended"}
                     />
                     <ThresholdSelector
-                        id={"rules-threshold-selector"}
+                        keepChanges={parameters.typeOfRules !== 'possible'}
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}
+                        variant={"extended"}
                     />
                 </RuleWorkDrawer>
                 <TabBody

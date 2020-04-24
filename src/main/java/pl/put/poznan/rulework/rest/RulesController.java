@@ -10,7 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulework.enums.RuleType;
+import pl.put.poznan.rulework.enums.RulesFormat;
 import pl.put.poznan.rulework.enums.UnionType;
+import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.RulesWithHttpParameters;
 import pl.put.poznan.rulework.service.RulesService;
 
@@ -65,16 +67,31 @@ public class RulesController {
         return ResponseEntity.ok(result);
     }
 
-    @RequestMapping(value = "/download", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(value = "/download", method = RequestMethod.GET)
     public ResponseEntity<Resource> download(
-            @PathVariable("id") UUID id) throws IOException {
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "format") RulesFormat rulesFormat) throws IOException {
         logger.info("Downloading file");
-        Pair<String, Resource> p = rulesService.download(id);
+        Pair<String, Resource> p = rulesService.download(id, rulesFormat);
         String projectName = p.getKey();
         Resource resource = p.getValue();
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + "_rules.xml")
-                .body(resource);
+
+        switch (rulesFormat) {
+            case XML:
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " rules.xml")
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_XML_VALUE)
+                        .body(resource);
+            case TXT:
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " rules.txt")
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
+                        .body(resource);
+            default:
+                WrongParameterException ex = new WrongParameterException(String.format("Given format of rules \"%s\" is unrecognized.", rulesFormat));
+                logger.error(ex.getMessage());
+                throw ex;
+        }
     }
 
     @RequestMapping(value = "/arePossibleRulesAllowed", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

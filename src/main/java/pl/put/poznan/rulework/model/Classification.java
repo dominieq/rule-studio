@@ -18,6 +18,7 @@ public class Classification {
     private OrdinalMisclassificationMatrix ordinalMisclassificationMatrix;
     private ClassifierType typeOfClassifier;
     private DefaultClassificationResultType defaultClassificationResult;
+    private boolean externalData;
 
     public Classification(ClassificationResult[] simpleClassificationResults, InformationTable informationTable) {
         this.classificationResults = simpleClassificationResults;
@@ -40,6 +41,7 @@ public class Classification {
         this.ordinalMisclassificationMatrix = ordinalMisclassificationMatrix;
         this.typeOfClassifier = typeOfClassifier;
         this.defaultClassificationResult = defaultClassificationResult;
+        this.externalData = false;
     }
 
     public ClassificationResult[] getClassificationResults() {
@@ -98,6 +100,14 @@ public class Classification {
         this.defaultClassificationResult = defaultClassificationResult;
     }
 
+    public boolean isExternalData() {
+        return externalData;
+    }
+
+    public void setExternalData(boolean externalData) {
+        this.externalData = externalData;
+    }
+
     @Override
     public String toString() {
         return "Classification{" +
@@ -108,6 +118,7 @@ public class Classification {
                 ", ordinalMisclassificationMatrix=" + ordinalMisclassificationMatrix +
                 ", typeOfClassifier=" + typeOfClassifier +
                 ", defaultClassificationResult=" + defaultClassificationResult +
+                ", externalData=" + externalData +
                 '}';
     }
 }

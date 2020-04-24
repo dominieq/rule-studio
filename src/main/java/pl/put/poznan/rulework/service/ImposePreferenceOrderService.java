@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.put.poznan.rulework.exception.EmptyResponseException;
+import pl.put.poznan.rulework.exception.NoDataException;
 import pl.put.poznan.rulework.model.DominanceCones;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
@@ -27,7 +28,14 @@ public class ImposePreferenceOrderService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = project.getInformationTable().imposePreferenceOrders(binarizeNominalAttributesWith3PlusValues);
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no data in project. Couldn't perform operation.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        informationTable = informationTable.imposePreferenceOrders(binarizeNominalAttributesWith3PlusValues);
 
         logger.debug("InformationTable:\t{}", informationTable);
         return informationTable;

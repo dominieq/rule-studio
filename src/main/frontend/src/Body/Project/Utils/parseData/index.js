@@ -1,3 +1,4 @@
+export {default as addSubheaders} from "./utilFunctions/addSubheaders";
 export {default as getItemName} from "./utilFunctions/getItemName";
 export {default as getRuleName} from "./utilFunctions/getRuleName";
 export {default as getRelationSign} from "./utilFunctions/getRelationSign";
@@ -8,7 +9,7 @@ export {default as parseConesListItems} from "./parseConesListItems";
 export {default as parseCrossValidationFolds} from "./parseCrossValidationFolds";
 export {default as parseCrossValidationItems} from "./parseCrossValidationItems";
 export {default as parseCrossValidationListItems} from "./parseCrossValidationListItems";
-export {default as parseMatrixTraits} from "./parseMatrixTraits";
+export {default as parseMatrix} from "./parseMatrix";
 export {default as parseRulesItems} from "./parseRulesItems";
 export {default as parseRulesListItems} from "./parseRulesListItems";
 export {default as parseUnionsItems} from "./parseUnionsItems";

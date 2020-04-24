@@ -34,20 +34,19 @@ const inputStyles = makeStyles(theme => ({
     },
 }), {name: "MuiOutlinedInput"});
 
-const selectStyles = makeStyles({
-    selectMenu: {
-        '&:hover': {
-            overflow: "visible"
-        }
+const menuStyles = makeStyles(theme => ({
+    list: {
+        backgroundColor: theme.palette.popper.background,
+        color: theme.palette.popper.text,
     }
-});
+}), {name: "MuiMenu"});
 
 function RuleWorkTextField(props) {
     const { children, disabledChildren, outsideLabel, select, ...other } = props;
     const { InputProps, OutsideLabelProps, SelectProps } = props;
     const inputClasses = inputStyles();
     const labelClasses = labelStyles();
-    const selectClasses = selectStyles();
+    const menuClasses = menuStyles();
 
     const renderMenuItems = () => {
         if (Array.isArray(children) && children.length) {
@@ -84,7 +83,7 @@ function RuleWorkTextField(props) {
                 select={select}
                 SelectProps={{
                     ...SelectProps,
-                    classes: {selectMenu: selectClasses.selectMenu}
+                    MenuProps: {classes: {list: menuClasses.list}}
                 }}
                 {...other}
             >

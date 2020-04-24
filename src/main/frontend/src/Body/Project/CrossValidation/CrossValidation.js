@@ -1,31 +1,36 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { createFormData, fetchCrossValidation, parseCrossValidationParams } from "../Utils/fetchFunctions";
+import { createFormData, downloadMatrix, fetchCrossValidation, parseCrossValidationParams } from "../Utils/fetchFunctions";
 import { parseCrossValidationFolds, parseCrossValidationItems, parseCrossValidationListItems } from "../Utils/parseData";
-import { parseMatrixTraits } from "../Utils/parseData";
+import { parseMatrix } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
 import MatrixButton from "../Utils/Buttons/MatrixButton";
+import MatrixDownloadButton from "../Utils/Buttons/MatrixDownloadButton";
+import MatrixSwapButton from "../Utils/Buttons/MatrixSwapButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
+import NumberOfFoldsSelector from "../Utils/Calculations/NumberOfFoldsSelector";
+import SeedSelector from "../Utils/Calculations/SeedSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
 import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
 import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
-import RuleWorkSmallBox from "../../../RuleWorkComponents/Containers/RuleWorkSmallBox";
-import MatrixDialog from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
+import { MatrixDialog } from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
 import { CrossValidationDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
+import Sigma from "mdi-material-ui/Sigma";
 
 class CrossValidation extends Component {
     constructor(props) {
@@ -41,6 +46,7 @@ class CrossValidation extends Component {
                 consistencyThreshold: 0,
                 defaultClassificationResult: "majorityDecisionClass",
                 numberOfFolds: 2,
+                seed: 0,
                 typeOfClassifier: "SimpleRuleClassifier",
                 typeOfRules: "certain",
                 typeOfUnions: "monotonic",
@@ -52,7 +58,8 @@ class CrossValidation extends Component {
             },
             open: {
                 details: false,
-                matrixGlobal: false,
+                matrixMean: false,
+                matrixSum: false,
                 matrixFold: false,
                 settings: false,
             },
@@ -62,54 +69,61 @@ class CrossValidation extends Component {
         this.upperBar = React.createRef();
     }
 
+    getCrossValidation = () => {
+        const { project } = this.props;
+
+        fetchCrossValidation(
+            project.result.id, 'GET', null
+        ).then(result => {
+            if (this._isMounted && result) {
+                const { project: { parametersSaved, settings } } = this.props
+
+                let folds = parseCrossValidationFolds(result);
+                let resultParams = parseCrossValidationParams(result);
+
+                this.setState(({parameters}) => ({
+                    data: result,
+                    folds: folds,
+                    parameters: {...parameters, ...resultParams},
+                    parametersSaved: parametersSaved
+                }), () => {
+                    const { folds, selected: { foldIndex } } = this.state;
+                    let items = parseCrossValidationItems(folds[foldIndex], settings);
+
+                    this.setState({
+                        items: items,
+                        displayedItems: items,
+                    });
+                });
+            }
+        }).catch(error => {
+            if ( this._isMounted ) {
+                this.setState(({selected}) => ({
+                    data: null,
+                    folds: null,
+                    items: null,
+                    displayedItems: [],
+                    selected: { ...selected, item: null },
+                    alertProps: error
+                }));
+            }
+        }).finally(() => {
+            if ( this._isMounted ) {
+                const { parametersSaved } = this.state;
+                const { project: { parameters: propsParameters } } = this.props;
+
+                this.setState(({parameters}) => ({
+                    loading: false,
+                    parameters: parametersSaved ? parameters : { ...parameters, ...propsParameters }
+                }));
+            }
+        });
+    }
+
     componentDidMount() {
         this._isMounted = true;
 
-        this.setState({
-            loading: true,
-        }, () => {
-            const { project } = this.props;
-
-            fetchCrossValidation(
-                project.result.id, 'GET', null, 404
-            ).then(result => {
-                if (this._isMounted && result) {
-                    const { project: { parametersSaved, settings } } = this.props
-
-                    let folds = parseCrossValidationFolds(result);
-                    let resultParams = parseCrossValidationParams(result);
-
-                    this.setState(({parameters}) => ({
-                        data: result,
-                        folds: folds,
-                        parameters: {...parameters, ...resultParams},
-                        parametersSaved: parametersSaved
-                    }), () => {
-                        const { folds, selected: { foldIndex } } = this.state;
-                        let items = parseCrossValidationItems(folds[foldIndex], settings);
-
-                        this.setState({
-                            items: items,
-                            displayedItems: items,
-                        });
-                    });
-                }
-            }).catch(error => {
-                if ( this._isMounted ) {
-                    this.setState({alertProps: error});
-                }
-            }).finally(() => {
-                if ( this._isMounted ) {
-                    const { parametersSaved } = this.state;
-                    const { project: { parameters: propsParameters } } = this.props;
-
-                    this.setState(({parameters}) => ({
-                        loading: false,
-                        parameters: parametersSaved ? parameters : { ...parameters, ...propsParameters }
-                    }));
-                }
-            });
-        });
+        this.setState({ loading: true }, this.getCrossValidation);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -121,6 +135,31 @@ class CrossValidation extends Component {
                 displayedItems: [...parseCrossValidationItems(folds[foldIndex], project.settings)]
             });
         }
+
+        const { parameters: prevParameters } = prevState;
+        const { parameters } = this.state;
+
+        if (parameters.typeOfUnions !== "monotonic") {
+            if (parameters.consistencyThreshold === 1) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 0, typeOfUnions: "monotonic" }
+                }))
+            } else {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, typeOfUnions: "monotonic" }
+                }));
+            }
+        }
+
+        if (prevParameters.typeOfRules !== parameters.typeOfRules && parameters.typeOfRules === "possible") {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, consistencyThreshold: 0}
+            }));
+        }
+
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            this.setState({ loading: true }, this.getCrossValidation);
+        }
     }
 
     componentWillUnmount() {
@@ -131,7 +170,11 @@ class CrossValidation extends Component {
             let project = {...this.props.project};
             const { parameters, selected: { foldIndex } } = this.state;
 
-            project.parameters = { ...project.parameters, ...parameters }
+            project.parameters = {
+                ...project.parameters,
+                ...parameters,
+                typeOfUnions: project.parameters.typeOfUnions
+            };
             project.parametersSaved = parametersSaved;
             project.foldIndex = foldIndex;
             this.props.onTabChange(project);
@@ -149,7 +192,7 @@ class CrossValidation extends Component {
             let data = createFormData(parameters, project);
 
             fetchCrossValidation(
-                project.result.id, method, data, []
+                project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -175,7 +218,11 @@ class CrossValidation extends Component {
                     project.tabsUpToDate[this.props.value] = true;
 
                     let resultParameters = parseCrossValidationParams(result);
-                    project.parameters = { ...project.parameters, ...resultParameters };
+                    project.parameters = {
+                        ...project.parameters,
+                        ...resultParameters,
+                        typeOfUnions: project.parameters.typeOfUnions
+                    };
                     project.parametersSaved = true;
                     this.props.onTabChange(project);
                 }
@@ -192,10 +239,30 @@ class CrossValidation extends Component {
         });
     };
 
+    onSaveToFile = (data) => {
+        const { project } = this.props;
+
+        downloadMatrix( project.result.id, data ).catch(error => {
+            if (this._isMounted) {
+                this.setState({ alertProps: error });
+            }
+        });
+    };
+
     toggleOpen = (name) => {
         this.setState(({open}) => ({
             open: {...open, [name]: !open[name]}
         }));
+    };
+
+    swapMatrix = (from, to) => {
+       this.setState(({open}) => ({
+           open: { ...open, [from]: false }
+       }), () => {
+           this.setState(({open}) => ({
+               open: { ...open, [to]: true }
+           }));
+       });
     };
 
     onItemSelected = (index) => {
@@ -215,6 +282,30 @@ class CrossValidation extends Component {
             }));
         }
     };
+
+    onSeedChange = (event) => {
+        const { loading } = this.state;
+        const input = event.target.value;
+
+        if (!loading && !isNaN(input)) {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, seed: input },
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onSeedRandomize = () => {
+        const { loading } = this.state;
+        const newSeed = Math.round(Math.random() * Math.pow(10, 16));
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, seed: newSeed },
+                parametersSaved: false
+            }));
+        }
+    }
 
     onTypeOfRulesChange = (event) => {
         const { loading } = this.state;
@@ -325,7 +416,7 @@ class CrossValidation extends Component {
                         onClick={() => this.toggleOpen("settings")}
                         title={"Click to customize parameters"}
                     />
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     <RuleWorkTooltip title={`Current number of folds: ${parameters.numberOfFolds}`}>
                         <CalculateButton
                             aria-label={"cross-validation-calculate-button"}
@@ -333,15 +424,27 @@ class CrossValidation extends Component {
                             onClick={this.onCalculateClick}
                         />
                     </RuleWorkTooltip>
-                    <StyledDivider />
+                    <StyledDivider margin={16} />
                     {Array.isArray(folds) && Boolean(folds.length) &&
                         <Fragment>
+                            {/* Part regarding all folds */}
                             <p id={"all-folds"} style={{margin: "0 16px 0 0", fontSize: "1.15rem"}}>All folds:</p>
                             <MatrixButton
-                                onClick={() => this.toggleOpen("matrixGlobal")}
-                                title={"Show ordinal misclassification matrix for all folds"}
+                                onClick={() => this.toggleOpen("matrixMean")}
+                                title={"Show mean ordinal misclassification matrix"}
                             />
-                            <StyledDivider />
+                            <RuleWorkTooltip title={"Show sum ordinal misclassification matrix"}>
+                                <StyledButton
+                                    aria-label={"sum-matrix-button"}
+                                    isIcon={true}
+                                    onClick={() => this.toggleOpen("matrixSum")}
+                                    themeVariant={"secondary"}
+                                >
+                                    <Sigma />
+                                </StyledButton>
+                            </RuleWorkTooltip>
+                            <StyledDivider margin={16} />
+                            {/* Part regarding specific fold */}
                             <RuleWorkTextField
                                 onChange={this.onFoldIndexChange}
                                 InputProps={{
@@ -376,38 +479,48 @@ class CrossValidation extends Component {
                     onClose={() => this.toggleOpen("settings")}
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
-                    <RuleWorkSmallBox id={"fold-number-selector"} >
-                        <RuleWorkTextField
-                            onChange={this.onNumberOfFoldsChange}
-                            outsideLabel={"Choose number of folds"}
-                            style={{maxWidth: 72}}
-                            value={parameters.numberOfFolds}
-                        />
-                    </RuleWorkSmallBox>
+                    <TypeOfRulesSelector
+                        TextFieldProps={{
+                            onChange: this.onTypeOfRulesChange,
+                            value: parameters.typeOfRules
+                        }}
+                    />
                     <TypeOfUnionsSelector
-                        id={"cross-validation-union-type-selector"}
-                        onChange={this.onTypeOfUnionsChange}
-                        value={parameters.typeOfUnions}
+                        TextFieldProps={{
+                            disabledChildren: ["standard"],
+                            onChange: this.onTypeOfUnionsChange,
+                            value: parameters.typeOfUnions
+                        }}
                     />
                     <ThresholdSelector
-                        id={"cross-validation-threshold-selector"}
+                        keepChanges={parameters.typeOfRules !== "possible"}
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}
                     />
-                    <TypeOfRulesSelector
-                        id={"cross-validation-rule-type-selector"}
-                        onChange={this.onTypeOfRulesChange}
-                        value={parameters.typeOfRules}
-                    />
                     <TypeOfClassifierSelector
-                        id={"cross-validation-classifier-type-selector"}
-                        onChange={this.onTypeOfClassifierChange}
-                        value={parameters.typeOfClassifier}
+                        TextFieldProps={{
+                            onChange: this.onTypeOfClassifierChange,
+                            value: parameters.typeOfClassifier
+                        }}
                     />
                     <DefaultClassificationResultSelector
-                        id={"cross-validation-default-classification-result-selector"}
-                        onChange={this.onDefaultClassificationResultChange}
-                        value={parameters.defaultClassificationResult}
+                        TextFieldProps={{
+                            onChange: this.onDefaultClassificationResultChange,
+                            value: parameters.defaultClassificationResult
+                        }}
+                    />
+                    <SeedSelector
+                        randomizeSeed={this.onSeedRandomize}
+                        TextFieldProps={{
+                            onChange: this.onSeedChange,
+                            value: parameters.seed
+                        }}
+                    />
+                    <NumberOfFoldsSelector
+                        TextFieldProps={{
+                            onChange: this.onNumberOfFoldsChange,
+                            value: parameters.numberOfFolds
+                        }}
                     />
                 </RuleWorkDrawer>
                 <TabBody
@@ -425,12 +538,16 @@ class CrossValidation extends Component {
                             value: selected.foldIndex + 1
                         },
                         {
-                            label: "Number of objects:",
-                            value: displayedItems && displayedItems.length
+                            label: "Training objects:",
+                            value: folds && folds[selected.foldIndex].numberOfLearningObjects
                         },
                         {
-                            label: "Total number of rules:",
+                            label: "Rules:",
                             value: folds && folds[selected.foldIndex].ruleSet.length
+                        },
+                        {
+                            label: "Test objects:",
+                            value: folds && folds[selected.foldIndex].numberOfTestObjects,
                         }
                     ]}
                 />
@@ -445,22 +562,91 @@ class CrossValidation extends Component {
                 {data &&
                     <MatrixDialog
                         disableDeviation={false}
-                        matrix={parseMatrixTraits(data.meanOrdinalMisclassificationMatrix)}
-                        onClose={() => this.toggleOpen("matrixGlobal")}
-                        open={open.matrixGlobal}
-                        title={"Mean ordinal misclassification matrix, it's deviation and details"}
+                        matrix={parseMatrix(data.meanOrdinalMisclassificationMatrix)}
+                        onClose={() => this.toggleOpen("matrixMean")}
+                        open={open.matrixMean}
+                        saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
+                        subheaders={
+                            folds[selected.foldIndex].classificationValidationTable.decisionsDomain
+                        }
+                        title={
+                            <React.Fragment>
+                                <MatrixSwapButton
+                                    onSwap={() => this.swapMatrix("matrixMean", "matrixSum")}
+                                    tooltip={"Go to sum ordinal misclassification matrix"}
+                                />
+                                <MatrixDownloadButton
+                                    onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
+                                    tooltip={"Download mean matrix (txt)"}
+                                />
+                                <span aria-label={"mean matrix title"} style={{paddingLeft: 8}}>
+                                    Mean ordinal misclassification matrix, deviations and details
+                                </span>
+                            </React.Fragment>
+                        }
+                    />
+                }
+                {data &&
+                    <MatrixDialog
+                        matrix={parseMatrix(data.sumOrdinalMisclassificationMatrix)}
+                        onClose={() => this.toggleOpen("matrixSum")}
+                        open={open.matrixSum}
+                        saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
+                        subheaders={
+                            folds[selected.foldIndex].classificationValidationTable.decisionsDomain
+                        }
+                        title={
+                            <React.Fragment>
+                                <MatrixSwapButton
+                                    onSwap={() => this.swapMatrix("matrixSum", "matrixMean")}
+                                    tooltip={"Go to mean ordinal misclassification matrix"}
+                                />
+                                <MatrixDownloadButton
+                                    onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
+                                    tooltip={"Download sum matrix (txt)"}
+                                />
+                                <span aria-label={"sum matrix title"} style={{paddingLeft: 8}}>
+                                    Sum ordinal misclassification matrix and details
+                                </span>
+                            </React.Fragment>
+
+                        }
                     />
                 }
                 {Array.isArray(folds) && Boolean(folds.length) &&
                     <MatrixDialog
                         matrix={
-                            parseMatrixTraits(
+                            parseMatrix(
                                 folds[selected.foldIndex].classificationValidationTable.ordinalMisclassificationMatrix
                             )
                         }
                         onClose={() => this.toggleOpen("matrixFold")}
                         open={open.matrixFold}
-                        title={`Fold ${selected.foldIndex + 1}: Ordinal misclassification matrix, it's deviation and details`}
+                        saveMatrix={() => {
+                            this.onSaveToFile({
+                                typeOfMatrix: "crossValidationFold",
+                                numberOfFold: selected.foldIndex
+                            });
+                        }}
+                        subheaders={
+                            folds[selected.foldIndex].classificationValidationTable.decisionsDomain
+                        }
+                        title={
+                            <React.Fragment>
+                                <MatrixDownloadButton
+                                    onSave={() => {
+                                        this.onSaveToFile({
+                                            typeOfMatrix: "crossValidationFold",
+                                            numberOfFold: selected.foldIndex
+                                        });
+                                    }}
+                                    tooltip={`Download fold ${selected.foldIndex + 1} matrix (txt)`}
+                                />
+                                <span aria-label={"fold matrix title"} style={{paddingLeft: 8}}>
+                                    {`Fold ${selected.foldIndex + 1}: Ordinal misclassification matrix  and details`}
+                                </span>
+                            </React.Fragment>
+                        }
                     />
                 }
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />

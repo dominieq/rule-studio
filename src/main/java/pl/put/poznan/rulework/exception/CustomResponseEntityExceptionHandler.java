@@ -15,12 +15,12 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     public void projectNotFoundException(
             ProjectNotFoundException ex,
             HttpServletResponse response) throws IOException {
-        response.sendError(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        response.sendError(HttpStatus.NOT_ACCEPTABLE.value(), ex.getMessage());
     }
 
-    @ExceptionHandler(EmptyResponseException.class)
+    @ExceptionHandler({EmptyResponseException.class, NoRulesException.class, NoDataException.class})
     public void emptyResponseException(
-            EmptyResponseException ex,
+            RuntimeException ex,
             HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
@@ -30,5 +30,26 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
             WrongParameterException ex,
             HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.UNPROCESSABLE_ENTITY.value(), ex.getMessage());
+    }
+
+    @ExceptionHandler(NotSuitableForInductionOfPossibleRulesException.class)
+    public void notSuitableForInductionOfPossibleRulesException(
+            NotSuitableForInductionOfPossibleRulesException ex,
+            HttpServletResponse response) throws IOException {
+        response.sendError(460, ex.getMessage());
+    }
+
+    @ExceptionHandler(NoHashInRuleSetException.class)
+    public void noHashInRuleSetException(
+            NoHashInRuleSetException ex,
+            HttpServletResponse response) throws IOException {
+        response.sendError(461, ex.getMessage());
+    }
+
+    @ExceptionHandler(IncompatibleLearningInformationTableException.class)
+    public void incompatibleLearningInformationTableException(
+            IncompatibleLearningInformationTableException ex,
+            HttpServletResponse response) throws IOException {
+        response.sendError(462, ex.getMessage());
     }
 }
