@@ -138,7 +138,7 @@ class App extends Component {
         }
     };
 
-    onFilesAccepted = (name, files) => {
+    onFilesAccepted = (name, files, csvSpecs) => {
         if (!this.isNameUnique(name)) {
             this.setState({
                 alertProps: {
@@ -156,6 +156,10 @@ class App extends Component {
 
                 data.append("name", name);
                 files.map(file => data.append(file.type, file.file));
+
+                if (csvSpecs && Object.keys(csvSpecs).length) {
+                    Object.keys(csvSpecs).map(key => data.append(key, csvSpecs[key]));
+                }
 
                 fetchProjects(
                     "POST", data
@@ -324,10 +328,7 @@ class App extends Component {
                     {
                         "Help": <Help />,
                         "Home": <Home />,
-                        "Import":
-                            <Import
-                                onFilesAccepted={(name, files) => this.onFilesAccepted(name, files)}
-                            />,
+                        "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
                             <ProjectTabs
                                 project={projects[currentProject]}

@@ -1,8 +1,17 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { createFormData, downloadMatrix, fetchCrossValidation, parseCrossValidationParams } from "../Utils/fetchFunctions";
-import { parseCrossValidationFolds, parseCrossValidationItems, parseCrossValidationListItems } from "../Utils/parseData";
-import { parseMatrix } from "../Utils/parseData";
+import {
+    createFormData,
+    downloadMatrix,
+    fetchCrossValidation,
+    parseCrossValidationParams
+} from "../Utils/fetchFunctions";
+import {
+    parseMatrix,
+    parseCrossValidationFolds,
+    parseCrossValidationItems,
+    parseCrossValidationListItems
+} from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -185,11 +194,15 @@ class CrossValidation extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let project = {...this.props.project};
+            let project = { ...this.props.project };
             const { parameters } = this.state;
 
             let method = project.dataUpToDate ? "PUT" : "POST";
-            let data = createFormData(parameters, project);
+            let files =  {
+                metadata: JSON.stringify(project.result.informationTable.attributes),
+                data: JSON.stringify(project.result.informationTable.objects)
+            };
+            let data = createFormData(parameters, project.dataUpToDate ? null : files);
 
             fetchCrossValidation(
                 project.result.id, method, data
@@ -218,6 +231,7 @@ class CrossValidation extends Component {
                     project.tabsUpToDate[this.props.value] = true;
 
                     let resultParameters = parseCrossValidationParams(result);
+
                     project.parameters = {
                         ...project.parameters,
                         ...resultParameters,
