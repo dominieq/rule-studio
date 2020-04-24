@@ -4,6 +4,7 @@ import FileSelectZone from "./FileSelectZone";
 import RuleWorkBox from "../../RuleWorkComponents/Containers/RuleWorkBox";
 import CollapsibleDivider from "../../RuleWorkComponents/DataDisplay/CollapsibleDivider";
 import StyledDivider from "../../RuleWorkComponents/DataDisplay/StyledDivider";
+import { CSVDialog } from "../../RuleWorkComponents/Feedback/CSVDialog";
 import RuleWorkSwitch from "../../RuleWorkComponents/Inputs/RuleWorkSwitch";
 import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import StyledButton  from "../../RuleWorkComponents/Inputs/StyledButton"
@@ -17,9 +18,11 @@ class Import extends Component{
 
         this.state = {
             checked: false,
+            csvFile: false,
             expand: false,
-            name: "new project",
             files: [],
+            name: "new project",
+            open: false
         };
     }
 
@@ -51,27 +54,35 @@ class Import extends Component{
         }));
     };
 
-    onInputChange = (message) => {
-        let newFiles = this.state.files;
-        for (let i = 0; i <  newFiles.length; i++) {
-            if (newFiles[i].type === message.type) {
-                newFiles.splice(i, 1);
+    onInputChange = (file) => {
+        let { files } = this.state;
+
+        for (let i = 0; i <  files.length; i++) {
+            if (files[i].type === file.type) {
+                files.splice(i, 1);
                 break;
             }
         }
-        this.setState({
-            files: [...newFiles, message],
-        });
+
+        this.setState(({csvFile}) => ({
+            files: [ ...files, file ],
+            csvFile: file.type === "data" && file.file.type !== 'application/json'
+                ? true : csvFile,
+        }));
     };
 
-    onInputDelete = (message) => {
-        let newFiles = this.state.files;
-        for (let i = 0; i <  newFiles.length; i++) {
-            if (newFiles[i].type === message.type) {
-                newFiles.splice(i, 1);
-                this.setState({
-                    files: newFiles,
-                });
+    onInputDelete = (file) => {
+        let { files } = this.state;
+
+        for (let i = 0; i <  files.length; i++) {
+            if (files[i].type === file.type) {
+                let removed = files.splice(i, 1);
+
+                this.setState(({csvFile}) => ({
+                    files: files,
+                    csvFile: removed[0].type === "data" && removed[0].file.type !== 'application/json'
+                        ? false : csvFile
+                }));
                 break;
             }
         }
@@ -85,13 +96,13 @@ class Import extends Component{
     };
 
     onAcceptButtonClick = () => {
-        const projectName = this.state.name;
-        let projectFiles = [];
-        if (this.state.checked) {
-            projectFiles = this.state.files;
-        }
+        const { name, files, csvFile } = this.state;
 
-        this.props.onFilesAccepted(projectName, projectFiles);
+        if (csvFile) {
+            this.setState({ open: true });
+        } else {
+            this.props.onFilesAccepted(name, files, null);
+        }
     };
 
     onClearClick = () => {
@@ -103,8 +114,20 @@ class Import extends Component{
         })
     };
 
+    onCSVDialogClose = (csvSpecs) => {
+        this.setState({
+            open: false
+        }, () => {
+            if (csvSpecs && Object.keys(csvSpecs).length) {
+                const { name, files } = this.state;
+
+                this.props.onFilesAccepted(name, files, csvSpecs);
+            }
+        });
+    };
+
     render() {
-        const {checked, expand, name} = this.state;
+        const { checked, expand, name, open } = this.state;
 
         return (
             <RuleWorkBox id={"rule-work-import"} onKeyPress={this.onEnterClick} styleVariant={"body"}>
@@ -189,6 +212,7 @@ class Import extends Component{
                         </StyledButton>
                     </div>
                 </StyledPaper>
+                <CSVDialog onConfirm={this.onCSVDialogClose} open={open} />
             </RuleWorkBox>
         );
     }

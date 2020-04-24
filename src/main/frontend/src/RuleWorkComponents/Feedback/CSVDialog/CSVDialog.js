@@ -69,8 +69,6 @@ class CSVDialog extends React.PureComponent {
     onConfirm = () => {
         const { header, separator } = this.state;
 
-        console.log({header, separator} === this.state);
-
         this.props.onConfirm({ header, separator });
     };
 
