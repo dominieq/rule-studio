@@ -101,6 +101,32 @@ public class RulesService {
         }
     }
 
+    interface NumberCharacteristic {
+        Number get(int index);
+    }
+
+    private static void collectIntegerCharacteristicLoop(int rulesNumber, Number[] characteristicValues, NumberCharacteristic function) {
+        for(int i = 0; i < rulesNumber; i++) {
+            try {
+                characteristicValues[i] = function.get(i);
+            } catch (UnknownValueException e)  {
+                logger.warn(e.getMessage());
+                characteristicValues[i] = Integer.MIN_VALUE;
+            }
+        }
+    }
+
+    private static void collectDoubleCharacteristicLoop(int rulesNumber, Number[] characteristicValues, NumberCharacteristic function) {
+        for(int i = 0; i < rulesNumber; i++) {
+            try {
+                characteristicValues[i] = function.get(i);
+            } catch (UnknownValueException e)  {
+                logger.warn(e.getMessage());
+                characteristicValues[i] = Double.MAX_VALUE;
+            }
+        }
+    }
+
     public static RuleSetWithComputableCharacteristics parseComputableRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
         Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
         RuleParser ruleParser = new RuleParser(attributes);
@@ -280,144 +306,46 @@ public class RulesService {
             Number[] characteristicValues = new Number[rulesNumber];
             switch (orderBy) {
                 case SUPPORT:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getSupport();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Integer.MIN_VALUE;
-                        }
-                    }
+                    collectIntegerCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getSupport());
                     break;
                 case STRENGTH:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getStrength();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Double.MAX_VALUE;
-                        }
-                    }
+                    collectDoubleCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getStrength());
                     break;
                 case CONFIDENCE:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getConfidence();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Double.MAX_VALUE;
-                        }
-                    }
+                    collectDoubleCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getConfidence());
                     break;
                 case COVERAGE_FACTOR:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getCoverageFactor();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Double.MAX_VALUE;
-                        }
-                    }
+                    collectDoubleCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getCoverageFactor());
                     break;
                 case COVERAGE:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getCoverage();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Integer.MIN_VALUE;
-                        }
-                    }
+                    collectIntegerCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getCoverage());
                     break;
                 case NEGATIVE_COVERAGE:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getNegativeCoverage();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Integer.MIN_VALUE;
-                        }
-                    }
+                    collectIntegerCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getNegativeCoverage());
                     break;
                 case EPSILON:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getEpsilon();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Double.MAX_VALUE;
-                        }
-                    }
+                    collectDoubleCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getEpsilon());
                     break;
                 case EPSILON_PRIME:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getEpsilonPrime();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Double.MAX_VALUE;
-                        }
-                    }
+                    collectDoubleCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getEpsilonPrime());
                     break;
                 case F_CONFIRMATION:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getFConfirmation();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Double.MAX_VALUE;
-                        }
-                    }
+                    collectDoubleCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getFConfirmation());
                     break;
                 case A_CONFIRMATION:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getAConfirmation();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Double.MAX_VALUE;
-                        }
-                    }
+                    collectDoubleCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getAConfirmation());
                     break;
                 case Z_CONFIRMATION:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getZConfirmation();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Double.MAX_VALUE;
-                        }
-                    }
+                    collectDoubleCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getZConfirmation());
                     break;
                 case L_CONFIRMATION:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getLConfirmation();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Double.MAX_VALUE;
-                        }
-                    }
+                    collectDoubleCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getLConfirmation());
                     break;
                 case C1_CONFIRMATION:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getC1Confirmation();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Double.MAX_VALUE;
-                        }
-                    }
+                    collectDoubleCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getC1Confirmation());
                     break;
                 case S_CONFIRMATION:
-                    for(i = 0; i < rulesNumber; i++) {
-                        try {
-                            characteristicValues[i] = ruleCharacteristicsArray[i].getSConfirmation();
-                        } catch (UnknownValueException e)  {
-                            logger.warn(e.getMessage());
-                            characteristicValues[i] = Double.MAX_VALUE;
-                        }
-                    }
+                    collectDoubleCharacteristicLoop(rulesNumber, characteristicValues, (int index) -> ruleCharacteristicsArray[index].getSConfirmation());
                     break;
                 default:
                     WrongParameterException ex = new WrongParameterException(String.format("Given ordering rule characteristic \"%s\" is unrecognized.", orderBy));
