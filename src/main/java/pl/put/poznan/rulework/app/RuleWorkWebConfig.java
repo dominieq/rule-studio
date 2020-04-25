@@ -17,5 +17,6 @@ public class RuleWorkWebConfig implements WebMvcConfigurer {
         registry.addConverter(new StringToDataFormatConverter());
         registry.addConverter(new StringToRulesFormatConverter());
         registry.addConverter(new StringToMisclassificationMatrixType());
+        registry.addConverter(new StringToOrderByRuleCharacteristicConverter());
     }
 }

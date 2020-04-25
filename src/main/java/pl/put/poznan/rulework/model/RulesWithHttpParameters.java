@@ -4,7 +4,7 @@ import org.rulelearn.rules.RuleSetWithCharacteristics;
 import pl.put.poznan.rulework.enums.RuleType;
 import pl.put.poznan.rulework.enums.UnionType;
 
-public class RulesWithHttpParameters {
+public class RulesWithHttpParameters implements Cloneable {
     private RuleSetWithCharacteristics ruleSet;
     private UnionType typeOfUnions;
     private Double consistencyThreshold;
@@ -73,5 +73,10 @@ public class RulesWithHttpParameters {
                 ", typeOfRules=" + typeOfRules +
                 ", externalRules=" + externalRules +
                 '}';
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

@@ -7,6 +7,7 @@ import javafx.util.Pair;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
 import org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator;
+import org.rulelearn.core.UnknownValueException;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
@@ -20,6 +21,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulework.enums.OrderByRuleCharacteristic;
 import pl.put.poznan.rulework.enums.RuleType;
 import pl.put.poznan.rulework.enums.RulesFormat;
 import pl.put.poznan.rulework.enums.UnionType;
@@ -35,8 +37,7 @@ import pl.put.poznan.rulework.model.UnionsWithHttpParameters;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class RulesService {
@@ -45,6 +46,60 @@ public class RulesService {
 
     @Autowired
     ProjectsContainer projectsContainer;
+
+    private class ArrayIndexComparator implements Comparator<Integer> {
+        private final Number[] array;
+
+        public ArrayIndexComparator(Number[] array) {
+            this.array = array;
+        }
+
+        public Integer[] createIndexArray()
+        {
+            Integer[] indices = new Integer[array.length];
+            for (int i = 0; i < array.length; i++)
+            {
+                indices[i] = i;
+            }
+            return indices;
+        }
+
+        @Override
+        public int compare(Integer ind1, Integer ind2) {
+            if (array[ind1] instanceof Integer) {
+                Integer val1 = (Integer)array[ind1];
+                Integer val2 = (Integer)array[ind2];
+
+                if ((val1.equals(Integer.MIN_VALUE)) && (val2.equals(Integer.MIN_VALUE))) {
+                    return ind1.compareTo(ind2);
+                }
+                if (val1.equals(Integer.MIN_VALUE)) {
+                    return -1;
+                }
+                if (val2.equals(Integer.MIN_VALUE)) {
+                    return 1;
+                }
+                return val1.compareTo(val2);
+
+            } else if (array[ind1] instanceof Double) {
+                Double val1 = (Double)array[ind1];
+                Double val2 = (Double)array[ind2];
+
+                if ((val1.equals(Double.MAX_VALUE)) && (val2.equals(Double.MAX_VALUE))) {
+                    return ind1.compareTo(ind2);
+                }
+                if (val1.equals(Double.MAX_VALUE)) {
+                    return -1;
+                }
+                if (val2.equals(Double.MAX_VALUE)) {
+                    return 1;
+                }
+                return val1.compareTo(val2);
+            }
+
+            return ind1.compareTo(ind2);
+        }
+    }
 
     public static RuleSetWithComputableCharacteristics parseComputableRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
         Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
@@ -179,8 +234,10 @@ public class RulesService {
         }
     }
 
-    public RulesWithHttpParameters getRules(UUID id) {
+    public RulesWithHttpParameters getRules(UUID id, OrderByRuleCharacteristic orderBy, Boolean desc) {
         logger.info("Id:\t{}", id);
+        logger.info("OrderBy:\t{}", orderBy);
+        logger.info("Desc:\t{}", desc);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -189,6 +246,197 @@ public class RulesService {
             EmptyResponseException ex = new EmptyResponseException("There are no rules in project to show.");
             logger.error(ex.getMessage());
             throw ex;
+        }
+
+        try {
+            rules = (RulesWithHttpParameters) project.getRules().clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            rules = project.getRules();
+        }
+
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = rules.getRuleSet();
+        if (!orderBy.equals(OrderByRuleCharacteristic.NONE)) {
+
+            int i, rulesNumber = ruleSetWithCharacteristics.size();
+
+            Rule[] ruleArray = new Rule[rulesNumber];
+
+            RuleCharacteristics[] ruleCharacteristicsArray = new RuleCharacteristics[rulesNumber];
+            for(i = 0; i < rulesNumber; i++) {
+                ruleCharacteristicsArray[i] = ruleSetWithCharacteristics.getRuleCharacteristics(i);
+            }
+
+            Number[] characteristicValues = new Number[rulesNumber];
+            switch (orderBy) {
+                case SUPPORT:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getSupport();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Integer.MIN_VALUE;
+                        }
+                    }
+                    break;
+                case STRENGTH:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getStrength();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Double.MAX_VALUE;
+                        }
+                    }
+                    break;
+                case CONFIDENCE:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getConfidence();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Double.MAX_VALUE;
+                        }
+                    }
+                    break;
+                case COVERAGE_FACTOR:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getCoverageFactor();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Double.MAX_VALUE;
+                        }
+                    }
+                    break;
+                case COVERAGE:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getCoverage();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Integer.MIN_VALUE;
+                        }
+                    }
+                    break;
+                case NEGATIVE_COVERAGE:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getNegativeCoverage();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Integer.MIN_VALUE;
+                        }
+                    }
+                    break;
+                case EPSILON:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getEpsilon();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Double.MAX_VALUE;
+                        }
+                    }
+                    break;
+                case EPSILON_PRIME:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getEpsilonPrime();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Double.MAX_VALUE;
+                        }
+                    }
+                    break;
+                case F_CONFIRMATION:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getFConfirmation();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Double.MAX_VALUE;
+                        }
+                    }
+                    break;
+                case A_CONFIRMATION:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getAConfirmation();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Double.MAX_VALUE;
+                        }
+                    }
+                    break;
+                case Z_CONFIRMATION:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getZConfirmation();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Double.MAX_VALUE;
+                        }
+                    }
+                    break;
+                case L_CONFIRMATION:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getLConfirmation();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Double.MAX_VALUE;
+                        }
+                    }
+                    break;
+                case C1_CONFIRMATION:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getC1Confirmation();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Double.MAX_VALUE;
+                        }
+                    }
+                    break;
+                case S_CONFIRMATION:
+                    for(i = 0; i < rulesNumber; i++) {
+                        try {
+                            characteristicValues[i] = ruleCharacteristicsArray[i].getSConfirmation();
+                        } catch (UnknownValueException e)  {
+                            logger.warn(e.getMessage());
+                            characteristicValues[i] = Double.MAX_VALUE;
+                        }
+                    }
+                    break;
+                default:
+                    WrongParameterException ex = new WrongParameterException(String.format("Given ordering rule characteristic \"%s\" is unrecognized.", orderBy));
+                    logger.error(ex.getMessage());
+                    throw ex;
+            }
+
+            ArrayIndexComparator comparator = new ArrayIndexComparator(characteristicValues);
+            Integer[] indices = comparator.createIndexArray();
+            Arrays.sort(indices, comparator);
+
+            int x, step;
+            if(desc) {
+                x = rulesNumber - 1;
+                step = -1;
+            } else {
+                x = 0;
+                step = 1;
+            }
+            for(i = 0; i < rulesNumber; i++) {
+                ruleArray[i] = ruleSetWithCharacteristics.getRule(indices[x]);
+                ruleCharacteristicsArray[i] = ruleSetWithCharacteristics.getRuleCharacteristics(indices[x]);
+                logger.debug("{}:\tsupport={}\tindex={}", i, characteristicValues[indices[x]], indices[x]);
+                x += step;
+            }
+
+            RuleSetWithCharacteristics sortedRuleSet = new RuleSetWithCharacteristics(ruleArray, ruleCharacteristicsArray);
+            sortedRuleSet.setLearningInformationTableHash(ruleSetWithCharacteristics.getLearningInformationTableHash());
+            rules.setRuleSet(sortedRuleSet);
         }
 
         logger.debug("rulesWithHttpParameters:\t{}", rules.toString());
