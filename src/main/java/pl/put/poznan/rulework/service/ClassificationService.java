@@ -197,7 +197,7 @@ public class ClassificationService {
         }
 
         if(!ruleSetHash.equals(learningInformationTable.getHash())) {
-            IncompatibleLearningInformationTableException ex = new IncompatibleLearningInformationTableException("Data in current project should be a valid training set for existing rules. Access to this set is required to be able to use chosen classifier.");
+            IncompatibleLearningInformationTableException ex = new IncompatibleLearningInformationTableException("Data in current project should be a valid training set for existing rules. Access to this set is required to be able to use chosen classifier. Prepare rules based on current data or create new project with valid training set.");
             logger.error(ex.getMessage());
             throw ex;
         }

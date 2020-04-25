@@ -22,8 +22,6 @@ import pl.put.poznan.rulework.model.ProjectsContainer;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -35,32 +33,33 @@ public class DataService {
     ProjectsContainer projectsContainer;
 
     public static InformationTable informationTableFromMultipartFileData(MultipartFile dataFile, Attribute[] attributes, Character separator, Boolean header) throws IOException {
+        logger.info("Start of processing data file...");
         Reader reader;
         InformationTable informationTable = new InformationTable(new Attribute[0], new ArrayList<>());
-        List<String> csvMimeType = Arrays.asList(
-                "text/csv",
-                "application/vnd.ms-excel",
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        );
 
-        if (dataFile.getContentType().equals("application/json")) {
-            logger.info("Data type is json");
-            org.rulelearn.data.json.ObjectParser objectParser = new org.rulelearn.data.json.ObjectParser.Builder(attributes).build();
+        try {
+            logger.info("Trying parse as json file...");
+            org.rulelearn.data.json.ObjectParser jsonObjectParser = new org.rulelearn.data.json.ObjectParser.Builder(attributes).build();
             reader = new InputStreamReader(dataFile.getInputStream());
-            informationTable = objectParser.parseObjects(reader);
+            informationTable = jsonObjectParser.parseObjects(reader);
+            logger.info("Successfully parsed as json file.");
+        } catch (RuntimeException eJson) {
+            logger.info("Failed to parse as json file:\t{}", eJson.getMessage());
 
-        } else if (csvMimeType.contains(dataFile.getContentType())) {
-            logger.info("Data type is csv (" + dataFile.getContentType() + ")");
-            org.rulelearn.data.csv.ObjectParser objectParser = new org.rulelearn.data.csv.ObjectParser.Builder(attributes).
-                    separator(separator).
-                    header(header).
-                    build();
-            reader = new InputStreamReader(dataFile.getInputStream());
-            informationTable = objectParser.parseObjects(reader);
-        } else {
-            WrongParameterException ex = new WrongParameterException(String.format("Wrong file. Data should be a valid json or csv file."));
-            logger.error("Unrecognized format of data file:\t{}", dataFile.getContentType());
-            throw ex;
+            try {
+                logger.info("Trying parse as csv file...");
+                org.rulelearn.data.csv.ObjectParser csvObjectParser = new org.rulelearn.data.csv.ObjectParser.Builder(attributes).
+                        separator(separator).
+                        header(header).
+                        build();
+                reader = new InputStreamReader(dataFile.getInputStream());
+                informationTable = csvObjectParser.parseObjects(reader);
+                logger.info("Successfully parsed as csv file.");
+            } catch (RuntimeException eCsv) {
+                logger.info("Failed to parse as csv file:\t{}", eCsv.getMessage());
+                WrongParameterException ex = new WrongParameterException(String.format("Wrong file. Data should be a valid json or csv file."));
+                throw ex;
+            }
         }
 
         if(logger.isTraceEnabled()) {
@@ -77,10 +76,12 @@ public class DataService {
             }
         }
 
+        logger.info("End of processing data file.");
         return informationTable;
     }
 
     public static InformationTable informationTableFromStringData(String data, Attribute[] attributes) throws IOException {
+        logger.info("Start of processing data text...");
         InputStream targetStream = new ByteArrayInputStream(data.getBytes());
         Reader reader = new InputStreamReader(targetStream);
         ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
@@ -100,6 +101,7 @@ public class DataService {
             }
         }
 
+        logger.info("End of processing data text.");
         return informationTable;
     }
 
