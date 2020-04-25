@@ -28,6 +28,16 @@ function parseRulesItems(data) {
                         "coverage factor " + this.traits["Coverage factor"],
                         "epsilon measure " + this.traits["Epsilon measure"]
                     ]
+                },
+                toSort(category) {
+                    if (Object.keys(this.traits).includes(category)) {
+                        return {
+                            id: this.id,
+                            [category]: this.traits[category]
+                        };
+                    } else {
+                        return null;
+                    }
                 }
             });
         }
