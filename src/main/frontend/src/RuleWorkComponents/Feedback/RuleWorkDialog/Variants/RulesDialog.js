@@ -157,7 +157,8 @@ RulesDialog.propTypes = {
         tables: PropTypes.exact({
             indicesOfCoveredObjects: PropTypes.arrayOf(PropTypes.number)
         }),
-        toFilter: PropTypes.func
+        toFilter: PropTypes.func,
+        toSort: PropTypes.func,
     }),
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func,
