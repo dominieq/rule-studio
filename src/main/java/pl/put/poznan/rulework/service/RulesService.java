@@ -138,6 +138,16 @@ public class RulesService {
         RuleParser ruleParser = new RuleParser(attributes);
         parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
 
+        if(parsedRules == null) {
+            WrongParameterException ex = new WrongParameterException(String.format("Given file with rules could not be successfully read as RuleML file."));
+            logger.error(ex.getMessage());
+            throw ex;
+        } else if (parsedRules.entrySet().iterator().next().getValue().size() == 0) {
+            WrongParameterException ex = new WrongParameterException(String.format("Parser could not process any rule. Make sure that the file is not empty and its content is compatible with current project's metadata."));
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
         for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
             logger.info("ruleSet.size=" + rswc.size());
             for(int i = 0; i < rswc.size(); i++) {
