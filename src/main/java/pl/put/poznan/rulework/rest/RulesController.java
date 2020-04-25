@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.put.poznan.rulework.enums.OrderByRuleCharacteristic;
 import pl.put.poznan.rulework.enums.RuleType;
 import pl.put.poznan.rulework.enums.RulesFormat;
 import pl.put.poznan.rulework.enums.UnionType;
@@ -37,9 +38,11 @@ public class RulesController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RulesWithHttpParameters> getRules (
-            @PathVariable("id") UUID id) {
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "orderBy", defaultValue = "none") OrderByRuleCharacteristic orderBy,
+            @RequestParam(name = "desc", defaultValue = "true") Boolean desc) {
         logger.info("Getting rules...");
-        RulesWithHttpParameters result = rulesService.getRules(id);
+        RulesWithHttpParameters result = rulesService.getRules(id, orderBy, desc);
         return ResponseEntity.ok(result);
     }
 
