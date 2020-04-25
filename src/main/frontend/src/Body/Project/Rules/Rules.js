@@ -404,7 +404,9 @@ class Rules extends Component {
             } else {
                 const { items: originalItems } = this.state;
 
-                this.setState({ displayedItems: originalItems });
+                this.setState({
+                    displayedItems: Boolean(originalItems) ? originalItems : []
+                });
             }
         }
     };
