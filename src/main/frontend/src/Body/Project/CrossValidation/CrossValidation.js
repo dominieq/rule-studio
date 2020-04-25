@@ -1,13 +1,24 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import { createFormData, downloadMatrix, fetchCrossValidation, parseCrossValidationParams } from "../Utils/fetchFunctions";
-import { parseCrossValidationFolds, parseCrossValidationItems, parseCrossValidationListItems } from "../Utils/parseData";
-import { parseMatrix } from "../Utils/parseData";
+import {
+    createFormData,
+    downloadMatrix,
+    fetchCrossValidation,
+    parseCrossValidationParams
+} from "../Utils/fetchFunctions";
+import {
+    parseMatrix,
+    parseCrossValidationFolds,
+    parseCrossValidationItems,
+    parseCrossValidationListItems
+} from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
 import MatrixButton from "../Utils/Buttons/MatrixButton";
+import MatrixDownloadButton from "../Utils/Buttons/MatrixDownloadButton";
+import MatrixSwapButton from "../Utils/Buttons/MatrixSwapButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import NumberOfFoldsSelector from "../Utils/Calculations/NumberOfFoldsSelector";
@@ -28,9 +39,7 @@ import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
-import GetApp from "@material-ui/icons/GetApp";
 import Sigma from "mdi-material-ui/Sigma";
-import SwapVert from "@material-ui/icons/SwapVert";
 
 class CrossValidation extends Component {
     constructor(props) {
@@ -185,11 +194,15 @@ class CrossValidation extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let project = {...this.props.project};
+            let project = { ...this.props.project };
             const { parameters } = this.state;
 
             let method = project.dataUpToDate ? "PUT" : "POST";
-            let data = createFormData(parameters, project);
+            let files =  {
+                metadata: JSON.stringify(project.result.informationTable.attributes),
+                data: JSON.stringify(project.result.informationTable.objects)
+            };
+            let data = createFormData(parameters, project.dataUpToDate ? null : files);
 
             fetchCrossValidation(
                 project.result.id, method, data
@@ -218,6 +231,7 @@ class CrossValidation extends Component {
                     project.tabsUpToDate[this.props.value] = true;
 
                     let resultParameters = parseCrossValidationParams(result);
+
                     project.parameters = {
                         ...project.parameters,
                         ...resultParameters,
@@ -571,28 +585,15 @@ class CrossValidation extends Component {
                         }
                         title={
                             <React.Fragment>
-                                <RuleWorkTooltip title={"Go to sum ordinal misclassification matrix"}>
-                                    <StyledButton
-                                        aria-label={"swap to sum"}
-                                        isIcon={true}
-                                        onClick={() => this.swapMatrix("matrixMean", "matrixSum")}
-                                        themeVariant={"secondary"}
-                                    >
-                                        <SwapVert />
-                                    </StyledButton>
-                                </RuleWorkTooltip>
-                                <StyledDivider margin={4} />
-                                <RuleWorkTooltip title={"Download mean matrix (txt)"} WrapperComponent={'span'}>
-                                    <StyledButton
-                                        aria-label={"mean-download-button"}
-                                        isIcon={true}
-                                        onClick={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
-                                        themeVariant={"primary"}
-                                    >
-                                        <GetApp />
-                                    </StyledButton>
-                                </RuleWorkTooltip>
-                                <span style={{marginLeft: 8}}>
+                                <MatrixSwapButton
+                                    onSwap={() => this.swapMatrix("matrixMean", "matrixSum")}
+                                    tooltip={"Go to sum ordinal misclassification matrix"}
+                                />
+                                <MatrixDownloadButton
+                                    onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
+                                    tooltip={"Download mean matrix (txt)"}
+                                />
+                                <span aria-label={"mean matrix title"} style={{paddingLeft: 8}}>
                                     Mean ordinal misclassification matrix, deviations and details
                                 </span>
                             </React.Fragment>
@@ -610,29 +611,16 @@ class CrossValidation extends Component {
                         }
                         title={
                             <React.Fragment>
-                                <RuleWorkTooltip title={"Go to mean ordinal misclassification matrix"}>
-                                    <StyledButton
-                                        aria-label={"swap to mean"}
-                                        isIcon={true}
-                                        onClick={() => this.swapMatrix("matrixSum", "matrixMean")}
-                                        themeVariant={"secondary"}
-                                    >
-                                        <SwapVert />
-                                    </StyledButton>
-                                </RuleWorkTooltip>
-                                <StyledDivider margin={4} />
-                                <RuleWorkTooltip title={"Download sum matrix (txt)"} WrapperComponent={"span"}>
-                                    <StyledButton
-                                        aria-label={"sum-download-button"}
-                                        isIcon={true}
-                                        onClick={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
-                                        themeVariant={"primary"}
-                                    >
-                                        <GetApp />
-                                    </StyledButton>
-                                </RuleWorkTooltip>
-                                <span style={{marginLeft: 8}}>
-                                    Sum ordinal misclassification matrix, deviations and details
+                                <MatrixSwapButton
+                                    onSwap={() => this.swapMatrix("matrixSum", "matrixMean")}
+                                    tooltip={"Go to mean ordinal misclassification matrix"}
+                                />
+                                <MatrixDownloadButton
+                                    onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
+                                    tooltip={"Download sum matrix (txt)"}
+                                />
+                                <span aria-label={"sum matrix title"} style={{paddingLeft: 8}}>
+                                    Sum ordinal misclassification matrix and details
                                 </span>
                             </React.Fragment>
 
@@ -659,24 +647,17 @@ class CrossValidation extends Component {
                         }
                         title={
                             <React.Fragment>
-                                <RuleWorkTooltip title={`Download fold ${selected.foldIndex + 1} matrix (txt)`}>
-                                    <StyledButton
-                                        aria-label={"fold-download-button"}
-                                        isIcon={true}
-                                        onClick={() => {
-                                            this.onSaveToFile({
-                                                typeOfMatrix: "crossValidationFold",
-                                                numberOfFold: selected.foldIndex
-                                            });
-                                        }}
-                                        themeVariant={"primary"}
-                                    >
-                                        <GetApp />
-                                    </StyledButton>
-                                </RuleWorkTooltip>
-                                <span style={{marginLeft: 8}}>
-                                    {`Fold ${selected.foldIndex + 1}: 
-                                    Ordinal misclassification matrix, it's deviation and details`}
+                                <MatrixDownloadButton
+                                    onSave={() => {
+                                        this.onSaveToFile({
+                                            typeOfMatrix: "crossValidationFold",
+                                            numberOfFold: selected.foldIndex
+                                        });
+                                    }}
+                                    tooltip={`Download fold ${selected.foldIndex + 1} matrix (txt)`}
+                                />
+                                <span aria-label={"fold matrix title"} style={{paddingLeft: 8}}>
+                                    {`Fold ${selected.foldIndex + 1}: Ordinal misclassification matrix  and details`}
                                 </span>
                             </React.Fragment>
                         }

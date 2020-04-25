@@ -1,27 +1,35 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { downloadMatrix, fetchClassification, parseClassificationParams } from "../Utils/fetchFunctions";
-import { parseClassificationItems, parseClassificationListItems, parseMatrix } from "../Utils/parseData";
+import {
+    createFormData,
+    downloadMatrix,
+    fetchClassification,
+    parseClassificationParams
+} from "../Utils/fetchFunctions";
+import {
+    parseClassificationItems,
+    parseClassificationListItems,
+    parseMatrix
+} from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
 import MatrixButton from "../Utils/Buttons/MatrixButton";
+import MatrixDownloadButton from "../Utils/Buttons/MatrixDownloadButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
+import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
 import { MatrixDialog } from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
+import { CSVDialog } from "../../../RuleWorkComponents/Feedback/CSVDialog";
 import { ClassificationDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog"
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
-import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import GetApp from "@material-ui/icons/GetApp";
 
 class Classification extends Component {
     constructor(props) {
@@ -43,6 +51,7 @@ class Classification extends Component {
                 details: false,
                 matrix: false,
                 settings: false,
+                csv: false
             },
             alertProps: undefined,
         };
@@ -136,23 +145,8 @@ class Classification extends Component {
         }
     }
 
-    onCalculateClick = (event) => {
-        event.persist();
+    calculateClassification = (method, data) => {
         let project = {...this.props.project};
-        const { parameters: { defaultClassificationResult, typeOfClassifier } } = this.state;
-
-        let method = project.dataUpToDate || event.target.files ? "PUT" : "POST"
-        let data = new FormData();
-        data.append("defaultClassificationResult", defaultClassificationResult);
-        data.append("typeOfClassifier", typeOfClassifier);
-
-        if (event.target.files) {
-            data.append("data", event.target.files[0]);
-        }
-        if (!project.dataUpToDate && !event.target.files) {
-            data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-            data.append("data", JSON.stringify(project.result.informationTable.objects));
-        }
 
         this.setState({
             loading: true,
@@ -162,6 +156,7 @@ class Classification extends Component {
             ).then(result => {
                 if (result) {
                     project = {...this.props.project};
+
                     if (this._isMounted) {
                         const items = parseClassificationItems(result, project.settings);
 
@@ -197,7 +192,61 @@ class Classification extends Component {
                 }
             });
         });
+    }
+
+    onClassifyData = () => {
+        const { project } = this.props;
+        const { parameters } = this.state;
+
+        let method = project.dataUpToDate ? "PUT" : "POST";
+        let files = {
+            metadata: JSON.stringify(project.result.informationTable.attributes),
+            data: JSON.stringify(project.result.informationTable.objects)
+        }
+        let data = createFormData(parameters, project.dataUpToDate ? null : files);
+
+        this.calculateClassification(method, data);
     };
+
+    onUploadData = (event) => {
+        event.persist();
+
+        if (event.target.files) {
+            if (event.target.files[0].type !== "application/json") {
+                this.csvFile = event.target.files[0];
+
+                this.setState(({open}) => ({
+                    open: { ...open, csv: true }
+                }));
+            } else {
+                const { project } = this.props;
+                const { parameters } = this.state;
+
+                let method = project.dataUpToDate ? "PUT" : "POST";
+                let files = { data: event.target.files[0] };
+                let data = createFormData(parameters, files);
+
+                this.calculateClassification(method, data);
+            }
+        }
+    };
+
+    onCSVDialogClose = (csvSpecs) => {
+        this.setState(({open}) => ({
+            open: { ...open, csv: false }
+        }), () => {
+            if (csvSpecs && Object.keys(csvSpecs).length) {
+                const { project } = this.props;
+                const { parameters } = this.state;
+
+                let method = project.dataUpToDate ? "PUT" : "POST";
+                let files = { data: this.csvFile };
+                let data = createFormData(parameters, files);
+
+                this.calculateClassification(method, data);
+            }
+        });
+    }
 
     onSaveToFile = () => {
         const { project } = this.props;
@@ -287,14 +336,14 @@ class Classification extends Component {
                         <CalculateButton
                             aria-label={"classify-current-file"}
                             disabled={loading}
-                            onClick={this.onCalculateClick}
+                            onClick={this.onClassifyData}
                         >
                             Classify current data
                         </CalculateButton>
                         <RuleWorkUpload
                             accept={".json,.csv"}
                             id={"classify-new-file"}
-                            onChange={this.onCalculateClick}
+                            onChange={this.onUploadData}
                         >
                             <CalculateButton
                                 aria-label={"classify-new-file"}
@@ -367,23 +416,18 @@ class Classification extends Component {
                         saveMatrix={this.onSaveToFile}
                         title={
                             <React.Fragment>
-                                <RuleWorkTooltip title={"Download matrix (txt)"}>
-                                    <StyledButton
-                                        aria-label={"download matrix"}
-                                        isIcon={true}
-                                        onClick={this.onSaveToFile}
-                                        themeVariant={"primary"}
-                                    >
-                                        <GetApp />
-                                    </StyledButton>
-                                </RuleWorkTooltip>
-                                <span style={{marginLeft: 8}}>
+                                <MatrixDownloadButton
+                                    onSave={this.onSaveToFile}
+                                    tooltip={"Download matrix (txt)"}
+                                />
+                                <span aria-label={"matrix title"} style={{paddingLeft: 8}}>
                                     Ordinal misclassification matrix and details
                                 </span>
                             </React.Fragment>
                         }
                     />
                 }
+                <CSVDialog onConfirm={this.onCSVDialogClose} open={open.csv} />
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )

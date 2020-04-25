@@ -1,13 +1,12 @@
-function createFormData(parameters, project) {
+function createFormData(parameters, files) {
     let data = new FormData();
 
-    Object.keys(parameters).map(key => {
-        data.append(key, parameters[key])
-    });
+    if (parameters && Object.keys(parameters).length) {
+        Object.keys(parameters).map(key => data.append(key, parameters[key]));
+    }
 
-    if (!project.dataUpToDate) {
-        data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-        data.append("data", JSON.stringify(project.result.informationTable.objects));
+    if (files && Object.keys(files).length) {
+        Object.keys(files).map(key => data.append(key, files[key]));
     }
 
     return data;

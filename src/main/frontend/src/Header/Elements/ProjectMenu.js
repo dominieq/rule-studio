@@ -20,7 +20,7 @@ const menuStyles = makeStyles(theme => ({
         backgroundColor: theme.palette.popper.background,
         color: theme.palette.popper.text
     }
-}), {name: "MuiMenu"});
+}), {name: "ProjectMenu"});
 
 function ProjectMenu(props) {
     const [anchorE1, setAnchorE1] = useState(null);

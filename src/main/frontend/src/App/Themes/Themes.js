@@ -20,6 +20,8 @@ export const LightTheme = createMuiTheme( {
         },
         background: {
             default: "#D3D3D3",
+            defaultDark: "#939393",
+            defaultLight: "#DBDBDB",
         },
         button: {
             primary: "#2196f3",
@@ -151,6 +153,8 @@ export const DarkTheme = createMuiTheme({
         },
         background: {
             default: "#2A3439",
+            defaultDark: "#1D2427",
+            defaultLight: "#545C60"
         },
         button: {
             primary: "#ABFAA9",
