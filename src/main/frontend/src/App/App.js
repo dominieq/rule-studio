@@ -110,21 +110,17 @@ class App extends Component {
     };
 
     onTabChanges = (project) => {
-        this.setState(({currentProject, projects}) => {
-            let index = currentProject;
+        this.setState(({projects}) => {
+            if (projects.length) {
+                let index;
 
-            if (index === -1 && projects.length) {
                 for (let i = 0; i < projects.length; i++) {
                     if (projects[i].result.id === project.result.id) {
                         index = i;
                         break;
                     }
                 }
-            } else if (index === -1 && !projects.length) {
-                return { projects: projects };
-            }
 
-            if (index > -1) {
                 return {
                     projects: [
                         ...projects.slice(0, index),
@@ -134,7 +130,7 @@ class App extends Component {
                         },
                         ...projects.slice(index + 1)
                     ],
-                }
+                };
             } else {
                 return { projects: projects };
             }

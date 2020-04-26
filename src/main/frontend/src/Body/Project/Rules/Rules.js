@@ -85,7 +85,6 @@ class Rules extends Component {
                     data: null,
                     items: null,
                     displayedItems: [],
-                    selectedItem: null,
                     alertProps: error
                 });
             }
@@ -102,7 +101,8 @@ class Rules extends Component {
                 this.setState(({parameters}) => ({
                     loading: false,
                     parameters: parametersSaved ?
-                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules, typeOfUnions } }
+                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules, typeOfUnions } },
+                    selectedItem: null
                 }), () => this.onSortChange(displayedItems));
             }
         });
@@ -137,6 +137,24 @@ class Rules extends Component {
         }
 
         if (prevProps.project.result.id !== this.props.project.result.id) {
+            const { parametersSaved, sort: { order, value } } = prevState;
+            let project = { ...prevProps.project };
+
+            project.sortParams.rules = { ...project.sortParams.rules, ...{ order, value } };
+
+            if (!parametersSaved) {
+                const { parameters } = prevState;
+
+                project.parameters = {
+                    ...project.parameters,
+                    consistencyThreshold: parameters.consistencyThreshold,
+                    typeOfRules: parameters.typeOfRules
+                };
+                project.parametersSaved = parametersSaved;
+            }
+
+            this.props.onTabChange(project);
+
             this.setState({ loading: true }, this.getRules);
         }
     }
@@ -527,7 +545,7 @@ class Rules extends Component {
                         variant={"extended"}
                     />
                 </RuleWorkDrawer>
-                {Boolean(data) &&
+                {data !== null &&
                     <SortMenu
                         anchorE1={sort.anchorE1}
                         ContentProps={{
@@ -559,7 +577,7 @@ class Rules extends Component {
                         }
                     ]}
                 />
-                {selectedItem &&
+                {selectedItem !== null &&
                     <RulesDialog
                         item={selectedItem}
                         onClose={() => this.toggleOpen("details")}

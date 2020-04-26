@@ -85,16 +85,17 @@ class CrossValidation extends Component {
             project.result.id, 'GET', null
         ).then(result => {
             if (this._isMounted && result) {
-                const { project: { parametersSaved, settings } } = this.props
+                const { project: { parametersSaved, foldIndex, settings } } = this.props
 
                 let folds = parseCrossValidationFolds(result);
                 let resultParams = parseCrossValidationParams(result);
 
-                this.setState(({parameters}) => ({
+                this.setState(({parameters, selected}) => ({
                     data: result,
                     folds: folds,
                     parameters: {...parameters, ...resultParams},
-                    parametersSaved: parametersSaved
+                    parametersSaved: parametersSaved,
+                    selected: { ...selected, foldIndex: foldIndex }
                 }), () => {
                     const { folds, selected: { foldIndex } } = this.state;
                     let items = parseCrossValidationItems(folds[foldIndex], settings);
@@ -107,23 +108,23 @@ class CrossValidation extends Component {
             }
         }).catch(error => {
             if ( this._isMounted ) {
-                this.setState(({selected}) => ({
+                this.setState({
                     data: null,
                     folds: null,
                     items: null,
                     displayedItems: [],
-                    selected: { ...selected, item: null },
                     alertProps: error
-                }));
+                });
             }
         }).finally(() => {
             if ( this._isMounted ) {
                 const { parametersSaved } = this.state;
                 const { project: { parameters: propsParameters } } = this.props;
 
-                this.setState(({parameters}) => ({
+                this.setState(({parameters, selected}) => ({
                     loading: false,
-                    parameters: parametersSaved ? parameters : { ...parameters, ...propsParameters }
+                    parameters: parametersSaved ? parameters : { ...parameters, ...propsParameters },
+                    selected: { ...selected, item: null }
                 }));
             }
         });
@@ -167,6 +168,22 @@ class CrossValidation extends Component {
         }
 
         if (prevProps.project.result.id !== this.props.project.result.id) {
+            const { parametersSaved } = prevState;
+
+            if (!parametersSaved) {
+                let project = { ...prevProps.project };
+                const { parameters, selected: { foldIndex } } = this.state;
+
+                project.parameters = {
+                    ...project.parameters,
+                    ...parameters,
+                    typeOfUnions: project.parameters.typeOfUnions
+                };
+                project.parametersSaved = parametersSaved;
+                project.foldIndex = foldIndex;
+                this.props.onTabChange(project);
+            }
+
             this.setState({ loading: true }, this.getCrossValidation);
         }
     }
@@ -565,7 +582,7 @@ class CrossValidation extends Component {
                         }
                     ]}
                 />
-                {selected.item &&
+                {Array.isArray(folds) && Boolean(folds.length) && selected.item !== null &&
                     <CrossValidationDialog
                         item={selected.item}
                         onClose={() => this.toggleOpen("details")}
@@ -573,7 +590,7 @@ class CrossValidation extends Component {
                         ruleSet={folds[selected.foldIndex].ruleSet}
                     />
                 }
-                {data &&
+                {data !== null &&
                     <MatrixDialog
                         disableDeviation={false}
                         matrix={parseMatrix(data.meanOrdinalMisclassificationMatrix)}
@@ -600,7 +617,7 @@ class CrossValidation extends Component {
                         }
                     />
                 }
-                {data &&
+                {data !== null &&
                     <MatrixDialog
                         matrix={parseMatrix(data.sumOrdinalMisclassificationMatrix)}
                         onClose={() => this.toggleOpen("matrixSum")}

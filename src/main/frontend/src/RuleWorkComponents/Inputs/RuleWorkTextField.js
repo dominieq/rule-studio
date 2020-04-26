@@ -32,7 +32,7 @@ const inputStyles = makeStyles(theme => ({
             backgroundColor: theme.palette.button.contained.backgroundAction
         },
     },
-}), {name: "MuiOutlinedInput"});
+}), {name: "CustomOutlinedInput"});
 
 const menuStyles = makeStyles(theme => ({
     list: {
@@ -42,8 +42,9 @@ const menuStyles = makeStyles(theme => ({
 }), {name: "CustomMenu"});
 
 function RuleWorkTextField(props) {
-    const { children, disabledChildren, outsideLabel, select, ...other } = props;
-    const { InputProps, OutsideLabelProps, SelectProps } = props;
+    const { disabledChildren, outsideLabel, OutsideLabelProps, ...TextFieldProps } = props;
+    const { children, InputProps, select, SelectProps, ...other } = TextFieldProps;
+
     const inputClasses = inputStyles();
     const labelClasses = labelStyles();
     const menuClasses = menuStyles();
@@ -83,7 +84,7 @@ function RuleWorkTextField(props) {
                 select={select}
                 SelectProps={{
                     ...SelectProps,
-                    MenuProps: {classes: {list: menuClasses.list}}
+                    MenuProps: { classes: { ...menuClasses } }
                 }}
                 {...other}
             >

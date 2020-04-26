@@ -69,7 +69,6 @@ class Unions extends Component {
                     data: null,
                     items: null,
                     displayedItems: [],
-                    selectedItems: null,
                     alertProps: error
                 });
             }
@@ -81,7 +80,8 @@ class Unions extends Component {
                 this.setState(({parameters}) => ({
                     loading: false,
                     parameters: parametersSaved ?
-                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfUnions } }
+                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfUnions } },
+                    selectedItems: null
                 }));
             }
         });
@@ -110,6 +110,17 @@ class Unions extends Component {
         }
 
         if (prevProps.project.result.id !== this.props.project.result.id) {
+            const { parametersSaved } = prevState;
+
+            if (!parametersSaved) {
+                const { parameters } = prevState;
+                let project = { ...prevProps.project };
+
+                project.parameters = { ...project.parameters, ...parameters };
+                project.parametersSaved = parametersSaved;
+                this.props.onTabChange(project);
+            }
+
             this.setState({ loading: true }, this.getUnions);
         }
     }
@@ -311,7 +322,7 @@ class Unions extends Component {
                         }
                     ]}
                 />
-                {selectedItem &&
+                {selectedItem !== null &&
                     <UnionsDialog
                         item={selectedItem}
                         onClose={() => this.toggleOpen("details")}
