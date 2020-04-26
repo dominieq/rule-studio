@@ -147,6 +147,17 @@ public class DataService {
         return project;
     }
 
+    public void postData(UUID id, String metadata, String data) throws IOException {
+        logger.info("Id:\t{}", id);
+        logger.info("Metadata:\t{}", metadata);
+        logger.info("Data:\t{}", data);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        project.setInformationTable(informationTable);
+    }
+
     private InputStreamResource produceJsonResource(InformationTable informationTable) throws IOException {
         StringWriter sw = new StringWriter();
 
