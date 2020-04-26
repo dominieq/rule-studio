@@ -85,16 +85,17 @@ class CrossValidation extends Component {
             project.result.id, 'GET', null
         ).then(result => {
             if (this._isMounted && result) {
-                const { project: { parametersSaved, settings } } = this.props
+                const { project: { parametersSaved, foldIndex, settings } } = this.props
 
                 let folds = parseCrossValidationFolds(result);
                 let resultParams = parseCrossValidationParams(result);
 
-                this.setState(({parameters}) => ({
+                this.setState(({parameters, selected}) => ({
                     data: result,
                     folds: folds,
                     parameters: {...parameters, ...resultParams},
-                    parametersSaved: parametersSaved
+                    parametersSaved: parametersSaved,
+                    selected: { ...selected, foldIndex: foldIndex }
                 }), () => {
                     const { folds, selected: { foldIndex } } = this.state;
                     let items = parseCrossValidationItems(folds[foldIndex], settings);
