@@ -1,63 +1,20 @@
 import React from "react";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from "@material-ui/icons/Delete";
-import TextField from "@material-ui/core/TextField";
 import ListItemText from "@material-ui/core/ListItemText";
-import { Button } from "@material-ui/core";
-import { withStyles } from '@material-ui/styles';
+import DeleteIcon from "@material-ui/icons/Delete";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
+import { withStyles } from '@material-ui/styles';
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
+import { StyledDefaultTextField } from './StyledComponents';
 
-const styles = theme => ({
+const styles = ({
   root: {
-    flexGrow: 1,
-    paddingTop: 10,
-    marginTop: 10,
-    maxWidth: 30,//752,
-  },
-  left: {
-    textAlign: "left",
-  }  
-});
-
-const style = {
-    backgroundColor: "#545F66",
-    color: "#ABFAA9",
-}
-
-const StyledList = withStyles({
-  root: {
-      backgroundColor: "#545F66",
-      color: "#ABFAA9",
-      //minWidth: "50%",
+    marginTop: 15,
+    marginBottom: 0
   }
-})(props => <List {...props} />);
-
-const StyledTextField = withStyles({
-  root: {
-      '& label': {
-        color: 'black',
-        backgroundColor: '#ABFAA9',
-      },
-      '& .MuiInput-underline:before': {
-        borderBottomColor: '#6BD425',
-      },
-      '&:hover label': {
-          backgroundColor: "#6BD425",
-      },
-      '& .MuiInput-underline:after': {
-        borderBottomColor: '#6BD425',
-      },
-      '& label.Mui-focused': {
-        color: 'black',
-        backgroundColor: '#66FF66'
-      },
-  },
-})(TextField);
+});
 
 class AttributeDomain extends React.Component {
   constructor(props) {
@@ -75,17 +32,25 @@ class AttributeDomain extends React.Component {
     };
     
     this.props.setDomainElements(props.defaultValue);
+    this.timer = null;
+  }
+
+  startTime = (e) => {
+    e.persist();
+
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.textFieldOnChange(e),300);
   }
 
   textFieldOnChange = (e) => {
     for (let i in this.state.domainElements) {
       if (this.state.domainElements[i].id == e.target.id) {
         const newText = e.target.value;
-        this.setState(
-          prevState => {
-            prevState.domainElements[i].text = newText;
+        this.setState(prevState => {
+          let newDomainElements = [...prevState.domainElements];
+          newDomainElements[i].text = newText;
             return {
-              domainElements: prevState.domainElements
+              domainElements: newDomainElements
             };
           },
           () => this.props.setDomainElements(this.state.domainElements)
@@ -187,75 +152,75 @@ class AttributeDomain extends React.Component {
     const elements = [];
     this.state.domainElements.forEach((x, num) => {
       elements.push(
-        <StyledList dense={false} key={x.id.toString()}>
-          <ListItem>
+          <ListItem key={x.id.toString()}>
             <ListItemText primary={num + 1} classes={{ root: classes.root }} />
-            <StyledTextField
+            <StyledDefaultTextField
+              variant = "standard"
               id={x.id.toString()}
               label="Domain element"
-              onChange={this.textFieldOnChange}
+              onChange={this.startTime}
               defaultValue={x.text}
               autoComplete="off"
               required
             />
 
-            <IconButton
+            <StyledButton
+              isIcon={true}
               aria-label="up"
-              className={classes.margin}
+              className={classes.root}
               size="small"
               value={x.id}
-              style={style}
               onClick={this.switchUpward}
             >
               <ArrowUpwardIcon fontSize="inherit" />
-            </IconButton>
-            <IconButton
+            </StyledButton>
+            <StyledButton
+              isIcon={true}
               aria-label="down"
-              className={classes.margin}
+              className={classes.root}
               disableRipple={false}
               disableFocusRipple={false}
               size="small"
               value={x.id}
-              style={style}
               onClick={this.switchDownward}
             >
               <ArrowDownwardIcon fontSize="inherit" />
-            </IconButton>
-
-            <ListItemSecondaryAction>
-              <IconButton
-                edge="start"
-                aria-label="delete"
-                onClick={this.onClickRemoveElement}
-                value={x.id}
-                style={style}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
+            </StyledButton>
+            
+            <StyledButton
+              isIcon={true}
+              edge="start"
+              aria-label="delete"
+              className={classes.root}
+              onClick={this.onClickRemoveElement}
+              size="small"
+              value={x.id}
+            >
+              <DeleteIcon />
+            </StyledButton>
           </ListItem>
-        </StyledList>
+       
       );
     });
-    return elements;
+    return <List dense={false} style={{overflow: "auto"}} > {elements} </List>;
   };
 
   render() {
     const { classes } = this.props;
     return (
-        <div className={classes.left}>
+        <React.Fragment>
           <StyledButton
             disableElevation={true}
             onClick={this.onClickAddElement}
             themeVariant={"primary"}
-            variant={"contained"} //outlined
-            style={{display: "flex", margin: "auto"}}
+            variant={"contained"}
+            style={{display: "flex", margin: "0 auto"}}
           >
             Add domain element
           </StyledButton>
             
             {this.renderElements(classes)}
-        </div>
+        </React.Fragment>
     );
   }
 }

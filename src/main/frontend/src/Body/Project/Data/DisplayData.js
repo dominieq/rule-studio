@@ -10,19 +10,11 @@ import DropDownForAttributes from './DropDownForAttributes';
 import Notification from './Notification';
 import AttributeDomain from './AttributeDomain';
 import ColumnHeaderMenu from './ColumnHeaderMenu';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
-import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Checkbox from '@material-ui/core/Checkbox';
-import Tooltip from '@material-ui/core/Tooltip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { withStyles, createStyles } from '@material-ui/core/styles';
 import { DraggableHeader } from 'react-data-grid-addons';
@@ -30,7 +22,11 @@ import PropTypes from 'prop-types';
 import RuleWorkLoadingIcon from './RuleWorkLoadingIcon';
 import StyledButton from '../../../RuleWorkComponents/Inputs/StyledButton';
 import NumericFilter from './NumericFilter';
-import { Divider } from '@material-ui/core';
+import AttributesVirtualizedTable from './AttributesVirtualizedTable';
+import RuleWorkTooltip from '../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip';
+
+import { StyledCheckbox, StyledRadio, StyledRuleWorkTextField} from './StyledComponents';
+import StyledDivider from '../../../RuleWorkComponents/DataDisplay/StyledDivider';
 
 const selectors = Data.Selectors;
 const { DropDownEditor } = Editors;
@@ -43,8 +39,11 @@ const maxNoOfHistorySteps = 30;
 
 const SimpleDialog = withStyles( theme => ({
     paper: {
-        backgroundColor: theme.palette.paper.background,
+        backgroundColor: theme.palette.background.default,
         color: theme.palette.paper.text,
+    },    
+    paperWidthSm: {
+        maxWidth: "700px"
     }
 }), {name: "simple-dialog"})(props => (
     <Dialog {...props}/>
@@ -135,51 +134,6 @@ const StyledReactDataGrid = (theme) => createStyles({
     }
   }   
 });
-
-const defaultPrimaryColor = "#ABFAA9";
-
-const ValidationTextField = withStyles(theme => ({
-    root: {
-        '& label': {
-          color: 'black',
-          backgroundColor: '#ABFAA9',
-        },
-        '&:hover label': {
-            backgroundColor: "#6BD425",
-        },
-        '& label.Mui-focused': {
-          color: 'black',
-          backgroundColor: '#66FF66'
-        },
-      '& .MuiOutlinedInput-root': {
-          height: 40,
-          backgroundColor: theme.palette.button.primary,
-          '&:hover fieldset': {
-              borderColor: "#66FF66",
-          },
-          '&.Mui-focused fieldset': {
-              borderColor: "#66FF66",
-          },
-          '&:hover': {
-              backgroundColor: "#6BD425",
-              '& label': {
-                backgroundColor: '#ABFAA9'
-              }
-          },
-          '&.Mui-focused': {
-              backgroundColor: "#6BD425"
-          },
-      },
-  },
-}))(TextField);
-
-const StyledList = withStyles({
-    root: {
-        backgroundColor: "#545F66",
-        color: "#ABFAA9",
-        minWidth: "50%",
-    }
-})(props => <List {...props} />);
 
 function RightClickContextMenu({
     idx,
@@ -409,26 +363,39 @@ class DisplayData extends React.Component {
                 }
             }                        
         }
-       
 
+       console.log(this.props.project.isDataFromServer);
         this._isMounted = true;
     }
 
     componentWillUnmount() {
         console.log("Witam w metodzie: componentWillUnmount")
         if(this.state.dataModified) {
-            console.log("wszedlem do component did update -> zmienione dane")
             const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
             const tmpData = this.prepareDataFileBeforeSendingToServer();
             const tmpProject = {...this.props.project}
             tmpProject.result.informationTable.attributes = tmpMetaData;
             tmpProject.result.informationTable.objects = tmpData;
-            tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history}
+            tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history};
+            tmpProject.isDataFromServer = false;
             this.props.updateProject(tmpProject);
         }
         this._isMounted = false;
+        let t0 = performance.now();
+        //this.sameData();
+        let t1 = performance.now();
     }
-
+/*
+    sameData = (rows, cols) => {
+        //length of the columns
+        if(cols.length !== this.state.history[this.state.historySnapshot].cols.length) 
+            return false
+        //compare all columns
+        for(let i in cols) {
+           // if()
+        }
+    }
+*/
     /** 
      * Method responsible for updating displayed data when the value in the cell changes (or multiple values when dragging). First row has index 0.
      * @method
@@ -472,6 +439,14 @@ class DisplayData extends React.Component {
                 const filtered = this.filteredRows();
                 const tmp = Object.entries(updated)[0];
                 const editedCol = prevState.history[prevState.historySnapshot].columns.find(x => x.key === tmp[0])
+
+                if(tmp[1]==="") {
+                    const message = <span> Cell hasn't been updated. <br/> Empty value is not valid input. </span>
+                        return {
+                            isOpenedNotification: true,
+                            addAttributeErrorNotification: message
+                        }
+                }
                 if(editedCol.valueType === "real") { //enable only reals and "?"
                     if(tmp[1] !== "?" && isNaN(Number(tmp[1]))) {
                         const message = <span> Cell hasn't been updated. <br/> Column type: real <br/> The entered value: {tmp[1]}, which is invalid. </span>
@@ -535,7 +510,6 @@ class DisplayData extends React.Component {
         
         const comparer = (a, b) => {
             if (sortDirection === "ASC") {
-                console.log("Porownuje: " + a[sortColumn] + " z " + b[sortColumn]);
                 ((sortColumn === "uniqueLP") ? tmpEnableRowInsert = 0 : tmpEnableRowInsert = -1)
                 if(numberSorting) {
                     //a-at the beginning, b-at the end
@@ -1309,14 +1283,6 @@ class DisplayData extends React.Component {
         return [];
     }
 
-    EmptyRowsView = () => {
-        return (
-            <div>
-                <h5> There are no rows to display! </h5>
-            </div>
-        );
-    };
-
     /**
      * Method responsible for opening the "Save to file" dialog. The dialog is accessible through the "SAVE TO FILE" button.
      * Method responsible for changing displayed data when project is changed. Runs after every [twojaNazwa]{@link DisplayData#render} and holds the latest values of props and state.
@@ -1442,7 +1408,7 @@ class DisplayData extends React.Component {
 
                 //enumeration validation
                 else if(valueType === "enumeration") {
-                    if(domain.length === 0) error = "You have chosen enumeration type, but didn't provide any domain! Please add the domain to your enumeration value type.";
+                    if(domain.length === 0) error = <span> You have chosen enumeration type, but didn't provide any domain! <br/> Please add the domain to your enumeration value type. </span>;
 
                     for(let i=0; i<domain.length; i++) {
                         if(domain[i].text === "") {
@@ -1458,7 +1424,7 @@ class DisplayData extends React.Component {
                         if(error === '') {
                             const domainTmp = domain.map(x => x.text.trim());
                             if(new Set(domainTmp).size !== domainTmp.length) {
-                                error = "There are at least 2 attributes, which have the same domain name! The domain name must be unique, so please rename them.";
+                                error = <span> There are at least 2 attributes, which have the same domain name! <br/> The domain name must be unique, so please rename them. </span>;
                                 break;
                             }
                         }
@@ -1719,15 +1685,16 @@ class DisplayData extends React.Component {
     }
 
     displayAddAttributeFields = () => {
+        const tmpWrapper = [];
         const tmp = [];
         tmp.push(<FormControlLabel
-            control={<Checkbox defaultChecked={true} style={{float: "left", width: "65%", color: defaultPrimaryColor}} name="attributeIsActive"/>}
+            control={<StyledCheckbox defaultChecked={true} name="attributeIsActive"/>}
             label="Active"
             labelPlacement="start"
             key="attributeIsActive"
-            style={{justifyContent: "space-evenly"}}
+            style={{justifyContent: "flex-end",  margin: "0"}}
         />)
-        tmp.push(<ValidationTextField autoComplete="off" label="Name" size="small" fullWidth required variant="outlined" id="attributeName" key="attributeName" defaultValue="" />)
+        tmp.push(<StyledRuleWorkTextField autoComplete={"off"} label="Name" size="small" fullWidth required variant="outlined" id="attributeName" key="attributeName" defaultValue="" />)
         tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key="attributeType" displayName={"Type"} items={["identification","description","condition","decision"]}/>)
 
         if(this.state.attributeTypeSelected !== "identification") {
@@ -1736,18 +1703,102 @@ class DisplayData extends React.Component {
             tmp.push(<DropDownForAttributes getSelected={this.getSelectedValueType} name={"valueType"} displayName={"Value type"} key="valueType" items={["integer","real","enumeration"]}/>)
             if(this.state.valueTypeSelected === "enumeration")
             {
-                tmp.push(<div className="attributeDomainWrapper" key="attributeDomainWrapper"><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements}/> </div> </div>)
+                tmpWrapper.push(<div className="addAttributeDomain" key="addAttributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements}/> </div>)
             }
         } else if(this.state.attributeTypeSelected === "identification") { 
             tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} displayName={"Identifier type"} key="identifierType" items={["uuid","text"]}/>)
         }
+
+        tmpWrapper.unshift(<div key="addAttributeFields" className="addAttributeFields"> {tmp} </div>)
       
-        if(tmp.length !== 0) return tmp;
+        if(tmpWrapper.length !== 0) return tmpWrapper;
         return ;
     }
 
-    handleListItemClick = (e) => {
-        const selectedItem = e.currentTarget.dataset.value;
+    displayEditAttributeFields = () => {
+        let attribute = {};
+        for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
+            if(this.state.editAttributeSelected === this.state.history[this.state.historySnapshot].columns[i].name) { 
+                attribute = {...this.state.history[this.state.historySnapshot].columns[i]};
+                break;
+            }
+        }
+        
+        const tmpWrapper = [];
+        const tmp = [];
+        
+        tmp.push(<FormControlLabel
+            control={<StyledCheckbox defaultChecked={attribute.active} name="attributeIsActive"/>}
+            label="Active"
+            labelPlacement="start"
+            key={"attributeIsActive"+attribute.name}
+            style={{justifyContent: "flex-end",  margin: "0"}}
+        />)
+
+        //display attribute name
+        tmp.push(<StyledRuleWorkTextField autoComplete={"off"} label="Name" fullWidth required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
+        
+        //display attribute type - identification
+        if(this.state.attributeTypeSelected === "identification" || (this.state.attributeTypeSelected === '' && attribute.valueType === undefined)) {
+            tmp.push(<DropDownForAttributes key={"attributeType"+attribute.name} name={"attributeType"} getSelected={this.getSelectedAttributeType} displayName={"Type"} defaultValue={"identification"} items={["identification","description","condition","decision"]}/>)
+            
+            //display identifier type
+            if(attribute.identifierType === 'uuid' || attribute.identifierType === 'text') {
+                tmp.push(<DropDownForAttributes key={"identifierType"+attribute.name} name={"identifierType"} getSelected={this.getSelectedIdentifierType} displayName={"Identifier type"} defaultValue={attribute.identifierType} items={["uuid","text"]}/>)
+            } else {
+                tmp.push(<DropDownForAttributes key={"identifierType"+attribute.name} name={"identifierType"} getSelected={this.getSelectedIdentifierType} displayName={"Identifier type"} items={["uuid","text"]}/>)
+            }
+
+        } else if(this.state.attributeTypeSelected == attribute.type || (this.state.attributeTypeSelected == '' && attribute.type !== undefined)) { //display attribute type - other than identification and the same as before editing 
+            tmp.push(<DropDownForAttributes key={"attributeType"+attribute.name} name={"attributeType"} getSelected={this.getSelectedAttributeType} displayName={"Type"} defaultValue={attribute.type} items={["identification","description","condition","decision"]}/>)
+        } else { //display attribute type - other than identification and other than before editing
+            tmp.push(<DropDownForAttributes key={"attributeType"+attribute.name} name={"attributeType"} getSelected={this.getSelectedAttributeType} displayName={"Type"} items={["identification","description","condition","decision"]}/>)
+        }
+        
+        //it's not identification attribute
+        if((attribute.valueType !== undefined && this.state.attributeTypeSelected === '') || (this.state.attributeTypeSelected !== "identification")) {
+            
+            //display missing value type
+            if(attribute.missingValueType !== undefined) 
+                tmp.push(<DropDownForAttributes key={"missingValueType"+attribute.name} name={"missingValueType"} getSelected={this.getSelectedMissingValueType} displayName={"Missing value type"} missingVal={true} defaultValue={attribute.missingValueType} items={["1.5","2"]}/>)
+            else 
+                tmp.push(<DropDownForAttributes key={"missingValueType"+attribute.name} name={"missingValueType"} getSelected={this.getSelectedMissingValueType} displayName={"Missing value type"} missingVal={true} defaultValue="mv2" items={["1.5","2"]}/>)
+
+            //display preference type
+            if(attribute.preferenceType !== undefined) 
+                tmp.push(<DropDownForAttributes key={"attributePreferenceType"+attribute.name} name={"attributePreferenceType"} getSelected={this.getSelectedAttributePreferenceType} displayName={"Preference type"} defaultValue={attribute.preferenceType} items={["none","cost","gain"]}/>)
+            else
+                tmp.push(<DropDownForAttributes key={"attributePreferenceType"+attribute.name} name={"attributePreferenceType"} getSelected={this.getSelectedAttributePreferenceType} displayName={"Preference type"} items={["none","cost","gain"]}/>)
+
+            //display value type
+            if(attribute.valueType !== undefined)
+                tmp.push(<DropDownForAttributes key={"valueType"+attribute.name} name={"valueType"} getSelected={this.getSelectedValueType} displayName={"Value type"} defaultValue={attribute.valueType} items={["integer","real","enumeration"]}/>)
+            else
+                tmp.push(<DropDownForAttributes key={"valueType"+attribute.name} name={"valueType"} getSelected={this.getSelectedValueType} displayName={"Value type"} items={["integer","real","enumeration"]}/>)
+
+            tmpWrapper.push(<div key="editAttributeFields" className="editAttributeFields"> {tmp} </div>)
+            //display domain for enumeration value type
+            if(attribute.valueType === "enumeration" && (this.state.valueTypeSelected === '' || this.state.valueTypeSelected === "enumeration"))
+            {
+                const domain = [];
+                attribute.domain.forEach( (x, index) => { 
+                    if(x !== "?") domain.push({id: index, text: x});
+                })
+                tmpWrapper.push(<div className="editAttributeDomain" key={"editAttributeDomain"+attribute.name}> <AttributeDomain setDomainElements={this.setDomainElements} defaultValue={domain}/> </div>)
+            } else if(this.state.valueTypeSelected === "enumeration") {
+                tmpWrapper.push(<div className="editAttributeDomain" key={"editAttributeDomain"+attribute.name}> <AttributeDomain setDomainElements={this.setDomainElements}/> </div>)
+            }
+
+        }
+
+        if(tmpWrapper.length === 0)
+            tmpWrapper.push(<div key="editAttributeFields" className="editAttributeFields"> {tmp} </div>)
+        
+        return tmpWrapper;
+    }
+
+    handleListItemClick = (col) => {
+        const selectedItem = col.name; //e.currentTarget.dataset.value;
         this.setState( (prevState) => {
             if(prevState.editAttributeSelected !== selectedItem) {
                 return { 
@@ -1839,90 +1890,6 @@ class DisplayData extends React.Component {
         
         return tmp;
     }
-
-    displayFieldsOfSelectedAttribute = () => {
-        let attribute;
-        for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
-            if(this.state.editAttributeSelected === this.state.history[this.state.historySnapshot].columns[i].name) { 
-                attribute = {...this.state.history[this.state.historySnapshot].columns[i]};
-                break;
-            }
-        }
-        
-        const tmp = [];
-        
-        tmp.push(<FormControlLabel
-            control={<Checkbox defaultChecked={attribute.active} color="primary" style={{float: "left", width: "65%", color: defaultPrimaryColor}} name="attributeIsActive"/>}
-            label="Active"
-            labelPlacement="start"
-            key={"attributeIsActive"+attribute.name}
-            style={{justifyContent: "space-evenly"}}
-        />)
-        tmp.push(<ValidationTextField autoComplete="off" label="Name" fullWidth required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
-
-        if((this.state.attributeTypeSelected === '' && this.state.valueTypeSelected === '') || (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected.toLowerCase() === attribute.valueType)   /*|| (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected === '') //nothing has changed
-            || (this.state.attributeTypeSelected === '' && this.state.valueTypeSelected.toLowerCase() === attribute.valueType) || (this.state.attributeTypeSelected.toLowerCase()===attribute.type && this.state.valueTypeSelected.toLowerCase() === attribute.valueType) */
-            || (this.state.attributeTypeSelected === 'identification' && attribute.preferenceType === undefined)) { 
-
-            if(attribute.identifierType !== '' && attribute.type === undefined) { //if it's identifier attribute
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} defaultValue={"identification"} displayName={"Type"} items={["identification","description","condition","decision"]}/>) 
-                
-                if(attribute.identifierType.toLowerCase() === 'uuid') {
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} key={"identifierType"+attribute.name} defaultValue={"uuid"} displayName={"Identifier type"}  items={["uuid","text"]}/>)
-                }
-                else { 
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} key={"identifierType"+attribute.name} defaultValue={"text"} displayName={"Identifier type"}  items={["uuid","text"]}/>) 
-                }
-            } else { //it's not identifier attribute
-                
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} defaultValue={attribute.type} displayName={"Type"} items={["identification","description","condition","decision"]}/>)
-
-                if(attribute.missingValueType === "mv2") {
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} displayName={"Missing value type"} missingVal={true} defaultValue="mv2" items={["1.5","2"]}/>)
-                }
-                else {
-                    tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} displayName={"Missing value type"} missingVal={true} defaultValue="mv1.5" items={["1.5","2"]}/>)
-                }
-                
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributePreferenceType} name={"attributePreferenceType"} key={"attributePreferenceType"+attribute.name} defaultValue={attribute.preferenceType} displayName={"Preference type"} items={["none","cost","gain"]}/>)
-
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedValueType} name={"valueType"} displayName={"Value type"} key={"valueType"+attribute.name} defaultValue={attribute.valueType} items={["integer","real","enumeration"]}/>)
-
-                if(attribute.valueType === "enumeration")
-                {
-                    const domain = [];
-                    attribute.domain.forEach( (x, index) => { 
-                        if(x !== "?") domain.push({id: index, text: x});
-                    })
-                    tmp.push(<div className="attributeDomainWrapper" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements} defaultValue={domain}/> </div> </div>)
-                }
-            }
-        } else if(this.state.attributeTypeSelected !== attribute.type) { //attribute type has changed (everything under it - rerender with empty values)
-            
-            if(this.state.attributeTypeSelected !== "identification") {
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} displayName={"Type"} items={["identification","description","condition","decision"]}/>)
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedMissingValueType} name={"missingValueType"} key={"missingValueType"+attribute.name} missingVal={true}  defaultValue="mv2" displayName={"Missing value type"} items={["1.5","2"]}/>)
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributePreferenceType} name={"attributePreferenceType"} key={"attributePreferenceType"+attribute.name} displayName={"Preference type"} items={["none","cost","gain"]}/>)
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedValueType} name={"valueType"} displayName={"Value type"} key={"valueType"+attribute.name} items={["integer","real","enumeration"]}/>)
-                if(this.state.valueTypeSelected === "enumeration")
-                {
-                    tmp.push(<div className="attributeDomainWrapper" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements}/> </div> </div>)
-                }
-            } else if(this.state.attributeTypeSelected === "identification") { 
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key={"attributeType"+attribute.name} displayName={"Type"} defaultValue={"identification"} items={["identification","description","condition","decision"]}/>)
-                tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} displayName={"Identifier type"} key={"identifierType"+attribute.name} items={["uuid","text"]}/>)
-            }
-        } else if(this.state.valueTypeSelected !== attribute.valueType) {
-            if(this.state.valueTypeSelected === "enumeration")
-            {
-                tmp.push(<div className="attributeDomainWrapper" key={"attributeDomainWrapper"+attribute.name}><div className="attributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements}/> </div> </div>)
-            }
-        }
-      
-        return tmp;
-    }
-
-    
 
     displayColumnHeaderMenu = () => {
         if(this.state.isColumnHeaderMenuOpened && this.state.columnKeyOfHeaderMenuOpened !== "uniqueLP") { //don't touch No. column
@@ -2035,7 +2002,7 @@ class DisplayData extends React.Component {
     render() {   
         const classes = this.props.classes;
         return (
-            <div style={{height: "0px", flexGrow: 0.93}} className={classes.root}>      
+            <div style={{height: "0px", flexGrow: 0.93}} className={classes.root}>
                 <DraggableContainer onHeaderDrop={this.onColumnHeaderDragDrop}>   
                 <ReactDataGrid
                     ref={(node) => this.grid = node}
@@ -2082,21 +2049,20 @@ class DisplayData extends React.Component {
                         />
                       }
                       RowsContainer={ContextMenuTrigger}
-                      //emptyRowsView={this.EmptyRowsView}
                 />
                 </DraggableContainer>     
                 
-                <SimpleDialog open={this.state.isOpenedAddAttribute} fullWidth={true} maxWidth={"xs"} onClose={this.closeOnAddAttribute} aria-labelledby="add-attribute-dialog">
+                <SimpleDialog open={this.state.isOpenedAddAttribute} fullWidth={true} maxWidth={"sm"} onClose={this.closeOnAddAttribute} aria-labelledby="add-attribute-dialog">
                     <DialogTitle id="add-attribute-dialog">{"Add new attribute"}</DialogTitle>
                     <form onSubmit={this.applyOnAddAttribute}>
                     <DialogContent>
-                        <div className="nicelyInColumn">
+                        <div className={"editAndAddAttributesWrapper"}>
                             {this.displayAddAttributeFields()}
-                            {
-                                this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
-                                closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
-                            }                        
                         </div>        
+                        {
+                            this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
+                            closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
+                        }  
                     </DialogContent>
                     <DialogActions>
                         <StyledButton onClick={this.closeOnAddAttribute} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
@@ -2109,28 +2075,27 @@ class DisplayData extends React.Component {
                     <DialogTitle id="edit-attributes-dialog">{"Edit attributes"}</DialogTitle>
                     <form onSubmit={this.applyOnEditAttributes}>
                     <DialogContent>
-                        {this.state.history[this.state.historySnapshot].columns !== undefined && this.state.history[this.state.historySnapshot].columns.length === 1? 
-                        <span> There are no attributes to edit! </span> :
-                        <span> Choose attribute to edit. <br/> Please note that you can apply changes only to the selected attribute. </span>
+                        {
+                        this.state.history[this.state.historySnapshot].columns !== undefined && this.state.history[this.state.historySnapshot].columns.length === 1 ? 
+                            <span> There are no attributes to edit! </span> 
+                            :
+                            <span> Choose attribute to edit. <br/> Please note that you can apply changes only to the selected attribute. </span> && 
+                            <div className="editAndAddAttributesWrapper">
+                                <div className="editAttributesVirtualizedList">
+                                    <AttributesVirtualizedTable
+                                        headerText={"Attributes"}
+                                        onItemInTableSelected={this.handleListItemClick}
+                                        table={this.displayListOfAttributesForModification()}
+                                        clicked={this.state.editAttributeSelected}
+                                    />
+                                </div>                       
+                                {this.state.editAttributeSelected !== '' ? this.displayEditAttributeFields() : null}                            
+                            </div>  
                         }
-                        
-                        <div className="editAttributesWrapper">
-                        <div className="nicelyInColumn">
-                            <StyledList component="nav" aria-label="display attributes" id="edit-attributes-list"> 
-                            {this.displayListOfAttributesForModification().map(x => (
-                                <ListItem button data-value={x.name} key={x.key} selected={this.state.editAttributeSelected === x.name} onClick={this.handleListItemClick} >
-                                    <ListItemText primary={x.name}/>
-                                </ListItem>))}
-                            </StyledList>
-                        </div>
-                        <div className="editAttributesValues">
-                            {this.state.editAttributeSelected !== '' ? this.displayFieldsOfSelectedAttribute() : null}    
-                            {
-                                this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
-                                closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
-                            }                        
-                        </div> 
-                        </div>       
+                        {
+                            this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
+                            closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
+                        }    
                     </DialogContent>
                     <DialogActions>
                         <StyledButton onClick={this.closeOnEditAttributes} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
@@ -2147,38 +2112,37 @@ class DisplayData extends React.Component {
                             <div style={{flex: "1"}}>
                                 <span style={{display: "flex", justifyContent: "center"}}>Metadata</span>
                                 <FormControlLabel style={{display: "flex", justifyContent: "center"}}
-                                    control={<Checkbox style={{color: defaultPrimaryColor}} name="metadata" 
+                                    control={<StyledCheckbox name="metadata" 
                                     onChange={this.handleChangeSaveToFileMetaData}/>}
                                     label="JSON"
                                     labelPlacement="end"
                                 />
                             </div>
                             
-                            <Divider orientation="vertical" variant="fullWidth" flexItem
-                            style={{backgroundColor: defaultPrimaryColor, flex: "0 0 1px"}}/>
+                            <StyledDivider orientation="vertical" color="secondary" />
                             
                             <div style={{flex: "1"}}>
                                 <span style={{display: "flex", justifyContent: "center"}}>Data</span>
                                 <div style={{display: "flex", justifyContent: "center" }}>
                                     <RadioGroup row={true} aria-label="file" name="file" value={this.state.saveToFileData} 
                                     onChange={this.handleChangeSaveToFileData}>
-                                    <FormControlLabel value="json" control={<Radio style={{color: defaultPrimaryColor}}/>} label="JSON" />
-                                    <FormControlLabel value="csv" control={<Radio style={{color: defaultPrimaryColor}}/>} label="CSV" />
+                                        <FormControlLabel value="json" control={<StyledRadio />} label="JSON" />
+                                        <FormControlLabel value="csv" control={<StyledRadio />} label="CSV" />
                                     </RadioGroup>
                                 </div>
                                 {
                                     this.state.saveToFileData === "csv" && <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                                    <Tooltip title="Save data with header row" placement="bottom">
+                                    <RuleWorkTooltip title="Save data with header row">
                                     <FormControlLabel 
-                                        control={<Checkbox style={{color: defaultPrimaryColor}} name="csvHeader" 
+                                        control={<StyledCheckbox name="csvHeader" 
                                         onChange={this.handleChangeSaveToFileCsvHeader}/>}
-                                        label="Header?"
+                                        label="Header"
                                         labelPlacement="end"
                                     />
-                                    </Tooltip>
+                                    </RuleWorkTooltip>
                                     <DropDownForAttributes getSelected={this.getSelectedSaveToFileCsvSeparator} 
                                         name={"saveToFileSeparator"} key="saveToFileSeparator" displayName={"Separator"} 
-                                        items={["tab","semicolon","comma","space"]}
+                                        items={["comma","space","tab","semicolon"]} defaultValue="comma" defaultWidth="80%"
                                     />
                                     </div>
                                 }
@@ -2200,14 +2164,14 @@ class DisplayData extends React.Component {
                 <SimpleDialog open={this.state.isOpenedTransform} onClose={this.closeOnTransform} aria-labelledby="transform-warning-dialog">
                     <DialogTitle id="transform-warning-title">{"Do you want to impose preference orders?"}</DialogTitle>
                     <DialogContent>
-                    <Tooltip title="Binarize nominal attributes with 3+ values?" placement="bottom" arrow>
+                    <RuleWorkTooltip title="Binarize nominal attributes with 3+ values?">
                     <FormControlLabel
-                        control={<Checkbox defaultChecked={false} style={{color: defaultPrimaryColor}} name="binarize" onChange={this.handleChangeBinarize}/>}
+                        control={<StyledCheckbox defaultChecked={false} name="binarize" onChange={this.handleChangeBinarize}/>}
                         label="Binarize"
                         labelPlacement="start"
                         key="Binarize"
                     />
-                    </Tooltip>
+                    </RuleWorkTooltip>
                     
                     </DialogContent>
                     <DialogActions>

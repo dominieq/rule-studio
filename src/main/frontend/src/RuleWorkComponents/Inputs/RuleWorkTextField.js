@@ -94,7 +94,7 @@ function RuleWorkTextField(props) {
 }
 
 RuleWorkTextField.propTypes = {
-    autoComplete: PropTypes.bool,
+    autoComplete: PropTypes.string,
     autoFocus: PropTypes.bool,
     classes: PropTypes.object,
     color: PropTypes.oneOf(["primary", "secondary"]),

@@ -1,20 +1,3 @@
-.nav {
-    padding: 10px 10px 0;
-    background: #333;
-}
-.is-visible {
-    border: solid 1px red;
-}
-/*
-.rdg-selected {
-  border: none !important;
-  
-}
-
-.drag-handle {
-  display: none;
-}*/
-
 /* USTAW ROZMIAR */
 .react-grid-Main{
   height: 100%;
@@ -33,24 +16,21 @@
 }
 
 div.react-grid-HeaderCell .input-sm {
-    height: 30px;
-    padding: 5px 10px;
-    font-size: 12px;
-    line-height: 1.5;
-    border-radius: 3px;
-    max-width : 100%;
-    border : 1px solid #ddd;
-    /*
-    background-color: #2A3439;
-    color: rgb(102,255,102, 0.8);
-    */
+  height: 30px;
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+  max-width : 100%;
+  border : 1px solid #ddd;
 }
 
 div.react-grid-HeaderCell-sortable {
   height: 100%;
-  display: flex;
+  display: inline-block;
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
 
 div.react-grid-HeaderCell-sortable > .pull-right {
@@ -67,53 +47,45 @@ div.react-grid-HeaderCell-sortable > .pull-right {
  font-size: small;
 }
 
-#edit-attributes-list {
-  width: 100%;
-}
-
-.nicelyInColumn {
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  float: left;
-  margin-right: 16px;
-  width: 16vw;
-}
-
-.editAttributesValues {
-  margin-top: 16px;
-  width: auto;
-  
-  
-}
-.editAttributesWrapper {
+.editAndAddAttributesWrapper {
   display: flex;
-}
-
-.editAttributesValues > div, .editAttributesValues > label {
-  float: left;
-  clear: left;
-  width: 16vw;
-}
-
-.attributeDomain {
-  width: 350px;
-  height: 300px;
-  /*overflow-y: auto;*/
-}
-
-div.attributeDomainWrapper {
-  height: 98%;
+  justify-content: space-evenly;
   margin-top: 16px;
-  clear: none;
-  float: none;
-  display: inline-block;
-  flex-basis: 100%; 
-  width: 346px;
-  
-  overflow-y: auto;
-  overflow-x: hidden;
+}
+
+.editAttributesVirtualizedList{
+  width: 26%;
+  display: flex;
+  flex-direction: column;
+  height: 60vh;
+}
+
+.addAttributeFields {
+  width: 36%;
+  display: flex;
+  flex-direction: column;
+}
+
+.addAttributeDomain {
+  width: 56%;
+  height: 60vh;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.editAttributeFields {
+  width: 26%;
+  display: flex;
+  flex-direction: column;
+}
+
+.editAttributeDomain {
+  width: 40%;
+  height: 60vh;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 /* BLUE SCROLL IN EDIT ATTRIBUTES ENUMERATION */
