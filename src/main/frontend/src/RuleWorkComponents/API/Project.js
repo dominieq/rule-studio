@@ -28,6 +28,7 @@ class Project {
             historySnapshot: 0,
             history: []
         };
+        this.isDataFromServer = true;
     }
 }
 
