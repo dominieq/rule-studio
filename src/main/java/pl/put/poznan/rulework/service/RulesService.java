@@ -259,7 +259,7 @@ public class RulesService {
         UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
 
         RulesWithHttpParameters rules = project.getRules();
-        if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (rules.getConsistencyThreshold() != consistencyThreshold) || (rules.getTypeOfRules() != typeOfRules)) {
+        if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (!rules.getConsistencyThreshold().equals(consistencyThreshold)) || (rules.getTypeOfRules() != typeOfRules)) {
             RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
             rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, false);
 
