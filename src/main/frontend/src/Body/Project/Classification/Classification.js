@@ -86,7 +86,6 @@ class Classification extends Component {
                     data: null,
                     items: null,
                     displayedItems: [],
-                    selectedItem: null,
                     alertProps: error
                 });
             }
@@ -101,7 +100,8 @@ class Classification extends Component {
                 this.setState(({parameters}) => ({
                     loading: false,
                     parameters: parametersSaved ?
-                        parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier } }
+                        parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier } },
+                    selectedItem: null
                 }));
             }
         });
@@ -127,7 +127,18 @@ class Classification extends Component {
         }
 
         if (prevProps.project.result.id !== this.props.project.result.id) {
-            this.setState({ loading: true}, this.getClassification);
+            const { parametersSaved } = prevState;
+
+            if (!parametersSaved) {
+                let project = { ...prevProps.project };
+                const { parameters } = prevState;
+
+                project.parameters = { ...project.parameters, ...parameters};
+                project.parametersSaved = parametersSaved;
+                this.props.onTabChange(project);
+            }
+
+            this.setState({ loading: true }, this.getClassification);
         }
     }
 
@@ -319,6 +330,7 @@ class Classification extends Component {
 
     render() {
         const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
+        const { project } = this.props;
 
         return (
             <RuleWorkBox id={"rule-work-classification"} styleVariant={"tab"}>
@@ -399,15 +411,15 @@ class Classification extends Component {
                         }
                     ]}
                 />
-                {selectedItem &&
+                {project.result.rules !== null && selectedItem !== null &&
                     <ClassificationDialog
                         item={selectedItem}
                         onClose={() => this.toggleOpen("details")}
                         open={open.details}
-                        ruleSet={this.props.project.result.rules.ruleSet}
+                        ruleSet={project.result.rules.ruleSet}
                     />
                 }
-                {data &&
+                {data !== null &&
                     <MatrixDialog
                         matrix={parseMatrix(data.ordinalMisclassificationMatrix)}
                         onClose={() => this.toggleOpen("matrix")}
