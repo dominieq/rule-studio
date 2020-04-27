@@ -347,6 +347,9 @@ class DisplayData extends React.Component {
                     attribute.filterRenderer = NumericFilter;
                 }
             }
+            if(metadata[el].type !== undefined) attribute.width = Math.max(120, 20 + 10*metadata[el].name.length, 20+10*(metadata[el].type.length + 9));
+            else if(metadata[el].identifierType !== undefined) attribute.width = Math.max(120, 20 + 10*metadata[el].name.length, 20+10*(metadata[el].identifierType.length + 9));
+            else attribute.width = 120;
             tmp.push(attribute)
         }
         return tmp; 
