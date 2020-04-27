@@ -227,21 +227,12 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for catching errors
-     */
-    componentDidCatch(error, info) {
-        console.log(error);
-        console.log(info);
-    }
-
-    /**
      * Method responsible for changing displayed data when project is changed. Runs after every [render()]{@link DisplayData#render} and holds the newest values of props and state.
      * If the project has been changed then initialize all the values (overwrite) in the state.
      * @param {Object} prevProps Props object containing all the props e.g. props.project.id or props.project.name
      * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
      */
     componentDidUpdate(prevProps, prevState) {
-        console.log("Witam w metodzie: componentDidUpdate")
         if(prevProps.project.result.id !== this.props.project.result.id) {
             this.isDataFromServer = this.props.project.isDataFromServer;
             this.setState({
@@ -290,12 +281,6 @@ class DisplayData extends React.Component {
                 this.replaceMissingDataWithQuestionMarks();
             })
         }
-       // if(prevState.history[prevState.historySnapshot] !== undefined && this.state.history[this.state.historySnapshot] !== undefined) {
-           // console.log("PrevState columns (gdzieJestem = " + prevState.historySnapshot + "):")
-            //console.log(prevState.history);
-            //console.log("State columns (gdzieJestem = " + this.state.historySnapshot + "):")
-            //console.log(this.state.history)
-        //}
     }
 
     /** 
@@ -387,7 +372,6 @@ class DisplayData extends React.Component {
      * Runs only once, after component is mounted (after first [render]{@link DisplayData#render} and before methods shouldComponentUpdate() and [componentDidUpdate]{@link DisplayData#componentDidUpdate}).
      */
     componentDidMount() {
-        console.log("Witam w metodzie: componentDidMount")
         const headers = document.getElementsByClassName("react-grid-HeaderCell-sortable");
         for(let i=0; i<headers.length; i++) {
             for(let j=0; j<this.state.history[this.state.historySnapshot].columns.length; j++)
@@ -404,7 +388,6 @@ class DisplayData extends React.Component {
     }
 
     componentWillUnmount() {
-        console.log("Witam w metodzie: componentWillUnmount")
         if(this.state.dataModified) {
             const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
             const tmpData = this.prepareDataFileBeforeSendingToServer();
@@ -416,21 +399,11 @@ class DisplayData extends React.Component {
             this.props.updateProject(tmpProject);
         }
         this._isMounted = false;
-        let t0 = performance.now();
+        //let t0 = performance.now();
         //this.sameData();
-        let t1 = performance.now();
+        //let t1 = performance.now();
     }
-/*
-    sameData = (rows, cols) => {
-        //length of the columns
-        if(cols.length !== this.state.history[this.state.historySnapshot].cols.length) 
-            return false
-        //compare all columns
-        for(let i in cols) {
-           // if()
-        }
-    }
-*/
+
     /** 
      * Method responsible for updating displayed data when the value in the cell changes (or multiple values when dragging). First row has index 0.
      * @method
@@ -916,7 +889,6 @@ class DisplayData extends React.Component {
      */
     onTransformAttributes = () => {
         if(this.state.dataModified) {
-            console.log("Wykonuje transform wrzucajac nowe pliki, gdzie binaryzacja: " + this.state.binarizeNominalAttributesWith3PlusValues)
             this.setState({
                     isLoading: true,
                     isOpenedTransform: false,
@@ -930,17 +902,8 @@ class DisplayData extends React.Component {
                     method: 'POST',
                     body: formData
                 }).then(response => {
-                    console.log(response)
-
                     if(response.status === 200) {
                         response.json().then(result => {
-                            console.log("Received information table:")
-                            console.log(result)
-                            console.log("atrybuty:")
-                            console.log(result.attributes);
-                            console.log("obiekty:")
-                            console.log(result.objects);
-                    
                             if(this._isMounted) {
                                 this.isDataFromServer = true;
                                 const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
@@ -958,12 +921,9 @@ class DisplayData extends React.Component {
                             }
 
                         }).catch(err => {
-                            console.log(err)
                         })
                     } else if(response.status === 404) {
                         response.json().then(result => {
-                            console.log("Error 404.")
-                            console.log(result.message)
                             const message = <span> {result.message} </span>
                             if(this._isMounted) {
                                 this.setState({
@@ -978,14 +938,14 @@ class DisplayData extends React.Component {
                                     isLoading: false,
                                 })
                             }
-                            console.log(err)
                         })
                     } else {
                         response.json().then(result => {
-                            console.log("Result of response.json():")
-                            console.log(result)
+                            const message = <span> {result.message} </span>
                             if(this._isMounted) {
                                 this.setState({
+                                    isOpenedNotification: true,
+                                    addAttributeErrorNotification: message,
                                     isLoading: false,
                                 })
                             }
@@ -995,7 +955,6 @@ class DisplayData extends React.Component {
                                     isLoading: false,
                                 })
                             }
-                            console.log(err)
                         })
                     }
                 }).catch(err => {
@@ -1004,7 +963,6 @@ class DisplayData extends React.Component {
                             isLoading: false,
                         })
                     }
-                    console.log(err)
                 })
             })
         } else {
@@ -1012,23 +970,13 @@ class DisplayData extends React.Component {
                 isLoading: true,
                 isOpenedTransform: false,
             }, () => {
-                console.log("Wykonuje transform bez nowych plikow, gdzie binaryzacja: " + this.state.binarizeNominalAttributesWith3PlusValues)
                 let link = `http://localhost:8080/projects/${this.props.project.result.id}/imposePreferenceOrder?binarizeNominalAttributesWith3PlusValues=${this.state.binarizeNominalAttributesWith3PlusValues}`;
-                console.log(link);
                 
                 fetch(link, {
                     method: 'GET'
                 }).then(response => {
-                    console.log(response)
                     if(response.status === 200) {
-                        response.json().then(result => {
-                            console.log("Received information table:")
-                            console.log(result)
-                            console.log("atrybuty:")
-                            console.log(result.attributes);
-                            console.log("obiekty:")
-                            console.log(result.objects);
-                            
+                        response.json().then(result => {                            
                             if(this._isMounted) {
                                 this.isDataFromServer = true;
                                 const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
@@ -1045,12 +993,9 @@ class DisplayData extends React.Component {
                                 })
                             }
                         }).catch(err => {
-                            console.log(err)
                         })
                     } else if(response.status === 404) {
                         response.json().then(result => {
-                            console.log("Error 404.")
-                            console.log(result.message)
                             const message = <span> {result.message} </span>
                             if(this._isMounted) {
                                 this.setState({
@@ -1065,14 +1010,14 @@ class DisplayData extends React.Component {
                                     isLoading: false,
                                 })
                             }
-                            console.log(err)
                         })
                     } else {
                         response.json().then(result => {
-                            console.log("Result of response.json():")
-                            console.log(result)
+                            const message = <span> {result.message} </span>
                             if(this._isMounted) {
                                 this.setState({
+                                    isOpenedNotification: true,
+                                    addAttributeErrorNotification: message,
                                     isLoading: false,
                                 })
                             }
@@ -1082,7 +1027,6 @@ class DisplayData extends React.Component {
                                     isLoading: false,
                                 })
                             }
-                            console.log(err)
                         })
                     }
                 }).catch(err => {
@@ -1091,7 +1035,6 @@ class DisplayData extends React.Component {
                             isLoading: false,
                         })
                     }
-                    console.log(err)
                 })
             })
         }
@@ -1221,38 +1164,27 @@ class DisplayData extends React.Component {
                 link += `&separator=${separator}`;
                 link += `&header=${header}`;
             }
-            console.log(link)
 
             let formData = new FormData();
             formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
             formData.append('data', JSON.stringify(this.prepareDataFileBeforeSendingToServer()));
 
-            console.log("Poczatek - co wysylam:")
-            console.log(JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()))
-            console.log(JSON.stringify(this.prepareDataFileBeforeSendingToServer()));
-            console.log("Koniec - co wysylam")
             fetch(link, {
                 method: 'PUT',
                 body: formData
             }).then(response => {
-                console.log(response)
                 if(response.status === 200) { 
                     filename =  response.headers.get('Content-Disposition').split('filename=')[1];
                     response.blob().then(result => {
-                        console.log("Result of response.blob():")
-                        console.log(result)
                         const url = window.URL.createObjectURL(result);
                         const b = document.createElement('a');
                         b.href = url;
                         b.download = filename;
                         b.click();
                     }).catch(err => {
-                        console.log(err)
                     }) 
                 } else if(response.status === 406) {
                     response.json().then(result => {
-                        console.log("Wynik dzialania response.json():")
-                        console.log(result)
                         const message = <span> {result.message} </span>
                         if(this._isMounted) {
                             this.setState({
@@ -1261,12 +1193,9 @@ class DisplayData extends React.Component {
                             })
                         }
                     }).catch(err => {
-                        console.log(err)
                     })
                 } else if(response.status === 500) {
                     response.json().then(result => {
-                        console.log("Wynik dzialania response.json():")
-                        console.log(result)
                         const message = <span> {result.message} </span>
                         if(this._isMounted) {
                             this.setState({
@@ -1275,22 +1204,23 @@ class DisplayData extends React.Component {
                             })
                         }
                     }).catch(err => {
-                        console.log(err)
                     })
                 } else {
                     response.json().then(result => {
-                        console.log("Result of response.json():")
-                        console.log(result)
+                        const message = <span> {result.message} </span>
+                        if(this._isMounted) {
+                            this.setState({
+                                isOpenedNotification: true,
+                                addAttributeErrorNotification: message
+                            })
+                        }
                     }).catch(err => {
-                        console.log(err)
                     })
                 }
             }).catch(err => {
-                console.log(err)
             })
             
         } else {
-            console.log("Wszedlem do funkcji pobierania danych GET")
             let filename = name;
 
             let link = `http://localhost:8080/projects/${this.props.project.result.id}/data/download`;
@@ -1301,17 +1231,13 @@ class DisplayData extends React.Component {
                 link += `&separator=${separator}`;
                 link += `&header=${header}`;
             }    
-            console.log(link)
     
             fetch(link, {
                 method: 'GET'
             }).then(response => {
-                console.log(response)
                 if(response.status === 200) {
                     filename =  response.headers.get('Content-Disposition').split('filename=')[1];
                     response.blob().then(result => {
-                        console.log("Result of response.blob():")
-                        console.log(result)
                         const url = window.URL.createObjectURL(result);
                         const b = document.createElement('a');
                         b.href = url;
@@ -1320,12 +1246,9 @@ class DisplayData extends React.Component {
                         b.click();
                         document.body.removeChild(b);
                     }).catch(err => {
-                        console.log(err)
                     })
                 } else if(response.status === 404) {
                     response.json().then(result => {
-                        console.log("Wynik dzialania response.json():")
-                        console.log(result)
                         const message = <span> {result.message} </span>
                         if(this._isMounted) {
                             this.setState({
@@ -1334,12 +1257,9 @@ class DisplayData extends React.Component {
                             })
                         }
                     }).catch(err => {
-                        console.log(err)
                     })
                 } else if(response.status === 406) {
                     response.json().then(result => {
-                        console.log("Wynik dzialania response.json():")
-                        console.log(result)
                         const message = <span> {result.message} </span>
                         if(this._isMounted) {
                             this.setState({
@@ -1348,18 +1268,20 @@ class DisplayData extends React.Component {
                             })
                         }
                     }).catch(err => {
-                        console.log(err)
                     })
                 } else {
                     response.json().then(result => {
-                        console.log("Result of response.json():")
-                        console.log(result)
+                        const message = <span> {result.message} </span>
+                        if(this._isMounted) {
+                            this.setState({
+                                isOpenedNotification: true,
+                                addAttributeErrorNotification: message
+                            })
+                        }
                     }).catch(err => {
-                        console.log(err)
                     })
                 }
             }).catch(err => {
-                console.log(err)
             })
 
         }
@@ -1377,24 +1299,18 @@ class DisplayData extends React.Component {
                 method: 'PUT',
                 body: formData
             }).then(response => {
-                console.log(response)
                 if(response.status === 200) {
                     filename =  response.headers.get('Content-Disposition').split('filename=')[1];
                     response.blob().then(result => {
-                        console.log("Wynik dzialania response.blob():")
-                        console.log(result)
                         let url = window.URL.createObjectURL(result);
                         let link = document.createElement('a');
                         link.href = url;
                         link.download = filename;
                         link.click();
                     }).catch(err => {
-                        console.log(err)
                     })
                 } else if(response.status === 406) {
                     response.json().then(result => {
-                        console.log("Wynik dzialania response.json():")
-                        console.log(result)
                         const message = <span> {result.message} </span>
                         if(this._isMounted) {
                             this.setState({
@@ -1403,12 +1319,9 @@ class DisplayData extends React.Component {
                             })
                         }
                     }).catch(err => {
-                        console.log(err)
                     })
                 } else if(response.status === 500) {
                     response.json().then(result => {
-                        console.log("Wynik dzialania response.json():")
-                        console.log(result)
                         const message = <span> {result.message} </span>
                         if(this._isMounted) {
                             this.setState({
@@ -1417,42 +1330,38 @@ class DisplayData extends React.Component {
                             })
                         }
                     }).catch(err => {
-                        console.log(err)
                     })
                 } else {
                     response.json().then(result => {
-                        console.log("Wynik dzialania response.json():")
-                        console.log(result)
+                        const message = <span> {result.message} </span>
+                        if(this._isMounted) {
+                            this.setState({
+                                isOpenedNotification: true,
+                                addAttributeErrorNotification: message
+                            })
+                        }
                     }).catch(err => {
-                        console.log(err)
                     })
                 }
             }).catch(err => {
-                console.log(err)
             })
         } else {
             let filename = name;
             fetch(`http://localhost:8080/projects/${this.props.project.result.id}/metadata/download`, {
                 method: 'GET'
             }).then(response => {
-                console.log(response)
                 if(response.status === 200) {
                     filename =  response.headers.get('Content-Disposition').split('filename=')[1];
                     response.blob().then(result => {
-                        console.log("Wynik dzialania response.blob():")
-                        console.log(result)
                         let url = window.URL.createObjectURL(result);
                         let link = document.createElement('a');
                         link.href = url;
                         link.download = filename;
                         link.click();
                     }).catch(err => {
-                        console.log(err)
                     })
                 } else if(response.status === 404) {
                     response.json().then(result => {
-                        console.log("Wynik dzialania response.json():")
-                        console.log(result)
                         const message = <span> {result.message} </span>
                         if(this._isMounted) {
                             this.setState({
@@ -1461,12 +1370,9 @@ class DisplayData extends React.Component {
                             })
                         }
                     }).catch(err => {
-                        console.log(err)
                     })
                 } else if(response.status === 406) {
                     response.json().then(result => {
-                        console.log("Wynik dzialania response.json():")
-                        console.log(result)
                         const message = <span> {result.message} </span>
                         if(this._isMounted) {
                             this.setState({
@@ -1475,18 +1381,20 @@ class DisplayData extends React.Component {
                             })
                         }
                     }).catch(err => {
-                        console.log(err)
                     })
                 } else {
                     response.json().then(result => {
-                        console.log("Wynik dzialania response.json():")
-                        console.log(result)
+                        const message = <span> {result.message} </span>
+                        if(this._isMounted) {
+                            this.setState({
+                                isOpenedNotification: true,
+                                addAttributeErrorNotification: message
+                            })
+                        }
                     }).catch(err => {
-                        console.log(err)
                     })
                 }
             }).catch(err => {
-                console.log(err)
             })
         }
     }
