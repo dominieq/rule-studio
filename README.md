@@ -1,4 +1,4 @@
-# RuLe Work (Test)
+# RuLe Work
 Open source application that makes use of [ruleLearn library](https://github.com/ruleLearn/rulelearn) 
 to put into action it's core functionalities and display them in user-friendly manner.
 ## Getting Started
