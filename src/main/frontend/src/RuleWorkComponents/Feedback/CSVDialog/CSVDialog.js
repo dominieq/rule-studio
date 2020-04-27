@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core";
 import RuleWorkTextField from "../../Inputs/RuleWorkTextField";
+import RuleWorkTooltip from "../../DataDisplay/RuleWorkTooltip";
 import StyledButton from "../../Inputs/StyledButton";
 import StyledCheckbox from "../../Inputs/StyledCheckbox";
 import Dialog from "@material-ui/core/Dialog";
@@ -98,13 +99,18 @@ class CSVDialog extends React.PureComponent {
                     <FormControlLabel
                         aria-label={"header checkbox"}
                         control={
-                            <StyledCheckbox
-                                checked={header}
-                                inputProps={{ "aria-label": "csv header checkbox" }}
-                                onChange={this.onHeaderChange}
-                            />
+                            <RuleWorkTooltip
+                                title={"File contains header row"}
+                                WrapperComponent={'span'}
+                            >
+                                <StyledCheckbox
+                                    checked={header}
+                                    inputProps={{ "aria-label": "csv header checkbox" }}
+                                    onChange={this.onHeaderChange}
+                                />
+                            </RuleWorkTooltip>
                         }
-                        label={"Header exists"}
+                        label={"Header"}
                     />
                     <div aria-label={"separator selector"} className={styles.ContentRow}>
                         <RuleWorkTextField

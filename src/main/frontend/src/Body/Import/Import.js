@@ -64,11 +64,22 @@ class Import extends Component{
             }
         }
 
-        this.setState(({csvFile}) => ({
-            files: [ ...files, file ],
-            csvFile: file.type === "data" && file.file.type !== 'application/json'
-                ? true : csvFile,
-        }));
+        this.setState(({csvFile}) => {
+            let csv = csvFile;
+
+            if ( file.type === "data" ) {
+                if ( file.file.type !== 'application/json' ) {
+                    csv = true;
+                } else if ( csv && file.file.type === 'application/json' ) {
+                    csv = false;
+                }
+            }
+
+            return {
+                files: [ ...files, file ],
+                csvFile: csv
+            };
+        });
     };
 
     onInputDelete = (file) => {
@@ -108,9 +119,10 @@ class Import extends Component{
     onClearClick = () => {
         this.setState({
             checked: false,
+            csvFile: false,
             expand: false,
-            name: "new project",
             files: [],
+            name: "new project"
         })
     };
 

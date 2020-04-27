@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
 import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import MenuItem from "@material-ui/core/MenuItem";
 import styles from "./styles/Calculations.module.css";
 
 const tooltip = {
@@ -11,6 +12,17 @@ const tooltip = {
     majorityDecisionClass: " - ",
     medianDecisionClass: " - "
 };
+
+const classificationResults = [
+    {
+        label: "Majority decision class",
+        value: "majorityDecisionClass"
+    },
+    {
+        label: "Median decision class",
+        value: "medianDecisionClass"
+    }
+];
 
 const useStyles = makeStyles({
     paragraph: {
@@ -59,7 +71,11 @@ function DefaultClassificationResultSelector(props) {
                     select={true}
                     {...other}
                 >
-                    {["majorityDecisionClass", "medianDecisionClass"]}
+                    {classificationResults.map((result, index) => (
+                        <MenuItem key={index} value={result.value}>
+                            {result.label}
+                        </MenuItem>
+                    ))}
                 </RuleWorkTextField>
             </div>
         </div>
