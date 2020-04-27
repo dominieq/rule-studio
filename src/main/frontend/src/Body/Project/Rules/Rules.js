@@ -218,6 +218,7 @@ class Rules extends Component {
                     project.result.rules = result;
                     project.dataUpToDate = true;
                     project.tabsUpToDate[this.props.value] = true;
+                    project.tabsUpToDate[this.props.value - 1] = true;
                     project.externalRules = result.externalRules;
 
                     const newParameters = parseRulesParams(result);
@@ -438,7 +439,7 @@ class Rules extends Component {
     };
 
     render() {
-        const { loading, data, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
+        const { loading, data, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
         const { project: { result, settings } } = this.props;
 
         return (
@@ -549,7 +550,7 @@ class Rules extends Component {
                     <SortMenu
                         anchorE1={sort.anchorE1}
                         ContentProps={{
-                            categories: createCategories(Object.keys(displayedItems[0].traits)),
+                            categories: createCategories(Object.keys(items[0].traits)),
                             chooseOrder: true,
                             onCategoryChange: this.onSortValueChange,
                             onOrderChange: this.onSortOrderChange,
