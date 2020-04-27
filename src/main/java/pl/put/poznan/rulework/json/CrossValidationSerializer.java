@@ -53,6 +53,9 @@ public class CrossValidationSerializer extends JsonSerializer<CrossValidation> {
         jsonGenerator.writeFieldName("defaultClassificationResult");
         jsonGenerator.writeString(crossValidation.getDefaultClassificationResult().toString());
 
+        jsonGenerator.writeFieldName("seed");
+        jsonGenerator.writeNumber(crossValidation.getSeed());
+
         jsonGenerator.writeEndObject();
     }
 }

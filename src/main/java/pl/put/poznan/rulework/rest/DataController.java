@@ -1,13 +1,11 @@
 package pl.put.poznan.rulework.rest;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +47,16 @@ public class DataController {
         logger.info("Putting data");
         Project result = dataService.putData(id, data);
         return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity postData(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "metadata") String metadata,
+            @RequestParam(name = "data") String data) throws IOException {
+        logger.info("Posting data");
+        dataService.postData(id, metadata, data);
+        return ResponseEntity.ok().build();
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)

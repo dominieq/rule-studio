@@ -55,8 +55,7 @@ public class UnionsService {
 
     public static void calculateUnionsWithHttpParametersInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold) {
         UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
-
-        if((!project.isCurrentUnionsWithSingleLimitingDecision()) || (unionsWithHttpParameters.getTypeOfUnions() != typeOfUnions) || (unionsWithHttpParameters.getConsistencyThreshold() != consistencyThreshold)) {
+        if((!project.isCurrentUnionsWithSingleLimitingDecision()) || (unionsWithHttpParameters.getTypeOfUnions() != typeOfUnions) || (!unionsWithHttpParameters.getConsistencyThreshold().equals(consistencyThreshold))) {
             InformationTable informationTable = project.getInformationTable();
             if(informationTable == null) {
                 NoDataException ex = new NoDataException("There is no data in project. Couldn't calculate unions.");

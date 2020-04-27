@@ -18,6 +18,7 @@ public class CrossValidation {
     private RuleType typeOfRules;
     private ClassifierType typeOfClassifier;
     private DefaultClassificationResultType defaultClassificationResult;
+    private Long seed;
 
     public CrossValidation(Integer numberOfFolds, CrossValidationSingleFold[] crossValidationSingleFolds, OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix, OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix) {
         this.numberOfFolds = numberOfFolds;
@@ -34,7 +35,8 @@ public class CrossValidation {
             UnionType typeOfUnions,
             Double consistencyThreshold, RuleType typeOfRules,
             ClassifierType typeOfClassifier,
-            DefaultClassificationResultType defaultClassificationResult) {
+            DefaultClassificationResultType defaultClassificationResult,
+            Long seed) {
 
         this.numberOfFolds = numberOfFolds;
         this.crossValidationSingleFolds = crossValidationSingleFolds;
@@ -45,6 +47,7 @@ public class CrossValidation {
         this.typeOfRules = typeOfRules;
         this.typeOfClassifier = typeOfClassifier;
         this.defaultClassificationResult = defaultClassificationResult;
+        this.seed = seed;
     }
 
     public Integer getNumberOfFolds() {
@@ -119,6 +122,14 @@ public class CrossValidation {
         this.defaultClassificationResult = defaultClassificationResult;
     }
 
+    public Long getSeed() {
+        return seed;
+    }
+
+    public void setSeed(Long seed) {
+        this.seed = seed;
+    }
+
     @Override
     public String toString() {
         return "CrossValidation{" +
@@ -131,6 +142,7 @@ public class CrossValidation {
                 ", typeOfRules=" + typeOfRules +
                 ", typeOfClassifier=" + typeOfClassifier +
                 ", defaultClassificationResult=" + defaultClassificationResult +
+                ", seed=" + seed +
                 '}';
     }
 }
