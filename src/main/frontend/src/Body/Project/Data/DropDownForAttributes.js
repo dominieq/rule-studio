@@ -39,9 +39,17 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const menuStyles = makeStyles(theme => ({
+  list: {
+    backgroundColor: theme.palette.popper.background,
+    color: theme.palette.popper.text,
+  }
+}), {name: "CustomMenu"});
+
 export default function DropDownForAttributes(props) { 
   const [selectedOption, setSelectedOption] = React.useState(props.defaultValue);
   const classes = useStyles();
+  const menuClasses = menuStyles();
 
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = React.useState(0);
@@ -64,6 +72,7 @@ export default function DropDownForAttributes(props) {
           value={selectedOption}
           onChange={handleChange}
           labelWidth={labelWidth}
+          MenuProps={{classes: {list: menuClasses.list}}}
         >
         {props.items.map((x,index) => { 
           if(props.missingVal) return <MenuItem style={{display: "inherit"}} key={index} value={`mv${x}`}>mv<sub>{x}</sub></MenuItem>
