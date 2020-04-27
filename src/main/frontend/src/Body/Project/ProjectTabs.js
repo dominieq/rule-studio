@@ -9,9 +9,8 @@ import Rules from "./Rules/Rules";
 import Unions from "./Unions/Unions";
 import ExternalRulesAlert from "./Utils/Alerts/ExternalRulesAlert";
 import OutdatedDataAlert from "./Utils/Alerts/OutdatedDataAlert";
-import OutdatedRulesAlert from "./Utils/Alerts/OutdatedRulesAlert";
-import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
+import Tabs from "@material-ui/core/Tabs";
 
 const StyledTabs = withStyles(theme => ({
     indicator: {
