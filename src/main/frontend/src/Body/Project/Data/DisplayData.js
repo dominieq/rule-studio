@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import ReactDataGrid from '@emsi-iggy/rulework-react-data-grid';
 
 import { Editors,  Data, Menu} from 'react-data-grid-addons';
@@ -217,6 +217,7 @@ class DisplayData extends React.Component {
             wholeAppError: false,
         };    
         
+        this.isDataFromServer = this.props.project.isDataFromServer;
         this._isMounted = false;
     }
 
@@ -242,6 +243,7 @@ class DisplayData extends React.Component {
     componentDidUpdate(prevProps, prevState) {
         console.log("Witam w metodzie: componentDidUpdate")
         if(prevProps.project.result.id !== this.props.project.result.id) {
+            this.isDataFromServer = this.props.project.isDataFromServer;
             this.setState({
                 enableRowInsert: 0, //-1 no sort, 0-sort asc, 1-sort desc
                 selectedRows: [],
@@ -283,13 +285,16 @@ class DisplayData extends React.Component {
                         columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
                     }
                 ],
-            }, () => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true)))
+            }, () => {
+                this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
+                this.replaceMissingDataWithQuestionMarks();
+            })
         }
        // if(prevState.history[prevState.historySnapshot] !== undefined && this.state.history[this.state.historySnapshot] !== undefined) {
-            console.log("PrevState columns (gdzieJestem = " + prevState.historySnapshot + "):")
-            console.log(prevState.history);
-            console.log("State columns (gdzieJestem = " + this.state.historySnapshot + "):")
-            console.log(this.state.history)
+           // console.log("PrevState columns (gdzieJestem = " + prevState.historySnapshot + "):")
+            //console.log(prevState.history);
+            //console.log("State columns (gdzieJestem = " + this.state.historySnapshot + "):")
+            //console.log(this.state.history)
         //}
     }
 
@@ -347,6 +352,33 @@ class DisplayData extends React.Component {
         return tmp; 
     }
 
+    replaceMissingDataWithQuestionMarks = () => {
+        if(this.isDataFromServer) {
+            this.setState(prevState => {
+                let rows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
+                for(let i in rows) {
+                    for(let j in prevState.history[prevState.historySnapshot].columns) {
+                        if(rows[i][prevState.history[prevState.historySnapshot].columns[j].key] === undefined || rows[i][prevState.history[prevState.historySnapshot].columns[j].key] === "") {
+                            rows[i][prevState.history[prevState.historySnapshot].columns[j].key] = "?"
+                        }
+                    }
+                }
+
+                let history = [...this.state.history];
+                let newHistory = {...history[this.state.historySnapshot]};
+                newHistory.rows = rows;
+                history[this.state.historySnapshot] = newHistory;
+
+                if(this._isMounted) {
+                    return {
+                        history: history
+                    }
+                }
+            });
+            this.isDataFromServer = false;
+        }
+    }
+
     /** 
      * Method responsible for setting the color of column headers accordingly to the attribute preference type during initialization of the component.
      * Runs only once, after component is mounted (after first [render]{@link DisplayData#render} and before methods shouldComponentUpdate() and [componentDidUpdate]{@link DisplayData#componentDidUpdate}).
@@ -364,8 +396,8 @@ class DisplayData extends React.Component {
             }                        
         }
 
-       console.log(this.props.project.isDataFromServer);
         this._isMounted = true;
+        this.replaceMissingDataWithQuestionMarks();
     }
 
     componentWillUnmount() {
@@ -441,7 +473,7 @@ class DisplayData extends React.Component {
                 const editedCol = prevState.history[prevState.historySnapshot].columns.find(x => x.key === tmp[0])
 
                 if(tmp[1]==="") {
-                    const message = <span> Cell hasn't been updated. <br/> Empty value is not valid input. </span>
+                    const message = <span> Cell hasn't been updated. <br/> Empty value isn't valid input. Use question mark (?) instead. </span>
                         return {
                             isOpenedNotification: true,
                             addAttributeErrorNotification: message
@@ -907,6 +939,7 @@ class DisplayData extends React.Component {
                             console.log(result.objects);
                     
                             if(this._isMounted) {
+                                this.isDataFromServer = true;
                                 const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
 				                tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes)});
                                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
@@ -915,7 +948,10 @@ class DisplayData extends React.Component {
                                     dataModified: true,
                                     history: tmpHistory, 
                                     historySnapshot: tmpHistory.length-1
-                                }, () => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true)))
+                                }, () => {
+                                    this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
+                                    this.replaceMissingDataWithQuestionMarks();
+                                })
                             }
 
                         }).catch(err => {
@@ -925,7 +961,7 @@ class DisplayData extends React.Component {
                         response.json().then(result => {
                             console.log("Error 404.")
                             console.log(result.message)
-                            const message = <span> Error 404. <br/> {result.message} </span>
+                            const message = <span> {result.message} </span>
                             if(this._isMounted) {
                                 this.setState({
                                     isOpenedNotification: true,
@@ -991,6 +1027,7 @@ class DisplayData extends React.Component {
                             console.log(result.objects);
                             
                             if(this._isMounted) {
+                                this.isDataFromServer = true;
                                 const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
                                 tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes)});
                                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
@@ -999,7 +1036,10 @@ class DisplayData extends React.Component {
                                     dataModified: true,
                                     history: tmpHistory, 
                                     historySnapshot: tmpHistory.length-1
-                                }, () => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true)))
+                                }, () => { 
+                                    this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
+                                    this.replaceMissingDataWithQuestionMarks();
+                                })
                             }
                         }).catch(err => {
                             console.log(err)
@@ -1008,7 +1048,7 @@ class DisplayData extends React.Component {
                         response.json().then(result => {
                             console.log("Error 404.")
                             console.log(result.message)
-                            const message = <span> Error 404. <br/> {result.message} </span>
+                            const message = <span> {result.message} </span>
                             if(this._isMounted) {
                                 this.setState({
                                     isOpenedNotification: true,
@@ -1143,17 +1183,17 @@ class DisplayData extends React.Component {
      */
     saveToFile = () => {
         if(this.state.saveToFileMetaData) {
-            this.saveToJsonFile(this.prepareMetadataFileBeforeSendingToServer(), this.props.project.result.name + "_metadata.json");
+            this.saveMetaDataToJson(this.props.project.result.name + "_metadata.json");
         }
         if(this.state.saveToFileData === 'json') {
-            this.saveToJsonFile(this.prepareDataFileBeforeSendingToServer(), this.props.project.result.name + "_data.json");
+            this.saveDataToCsvOrJson(this.props.project.result.name + "_data.json", -1, -1);
         } else if(this.state.saveToFileData === 'csv') {
             let separator = " ";
             if(this.state.saveToFileCsvSeparator === "tab") separator = "%09";
             else if(this.state.saveToFileCsvSeparator === "semicolon") separator = ";";
             else if(this.state.saveToFileCsvSeparator === "comma") separator = ",";
             //else it is space
-            this.saveToCSVFile(this.props.project.result.name + "_data.csv", this.state.saveToFileCsvHeader, separator);
+            this.saveDataToCsvOrJson(this.props.project.result.name + "_data.csv", this.state.saveToFileCsvHeader, separator);
         }
 
         this.setState({
@@ -1165,18 +1205,19 @@ class DisplayData extends React.Component {
         })
     } 
 
-    saveToCSVFile = (name, header, separator) => {
-        console.log("Otrzymalem:")
-        console.log(header);
-        console.log(separator);
-        console.log("Wszedlem do funkcji pobierania danych PUT")
-        let x = true;
-        if(x) { //modified?
+    saveDataToCsvOrJson = (name, header, separator) => {
+        //if(this.state.dataModified) { //modified?
+        const x = true;
+        if(x) {
             let filename = name;
             let link = `http://localhost:8080/projects/${this.props.project.result.id}/data/download`;
-            link += `?format=csv`;
-            link += `&separator=${separator}`;
-            link += `&header=${header}`;
+            if(header === -1) { //json
+                link += `?format=json`;
+            } else { //csv
+                link += `?format=csv`;
+                link += `&separator=${separator}`;
+                link += `&header=${header}`;
+            }
             console.log(link)
 
             let formData = new FormData();
@@ -1205,6 +1246,34 @@ class DisplayData extends React.Component {
                     }).catch(err => {
                         console.log(err)
                     }) 
+                } else if(response.status === 406) {
+                    response.json().then(result => {
+                        console.log("Wynik dzialania response.json():")
+                        console.log(result)
+                        const message = <span> {result.message} </span>
+                        if(this._isMounted) {
+                            this.setState({
+                                isOpenedNotification: true,
+                                addAttributeErrorNotification: message
+                            })
+                        }
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                } else if(response.status === 500) {
+                    response.json().then(result => {
+                        console.log("Wynik dzialania response.json():")
+                        console.log(result)
+                        const message = <span> {result.message} </span>
+                        if(this._isMounted) {
+                            this.setState({
+                                isOpenedNotification: true,
+                                addAttributeErrorNotification: message
+                            })
+                        }
+                    }).catch(err => {
+                        console.log(err)
+                    })
                 } else {
                     response.json().then(result => {
                         console.log("Result of response.json():")
@@ -1221,11 +1290,14 @@ class DisplayData extends React.Component {
             console.log("Wszedlem do funkcji pobierania danych GET")
             let filename = name;
 
-            let link = `http://localhost:8080/projects//${this.props.project.result.id}/data/download`;
-            link += `?format=csv`;
-            link += `&separator=${separator}`;
-            link += `&header=${header}`;
-    
+            let link = `http://localhost:8080/projects/${this.props.project.result.id}/data/download`;
+            if(header === -1) { //json
+                link += `?format=json`;
+            } else { //csv
+                link += `?format=csv`;
+                link += `&separator=${separator}`;
+                link += `&header=${header}`;
+            }    
             console.log(link)
     
             fetch(link, {
@@ -1247,6 +1319,34 @@ class DisplayData extends React.Component {
                     }).catch(err => {
                         console.log(err)
                     })
+                } else if(response.status === 404) {
+                    response.json().then(result => {
+                        console.log("Wynik dzialania response.json():")
+                        console.log(result)
+                        const message = <span> {result.message} </span>
+                        if(this._isMounted) {
+                            this.setState({
+                                isOpenedNotification: true,
+                                addAttributeErrorNotification: message
+                            })
+                        }
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                } else if(response.status === 406) {
+                    response.json().then(result => {
+                        console.log("Wynik dzialania response.json():")
+                        console.log(result)
+                        const message = <span> {result.message} </span>
+                        if(this._isMounted) {
+                            this.setState({
+                                isOpenedNotification: true,
+                                addAttributeErrorNotification: message
+                            })
+                        }
+                    }).catch(err => {
+                        console.log(err)
+                    })
                 } else {
                     response.json().then(result => {
                         console.log("Result of response.json():")
@@ -1262,18 +1362,131 @@ class DisplayData extends React.Component {
         }
     }
 
-    saveToJsonFile = (data, filename) => {
-        const blob = new Blob([JSON.stringify(data, null, 1)], {type: "application/json"});
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.style = "display: none";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+    saveMetaDataToJson = (name) => {
+        //if(this.state.dataModified) { //modified?
+        const x = true;
+        if(x) { 
+            let filename = name;
+            let formData = new FormData();
+            formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
+    
+            fetch(`http://localhost:8080/projects/${this.props.project.result.id}/metadata/download`, {
+                method: 'PUT',
+                body: formData
+            }).then(response => {
+                console.log(response)
+                if(response.status === 200) {
+                    filename =  response.headers.get('Content-Disposition').split('filename=')[1];
+                    response.blob().then(result => {
+                        console.log("Wynik dzialania response.blob():")
+                        console.log(result)
+                        let url = window.URL.createObjectURL(result);
+                        let link = document.createElement('a');
+                        link.href = url;
+                        link.download = filename;
+                        link.click();
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                } else if(response.status === 406) {
+                    response.json().then(result => {
+                        console.log("Wynik dzialania response.json():")
+                        console.log(result)
+                        const message = <span> {result.message} </span>
+                        if(this._isMounted) {
+                            this.setState({
+                                isOpenedNotification: true,
+                                addAttributeErrorNotification: message
+                            })
+                        }
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                } else if(response.status === 500) {
+                    response.json().then(result => {
+                        console.log("Wynik dzialania response.json():")
+                        console.log(result)
+                        const message = <span> {result.message} </span>
+                        if(this._isMounted) {
+                            this.setState({
+                                isOpenedNotification: true,
+                                addAttributeErrorNotification: message
+                            })
+                        }
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                } else {
+                    response.json().then(result => {
+                        console.log("Wynik dzialania response.json():")
+                        console.log(result)
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+        } else {
+            let filename = name;
+            fetch(`http://localhost:8080/projects/${this.props.project.result.id}/metadata/download`, {
+                method: 'GET'
+            }).then(response => {
+                console.log(response)
+                if(response.status === 200) {
+                    filename =  response.headers.get('Content-Disposition').split('filename=')[1];
+                    response.blob().then(result => {
+                        console.log("Wynik dzialania response.blob():")
+                        console.log(result)
+                        let url = window.URL.createObjectURL(result);
+                        let link = document.createElement('a');
+                        link.href = url;
+                        link.download = filename;
+                        link.click();
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                } else if(response.status === 404) {
+                    response.json().then(result => {
+                        console.log("Wynik dzialania response.json():")
+                        console.log(result)
+                        const message = <span> {result.message} </span>
+                        if(this._isMounted) {
+                            this.setState({
+                                isOpenedNotification: true,
+                                addAttributeErrorNotification: message
+                            })
+                        }
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                } else if(response.status === 406) {
+                    response.json().then(result => {
+                        console.log("Wynik dzialania response.json():")
+                        console.log(result)
+                        const message = <span> {result.message} </span>
+                        if(this._isMounted) {
+                            this.setState({
+                                isOpenedNotification: true,
+                                addAttributeErrorNotification: message
+                            })
+                        }
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                } else {
+                    response.json().then(result => {
+                        console.log("Wynik dzialania response.json():")
+                        console.log(result)
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+        }
     }
-
 
     getColumns() {
         if(this.state.history[this.state.historySnapshot] !== undefined) {
@@ -1577,7 +1790,12 @@ class DisplayData extends React.Component {
 
             //both name and valueType of the column has been changed
             if(ifIsNewColumnElseOldColumn.name !== column.name && ifIsNewColumnElseOldColumn.valueType !== column.valueType) {
-                if(column.valueType === "enumeration") { 
+                if(ifIsNewColumnElseOldColumn.valueType === undefined) { //previously attribute was Identification, fill with "?"
+                    for(let i in nextRows) {
+                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
+                        nextRows[i][column.key] = "?";
+                    }
+                } else if(column.valueType === "enumeration") { 
                     for(let i in nextRows) {
                         nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
                         nextRows[i][column.key] = nextRows[i][column.key].toString();
@@ -1605,12 +1823,15 @@ class DisplayData extends React.Component {
                 }
             // column valueType has been changed so check the content of each row
             } else if(ifIsNewColumnElseOldColumn.valueType !== column.valueType) {
-                if(column.valueType === "enumeration") {
+                if(ifIsNewColumnElseOldColumn.valueType === undefined) { //previously attribute was Identification, fill with "?"
+                    for(let i in nextRows) {
+                        nextRows[i][column.key] = "?";
+                    }
+                } else if(column.valueType === "enumeration") {
                     for(let i in nextRows) {
                         if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
                     }
-                }
-                else if(column.valueType === "integer") {
+                } else if(column.valueType === "integer") {
                     for(let i in nextRows) {
                         let tmp = parseInt(nextRows[i][column.key],10);
                         if(isNaN(tmp)) nextRows[i][column.key] = "?";
@@ -2079,18 +2300,20 @@ class DisplayData extends React.Component {
                         this.state.history[this.state.historySnapshot].columns !== undefined && this.state.history[this.state.historySnapshot].columns.length === 1 ? 
                             <span> There are no attributes to edit! </span> 
                             :
-                            <span> Choose attribute to edit. <br/> Please note that you can apply changes only to the selected attribute. </span> && 
-                            <div className="editAndAddAttributesWrapper">
-                                <div className="editAttributesVirtualizedList">
-                                    <AttributesVirtualizedTable
-                                        headerText={"Attributes"}
-                                        onItemInTableSelected={this.handleListItemClick}
-                                        table={this.displayListOfAttributesForModification()}
-                                        clicked={this.state.editAttributeSelected}
-                                    />
-                                </div>                       
-                                {this.state.editAttributeSelected !== '' ? this.displayEditAttributeFields() : null}                            
-                            </div>  
+                            <Fragment>
+                                <span> Choose attribute to edit. <br/> Please note that you can apply changes only to the selected attribute. </span>
+                                <div className="editAndAddAttributesWrapper">
+                                    <div className="editAttributesVirtualizedList">
+                                        <AttributesVirtualizedTable
+                                            headerText={"Attributes"}
+                                            onItemInTableSelected={this.handleListItemClick}
+                                            table={this.displayListOfAttributesForModification()}
+                                            clicked={this.state.editAttributeSelected}
+                                        />
+                                    </div>                       
+                                    {this.state.editAttributeSelected !== '' ? this.displayEditAttributeFields() : null}                            
+                                </div> 
+                            </Fragment>
                         }
                         {
                             this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
