@@ -20,6 +20,9 @@ class RenameProjectDialog extends PureComponent {
     onEnter = () => {
        this.setState({
            name: this.props.currentName,
+       }, () => {
+            const element = document.getElementById("rename-project-input");
+            element.focus();
        });
     };
 
@@ -66,6 +69,9 @@ class RenameProjectDialog extends PureComponent {
                 <SimpleContent>
                     <RuleWorkTextField
                         fullWidth={true}
+                        InputProps={{
+                            id: "rename-project-input"
+                        }}
                         onChange={this.onInputChange}
                         outsideLabel={"Type new name"}
                         value={name}

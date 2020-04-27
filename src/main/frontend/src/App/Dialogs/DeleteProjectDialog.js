@@ -21,7 +21,7 @@ function ProjectName(props) {
     return (
         <span aria-label={"project name"} className={classes.projectName} {...props} />
     )
-};
+}
 
 class DeleteProjectDialog extends PureComponent {
     constructor(props) {
@@ -37,6 +37,9 @@ class DeleteProjectDialog extends PureComponent {
         this.setState({
             name: "",
             correct: false,
+        }, () => {
+            const element = document.getElementById("delete-project-input");
+            element.focus();
         });
     };
 
@@ -91,6 +94,9 @@ class DeleteProjectDialog extends PureComponent {
                 <SimpleContent>
                     <RuleWorkTextField
                         fullWidth={true}
+                        InputProps={{
+                            id: "delete-project-input"
+                        }}
                         onChange={this.onInputChange}
                         outsideLabel={"Type project name"}
                         value={name}
