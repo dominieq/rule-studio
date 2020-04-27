@@ -44,7 +44,7 @@ public class DataService {
             informationTable = jsonObjectParser.parseObjects(reader);
             logger.info("Successfully parsed as json file.");
         } catch (RuntimeException eJson) {
-            logger.info("Failed to parse as json file:\t{}", eJson.getMessage());
+            logger.error("Failed to parse as json file:\t{}", eJson.getMessage());
 
             try {
                 logger.info("Trying parse as csv file...");
@@ -56,8 +56,9 @@ public class DataService {
                 informationTable = csvObjectParser.parseObjects(reader);
                 logger.info("Successfully parsed as csv file.");
             } catch (RuntimeException eCsv) {
-                logger.info("Failed to parse as csv file:\t{}", eCsv.getMessage());
-                WrongParameterException ex = new WrongParameterException(String.format("Wrong file. Data should be a valid json or csv file."));
+                logger.error("Failed to parse as csv file:\t{}", eCsv.getMessage());
+
+                WrongParameterException ex = new WrongParameterException("Wrong file. Data should be a valid json or csv file.");
                 throw ex;
             }
         }
@@ -85,7 +86,14 @@ public class DataService {
         InputStream targetStream = new ByteArrayInputStream(data.getBytes());
         Reader reader = new InputStreamReader(targetStream);
         ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
-        InformationTable informationTable = objectParser.parseObjects(reader);
+        InformationTable informationTable;
+        try {
+            informationTable = objectParser.parseObjects(reader);
+        } catch (RuntimeException e) {
+            WrongParameterException ex = new WrongParameterException("Invalid format of json data, couldn't be successfully parsed.");
+            logger.error("{}:\t{}", ex.getMessage(), e.getMessage());
+            throw ex;
+        }
 
         if(logger.isTraceEnabled()) {
             Table<EvaluationAttribute, EvaluationField> table = informationTable.getActiveConditionAttributeFields();

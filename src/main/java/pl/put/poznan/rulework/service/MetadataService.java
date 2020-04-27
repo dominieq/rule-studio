@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.exception.NoDataException;
+import pl.put.poznan.rulework.exception.WrongParameterException;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
@@ -32,7 +33,14 @@ public class MetadataService {
         Attribute[] attributes;
         AttributeParser attributeParser = new AttributeParser();
         Reader reader = new InputStreamReader(targetStream);
-        attributes = attributeParser.parseAttributes(reader);
+        try {
+            attributes = attributeParser.parseAttributes(reader);
+        } catch (RuntimeException e) {
+            WrongParameterException ex = new WrongParameterException("Invalid format of json metadata, couldn't be successfully parsed.");
+            logger.error("{}:\t{}", ex.getMessage(), e.getMessage());
+            throw ex;
+        }
+
         for(int i = 0; i < attributes.length; i++) {
             logger.info(i + ":\t" + attributes[i]);
         }
