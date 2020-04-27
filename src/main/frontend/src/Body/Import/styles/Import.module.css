@@ -1,0 +1,21 @@
+.Collapse {
+    display: flex;
+    flex-direction: column;
+}
+
+.Row {
+    align-items: center;
+    display: flex;
+    min-width: fit-content;
+    min-width: -moz-fit-content;
+}
+
+.Footer {
+    align-items: center;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.Footer > *:last-child {
+    margin-left: 8px;
+}

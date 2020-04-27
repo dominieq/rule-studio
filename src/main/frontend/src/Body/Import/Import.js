@@ -1,141 +1,225 @@
-import React, {Component} from 'react';
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import FormControl from "@material-ui/core/FormControl";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import Checkbox from "@material-ui/core/Checkbox";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import Button from "@material-ui/core/Button";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import FileSelectZone from "./FileSelectZone";
-import "./Import.css";
-
-function getOptionalStyleClasses() {
-    return [
-        "import-project-files-optional-visible",
-        "import-project-files-optional-invisible",
-    ]
-}
+import RuleWorkBox from "../../RuleWorkComponents/Containers/RuleWorkBox";
+import CollapsibleDivider from "../../RuleWorkComponents/DataDisplay/CollapsibleDivider";
+import StyledDivider from "../../RuleWorkComponents/DataDisplay/StyledDivider";
+import { CSVDialog } from "../../RuleWorkComponents/Feedback/CSVDialog";
+import RuleWorkSwitch from "../../RuleWorkComponents/Inputs/RuleWorkSwitch";
+import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import StyledButton  from "../../RuleWorkComponents/Inputs/StyledButton"
+import StyledPaper from "../../RuleWorkComponents/Surfaces/StyledPaper";
+import Collapse from "@material-ui/core/Collapse";
+import styles from "./styles/Import.module.css";
 
 class Import extends Component{
     constructor(props) {
         super(props);
 
-        const styleClass = getOptionalStyleClasses();
-
         this.state = {
             checked: false,
-            optionalStyling: styleClass[1],
-            projectName: "new project",
-            projectFiles: [],
+            csvFile: false,
+            expand: false,
+            files: [],
+            name: "new project",
+            open: false
         };
-
-        this.setProjectName = this.setProjectName.bind(this);
-        this.setChecked = this.setChecked.bind(this);
-        this.acceptProject = this.acceptProject.bind(this);
     }
 
-    setProjectName(event) {
+    onProjectNameChange = (event) => {
         this.setState({
-            projectName: event.target.value,
+            name: event.target.value,
         });
+    };
+
+    onProjectNameFocus = (event) => {
+        event.target.select();
     }
 
-    setChecked(event) {
-        const styleClass = getOptionalStyleClasses();
-
-        this.setState({
-            checked: event.target.checked,
-            optionalStyling: event.target.checked ? styleClass[0] : styleClass[1]
+    onCheckboxChange = () => {
+        this.setState( prevState => ({
+            checked: !prevState.checked,
+        }), () => {
+            if (!this.state.checked) {
+                this.setState({
+                    expand: false,
+                });
+            }
         });
-    }
+    };
 
-    acceptProject() {
-        console.log("Sending project name and files");
-        const finalProjectName = this.state.projectName;
-        let finalProjectFiles = [];
-        if (this.state.checked) {
-            finalProjectFiles = this.state.projectFiles;
+    onExpandClick = () => {
+        this.setState(prevState => ({
+            expand: !prevState.expand,
+        }));
+    };
+
+    onInputChange = (file) => {
+        let { files } = this.state;
+
+        for (let i = 0; i <  files.length; i++) {
+            if (files[i].type === file.type) {
+                files.splice(i, 1);
+                break;
+            }
         }
 
-        this.props.sendProject(finalProjectName, finalProjectFiles);
-        console.log("Project name and files sent");
-    }
+        this.setState(({csvFile}) => ({
+            files: [ ...files, file ],
+            csvFile: file.type === "data" && file.file.type !== 'application/json'
+                ? true : csvFile,
+        }));
+    };
+
+    onInputDelete = (file) => {
+        let { files } = this.state;
+
+        for (let i = 0; i <  files.length; i++) {
+            if (files[i].type === file.type) {
+                let removed = files.splice(i, 1);
+
+                this.setState(({csvFile}) => ({
+                    files: files,
+                    csvFile: removed[0].type === "data" && removed[0].file.type !== 'application/json'
+                        ? false : csvFile
+                }));
+                break;
+            }
+        }
+    };
+
+    onEnterClick = (event) => {
+        if (event.which === 13) {
+            event.preventDefault();
+            this.onAcceptButtonClick();
+        }
+    };
+
+    onAcceptButtonClick = () => {
+        const { name, files, csvFile } = this.state;
+
+        if (csvFile) {
+            this.setState({ open: true });
+        } else {
+            this.props.onFilesAccepted(name, files, null);
+        }
+    };
+
+    onClearClick = () => {
+        this.setState({
+            checked: false,
+            expand: false,
+            name: "new project",
+            files: [],
+        })
+    };
+
+    onCSVDialogClose = (csvSpecs) => {
+        this.setState({
+            open: false
+        }, () => {
+            if (csvSpecs && Object.keys(csvSpecs).length) {
+                const { name, files } = this.state;
+
+                this.props.onFilesAccepted(name, files, csvSpecs);
+            }
+        });
+    };
 
     render() {
+        const { checked, expand, name, open } = this.state;
+
         return (
-            <div className={"import-root"}>
-                <Paper square={true} className={"import-panel"}>
-                    <Grid container direction={"column"} spacing={2}>
-                        <Grid item component={"div"}
-                              className={"import-project-row"}>
-
-                            <Typography component={"div"}>
-                                Project name:
-                            </Typography>
-                            <form noValidate={true} autoComplete={"off"}>
-                                <FormControl variant={"outlined"}>
-                                    <OutlinedInput
-                                        id={"component-outlined"}
-                                        defaultValue={this.state.projectName}
-                                        onChange={this.setProjectName}
-                                        labelWidth={0}/>
-                                </FormControl>
-                            </form>
-                        </Grid>
-                        <Grid item component={"div"}
-                              className={"import-project-row"}>
-
-                            <Checkbox
-                                checked={this.state.checked}
-                                onChange={this.setChecked}
-                                value={"primary"}
-                                color={"primary"}
-                            />
-                            <Typography component={"div"}>
-                                Create project with metadata.
-                            </Typography>
-                        </Grid>
-                        <Grid item component={"div"}
-                              className={this.state.optionalStyling} hidden={!this.state.checked}>
-
+            <RuleWorkBox id={"rule-work-import"} onKeyPress={this.onEnterClick} styleVariant={"body"}>
+                <StyledPaper id={"import-panel"} elevation={6} styleVariant={"panel"}>
+                    <div aria-label={"text field row"} className={styles.Row}>
+                        <RuleWorkTextField
+                            fullWidth={true}
+                            onChange={this.onProjectNameChange}
+                            onFocus={this.onProjectNameFocus}
+                            outsideLabel={"Project name"}
+                            value={name}
+                        />
+                    </div>
+                    <StyledDivider
+                        color={"secondary"}
+                        flexItem={false}
+                        margin={12}
+                        orientation={"horizontal"}
+                    />
+                    <div aria-label={"switch row"} className={styles.Row} style={{paddingBottom: 8}}>
+                        <RuleWorkSwitch
+                            label={"Create project with metadata"}
+                            checked={checked}
+                            onChange={this.onCheckboxChange}
+                        />
+                    </div>
+                    <Collapse in={checked} unmountOnExit={true}>
+                        <div aria-label={"outer collapse"} className={styles.Collapse}>
                             <FileSelectZone
-                                textField={"standard-read-only-metadata-input"}
-                                input={"icon-button-metadata"}>
-                                Choose metadata file:
-                            </FileSelectZone>
-                            <ExpansionPanel>
-                                <ExpansionPanelSummary
-                                    expandIcon={<ExpandMoreIcon/>}
-                                    aria-controls={"optional-panel-content"}
-                                >
-                                    <Typography component={"p"}>Choose optional files</Typography>
-                                </ExpansionPanelSummary>
-                                <ExpansionPanelDetails className={this.state.optionalStyling}>
+                                variant={"metadata"}
+                                accept={".json"}
+                                onInputChange={this.onInputChange}
+                                onInputDelete={this.onInputDelete}
+                                title={"A file defining structure of attributes"}
+                            />
+                            <CollapsibleDivider
+                                onClick={this.onExpandClick}
+                                expanded={expand}
+                            />
+                            <Collapse in={expand} unmountOnExit={true}>
+                                <div aria-label={"inner collapse"} className={styles.Collapse}>
                                     <FileSelectZone
-                                        textField={"standard-read-only-data-input"}
-                                        input={"icon-button-data"}>
-                                        Choose data file:
-                                    </FileSelectZone>
+                                        variant={"data"}
+                                        accept={".json,.csv"}
+                                        onInputChange={this.onInputChange}
+                                        onInputDelete={this.onInputDelete}
+                                    />
                                     <FileSelectZone
-                                        textField={"standard-read-only-rules-input"}
-                                        input={"icon-button-rules"}>
-                                        Choose rules file:
-                                    </FileSelectZone>
-                                </ExpansionPanelDetails>
-                            </ExpansionPanel>
-                        </Grid>
-                        <Grid>
-                            <Button onClick={this.acceptProject}>Accept</Button>
-                        </Grid>
-                    </Grid>
-                </Paper>
-            </div>
+                                        variant={"rules"}
+                                        accept={".xml"}
+                                        onInputChange={this.onInputChange}
+                                        onInputDelete={this.onInputDelete}
+                                    />
+                                </div>
+                            </Collapse>
+                        </div>
+                    </Collapse>
+                    <StyledDivider
+                        color={"secondary"}
+                        flexItem={false}
+                        hidden={!expand}
+                        margin={12}
+                        orientation={"horizontal"}
+                    />
+                    <div aria-label={"footer"} className={styles.Footer}>
+                        <StyledButton
+                            id={"footer-accept-button"}
+                            onClick={this.onAcceptButtonClick}
+                            themeVariant={"primary"}
+                            variant={"outlined"}
+                        >
+                            Accept
+                        </StyledButton>
+                        <StyledButton
+                            id={"footer-cancel-button"}
+                            onClick={this.onClearClick}
+                            style={{marginRight: 12}}
+                            themeVariant={"secondary"}
+                            variant={"outlined"}
+                        >
+                            Clear
+                        </StyledButton>
+                    </div>
+                </StyledPaper>
+                <CSVDialog onConfirm={this.onCSVDialogClose} open={open} />
+            </RuleWorkBox>
         );
     }
 }
+
+Import.propTypes = {
+    onFilesAccepted: PropTypes.func.isRequired,
+};
 
 export default Import;

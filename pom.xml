@@ -6,7 +6,7 @@
 
     <groupId>pl.put.poznan</groupId>
     <artifactId>rulework</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
     <parent>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.github.rulelearn</groupId>
             <artifactId>rulelearn</artifactId>
-            <version>0.17.0</version>
+            <version>0.21.0-rc.4</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
         <dependency>

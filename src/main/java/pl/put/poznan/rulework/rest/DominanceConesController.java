@@ -1,7 +1,5 @@
 package pl.put.poznan.rulework.rest;
 
-import org.rulelearn.approximations.Unions;
-import org.rulelearn.dominance.DominanceConesDecisionDistributions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulework.model.DominanceCones;
 import pl.put.poznan.rulework.service.DominanceConesService;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @CrossOrigin
-@RequestMapping("/cones")
+@RequestMapping("projects/{id}/cones")
 @RestController
 public class DominanceConesController {
 
@@ -29,7 +28,7 @@ public class DominanceConesController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DominanceCones> getDominanceCones(
-            @RequestParam("id") UUID id) {
+            @PathVariable("id") UUID id) {
         logger.info("Getting dominance cones...");
 
         DominanceCones result = dominanceConesService.getDominanceCones(id);
@@ -38,11 +37,23 @@ public class DominanceConesController {
     }
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DominanceCones> calculate(
-            @RequestParam("id") UUID id) {
-        logger.info("Calculating cones...");
+    public ResponseEntity<DominanceCones> putDominanceCones(
+            @PathVariable("id") UUID id) {
+        logger.info("Putting dominance cones...");
 
-        DominanceCones result = dominanceConesService.calculate(id);
+        DominanceCones result = dominanceConesService.putDominanceCones(id);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DominanceCones> postDominanceCones(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "metadata") String metadata,
+            @RequestParam(name = "data") String data) throws IOException {
+        logger.info("Posting dominance cones...");
+
+        DominanceCones result = dominanceConesService.postDominanceCones(id, metadata, data);
 
         return ResponseEntity.ok(result);
     }

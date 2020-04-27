@@ -1,9 +1,24 @@
-.left-aligned {
-    position: relative;
-    text-align: left;
-    float: left;
+.rule-work-data-toolbar {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
 }
 
-div.left-aligned {
-    overflow: hidden;
+#rule-work-data-1 {
+    display: flex;
+}
+
+#rule-work-data-2 {
+    display: none;
+}
+
+@media only screen and (max-width: 1413px) {
+    #rule-work-data-1 {
+        display: none;
+    }
+
+    #rule-work-data-2 {
+        display: flex;
+    }
 }

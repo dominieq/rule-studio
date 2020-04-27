@@ -1,10 +1,11 @@
 import React from 'react';
+import RuleWorkBox from "../../RuleWorkComponents/Containers/RuleWorkBox";
 
-function Help(props) {
+function Help() {
     return (
-        <div>
+        <RuleWorkBox id={"rule-work-help"} styleVariant={"body"}>
 
-        </div>
+        </RuleWorkBox>
     )
 }
 

@@ -18,19 +18,32 @@ class GetDominanceCones extends Component {
     getDominanceCones = (event) => {
         event.preventDefault();
 
-        fetch(`http://localhost:8080/cones?id=${this.state.id_projektu}`, {
+        fetch(`http://localhost:8080/projects/${this.state.id_projektu}/cones`, {
             method: 'GET'
         }).then(response => {
             console.log(response)
-            return response.json()
-        }).then(result => {
-            console.log("Wynik dzialania response.json():")
-            console.log(result)
-
-            console.log("Obiekty:")
-            result.forEach(element => {
-                console.log(element)
-            })
+            if(response.status === 200) {
+                response.json().then(result => {
+                    console.log("Otrzymane unie:")
+                    console.log(result)
+                }).catch(err => {
+                    console.log(err)
+                })
+            } else if(response.status === 404) {
+                response.json().then(result => {
+                    console.log("Błąd 404.")
+                    console.log(result.message)
+                }).catch(err => {
+                    console.log(err)
+                })
+            } else {
+                response.json().then(result => {
+                    console.log("Wynik dzialania response.json():")
+                    console.log(result)
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
         }).catch(err => {
             console.log(err)
         })

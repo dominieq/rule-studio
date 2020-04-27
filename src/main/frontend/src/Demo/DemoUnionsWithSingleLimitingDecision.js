@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import Calculate from './DemoUnionsWithSingleLimitingDecision/Calculate'
 import GetUnionsWithSingleLimitingDecision from './DemoUnionsWithSingleLimitingDecision/GetUnionsWithSingleLimitingDecision'
+import PutUnionsWithSingleLimitingDecision from './DemoUnionsWithSingleLimitingDecision/PutUnionsWithSingleLimitingDecision'
+import PostUnionsWithSingleLimitingDecision from './DemoUnionsWithSingleLimitingDecision/PostUnionsWithSingleLimitingDecision'
 
 class DemoUnionsWithSingleLimitingDecision extends Component {
 
@@ -8,9 +9,10 @@ class DemoUnionsWithSingleLimitingDecision extends Component {
         return (
             <div>
                 <hr></hr>
-                <h3>UnionsController</h3>
+                <h2>UnionsController</h2>
                 <GetUnionsWithSingleLimitingDecision></GetUnionsWithSingleLimitingDecision>
-                <Calculate></Calculate>
+                <PutUnionsWithSingleLimitingDecision></PutUnionsWithSingleLimitingDecision>
+                <PostUnionsWithSingleLimitingDecision></PostUnionsWithSingleLimitingDecision>
             </div>
         )
     }
