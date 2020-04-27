@@ -15,6 +15,10 @@
   height: 100% !important;
 }
 
+.react-grid-HeaderCell {
+  overflow: hidden;
+}
+
 div.react-grid-HeaderCell .input-sm {
   height: 30px;
   padding: 5px 10px;
