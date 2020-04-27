@@ -50,13 +50,15 @@ class Cones extends Component {
                     data: null,
                     items: null,
                     displayedItems: [],
-                    selectedItem: null,
                     alertProps: error
                 });
             }
         }).finally(() => {
             if (this._isMounted) {
-                this.setState({loading: false})
+                this.setState({
+                    loading: false,
+                    selectedItem: null,
+                })
             }
         });
     }
@@ -202,7 +204,7 @@ class Cones extends Component {
                         }
                     ]}
                 />
-                {selectedItem &&
+                {selectedItem !== null &&
                     <ConesDialog
                         item={selectedItem}
                         items={items}

@@ -1,7 +1,16 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { downloadMatrix, fetchClassification, parseClassificationParams } from "../Utils/fetchFunctions";
-import { parseClassificationItems, parseClassificationListItems, parseMatrix } from "../Utils/parseData";
+import {
+    createFormData,
+    downloadMatrix,
+    fetchClassification,
+    parseClassificationParams
+} from "../Utils/fetchFunctions";
+import {
+    parseClassificationItems,
+    parseClassificationListItems,
+    parseMatrix
+} from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -12,9 +21,10 @@ import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
 import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
+import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
 import { MatrixDialog } from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
+import { CSVDialog } from "../../../RuleWorkComponents/Feedback/CSVDialog";
 import { ClassificationDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog"
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
 import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
@@ -41,6 +51,7 @@ class Classification extends Component {
                 details: false,
                 matrix: false,
                 settings: false,
+                csv: false
             },
             alertProps: undefined,
         };
@@ -75,7 +86,6 @@ class Classification extends Component {
                     data: null,
                     items: null,
                     displayedItems: [],
-                    selectedItem: null,
                     alertProps: error
                 });
             }
@@ -90,7 +100,8 @@ class Classification extends Component {
                 this.setState(({parameters}) => ({
                     loading: false,
                     parameters: parametersSaved ?
-                        parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier } }
+                        parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier } },
+                    selectedItem: null
                 }));
             }
         });
@@ -116,7 +127,18 @@ class Classification extends Component {
         }
 
         if (prevProps.project.result.id !== this.props.project.result.id) {
-            this.setState({ loading: true}, this.getClassification);
+            const { parametersSaved } = prevState;
+
+            if (!parametersSaved) {
+                let project = { ...prevProps.project };
+                const { parameters } = prevState;
+
+                project.parameters = { ...project.parameters, ...parameters};
+                project.parametersSaved = parametersSaved;
+                this.props.onTabChange(project);
+            }
+
+            this.setState({ loading: true }, this.getClassification);
         }
     }
 
@@ -134,23 +156,8 @@ class Classification extends Component {
         }
     }
 
-    onCalculateClick = (event) => {
-        event.persist();
+    calculateClassification = (method, data) => {
         let project = {...this.props.project};
-        const { parameters: { defaultClassificationResult, typeOfClassifier } } = this.state;
-
-        let method = project.dataUpToDate || event.target.files ? "PUT" : "POST"
-        let data = new FormData();
-        data.append("defaultClassificationResult", defaultClassificationResult);
-        data.append("typeOfClassifier", typeOfClassifier);
-
-        if (event.target.files) {
-            data.append("data", event.target.files[0]);
-        }
-        if (!project.dataUpToDate && !event.target.files) {
-            data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-            data.append("data", JSON.stringify(project.result.informationTable.objects));
-        }
 
         this.setState({
             loading: true,
@@ -160,6 +167,7 @@ class Classification extends Component {
             ).then(result => {
                 if (result) {
                     project = {...this.props.project};
+
                     if (this._isMounted) {
                         const items = parseClassificationItems(result, project.settings);
 
@@ -195,7 +203,61 @@ class Classification extends Component {
                 }
             });
         });
+    }
+
+    onClassifyData = () => {
+        const { project } = this.props;
+        const { parameters } = this.state;
+
+        let method = project.dataUpToDate ? "PUT" : "POST";
+        let files = {
+            metadata: JSON.stringify(project.result.informationTable.attributes),
+            data: JSON.stringify(project.result.informationTable.objects)
+        }
+        let data = createFormData(parameters, project.dataUpToDate ? null : files);
+
+        this.calculateClassification(method, data);
     };
+
+    onUploadData = (event) => {
+        event.persist();
+
+        if (event.target.files) {
+            if (event.target.files[0].type !== "application/json") {
+                this.csvFile = event.target.files[0];
+
+                this.setState(({open}) => ({
+                    open: { ...open, csv: true }
+                }));
+            } else {
+                const { project } = this.props;
+                const { parameters } = this.state;
+
+                let method = project.dataUpToDate ? "PUT" : "POST";
+                let files = { data: event.target.files[0] };
+                let data = createFormData(parameters, files);
+
+                this.calculateClassification(method, data);
+            }
+        }
+    };
+
+    onCSVDialogClose = (csvSpecs) => {
+        this.setState(({open}) => ({
+            open: { ...open, csv: false }
+        }), () => {
+            if (csvSpecs && Object.keys(csvSpecs).length) {
+                const { project } = this.props;
+                const { parameters } = this.state;
+
+                let method = project.dataUpToDate ? "PUT" : "POST";
+                let files = { data: this.csvFile };
+                let data = createFormData(parameters, files);
+
+                this.calculateClassification(method, data);
+            }
+        });
+    }
 
     onSaveToFile = () => {
         const { project } = this.props;
@@ -268,6 +330,7 @@ class Classification extends Component {
 
     render() {
         const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
+        const { project } = this.props;
 
         return (
             <RuleWorkBox id={"rule-work-classification"} styleVariant={"tab"}>
@@ -285,14 +348,14 @@ class Classification extends Component {
                         <CalculateButton
                             aria-label={"classify-current-file"}
                             disabled={loading}
-                            onClick={this.onCalculateClick}
+                            onClick={this.onClassifyData}
                         >
                             Classify current data
                         </CalculateButton>
                         <RuleWorkUpload
                             accept={".json,.csv"}
                             id={"classify-new-file"}
-                            onChange={this.onCalculateClick}
+                            onChange={this.onUploadData}
                         >
                             <CalculateButton
                                 aria-label={"classify-new-file"}
@@ -348,15 +411,15 @@ class Classification extends Component {
                         }
                     ]}
                 />
-                {selectedItem &&
+                {project.result.rules !== null && selectedItem !== null &&
                     <ClassificationDialog
                         item={selectedItem}
                         onClose={() => this.toggleOpen("details")}
                         open={open.details}
-                        ruleSet={this.props.project.result.rules.ruleSet}
+                        ruleSet={project.result.rules.ruleSet}
                     />
                 }
-                {data &&
+                {data !== null &&
                     <MatrixDialog
                         matrix={parseMatrix(data.ordinalMisclassificationMatrix)}
                         onClose={() => this.toggleOpen("matrix")}
@@ -376,6 +439,7 @@ class Classification extends Component {
                         }
                     />
                 }
+                <CSVDialog onConfirm={this.onCSVDialogClose} open={open.csv} />
                 <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
             </RuleWorkBox>
         )

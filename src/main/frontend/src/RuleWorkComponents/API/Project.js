@@ -18,6 +18,13 @@ class Project {
         };
         this.parametersSaved = true;
 
+        this.sortParams = {
+            rules: {
+                order: "asc",
+                value: ""
+            }
+        };
+
         this.foldIndex = 0;
 
         this.settings = {
@@ -28,6 +35,7 @@ class Project {
             historySnapshot: 0,
             history: []
         };
+        this.isDataFromServer = true;
     }
 }
 

@@ -1,5 +1,6 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
+import { makeStyles } from "@material-ui/core/styles";
 import Accept from "./Utils/Accept";
 import Cancel from "./Utils/Cancel";
 import SimpleContent from "./Utils/SimpleContent";
@@ -7,6 +8,20 @@ import SimpleDialog from "./Utils/SimpleDialog";
 import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
+
+const useStyles = makeStyles(theme => ({
+    projectName: {
+        color: theme.palette.button.secondary
+    }
+}), {name: "Delete"});
+
+function ProjectName(props) {
+    const classes = useStyles();
+
+    return (
+        <span aria-label={"project name"} className={classes.projectName} {...props} />
+    )
+}
 
 class DeleteProjectDialog extends PureComponent {
     constructor(props) {
@@ -22,6 +37,9 @@ class DeleteProjectDialog extends PureComponent {
         this.setState({
             name: "",
             correct: false,
+        }, () => {
+            const element = document.getElementById("delete-project-input");
+            element.focus();
         });
     };
 
@@ -71,11 +89,14 @@ class DeleteProjectDialog extends PureComponent {
                 open={open}
             >
                 <DialogTitle id={"delete-project-dialog"}>
-                    Confirm deletion of {currentName}
+                    Confirm deletion of: <ProjectName>{currentName}</ProjectName>
                 </DialogTitle>
                 <SimpleContent>
                     <RuleWorkTextField
                         fullWidth={true}
+                        InputProps={{
+                            id: "delete-project-input"
+                        }}
                         onChange={this.onInputChange}
                         outsideLabel={"Type project name"}
                         value={name}

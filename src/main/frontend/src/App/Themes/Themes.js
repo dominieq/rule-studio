@@ -133,7 +133,7 @@ export const LightTheme = createMuiTheme( {
                 }
             },
             contextMenu: {
-                backgroundColor: "#FFF",
+                backgroundColor: "#2196F3",
                 border: "1px solid rgba(0,0,0,.15)",
                 hover: {
                     color: "#000000",

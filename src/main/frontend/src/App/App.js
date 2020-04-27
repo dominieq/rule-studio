@@ -70,38 +70,71 @@ class App extends Component {
     };
 
     onDataChanges = (project) => {
-        let tabsUpToDate = [
-            !project.result.dominanceCones,
-            !project.result.unions,
-            !project.result.rules,
-            !project.result.classification,
-            !project.result.crossValidation,
-        ];
-        this.setState(({currentProject, projects}) => ({
-            projects: [
-                ...projects.slice(0, currentProject),
-                {
-                    ...projects[currentProject],
-                    ...project,
-                    dataUpToDate: false,
-                    tabsUpToDate: tabsUpToDate
-                },
-                ...projects.slice(currentProject + 1)
-            ],
-        }));
+        this.setState(({currentProject, projects}) => {
+            let index = currentProject;
+
+            if (index === -1 && projects.length) {
+                for (let i = 0; i < projects.length; i++) {
+                   if (projects[i].result.id === project) {
+                       index = i;
+                       break;
+                   }
+                }
+            } else if (index === -1 && !projects.length) {
+                return { projects: projects };
+            }
+
+            if (index > -1) {
+                return {
+                    projects: [
+                        ...projects.slice(0, index),
+                        {
+                            ...projects[index],
+                            ...project,
+                            dataUpToDate: false,
+                            tabsUpToDate: [
+                                !project.result.dominanceCones,
+                                !project.result.unions,
+                                !project.result.rules,
+                                !project.result.classification,
+                                !project.result.crossValidation,
+                            ]
+                        },
+                        ...projects.slice(index + 1)
+                    ]
+                };
+            } else {
+                return { projects: projects };
+            }
+        });
     };
 
     onTabChanges = (project) => {
-        this.setState(({currentProject, projects}) => ({
-            projects: [
-                ...projects.slice(0, currentProject),
-                {
-                    ...projects[currentProject],
-                    ...project
-                },
-                ...projects.slice(currentProject + 1)
-            ],
-        }));
+        this.setState(({projects}) => {
+            if (projects.length) {
+                let index;
+
+                for (let i = 0; i < projects.length; i++) {
+                    if (projects[i].result.id === project.result.id) {
+                        index = i;
+                        break;
+                    }
+                }
+
+                return {
+                    projects: [
+                        ...projects.slice(0, index),
+                        {
+                            ...projects[index],
+                            ...project
+                        },
+                        ...projects.slice(index + 1)
+                    ],
+                };
+            } else {
+                return { projects: projects };
+            }
+        });
     };
 
     onBodyChange = (name) => {
@@ -138,7 +171,7 @@ class App extends Component {
         }
     };
 
-    onFilesAccepted = (name, files) => {
+    onFilesAccepted = (name, files, csvSpecs) => {
         if (!this.isNameUnique(name)) {
             this.setState({
                 alertProps: {
@@ -156,6 +189,10 @@ class App extends Component {
 
                 data.append("name", name);
                 files.map(file => data.append(file.type, file.file));
+
+                if (csvSpecs && Object.keys(csvSpecs).length) {
+                    Object.keys(csvSpecs).map(key => data.append(key, csvSpecs[key]));
+                }
 
                 fetchProjects(
                     "POST", data
@@ -324,10 +361,7 @@ class App extends Component {
                     {
                         "Help": <Help />,
                         "Home": <Home />,
-                        "Import":
-                            <Import
-                                onFilesAccepted={(name, files) => this.onFilesAccepted(name, files)}
-                            />,
+                        "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
                             <ProjectTabs
                                 project={projects[currentProject]}

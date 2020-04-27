@@ -16,6 +16,7 @@ import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider
 import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
 import { RulesDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
 import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
+import { createCategories, simpleSort, SortButton, SortMenu } from "../../../RuleWorkComponents/Inputs/SortMenu";
 import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
 import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
 import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
@@ -42,7 +43,12 @@ class Rules extends Component {
             selectedItem: null,
             open: {
                 details: false,
-                settings: false
+                settings: false,
+            },
+            sort: {
+                anchorE1: null,
+                order: "asc",
+                value: ""
             },
             alertProps: undefined,
         };
@@ -57,44 +63,47 @@ class Rules extends Component {
             project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
-                const { project: { parametersSaved } } = this.props;
+                const { project: { parametersSaved, sortParams } } = this.props;
 
                 const items = parseRulesItems(result);
                 const resultParameters = parseRulesParams(result);
 
-                this.setState(({parameters}) => ({
+                this.setState(({parameters, sort}) => ({
                     data: result,
                     items: items,
                     displayedItems: items,
                     externalRules: result.externalRules,
                     parameters: { ...parameters, ...resultParameters},
-                    parametersSaved: parametersSaved
+                    parametersSaved: parametersSaved,
+                    sort: { ...sort, ...sortParams.rules }
                 }));
             }
         }).catch(error => {
+            console.log(error);
             if (this._isMounted) {
                 this.setState({
                     data: null,
                     items: null,
                     displayedItems: [],
-                    selectedItem: null,
                     alertProps: error
                 });
             }
         }).finally(() => {
             if (this._isMounted) {
-                const { parametersSaved } = this.state;
+                const { displayedItems, parametersSaved } = this.state;
                 const { project: { parameters: {
                     consistencyThreshold,
                     typeOfRules,
                     typeOfUnions
                 }}} = this.props;
 
+
                 this.setState(({parameters}) => ({
                     loading: false,
                     parameters: parametersSaved ?
-                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules, typeOfUnions } }
-                }));
+                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules, typeOfUnions } },
+                    selectedItem: null
+                }), () => this.onSortChange(displayedItems));
             }
         });
     };
@@ -128,17 +137,37 @@ class Rules extends Component {
         }
 
         if (prevProps.project.result.id !== this.props.project.result.id) {
+            const { parametersSaved, sort: { order, value } } = prevState;
+            let project = { ...prevProps.project };
+
+            project.sortParams.rules = { ...project.sortParams.rules, ...{ order, value } };
+
+            if (!parametersSaved) {
+                const { parameters } = prevState;
+
+                project.parameters = {
+                    ...project.parameters,
+                    consistencyThreshold: parameters.consistencyThreshold,
+                    typeOfRules: parameters.typeOfRules
+                };
+                project.parametersSaved = parametersSaved;
+            }
+
+            this.props.onTabChange(project);
+
             this.setState({ loading: true }, this.getRules);
         }
     }
 
     componentWillUnmount() {
         this._isMounted = false;
-        const { parametersSaved } = this.state;
+        const { parametersSaved , sort: { order, value } } = this.state;
+        let project = {...this.props.project};
+
+        project.sortParams.rules = { ...project.sortParams.rules, ...{ order, value } };
 
         if ( !parametersSaved ) {
             const { parameters } = this.state;
-            let project = {...this.props.project};
 
             project.parameters = {
                 ...project.parameters,
@@ -146,8 +175,9 @@ class Rules extends Component {
                 typeOfRules: parameters.typeOfRules
             };
             project.parametersSaved = parametersSaved;
-            this.props.onTabChange(project);
         }
+
+        this.props.onTabChange(project);
     }
 
     onCalculateClick = () => {
@@ -188,6 +218,7 @@ class Rules extends Component {
                     project.result.rules = result;
                     project.dataUpToDate = true;
                     project.tabsUpToDate[this.props.value] = true;
+                    project.tabsUpToDate[this.props.value - 1] = true;
                     project.externalRules = result.externalRules;
 
                     const newParameters = parseRulesParams(result);
@@ -328,12 +359,74 @@ class Rules extends Component {
         const { loading } = this.state;
 
         if (!loading) {
-            const { items } = this.state;
+            const { items, sort: { order, value } } = this.state;
             const filteredItems = filterFunction(event.target.value.toString(), items.slice());
 
-            this.setState({
-                displayedItems: filteredItems
-            });
+            if ( order && value ) {
+                this.onSortChange(filteredItems);
+            } else {
+                this.setState({
+                    displayedItems: filteredItems
+                });
+            }
+        }
+    };
+
+    onSortMenuOpen = (event) => {
+        const target = event.currentTarget;
+
+        this.setState(({sort}) => ({
+            sort: { ...sort, anchorE1: target }
+        }));
+    };
+
+    onSortMenuClose = () => {
+        this.setState(({sort}) => ({
+            sort: { ...sort, anchorE1: null }
+        }));
+    };
+
+    onSortValueChange = (event) => {
+        const value = event.target.value;
+
+        this.setState(({sort}) => ({
+            sort: { ...sort, value: value }
+        }), () => {
+            const { displayedItems } = this.state;
+
+            this.onSortChange(displayedItems);
+        });
+    };
+
+    onSortOrderChange = (event) => {
+        const order = event.target.value;
+
+        this.setState(({sort}) => ({
+            sort: { ...sort, order: order }
+        }), () => {
+            const { displayedItems } = this.state;
+
+            this.onSortChange(displayedItems);
+        });
+    };
+
+    onSortChange = (items) => {
+        if (items) {
+            const { items: originalItems, sort: { order, value } } = this.state;
+
+            if (order && value) {
+                let newItems = items.map(item => item.toSort(value));
+                newItems = simpleSort(newItems, value, order);
+                newItems = newItems.map(item => originalItems[item.id]);
+
+                this.setState({ displayedItems: newItems });
+            } else {
+                const { items: originalItems } = this.state;
+
+                this.setState({
+                    displayedItems: Boolean(originalItems) ? originalItems : []
+                });
+            }
         }
     };
 
@@ -346,7 +439,7 @@ class Rules extends Component {
     };
 
     render() {
-        const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
+        const { loading, data, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
         const { project: { result, settings } } = this.props;
 
         return (
@@ -411,6 +504,19 @@ class Rules extends Component {
                         </StyledButton>
                     </RuleWorkTooltip>
                     <span style={{flexGrow: 1}} />
+                    <SortButton
+                        ButtonProps={{
+                            "aria-controls": "rules-sort-menu",
+                            "aria-haspopup": true,
+                            "aria-label": "sort rules",
+                            disabled: !Boolean(data),
+                            onClick: this.onSortMenuOpen
+                        }}
+                        tooltip={Boolean(data) ? "Sort rules" : "No content to sort"}
+                        TooltipProps={{
+                            WrapperProps: { style: { marginRight: "0.5rem" } }
+                        }}
+                    />
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
                 <RuleWorkDrawer
@@ -440,6 +546,22 @@ class Rules extends Component {
                         variant={"extended"}
                     />
                 </RuleWorkDrawer>
+                {data !== null &&
+                    <SortMenu
+                        anchorE1={sort.anchorE1}
+                        ContentProps={{
+                            categories: createCategories(Object.keys(items[0].traits)),
+                            chooseOrder: true,
+                            onCategoryChange: this.onSortValueChange,
+                            onOrderChange: this.onSortOrderChange,
+                            order: sort.order,
+                            rowHeight: 28,
+                            value: sort.value
+                        }}
+                        id={"rules-sort-menu"}
+                        onClose={this.onSortMenuClose}
+                    />
+                }
                 <TabBody
                     content={parseRulesListItems(displayedItems)}
                     id={"rules-list"}
@@ -456,7 +578,7 @@ class Rules extends Component {
                         }
                     ]}
                 />
-                {selectedItem &&
+                {selectedItem !== null &&
                     <RulesDialog
                         item={selectedItem}
                         onClose={() => this.toggleOpen("details")}
