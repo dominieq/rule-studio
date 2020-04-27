@@ -191,13 +191,13 @@ public class ClassificationService {
     private static void checkLearningInformationTableCompatibility(InformationTable learningInformationTable, RuleSetWithCharacteristics ruleSetWithCharacteristics) {
         String ruleSetHash = ruleSetWithCharacteristics.getLearningInformationTableHash();
         if(ruleSetHash == null) {
-            NoHashInRuleSetException ex = new NoHashInRuleSetException("Provided rules set doesn't have learning information table hash. It can't be determined, if this rules set was generated based on given learning information table. Chosen classifier can't be used.");
+            NoHashInRuleSetException ex = new NoHashInRuleSetException(String.format("Provided rules set doesn't have learning information table hash. It can't be determined, if this rules set was generated based on given learning information table. Chosen classifier can't be used. Learning data hash: \"%s\".", learningInformationTable.getHash()));
             logger.error(ex.getMessage());
             throw ex;
         }
 
         if(!ruleSetHash.equals(learningInformationTable.getHash())) {
-            IncompatibleLearningInformationTableException ex = new IncompatibleLearningInformationTableException("Data in current project should be a valid training set for existing rules. Access to this set is required to be able to use chosen classifier. Prepare rules based on current data or create new project with valid training set.");
+            IncompatibleLearningInformationTableException ex = new IncompatibleLearningInformationTableException(String.format("Data in current project should be a valid training set for existing rules. Access to this set is required to be able to use chosen classifier. Prepare rules based on current data or create new project with valid training set. Learning data hash: \"%s\", rules hash: \"%s\".", learningInformationTable.getHash(), ruleSetHash));
             logger.error(ex.getMessage());
             throw ex;
         }
