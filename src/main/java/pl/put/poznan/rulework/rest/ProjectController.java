@@ -12,7 +12,6 @@ import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.service.ProjectService;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.UUID;
 
 @CrossOrigin
@@ -36,12 +35,7 @@ public class ProjectController {
         logger.info("Getting project");
         Project result = projectService.getProject(id);
 
-        if(result == null) {
-            logger.info("No project with given id");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-        }
-
-        logger.info(result.toString());
+        logger.debug(result.toString());
         return ResponseEntity.ok(result);
     }
 
@@ -50,10 +44,12 @@ public class ProjectController {
             @PathVariable(name = "id") UUID id,
             @RequestParam(name = "metadata", required = false) MultipartFile metadataFile,
             @RequestParam(name = "data", required = false) MultipartFile dataFle,
-            @RequestParam(name = "rules", required = false) MultipartFile rulesFiles) throws IOException {
+            @RequestParam(name = "rules", required = false) MultipartFile rulesFiles,
+            @RequestParam(name = "separator", defaultValue = ",") Character separator,
+            @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
 
-        logger.info("Creating project");
-        Project result = projectService.setProject(id, metadataFile, dataFle, rulesFiles);
+        logger.info("Setting project");
+        Project result = projectService.setProject(id, metadataFile, dataFle, rulesFiles, separator, header);
         return ResponseEntity.ok(result);
     }
 
@@ -65,20 +61,15 @@ public class ProjectController {
         logger.info("Renaming project");
         Project result = projectService.renameProject(id, name);
 
-        if(result == null) {
-            logger.info("No project with given id");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-        }
-
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> deleteProject(
+    public ResponseEntity deleteProject(
             @PathVariable("id") UUID id) {
 
         logger.info("Deleting project");
-        String result = projectService.deleteProject(id);
-        return ResponseEntity.ok(result);
+        projectService.deleteProject(id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

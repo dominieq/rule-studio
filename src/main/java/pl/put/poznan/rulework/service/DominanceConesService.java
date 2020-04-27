@@ -1,20 +1,17 @@
 package pl.put.poznan.rulework.service;
 
-import org.rulelearn.approximations.*;
-import org.rulelearn.data.Decision;
-import org.rulelearn.data.DecisionDistribution;
-import org.rulelearn.data.InformationTableWithDecisionDistributions;
-import org.rulelearn.dominance.DominanceConesDecisionDistributions;
-import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
+import org.rulelearn.data.InformationTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.put.poznan.rulework.exception.EmptyResponseException;
+import pl.put.poznan.rulework.exception.NoDataException;
 import pl.put.poznan.rulework.model.DominanceCones;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
 
-import java.util.SortedSet;
+import java.io.*;
 import java.util.UUID;
 
 @Service
@@ -25,35 +22,65 @@ public class DominanceConesService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private Project getProjectFromProjectsContainer(UUID id) {
-        return projectsContainer.getProjectHashMap().get(id);
+    private void calculateDominanceCones(Project project) {
+        if(!project.isCurrentDominanceCones()) {
+            InformationTable informationTable = project.getInformationTable();
+            if(informationTable == null) {
+                NoDataException ex = new NoDataException("There is no data in project. Couldn't calculate dominance cones.");
+                logger.error(ex.getMessage());
+                throw ex;
+            }
+
+            DominanceCones dominanceCones = new DominanceCones();
+            dominanceCones.calculateDCones(project.getInformationTable());
+
+            project.setDominanceCones(dominanceCones);
+            project.setCurrentDominanceCones(true);
+        } else {
+            logger.info("Dominance cones are already calculated with given configuration, skipping current calculation.");
+        }
     }
 
     public DominanceCones getDominanceCones(UUID id) {
-        logger.info("Id:\t" + id);
+        logger.info("Id:\t{}", id);
 
-        Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        DominanceCones dominanceCones = project.getDominanceCones();
+        if(dominanceCones == null) {
+            EmptyResponseException ex = new EmptyResponseException("Dominance cones haven't been calculated.");
+            logger.error(ex.getMessage());
+            throw ex;
         }
 
-        logger.info(project.getDominanceCones().toString());
+        logger.debug("dominanceCones:\t{}", dominanceCones.toString());
+        return dominanceCones;
+    }
 
+    public DominanceCones putDominanceCones(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        calculateDominanceCones(project);
+
+        logger.debug("dominanceCones:\t{}", project.getDominanceCones().toString());
         return project.getDominanceCones();
     }
 
-    public DominanceCones calculate(UUID id) {
-        logger.info("Id:\t" + id);
+    public DominanceCones postDominanceCones(UUID id, String metadata, String data) throws IOException {
+        logger.info("Id:\t{}", id);
+        logger.info("Metadata:\t{}", metadata);
+        logger.info("Data:\t{}", data);
 
-        Project project = getProjectFromProjectsContainer(id);
-        if(project == null) {
-            return null;
-        }
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        project.getDominanceCones().calculateDCones(project.getInformationTable());
+        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        project.setInformationTable(informationTable);
 
-        logger.info(project.getDominanceCones().toString());
+        calculateDominanceCones(project);
 
+        logger.debug("dominanceCones:\t{}", project.getDominanceCones().toString());
         return project.getDominanceCones();
     }
 }

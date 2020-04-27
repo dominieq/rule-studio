@@ -1,99 +1,178 @@
-import React, {Component} from 'react';
+import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
-import Box from '@material-ui/core/Box';
-import Paper from "@material-ui/core/Paper";
+import {withStyles} from "@material-ui/core/styles";
+import Classification from "./Classification/Classification";
+import CrossValidation from "./CrossValidation/CrossValidation";
+import Cones from "./Cones/Cones";
+import Data from "./Data/DisplayData";
+import Rules from "./Rules/Rules";
+import Unions from "./Unions/Unions";
+import ExternalRulesAlert from "./Utils/Alerts/ExternalRulesAlert";
+import OutdatedDataAlert from "./Utils/Alerts/OutdatedDataAlert";
+import OutdatedRulesAlert from "./Utils/Alerts/OutdatedRulesAlert";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import DisplayData from "./Data/DisplayData";
 
-function TabPanel(props) {
-    const { children, value, index, ...other} = props;
+const StyledTabs = withStyles(theme => ({
+    indicator: {
+        backgroundColor: theme.palette.tab.background,
+    },
+}), {name: "MuiTabs"})(props => <Tabs {...props} />);
 
-    return (
-        <Box
-            component={"div"}
-            role={"tabpanel"}
-            hidden={value !== index}
-            id={`project-tabpanel-${index}`}
-            aria-labelledby={`project-tab-${index}`}
-            {...other}>
-            {value === index && children}
+const StyledTab = withStyles(theme => ({
+    root: {
+        color: theme.palette.tab.textIdle,
+        '&:hover': {
+            backgroundColor: theme.palette.tab.backgroundAction,
+            color: theme.palette.tab.textAction,
+        },
+        '&:focus': {
+            backgroundColor: theme.palette.tab.backgroundAction,
+            color: theme.palette.tab.textAction,
+        }
+    },
+    textColorInherit: {
+        '&.Mui-selected': {
+            backgroundColor: theme.palette.tab.background,
+            color: theme.palette.tab.text,
+            opacity: 1,
+        },
+    },
+    wrapper: {
+        flexDirection: "row",
+        '&>.MuiSvgIcon-root': {
+            marginRight: 8,
+        }
+    }
 
-        </Box>
-    )
-}
+}), {name: "MuiTab"})(props => <Tab {...props} disableRipple={true} /> );
 
-TabPanel.propTypes = {
-    children: PropTypes.any,
-    index: PropTypes.any.isRequired,
-    value: PropTypes.any.isRequired,
-};
-
-class ProjectTabs extends Component {
+class ProjectTabs extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            value: 0
+            selected: 0
         };
-
-        this.handleChange = this.handleChange.bind(this);
-        this.setTabProps = this.setTabProps.bind(this);
     }
 
-    handleChange(event, newValue) {
+    onTabChange = (event, newValue) => {
         this.setState({
-            value: newValue
-        })
-    }
+            selected: newValue,
+        });
+    };
 
-    setTabProps(index) {
+    getTabProps = (index) => {
         return ({
             id: `project-tab-${index}`,
             'aria-controls': `project-tabpanel-${index}`,
         })
-    }
+    };
+
+    getTabBodyProps = (index) => {
+        return ({
+            project: this.props.project,
+            onTabChange: this.props.onTabChange,
+            value: index,
+        })
+    };
+
+    renderSimpleTabLabel = (name, index) => {
+        const { project: { tabsUpToDate } } = this.props;
+
+        if (tabsUpToDate[index]) {
+            return name;
+        } else {
+            return (
+                <OutdatedDataAlert>
+                    {name}
+                </OutdatedDataAlert>
+            );
+        }
+    };
+
+    renderRulesTabLabel = () => {
+        const { project: { externalRules, tabsUpToDate } } = this.props;
+
+        if (externalRules) {
+            return (
+                <Fragment>
+                    <ExternalRulesAlert />
+                    {"Rules"}
+                </Fragment>
+            );
+        } else if (!tabsUpToDate[2]) {
+            return (
+                <OutdatedDataAlert>
+                    {"Rules"}
+                </OutdatedDataAlert>
+            );
+        } else {
+            return "Rules";
+        }
+    };
+
+    renderClassificationTabLabel = () => {
+        const { project: { externalData, tabsUpToDate} } = this.props;
+
+        if (tabsUpToDate[3] || externalData) {
+            return "Classification";
+        } else if (!tabsUpToDate[3] && !externalData) {
+            return (
+                <OutdatedDataAlert>
+                    {"Classification"}
+                </OutdatedDataAlert>
+            );
+        }
+    };
 
     render() {
-        return (
-            <Box component={"div"}>
-                <Paper elevation={0}>
-                    <Tabs
-                        value={this.state.value}
-                        onChange={this.handleChange}
-                        indicatorColor={"primary"}
-                        textColor={"primary"}
-                        aria-label={"project tabs"}>
+        const { selected } = this.state;
 
-                        <Tab label={"Data"} {...this.setTabProps(0)} />
-                        <Tab label={"Dominance cones"} {...this.setTabProps(1)} />
-                        <Tab label={"Class unions"} {...this.setTabProps(2)} />
-                        <Tab label={"Rules"} {...this.setTabProps(3)} />
-                        <Tab label={"Classification"} {...this.setTabProps(4)} />
-                        <Tab label={"Cross-validation"} {...this.setTabProps(5)} />
-                    </Tabs>
-                    <TabPanel value={this.state.value} index={0}>
-                        <DisplayData/>
-                    </TabPanel>
-                    <TabPanel value={this.state.value} index={1}>
-                        Dominance cones
-                    </TabPanel>
-                    <TabPanel value={this.state.value} index={2}>
-                        Class unions
-                    </TabPanel>
-                    <TabPanel value={this.state.value} index={3}>
-                        Rules
-                    </TabPanel>
-                    <TabPanel value={this.state.value} index={4}>
-                        Classification
-                    </TabPanel>
-                    <TabPanel value={this.state.value} index={5}>
-                        Cross-validation
-                    </TabPanel>
-                </Paper>
-            </Box>
+        return (
+            <Fragment>
+                <StyledTabs aria-label={"project tabs"} centered={true} onChange={this.onTabChange} value={selected}>
+                    <StyledTab label={"Data"} {...this.getTabProps(0)} />
+                    <StyledTab
+                        label={this.renderSimpleTabLabel("Dominance cones", 0)}
+                        {...this.getTabProps(1)}
+                    />
+                    <StyledTab
+                        label={this.renderSimpleTabLabel("Class unions" , 1)}
+                        {...this.getTabProps(2)}
+                    />
+                    <StyledTab
+                        label={this.renderRulesTabLabel()}
+                        {...this.getTabProps(3)}
+                    />
+                    <StyledTab
+                        label={this.renderClassificationTabLabel()}
+                        {...this.getTabProps(4)}
+                    />
+                    <StyledTab
+                        label={this.renderSimpleTabLabel("Cross-Validation", 4)}
+                        {...this.getTabProps(5)}
+                    />
+                </StyledTabs>
+                {
+                    {
+                        0: <Data project={this.props.project} updateProject={this.props.onDataChange} />,
+                        1: <Cones {...this.getTabBodyProps(0)} />,
+                        2: <Unions {...this.getTabBodyProps(1)} />,
+                        3: <Rules {...this.getTabBodyProps(2)} />,
+                        4: <Classification {...this.getTabBodyProps(3)} />,
+                        5: <CrossValidation {...this.getTabBodyProps(4)} />,
+                    }[selected]
+                }
+            </Fragment>
         );
     }
 }
+
+ProjectTabs.propTypes = {
+    onDataChange: PropTypes.func,
+    onTabChange: PropTypes.func,
+    project: PropTypes.object,
+};
 
 export default ProjectTabs;

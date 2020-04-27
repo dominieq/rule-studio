@@ -33,13 +33,6 @@ public class ProjectsController {
 
         logger.info("Getting projects");
         ArrayList<Project> result = projectsService.getProjects();
-
-        if(result == null) {
-            logger.info("There is no projects");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-        }
-
-        logger.info(result.toString());
         return ResponseEntity.ok(result);
     }
 
@@ -48,10 +41,12 @@ public class ProjectsController {
             @RequestParam(name = "name") String name,
             @RequestParam(name = "metadata", required = false) MultipartFile metadataFile,
             @RequestParam(name = "data", required = false) MultipartFile dataFle,
-            @RequestParam(name = "rules", required = false) MultipartFile rulesFiles) throws IOException {
+            @RequestParam(name = "rules", required = false) MultipartFile rulesFiles,
+            @RequestParam(name = "separator", defaultValue = ",") Character separator,
+            @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
 
         logger.info("Creating project");
-        Project result = projectsService.createProject(name, metadataFile, dataFle, rulesFiles);
+        Project result = projectsService.createProject(name, metadataFile, dataFle, rulesFiles, separator, header);
         return ResponseEntity.ok(result);
     }
 }

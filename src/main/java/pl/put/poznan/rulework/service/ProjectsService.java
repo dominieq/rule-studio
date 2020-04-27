@@ -1,12 +1,8 @@
 package pl.put.poznan.rulework.service;
 
 import org.rulelearn.data.Attribute;
-import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.data.Table;
-import org.rulelearn.data.csv.ObjectParser;
-import org.rulelearn.data.json.AttributeParser;
-import org.rulelearn.types.EvaluationField;
+import org.rulelearn.rules.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulework.model.Project;
 import pl.put.poznan.rulework.model.ProjectsContainer;
+import pl.put.poznan.rulework.model.RulesWithHttpParameters;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.UUID;
 
 @Service
 public class ProjectsService {
@@ -29,117 +23,58 @@ public class ProjectsService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    private Project getProjectFromProjectsContainer(UUID id) {
-        return projectsContainer.getProjectHashMap().get(id);
-    }
-
-    private void addProjectToProjectsContainer(Project project) {
-        projectsContainer.getProjectHashMap().put(project.getId(), project);
-    }
-
     public ArrayList<Project> getProjects() {
-        return new ArrayList<Project>(projectsContainer.getProjectHashMap().values());
+        ArrayList<Project> result = new ArrayList<Project>(projectsContainer.getProjectHashMap().values());
+
+        logger.debug(result.toString());
+        return result;
     }
 
     private Project createEmptyProject(String name) {
         Project project = new Project(name);
-        addProjectToProjectsContainer(project);
+        projectsContainer.addProject(project);
         return project;
     }
 
-    public Project createProjectWithMetadata(String name, MultipartFile metadataFile) throws IOException {
-
-        Attribute[] attributes;
-        AttributeParser attributeParser = new AttributeParser();
-        Reader reader = new InputStreamReader(metadataFile.getInputStream());
-        attributes = attributeParser.parseAttributes(reader);
-        for(int i = 0; i < attributes.length; i++) {
-            logger.info(i + ":\t" + attributes[i]);
-        }
-
-        InformationTable informationTable = new InformationTable(attributes, new ArrayList<>());
-
-        Project project = new Project(name, informationTable);
-        projectsContainer.getProjectHashMap().put(project.getId(), project);
-        logger.info(project.toString());
-
-
-        Table<EvaluationAttribute, EvaluationField> table = informationTable.getActiveConditionAttributeFields();
-        for(int i = 0; i < table.getNumberOfObjects(); i++) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(i);
-            sb.append(":");
-            for(int j = 0; j < table.getNumberOfAttributes(); j++) {
-                sb.append("\t");
-                sb.append(table.getField(i, j));
-            }
-            logger.info(sb.toString());
-        }
-
-        return project;
-    }
-
-    public Project createProjectWithData(String name, MultipartFile metadataFile, MultipartFile dataFile) throws IOException {
-
-        Attribute[] attributes;
-        AttributeParser attributeParser = new AttributeParser();
-        Reader reader = new InputStreamReader(metadataFile.getInputStream());
-        attributes = attributeParser.parseAttributes(reader);
-        for(int i = 0; i < attributes.length; i++) {
-            logger.info(i + ":\t" + attributes[i]);
-        }
-
-        InformationTable informationTable = null;
-
-        if (dataFile.getContentType().equals("application/json")) {
-            logger.info("Data type is json");
-            org.rulelearn.data.json.ObjectParser objectParser = new org.rulelearn.data.json.ObjectParser.Builder(attributes).build();
-            reader = new InputStreamReader(dataFile.getInputStream());
-            informationTable = objectParser.parseObjects(reader);
-
-        } else if (dataFile.getContentType().equals("application/vnd.ms-excel")) {
-            logger.info("Data type is csv");
-            ObjectParser objectParser = new ObjectParser.Builder(attributes).build();
-            reader = new InputStreamReader(dataFile.getInputStream());
-            informationTable = objectParser.parseObjects(reader);
-        } else {
-            logger.error("Unrecognized format of data file: " + dataFile.getContentType());
-        }
-
-        Project project = new Project(name, informationTable);
-        projectsContainer.getProjectHashMap().put(project.getId(), project);
-        logger.info(project.toString());
-
-
-        Table<EvaluationAttribute, EvaluationField> table = informationTable.getActiveConditionAttributeFields();
-        for(int i = 0; i < table.getNumberOfObjects(); i++) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(i);
-            sb.append(":");
-            for(int j = 0; j < table.getNumberOfAttributes(); j++) {
-                sb.append("\t");
-                sb.append(table.getField(i, j));
-            }
-            logger.info(sb.toString());
-        }
-
-        return project;
-    }
-
-    public Project createProject(String name, MultipartFile metadataFile, MultipartFile dataFile, MultipartFile rulesFile) throws IOException {
-        logger.info("Name:\t" + name);
-        if(metadataFile != null)    logger.info("Metadata:\t" + metadataFile.getOriginalFilename() + "\t" + metadataFile.getContentType());
-        if(dataFile != null)        logger.info("Data:\t" + dataFile.getOriginalFilename() + "\t" + dataFile.getContentType());
-        if(rulesFile != null)       logger.info("Rules:\t" + rulesFile.getOriginalFilename() + "\t" + rulesFile.getContentType());
+    public Project createProject(
+            String name,
+            MultipartFile metadataFile,
+            MultipartFile dataFile,
+            MultipartFile rulesFile,
+            Character separator,
+            Boolean header) throws IOException {
+        logger.info("Name:\t{}", name);
+        if(metadataFile != null)    logger.info("Metadata:\t{}\t{}", metadataFile.getOriginalFilename(), metadataFile.getContentType());
+        if(dataFile != null)        logger.info("Data:\t{}\t{}", dataFile.getOriginalFilename(), dataFile.getContentType());
+        if(rulesFile != null)       logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
+        logger.info("Separator:\t{}", separator);
+        logger.info("Header:\t{}", header);
 
         if(metadataFile == null) {
             return createEmptyProject(name);
-        } else {
-            if(dataFile != null) {
-                return createProjectWithData(name, metadataFile, dataFile);
-            } else {
-                return createProjectWithMetadata(name, metadataFile);
-            }
         }
+
+        InformationTable informationTable = null;
+        Project project;
+        Attribute[] attributes = MetadataService.attributesFromMultipartFileMetadata(metadataFile);
+
+        if(dataFile != null) { //load data from file
+            informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
+        } else { //there is no objects
+            informationTable = new InformationTable(attributes, new ArrayList<>());
+        }
+
+        project = new Project(name, informationTable);
+
+
+        if(rulesFile != null) { //load rules from file
+            RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
+            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, true));
+        }
+
+
+        projectsContainer.addProject(project);
+        logger.debug(project.toString());
+        return project;
     }
 }

@@ -8,13 +8,27 @@ class CreateProject extends Component {
             name: 'newProject',
             metadata: '',
             data: '',
-            rules: ''
+            rules: '',
+            separator: ',',
+            header: false
         }
     }
 
     handleNameChange = (event) => {
         this.setState({
             name: event.target.value
+        })
+    }
+
+    handleSeparatorChange = (event) => {
+        this.setState({
+            separator: event.target.value
+        })
+    }
+
+    handleHeaderChange = (event) => {
+        this.setState({
+            header: event.target.checked
         })
     }
 
@@ -44,29 +58,26 @@ class CreateProject extends Component {
         data.append('metadata', this.state.metadata)
         data.append('data', this.state.data)
         data.append('rules', this.state.rules)
+        data.append('separator', this.state.separator)
+        data.append('header', this.state.header)
 
         fetch('http://localhost:8080/projects', {
             method: 'POST',
-            body: data,
+            body: data
         }).then(response => {
             console.log(response)
             return response.json()
         }).then(result => {
             console.log("Wynik dzialania response.json():")
             console.log(result)
-
-            console.log("Atrybuty:")
-            result.attributes.forEach(element => {
-                console.log(element)
-            });
-
-            console.log("Obiekty:")
-            result.objects.forEach(element => {
-                console.log(element)
-            })
         }).catch(err => {
             console.log(err)
         })
+    }
+
+    handleClick = (cb) => {
+      console.log("Clicked, new value = " + cb.checked);
+      console.log(cb.target.checked);
     }
 
     render() {
@@ -75,12 +86,16 @@ class CreateProject extends Component {
                 <h3>Create project</h3>
                 name->
                 <input type='text' value={this.state.name} onChange={this.handleNameChange} />
-                <p>metadata</p>
+                metadata->
                 <input onChange={this.onMetadataChange} type="file"></input>
-                <p>data</p>
+                data->
                 <input onChange={this.onDataChange} type="file"></input>
-                <p>rules</p>
+                rules->
                 <input onChange={this.onRulesChange} type="file"></input>
+                separator(only csv)->
+                <input type='text' value={this.state.separator} onChange={this.handleSeparatorChange} />
+                <input type="checkbox" id="headerCreateProject" onChange={this.handleHeaderChange} />
+                <label for="headerCreateProject"> header </label>
                 <br />
                 <button onClick={this.createProject}>createProject</button>
             </div>
