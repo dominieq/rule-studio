@@ -25,32 +25,32 @@ public class RuleCharacteristicsSerializer extends JsonSerializer<RuleCharacteri
             jsonGenerator.writeFieldName(fieldName);
 
             if((value instanceof Double) && (Double.isInfinite((Double)value))) {
-                logger.warn("Value of " + fieldName + " is infinite:\t" + value);
+                logger.debug("Value of " + fieldName + " is infinite:\t" + value);
                 jsonGenerator.writeString(value.toString());
                 return;
             }
 
             if((value instanceof Double) && (Double.isNaN((Double)value))) {
-                logger.warn("Value of " + fieldName + " is NaN:\t" + value);
+                logger.debug("Value of " + fieldName + " is NaN:\t" + value);
                 jsonGenerator.writeString(value.toString());
                 return;
             }
 
             if((value instanceof Double) && (value.equals(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE))) {
-                logger.warn("Value of " + fieldName + " is unknown:\t" + value);
+                logger.debug("Value of " + fieldName + " is unknown:\t" + value);
                 jsonGenerator.writeString("-");
                 return;
             }
 
             if((value instanceof Integer) && (value.equals(RuleCharacteristics.UNKNOWN_INT_VALUE))) {
-                logger.warn("Value of " + fieldName + " is unknown:\t" + value);
+                logger.debug("Value of " + fieldName + " is unknown:\t" + value);
                 jsonGenerator.writeString("-");
                 return;
             }
 
             jsonGenerator.writeRawValue(value.toString());
         } catch (UnknownValueException e) {
-            logger.warn(e.getMessage());
+            logger.debug(e.getMessage());
             jsonGenerator.writeFieldName(fieldName);
             jsonGenerator.writeString("-");
         }
