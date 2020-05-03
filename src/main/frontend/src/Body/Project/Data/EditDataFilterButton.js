@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react';
 import SearchIcon from '@material-ui/icons/Search';
 import './EditDataButtons.css';
-import RuleWorkTooltip from '../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip';
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import RuleWorkTooltip from '../../../Utils/DataDisplay/RuleWorkTooltip';
+import StyledButton from "../../../Utils/Inputs/StyledButton";
+import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 
 class EditDataFilterButton extends React.Component {
     constructor(props) {

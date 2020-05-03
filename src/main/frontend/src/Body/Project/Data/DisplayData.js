@@ -20,13 +20,13 @@ import { withStyles, createStyles } from '@material-ui/core/styles';
 import { DraggableHeader } from 'react-data-grid-addons';
 import PropTypes from 'prop-types';
 import RuleWorkLoadingIcon from './RuleWorkLoadingIcon';
-import StyledButton from '../../../RuleWorkComponents/Inputs/StyledButton';
+import StyledButton from '../../../Utils/Inputs/StyledButton';
 import NumericFilter from './NumericFilter';
 import AttributesVirtualizedTable from './AttributesVirtualizedTable';
-import RuleWorkTooltip from '../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip';
+import RuleWorkTooltip from '../../../Utils/DataDisplay/RuleWorkTooltip';
 
 import { StyledCheckbox, StyledRadio, StyledRuleWorkTextField} from './StyledComponents';
-import StyledDivider from '../../../RuleWorkComponents/DataDisplay/StyledDivider';
+import StyledDivider from '../../../Utils/DataDisplay/StyledDivider';
 
 const selectors = Data.Selectors;
 const { DropDownEditor } = Editors;

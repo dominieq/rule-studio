@@ -6,10 +6,10 @@ import TabBody from "../Utils/TabBody";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
-import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox"
-import { ConesDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
-import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
-import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox"
+import { ConesDialog } from "../../../Utils/Feedback/RuleWorkDialog";
+import RuleWorkAlert from "../../../Utils/Feedback/RuleWorkAlert";
+import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 
 class Cones extends Component {
     constructor(props) {

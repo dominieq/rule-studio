@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
-import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import StyledSlider from "../../../../RuleWorkComponents/Inputs/StyledSlider";
+import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
+import RuleWorkTextField from "../../../../Utils/Inputs/RuleWorkTextField";
+import StyledSlider from "../../../../Utils/Inputs/StyledSlider";
 import styles from "./styles/Calculations.module.css";
 
 const tooltip = {

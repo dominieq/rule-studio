@@ -9,13 +9,13 @@ import CalculateButton from "../Utils/Buttons/CalculateButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
-import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
-import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
-import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import { UnionsDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
-import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
-import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox";
+import RuleWorkDrawer from "../../../Utils/Containers/RuleWorkDrawer"
+import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
+import RuleWorkTooltip from "../../../Utils/DataDisplay/RuleWorkTooltip";
+import { UnionsDialog } from "../../../Utils/Feedback/RuleWorkDialog";
+import RuleWorkAlert from "../../../Utils/Feedback/RuleWorkAlert";
+import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 
 class Unions extends Component {
     constructor(props) {

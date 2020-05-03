@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styles from "./styles/Calculations.module.css";
-import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
-import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
+import RuleWorkTextField from "../../../../Utils/Inputs/RuleWorkTextField";
 
 const tooltip = {
     main: "Number of parts of equal (or differing by 1) size that the training data set is randomly split into " +

@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import StyledButton from "../../../../RuleWorkComponents/Inputs/StyledButton";
+import StyledButton from "../../../../Utils/Inputs/StyledButton";
 import Calculator from "mdi-material-ui/Calculator"
 
 function CalculateButton(props) {

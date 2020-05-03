@@ -27,16 +27,16 @@ import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
 import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
-import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
-import { MatrixDialog } from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
-import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
-import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import { CrossValidationDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
-import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
-import RuleWorkTextField from "../../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox";
+import RuleWorkDrawer from "../../../Utils/Containers/RuleWorkDrawer"
+import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
+import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
+import RuleWorkTooltip from "../../../Utils/DataDisplay/RuleWorkTooltip";
+import { CrossValidationDialog } from "../../../Utils/Feedback/RuleWorkDialog";
+import RuleWorkAlert from "../../../Utils/Feedback/RuleWorkAlert";
+import RuleWorkTextField from "../../../Utils/Inputs/RuleWorkTextField";
+import StyledButton from "../../../Utils/Inputs/StyledButton";
+import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
 import Sigma from "mdi-material-ui/Sigma";

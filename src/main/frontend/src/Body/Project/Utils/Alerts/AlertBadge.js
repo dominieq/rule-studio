@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
-import RuleWorkTooltip from "../../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
+import RuleWorkTooltip from "../../../../Utils/DataDisplay/RuleWorkTooltip";
 import Badge from "@material-ui/core/Badge";
 
 const StyledBadge = withStyles(theme => ({

@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import FileSelectZone from "./FileSelectZone";
-import RuleWorkBox from "../../RuleWorkComponents/Containers/RuleWorkBox";
-import CollapsibleDivider from "../../RuleWorkComponents/DataDisplay/CollapsibleDivider";
-import StyledDivider from "../../RuleWorkComponents/DataDisplay/StyledDivider";
-import { CSVDialog } from "../../RuleWorkComponents/Feedback/CSVDialog";
-import RuleWorkSwitch from "../../RuleWorkComponents/Inputs/RuleWorkSwitch";
-import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import StyledButton  from "../../RuleWorkComponents/Inputs/StyledButton"
-import StyledPaper from "../../RuleWorkComponents/Surfaces/StyledPaper";
+import { FileSelectZone } from "./Elements";
+import RuleWorkBox from "../../Utils/Containers/RuleWorkBox";
+import CollapsibleDivider from "../../Utils/DataDisplay/CollapsibleDivider";
+import StyledDivider from "../../Utils/DataDisplay/StyledDivider";
+import { CSVDialog } from "../../Utils/Feedback/CSVDialog";
+import RuleWorkSwitch from "../../Utils/Inputs/RuleWorkSwitch";
+import RuleWorkTextField from "../../Utils/Inputs/RuleWorkTextField";
+import StyledButton  from "../../Utils/Inputs/StyledButton"
+import StyledPaper from "../../Utils/Surfaces/StyledPaper";
 import Collapse from "@material-ui/core/Collapse";
 import styles from "./styles/Import.module.css";
 

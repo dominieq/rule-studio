@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from "@material-ui/core/styles";
-import RuleWorkTooltip from "../../RuleWorkComponents/DataDisplay/RuleWorkTooltip"
-import StyledFileChip from "../../RuleWorkComponents/DataDisplay/StyledFileChip";
-import RuleWorkUpload from "../../RuleWorkComponents/Inputs/RuleWorkUpload";
-import StyledButton from "../../RuleWorkComponents/Inputs/StyledButton";
+import RuleWorkTooltip from "../../../Utils/DataDisplay/RuleWorkTooltip"
+import StyledFileChip from "../../../Utils/DataDisplay/StyledFileChip";
+import RuleWorkUpload from "../../../Utils/Inputs/RuleWorkUpload";
+import StyledButton from "../../../Utils/Inputs/StyledButton";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Typography from "@material-ui/core/Typography";
 import DeleteCircle from "mdi-material-ui/DeleteCircle"
 import FileUpload from "mdi-material-ui/FileUpload";
-import styles from "./styles/FileSelectZone.module.css";
+import styles from "../styles/FileSelectZone.module.css";
 
 const useStyles = makeStyles({
     tooltip: {

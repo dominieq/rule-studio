@@ -1,7 +1,7 @@
 import React from "react";
 import {makeStyles} from "@material-ui/core";
 import {UploadOutline} from "mdi-material-ui";
-import RuleWorkTooltip from "../../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
+import RuleWorkTooltip from "../../../../Utils/DataDisplay/RuleWorkTooltip";
 
 const iconStyle = makeStyles(theme => ({
     root: {

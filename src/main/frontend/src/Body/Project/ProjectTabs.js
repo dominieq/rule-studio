@@ -1,12 +1,12 @@
 import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from "@material-ui/core/styles";
-import Classification from "./Classification/Classification";
-import CrossValidation from "./CrossValidation/CrossValidation";
-import Cones from "./Cones/Cones";
+import Classification from "./Tabs/Classification";
+import CrossValidation from "./Tabs/CrossValidation";
+import Cones from "./Tabs/Cones";
 import Data from "./Data/DisplayData";
-import Rules from "./Rules/Rules";
-import Unions from "./Unions/Unions";
+import Rules from "./Tabs/Rules";
+import Unions from "./Tabs/Unions";
 import ExternalRulesAlert from "./Utils/Alerts/ExternalRulesAlert";
 import OutdatedDataAlert from "./Utils/Alerts/OutdatedDataAlert";
 import Tab from "@material-ui/core/Tab";

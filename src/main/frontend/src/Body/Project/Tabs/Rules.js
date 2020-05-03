@@ -10,16 +10,16 @@ import SettingsButton from "../Utils/Buttons/SettingsButton";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
-import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer"
-import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
-import RuleWorkTooltip from "../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import { RulesDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog";
-import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
-import { createCategories, simpleSort, SortButton, SortMenu } from "../../../RuleWorkComponents/Inputs/SortMenu";
-import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox";
+import RuleWorkDrawer from "../../../Utils/Containers/RuleWorkDrawer"
+import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
+import RuleWorkTooltip from "../../../Utils/DataDisplay/RuleWorkTooltip";
+import { RulesDialog } from "../../../Utils/Feedback/RuleWorkDialog";
+import RuleWorkAlert from "../../../Utils/Feedback/RuleWorkAlert";
+import { createCategories, simpleSort, SortButton, SortMenu } from "../../../Utils/Inputs/SortMenu";
+import RuleWorkUpload from "../../../Utils/Inputs/RuleWorkUpload";
+import StyledButton from "../../../Utils/Inputs/StyledButton";
+import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";

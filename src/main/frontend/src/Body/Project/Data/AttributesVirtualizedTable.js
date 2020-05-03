@@ -6,7 +6,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import Typography from "@material-ui/core/Typography";
 import { AutoSizer, List } from "react-virtualized";
-import TextWithHoverTooltip from "../../../RuleWorkComponents/DataDisplay/TextWithHoverTooltip";
+import TextWithHoverTooltip from "../../../Utils/DataDisplay/TextWithHoverTooltip";
 
 const listStyles = makeStyles(theme => ({
     root: {

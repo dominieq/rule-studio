@@ -20,16 +20,16 @@ import MatrixDownloadButton from "../Utils/Buttons/MatrixDownloadButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
-import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../RuleWorkComponents/Containers/RuleWorkDrawer";
-import { MatrixDialog } from "../../../RuleWorkComponents/DataDisplay/MatrixDialog";
-import StyledDivider from "../../../RuleWorkComponents/DataDisplay/StyledDivider";
-import { CSVDialog } from "../../../RuleWorkComponents/Feedback/CSVDialog";
-import { ClassificationDialog } from "../../../RuleWorkComponents/Feedback/RuleWorkDialog"
-import RuleWorkAlert from "../../../RuleWorkComponents/Feedback/RuleWorkAlert";
-import RuleWorkButtonGroup from "../../../RuleWorkComponents/Inputs/RuleWorkButtonGroup";
-import RuleWorkUpload from "../../../RuleWorkComponents/Inputs/RuleWorkUpload";
-import StyledPaper from "../../../RuleWorkComponents/Surfaces/StyledPaper";
+import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox";
+import RuleWorkDrawer from "../../../Utils/Containers/RuleWorkDrawer";
+import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
+import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
+import { CSVDialog } from "../../../Utils/Feedback/CSVDialog";
+import { ClassificationDialog } from "../../../Utils/Feedback/RuleWorkDialog"
+import RuleWorkAlert from "../../../Utils/Feedback/RuleWorkAlert";
+import RuleWorkButtonGroup from "../../../Utils/Inputs/RuleWorkButtonGroup";
+import RuleWorkUpload from "../../../Utils/Inputs/RuleWorkUpload";
+import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 
 class Classification extends Component {
     constructor(props) {

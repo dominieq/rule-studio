@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import RuleWorkTooltip from "../../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import StyledButton from "../../../../RuleWorkComponents/Inputs/StyledButton";
+import RuleWorkTooltip from "../../../../Utils/DataDisplay/RuleWorkTooltip";
+import StyledButton from "../../../../Utils/Inputs/StyledButton";
 import SwapVert from "@material-ui/icons/SwapVert";
 
 const useStyles = makeStyles(theme => ({
