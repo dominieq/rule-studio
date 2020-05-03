@@ -110,7 +110,7 @@ public class RulesService {
             try {
                 characteristicValues[i] = function.get(i);
             } catch (UnknownValueException e)  {
-                logger.warn(e.getMessage());
+                logger.debug(e.getMessage());
                 characteristicValues[i] = RuleCharacteristics.UNKNOWN_INT_VALUE;
             }
         }
@@ -121,7 +121,7 @@ public class RulesService {
             try {
                 characteristicValues[i] = function.get(i);
             } catch (UnknownValueException e)  {
-                logger.warn(e.getMessage());
+                logger.debug(e.getMessage());
                 characteristicValues[i] = RuleCharacteristics.UNKNOWN_DOUBLE_VALUE;
             }
         }
