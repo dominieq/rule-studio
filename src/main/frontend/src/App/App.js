@@ -9,7 +9,7 @@ import ProjectTabs from "../Body/Project/ProjectTabs";
 import Project from "../Utils/Classes/Project";
 import LoadingDelay from "../Utils/Feedback/LoadingDelay";
 import LoadingSnackbar from "../Utils/Feedback/LoadingSnackbar";
-import RuleWorkAlert from "../Utils/Feedback/RuleWorkAlert";
+import StyledAlert from "../Utils/Feedback/StyledAlert";
 import DeleteProjectDialog from "./Dialogs/DeleteProjectDialog";
 import RenameProjectDialog from "./Dialogs/RenameProjectDialog";
 import SettingsProjectDialog from "./Dialogs/SettingsProjectDialog";
@@ -377,7 +377,7 @@ class App extends Component {
                     open={renameDialog}
                     onClose={this.onRenameDialogClose}
                 >
-                    {renameDialog && <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />}
+                    {renameDialog && <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />}
                 </RenameProjectDialog>
                 <SettingsProjectDialog
                     attributes={currentProject >= 0 ?
@@ -396,7 +396,7 @@ class App extends Component {
                     open={deleteDialog}
                     onClose={this.onDeleteDialogClose}
                 />
-                {showSnackbarNormally && <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose}/>}
+                {showSnackbarNormally && <StyledAlert {...alertProps} onClose={this.onSnackbarClose}/>}
                 {this.state.loading &&
                     <LoadingDelay>
                         <LoadingSnackbar message={this.state.loadingTitle} open={this.state.loading} />

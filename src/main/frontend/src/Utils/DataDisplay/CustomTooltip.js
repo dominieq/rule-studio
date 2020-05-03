@@ -26,7 +26,7 @@ function DefaultElement(props, ref) {
 
 const DefaultForwardRef = React.forwardRef(DefaultElement);
 
-function RuleWorkTooltip(props) {
+function CustomTooltip(props) {
     const { children,  classes: propsClasses, className, WrapperComponent, WrapperProps, ...other } = props;
     let classes = useStyles();
 
@@ -45,7 +45,7 @@ function RuleWorkTooltip(props) {
     )
 }
 
-RuleWorkTooltip.propTypes = {
+CustomTooltip.propTypes = {
     arrow: PropTypes.bool,
     children: PropTypes.node,
     classes: PropTypes.object,
@@ -85,8 +85,8 @@ RuleWorkTooltip.propTypes = {
     WrapperProps: PropTypes.object
 };
 
-RuleWorkTooltip.defaultProps = {
+CustomTooltip.defaultProps = {
     WrapperComponent: 'div'
 };
 
-export default RuleWorkTooltip;
+export default CustomTooltip;

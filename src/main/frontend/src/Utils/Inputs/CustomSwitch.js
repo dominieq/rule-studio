@@ -13,7 +13,7 @@ const labelStyles = makeStyles({
     },
 });
 
-function RuleWorkSwitch(props) {
+function CustomSwitch(props) {
     const {classes: propsClasses, label, ...other} = props;
     let classes = labelStyles();
 
@@ -28,10 +28,10 @@ function RuleWorkSwitch(props) {
     )
 }
 
-RuleWorkSwitch.propTypes = {
+CustomSwitch.propTypes = {
     label: PropTypes.string,
     checked: PropTypes.bool,
     onChange: PropTypes.func,
 };
 
-export default RuleWorkSwitch;
+export default CustomSwitch;

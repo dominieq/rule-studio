@@ -15,7 +15,7 @@ const StyledListItem = withStyles({
             marginBottom: "0.5rem"
         }
     }
-}, {name: "result-list-item"})(props => <ListItem {...props} />);
+}, {name: "ResultListItem"})(props => <ListItem {...props} />);
 
 const useStyles = makeStyles(theme => ({
     row: {
@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "result-list-item"});
 
-function RuleWorkListItem(props) {
+function ResultListItem(props) {
     const { classes: propsClasses, object, ...other } = props;
     let classes = useStyles();
 
@@ -93,7 +93,7 @@ function RuleWorkListItem(props) {
     )
 }
 
-RuleWorkListItem.propTypes = {
+ResultListItem.propTypes = {
     alignItems: PropTypes.oneOf(["flex-start", "center"]),
     autoFocus: PropTypes.bool,
     button: PropTypes.bool,
@@ -119,10 +119,10 @@ RuleWorkListItem.propTypes = {
     selected: PropTypes.bool,
 };
 
-RuleWorkListItem.defaultProps = {
+ResultListItem.defaultProps = {
     button: true,
     disableRipple: true,
     divider: true,
 };
 
-export default RuleWorkListItem
+export default ResultListItem

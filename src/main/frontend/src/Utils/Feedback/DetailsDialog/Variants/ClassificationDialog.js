@@ -1,19 +1,19 @@
-import React, { PureComponent, Fragment } from "react";
+import React, {PureComponent, Fragment} from "react";
 import PropTypes from "prop-types";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
-import RuleWorkDialog from "../RuleWorkDialog";
+import DetailsDialog from "../DetailsDialog";
 import ObjectTable from "../Elements/ObjectTable";
+import RuleTable, { estimateTableHeight } from "../Elements/RuleTable";
 import TableItemsList from "../Elements/TableItemsList";
 import TraitsTable from "../Elements/TraitsTable";
-import RuleTable, { estimateTableHeight } from "../Elements/RuleTable";
 
-class CrossValidationDialog extends PureComponent {
+class ClassificationDialog extends PureComponent {
     constructor(props) {
         super(props);
 
         this.state = {
             itemInTableIndex: undefined,
-            ruleTableHeight: 0
+            ruleTableHeight: 0,
         };
     }
 
@@ -32,9 +32,9 @@ class CrossValidationDialog extends PureComponent {
         }
     }
 
-    onExited = () => {
+    onEnter = () => {
         this.setState({
-            itemInTableIndex: undefined,
+            itemInTableIndex: undefined
         });
     };
 
@@ -45,65 +45,60 @@ class CrossValidationDialog extends PureComponent {
     };
 
     getOriginalDecision = () => {
-        const { item: { id, traits: { attributes, objects } } } = this.props;
+        const {item: { id, traits: { attributes, objects } } } = this.props;
 
         for (let i = 0; i < attributes.length; i++) {
-            if (attributes[i].type === 'decision') {
+            if (attributes[i].type === "decision") {
                 return objects[id][attributes[i].name];
             }
         }
 
-        return "?";
+        return "?"
     }
 
-    getCrossValidationTitle = () => {
+    getClassificationTitle = () => {
         const { item } = this.props;
 
         return (
             <ColouredTitle
                 text={[
-                    { primary: "Selected object:" },
+                    { primary: "Selected item:"},
                     { ...item.name, brackets: false, }
                 ]}
             />
-        )
-    }
+        );
+    };
 
     render() {
         const { itemInTableIndex, ruleTableHeight } = this.state;
         const { item, ruleSet, ...other } = this.props;
-        const { attributes, objects, suggestedDecision } = item.traits;
 
         let originalDecision = this.getOriginalDecision();
 
         return (
-            <RuleWorkDialog
-                onEntered={this.onEntered}
-                onExited={this.onExited}
+            <DetailsDialog
+                onEnter={this.onEnter}
                 optional={
                     <React.Fragment>
                         <span id={"original-decision"}>
-                            {"Original decision: " + originalDecision}
+                            {"Original decision: " +  originalDecision}
                         </span>
                         <span id={"suggested-decision"}>
-                            {"Suggested decision: " + suggestedDecision}
+                            {"Suggested decision: " + item.traits.suggestedDecision}
                         </span>
                     </React.Fragment>
                 }
-                title={this.getCrossValidationTitle()}
+                title={this.getClassificationTitle()}
                 {...other}
             >
-                <div id={"cross-validation-item-details"} style={{width: "40%"}}>
+                <div id={"classification-object"} style={{width: "40%"}}>
                     <ObjectTable
-                        informationTable={{attributes, objects}}
+                        informationTable={item.traits}
                         objectIndex={item.id}
                         objectHeader={item.name.toString()}
                     />
                 </div>
-                <div
-                    id={"cross-validation-rules-table"}
-                    style={{display: "flex", flexDirection: "column", width: "15%"}}
-                >
+                <div id={"classification-rules"} style={{display: "flex", flexDirection: "column", width: "15%"}}>
                     <TableItemsList
                         headerText={"Indices of covering rules"}
                         itemIndex={itemInTableIndex}
@@ -113,7 +108,7 @@ class CrossValidationDialog extends PureComponent {
                     />
                 </div>
                 <div
-                    id={"cross-validation-rule-characteristics"}
+                    id={"classification-rules-traits"}
                     style={{display: "flex", flexDirection: "column", width: "40%"}}
                 >
                     {!Number.isNaN(Number(itemInTableIndex)) &&
@@ -127,12 +122,12 @@ class CrossValidationDialog extends PureComponent {
                         </Fragment>
                     }
                 </div>
-            </RuleWorkDialog>
+            </DetailsDialog>
         );
     }
 }
 
-CrossValidationDialog.propTypes = {
+ClassificationDialog.propTypes = {
     item: PropTypes.exact({
         id: PropTypes.number,
         name: PropTypes.shape({
@@ -140,19 +135,19 @@ CrossValidationDialog.propTypes = {
             secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
             toString: PropTypes.func
         }),
-        traits: PropTypes.exact({
+        traits: PropTypes.shape({
             attributes: PropTypes.arrayOf(PropTypes.object),
             objects: PropTypes.arrayOf(PropTypes.object),
-            suggestedDecision: PropTypes.string
+            suggestedDecision: PropTypes.string,
         }),
-        tables: PropTypes.exact({
+        tables: PropTypes.shape({
             indicesOfCoveringRules: PropTypes.arrayOf(PropTypes.number)
         }),
         toFilter: PropTypes.func
     }),
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,
-    ruleSet: PropTypes.arrayOf(PropTypes.object)
+    ruleSet: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default CrossValidationDialog;
+export default ClassificationDialog;

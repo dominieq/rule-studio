@@ -50,7 +50,7 @@ const textStyles = makeStyles(theme => ({
     }
 }), {name: "subheader-text"});
 
-function RuleWorkListSubheader(props) {
+function ResultListSubheader(props) {
     const { children, ...other } = props;
     const subheaderClasses = subheaderStyles();
     const textClasses = textStyles();
@@ -77,7 +77,7 @@ function RuleWorkListSubheader(props) {
     );
 }
 
-RuleWorkListSubheader.propTypes = {
+ResultListSubheader.propTypes = {
     children: PropTypes.arrayOf(PropTypes.exact({
         label: PropTypes.string,
         value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -90,9 +90,9 @@ RuleWorkListSubheader.propTypes = {
     inset: PropTypes.bool,
 };
 
-RuleWorkListSubheader.defaultProps = {
+ResultListSubheader.defaultProps = {
     component: 'div',
     disableGutters: true,
 };
 
-export default RuleWorkListSubheader;
+export default ResultListSubheader;

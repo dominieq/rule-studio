@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { FileSelectZone } from "./Elements";
-import RuleWorkBox from "../../Utils/Containers/RuleWorkBox";
+import CustomBox from "../../Utils/Containers/CustomBox";
 import CollapsibleDivider from "../../Utils/DataDisplay/CollapsibleDivider";
 import StyledDivider from "../../Utils/DataDisplay/StyledDivider";
 import { CSVDialog } from "../../Utils/Feedback/CSVDialog";
-import RuleWorkSwitch from "../../Utils/Inputs/RuleWorkSwitch";
-import RuleWorkTextField from "../../Utils/Inputs/RuleWorkTextField";
+import CustomSwitch from "../../Utils/Inputs/CustomSwitch";
+import CustomTextField from "../../Utils/Inputs/CustomTextField";
 import StyledButton  from "../../Utils/Inputs/StyledButton"
 import StyledPaper from "../../Utils/Surfaces/StyledPaper";
 import Collapse from "@material-ui/core/Collapse";
@@ -142,10 +142,10 @@ class Import extends Component{
         const { checked, expand, name, open } = this.state;
 
         return (
-            <RuleWorkBox id={"rule-work-import"} onKeyPress={this.onEnterClick} styleVariant={"body"}>
+            <CustomBox id={"import"} onKeyPress={this.onEnterClick} styleVariant={"body"}>
                 <StyledPaper id={"import-panel"} elevation={6} styleVariant={"panel"}>
                     <div aria-label={"text field row"} className={styles.Row}>
-                        <RuleWorkTextField
+                        <CustomTextField
                             fullWidth={true}
                             onChange={this.onProjectNameChange}
                             onFocus={this.onProjectNameFocus}
@@ -160,7 +160,7 @@ class Import extends Component{
                         orientation={"horizontal"}
                     />
                     <div aria-label={"switch row"} className={styles.Row} style={{paddingBottom: 8}}>
-                        <RuleWorkSwitch
+                        <CustomSwitch
                             label={"Create project with metadata"}
                             checked={checked}
                             onChange={this.onCheckboxChange}
@@ -225,7 +225,7 @@ class Import extends Component{
                     </div>
                 </StyledPaper>
                 <CSVDialog onConfirm={this.onCSVDialogClose} open={open} />
-            </RuleWorkBox>
+            </CustomBox>
         );
     }
 }

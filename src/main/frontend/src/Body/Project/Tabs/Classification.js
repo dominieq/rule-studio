@@ -20,15 +20,15 @@ import MatrixDownloadButton from "../Utils/Buttons/MatrixDownloadButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
-import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../Utils/Containers/RuleWorkDrawer";
+import CustomBox from "../../../Utils/Containers/CustomBox";
+import CustomDrawer from "../../../Utils/Containers/CustomDrawer";
 import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import { CSVDialog } from "../../../Utils/Feedback/CSVDialog";
-import { ClassificationDialog } from "../../../Utils/Feedback/RuleWorkDialog"
-import RuleWorkAlert from "../../../Utils/Feedback/RuleWorkAlert";
-import RuleWorkButtonGroup from "../../../Utils/Inputs/RuleWorkButtonGroup";
-import RuleWorkUpload from "../../../Utils/Inputs/RuleWorkUpload";
+import { ClassificationDialog } from "../../../Utils/Feedback/DetailsDialog"
+import StyledAlert from "../../../Utils/Feedback/StyledAlert";
+import CustomButtonGroup from "../../../Utils/Inputs/CustomButtonGroup";
+import CustomUpload from "../../../Utils/Inputs/CustomUpload";
 import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 
 class Classification extends Component {
@@ -333,7 +333,7 @@ class Classification extends Component {
         const { project } = this.props;
 
         return (
-            <RuleWorkBox id={"rule-work-classification"} styleVariant={"tab"}>
+            <CustomBox id={"classification"} styleVariant={"tab"}>
                 <StyledPaper id={"classification-bar"} paperRef={this.upperBar}>
                     <SettingsButton
                         aria-label={"classification-settings-button"}
@@ -341,7 +341,7 @@ class Classification extends Component {
                         title={"Click to select parameters"}
                     />
                     <StyledDivider margin={16} />
-                    <RuleWorkButtonGroup
+                    <CustomButtonGroup
                         id={"classification-button-group"}
                         options={["Classify current data", "Choose new data & classify"]}
                     >
@@ -352,7 +352,7 @@ class Classification extends Component {
                         >
                             Classify current data
                         </CalculateButton>
-                        <RuleWorkUpload
+                        <CustomUpload
                             accept={".json,.csv"}
                             id={"classify-new-file"}
                             onChange={this.onUploadData}
@@ -364,8 +364,8 @@ class Classification extends Component {
                             >
                                 Choose new data & classify
                             </CalculateButton>
-                        </RuleWorkUpload>
-                    </RuleWorkButtonGroup>
+                        </CustomUpload>
+                    </CustomButtonGroup>
                     {data &&
                         <MatrixButton
                             onClick={() => this.toggleOpen("matrix")}
@@ -376,7 +376,7 @@ class Classification extends Component {
                     <span style={{flexGrow: 1}} />
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
-                <RuleWorkDrawer
+                <CustomDrawer
                     id={"classification-settings"}
                     open={open.settings}
                     onClose={() => this.toggleOpen("settings")}
@@ -394,7 +394,7 @@ class Classification extends Component {
                             value: parameters.defaultClassificationResult
                         }}
                     />
-                </RuleWorkDrawer>
+                </CustomDrawer>
                 <TabBody
                     content={parseClassificationListItems(displayedItems)}
                     id={"classification-list"}
@@ -440,8 +440,8 @@ class Classification extends Component {
                     />
                 }
                 <CSVDialog onConfirm={this.onCSVDialogClose} open={open.csv} />
-                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
-            </RuleWorkBox>
+                <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
+            </CustomBox>
         )
     }
 }

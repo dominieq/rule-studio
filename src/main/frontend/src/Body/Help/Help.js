@@ -1,11 +1,11 @@
 import React from 'react';
-import RuleWorkBox from "../../Utils/Containers/RuleWorkBox";
+import CustomBox from "../../Utils/Containers/CustomBox";
 
 function Help() {
     return (
-        <RuleWorkBox id={"rule-work-help"} styleVariant={"body"}>
+        <CustomBox id={"help"} styleVariant={"body"}>
 
-        </RuleWorkBox>
+        </CustomBox>
     )
 }
 

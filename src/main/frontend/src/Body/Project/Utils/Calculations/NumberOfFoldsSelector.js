@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import styles from "./styles/Calculations.module.css";
 import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
-import RuleWorkTextField from "../../../../Utils/Inputs/RuleWorkTextField";
+import CustomTextField from "../../../../Utils/Inputs/CustomTextField";
 
 const tooltip = {
     main: "Number of parts of equal (or differing by 1) size that the training data set is randomly split into " +
@@ -34,7 +34,7 @@ function NumberOfFoldsSelector(props) {
                 {...CircleHelperProps}
             />
             <div aria-label={"inner wrapper"} className={styles.InnerWrapper}>
-                <RuleWorkTextField
+                <CustomTextField
                     outsideLabel={"Choose number of folds"}
                     style={{maxWidth: 72}}
                     {...TextFieldProps}

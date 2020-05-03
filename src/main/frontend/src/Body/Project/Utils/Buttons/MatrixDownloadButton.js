@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import RuleWorkTooltip from "../../../../Utils/DataDisplay/RuleWorkTooltip";
+import CustomTooltip from "../../../../Utils/DataDisplay/CustomTooltip";
 import StyledButton from "../../../../Utils/Inputs/StyledButton";
 import GetApp from "@material-ui/icons/GetApp";
 
@@ -20,7 +20,7 @@ function MatrixDownloadButton(props) {
     const classes = useStyles();
 
     return (
-        <RuleWorkTooltip title={tooltip} {...TooltipProps}>
+        <CustomTooltip title={tooltip} {...TooltipProps}>
             <StyledButton
                 aria-label={"download matrix"}
                 className={classes.root}
@@ -31,7 +31,7 @@ function MatrixDownloadButton(props) {
             >
                 <GetApp />
             </StyledButton>
-        </RuleWorkTooltip>
+        </CustomTooltip>
     )
 }
 

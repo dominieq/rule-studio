@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
-import RuleWorkTooltip from "../../../../Utils/DataDisplay/RuleWorkTooltip";
+import CustomTooltip from "../../../../Utils/DataDisplay/CustomTooltip";
 import Badge from "@material-ui/core/Badge";
 
 const StyledBadge = withStyles(theme => ({
@@ -29,9 +29,9 @@ function AlertBadge(props) {
     return (
         <StyledBadge
             badgeContent={
-                <RuleWorkTooltip classes={{tooltip: classes['update-width']}} leaveDelay={1000} title={props.title}>
+                <CustomTooltip classes={{tooltip: classes['update-width']}} leaveDelay={1000} title={props.title}>
                     {props.icon}
-                </RuleWorkTooltip>
+                </CustomTooltip>
             }
             overlap={"circle"}
         >

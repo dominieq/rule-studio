@@ -1,7 +1,7 @@
 import React from "react";
 import {makeStyles} from "@material-ui/core";
 import {UploadOutline} from "mdi-material-ui";
-import RuleWorkTooltip from "../../../../Utils/DataDisplay/RuleWorkTooltip";
+import CustomTooltip from "../../../../Utils/DataDisplay/CustomTooltip";
 
 const iconStyle = makeStyles(theme => ({
     root: {
@@ -22,13 +22,13 @@ function ExternalRulesAlert() {
     const tooltipClasses = tooltipStyle();
 
     return (
-        <RuleWorkTooltip
+        <CustomTooltip
             classes={{wrapper: tooltipClasses.wrapper}}
             leaveDelay={1000}
             title={"You are currently using rule set from external file"}
         >
             <UploadOutline classes={{...iconClasses}} />
-        </RuleWorkTooltip>
+        </CustomTooltip>
     )
 }
 

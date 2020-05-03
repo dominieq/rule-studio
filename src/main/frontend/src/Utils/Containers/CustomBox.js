@@ -28,9 +28,9 @@ const useStyles = makeStyles({
         padding: "0 2.5% 2.5%",
         overflow: "auto",
     },
-}, {name: "rule-work"});
+}, {name: "CustomBox"});
 
-function RuleWorkBox(props) {
+function CustomBox(props) {
     const {children, classes: propsClasses, className, styleVariant, ...other} =  props;
     let classes = useStyles();
 
@@ -43,15 +43,15 @@ function RuleWorkBox(props) {
     )
 }
 
-RuleWorkBox.propTypes = {
+CustomBox.propTypes = {
     children: PropTypes.node,
     classes: PropTypes.object,
     className: PropTypes.string,
     styleVariant: PropTypes.oneOf(["body", "tab", "tab-body"]),
 };
 
-RuleWorkBox.defaultProps = {
+CustomBox.defaultProps = {
     styleVariant: "body",
 };
 
-export default RuleWorkBox;
+export default CustomBox;

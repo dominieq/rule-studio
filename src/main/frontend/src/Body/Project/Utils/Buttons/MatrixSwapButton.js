@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import RuleWorkTooltip from "../../../../Utils/DataDisplay/RuleWorkTooltip";
+import CustomTooltip from "../../../../Utils/DataDisplay/CustomTooltip";
 import StyledButton from "../../../../Utils/Inputs/StyledButton";
 import SwapVert from "@material-ui/icons/SwapVert";
 
@@ -20,7 +20,7 @@ function MatrixSwapButton(props) {
     const classes = useStyles()
 
     return (
-        <RuleWorkTooltip title={tooltip} {...TooltipProps}>
+        <CustomTooltip title={tooltip} {...TooltipProps}>
             <StyledButton
                 aria-label={"swap matrix"}
                 className={classes.root}
@@ -31,7 +31,7 @@ function MatrixSwapButton(props) {
             >
                 <SwapVert />
             </StyledButton>
-        </RuleWorkTooltip>
+        </CustomTooltip>
     )
 }
 

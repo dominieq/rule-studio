@@ -23,7 +23,7 @@ import RuleWorkLoadingIcon from './RuleWorkLoadingIcon';
 import StyledButton from '../../../Utils/Inputs/StyledButton';
 import NumericFilter from './NumericFilter';
 import AttributesVirtualizedTable from './AttributesVirtualizedTable';
-import RuleWorkTooltip from '../../../Utils/DataDisplay/RuleWorkTooltip';
+import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 
 import { StyledCheckbox, StyledRadio, StyledRuleWorkTextField} from './StyledComponents';
 import StyledDivider from '../../../Utils/DataDisplay/StyledDivider';
@@ -2266,14 +2266,14 @@ class DisplayData extends React.Component {
                                 </div>
                                 {
                                     this.state.saveToFileData === "csv" && <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                                    <RuleWorkTooltip title="Save data with header row">
+                                    <CustomTooltip title="Save data with header row">
                                     <FormControlLabel 
                                         control={<StyledCheckbox name="csvHeader" 
                                         onChange={this.handleChangeSaveToFileCsvHeader}/>}
                                         label="Header"
                                         labelPlacement="end"
                                     />
-                                    </RuleWorkTooltip>
+                                    </CustomTooltip>
                                     <DropDownForAttributes getSelected={this.getSelectedSaveToFileCsvSeparator} 
                                         name={"saveToFileSeparator"} key="saveToFileSeparator" displayName={"Separator"} 
                                         items={["comma","semicolon","space","tab"]} defaultValue="comma" defaultWidth="80%"
@@ -2298,14 +2298,14 @@ class DisplayData extends React.Component {
                 <SimpleDialog open={this.state.isOpenedTransform} onClose={this.closeOnTransform} aria-labelledby="transform-warning-dialog">
                     <DialogTitle id="transform-warning-title">{"Do you want to impose preference orders?"}</DialogTitle>
                     <DialogContent>
-                    <RuleWorkTooltip title="Binarize nominal attributes with 3+ values?">
+                    <CustomTooltip title="Binarize nominal attributes with 3+ values?">
                     <FormControlLabel
                         control={<StyledCheckbox defaultChecked={false} name="binarize" onChange={this.handleChangeBinarize}/>}
                         label="Binarize"
                         labelPlacement="start"
                         key="Binarize"
                     />
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                     
                     </DialogContent>
                     <DialogActions>

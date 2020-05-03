@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from "@material-ui/core/styles";
-import RuleWorkTooltip from "../../../Utils/DataDisplay/RuleWorkTooltip"
+import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip"
 import StyledFileChip from "../../../Utils/DataDisplay/StyledFileChip";
-import RuleWorkUpload from "../../../Utils/Inputs/RuleWorkUpload";
+import CustomUpload from "../../../Utils/Inputs/CustomUpload";
 import StyledButton from "../../../Utils/Inputs/StyledButton";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Typography from "@material-ui/core/Typography";
@@ -73,7 +73,7 @@ function FileSelectZone(props)  {
                     width={"100%"}
                 />
             }
-            <RuleWorkTooltip
+            <CustomTooltip
                 arrow={true}
                 classes={{tooltip: classes.tooltip}}
                 placement={"right"}
@@ -90,7 +90,7 @@ function FileSelectZone(props)  {
                     </React.Fragment>
                 }
             >
-                <RuleWorkUpload
+                <CustomUpload
                     accept={accept}
                     id={"upload-" + variant}
                     onChange={onInputChange}
@@ -103,8 +103,8 @@ function FileSelectZone(props)  {
                     >
                         <FileUpload/>
                     </StyledButton>
-                </RuleWorkUpload>
-            </RuleWorkTooltip>
+                </CustomUpload>
+            </CustomTooltip>
         </div>
     );
 }

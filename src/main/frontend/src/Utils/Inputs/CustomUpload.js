@@ -9,14 +9,14 @@ const useStyles = makeStyles({
     label: {
         margin: 0,
     },
-}, {name: "rule-work-upload"});
+}, {name: "CustomUpload"});
 
-function RuleWorkUpload(props) {
+function CustomUpload(props) {
     const {children, id, ...other} = props;
     const classes = useStyles();
 
     return (
-        <div id={"rule-work-upload"}>
+        <div aria-label={"custom upload"}>
             <input className={classes.input} id={id} type={"file"} value={""} {...other}/>
             <label className={classes.label} htmlFor={id}>
                 {children}
@@ -25,15 +25,15 @@ function RuleWorkUpload(props) {
     )
 }
 
-RuleWorkUpload.propTypes = {
+CustomUpload.propTypes = {
     children: PropTypes.node,
     accept: PropTypes.string,
     id: PropTypes.string.isRequired,
     onChange: PropTypes.func,
 };
 
-RuleWorkUpload.defaultProps = {
+CustomUpload.defaultProps = {
     accept: "*",
 };
 
-export default RuleWorkUpload;
+export default CustomUpload;

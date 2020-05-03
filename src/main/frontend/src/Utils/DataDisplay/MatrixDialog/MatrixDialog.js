@@ -5,7 +5,7 @@ import { addSubheaders } from "../../../Body/Project/Utils/parseData";
 import { CenteredColumn } from "./Elements";
 import VirtualizedMatrix, { estimateMatrixHeight, estimateMatrixWidth } from "../VirtualizedMatrix";
 import { estimateTableHeight } from "../VirtualizedTable";
-import TraitsTable from "../../Feedback/RuleWorkDialog/Elements/TraitsTable";
+import TraitsTable from "../../Feedback/DetailsDialog/Elements/TraitsTable";
 import FullscreenDialog from "../FullscreenDialog";
 import FullscreenDialogTitleBar from "../FullscreenDialogTitleBar";
 import MultiColDialogContent from "../MultiColDialogContent";

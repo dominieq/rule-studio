@@ -41,7 +41,7 @@ const menuStyles = makeStyles(theme => ({
     }
 }), {name: "CustomMenu"});
 
-function RuleWorkTextField(props) {
+function CustomTextField(props) {
     const { disabledChildren, outsideLabel, OutsideLabelProps, ...TextFieldProps } = props;
     const { children, InputProps, select, SelectProps, ...other } = TextFieldProps;
 
@@ -94,7 +94,7 @@ function RuleWorkTextField(props) {
     )
 }
 
-RuleWorkTextField.propTypes = {
+CustomTextField.propTypes = {
     autoComplete: PropTypes.string,
     autoFocus: PropTypes.bool,
     classes: PropTypes.object,
@@ -131,9 +131,9 @@ RuleWorkTextField.propTypes = {
     variant: PropTypes.oneOf(["standard", "outlined", "filled"]),
 };
 
-RuleWorkTextField.defaultProps = {
+CustomTextField.defaultProps = {
     margin: "none",
     variant: "outlined",
 };
 
-export default RuleWorkTextField;
+export default CustomTextField;

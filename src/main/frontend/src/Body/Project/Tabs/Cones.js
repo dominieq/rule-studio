@@ -6,9 +6,9 @@ import TabBody from "../Utils/TabBody";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
-import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox"
-import { ConesDialog } from "../../../Utils/Feedback/RuleWorkDialog";
-import RuleWorkAlert from "../../../Utils/Feedback/RuleWorkAlert";
+import CustomBox from "../../../Utils/Containers/CustomBox"
+import { ConesDialog } from "../../../Utils/Feedback/DetailsDialog";
+import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 
 class Cones extends Component {
@@ -178,7 +178,7 @@ class Cones extends Component {
         const { project: { result } } = this.props;
 
         return (
-            <RuleWorkBox id={"rule-work-cones"} styleVariant={"tab"}>
+            <CustomBox id={"cones"} styleVariant={"tab"}>
                 <StyledPaper id={"cones-bar"} paperRef={this.upperBar}>
                     <CalculateButton
                         aria-label={"cones-calculate-button"}
@@ -213,8 +213,8 @@ class Cones extends Component {
                         projectResult={result}
                     />
                 }
-                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
-            </RuleWorkBox>
+                <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
+            </CustomBox>
         );
     }
 }

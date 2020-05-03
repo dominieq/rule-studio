@@ -10,14 +10,14 @@ import SettingsButton from "../Utils/Buttons/SettingsButton";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
-import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../Utils/Containers/RuleWorkDrawer"
+import CustomBox from "../../../Utils/Containers/CustomBox";
+import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
-import RuleWorkTooltip from "../../../Utils/DataDisplay/RuleWorkTooltip";
-import { RulesDialog } from "../../../Utils/Feedback/RuleWorkDialog";
-import RuleWorkAlert from "../../../Utils/Feedback/RuleWorkAlert";
+import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
+import { RulesDialog } from "../../../Utils/Feedback/DetailsDialog";
+import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import { createCategories, simpleSort, SortButton, SortMenu } from "../../../Utils/Inputs/SortMenu";
-import RuleWorkUpload from "../../../Utils/Inputs/RuleWorkUpload";
+import CustomUpload from "../../../Utils/Inputs/CustomUpload";
 import StyledButton from "../../../Utils/Inputs/StyledButton";
 import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 import SvgIcon from "@material-ui/core/SvgIcon";
@@ -442,7 +442,7 @@ class Rules extends Component {
         const { project: { result, settings } } = this.props;
 
         return (
-            <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
+            <CustomBox id={"rules"} styleVariant={"tab"}>
                 <StyledPaper id={"rules-bar"} paperRef={this.upperBar}>
                     <SettingsButton
                         aria-label={"rules-settings-button"}
@@ -450,7 +450,7 @@ class Rules extends Component {
                         title={"Click to choose consistency threshold, type of unions & rules"}
                     />
                     <StyledDivider margin={16} />
-                    <RuleWorkTooltip
+                    <CustomTooltip
                         title={`Calculate with consistency threshold ${parameters.consistencyThreshold}`}
                     >
                         <CalculateButton
@@ -458,10 +458,10 @@ class Rules extends Component {
                             disabled={loading}
                             onClick={this.onCalculateClick}
                         />
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                     <StyledDivider margin={16} />
-                    <RuleWorkTooltip title={"Upload file"}>
-                        <RuleWorkUpload
+                    <CustomTooltip title={"Upload file"}>
+                        <CustomUpload
                             accept={".xml"}
                             disabled={loading}
                             id={"rules-upload-button"}
@@ -476,10 +476,10 @@ class Rules extends Component {
                             >
                                 <CloudUploadIcon />
                             </StyledButton>
-                        </RuleWorkUpload>
-                    </RuleWorkTooltip>
+                        </CustomUpload>
+                    </CustomTooltip>
                     <StyledDivider margin={16} />
-                    <RuleWorkTooltip title={"Save rules to RuleML"}>
+                    <CustomTooltip title={"Save rules to RuleML"}>
                         <StyledButton
                             aria-label={"rules-save-to-xml-button"}
                             disabled={!Boolean(data) || loading}
@@ -489,9 +489,9 @@ class Rules extends Component {
                         >
                             <SaveIcon />
                         </StyledButton>
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                     <StyledDivider margin={16} />
-                    <RuleWorkTooltip title={"Save rules to TXT"}>
+                    <CustomTooltip title={"Save rules to TXT"}>
                         <StyledButton
                             aria-label={"rules-save-to-txt-button"}
                             disabled={!Boolean(data) || loading}
@@ -501,7 +501,7 @@ class Rules extends Component {
                         >
                             <SvgIcon><path d={mdiTextBox} /></SvgIcon>
                         </StyledButton>
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                     <span style={{flexGrow: 1}} />
                     <SortButton
                         ButtonProps={{
@@ -518,7 +518,7 @@ class Rules extends Component {
                     />
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
-                <RuleWorkDrawer
+                <CustomDrawer
                     id={"rules-settings"}
                     open={open.settings}
                     onClose={() => this.toggleOpen("settings")}
@@ -544,7 +544,7 @@ class Rules extends Component {
                         value={parameters.consistencyThreshold}
                         variant={"extended"}
                     />
-                </RuleWorkDrawer>
+                </CustomDrawer>
                 {data !== null &&
                     <SortMenu
                         anchorE1={sort.anchorE1}
@@ -586,8 +586,8 @@ class Rules extends Component {
                         settings={settings}
                     />
                 }
-                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
-            </RuleWorkBox>
+                <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
+            </CustomBox>
         )
     }
 }

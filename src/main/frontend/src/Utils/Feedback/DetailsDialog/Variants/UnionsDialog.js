@@ -2,7 +2,7 @@ import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import { getItemName } from "../../../../Body/Project/Utils/parseData";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
-import RuleWorkDialog from "../RuleWorkDialog";
+import DetailsDialog from "../DetailsDialog";
 import ObjectTable from "../Elements/ObjectTable";
 import TableItemsList from "../Elements/TableItemsList";
 import TablesList from "../Elements/TablesList";
@@ -66,7 +66,7 @@ class UnionsDialog extends PureComponent {
         const { item, projectResult, ...other}  = this.props;
 
         return (
-            <RuleWorkDialog onExited={this.onExited} title={this.getUnionsTitle()} {...other}>
+            <DetailsDialog onExited={this.onExited} title={this.getUnionsTitle()} {...other}>
                 <div id={"unions-tables"}>
                     <TablesList
                         headerText={"Union's characteristics"}
@@ -103,7 +103,7 @@ class UnionsDialog extends PureComponent {
                         }
                     </div>
                 </div>
-            </RuleWorkDialog>
+            </DetailsDialog>
         );
     }
 }

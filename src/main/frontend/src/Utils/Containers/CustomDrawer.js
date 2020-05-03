@@ -30,7 +30,7 @@ const paperStyles = makeStyles(theme => ({
     }
 }), {name: "MuiDrawerPaper"});
 
-function RuleWorkDrawer(props) {
+function CustomDrawer(props) {
     const { children, classes,  onClose, PaperProps,
             closeFooter, dividers, placeholder, ...other } = props;
 
@@ -87,7 +87,7 @@ function RuleWorkDrawer(props) {
     )
 }
 
-RuleWorkDrawer.propTypes = {
+CustomDrawer.propTypes = {
     anchor: PropTypes.oneOf(["bottom", "left", "right", "top"]),
     children: PropTypes.node,
     classes: PropTypes.object,
@@ -112,10 +112,10 @@ RuleWorkDrawer.propTypes = {
     variant: PropTypes.oneOf(["permanent", "persistent", "temporary"])
 };
 
-RuleWorkDrawer.defaultProps = {
+CustomDrawer.defaultProps = {
     closeFooter: true,
     dividers: true,
     variant: "persistent"
 };
 
-export default RuleWorkDrawer;
+export default CustomDrawer;

@@ -4,7 +4,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import AlertTitle from "@material-ui/lab/AlertTitle";
 
-function StyledAlert(props) {
+function MuiAlert(props) {
     const {children, title, ...other} = props;
 
     return (
@@ -15,19 +15,19 @@ function StyledAlert(props) {
     )
 }
 
-function RuleWorkAlert(props) {
+function StyledAlert(props) {
     const {message, onClose, open, snackbarProps, ...other} = props;
 
     return (
         <Snackbar onClose={onClose} open={open} {...snackbarProps}>
-            <StyledAlert onClose={onClose} {...other}>
+            <MuiAlert onClose={onClose} {...other}>
                 {message}
-            </StyledAlert>
+            </MuiAlert>
         </Snackbar>
     )
 }
 
-RuleWorkAlert.propTypes = {
+StyledAlert.propTypes = {
     message: PropTypes.string,
     onClose: PropTypes.func,
     open: PropTypes.bool,
@@ -42,10 +42,10 @@ RuleWorkAlert.propTypes = {
     severity: PropTypes.oneOf(["info", "success", "warning", "error"])
 };
 
-RuleWorkAlert.defaultProps = {
+StyledAlert.defaultProps = {
     snackbarProps: {
         autoHideDuration: 6000,
     },
 };
 
-export default RuleWorkAlert
+export default StyledAlert

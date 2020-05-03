@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
-import RuleWorkTextField from "../../../../Utils/Inputs/RuleWorkTextField";
+import CustomTextField from "../../../../Utils/Inputs/CustomTextField";
 import styles from "./styles/Calculations.module.css";
 
 const tooltip = {
@@ -35,13 +35,13 @@ function TypeOfRulesSelector(props) {
                 {...CircleHelperProps}
             />
             <div aria-label={"inner wrapper"} className={styles.InnerWrapper}>
-                <RuleWorkTextField
+                <CustomTextField
                     outsideLabel={"Select type of rules"}
                     select={true}
                     {...TextFieldProps}
                 >
                     {["certain", "possible"]}
-                </RuleWorkTextField>
+                </CustomTextField>
             </div>
         </div>
     )

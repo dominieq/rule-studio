@@ -27,14 +27,14 @@ import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
 import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
-import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../Utils/Containers/RuleWorkDrawer"
+import CustomBox from "../../../Utils/Containers/CustomBox";
+import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
-import RuleWorkTooltip from "../../../Utils/DataDisplay/RuleWorkTooltip";
-import { CrossValidationDialog } from "../../../Utils/Feedback/RuleWorkDialog";
-import RuleWorkAlert from "../../../Utils/Feedback/RuleWorkAlert";
-import RuleWorkTextField from "../../../Utils/Inputs/RuleWorkTextField";
+import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
+import { CrossValidationDialog } from "../../../Utils/Feedback/DetailsDialog";
+import StyledAlert from "../../../Utils/Feedback/StyledAlert";
+import CustomTextField from "../../../Utils/Inputs/CustomTextField";
 import StyledButton from "../../../Utils/Inputs/StyledButton";
 import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -441,7 +441,7 @@ class CrossValidation extends Component {
         const { alertProps, data, folds, displayedItems, loading, open, parameters, selected } = this.state;
 
         return (
-            <RuleWorkBox id={"rule-work-cross-validation"} styleVariant={"tab"}>
+            <CustomBox id={"cross-validation"} styleVariant={"tab"}>
                 <StyledPaper id={"cross-validation-bar"} paperRef={this.upperBar}>
                     <SettingsButton
                         aria-label={"cross-validation-settings-button"}
@@ -449,13 +449,13 @@ class CrossValidation extends Component {
                         title={"Click to customize parameters"}
                     />
                     <StyledDivider margin={16} />
-                    <RuleWorkTooltip title={`Current number of folds: ${parameters.numberOfFolds}`}>
+                    <CustomTooltip title={`Current number of folds: ${parameters.numberOfFolds}`}>
                         <CalculateButton
                             aria-label={"cross-validation-calculate-button"}
                             disabled={loading}
                             onClick={this.onCalculateClick}
                         />
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                     <StyledDivider margin={16} />
                     {Array.isArray(folds) && Boolean(folds.length) &&
                         <Fragment>
@@ -465,7 +465,7 @@ class CrossValidation extends Component {
                                 onClick={() => this.toggleOpen("matrixMean")}
                                 title={"Show mean ordinal misclassification matrix"}
                             />
-                            <RuleWorkTooltip title={"Show sum ordinal misclassification matrix"}>
+                            <CustomTooltip title={"Show sum ordinal misclassification matrix"}>
                                 <StyledButton
                                     aria-label={"sum-matrix-button"}
                                     isIcon={true}
@@ -474,10 +474,10 @@ class CrossValidation extends Component {
                                 >
                                     <Sigma />
                                 </StyledButton>
-                            </RuleWorkTooltip>
+                            </CustomTooltip>
                             <StyledDivider margin={16} />
                             {/* Part regarding specific fold */}
-                            <RuleWorkTextField
+                            <CustomTextField
                                 onChange={this.onFoldIndexChange}
                                 InputProps={{
                                     startAdornment: (
@@ -494,7 +494,7 @@ class CrossValidation extends Component {
                                         {fold.index + 1}
                                     </MenuItem>
                                 ))}
-                            </RuleWorkTextField>
+                            </CustomTextField>
                             <p id={"fold-colon"} style={{margin: "0 16px 0 4px", fontSize: "1.15rem"}}>:</p>
                             <MatrixButton
                                 onClick={() => this.toggleOpen("matrixFold")}
@@ -505,7 +505,7 @@ class CrossValidation extends Component {
                     <span style={{flexGrow: 1}} />
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
-                <RuleWorkDrawer
+                <CustomDrawer
                     id={"cross-validation-settings"}
                     open={open.settings}
                     onClose={() => this.toggleOpen("settings")}
@@ -554,7 +554,7 @@ class CrossValidation extends Component {
                             value: parameters.numberOfFolds
                         }}
                     />
-                </RuleWorkDrawer>
+                </CustomDrawer>
                 <TabBody
                     content={parseCrossValidationListItems(displayedItems)}
                     id={"cross-validation-list"}
@@ -681,8 +681,8 @@ class CrossValidation extends Component {
                         }
                     />
                 }
-                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
-            </RuleWorkBox>
+                <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
+            </CustomBox>
         )
     }
 }

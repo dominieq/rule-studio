@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
-import RuleWorkTextField from "../../../../Utils/Inputs/RuleWorkTextField";
+import CustomTextField from "../../../../Utils/Inputs/CustomTextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import styles from "./styles/Calculations.module.css";
 
@@ -67,7 +67,7 @@ function DefaultClassificationResultSelector(props) {
                 {...CircleHelperProps}
             />
             <div aria-label={"inner wrapper"} className={styles.InnerWrapper}>
-                <RuleWorkTextField
+                <CustomTextField
                     outsideLabel={"Select default classification result"}
                     select={true}
                     {...other}
@@ -77,7 +77,7 @@ function DefaultClassificationResultSelector(props) {
                             {result.label}
                         </MenuItem>
                     ))}
-                </RuleWorkTextField>
+                </CustomTextField>
             </div>
         </div>
     )

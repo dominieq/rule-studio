@@ -1,14 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import StyledButton from "../../../../Utils/Inputs/StyledButton";
-import RuleWorkTooltip from "../../../../Utils/DataDisplay/RuleWorkTooltip";
+import CustomTooltip from "../../../../Utils/DataDisplay/CustomTooltip";
 import Matrix from "mdi-material-ui/Matrix";
 
 function MatrixButton(props) {
     const {title, ...other} = props;
     
     return (
-        <RuleWorkTooltip id={"matrix-button-tooltip"} title={title}>
+        <CustomTooltip id={"matrix-button-tooltip"} title={title}>
             <StyledButton
                 aria-label={"matrix-button"}
                 isIcon={true}
@@ -17,7 +17,7 @@ function MatrixButton(props) {
             >
                 <Matrix />
             </StyledButton>
-        </RuleWorkTooltip>
+        </CustomTooltip>
     )
 
 }

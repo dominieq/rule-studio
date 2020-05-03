@@ -4,7 +4,7 @@ import FullscreenDialog from "../../DataDisplay/FullscreenDialog";
 import MultiColDialogContent from "../../DataDisplay/MultiColDialogContent";
 import FullscreenDialogTitleBar from "../../DataDisplay/FullscreenDialogTitleBar";
 
-function RuleWorkDialog(props) {
+function DetailsDialog(props) {
     const {children, onClose, open, optional, title, ...other} = props;
 
     return (
@@ -17,7 +17,7 @@ function RuleWorkDialog(props) {
     );
 }
 
-RuleWorkDialog.propTypes = {
+DetailsDialog.propTypes = {
     children: PropTypes.node,
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,
@@ -25,4 +25,4 @@ RuleWorkDialog.propTypes = {
     title: PropTypes.node,
 };
 
-export default RuleWorkDialog;
+export default DetailsDialog;

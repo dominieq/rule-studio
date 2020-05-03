@@ -9,12 +9,12 @@ import CalculateButton from "../Utils/Buttons/CalculateButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
-import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../Utils/Containers/RuleWorkDrawer"
+import CustomBox from "../../../Utils/Containers/CustomBox";
+import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
-import RuleWorkTooltip from "../../../Utils/DataDisplay/RuleWorkTooltip";
-import { UnionsDialog } from "../../../Utils/Feedback/RuleWorkDialog";
-import RuleWorkAlert from "../../../Utils/Feedback/RuleWorkAlert";
+import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
+import { UnionsDialog } from "../../../Utils/Feedback/DetailsDialog";
+import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 
 class Unions extends Component {
@@ -264,7 +264,7 @@ class Unions extends Component {
         const { project: { result, settings } } = this.props;
 
         return (
-            <RuleWorkBox id={"rule-work-unions"} styleVariant={"tab"}>
+            <CustomBox id={"unions"} styleVariant={"tab"}>
                 <StyledPaper id={"unions-bar"} paperRef={this.upperBar}>
                     <SettingsButton
                         aria-label={"unions-settings-button"}
@@ -272,7 +272,7 @@ class Unions extends Component {
                         title={"Click to choose consistency & type of unions"}
                     />
                     <StyledDivider margin={16} />
-                    <RuleWorkTooltip
+                    <CustomTooltip
                         title={`Calculate with threshold ${parameters.consistencyThreshold} 
                         & ${parameters.typeOfUnions} unions`}
                     >
@@ -281,11 +281,11 @@ class Unions extends Component {
                             disabled={loading}
                             onClick={this.onCountUnionsClick}
                         />
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                     <span style={{flexGrow: 1}} />
                     <FilterTextField onChange={this.onFilterChange}/>
                 </StyledPaper>
-                <RuleWorkDrawer
+                <CustomDrawer
                     id={"unions-settings"}
                     onClose={() => this.toggleOpen("settings")}
                     open={open.settings}
@@ -301,7 +301,7 @@ class Unions extends Component {
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}
                     />
-                </RuleWorkDrawer>
+                </CustomDrawer>
                 <TabBody
                     content={parseUnionsListItems(displayedItems)}
                     id={"unions-list"}
@@ -331,8 +331,8 @@ class Unions extends Component {
                         settings={settings}
                     />
                 }
-                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
-            </RuleWorkBox>
+                <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
+            </CustomBox>
         )
     }
 }

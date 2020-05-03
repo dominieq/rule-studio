@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core";
-import RuleWorkListItem from "./Elements/RuleWorkListItem";
+import ResultListItem from "./Elements/ResultListItem";
 import StyledPagination from "../../Navigation/StyledPagination";
 import List from "@material-ui/core/List";
 
@@ -12,9 +12,9 @@ const StyledList = withStyles(theme=> ({
         maxWidth: "75%",
         minWidth: "50%",
     }
-}), {name: "result-list"})(props => <List {...props} />);
+}), {name: "ResultList"})(props => <List {...props} />);
 
-class RuleWorkList extends Component {
+class ResultList extends Component {
     constructor(props) {
         super(props);
 
@@ -80,7 +80,7 @@ class RuleWorkList extends Component {
                 />
                 <StyledList {...other}>
                     {displayedItems.map((item, index) => (
-                        <RuleWorkListItem
+                        <ResultListItem
                             key={index}
                             object={item}
                             selected={selectedItem === index}
@@ -101,7 +101,7 @@ class RuleWorkList extends Component {
     }
 }
 
-RuleWorkList.propTypes = {
+ResultList.propTypes = {
     children: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.number,
         header: PropTypes.string,
@@ -117,9 +117,9 @@ RuleWorkList.propTypes = {
     subheader: PropTypes.node,
 };
 
-RuleWorkList.defaultProps = {
+ResultList.defaultProps = {
     component: "nav",
     disablePadding: true,
 };
 
-export default RuleWorkList;
+export default ResultList;

@@ -2,7 +2,7 @@ import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import { getItemName } from "../../../../Body/Project/Utils/parseData";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
-import RuleWorkDialog from "../RuleWorkDialog";
+import DetailsDialog from "../DetailsDialog";
 import ObjectTable from "../Elements/ObjectTable";
 import TableItemsList from "../Elements/TableItemsList";
 import TraitsTable from "../Elements/TraitsTable";
@@ -103,7 +103,7 @@ class RulesDialog extends PureComponent {
         const { item, projectResult, ...other } = this.props;
 
         return (
-            <RuleWorkDialog onExited={this.onExited} title={this.getRulesTitle()} {...other}>
+            <DetailsDialog onExited={this.onExited} title={this.getRulesTitle()} {...other}>
                 <div id={"rules-traits"}>
                     <TraitsTable
                         traits={item.traits}
@@ -127,7 +127,7 @@ class RulesDialog extends PureComponent {
                         />
                     }
                 </div>
-            </RuleWorkDialog>
+            </DetailsDialog>
         );
     }
 }

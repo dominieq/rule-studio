@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import Radio from '@material-ui/core/Radio';
 import TextField from '@material-ui/core/TextField';
-import RuleWorkTextField from "../../../Utils/Inputs/RuleWorkTextField";
+import CustomTextField from "../../../Utils/Inputs/CustomTextField";
 
 export const StyledCheckbox = withStyles(theme => ({
     root: {
@@ -40,7 +40,7 @@ export const StyledRuleWorkTextField = withStyles(theme => ({
         },
         marginTop: theme.spacing(2)
     },
-}))(RuleWorkTextField);
+}))(CustomTextField);
 
 export const StyledDefaultTextField = withStyles(theme => ({
     root: {

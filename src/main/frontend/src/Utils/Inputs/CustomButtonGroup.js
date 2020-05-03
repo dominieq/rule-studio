@@ -44,7 +44,7 @@ ButtonWrapper.propTypes = {
     placement: PropTypes.oneOf(["left", "right"]),
 };
 
-class RuleWorkButtonGroup extends Component {
+class CustomButtonGroup extends Component {
     constructor(props) {
         super(props);
 
@@ -142,9 +142,9 @@ class RuleWorkButtonGroup extends Component {
     }
 }
 
-RuleWorkButtonGroup.propTypes = {
+CustomButtonGroup.propTypes = {
     children: PropTypes.arrayOf(PropTypes.node).isRequired,
     options: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default RuleWorkButtonGroup;
+export default CustomButtonGroup;

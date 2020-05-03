@@ -1,7 +1,7 @@
 import React, {PureComponent} from "react";
 import PropTypes from "prop-types";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
-import RuleWorkDialog from "../RuleWorkDialog";
+import DetailsDialog from "../DetailsDialog";
 import TablesList from "../Elements/TablesList";
 import ObjectsComparisonTable from "../Elements/ObjectsComparisonTable";
 import TableItemsList from "../Elements/TableItemsList";
@@ -59,7 +59,7 @@ class ConesDialog extends PureComponent {
         const { item, items, projectResult, ...other } = this.props;
 
         return (
-            <RuleWorkDialog onExited={this.onExited} title={this.getConesTitle()} {...other}>
+            <DetailsDialog onExited={this.onExited} title={this.getConesTitle()} {...other}>
                 <div id={"cones-tables"} style={{width: "22.5%"}}>
                     <TablesList
                         headerText={"Dominance cones"}
@@ -90,7 +90,7 @@ class ConesDialog extends PureComponent {
                         />
                     }
                 </div>
-            </RuleWorkDialog>
+            </DetailsDialog>
         );
     }
 }
