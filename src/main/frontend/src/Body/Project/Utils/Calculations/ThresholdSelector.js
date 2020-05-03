@@ -97,15 +97,13 @@ class ThresholdSelector extends Component {
             <div aria-label={"outer wrapper"} className={styles.OuterWrapper}>
                 <CircleHelper
                     title={
-                        <p id={"main"} style={{margin: 0, textAlign: "justify"}}>
+                        <p aria-label={"main"} style={{margin: 0, textAlign: "justify"}}>
                             {tooltip["main" + variant[0].toUpperCase() + variant.slice(1)]}
                         </p>
                     }
                     TooltipProps={{
                         placement: "right-start",
-                        PopperProps: {
-                            disablePortal: false
-                        }
+                        PopperProps: { disablePortal: false }
                     }}
                     WrapperProps={{
                         style: { marginRight: 16 }

@@ -9,8 +9,11 @@ import styles from "./styles/Calculations.module.css";
 const tooltip = {
     main: "Default classification result is returned by the selected classifier if no rule matches classified object. " +
         "Available methods of determining default classification result:",
-    majorityDecisionClass: " - ",
-    medianDecisionClass: " - "
+    majorityDecisionClass: " -  if no rule matches classified object, " +
+        "then suggested decision is the most frequent class in the training data set",
+    medianDecisionClass: " - if no rule matches classified object, " +
+        "then suggested decision is the median decision class in the distribution " +
+        "of ordered decision classes observed in the training data set."
 };
 
 const classificationResults = [
@@ -29,7 +32,7 @@ const useStyles = makeStyles({
         margin: 0,
         textAlign: "justify"
     }
-}, {name: "multi-row-tooltip"});
+}, {name: "MultiRow"});
 
 function DefaultClassificationResultSelector(props) {
     const { CircleHelperProps, TextFieldProps: { disabledChildren, ...other } } = props;
@@ -41,14 +44,14 @@ function DefaultClassificationResultSelector(props) {
                 multiRow={true}
                 title={
                     <React.Fragment>
-                        <p className={classes.paragraph} id={"main"}>
+                        <p className={classes.paragraph}>
                             {tooltip.main}
                         </p>
-                        <p className={classes.paragraph} id={"majority-decision-class"}>
+                        <p className={classes.paragraph}>
                             <b>Majority decision class</b>
                             {tooltip.majorityDecisionClass}
                         </p>
-                        <p className={classes.paragraph} id={"median-decision-class"}>
+                        <p className={classes.paragraph}>
                             <b>Median decision class</b>
                             {tooltip.medianDecisionClass}
                         </p>
@@ -56,12 +59,10 @@ function DefaultClassificationResultSelector(props) {
                 }
                 TooltipProps={{
                     placement: "right-start",
-                    PopperProps: {
-                        disablePortal: false
-                    }
+                    PopperProps: { disablePortal: false }
                 }}
                 WrapperProps={{
-                    style: {marginRight: 16}
+                    style: { marginRight: 16 }
                 }}
                 {...CircleHelperProps}
             />
