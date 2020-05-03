@@ -438,8 +438,10 @@ class Rules extends Component {
     };
 
     render() {
-        const { loading, data, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
+        const { loading, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
         const { project: { result, settings } } = this.props;
+
+        const resultsExists = Array.isArray(items) && Boolean(items.length);
 
         return (
             <CustomBox id={"rules"} styleVariant={"tab"}>
@@ -450,9 +452,7 @@ class Rules extends Component {
                         title={"Click to choose consistency threshold, type of unions & rules"}
                     />
                     <StyledDivider margin={16} />
-                    <CustomTooltip
-                        title={`Calculate with consistency threshold ${parameters.consistencyThreshold}`}
-                    >
+                    <CustomTooltip title={`Calculate with consistency threshold ${parameters.consistencyThreshold}`}>
                         <CalculateButton
                             aria-label={"rules-calculate-button"}
                             disabled={loading}
@@ -482,7 +482,7 @@ class Rules extends Component {
                     <CustomTooltip title={"Save rules to RuleML"}>
                         <StyledButton
                             aria-label={"rules-save-to-xml-button"}
-                            disabled={!Boolean(data) || loading}
+                            disabled={!resultsExists || loading}
                             isIcon={true}
                             onClick={this.onSaveRulesToXMLClick}
                             themeVariant={"primary"}
@@ -494,7 +494,7 @@ class Rules extends Component {
                     <CustomTooltip title={"Save rules to TXT"}>
                         <StyledButton
                             aria-label={"rules-save-to-txt-button"}
-                            disabled={!Boolean(data) || loading}
+                            disabled={!resultsExists || loading}
                             isIcon={true}
                             onClick={this.onSaveRulesToTXTClick}
                             themeVariant={"primary"}
@@ -508,10 +508,10 @@ class Rules extends Component {
                             "aria-controls": "rules-sort-menu",
                             "aria-haspopup": true,
                             "aria-label": "sort rules",
-                            disabled: !Boolean(data),
+                            disabled: !resultsExists || loading,
                             onClick: this.onSortMenuOpen
                         }}
-                        tooltip={Boolean(data) ? "Sort rules" : "No content to sort"}
+                        tooltip={resultsExists ? "Sort rules" : "No content to sort"}
                         TooltipProps={{
                             WrapperProps: { style: { marginRight: "0.5rem" } }
                         }}
@@ -545,7 +545,7 @@ class Rules extends Component {
                         variant={"extended"}
                     />
                 </CustomDrawer>
-                {data !== null &&
+                {resultsExists &&
                     <SortMenu
                         anchorE1={sort.anchorE1}
                         ContentProps={{
