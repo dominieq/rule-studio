@@ -79,7 +79,6 @@ class Rules extends Component {
                 }));
             }
         }).catch(error => {
-            console.log(error);
             if (this._isMounted) {
                 this.setState({
                     data: null,
