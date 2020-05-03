@@ -47,9 +47,9 @@ class EditDataFilterButton extends React.Component {
     render() {
         return(
             <Fragment>
-                <div id={"rule-work-data-1"} className={"rule-work-data-toolbar"}>
+                <div id={"rule-studio-data-1"} className={"rule-studio-data-toolbar"}>
                     <StyledPaper
-                        id={"rule-work-data-1-bar"}
+                        id={"rule-studio-data-1-bar"}
                         paperRef={this.upperBar}
                         styleVariant={"bar"}
                         square={true}
@@ -60,9 +60,9 @@ class EditDataFilterButton extends React.Component {
                     </StyledPaper>
                 </div>
 
-                <div id={"rule-work-data-2"} className={"rule-work-data-toolbar"}>
+                <div id={"rule-studio-data-2"} className={"rule-studio-data-toolbar"}>
                     <StyledPaper
-                        id={"rule-work-data-2-bar"}
+                        id={"rule-studio-data-2-bar"}
                         paperRef={this.upperBar}
                         styleVariant={"bar"}
                         square={true}
