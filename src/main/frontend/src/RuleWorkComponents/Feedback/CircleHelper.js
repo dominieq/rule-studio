@@ -1,7 +1,8 @@
 import React, {useState} from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import { mergeClasses } from "../utilFunctions";
 import RuleWorkTooltip from "../DataDisplay/RuleWorkTooltip";
 import Avatar from "@material-ui/core/Avatar";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -49,13 +50,16 @@ const useStyles = makeStyles(theme => ({
         height: "2.14em",
         width: "2.14em",
     }
-}), {name: "circle-helper"});
+}), {name: "CircleHelper"});
 
 function CircleHelper(props) {
     const [open, setOpen] = useState(false);
 
     const { AvatarProps, children, multiRow, size, title, TooltipProps, WrapperProps } = props;
-    const classes =  useStyles();
+    const { classes: tooltipClasses , ...other } = TooltipProps;
+
+    let classes =  useStyles();
+    if (tooltipClasses) classes = mergeClasses(classes, tooltipClasses);
 
     const onTooltipOpen = () => {
         setOpen(true)
@@ -79,7 +83,7 @@ function CircleHelper(props) {
                         disablePortal: true,
                     }}
                     title={!children ? title : children}
-                    {...TooltipProps}
+                    {...other}
                 >
                     <Avatar
                         className={clsx(classes.root, classes.button, classes[size])}
