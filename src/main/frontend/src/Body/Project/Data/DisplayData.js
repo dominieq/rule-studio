@@ -19,13 +19,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { withStyles, createStyles } from '@material-ui/core/styles';
 import { DraggableHeader } from 'react-data-grid-addons';
 import PropTypes from 'prop-types';
-import RuleWorkLoadingIcon from './RuleWorkLoadingIcon';
+import CustomLoadingIcon from './CustomLoadingIcon';
 import StyledButton from '../../../Utils/Inputs/StyledButton';
 import NumericFilter from './NumericFilter';
 import AttributesVirtualizedTable from './AttributesVirtualizedTable';
 import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 
-import { StyledCheckbox, StyledRadio, StyledRuleWorkTextField} from './StyledComponents';
+import { StyledCheckbox, StyledRadio, StyledCustomTextField} from './StyledComponents';
 import StyledDivider from '../../../Utils/DataDisplay/StyledDivider';
 
 const selectors = Data.Selectors;
@@ -1826,7 +1826,7 @@ class DisplayData extends React.Component {
             key="attributeIsActive"
             style={{justifyContent: "flex-end",  margin: "0"}}
         />)
-        tmp.push(<StyledRuleWorkTextField autoComplete={"off"} label="Name" size="small" fullWidth required variant="outlined" id="attributeName" key="attributeName" defaultValue="" />)
+        tmp.push(<StyledCustomTextField autoComplete={"off"} label="Name" size="small" fullWidth required variant="outlined" id="attributeName" key="attributeName" defaultValue="" />)
         tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key="attributeType" displayName={"Type"} items={["identification","description","condition","decision"]}/>)
 
         if(this.state.attributeTypeSelected !== "identification") {
@@ -1868,7 +1868,7 @@ class DisplayData extends React.Component {
         />)
 
         //display attribute name
-        tmp.push(<StyledRuleWorkTextField autoComplete={"off"} label="Name" fullWidth required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
+        tmp.push(<StyledCustomTextField autoComplete={"off"} label="Name" fullWidth required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
         
         //display attribute type - identification
         if(this.state.attributeTypeSelected === "identification" || (this.state.attributeTypeSelected === '' && attribute.valueType === undefined)) {
@@ -2321,7 +2321,7 @@ class DisplayData extends React.Component {
                     closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
                 }
               
-                {this.state.isLoading ? <RuleWorkLoadingIcon color="primary" /> : null }
+                {this.state.isLoading ? <CustomLoadingIcon color="primary" /> : null }
             </div>
         )
     }

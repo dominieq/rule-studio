@@ -27,7 +27,7 @@ export const StyledRadio = withStyles(theme => ({
   }))((props) => <Radio color="default" {...props} />);
 
 
-export const StyledRuleWorkTextField = withStyles(theme => ({
+export const StyledCustomTextField = withStyles(theme => ({
     root: {
         '& label.MuiInputLabel-shrink': {
             backgroundColor: theme.palette.background.default,
