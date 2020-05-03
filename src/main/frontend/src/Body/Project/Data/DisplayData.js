@@ -2276,7 +2276,7 @@ class DisplayData extends React.Component {
                                     </RuleWorkTooltip>
                                     <DropDownForAttributes getSelected={this.getSelectedSaveToFileCsvSeparator} 
                                         name={"saveToFileSeparator"} key="saveToFileSeparator" displayName={"Separator"} 
-                                        items={["comma","space","tab","semicolon"]} defaultValue="comma" defaultWidth="80%"
+                                        items={["comma","semicolon","space","tab"]} defaultValue="comma" defaultWidth="80%"
                                     />
                                     </div>
                                 }

@@ -35,6 +35,9 @@ const useStyles = makeStyles(theme => ({
     '& label.Mui-focused': {
         color: theme.palette.button.contained.backgroundAction
     },
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor:  theme.palette.text.default
+    },
     borderRadius: "4px"
   },
 }));
