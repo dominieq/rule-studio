@@ -70,13 +70,13 @@ public class RulesService {
                 Integer val1 = (Integer)array[ind1];
                 Integer val2 = (Integer)array[ind2];
 
-                if ((val1.equals(Integer.MIN_VALUE)) && (val2.equals(Integer.MIN_VALUE))) {
+                if ((val1.equals(RuleCharacteristics.UNKNOWN_INT_VALUE)) && (val2.equals(RuleCharacteristics.UNKNOWN_INT_VALUE))) {
                     return ind1.compareTo(ind2);
                 }
-                if (val1.equals(Integer.MIN_VALUE)) {
+                if (val1.equals(RuleCharacteristics.UNKNOWN_INT_VALUE)) {
                     return -1;
                 }
-                if (val2.equals(Integer.MIN_VALUE)) {
+                if (val2.equals(RuleCharacteristics.UNKNOWN_INT_VALUE)) {
                     return 1;
                 }
                 return val1.compareTo(val2);
@@ -85,13 +85,13 @@ public class RulesService {
                 Double val1 = (Double)array[ind1];
                 Double val2 = (Double)array[ind2];
 
-                if ((val1.equals(Double.MAX_VALUE)) && (val2.equals(Double.MAX_VALUE))) {
+                if ((val1.equals(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE)) && (val2.equals(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE))) {
                     return ind1.compareTo(ind2);
                 }
-                if (val1.equals(Double.MAX_VALUE)) {
+                if (val1.equals(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE)) {
                     return -1;
                 }
-                if (val2.equals(Double.MAX_VALUE)) {
+                if (val2.equals(RuleCharacteristics.UNKNOWN_DOUBLE_VALUE)) {
                     return 1;
                 }
                 return val1.compareTo(val2);
@@ -111,7 +111,7 @@ public class RulesService {
                 characteristicValues[i] = function.get(i);
             } catch (UnknownValueException e)  {
                 logger.warn(e.getMessage());
-                characteristicValues[i] = Integer.MIN_VALUE;
+                characteristicValues[i] = RuleCharacteristics.UNKNOWN_INT_VALUE;
             }
         }
     }
@@ -122,7 +122,7 @@ public class RulesService {
                 characteristicValues[i] = function.get(i);
             } catch (UnknownValueException e)  {
                 logger.warn(e.getMessage());
-                characteristicValues[i] = Double.MAX_VALUE;
+                characteristicValues[i] = RuleCharacteristics.UNKNOWN_DOUBLE_VALUE;
             }
         }
     }

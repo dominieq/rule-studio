@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
-import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
+import RuleWorkTextField from "../../../../Utils/Inputs/RuleWorkTextField";
 import styles from "./styles/Calculations.module.css";
 
 const tooltip = {
@@ -21,18 +21,16 @@ function TypeOfRulesSelector(props) {
         <div aria-label={"outer wrapper"} className={styles.OuterWrapper}>
             <CircleHelper
                 title={
-                    <p id={"main"} style={{margin: 0, textAlign: "justify"}}>
+                    <p aria-label={"main"} style={{ margin: 0, textAlign: "justify" }}>
                         {tooltip.main}
                     </p>
                 }
                 TooltipProps={{
                     placement: "right-start",
-                    PopperProps: {
-                        disablePortal: false,
-                    }
+                    PopperProps: { disablePortal: false }
                 }}
                 WrapperProps={{
-                    style: {marginRight: 16}
+                    style: { marginRight: 16 }
                 }}
                 {...CircleHelperProps}
             />

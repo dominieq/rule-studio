@@ -4,8 +4,8 @@ import AddIcon from '@material-ui/icons/Add';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import EditIcon from '@material-ui/icons/Edit';
 import TransformIcon from '@material-ui/icons/Transform';
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
-import RuleWorkTooltip from '../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip';
+import StyledButton from "../../../Utils/Inputs/StyledButton";
+import RuleWorkTooltip from '../../../Utils/DataDisplay/RuleWorkTooltip';
 import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';
 

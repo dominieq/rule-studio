@@ -6,7 +6,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import { withStyles } from '@material-ui/styles';
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
+import StyledButton from "../../../Utils/Inputs/StyledButton";
 import { StyledDefaultTextField } from './StyledComponents';
 
 const styles = ({

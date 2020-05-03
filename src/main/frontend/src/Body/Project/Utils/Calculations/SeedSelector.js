@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
-import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import RuleWorkTooltip from "../../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import StyledButton from "../../../../RuleWorkComponents/Inputs/StyledButton";
+import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
+import RuleWorkTextField from "../../../../Utils/Inputs/RuleWorkTextField";
+import RuleWorkTooltip from "../../../../Utils/DataDisplay/RuleWorkTooltip";
+import StyledButton from "../../../../Utils/Inputs/StyledButton";
 import styles from "./styles/Calculations.module.css";
 import Shuffle from "@material-ui/icons/Shuffle";
 

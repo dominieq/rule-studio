@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import RuleWorkTooltip from "../../../../RuleWorkComponents/DataDisplay/RuleWorkTooltip";
-import StyledButton from "../../../../RuleWorkComponents/Inputs/StyledButton";
+import RuleWorkTooltip from "../../../../Utils/DataDisplay/RuleWorkTooltip";
+import StyledButton from "../../../../Utils/Inputs/StyledButton";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import {mdiCog} from "@mdi/js";
 

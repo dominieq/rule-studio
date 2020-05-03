@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import FilterNoResults from "./Filtering/FilterNoResults";
-import RuleWorkBox from "../../../RuleWorkComponents/Containers/RuleWorkBox";
-import { RuleWorkList, RuleWorkListSubheader } from "../../../RuleWorkComponents/DataDisplay/RuleWorkList";
-import StyledCircularProgress from "../../../RuleWorkComponents/Feedback/StyledCircularProgress";
+import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox";
+import { RuleWorkList, RuleWorkListSubheader } from "../../../Utils/DataDisplay/RuleWorkList";
+import StyledCircularProgress from "../../../Utils/Feedback/StyledCircularProgress";
 
 function TabBody(props) {
     const { content, id, isArray, isLoading, ListProps, ListSubheaderProps, noFilterResults, subheaderContent } = props;

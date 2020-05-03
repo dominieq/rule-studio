@@ -1,23 +1,38 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
-import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
+import RuleWorkTextField from "../../../../Utils/Inputs/RuleWorkTextField";
+import MenuItem from "@material-ui/core/MenuItem";
 import styles from "./styles/Calculations.module.css";
 
 const tooltip = {
     main: "Default classification result is returned by the selected classifier if no rule matches classified object. " +
         "Available methods of determining default classification result:",
-    majorityDecisionClass: " - ",
-    medianDecisionClass: " - "
+    majorityDecisionClass: " -  if no rule matches classified object, " +
+        "then suggested decision is the most frequent class in the training data set",
+    medianDecisionClass: " - if no rule matches classified object, " +
+        "then suggested decision is the median decision class in the distribution " +
+        "of ordered decision classes observed in the training data set."
 };
+
+const classificationResults = [
+    {
+        label: "Majority decision class",
+        value: "majorityDecisionClass"
+    },
+    {
+        label: "Median decision class",
+        value: "medianDecisionClass"
+    }
+];
 
 const useStyles = makeStyles({
     paragraph: {
         margin: 0,
         textAlign: "justify"
     }
-}, {name: "multi-row-tooltip"});
+}, {name: "MultiRow"});
 
 function DefaultClassificationResultSelector(props) {
     const { CircleHelperProps, TextFieldProps: { disabledChildren, ...other } } = props;
@@ -29,14 +44,14 @@ function DefaultClassificationResultSelector(props) {
                 multiRow={true}
                 title={
                     <React.Fragment>
-                        <p className={classes.paragraph} id={"main"}>
+                        <p className={classes.paragraph}>
                             {tooltip.main}
                         </p>
-                        <p className={classes.paragraph} id={"majority-decision-class"}>
+                        <p className={classes.paragraph}>
                             <b>Majority decision class</b>
                             {tooltip.majorityDecisionClass}
                         </p>
-                        <p className={classes.paragraph} id={"median-decision-class"}>
+                        <p className={classes.paragraph}>
                             <b>Median decision class</b>
                             {tooltip.medianDecisionClass}
                         </p>
@@ -44,12 +59,10 @@ function DefaultClassificationResultSelector(props) {
                 }
                 TooltipProps={{
                     placement: "right-start",
-                    PopperProps: {
-                        disablePortal: false
-                    }
+                    PopperProps: { disablePortal: false }
                 }}
                 WrapperProps={{
-                    style: {marginRight: 16}
+                    style: { marginRight: 16 }
                 }}
                 {...CircleHelperProps}
             />
@@ -59,7 +72,11 @@ function DefaultClassificationResultSelector(props) {
                     select={true}
                     {...other}
                 >
-                    {["majorityDecisionClass", "medianDecisionClass"]}
+                    {classificationResults.map((result, index) => (
+                        <MenuItem key={index} value={result.value}>
+                            {result.label}
+                        </MenuItem>
+                    ))}
                 </RuleWorkTextField>
             </div>
         </div>

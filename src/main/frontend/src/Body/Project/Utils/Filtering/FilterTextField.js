@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import PropTypes from "prop-types";
-import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import RuleWorkTextField from "../../../../Utils/Inputs/RuleWorkTextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Magnify from "mdi-material-ui/Magnify";
 

@@ -5,8 +5,8 @@ import Accept from "./Utils/Accept";
 import Cancel from "./Utils/Cancel";
 import SimpleContent from "./Utils/SimpleContent"
 import SimpleDialog from "./Utils/SimpleDialog";
-import RuleWorkTextField from "../../RuleWorkComponents/Inputs/RuleWorkTextField";
-import CircleHelper from "../../RuleWorkComponents/Feedback/CircleHelper";
+import RuleWorkTextField from "../../Utils/Inputs/RuleWorkTextField";
+import CircleHelper from "../../Utils/Feedback/CircleHelper";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import List from "@material-ui/core/List";

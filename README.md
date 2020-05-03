@@ -2,32 +2,11 @@
 Open source application that makes use of [ruleLearn library](https://github.com/ruleLearn/rulelearn) 
 to put into action it's core functionalities and display them in user-friendly manner.
 ## Getting Started
-### Server
-To start server you need to execute:
+To start application you need to go to project folder and execute:
 ````
 mvn clean install
 cd target
-java -jar rulework-1.0-SNAPSHOT.jar
-````
-### Client
-**Make sure you have npm or yarn installed!**
-
-Production mode is faster than development mode; 
-however, development mode has more information displayed in console.
-
-To start client in development mode you need to execute:
-
-````
-cd src/main/frontend
-npm/yarn run start
-````
-To start client in production mode you need to execute:
-````
-cd src/main/frontend
-npm/yarn run build
-
-yarn global add serve
-serve -s build
+java -jar rulework-1.0.jar
 ````
 ## License
 This project is licensed under the Apache License, Version 2.0 - 

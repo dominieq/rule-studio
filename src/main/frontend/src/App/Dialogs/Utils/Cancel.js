@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import StyledButton from "../../../RuleWorkComponents/Inputs/StyledButton";
+import StyledButton from "../../../Utils/Inputs/StyledButton";
 
 function Cancel(props) {
     const {children, ...other} = props;

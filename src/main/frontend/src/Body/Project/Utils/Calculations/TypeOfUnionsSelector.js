@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import CircleHelper from "../../../../RuleWorkComponents/Feedback/CircleHelper";
-import RuleWorkTextField from "../../../../RuleWorkComponents/Inputs/RuleWorkTextField";
+import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
+import RuleWorkTextField from "../../../../Utils/Inputs/RuleWorkTextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import styles from "./styles/Calculations.module.css"
 
@@ -39,7 +39,7 @@ const tooltipStyles = makeStyles({
         textAlign: "justify"
 
     }
-}, {name: "multi-row-tooltip"})
+}, {name: "MultiRow"})
 
 function TypeOfUnionsSelector(props) {
     const { CircleHelperProps, TextFieldProps: { disabledChildren, ...other }, variant } = props;
@@ -51,14 +51,14 @@ function TypeOfUnionsSelector(props) {
                 multiRow={true}
                 title={
                     <React.Fragment>
-                        <p className={tooltipClasses.paragraph} id={"main"}>
+                        <p aria-label={"main"} className={tooltipClasses.paragraph}>
                             {tooltip["main" + variant[0].toUpperCase() + variant.slice(1)]}
                         </p>
-                        <p className={tooltipClasses.paragraph} id={"epsilon"}>
+                        <p aria-label={"epsilon"} className={tooltipClasses.paragraph}>
                             <b>epsilon</b>
                             {tooltip.epsilon}
                         </p>
-                        <p className={tooltipClasses.paragraph} id={"rough-membership"}>
+                        <p aria-label={"rough membership"} className={tooltipClasses.paragraph}>
                             <b>rough membership</b>
                             {tooltip.roughMembership}
                         </p>
@@ -66,12 +66,10 @@ function TypeOfUnionsSelector(props) {
                 }
                 TooltipProps={{
                     placement: "right-start",
-                    PopperProps: {
-                        disablePortal: false
-                    }
+                    PopperProps: { disablePortal: false }
                 }}
                 WrapperProps={{
-                    style: {marginRight: 16}
+                    style: { marginRight: 16 }
                 }}
                 {...CircleHelperProps}
             />
