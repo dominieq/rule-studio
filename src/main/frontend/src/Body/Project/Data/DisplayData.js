@@ -2134,7 +2134,7 @@ class DisplayData extends React.Component {
     render() {   
         const classes = this.props.classes;
         return (
-            <div style={{height: "0px", flexGrow: 0.93}} className={classes.root}>
+            <div style={{flexGrow: 1}} className={classes.root}>
                 <DraggableContainer onHeaderDrop={this.onColumnHeaderDragDrop}>   
                 <ReactDataGrid
                     ref={(node) => this.grid = node}
