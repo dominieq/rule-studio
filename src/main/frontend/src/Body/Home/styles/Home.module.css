@@ -1,15 +1,15 @@
-.rule-work-logo {
+.Logo {
     height: 40vmin;
     pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-    .rule-work-logo {
-        animation: rule-work-logo-spin infinite 20s linear;
+    .Logo {
+        animation: Logo-spin infinite 20s linear;
     }
 }
 
-@keyframes rule-work-logo-spin {
+@keyframes Logo-spin {
     from {
         transform: rotate(0deg);
     }

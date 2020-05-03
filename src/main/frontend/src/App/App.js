@@ -360,7 +360,7 @@ class App extends Component {
                 {
                     {
                         "Help": <Help />,
-                        "Home": <Home />,
+                        "Home": <Home isDarkTheme={this.state.darkTheme} />,
                         "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
                             <ProjectTabs
