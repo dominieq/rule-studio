@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>pl.put.poznan</groupId>
-    <artifactId>rulework</artifactId>
-    <version>1.0</version>
+    <artifactId>rulestudio</artifactId>
+    <version>1.0.0</version>
 
     <parent>
         <artifactId>spring-boot-starter-parent</artifactId>

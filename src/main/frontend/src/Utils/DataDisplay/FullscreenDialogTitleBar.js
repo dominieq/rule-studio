@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
-import RuleWorkTooltip from "./RuleWorkTooltip";
+import CustomTooltip from "./CustomTooltip";
 import StyledButton from "../Inputs/StyledButton";
 import StyledPaper from "../Surfaces/StyledPaper";
 import Typography from "@material-ui/core/Typography";
@@ -132,7 +132,7 @@ function FullscreenDialogTitleBar(props) {
                         {optional}
                     </Typography>
                 }
-                <RuleWorkTooltip title={"Close details"}>
+                <CustomTooltip title={"Close details"}>
                     <StyledButton
                         aria-label={"close-button"}
                         isIcon={true}
@@ -143,7 +143,7 @@ function FullscreenDialogTitleBar(props) {
                     >
                         <WindowClose />
                     </StyledButton>
-                </RuleWorkTooltip>
+                </CustomTooltip>
             </div>
         </StyledPaper>
     )

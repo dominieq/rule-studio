@@ -10,7 +10,7 @@ class Project {
         this.parameters = {
             consistencyThreshold: 0,
             defaultClassificationResult: "majorityDecisionClass",
-            numberOfFolds: 2,
+            numberOfFolds: 10,
             seed: 0,
             typeOfClassifier: "SimpleRuleClassifier",
             typeOfRules: "certain",

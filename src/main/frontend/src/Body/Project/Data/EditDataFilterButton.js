@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import SearchIcon from '@material-ui/icons/Search';
 import './EditDataButtons.css';
-import RuleWorkTooltip from '../../../Utils/DataDisplay/RuleWorkTooltip';
+import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 import StyledButton from "../../../Utils/Inputs/StyledButton";
 import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 
@@ -17,7 +17,7 @@ class EditDataFilterButton extends React.Component {
     renderToggleFilterButton = (name) => {
         if (this.props.enableFilter) {
           return (
-            <RuleWorkTooltip title={`Show filter`}>
+            <CustomTooltip title={`Show filter`}>
                 {name === "desktop" ?
                     <StyledButton
                         disableElevation
@@ -35,7 +35,7 @@ class EditDataFilterButton extends React.Component {
                         <SearchIcon />
                     </StyledButton>
                 }
-            </RuleWorkTooltip>    
+            </CustomTooltip>
           );
         }
     };
@@ -47,9 +47,9 @@ class EditDataFilterButton extends React.Component {
     render() {
         return(
             <Fragment>
-                <div id={"rule-work-data-1"} className={"rule-work-data-toolbar"}>
+                <div id={"rule-studio-data-1"} className={"rule-studio-data-toolbar"}>
                     <StyledPaper
-                        id={"rule-work-data-1-bar"}
+                        id={"rule-studio-data-1-bar"}
                         paperRef={this.upperBar}
                         styleVariant={"bar"}
                         square={true}
@@ -60,9 +60,9 @@ class EditDataFilterButton extends React.Component {
                     </StyledPaper>
                 </div>
 
-                <div id={"rule-work-data-2"} className={"rule-work-data-toolbar"}>
+                <div id={"rule-studio-data-2"} className={"rule-studio-data-toolbar"}>
                     <StyledPaper
-                        id={"rule-work-data-2-bar"}
+                        id={"rule-studio-data-2-bar"}
                         paperRef={this.upperBar}
                         styleVariant={"bar"}
                         square={true}

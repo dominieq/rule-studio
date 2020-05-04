@@ -1,7 +1,7 @@
 import React, { Fragment, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from "@material-ui/core/styles";
-import RuleWorkTooltip from "../../Utils/DataDisplay/RuleWorkTooltip";
+import CustomTooltip from "../../Utils/DataDisplay/CustomTooltip";
 import StyledButton from "../../Utils/Inputs/StyledButton";
 import StyledDivider from "../../Utils/DataDisplay/StyledDivider";
 import List from "@material-ui/core/List";
@@ -112,7 +112,7 @@ function ProjectMenu(props) {
             }
             {currentProject > 0 ?
                 <Fragment>
-                    <RuleWorkTooltip title={"Project settings"}>
+                    <CustomTooltip title={"Project settings"}>
                         <StyledButton
                             aria-label={"project-settings"}
                             isIcon={true}
@@ -120,8 +120,8 @@ function ProjectMenu(props) {
                         >
                             <SvgIcon><path d={mdiCog} /></SvgIcon>
                         </StyledButton>
-                    </RuleWorkTooltip>
-                    <RuleWorkTooltip title={"Rename project"}>
+                    </CustomTooltip>
+                    <CustomTooltip title={"Rename project"}>
                         <StyledButton
                             aria-label={"rename-project-button"}
                             isIcon={true}
@@ -129,16 +129,16 @@ function ProjectMenu(props) {
                         >
                             <RenameBox />
                         </StyledButton>
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                     <span style={{ flexGrow: 1 }} />
-                    <RuleWorkTooltip title={"Delete project"}>
+                    <CustomTooltip title={"Delete project"}>
                         <StyledButton
                             aria-label={"delete-project-button"}
                             isIcon={true}
                             onClick={() => props.onDialogOpen("deleteDialog")}>
                             <DeleteIcon />
                         </StyledButton>
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                 </Fragment>
                 :
                 <span style={{ flexGrow: 1 }} />

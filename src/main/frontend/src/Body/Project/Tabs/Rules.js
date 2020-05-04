@@ -10,14 +10,14 @@ import SettingsButton from "../Utils/Buttons/SettingsButton";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
-import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../Utils/Containers/RuleWorkDrawer"
+import CustomBox from "../../../Utils/Containers/CustomBox";
+import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
-import RuleWorkTooltip from "../../../Utils/DataDisplay/RuleWorkTooltip";
-import { RulesDialog } from "../../../Utils/Feedback/RuleWorkDialog";
-import RuleWorkAlert from "../../../Utils/Feedback/RuleWorkAlert";
+import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
+import { RulesDialog } from "../../../Utils/Feedback/DetailsDialog";
+import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import { createCategories, simpleSort, SortButton, SortMenu } from "../../../Utils/Inputs/SortMenu";
-import RuleWorkUpload from "../../../Utils/Inputs/RuleWorkUpload";
+import CustomUpload from "../../../Utils/Inputs/CustomUpload";
 import StyledButton from "../../../Utils/Inputs/StyledButton";
 import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 import SvgIcon from "@material-ui/core/SvgIcon";
@@ -58,9 +58,10 @@ class Rules extends Component {
 
     getRules = () => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
 
         fetchRules(
-            project.result.id, "GET", null
+            base, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
                 const { project: { parametersSaved, sortParams } } = this.props;
@@ -181,6 +182,7 @@ class Rules extends Component {
 
     onCalculateClick = () => {
         let project = {...this.props.project};
+        const base = window.location.origin.toString();
         const { parameters } = this.state;
 
         this.setState({
@@ -199,7 +201,7 @@ class Rules extends Component {
             }
 
             fetchRules(
-                project.result.id, method, data
+                base, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -245,6 +247,7 @@ class Rules extends Component {
     onUploadFileChanged = (event) => {
         if (event.target.files[0]) {
             let project = {...this.props.project};
+            const base = window.location.origin.toString();
 
             let data = new FormData();
             data.append("rules", event.target.files[0]);
@@ -253,7 +256,7 @@ class Rules extends Component {
                 loading: true,
             }, () => {
                 uploadRules(
-                    project.result.id, data
+                    base, project.result.id, data
                 ).then(result => {
                     if (result) {
                         if (this._isMounted) {
@@ -286,9 +289,10 @@ class Rules extends Component {
 
     onSaveRulesToXMLClick = () => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
         let data = { format: "xml" };
 
-        downloadRules( project.result.id, data ).catch(error => {
+        downloadRules(base, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({alertProps: error});
             }
@@ -297,9 +301,10 @@ class Rules extends Component {
 
     onSaveRulesToTXTClick = () => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
         let data = { format: "txt" };
 
-        downloadRules( project.result.id, data ).catch(error => {
+        downloadRules(base, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }
@@ -438,30 +443,26 @@ class Rules extends Component {
     };
 
     render() {
-        const { loading, data, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
+        const { loading, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
         const { project: { result, settings } } = this.props;
 
+        const resultsExists = Array.isArray(items) && Boolean(items.length);
+
         return (
-            <RuleWorkBox id={"rule-work-rules"} styleVariant={"tab"}>
+            <CustomBox id={"rules"} styleVariant={"tab"}>
                 <StyledPaper id={"rules-bar"} paperRef={this.upperBar}>
-                    <SettingsButton
-                        aria-label={"rules-settings-button"}
-                        onClick={() => this.toggleOpen("settings")}
-                        title={"Click to choose consistency threshold, type of unions & rules"}
-                    />
+                    <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
-                    <RuleWorkTooltip
-                        title={`Calculate with consistency threshold ${parameters.consistencyThreshold}`}
-                    >
+                    <CustomTooltip title={"Click on settings button to the left to customize parameters"}>
                         <CalculateButton
                             aria-label={"rules-calculate-button"}
                             disabled={loading}
                             onClick={this.onCalculateClick}
                         />
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                     <StyledDivider margin={16} />
-                    <RuleWorkTooltip title={"Upload file"}>
-                        <RuleWorkUpload
+                    <CustomTooltip title={"Upload file"}>
+                        <CustomUpload
                             accept={".xml"}
                             disabled={loading}
                             id={"rules-upload-button"}
@@ -476,49 +477,49 @@ class Rules extends Component {
                             >
                                 <CloudUploadIcon />
                             </StyledButton>
-                        </RuleWorkUpload>
-                    </RuleWorkTooltip>
+                        </CustomUpload>
+                    </CustomTooltip>
                     <StyledDivider margin={16} />
-                    <RuleWorkTooltip title={"Save rules to RuleML"}>
+                    <CustomTooltip title={"Save rules to RuleML"}>
                         <StyledButton
                             aria-label={"rules-save-to-xml-button"}
-                            disabled={!Boolean(data) || loading}
+                            disabled={!resultsExists || loading}
                             isIcon={true}
                             onClick={this.onSaveRulesToXMLClick}
                             themeVariant={"primary"}
                         >
                             <SaveIcon />
                         </StyledButton>
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                     <StyledDivider margin={16} />
-                    <RuleWorkTooltip title={"Save rules to TXT"}>
+                    <CustomTooltip title={"Save rules to TXT"}>
                         <StyledButton
                             aria-label={"rules-save-to-txt-button"}
-                            disabled={!Boolean(data) || loading}
+                            disabled={!resultsExists || loading}
                             isIcon={true}
                             onClick={this.onSaveRulesToTXTClick}
                             themeVariant={"primary"}
                         >
                             <SvgIcon><path d={mdiTextBox} /></SvgIcon>
                         </StyledButton>
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                     <span style={{flexGrow: 1}} />
                     <SortButton
                         ButtonProps={{
                             "aria-controls": "rules-sort-menu",
                             "aria-haspopup": true,
                             "aria-label": "sort rules",
-                            disabled: !Boolean(data),
+                            disabled: !resultsExists || loading,
                             onClick: this.onSortMenuOpen
                         }}
-                        tooltip={Boolean(data) ? "Sort rules" : "No content to sort"}
+                        tooltip={resultsExists ? "Sort rules" : "No content to sort"}
                         TooltipProps={{
                             WrapperProps: { style: { marginRight: "0.5rem" } }
                         }}
                     />
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
-                <RuleWorkDrawer
+                <CustomDrawer
                     id={"rules-settings"}
                     open={open.settings}
                     onClose={() => this.toggleOpen("settings")}
@@ -544,8 +545,8 @@ class Rules extends Component {
                         value={parameters.consistencyThreshold}
                         variant={"extended"}
                     />
-                </RuleWorkDrawer>
-                {data !== null &&
+                </CustomDrawer>
+                {resultsExists &&
                     <SortMenu
                         anchorE1={sort.anchorE1}
                         ContentProps={{
@@ -586,8 +587,8 @@ class Rules extends Component {
                         settings={settings}
                     />
                 }
-                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
-            </RuleWorkBox>
+                <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
+            </CustomBox>
         )
     }
 }

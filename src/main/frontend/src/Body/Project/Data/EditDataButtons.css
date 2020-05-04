@@ -1,24 +1,23 @@
-.rule-work-data-toolbar {
+.rule-studio-data-toolbar {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    overflow: hidden;
 }
 
-#rule-work-data-1 {
+#rule-studio-data-1 {
     display: flex;
 }
 
-#rule-work-data-2 {
+#rule-studio-data-2 {
     display: none;
 }
 
 @media only screen and (max-width: 1413px) {
-    #rule-work-data-1 {
+    #rule-studio-data-1 {
         display: none;
     }
 
-    #rule-work-data-2 {
+    #rule-studio-data-2 {
         display: flex;
     }
 }

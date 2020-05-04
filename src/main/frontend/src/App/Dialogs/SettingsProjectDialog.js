@@ -5,7 +5,7 @@ import Accept from "./Utils/Accept";
 import Cancel from "./Utils/Cancel";
 import SimpleContent from "./Utils/SimpleContent"
 import SimpleDialog from "./Utils/SimpleDialog";
-import RuleWorkTextField from "../../Utils/Inputs/RuleWorkTextField";
+import CustomTextField from "../../Utils/Inputs/CustomTextField";
 import CircleHelper from "../../Utils/Feedback/CircleHelper";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -91,14 +91,14 @@ class SettingsProjectDialog extends PureComponent {
                             <SettingsIcons>
                                 <EyeSettings />
                             </SettingsIcons>
-                            <RuleWorkTextField
+                            <CustomTextField
                                 onChange={this.onIndexOptionChange}
                                 outsideLabel={"Choose object's visible description"}
                                 select={true}
                                 value={indexOption}
                             >
                                 {options}
-                            </RuleWorkTextField>
+                            </CustomTextField>
                             <CircleHelper
                                 title={"Sets names of objects that will be displayed in tabs."}
                                 TooltipProps={{

@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
-import RuleWorkTooltip from "../Utils/DataDisplay/RuleWorkTooltip";
+import CustomTooltip from "../Utils/DataDisplay/CustomTooltip";
 import StyledButton from "../Utils/Inputs/StyledButton";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -32,11 +32,11 @@ function Header(props) {
                 <StyledButton name={"help"} onClick={() => onBodyChange("Help")}>
                     Help
                 </StyledButton>
-                <RuleWorkTooltip title={"Change colors"}>
+                <CustomTooltip title={"Change colors"}>
                     <StyledButton color={"inherit"} isIcon={true} name={"change colors"} onClick={onColorsChange}>
                         <Palette />
                     </StyledButton>
-                </RuleWorkTooltip>
+                </CustomTooltip>
             </Toolbar>
         </AppBar>
     );

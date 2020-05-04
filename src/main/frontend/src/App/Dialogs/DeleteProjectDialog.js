@@ -5,7 +5,7 @@ import Accept from "./Utils/Accept";
 import Cancel from "./Utils/Cancel";
 import SimpleContent from "./Utils/SimpleContent";
 import SimpleDialog from "./Utils/SimpleDialog";
-import RuleWorkTextField from "../../Utils/Inputs/RuleWorkTextField";
+import CustomTextField from "../../Utils/Inputs/CustomTextField";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
@@ -92,7 +92,7 @@ class DeleteProjectDialog extends PureComponent {
                     Confirm deletion of: <ProjectName>{currentName}</ProjectName>
                 </DialogTitle>
                 <SimpleContent>
-                    <RuleWorkTextField
+                    <CustomTextField
                         fullWidth={true}
                         InputProps={{
                             id: "delete-project-input"

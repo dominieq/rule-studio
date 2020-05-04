@@ -5,7 +5,7 @@ import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import EditIcon from '@material-ui/icons/Edit';
 import TransformIcon from '@material-ui/icons/Transform';
 import StyledButton from "../../../Utils/Inputs/StyledButton";
-import RuleWorkTooltip from '../../../Utils/DataDisplay/RuleWorkTooltip';
+import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';
 
@@ -18,7 +18,7 @@ export default function IconLabelButtons(props) {
      <Fragment>
         {/*<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />*/}
 
-        <RuleWorkTooltip title={`Add new example at the end of the table`}>
+        <CustomTooltip title={`Add new example at the end of the table`}>
           {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -38,9 +38,9 @@ export default function IconLabelButtons(props) {
               <AddIcon />
             </StyledButton>
         }
-        </RuleWorkTooltip>
+        </CustomTooltip>
 
-        <RuleWorkTooltip title={`Delete selected examples`}>
+        <CustomTooltip title={`Delete selected examples`}>
           {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -60,9 +60,9 @@ export default function IconLabelButtons(props) {
               <DeleteIcon />
             </StyledButton>
         }
-        </RuleWorkTooltip>
+        </CustomTooltip>
 
-        <RuleWorkTooltip title={`Add new attribute`}>
+        <CustomTooltip title={`Add new attribute`}>
         {props.whichDevice === "desktop" ?
           <StyledButton
             disableElevation={true}
@@ -82,9 +82,9 @@ export default function IconLabelButtons(props) {
               <AddIcon />
             </StyledButton>
           }
-        </RuleWorkTooltip>
+        </CustomTooltip>
 
-        <RuleWorkTooltip title={`Edit attributes`}>
+        <CustomTooltip title={`Edit attributes`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -104,9 +104,9 @@ export default function IconLabelButtons(props) {
               <EditIcon />
             </StyledButton>
           }
-        </RuleWorkTooltip>
+        </CustomTooltip>
 
-        <RuleWorkTooltip title={`Save objects (data) and attributes (metadata) to files`}>
+        <CustomTooltip title={`Save objects (data) and attributes (metadata) to files`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -126,9 +126,9 @@ export default function IconLabelButtons(props) {
               <SaveAltIcon />
             </StyledButton>
           }
-        </RuleWorkTooltip>
+        </CustomTooltip>
 
-        <RuleWorkTooltip title={`Impose preference orders`}>
+        <CustomTooltip title={`Impose preference orders`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -148,9 +148,9 @@ export default function IconLabelButtons(props) {
               <TransformIcon />
             </StyledButton>
             }
-        </RuleWorkTooltip>
+        </CustomTooltip>
 
-        <RuleWorkTooltip title={`undo changes`}>
+        <CustomTooltip title={`undo changes`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -172,9 +172,9 @@ export default function IconLabelButtons(props) {
               <UndoIcon />
             </StyledButton>
             }
-        </RuleWorkTooltip>
+        </CustomTooltip>
 
-        <RuleWorkTooltip title={`redo changes`}>
+        <CustomTooltip title={`redo changes`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -196,7 +196,7 @@ export default function IconLabelButtons(props) {
               <RedoIcon />
             </StyledButton>
             }
-        </RuleWorkTooltip>
+        </CustomTooltip>
 
     </Fragment>
     );

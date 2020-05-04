@@ -1,7 +1,7 @@
 import { handleResponse } from "./utilFunctions";
 
-async function fetchProjects(method, data) {
-    const response = await fetch(`http://localhost:8080/projects`, {
+async function fetchProjects(base, method, data) {
+    const response = await fetch(`${base}/projects`, {
         method: method,
         body: data
     }).catch(() => null);

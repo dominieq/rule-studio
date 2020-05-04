@@ -1,7 +1,7 @@
 import { responseJson } from "./utilFunctions";
 
-async function fetchCrossValidation(projectId, method, data) {
-   const response = await fetch(`http://localhost:8080/projects/${projectId}/crossValidation`, {
+async function fetchCrossValidation(base, projectId, method, data) {
+   const response = await fetch(`${base}/projects/${projectId}/crossValidation`, {
        method: method,
        body: data,
    }).catch(error => {

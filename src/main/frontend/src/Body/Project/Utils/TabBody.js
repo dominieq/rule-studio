@@ -1,34 +1,34 @@
 import React from "react";
 import PropTypes from "prop-types";
 import FilterNoResults from "./Filtering/FilterNoResults";
-import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox";
-import { RuleWorkList, RuleWorkListSubheader } from "../../../Utils/DataDisplay/RuleWorkList";
+import CustomBox from "../../../Utils/Containers/CustomBox";
+import { ResultList, ResultListSubheader } from "../../../Utils/DataDisplay/ResultList";
 import StyledCircularProgress from "../../../Utils/Feedback/StyledCircularProgress";
 
 function TabBody(props) {
     const { content, id, isArray, isLoading, ListProps, ListSubheaderProps, noFilterResults, subheaderContent } = props;
 
     return (
-        <RuleWorkBox id={id} styleVariant={"tab-body"}>
+        <CustomBox id={id} styleVariant={"tab-body"}>
             {isLoading &&
                 <StyledCircularProgress />
             }
             {!isLoading && isArray &&
-                <RuleWorkList
+                <ResultList
                     subheader={
-                        <RuleWorkListSubheader {...ListSubheaderProps}>
+                        <ResultListSubheader {...ListSubheaderProps}>
                             {subheaderContent}
-                        </RuleWorkListSubheader>
+                        </ResultListSubheader>
                     }
                     {...ListProps}
                 >
                     {content}
-                </RuleWorkList>
+                </ResultList>
             }
             {noFilterResults &&
                 <FilterNoResults />
             }
-        </RuleWorkBox>
+        </CustomBox>
     )
 }
 

@@ -1,7 +1,7 @@
 import { responseJson } from "./utilFunctions";
 
-async function uploadRules(projectId, data) {
-    const response = await fetch(`http://localhost:8080/projects/${projectId}`, {
+async function uploadRules(base, projectId, data) {
+    const response = await fetch(`${base}/projects/${projectId}`, {
         method: "POST",
         body: data
     }).catch(() => {

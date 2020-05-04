@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import RuleWorkTooltip from "./RuleWorkTooltip";
+import CustomTooltip from "./CustomTooltip";
 import Typography from "@material-ui/core/Typography";
 import Fade from "@material-ui/core/Fade";
 
@@ -40,7 +40,7 @@ function TextWithHoverTooltip(props) {
     }
 
     return (
-        <RuleWorkTooltip
+        <CustomTooltip
             classes={{wrapper: children ? wrapperClasses.wrapperFlex : wrapperClasses.wrapper}}
             enterDelay={1500}
             enterNextDelay={1500}
@@ -59,7 +59,7 @@ function TextWithHoverTooltip(props) {
                 :
                 children
             }
-        </RuleWorkTooltip>
+        </CustomTooltip>
     )
 }
 

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
-import RuleWorkTextField from "../../../../Utils/Inputs/RuleWorkTextField";
+import CustomTextField from "../../../../Utils/Inputs/CustomTextField";
 import StyledSlider from "../../../../Utils/Inputs/StyledSlider";
 import styles from "./styles/Calculations.module.css";
 
@@ -111,7 +111,7 @@ class ThresholdSelector extends Component {
                     {...CircleHelperProps}
                 />
                 <div aria-label={"inner wrapper"} className={styles.InnerWrapper} style={{marginRight: 16}}>
-                    <RuleWorkTextField
+                    <CustomTextField
                         onBlur={this.onInputBlur}
                         onChange={this.onInputChange}
                         outsideLabel={"Choose consistency threshold"}

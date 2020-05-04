@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core";
-import RuleWorkTextField from "../../Inputs/RuleWorkTextField";
-import RuleWorkTooltip from "../../DataDisplay/RuleWorkTooltip";
+import CustomTextField from "../../Inputs/CustomTextField";
+import CustomTooltip from "../../DataDisplay/CustomTooltip";
 import StyledButton from "../../Inputs/StyledButton";
 import StyledCheckbox from "../../Inputs/StyledCheckbox";
 import Dialog from "@material-ui/core/Dialog";
@@ -15,20 +15,20 @@ import styles from "./styles/CSVDialog.module.css";
 
 const separators = [
     {
-        label: "tab",
-        value: "%09"
-    },
-    {
-        label: "space",
-        value: " "
-    },
-    {
         label: "comma",
         value: ","
     },
     {
         label: "semicolon",
         value: ";"
+    },
+    {
+        label: "space",
+        value: " "
+    },
+    {
+        label: "tab",
+        value: "%09"
     }
 ];
 
@@ -47,7 +47,7 @@ class CSVDialog extends React.PureComponent {
 
         this.state = {
             header: false,
-            separator: ";"
+            separator: ","
         };
     }
 
@@ -76,7 +76,7 @@ class CSVDialog extends React.PureComponent {
     onEntering = () => {
         this.setState({
             header: false,
-            separator: ";"
+            separator: ","
         });
     };
 
@@ -99,7 +99,7 @@ class CSVDialog extends React.PureComponent {
                     <FormControlLabel
                         aria-label={"header checkbox"}
                         control={
-                            <RuleWorkTooltip
+                            <CustomTooltip
                                 title={"File contains header row"}
                                 WrapperComponent={'span'}
                             >
@@ -108,12 +108,12 @@ class CSVDialog extends React.PureComponent {
                                     inputProps={{ "aria-label": "csv header checkbox" }}
                                     onChange={this.onHeaderChange}
                                 />
-                            </RuleWorkTooltip>
+                            </CustomTooltip>
                         }
                         label={"Header"}
                     />
                     <div aria-label={"separator selector"} className={styles.ContentRow}>
-                        <RuleWorkTextField
+                        <CustomTextField
                             fullWidth={true}
                             onChange={this.onSeparatorChange}
                             outsideLabel={"Separator"}
@@ -128,7 +128,7 @@ class CSVDialog extends React.PureComponent {
                                     {sep.label}
                                 </MenuItem>
                             ))}
-                        </RuleWorkTextField>
+                        </CustomTextField>
                     </div>
                 </DialogContent>
                 <DialogActions>

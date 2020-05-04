@@ -27,14 +27,14 @@ import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
 import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
-import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../Utils/Containers/RuleWorkDrawer"
+import CustomBox from "../../../Utils/Containers/CustomBox";
+import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
-import RuleWorkTooltip from "../../../Utils/DataDisplay/RuleWorkTooltip";
-import { CrossValidationDialog } from "../../../Utils/Feedback/RuleWorkDialog";
-import RuleWorkAlert from "../../../Utils/Feedback/RuleWorkAlert";
-import RuleWorkTextField from "../../../Utils/Inputs/RuleWorkTextField";
+import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
+import { CrossValidationDialog } from "../../../Utils/Feedback/DetailsDialog";
+import StyledAlert from "../../../Utils/Feedback/StyledAlert";
+import CustomTextField from "../../../Utils/Inputs/CustomTextField";
 import StyledButton from "../../../Utils/Inputs/StyledButton";
 import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -54,7 +54,7 @@ class CrossValidation extends Component {
             parameters: {
                 consistencyThreshold: 0,
                 defaultClassificationResult: "majorityDecisionClass",
-                numberOfFolds: 2,
+                numberOfFolds: 10,
                 seed: 0,
                 typeOfClassifier: "SimpleRuleClassifier",
                 typeOfRules: "certain",
@@ -80,9 +80,10 @@ class CrossValidation extends Component {
 
     getCrossValidation = () => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
 
         fetchCrossValidation(
-            project.result.id, 'GET', null
+            base, project.result.id, 'GET', null
         ).then(result => {
             if (this._isMounted && result) {
                 const { project: { parametersSaved, foldIndex, settings } } = this.props
@@ -208,6 +209,8 @@ class CrossValidation extends Component {
     }
 
     onCalculateClick = () => {
+        const base = window.location.origin.toString();
+
         this.setState({
             loading: true,
         }, () => {
@@ -222,7 +225,7 @@ class CrossValidation extends Component {
             let data = createFormData(parameters, project.dataUpToDate ? null : files);
 
             fetchCrossValidation(
-                project.result.id, method, data
+                base, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -273,8 +276,9 @@ class CrossValidation extends Component {
 
     onSaveToFile = (data) => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
 
-        downloadMatrix( project.result.id, data ).catch(error => {
+        downloadMatrix(base, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }
@@ -441,21 +445,17 @@ class CrossValidation extends Component {
         const { alertProps, data, folds, displayedItems, loading, open, parameters, selected } = this.state;
 
         return (
-            <RuleWorkBox id={"rule-work-cross-validation"} styleVariant={"tab"}>
+            <CustomBox id={"cross-validation"} styleVariant={"tab"}>
                 <StyledPaper id={"cross-validation-bar"} paperRef={this.upperBar}>
-                    <SettingsButton
-                        aria-label={"cross-validation-settings-button"}
-                        onClick={() => this.toggleOpen("settings")}
-                        title={"Click to customize parameters"}
-                    />
+                    <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
-                    <RuleWorkTooltip title={`Current number of folds: ${parameters.numberOfFolds}`}>
+                    <CustomTooltip title={"Click on settings button to the left to customize parameters"}>
                         <CalculateButton
                             aria-label={"cross-validation-calculate-button"}
                             disabled={loading}
                             onClick={this.onCalculateClick}
                         />
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                     <StyledDivider margin={16} />
                     {Array.isArray(folds) && Boolean(folds.length) &&
                         <Fragment>
@@ -465,7 +465,7 @@ class CrossValidation extends Component {
                                 onClick={() => this.toggleOpen("matrixMean")}
                                 title={"Show mean ordinal misclassification matrix"}
                             />
-                            <RuleWorkTooltip title={"Show sum ordinal misclassification matrix"}>
+                            <CustomTooltip title={"Show sum ordinal misclassification matrix"}>
                                 <StyledButton
                                     aria-label={"sum-matrix-button"}
                                     isIcon={true}
@@ -474,10 +474,10 @@ class CrossValidation extends Component {
                                 >
                                     <Sigma />
                                 </StyledButton>
-                            </RuleWorkTooltip>
+                            </CustomTooltip>
                             <StyledDivider margin={16} />
                             {/* Part regarding specific fold */}
-                            <RuleWorkTextField
+                            <CustomTextField
                                 onChange={this.onFoldIndexChange}
                                 InputProps={{
                                     startAdornment: (
@@ -494,7 +494,7 @@ class CrossValidation extends Component {
                                         {fold.index + 1}
                                     </MenuItem>
                                 ))}
-                            </RuleWorkTextField>
+                            </CustomTextField>
                             <p id={"fold-colon"} style={{margin: "0 16px 0 4px", fontSize: "1.15rem"}}>:</p>
                             <MatrixButton
                                 onClick={() => this.toggleOpen("matrixFold")}
@@ -505,7 +505,7 @@ class CrossValidation extends Component {
                     <span style={{flexGrow: 1}} />
                     <FilterTextField onChange={this.onFilterChange} />
                 </StyledPaper>
-                <RuleWorkDrawer
+                <CustomDrawer
                     id={"cross-validation-settings"}
                     open={open.settings}
                     onClose={() => this.toggleOpen("settings")}
@@ -523,11 +523,13 @@ class CrossValidation extends Component {
                             onChange: this.onTypeOfUnionsChange,
                             value: parameters.typeOfUnions
                         }}
+                        variant={"extended"}
                     />
                     <ThresholdSelector
                         keepChanges={parameters.typeOfRules !== "possible"}
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}
+                        variant={"extended"}
                     />
                     <TypeOfClassifierSelector
                         TextFieldProps={{
@@ -554,7 +556,7 @@ class CrossValidation extends Component {
                             value: parameters.numberOfFolds
                         }}
                     />
-                </RuleWorkDrawer>
+                </CustomDrawer>
                 <TabBody
                     content={parseCrossValidationListItems(displayedItems)}
                     id={"cross-validation-list"}
@@ -681,8 +683,8 @@ class CrossValidation extends Component {
                         }
                     />
                 }
-                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
-            </RuleWorkBox>
+                <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
+            </CustomBox>
         )
     }
 }

@@ -9,7 +9,7 @@ import ProjectTabs from "../Body/Project/ProjectTabs";
 import Project from "../Utils/Classes/Project";
 import LoadingDelay from "../Utils/Feedback/LoadingDelay";
 import LoadingSnackbar from "../Utils/Feedback/LoadingSnackbar";
-import RuleWorkAlert from "../Utils/Feedback/RuleWorkAlert";
+import StyledAlert from "../Utils/Feedback/StyledAlert";
 import DeleteProjectDialog from "./Dialogs/DeleteProjectDialog";
 import RenameProjectDialog from "./Dialogs/RenameProjectDialog";
 import SettingsProjectDialog from "./Dialogs/SettingsProjectDialog";
@@ -38,12 +38,14 @@ class App extends Component {
     }
 
     componentDidMount() {
+        const base = window.location.origin.toString();
+
         this.setState({
             loading: true,
             loadingTitle: "Loading projects",
         }, () => {
             fetchProjects(
-                "GET", null
+                base, "GET", null
             ).then(result => {
                 if (Array.isArray(result)) {
                     this.setState(({projects}) => ({
@@ -181,6 +183,8 @@ class App extends Component {
                 }
             });
         } else {
+            const base = window.location.origin.toString();
+
             this.setState({
                 loading: true,
                 loadingTitle: "Creating project"
@@ -195,7 +199,7 @@ class App extends Component {
                 }
 
                 fetchProjects(
-                    "POST", data
+                    base,"POST", data
                 ).then(result => {
                     if (result) {
                         this.setState(({projects}) => ({
@@ -239,13 +243,15 @@ class App extends Component {
         const { currentProject, projects } = this.state;
 
         if (action && currentProject !== -1) {
+            const base = window.location.origin.toString();
+
             this.setState({
                 loading: true,
                 loadingTitle: "Deleting project"
             }, () => {
 
                 fetchProject(
-                    projects[currentProject].result.id, "DELETE", null
+                    base, projects[currentProject].result.id, "DELETE", null
                 ).then(() => {
                     const removedProject = projects[currentProject].result.name;
 
@@ -279,6 +285,7 @@ class App extends Component {
         if (name) {
             if (this.isNameUnique(name)) {
                 const { currentProject, projects } = this.state;
+                const base = window.location.origin.toString();
 
                 this.setState({
                     loading: true,
@@ -288,7 +295,7 @@ class App extends Component {
                     data.append("name", name);
 
                     fetchProject(
-                        projects[currentProject].result.id, "PATCH", data
+                        base, projects[currentProject].result.id, "PATCH", data
                     ).then(result => {
                         if (result) {
                             this.setState(({currentProject, projects}) => ({
@@ -360,7 +367,7 @@ class App extends Component {
                 {
                     {
                         "Help": <Help />,
-                        "Home": <Home />,
+                        "Home": <Home isDarkTheme={this.state.darkTheme} />,
                         "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
                             <ProjectTabs
@@ -377,7 +384,7 @@ class App extends Component {
                     open={renameDialog}
                     onClose={this.onRenameDialogClose}
                 >
-                    {renameDialog && <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />}
+                    {renameDialog && <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />}
                 </RenameProjectDialog>
                 <SettingsProjectDialog
                     attributes={currentProject >= 0 ?
@@ -396,7 +403,7 @@ class App extends Component {
                     open={deleteDialog}
                     onClose={this.onDeleteDialogClose}
                 />
-                {showSnackbarNormally && <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose}/>}
+                {showSnackbarNormally && <StyledAlert {...alertProps} onClose={this.onSnackbarClose}/>}
                 {this.state.loading &&
                     <LoadingDelay>
                         <LoadingSnackbar message={this.state.loadingTitle} open={this.state.loading} />

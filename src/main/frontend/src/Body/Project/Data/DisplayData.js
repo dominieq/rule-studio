@@ -19,13 +19,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { withStyles, createStyles } from '@material-ui/core/styles';
 import { DraggableHeader } from 'react-data-grid-addons';
 import PropTypes from 'prop-types';
-import RuleWorkLoadingIcon from './RuleWorkLoadingIcon';
+import CustomLoadingIcon from './CustomLoadingIcon';
 import StyledButton from '../../../Utils/Inputs/StyledButton';
 import NumericFilter from './NumericFilter';
 import AttributesVirtualizedTable from './AttributesVirtualizedTable';
-import RuleWorkTooltip from '../../../Utils/DataDisplay/RuleWorkTooltip';
+import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 
-import { StyledCheckbox, StyledRadio, StyledRuleWorkTextField} from './StyledComponents';
+import { StyledCheckbox, StyledRadio, StyledCustomTextField} from './StyledComponents';
 import StyledDivider from '../../../Utils/DataDisplay/StyledDivider';
 
 const selectors = Data.Selectors;
@@ -888,7 +888,9 @@ class DisplayData extends React.Component {
      * @method
      */
     onTransformAttributes = () => {
-        if(this.state.dataModified) {
+        const base = window.location.origin.toString();
+        const x = true;
+        if(x) {
             this.setState({
                     isLoading: true,
                     isOpenedTransform: false,
@@ -898,7 +900,7 @@ class DisplayData extends React.Component {
                     formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
                     formData.append('data', JSON.stringify(this.prepareDataFileBeforeSendingToServer()));
         
-                fetch(`http://localhost:8080/projects/${this.props.project.result.id}/imposePreferenceOrder`, {
+                fetch(`${base}/projects/${this.props.project.result.id}/imposePreferenceOrder`, {
                     method: 'POST',
                     body: formData
                 }).then(response => {
@@ -970,7 +972,7 @@ class DisplayData extends React.Component {
                 isLoading: true,
                 isOpenedTransform: false,
             }, () => {
-                let link = `http://localhost:8080/projects/${this.props.project.result.id}/imposePreferenceOrder?binarizeNominalAttributesWith3PlusValues=${this.state.binarizeNominalAttributesWith3PlusValues}`;
+                let link = `${base}/projects/${this.props.project.result.id}/imposePreferenceOrder?binarizeNominalAttributesWith3PlusValues=${this.state.binarizeNominalAttributesWith3PlusValues}`;
                 
                 fetch(link, {
                     method: 'GET'
@@ -1152,11 +1154,12 @@ class DisplayData extends React.Component {
     } 
 
     saveDataToCsvOrJson = (name, header, separator) => {
+        const base = window.location.origin.toString();
         //if(this.state.dataModified) { //modified?
         const x = true;
         if(x) {
             let filename = name;
-            let link = `http://localhost:8080/projects/${this.props.project.result.id}/data/download`;
+            let link = `${base}/projects/${this.props.project.result.id}/data/download`;
             if(header === -1) { //json
                 link += `?format=json`;
             } else { //csv
@@ -1223,7 +1226,7 @@ class DisplayData extends React.Component {
         } else {
             let filename = name;
 
-            let link = `http://localhost:8080/projects/${this.props.project.result.id}/data/download`;
+            let link = `${base}/projects/${this.props.project.result.id}/data/download`;
             if(header === -1) { //json
                 link += `?format=json`;
             } else { //csv
@@ -1288,6 +1291,7 @@ class DisplayData extends React.Component {
     }
 
     saveMetaDataToJson = (name) => {
+        const base = window.location.origin.toString();
         //if(this.state.dataModified) { //modified?
         const x = true;
         if(x) { 
@@ -1295,7 +1299,7 @@ class DisplayData extends React.Component {
             let formData = new FormData();
             formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
     
-            fetch(`http://localhost:8080/projects/${this.props.project.result.id}/metadata/download`, {
+            fetch(`${base}/projects/${this.props.project.result.id}/metadata/download`, {
                 method: 'PUT',
                 body: formData
             }).then(response => {
@@ -1347,7 +1351,7 @@ class DisplayData extends React.Component {
             })
         } else {
             let filename = name;
-            fetch(`http://localhost:8080/projects/${this.props.project.result.id}/metadata/download`, {
+            fetch(`${base}/projects/${this.props.project.result.id}/metadata/download`, {
                 method: 'GET'
             }).then(response => {
                 if(response.status === 200) {
@@ -1826,7 +1830,7 @@ class DisplayData extends React.Component {
             key="attributeIsActive"
             style={{justifyContent: "flex-end",  margin: "0"}}
         />)
-        tmp.push(<StyledRuleWorkTextField autoComplete={"off"} label="Name" size="small" fullWidth required variant="outlined" id="attributeName" key="attributeName" defaultValue="" />)
+        tmp.push(<StyledCustomTextField autoComplete={"off"} label="Name" size="small" fullWidth required variant="outlined" id="attributeName" key="attributeName" defaultValue="" />)
         tmp.push(<DropDownForAttributes getSelected={this.getSelectedAttributeType} name={"attributeType"} key="attributeType" displayName={"Type"} items={["identification","description","condition","decision"]}/>)
 
         if(this.state.attributeTypeSelected !== "identification") {
@@ -1868,7 +1872,7 @@ class DisplayData extends React.Component {
         />)
 
         //display attribute name
-        tmp.push(<StyledRuleWorkTextField autoComplete={"off"} label="Name" fullWidth required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
+        tmp.push(<StyledCustomTextField autoComplete={"off"} label="Name" fullWidth required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
         
         //display attribute type - identification
         if(this.state.attributeTypeSelected === "identification" || (this.state.attributeTypeSelected === '' && attribute.valueType === undefined)) {
@@ -2134,7 +2138,7 @@ class DisplayData extends React.Component {
     render() {   
         const classes = this.props.classes;
         return (
-            <div style={{height: "0px", flexGrow: 0.93}} className={classes.root}>
+            <div style={{flexGrow: 1}} className={classes.root}>
                 <DraggableContainer onHeaderDrop={this.onColumnHeaderDragDrop}>   
                 <ReactDataGrid
                     ref={(node) => this.grid = node}
@@ -2266,17 +2270,17 @@ class DisplayData extends React.Component {
                                 </div>
                                 {
                                     this.state.saveToFileData === "csv" && <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                                    <RuleWorkTooltip title="Save data with header row">
+                                    <CustomTooltip title="Save data with header row">
                                     <FormControlLabel 
                                         control={<StyledCheckbox name="csvHeader" 
                                         onChange={this.handleChangeSaveToFileCsvHeader}/>}
                                         label="Header"
                                         labelPlacement="end"
                                     />
-                                    </RuleWorkTooltip>
+                                    </CustomTooltip>
                                     <DropDownForAttributes getSelected={this.getSelectedSaveToFileCsvSeparator} 
                                         name={"saveToFileSeparator"} key="saveToFileSeparator" displayName={"Separator"} 
-                                        items={["comma","space","tab","semicolon"]} defaultValue="comma" defaultWidth="80%"
+                                        items={["comma","semicolon","space","tab"]} defaultValue="comma" defaultWidth="80%"
                                     />
                                     </div>
                                 }
@@ -2298,14 +2302,14 @@ class DisplayData extends React.Component {
                 <SimpleDialog open={this.state.isOpenedTransform} onClose={this.closeOnTransform} aria-labelledby="transform-warning-dialog">
                     <DialogTitle id="transform-warning-title">{"Do you want to impose preference orders?"}</DialogTitle>
                     <DialogContent>
-                    <RuleWorkTooltip title="Binarize nominal attributes with 3+ values?">
+                    <CustomTooltip title="Binarize nominal attributes with 3+ values?">
                     <FormControlLabel
                         control={<StyledCheckbox defaultChecked={false} name="binarize" onChange={this.handleChangeBinarize}/>}
                         label="Binarize"
                         labelPlacement="start"
                         key="Binarize"
                     />
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                     
                     </DialogContent>
                     <DialogActions>
@@ -2321,7 +2325,7 @@ class DisplayData extends React.Component {
                     closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
                 }
               
-                {this.state.isLoading ? <RuleWorkLoadingIcon color="primary" /> : null }
+                {this.state.isLoading ? <CustomLoadingIcon color="primary" /> : null }
             </div>
         )
     }

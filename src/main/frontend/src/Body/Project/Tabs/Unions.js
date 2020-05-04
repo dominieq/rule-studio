@@ -9,12 +9,12 @@ import CalculateButton from "../Utils/Buttons/CalculateButton";
 import SettingsButton from "../Utils/Buttons/SettingsButton";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
-import RuleWorkBox from "../../../Utils/Containers/RuleWorkBox";
-import RuleWorkDrawer from "../../../Utils/Containers/RuleWorkDrawer"
+import CustomBox from "../../../Utils/Containers/CustomBox";
+import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
-import RuleWorkTooltip from "../../../Utils/DataDisplay/RuleWorkTooltip";
-import { UnionsDialog } from "../../../Utils/Feedback/RuleWorkDialog";
-import RuleWorkAlert from "../../../Utils/Feedback/RuleWorkAlert";
+import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
+import { UnionsDialog } from "../../../Utils/Feedback/DetailsDialog";
+import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 
 class Unions extends Component {
@@ -44,9 +44,10 @@ class Unions extends Component {
 
     getUnions = () => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
 
         fetchUnions(
-            project.result.id, "GET", null
+            base, project.result.id, "GET", null
         ).then(result => {
             if (this._isMounted && result) {
                 const items = parseUnionsItems(result);
@@ -142,6 +143,7 @@ class Unions extends Component {
     onCountUnionsClick = () => {
         let project = {...this.props.project};
         const { parameters: { consistencyThreshold, typeOfUnions } } = this.state;
+        const base =  window.location.origin.toString();
 
         this.setState({
             loading: true,
@@ -162,7 +164,7 @@ class Unions extends Component {
             }
 
             fetchUnions(
-                project.result.id, method, data
+                base, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -264,28 +266,21 @@ class Unions extends Component {
         const { project: { result, settings } } = this.props;
 
         return (
-            <RuleWorkBox id={"rule-work-unions"} styleVariant={"tab"}>
+            <CustomBox id={"unions"} styleVariant={"tab"}>
                 <StyledPaper id={"unions-bar"} paperRef={this.upperBar}>
-                    <SettingsButton
-                        aria-label={"unions-settings-button"}
-                        onClick={() => this.toggleOpen("settings")}
-                        title={"Click to choose consistency & type of unions"}
-                    />
+                    <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
-                    <RuleWorkTooltip
-                        title={`Calculate with threshold ${parameters.consistencyThreshold} 
-                        & ${parameters.typeOfUnions} unions`}
-                    >
+                    <CustomTooltip title={"Click on settings button to the left to customize parameters"}>
                         <CalculateButton
                             aria-label={"unions-calculate-button"}
                             disabled={loading}
                             onClick={this.onCountUnionsClick}
                         />
-                    </RuleWorkTooltip>
+                    </CustomTooltip>
                     <span style={{flexGrow: 1}} />
                     <FilterTextField onChange={this.onFilterChange}/>
                 </StyledPaper>
-                <RuleWorkDrawer
+                <CustomDrawer
                     id={"unions-settings"}
                     onClose={() => this.toggleOpen("settings")}
                     open={open.settings}
@@ -301,7 +296,7 @@ class Unions extends Component {
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}
                     />
-                </RuleWorkDrawer>
+                </CustomDrawer>
                 <TabBody
                     content={parseUnionsListItems(displayedItems)}
                     id={"unions-list"}
@@ -331,8 +326,8 @@ class Unions extends Component {
                         settings={settings}
                     />
                 }
-                <RuleWorkAlert {...alertProps} onClose={this.onSnackbarClose} />
-            </RuleWorkBox>
+                <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
+            </CustomBox>
         )
     }
 }

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import { mergeClasses } from "../utilFunctions";
-import RuleWorkTooltip from "../DataDisplay/RuleWorkTooltip";
+import CustomTooltip from "../DataDisplay/CustomTooltip";
 import Avatar from "@material-ui/core/Avatar";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import HelpCircle from "mdi-material-ui/HelpCircle";
@@ -72,7 +72,7 @@ function CircleHelper(props) {
     return (
         <ClickAwayListener onClickAway={onTooltipClose}>
             <div id={"click-away-wrapper"} {...WrapperProps}>
-                <RuleWorkTooltip
+                <CustomTooltip
                     classes={multiRow ? {tooltip: classes.multiRow} : undefined}
                     disableFocusListener={true}
                     disableHoverListener={true}
@@ -92,7 +92,7 @@ function CircleHelper(props) {
                     >
                         <HelpCircle className={classes[size + "Icon"]} />
                     </Avatar>
-                </RuleWorkTooltip>
+                </CustomTooltip>
             </div>
         </ClickAwayListener>
 
