@@ -888,7 +888,9 @@ class DisplayData extends React.Component {
      * @method
      */
     onTransformAttributes = () => {
-        if(this.state.dataModified) {
+        const base = window.location.origin.toString();
+        const x = true;
+        if(x) {
             this.setState({
                     isLoading: true,
                     isOpenedTransform: false,
@@ -898,7 +900,7 @@ class DisplayData extends React.Component {
                     formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
                     formData.append('data', JSON.stringify(this.prepareDataFileBeforeSendingToServer()));
         
-                fetch(`http://localhost:8080/projects/${this.props.project.result.id}/imposePreferenceOrder`, {
+                fetch(`${base}/projects/${this.props.project.result.id}/imposePreferenceOrder`, {
                     method: 'POST',
                     body: formData
                 }).then(response => {
@@ -970,7 +972,7 @@ class DisplayData extends React.Component {
                 isLoading: true,
                 isOpenedTransform: false,
             }, () => {
-                let link = `http://localhost:8080/projects/${this.props.project.result.id}/imposePreferenceOrder?binarizeNominalAttributesWith3PlusValues=${this.state.binarizeNominalAttributesWith3PlusValues}`;
+                let link = `${base}/projects/${this.props.project.result.id}/imposePreferenceOrder?binarizeNominalAttributesWith3PlusValues=${this.state.binarizeNominalAttributesWith3PlusValues}`;
                 
                 fetch(link, {
                     method: 'GET'
@@ -1152,11 +1154,12 @@ class DisplayData extends React.Component {
     } 
 
     saveDataToCsvOrJson = (name, header, separator) => {
+        const base = window.location.origin.toString();
         //if(this.state.dataModified) { //modified?
         const x = true;
         if(x) {
             let filename = name;
-            let link = `http://localhost:8080/projects/${this.props.project.result.id}/data/download`;
+            let link = `${base}/projects/${this.props.project.result.id}/data/download`;
             if(header === -1) { //json
                 link += `?format=json`;
             } else { //csv
@@ -1223,7 +1226,7 @@ class DisplayData extends React.Component {
         } else {
             let filename = name;
 
-            let link = `http://localhost:8080/projects/${this.props.project.result.id}/data/download`;
+            let link = `${base}/projects/${this.props.project.result.id}/data/download`;
             if(header === -1) { //json
                 link += `?format=json`;
             } else { //csv
@@ -1288,6 +1291,7 @@ class DisplayData extends React.Component {
     }
 
     saveMetaDataToJson = (name) => {
+        const base = window.location.origin.toString();
         //if(this.state.dataModified) { //modified?
         const x = true;
         if(x) { 
@@ -1295,7 +1299,7 @@ class DisplayData extends React.Component {
             let formData = new FormData();
             formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
     
-            fetch(`http://localhost:8080/projects/${this.props.project.result.id}/metadata/download`, {
+            fetch(`${base}/projects/${this.props.project.result.id}/metadata/download`, {
                 method: 'PUT',
                 body: formData
             }).then(response => {
@@ -1347,7 +1351,7 @@ class DisplayData extends React.Component {
             })
         } else {
             let filename = name;
-            fetch(`http://localhost:8080/projects/${this.props.project.result.id}/metadata/download`, {
+            fetch(`${base}/projects/${this.props.project.result.id}/metadata/download`, {
                 method: 'GET'
             }).then(response => {
                 if(response.status === 200) {
