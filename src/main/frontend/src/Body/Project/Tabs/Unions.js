@@ -266,16 +266,9 @@ class Unions extends Component {
         return (
             <CustomBox id={"unions"} styleVariant={"tab"}>
                 <StyledPaper id={"unions-bar"} paperRef={this.upperBar}>
-                    <SettingsButton
-                        aria-label={"unions-settings-button"}
-                        onClick={() => this.toggleOpen("settings")}
-                        title={"Click to choose consistency & type of unions"}
-                    />
+                    <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
-                    <CustomTooltip
-                        title={`Calculate with threshold ${parameters.consistencyThreshold} 
-                        & ${parameters.typeOfUnions} unions`}
-                    >
+                    <CustomTooltip title={"Click on settings button to the left to customize parameters"}>
                         <CalculateButton
                             aria-label={"unions-calculate-button"}
                             disabled={loading}

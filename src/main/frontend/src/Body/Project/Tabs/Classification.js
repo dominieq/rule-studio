@@ -335,11 +335,7 @@ class Classification extends Component {
         return (
             <CustomBox id={"classification"} styleVariant={"tab"}>
                 <StyledPaper id={"classification-bar"} paperRef={this.upperBar}>
-                    <SettingsButton
-                        aria-label={"classification-settings-button"}
-                        onClick={() => this.toggleOpen("settings")}
-                        title={"Click to select parameters"}
-                    />
+                    <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
                     <CustomButtonGroup
                         id={"classification-button-group"}

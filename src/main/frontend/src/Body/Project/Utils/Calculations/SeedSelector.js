@@ -7,13 +7,22 @@ import StyledButton from "../../../../Utils/Inputs/StyledButton";
 import styles from "./styles/Calculations.module.css";
 import Shuffle from "@material-ui/icons/Shuffle";
 
+const tooltip = {
+    main: "Numeric value used by random number generator." +
+        "Using the same seed guarantees the repeatability of cross-validation for given data set."
+};
+
 function SeedSelector(props) {
     const { CircleHelperProps, TextFieldProps: { value, ...other } } = props;
 
     return (
         <div aria-label={"outer wrapper"} className={styles.OuterWrapper}>
             <CircleHelper
-                title={"Add more information to tooltip"}
+                title={
+                    <p aria-label={"main"} style={{margin: 0, textAlign: "justify"}}>
+                        {tooltip.main}
+                    </p>
+                }
                 WrapperProps={{
                     style: { marginRight: 16 }
                 }}

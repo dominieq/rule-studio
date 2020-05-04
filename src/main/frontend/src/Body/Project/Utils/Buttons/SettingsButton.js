@@ -6,11 +6,14 @@ import SvgIcon from "@material-ui/core/SvgIcon";
 import {mdiCog} from "@mdi/js";
 
 function SettingsButton(props) {
-    const {title, ...other} = props;
-
     return (
-        <CustomTooltip title={title}>
-            <StyledButton isIcon={true} themeVariant={"secondary"} {...other}>
+        <CustomTooltip title={"Click to customize parameters"}>
+            <StyledButton
+                aria-label={"settings button"}
+                isIcon={true}
+                themeVariant={"secondary"}
+                {...props}
+            >
                 <SvgIcon><path d={mdiCog} /></SvgIcon>
             </StyledButton>
         </CustomTooltip>
@@ -18,9 +21,7 @@ function SettingsButton(props) {
 }
 
 SettingsButton.propTypes = {
-    'aria-label': PropTypes.string,
-    onClick: PropTypes.func.isRequired,
-    title: PropTypes.string.isRequired,
+    onClick: PropTypes.func,
 };
 
 export default SettingsButton;

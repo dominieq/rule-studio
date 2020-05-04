@@ -54,7 +54,7 @@ class CrossValidation extends Component {
             parameters: {
                 consistencyThreshold: 0,
                 defaultClassificationResult: "majorityDecisionClass",
-                numberOfFolds: 2,
+                numberOfFolds: 10,
                 seed: 0,
                 typeOfClassifier: "SimpleRuleClassifier",
                 typeOfRules: "certain",
@@ -443,13 +443,9 @@ class CrossValidation extends Component {
         return (
             <CustomBox id={"cross-validation"} styleVariant={"tab"}>
                 <StyledPaper id={"cross-validation-bar"} paperRef={this.upperBar}>
-                    <SettingsButton
-                        aria-label={"cross-validation-settings-button"}
-                        onClick={() => this.toggleOpen("settings")}
-                        title={"Click to customize parameters"}
-                    />
+                    <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
-                    <CustomTooltip title={`Current number of folds: ${parameters.numberOfFolds}`}>
+                    <CustomTooltip title={"Click on settings button to the left to customize parameters"}>
                         <CalculateButton
                             aria-label={"cross-validation-calculate-button"}
                             disabled={loading}
@@ -523,11 +519,13 @@ class CrossValidation extends Component {
                             onChange: this.onTypeOfUnionsChange,
                             value: parameters.typeOfUnions
                         }}
+                        variant={"extended"}
                     />
                     <ThresholdSelector
                         keepChanges={parameters.typeOfRules !== "possible"}
                         onChange={this.onConsistencyThresholdChange}
                         value={parameters.consistencyThreshold}
+                        variant={"extended"}
                     />
                     <TypeOfClassifierSelector
                         TextFieldProps={{

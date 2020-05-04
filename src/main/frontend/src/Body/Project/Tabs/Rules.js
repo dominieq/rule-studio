@@ -446,13 +446,9 @@ class Rules extends Component {
         return (
             <CustomBox id={"rules"} styleVariant={"tab"}>
                 <StyledPaper id={"rules-bar"} paperRef={this.upperBar}>
-                    <SettingsButton
-                        aria-label={"rules-settings-button"}
-                        onClick={() => this.toggleOpen("settings")}
-                        title={"Click to choose consistency threshold, type of unions & rules"}
-                    />
+                    <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
-                    <CustomTooltip title={`Calculate with consistency threshold ${parameters.consistencyThreshold}`}>
+                    <CustomTooltip title={"Click on settings button to the left to customize parameters"}>
                         <CalculateButton
                             aria-label={"rules-calculate-button"}
                             disabled={loading}
