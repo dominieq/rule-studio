@@ -30,9 +30,10 @@ class Cones extends Component {
 
     getData = () => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
 
         fetchCones(
-            project.result.id, "GET", null
+            base, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
                 const { result: { informationTable: { objects } }, settings } = project;
@@ -93,6 +94,7 @@ class Cones extends Component {
 
     onCalculateClick = () => {
         let project = {...this.props.project};
+        const base = window.location.origin.toString();
 
         this.setState({
             loading: true,
@@ -106,7 +108,7 @@ class Cones extends Component {
             }
 
             fetchCones(
-                project.result.id, method, data
+                base, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {

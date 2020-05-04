@@ -61,9 +61,10 @@ class Classification extends Component {
 
     getClassification = () => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
 
         fetchClassification(
-            project.result.id, "GET", null
+            base, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
                 const { project: { parametersSaved, settings } } = this.props;
@@ -158,12 +159,13 @@ class Classification extends Component {
 
     calculateClassification = (method, data) => {
         let project = {...this.props.project};
+        const base = window.location.origin.toString();
 
         this.setState({
             loading: true,
         }, () => {
             fetchClassification(
-                project.result.id, method, data
+                base, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     project = {...this.props.project};
@@ -261,9 +263,10 @@ class Classification extends Component {
 
     onSaveToFile = () => {
         const { project } = this.props;
-        let data = {typeOfMatrix: "classification"}
+        const base = window.location.origin.toString();
+        let data = {typeOfMatrix: "classification"};
 
-        downloadMatrix( project.result.id, data ).catch(error => {
+        downloadMatrix(base, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }

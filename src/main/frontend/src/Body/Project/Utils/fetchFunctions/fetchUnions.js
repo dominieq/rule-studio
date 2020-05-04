@@ -1,13 +1,13 @@
 import { responseJson } from "./utilFunctions";
 
-async function fetchUnions(projectId, method, data) {
+async function fetchUnions(base, projectId, method, data) {
     let query = ""
     if (data && !(data instanceof FormData)) {
         query = `?typeOfUnions=${data.typeOfUnions}&consistencyThreshold=${data.consistencyThreshold}`;
         data = null;
     }
 
-    const response = await fetch(`http://localhost:8080/projects/${projectId}/unions` + query, {
+    const response = await fetch(`${base}/projects/${projectId}/unions` + query, {
         method: method,
         body: data,
     }).catch(() => {

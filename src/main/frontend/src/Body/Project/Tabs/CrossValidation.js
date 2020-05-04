@@ -80,9 +80,10 @@ class CrossValidation extends Component {
 
     getCrossValidation = () => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
 
         fetchCrossValidation(
-            project.result.id, 'GET', null
+            base, project.result.id, 'GET', null
         ).then(result => {
             if (this._isMounted && result) {
                 const { project: { parametersSaved, foldIndex, settings } } = this.props
@@ -208,6 +209,8 @@ class CrossValidation extends Component {
     }
 
     onCalculateClick = () => {
+        const base = window.location.origin.toString();
+
         this.setState({
             loading: true,
         }, () => {
@@ -222,7 +225,7 @@ class CrossValidation extends Component {
             let data = createFormData(parameters, project.dataUpToDate ? null : files);
 
             fetchCrossValidation(
-                project.result.id, method, data
+                base, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -273,8 +276,9 @@ class CrossValidation extends Component {
 
     onSaveToFile = (data) => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
 
-        downloadMatrix( project.result.id, data ).catch(error => {
+        downloadMatrix(base, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }

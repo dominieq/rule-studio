@@ -44,9 +44,10 @@ class Unions extends Component {
 
     getUnions = () => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
 
         fetchUnions(
-            project.result.id, "GET", null
+            base, project.result.id, "GET", null
         ).then(result => {
             if (this._isMounted && result) {
                 const items = parseUnionsItems(result);
@@ -142,6 +143,7 @@ class Unions extends Component {
     onCountUnionsClick = () => {
         let project = {...this.props.project};
         const { parameters: { consistencyThreshold, typeOfUnions } } = this.state;
+        const base =  window.location.origin.toString();
 
         this.setState({
             loading: true,
@@ -162,7 +164,7 @@ class Unions extends Component {
             }
 
             fetchUnions(
-                project.result.id, method, data
+                base, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {

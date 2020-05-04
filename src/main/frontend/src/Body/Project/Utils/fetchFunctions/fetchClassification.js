@@ -1,7 +1,7 @@
 import { responseJson } from "./utilFunctions";
 
-async function fetchClassification(projectId, method, data) {
-    const response = await fetch(`http://localhost:8080/projects/${projectId}/classification`, {
+async function fetchClassification(base, projectId, method, data) {
+    const response = await fetch(`${base}/projects/${projectId}/classification`, {
         method: method,
         body: data
     }).catch(() => {

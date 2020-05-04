@@ -58,9 +58,10 @@ class Rules extends Component {
 
     getRules = () => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
 
         fetchRules(
-            project.result.id, "GET", null
+            base, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
                 const { project: { parametersSaved, sortParams } } = this.props;
@@ -181,6 +182,7 @@ class Rules extends Component {
 
     onCalculateClick = () => {
         let project = {...this.props.project};
+        const base = window.location.origin.toString();
         const { parameters } = this.state;
 
         this.setState({
@@ -199,7 +201,7 @@ class Rules extends Component {
             }
 
             fetchRules(
-                project.result.id, method, data
+                base, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -245,6 +247,7 @@ class Rules extends Component {
     onUploadFileChanged = (event) => {
         if (event.target.files[0]) {
             let project = {...this.props.project};
+            const base = window.location.origin.toString();
 
             let data = new FormData();
             data.append("rules", event.target.files[0]);
@@ -253,7 +256,7 @@ class Rules extends Component {
                 loading: true,
             }, () => {
                 uploadRules(
-                    project.result.id, data
+                    base, project.result.id, data
                 ).then(result => {
                     if (result) {
                         if (this._isMounted) {
@@ -286,9 +289,10 @@ class Rules extends Component {
 
     onSaveRulesToXMLClick = () => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
         let data = { format: "xml" };
 
-        downloadRules( project.result.id, data ).catch(error => {
+        downloadRules(base, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({alertProps: error});
             }
@@ -297,9 +301,10 @@ class Rules extends Component {
 
     onSaveRulesToTXTClick = () => {
         const { project } = this.props;
+        const base = window.location.origin.toString();
         let data = { format: "txt" };
 
-        downloadRules( project.result.id, data ).catch(error => {
+        downloadRules(base, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }
