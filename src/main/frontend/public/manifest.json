@@ -1,8 +1,8 @@
 {
-  "short_name": "RuLe Work",
-  "name": "RuLe Work",
+  "short_name": "RuLeStudio",
+  "name": "RuLeStudio",
   "icons": [
-
+    "favicon.png"
   ],
   "start_url": ".",
   "display": "standalone",

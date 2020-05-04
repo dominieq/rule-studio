@@ -1,0 +1,23 @@
+.rule-studio-data-toolbar {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+#rule-studio-data-1 {
+    display: flex;
+}
+
+#rule-studio-data-2 {
+    display: none;
+}
+
+@media only screen and (max-width: 1413px) {
+    #rule-studio-data-1 {
+        display: none;
+    }
+
+    #rule-studio-data-2 {
+        display: flex;
+    }
+}
