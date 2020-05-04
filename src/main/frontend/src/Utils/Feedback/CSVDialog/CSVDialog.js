@@ -15,20 +15,20 @@ import styles from "./styles/CSVDialog.module.css";
 
 const separators = [
     {
-        label: "tab",
-        value: "%09"
-    },
-    {
-        label: "space",
-        value: " "
-    },
-    {
         label: "comma",
         value: ","
     },
     {
         label: "semicolon",
         value: ";"
+    },
+    {
+        label: "space",
+        value: " "
+    },
+    {
+        label: "tab",
+        value: "%09"
     }
 ];
 
@@ -47,7 +47,7 @@ class CSVDialog extends React.PureComponent {
 
         this.state = {
             header: false,
-            separator: ";"
+            separator: ","
         };
     }
 
@@ -76,7 +76,7 @@ class CSVDialog extends React.PureComponent {
     onEntering = () => {
         this.setState({
             header: false,
-            separator: ";"
+            separator: ","
         });
     };
 
