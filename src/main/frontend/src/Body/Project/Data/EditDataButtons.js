@@ -128,7 +128,20 @@ export default function IconLabelButtons(props) {
           }
         </CustomTooltip>
 
-        <CustomTooltip title={`Impose preference orders`}>
+        <CustomTooltip title={`Performs non-invasive transformation of the data according to the method
+          described in Błaszczyński, J., Greco, S., Słowiński, R., Inductive
+          discovery of laws using monotonic rules, Engineering Applications of
+          Artificial Intelligence, 25, 2012, pp. 284-294. For an ordinal
+          classification problem (where decision attribute has "gain" or "cost"
+          preference type), it is verified which active condition (evaluation)
+          attributes are eligible for preference order imposition or binarization.
+          If any active condition (evaluation) attribute has preference type
+          "none" and value type different than "enumeration", it is cloned. Then,
+          the first clone is assigned a "gain" preference type, and the second one
+          is assigned a "cost" preference type. If any active condition
+          (evaluation) attribute has preference type "none", value type
+          "enumeration", and at least three different evaluations in its value set
+          (domain), it can be binarized, depending on user’s choice.`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}

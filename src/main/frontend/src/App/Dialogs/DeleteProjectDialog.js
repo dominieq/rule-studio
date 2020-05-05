@@ -93,6 +93,7 @@ class DeleteProjectDialog extends PureComponent {
                 </DialogTitle>
                 <SimpleContent>
                     <CustomTextField
+                        autoComplete={"off"}
                         fullWidth={true}
                         InputProps={{
                             id: "delete-project-input"

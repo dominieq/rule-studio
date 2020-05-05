@@ -1,6 +1,5 @@
 package pl.put.poznan.rulestudio.rest;
 
-import javafx.util.Pair;
 import org.rulelearn.data.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.service.MetadataService;
 
@@ -51,9 +51,9 @@ public class MetadataController {
     public ResponseEntity<Resource> download(
             @PathVariable("id") UUID id) throws IOException {
         logger.info("Downloading server's metadata");
-        Pair<String, Resource> p = metadataService.getDownload(id);
-        String projectName = p.getKey();
-        Resource resource = p.getValue();
+        NamedResource namedResource = metadataService.getDownload(id);
+        String projectName = namedResource.getName();
+        Resource resource = namedResource.getResource();
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " metadata.json")
                 .body(resource);
@@ -64,9 +64,9 @@ public class MetadataController {
             @PathVariable("id") UUID id,
             @RequestParam(name = "metadata") String metadata) throws IOException {
         logger.info("Downloading client's metadata");
-        Pair<String, Resource> p = metadataService.putDownload(id, metadata);
-        String projectName = p.getKey();
-        Resource resource = p.getValue();
+        NamedResource namedResource = metadataService.putDownload(id, metadata);
+        String projectName = namedResource.getName();
+        Resource resource = namedResource.getResource();
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " metadata.json")
                 .body(resource);

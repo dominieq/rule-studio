@@ -146,6 +146,7 @@ class Import extends Component{
                 <StyledPaper id={"import-panel"} elevation={6} styleVariant={"panel"}>
                     <div aria-label={"text field row"} className={styles.Row}>
                         <CustomTextField
+                            autoComplete={"off"}
                             fullWidth={true}
                             onChange={this.onProjectNameChange}
                             onFocus={this.onProjectNameFocus}

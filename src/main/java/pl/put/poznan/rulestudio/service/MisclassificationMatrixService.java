@@ -1,12 +1,10 @@
 package pl.put.poznan.rulestudio.service;
 
-import javafx.util.Pair;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import pl.put.poznan.rulestudio.enums.MisclassificationMatrixType;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
@@ -84,7 +82,7 @@ public class MisclassificationMatrixService {
         return ordinalMisclassificationMatrix;
     }
 
-    public Pair<String, Resource> download(UUID id, MisclassificationMatrixType typeOfMatrix, Integer numberOfFold) {
+    public NamedResource download(UUID id, MisclassificationMatrixType typeOfMatrix, Integer numberOfFold) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfMatrix:\t{}", typeOfMatrix);
         if(numberOfFold != null) logger.info("NumberOfFold:\t{}", numberOfFold);
@@ -113,7 +111,7 @@ public class MisclassificationMatrixService {
                     logger.error(ex.getMessage());
                     throw ex;
                 }
-                filename = project.getName() + " misclassification matrix (cross-validation fold " + numberOfFold + ").txt";
+                filename = project.getName() + " misclassification matrix (cross-validation fold " + (numberOfFold + 1) + ").txt";
                 break;
 
             default:
@@ -127,6 +125,6 @@ public class MisclassificationMatrixService {
         InputStream is = new ByteArrayInputStream(matrixString.getBytes());
         InputStreamResource resource = new InputStreamResource(is);
 
-        return new Pair<>(filename, resource);
+        return new NamedResource(filename, resource);
     }
 }

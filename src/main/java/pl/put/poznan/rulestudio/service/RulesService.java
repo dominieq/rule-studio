@@ -3,7 +3,6 @@ package pl.put.poznan.rulestudio.service;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
-import javafx.util.Pair;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
 import org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator;
@@ -18,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.enums.OrderByRuleCharacteristic;
@@ -29,10 +27,7 @@ import pl.put.poznan.rulestudio.exception.EmptyResponseException;
 import pl.put.poznan.rulestudio.exception.NoRulesException;
 import pl.put.poznan.rulestudio.exception.NotSuitableForInductionOfPossibleRulesException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
-import pl.put.poznan.rulestudio.model.Project;
-import pl.put.poznan.rulestudio.model.ProjectsContainer;
-import pl.put.poznan.rulestudio.model.RulesWithHttpParameters;
-import pl.put.poznan.rulestudio.model.UnionsWithHttpParameters;
+import pl.put.poznan.rulestudio.model.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -412,7 +407,7 @@ public class RulesService {
         return project.getRules();
     }
 
-    public Pair<String, Resource> download(UUID id, RulesFormat rulesFormat) throws IOException {
+    public NamedResource download(UUID id, RulesFormat rulesFormat) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("RulesFormat:\t{}", rulesFormat);
 
@@ -444,7 +439,7 @@ public class RulesService {
         InputStream is = new ByteArrayInputStream(rulesString.getBytes());
         InputStreamResource resource = new InputStreamResource(is);
 
-        return new Pair<>(project.getName(), resource);
+        return new NamedResource(project.getName(), resource);
     }
 
     public Boolean arePossibleRulesAllowed(UUID id)  {

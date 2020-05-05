@@ -1,6 +1,5 @@
 package pl.put.poznan.rulestudio.rest;
 
-import javafx.util.Pair;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.enums.MisclassificationMatrixType;
+import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.service.MisclassificationMatrixService;
 
 import java.util.UUID;
@@ -45,10 +45,10 @@ public class MisclassificationMatrixController {
             @RequestParam(name = "typeOfMatrix") MisclassificationMatrixType typeOfMatrix,
             @RequestParam(name = "numberOfFold", required = false) Integer numberOfFold) {
         logger.info("Downloading misclassification matrix");
-        Pair<String, Resource> p = misclassificationMatrixService.download(id, typeOfMatrix, numberOfFold);
+        NamedResource namedResource = misclassificationMatrixService.download(id, typeOfMatrix, numberOfFold);
 
-        String filename = p.getKey();
-        Resource resource = p.getValue();
+        String filename = namedResource.getName();
+        Resource resource = namedResource.getResource();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)

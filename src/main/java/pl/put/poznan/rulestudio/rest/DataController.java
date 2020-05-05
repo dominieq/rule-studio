@@ -1,6 +1,5 @@
 package pl.put.poznan.rulestudio.rest;
 
-import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.enums.DataFormat;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
+import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.service.DataService;
 
@@ -68,24 +68,24 @@ public class DataController {
         logger.info("Downloading server's data");
         logger.info("Format:\t{}", format);
 
-        Pair<String, Resource> p;
+        NamedResource namedResource;
         String projectName;
         Resource resource;
 
         switch (format) {
             case JSON:
-                p = dataService.getDownloadJson(id);
-                projectName = p.getKey();
-                resource = p.getValue();
+                namedResource = dataService.getDownloadJson(id);
+                projectName = namedResource.getName();
+                resource = namedResource.getResource();
 
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.json")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .body(resource);
             case CSV:
-                p = dataService.getDownloadCsv(id, separator, header);
-                projectName = p.getKey();
-                resource = p.getValue();
+                namedResource = dataService.getDownloadCsv(id, separator, header);
+                projectName = namedResource.getName();
+                resource = namedResource.getResource();
 
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.csv")
@@ -108,24 +108,24 @@ public class DataController {
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Downloading client's data");
 
-        Pair<String, Resource> p;
+        NamedResource namedResource;
         String projectName;
         Resource resource;
 
         switch (format) {
             case JSON:
-                p = dataService.putDownloadJson(id, metadata, data);
-                projectName = p.getKey();
-                resource = p.getValue();
+                namedResource = dataService.putDownloadJson(id, metadata, data);
+                projectName = namedResource.getName();
+                resource = namedResource.getResource();
 
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.json")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .body(resource);
             case CSV:
-                p = dataService.putDownloadCsv(id, metadata, data, separator, header);
-                projectName = p.getKey();
-                resource = p.getValue();
+                namedResource = dataService.putDownloadCsv(id, metadata, data, separator, header);
+                projectName = namedResource.getName();
+                resource = namedResource.getResource();
 
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " data.csv")
