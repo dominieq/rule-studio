@@ -68,6 +68,7 @@ class RenameProjectDialog extends PureComponent {
                 </DialogTitle>
                 <SimpleContent>
                     <CustomTextField
+                        autoComplete={"off"}
                         fullWidth={true}
                         InputProps={{
                             id: "rename-project-input"
