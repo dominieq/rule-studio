@@ -1,6 +1,5 @@
 package pl.put.poznan.rulestudio.rest;
 
-import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import pl.put.poznan.rulestudio.enums.RuleType;
 import pl.put.poznan.rulestudio.enums.RulesFormat;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
+import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.RulesWithHttpParameters;
 import pl.put.poznan.rulestudio.service.RulesService;
 
@@ -75,9 +75,9 @@ public class RulesController {
             @PathVariable("id") UUID id,
             @RequestParam(name = "format") RulesFormat rulesFormat) throws IOException {
         logger.info("Downloading file");
-        Pair<String, Resource> p = rulesService.download(id, rulesFormat);
-        String projectName = p.getKey();
-        Resource resource = p.getValue();
+        NamedResource namedResource = rulesService.download(id, rulesFormat);
+        String projectName = namedResource.getName();
+        Resource resource = namedResource.getResource();
 
         switch (rulesFormat) {
             case XML:
