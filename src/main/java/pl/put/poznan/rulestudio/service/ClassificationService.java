@@ -220,21 +220,21 @@ public class ClassificationService {
 
         switch (typeOfClassifier) {
             case SIMPLE_RULE_CLASSIFIER:
-                simpleClassificationResult = createDefaultSimpleClassificationResult(typeOfDefaultClassificationResult, testingInformationTable);
+                simpleClassificationResult = createDefaultSimpleClassificationResult(typeOfDefaultClassificationResult, learningInformationTable);
                 classifier = new SimpleRuleClassifier(ruleSetWithCharacteristics, simpleClassificationResult);
                 break;
             case SIMPLE_OPTIMIZING_COUNTING_RULE_CLASSIFIER:
-                simpleClassificationResult = createDefaultSimpleClassificationResult(typeOfDefaultClassificationResult, testingInformationTable);
+                simpleClassificationResult = createDefaultSimpleClassificationResult(typeOfDefaultClassificationResult, learningInformationTable);
                 checkLearningInformationTableCompatibility(learningInformationTable, ruleSetWithCharacteristics);
                 classifier = new SimpleOptimizingCountingRuleClassifier(ruleSetWithCharacteristics, simpleClassificationResult, learningInformationTable);
                 break;
             case SCORING_RULE_CLASSIFIER_SCORE:
-                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, testingInformationTable);
+                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, learningInformationTable);
                 checkLearningInformationTableCompatibility(learningInformationTable, ruleSetWithCharacteristics);
                 classifier = new ScoringRuleClassifier(ruleSetWithCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.SCORE, learningInformationTable);
                 break;
             case SCORING_RULE_CLASSIFIER_HYBRID:
-                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, testingInformationTable);
+                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, learningInformationTable);
                 checkLearningInformationTableCompatibility(learningInformationTable, ruleSetWithCharacteristics);
                 classifier = new ScoringRuleClassifier(ruleSetWithCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.HYBRID, learningInformationTable);
                 break;
@@ -297,6 +297,11 @@ public class ClassificationService {
             logger.error(ex.getMessage());
             throw ex;
         }
+        if(informationTable.getNumberOfObjects() == 0) {
+            NoDataException ex = new NoDataException("There is no objects in project. Couldn't reclassify.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
 
         if(project.getRules() == null) {
             NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
@@ -343,6 +348,11 @@ public class ClassificationService {
         }
 
         InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
+        if(newInformationTable.getNumberOfObjects() == 0) {
+            NoDataException ex = new NoDataException("There is no objects in external data. Couldn't classify.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
 
         if(project.getRules() == null) {
             NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
@@ -370,6 +380,12 @@ public class ClassificationService {
 
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
+
+        if(informationTable.getNumberOfObjects() == 0) {
+            NoDataException ex = new NoDataException("There is no objects in project. Couldn't reclassify.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
 
         if(project.getRules() == null) {
             NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");

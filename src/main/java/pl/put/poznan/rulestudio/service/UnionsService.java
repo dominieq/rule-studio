@@ -62,6 +62,11 @@ public class UnionsService {
                 logger.error(ex.getMessage());
                 throw ex;
             }
+            if(informationTable.getNumberOfObjects() == 0) {
+                NoDataException ex = new NoDataException("There is no objects in project. Couldn't calculate unions.");
+                logger.error(ex.getMessage());
+                throw ex;
+            }
 
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(informationTable, typeOfUnions, consistencyThreshold);
 

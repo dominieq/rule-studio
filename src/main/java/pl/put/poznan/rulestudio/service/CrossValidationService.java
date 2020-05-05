@@ -16,6 +16,7 @@ import pl.put.poznan.rulestudio.enums.RuleType;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
 import pl.put.poznan.rulestudio.exception.NoDataException;
+import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.*;
 
 import java.io.IOException;
@@ -43,6 +44,28 @@ public class CrossValidationService {
     }
 
     private CrossValidation calculateCrossValidation(InformationTable informationTable, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult, Integer numberOfFolds, Long seed) {
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no data in project. Couldn't make cross-validation.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+        if(informationTable.getNumberOfObjects() == 0) {
+            NoDataException ex = new NoDataException("There is no objects in project. Couldn't make cross-validation.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        if(numberOfFolds < 2) {
+            WrongParameterException ex = new WrongParameterException(String.format("There must be at least 2 folds, %d is not enough. Couldn't make cross-validation.", numberOfFolds));
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+        if(numberOfFolds > informationTable.getNumberOfObjects()) {
+            WrongParameterException ex = new WrongParameterException(String.format("There must be at most as many folds as number of objects. %d folds is more than %d objects. Couldn't make cross-validation.", numberOfFolds, informationTable.getNumberOfObjects()));
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
         CrossValidationSingleFold crossValidationSingleFolds[] = new CrossValidationSingleFold[numberOfFolds];
         Decision[] orderOfDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
         OrdinalMisclassificationMatrix[] foldOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix[numberOfFolds];
@@ -96,11 +119,6 @@ public class CrossValidationService {
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InformationTable informationTable = project.getInformationTable();
-        if(informationTable == null) {
-            NoDataException ex = new NoDataException("There is no data in project. Couldn't make cross-validation.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
 
         CrossValidation crossValidation = calculateCrossValidation(informationTable, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, seed);
 
