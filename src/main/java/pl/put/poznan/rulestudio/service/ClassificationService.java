@@ -298,7 +298,7 @@ public class ClassificationService {
             throw ex;
         }
         if(informationTable.getNumberOfObjects() == 0) {
-            NoDataException ex = new NoDataException("There is no objects in project. Couldn't reclassify.");
+            NoDataException ex = new NoDataException("There are no objects in project. Couldn't reclassify.");
             logger.error(ex.getMessage());
             throw ex;
         }
@@ -349,7 +349,7 @@ public class ClassificationService {
 
         InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
         if(newInformationTable.getNumberOfObjects() == 0) {
-            NoDataException ex = new NoDataException("There is no objects in external data. Couldn't classify.");
+            NoDataException ex = new NoDataException("There are no objects in external data. Couldn't classify.");
             logger.error(ex.getMessage());
             throw ex;
         }
@@ -382,7 +382,7 @@ public class ClassificationService {
         project.setInformationTable(informationTable);
 
         if(informationTable.getNumberOfObjects() == 0) {
-            NoDataException ex = new NoDataException("There is no objects in project. Couldn't reclassify.");
+            NoDataException ex = new NoDataException("There are no objects in project. Couldn't reclassify.");
             logger.error(ex.getMessage());
             throw ex;
         }

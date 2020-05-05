@@ -1,6 +1,5 @@
 package pl.put.poznan.rulestudio.service;
 
-import javafx.util.Pair;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.EvaluationAttribute;
 import org.rulelearn.data.InformationTable;
@@ -12,11 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
+import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 
@@ -123,7 +122,7 @@ public class DataService {
 
         InformationTable informationTable = project.getInformationTable();
         if(informationTable == null) {
-            NoDataException ex = new NoDataException("There is no objects in project. Couldn't get them.");
+            NoDataException ex = new NoDataException("There are no objects in project. Couldn't get them.");
             logger.error(ex.getMessage());
             throw ex;
         }
@@ -190,7 +189,7 @@ public class DataService {
         return new InputStreamResource(is);
     }
 
-    public Pair<String, Resource> getDownloadJson(UUID id) throws IOException {
+    public NamedResource getDownloadJson(UUID id) throws IOException {
         logger.info("Downloading data in json format");
         logger.info("Id:\t{}", id);
 
@@ -205,10 +204,10 @@ public class DataService {
 
         InputStreamResource resource = produceJsonResource(informationTable);
 
-        return new Pair<>(project.getName(), resource);
+        return new NamedResource(project.getName(), resource);
     }
 
-    public Pair<String, Resource> getDownloadCsv(UUID id, String separator, Boolean header) throws IOException {
+    public NamedResource getDownloadCsv(UUID id, String separator, Boolean header) throws IOException {
         logger.info("Downloading data in csv format");
         logger.info("Id:\t{}", id);
         logger.info("Separator:\t{}", separator);
@@ -225,10 +224,10 @@ public class DataService {
 
         InputStreamResource resource = produceCsvResource(informationTable, separator, header);
 
-        return new Pair<>(project.getName(), resource);
+        return new NamedResource(project.getName(), resource);
     }
 
-    public Pair<String, Resource> putDownloadJson(UUID id, String metadata, String data) throws IOException {
+    public NamedResource putDownloadJson(UUID id, String metadata, String data) throws IOException {
         logger.info("Downloading data in json format");
         logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
@@ -242,10 +241,10 @@ public class DataService {
         // serialize data from InformationTable
         InputStreamResource resource = produceJsonResource(informationTable);
 
-        return new Pair<>(project.getName(), resource);
+        return new NamedResource(project.getName(), resource);
     }
 
-    public Pair<String, Resource> putDownloadCsv(UUID id, String metadata, String data, String separator, Boolean header) throws IOException {
+    public NamedResource putDownloadCsv(UUID id, String metadata, String data, String separator, Boolean header) throws IOException {
         logger.info("Downloading data in csv format");
         logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
@@ -261,6 +260,6 @@ public class DataService {
         // serialize data from InformationTable object
         InputStreamResource resource = produceCsvResource(informationTable, separator, header);
 
-        return new Pair<>(project.getName(), resource);
+        return new NamedResource(project.getName(), resource);
     }
 }
