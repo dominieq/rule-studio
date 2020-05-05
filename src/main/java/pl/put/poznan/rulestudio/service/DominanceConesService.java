@@ -31,7 +31,7 @@ public class DominanceConesService {
                 throw ex;
             }
             if(informationTable.getNumberOfObjects() == 0) {
-                NoDataException ex = new NoDataException("There is no objects in project. Couldn't calculate dominance cones.");
+                NoDataException ex = new NoDataException("There are no objects in project. Couldn't calculate dominance cones.");
                 logger.error(ex.getMessage());
                 throw ex;
             }

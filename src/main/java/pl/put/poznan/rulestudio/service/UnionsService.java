@@ -63,7 +63,7 @@ public class UnionsService {
                 throw ex;
             }
             if(informationTable.getNumberOfObjects() == 0) {
-                NoDataException ex = new NoDataException("There is no objects in project. Couldn't calculate unions.");
+                NoDataException ex = new NoDataException("There are no objects in project. Couldn't calculate unions.");
                 logger.error(ex.getMessage());
                 throw ex;
             }

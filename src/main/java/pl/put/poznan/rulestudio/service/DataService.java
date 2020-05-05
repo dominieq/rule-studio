@@ -123,7 +123,7 @@ public class DataService {
 
         InformationTable informationTable = project.getInformationTable();
         if(informationTable == null) {
-            NoDataException ex = new NoDataException("There is no objects in project. Couldn't get them.");
+            NoDataException ex = new NoDataException("There are no objects in project. Couldn't get them.");
             logger.error(ex.getMessage());
             throw ex;
         }
