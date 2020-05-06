@@ -8,6 +8,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.46",
     "@mdi/js": "^5.0.45",
+    "bignumber.js": "^9.0.0",
     "bootstrap": "^4.3.1",
     "clsx": "^1.1.0",
     "immutability-helper": "^3.0.1",

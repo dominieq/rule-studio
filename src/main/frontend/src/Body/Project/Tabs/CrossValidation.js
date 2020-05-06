@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
+import BigNumber from "bignumber.js";
 import {
     createFormData,
     downloadMatrix,
@@ -319,13 +320,26 @@ class CrossValidation extends Component {
         }
     };
 
-    onSeedChange = (event) => {
-        const { loading } = this.state;
-        const input = event.target.value;
+    onSeedChange = (number) => {
+        const javaLong = new BigNumber("9223372036854775807");
 
-        if (!loading && !isNaN(input)) {
+        const { loading } = this.state;
+        const bigNumber = new BigNumber(number);
+
+        if (!loading && !bigNumber.isNaN()) {
+            if (bigNumber.isGreaterThan(javaLong)) {
+                this.setState({
+                    alertProps: {
+                        message: "Chosen seed is bigger than 9223372036854775807. Choose smaller value.",
+                        open: true,
+                        severity: "warning"
+                    }
+                })
+                return;
+            }
+
             this.setState(({parameters}) => ({
-                parameters: { ...parameters, seed: input },
+                parameters: { ...parameters, seed: bigNumber },
                 parametersSaved: false
             }));
         }
@@ -336,10 +350,7 @@ class CrossValidation extends Component {
         const newSeed = Math.round(Math.random() * Math.pow(10, 16));
 
         if (!loading) {
-            this.setState(({parameters}) => ({
-                parameters: { ...parameters, seed: newSeed },
-                parametersSaved: false
-            }));
+            this.onSeedChange(newSeed);
         }
     }
 
@@ -546,7 +557,7 @@ class CrossValidation extends Component {
                     <SeedSelector
                         randomizeSeed={this.onSeedRandomize}
                         TextFieldProps={{
-                            onChange: this.onSeedChange,
+                            onChange: event => this.onSeedChange(event.target.value),
                             value: parameters.seed
                         }}
                     />
