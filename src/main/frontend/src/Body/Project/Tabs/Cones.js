@@ -29,11 +29,10 @@ class Cones extends Component {
     }
 
     getData = () => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
 
         fetchCones(
-            base, project.result.id, "GET", null
+            serverBase, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
                 const { result: { informationTable: { objects } }, settings } = project;
@@ -93,8 +92,7 @@ class Cones extends Component {
     }
 
     onCalculateClick = () => {
-        let project = {...this.props.project};
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
 
         this.setState({
             loading: true,
@@ -108,7 +106,7 @@ class Cones extends Component {
             }
 
             fetchCones(
-                base, project.result.id, method, data
+                serverBase, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -121,11 +119,12 @@ class Cones extends Component {
                             displayedItems: items,
                         });
                     }
+                    let newProject = { ...project };
 
-                    project.result.dominanceCones = result;
-                    project.dataUpToDate = true;
-                    project.tabsUpToDate[this.props.value] = true;
-                    this.props.onTabChange(project);
+                    newProject.result.dominanceCones = result;
+                    newProject.dataUpToDate = true;
+                    newProject.tabsUpToDate[this.props.value] = true;
+                    this.props.onTabChange(newProject);
                 }
             }).catch(error => {
                 if (this._isMounted) {
@@ -224,7 +223,8 @@ class Cones extends Component {
 Cones.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    value: PropTypes.number,
+    serverBase: PropTypes.string,
+    value: PropTypes.number
 };
 
 export default Cones;

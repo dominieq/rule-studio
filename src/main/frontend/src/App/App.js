@@ -28,6 +28,7 @@ class App extends Component {
             currentProject: -1,
             projects: [],
             darkTheme: true,
+            serverBase: "http://localhost:8080",
             open: {
                 settingsDialog: false,
                 renameDialog: false,
@@ -66,7 +67,10 @@ class App extends Component {
             }).catch(error => {
                 this.setState({ alertProps: error });
             }).finally(() => {
-                this.setState({ loading: false });
+                this.setState({
+                    loading: false,
+                    serverBase: base
+                });
             });
         });
     };
@@ -183,7 +187,7 @@ class App extends Component {
                 }
             });
         } else {
-            const base = window.location.origin.toString();
+            const { serverBase } = this.state;
 
             this.setState({
                 loading: true,
@@ -199,7 +203,7 @@ class App extends Component {
                 }
 
                 fetchProjects(
-                    base,"POST", data
+                    serverBase,"POST", data
                 ).then(result => {
                     if (result) {
                         this.setState(({projects}) => ({
@@ -240,18 +244,15 @@ class App extends Component {
     };
 
     onDeleteDialogClose = (action) => {
-        const { currentProject, projects } = this.state;
+        const { currentProject, projects, serverBase } = this.state;
 
         if (action && currentProject !== -1) {
-            const base = window.location.origin.toString();
-
             this.setState({
                 loading: true,
                 loadingTitle: "Deleting project"
             }, () => {
-
                 fetchProject(
-                    base, projects[currentProject].result.id, "DELETE", null
+                    serverBase, projects[currentProject].result.id, "DELETE", null
                 ).then(() => {
                     const removedProject = projects[currentProject].result.name;
 
@@ -284,8 +285,7 @@ class App extends Component {
     onRenameDialogClose = (name) => {
         if (name) {
             if (this.isNameUnique(name)) {
-                const { currentProject, projects } = this.state;
-                const base = window.location.origin.toString();
+                const { currentProject, projects, serverBase } = this.state;
 
                 this.setState({
                     loading: true,
@@ -295,7 +295,7 @@ class App extends Component {
                     data.append("name", name);
 
                     fetchProject(
-                        base, projects[currentProject].result.id, "PATCH", data
+                        serverBase, projects[currentProject].result.id, "PATCH", data
                     ).then(result => {
                         if (result) {
                             this.setState(({currentProject, projects}) => ({
@@ -346,7 +346,7 @@ class App extends Component {
     };
 
     render() {
-        const {currentProject, projects, open, alertProps} = this.state;
+        const {currentProject, projects, open, serverBase, alertProps} = this.state;
         const {renameDialog, deleteDialog, settingsDialog} = open;
         const showSnackbarNormally = !renameDialog || !deleteDialog || !settingsDialog;
 
@@ -371,9 +371,10 @@ class App extends Component {
                         "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
                             <ProjectTabs
-                                project={projects[currentProject]}
                                 onDataChange={this.onDataChanges}
                                 onTabChange={this.onTabChanges}
+                                project={projects[currentProject]}
+                                serverBase={serverBase}
                             />,
                     }[this.state.body]
                 }

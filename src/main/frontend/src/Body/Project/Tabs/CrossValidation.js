@@ -80,11 +80,10 @@ class CrossValidation extends Component {
     }
 
     getCrossValidation = () => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
 
         fetchCrossValidation(
-            base, project.result.id, 'GET', null
+            serverBase, project.result.id, 'GET', null
         ).then(result => {
             if (this._isMounted && result) {
                 const { project: { parametersSaved, foldIndex, settings } } = this.props
@@ -221,14 +220,12 @@ class CrossValidation extends Component {
     }
 
     onCalculateClick = () => {
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
+        const { parameters } = this.state;
 
         this.setState({
             loading: true,
         }, () => {
-            let project = { ...this.props.project };
-            const { parameters } = this.state;
-
             let method = project.dataUpToDate ? "PUT" : "POST";
             let files =  {
                 metadata: JSON.stringify(project.result.informationTable.attributes),
@@ -237,7 +234,7 @@ class CrossValidation extends Component {
             let data = createFormData(parameters, project.dataUpToDate ? null : files);
 
             fetchCrossValidation(
-                base, project.result.id, method, data
+                serverBase, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -258,20 +255,21 @@ class CrossValidation extends Component {
                             });
                         });
                     }
+                    let newProject = { ...project };
 
-                    project.result.crossValidation = result;
-                    project.dataUpToDate = true;
-                    project.tabsUpToDate[this.props.value] = true;
+                    newProject.result.crossValidation = result;
+                    newProject.dataUpToDate = true;
+                    newProject.tabsUpToDate[this.props.value] = true;
 
                     let resultParameters = parseCrossValidationParams(result);
 
-                    project.parameters = {
-                        ...project.parameters,
+                    newProject.parameters = {
+                        ...newProject.parameters,
                         ...resultParameters,
-                        typeOfUnions: project.parameters.typeOfUnions
+                        typeOfUnions: newProject.parameters.typeOfUnions
                     };
-                    project.parametersSaved = true;
-                    this.props.onTabChange(project);
+                    newProject.parametersSaved = true;
+                    this.props.onTabChange(newProject);
                 }
 
             }).catch(error => {
@@ -287,10 +285,9 @@ class CrossValidation extends Component {
     };
 
     onSaveToFile = (data) => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
 
-        downloadMatrix(base, project.result.id, data).catch(error => {
+        downloadMatrix(serverBase, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }
@@ -746,7 +743,8 @@ class CrossValidation extends Component {
 CrossValidation.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    value: PropTypes.number,
+    serverBase: PropTypes.string,
+    value: PropTypes.number
 };
 
 export default CrossValidation;

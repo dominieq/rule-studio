@@ -57,11 +57,10 @@ class Rules extends Component {
     }
 
     getRules = () => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
 
         fetchRules(
-            base, project.result.id, "GET", null
+            serverBase, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
                 const { project: { parametersSaved, sortParams } } = this.props;
@@ -181,8 +180,7 @@ class Rules extends Component {
     }
 
     onCalculateClick = () => {
-        let project = {...this.props.project};
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
         const { parameters } = this.state;
 
         this.setState({
@@ -201,7 +199,7 @@ class Rules extends Component {
             }
 
             fetchRules(
-                base, project.result.id, method, data
+                serverBase, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -216,21 +214,23 @@ class Rules extends Component {
                         });
                     }
 
-                    project.result.rules = result;
-                    project.dataUpToDate = true;
-                    project.tabsUpToDate[this.props.value] = true;
-                    project.tabsUpToDate[this.props.value - 1] = true;
-                    project.externalRules = result.externalRules;
+                    let newProject = { ...project };
+
+                    newProject.result.rules = result;
+                    newProject.dataUpToDate = true;
+                    newProject.tabsUpToDate[this.props.value] = true;
+                    newProject.tabsUpToDate[this.props.value - 1] = true;
+                    newProject.externalRules = result.externalRules;
 
                     const newParameters = parseRulesParams(result);
 
-                    project.parameters = {
-                        ...project.parameters,
+                    newProject.parameters = {
+                        ...newProject.parameters,
                         consistencyThreshold: newParameters.consistencyThreshold,
                         typeOfRules: newParameters.typeOfRules
                     };
-                    project.parametersSaved = true;
-                    this.props.onTabChange(project);
+                    newProject.parametersSaved = true;
+                    this.props.onTabChange(newProject);
                 }
             }).catch(error => {
                 if (this._isMounted) {
@@ -246,8 +246,7 @@ class Rules extends Component {
 
     onUploadFileChanged = (event) => {
         if (event.target.files[0]) {
-            let project = {...this.props.project};
-            const base = window.location.origin.toString();
+            const { project, serverBase } = this.props;
 
             let data = new FormData();
             data.append("rules", event.target.files[0]);
@@ -256,7 +255,7 @@ class Rules extends Component {
                 loading: true,
             }, () => {
                 uploadRules(
-                    base, project.result.id, data
+                    serverBase, project.result.id, data
                 ).then(result => {
                     if (result) {
                         if (this._isMounted) {
@@ -269,10 +268,11 @@ class Rules extends Component {
                                 externalRules: result.rules.externalRules,
                             });
                         }
+                        let newProject = { ...project };
 
-                        project.result.rules = result.rules;
-                        project.externalRules = result.rules.externalRules;
-                        this.props.onTabChange(project);
+                        newProject.result.rules = result.rules;
+                        newProject.externalRules = result.rules.externalRules;
+                        this.props.onTabChange(newProject);
                     }
                 }).catch(error => {
                     if (this._isMounted) {
@@ -288,11 +288,10 @@ class Rules extends Component {
     };
 
     onSaveRulesToXMLClick = () => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
         let data = { format: "xml" };
 
-        downloadRules(base, project.result.id, data).catch(error => {
+        downloadRules(serverBase, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({alertProps: error});
             }
@@ -300,11 +299,10 @@ class Rules extends Component {
     };
 
     onSaveRulesToTXTClick = () => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
         let data = { format: "txt" };
 
-        downloadRules(base, project.result.id, data).catch(error => {
+        downloadRules(serverBase, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }
@@ -596,7 +594,8 @@ class Rules extends Component {
 Rules.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    value: PropTypes.number,
+    serverBase: PropTypes.string,
+    value: PropTypes.number
 };
 
 export default Rules;

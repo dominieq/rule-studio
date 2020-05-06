@@ -60,11 +60,10 @@ class Classification extends Component {
     }
 
     getClassification = () => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
 
         fetchClassification(
-            base, project.result.id, "GET", null
+            serverBase, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
                 const { project: { parametersSaved, settings } } = this.props;
@@ -158,18 +157,15 @@ class Classification extends Component {
     }
 
     calculateClassification = (method, data) => {
-        let project = {...this.props.project};
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
 
         this.setState({
             loading: true,
         }, () => {
             fetchClassification(
-                base, project.result.id, method, data
+                serverBase, project.result.id, method, data
             ).then(result => {
                 if (result) {
-                    project = {...this.props.project};
-
                     if (this._isMounted) {
                         const items = parseClassificationItems(result, project.settings);
 
@@ -181,19 +177,20 @@ class Classification extends Component {
                             parametersSaved: true,
                         });
                     }
+                    let newProject = { ...project }
 
-                    project.result.classification = result;
-                    project.dataUpToDate = result.externalData ?
+                    newProject.result.classification = result;
+                    newProject.dataUpToDate = result.externalData ?
                         project.dataUpToDate : true;
-                    project.tabsUpToDate[this.props.value] = result.externalData ?
+                    newProject.tabsUpToDate[this.props.value] = result.externalData ?
                         project.tabsUpToDate[this.props.value] : true;
-                    project.externalData = result.externalData;
+                    newProject.externalData = result.externalData;
 
                     const resultParameters = parseClassificationParams(result);
 
-                    project.parameters = { ...project.parameters, ...resultParameters}
-                    project.parametersSaved = true;
-                    this.props.onTabChange(project);
+                    newProject.parameters = { ...project.parameters, ...resultParameters }
+                    newProject.parametersSaved = true;
+                    this.props.onTabChange(newProject);
                 }
             }).catch(error => {
                 if (this._isMounted) {
@@ -262,11 +259,10 @@ class Classification extends Component {
     }
 
     onSaveToFile = () => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
         let data = {typeOfMatrix: "classification"};
 
-        downloadMatrix(base, project.result.id, data).catch(error => {
+        downloadMatrix(serverBase, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }
@@ -448,7 +444,8 @@ class Classification extends Component {
 Classification.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    value: PropTypes.number,
+    serverBase: PropTypes.string,
+    value: PropTypes.number
 };
 
 export default Classification;
