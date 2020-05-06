@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
+import BigNumber from "bignumber.js";
 import {
     createFormData,
     downloadMatrix,
@@ -120,11 +121,18 @@ class CrossValidation extends Component {
         }).finally(() => {
             if ( this._isMounted ) {
                 const { parametersSaved } = this.state;
-                const { project: { parameters: propsParameters } } = this.props;
+                const { project: { parameters: propsParams, result: { informationTable: { objects }}}} = this.props;
+                let { numberOfFolds, ...otherParams } = propsParams;
+
+                if (objects.length < numberOfFolds) {
+                    otherParams = { ...otherParams, numberOfFolds: objects.length };
+                } else {
+                    otherParams = { ...otherParams, numberOfFolds: numberOfFolds };
+                }
 
                 this.setState(({parameters, selected}) => ({
                     loading: false,
-                    parameters: parametersSaved ? parameters : { ...parameters, ...propsParameters },
+                    parameters: parametersSaved ? parameters : { ...parameters, ...otherParams },
                     selected: { ...selected, item: null }
                 }));
             }
@@ -138,6 +146,7 @@ class CrossValidation extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        /* Check if default objects name has changed */
         if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
             const { folds, selected: { foldIndex } } = this.state;
             const { project } = this.props;
@@ -150,6 +159,7 @@ class CrossValidation extends Component {
         const { parameters: prevParameters } = prevState;
         const { parameters } = this.state;
 
+        /* Check if consistency measure has changed and whether consistency threshold had boundary value */
         if (parameters.typeOfUnions !== "monotonic") {
             if (parameters.consistencyThreshold === 1) {
                 this.setState(({parameters}) => ({
@@ -162,12 +172,14 @@ class CrossValidation extends Component {
             }
         }
 
+        /* Check if type of rules changed to possible */
         if (prevParameters.typeOfRules !== parameters.typeOfRules && parameters.typeOfRules === "possible") {
             this.setState(({parameters}) => ({
                 parameters: { ...parameters, consistencyThreshold: 0}
             }));
         }
 
+        /* Check if project has been changed by user and save changes from previous project */
         if (prevProps.project.result.id !== this.props.project.result.id) {
             const { parametersSaved } = prevState;
 
@@ -319,13 +331,26 @@ class CrossValidation extends Component {
         }
     };
 
-    onSeedChange = (event) => {
-        const { loading } = this.state;
-        const input = event.target.value;
+    onSeedChange = (number) => {
+        const javaLong = new BigNumber("9223372036854775807");
 
-        if (!loading && !isNaN(input)) {
+        const { loading } = this.state;
+        const bigNumber = new BigNumber(number);
+
+        if (!loading && !bigNumber.isNaN()) {
+            if (bigNumber.isGreaterThan(javaLong)) {
+                this.setState({
+                    alertProps: {
+                        message: "Seed shouldn't be greater than 9223372036854775807.",
+                        open: true,
+                        severity: "warning"
+                    }
+                })
+                return;
+            }
+
             this.setState(({parameters}) => ({
-                parameters: { ...parameters, seed: input },
+                parameters: { ...parameters, seed: bigNumber },
                 parametersSaved: false
             }));
         }
@@ -336,10 +361,7 @@ class CrossValidation extends Component {
         const newSeed = Math.round(Math.random() * Math.pow(10, 16));
 
         if (!loading) {
-            this.setState(({parameters}) => ({
-                parameters: { ...parameters, seed: newSeed },
-                parametersSaved: false
-            }));
+            this.onSeedChange(newSeed);
         }
     }
 
@@ -389,7 +411,7 @@ class CrossValidation extends Component {
 
     onNumberOfFoldsChange = (event) => {
         const { loading } = this.state;
-        const input = event.target.value;
+        let input = event.target.value;
 
         if (!loading && !isNaN(input)) {
             this.setState(({parameters}) => ({
@@ -398,6 +420,37 @@ class CrossValidation extends Component {
             }));
         }
     };
+
+    onNumberOfFoldsBlur = () => {
+        this.setState(({parameters}) => {
+            const { numberOfFolds } = parameters;
+            const { project: { result: { informationTable: { objects }}}} = this.props;
+
+            if (numberOfFolds > objects.length) {
+                return {
+                    parameters: { ...parameters, numberOfFolds: objects.length },
+                    alertProps: {
+                        message: "Number of folds should be less than or equal to number of objects.",
+                        open: true,
+                        severity: "warning"
+                    }
+                };
+            } else if (numberOfFolds < 2 && objects.length >= 2) {
+                return {
+                    parameters: { ...parameters, numberOfFolds: 2 },
+                    alertProps: {
+                        message: "Number of folds should be greater than or equal to 2.",
+                        open: true,
+                        severity: "warning"
+                    }
+                };
+            } else {
+                return {
+                    parameters: { ...parameters }
+                };
+            }
+        })
+    }
 
     onFoldIndexChange = (event) => {
         const { loading } = this.state;
@@ -546,13 +599,14 @@ class CrossValidation extends Component {
                     <SeedSelector
                         randomizeSeed={this.onSeedRandomize}
                         TextFieldProps={{
-                            onChange: this.onSeedChange,
+                            onChange: event => this.onSeedChange(event.target.value),
                             value: parameters.seed
                         }}
                     />
                     <NumberOfFoldsSelector
                         TextFieldProps={{
                             onChange: this.onNumberOfFoldsChange,
+                            onBlur: this.onNumberOfFoldsBlur,
                             value: parameters.numberOfFolds
                         }}
                     />
