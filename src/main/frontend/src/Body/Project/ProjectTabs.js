@@ -156,7 +156,7 @@ class ProjectTabs extends React.Component {
                 </StyledTabs>
                 {
                     {
-                        0: <Data project={this.props.project} updateProject={this.props.onDataChange} />,
+                        0: <Data project={this.props.project} updateProject={this.props.onDataChange} serverBase={this.props.serverBase}/>,
                         1: <Cones {...this.getTabBodyProps(0)} />,
                         2: <Unions {...this.getTabBodyProps(1)} />,
                         3: <Rules {...this.getTabBodyProps(2)} />,
