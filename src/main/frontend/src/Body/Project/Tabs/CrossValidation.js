@@ -515,7 +515,7 @@ class CrossValidation extends Component {
                                 onClick={() => this.toggleOpen("matrixMean")}
                                 title={"Show mean ordinal misclassification matrix"}
                             />
-                            <CustomTooltip title={"Show sum ordinal misclassification matrix"}>
+                            <CustomTooltip title={"Show accumulated ordinal misclassification matrix"}>
                                 <StyledButton
                                     aria-label={"sum-matrix-button"}
                                     isIcon={true}
@@ -658,7 +658,7 @@ class CrossValidation extends Component {
                             <React.Fragment>
                                 <MatrixSwapButton
                                     onSwap={() => this.swapMatrix("matrixMean", "matrixSum")}
-                                    tooltip={"Go to sum ordinal misclassification matrix"}
+                                    tooltip={"Go to accumulated ordinal misclassification matrix"}
                                 />
                                 <MatrixDownloadButton
                                     onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
@@ -688,10 +688,10 @@ class CrossValidation extends Component {
                                 />
                                 <MatrixDownloadButton
                                     onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
-                                    tooltip={"Download sum matrix (txt)"}
+                                    tooltip={"Download accumulated matrix (txt)"}
                                 />
                                 <span aria-label={"sum matrix title"} style={{paddingLeft: 8}}>
-                                    Sum ordinal misclassification matrix and details
+                                    Accumulated ordinal misclassification matrix and details
                                 </span>
                             </React.Fragment>
 

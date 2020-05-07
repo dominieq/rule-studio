@@ -235,7 +235,7 @@ MatrixDialog.propTypes = {
     }),
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,
-    subheaders: PropTypes.arrayOf(PropTypes.object),
+    subheaders: PropTypes.arrayOf(PropTypes.string),
     saveMatrix: PropTypes.func,
     title: PropTypes.node.isRequired
 };
