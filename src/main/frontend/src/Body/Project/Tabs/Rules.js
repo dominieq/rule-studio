@@ -557,7 +557,9 @@ class Rules extends Component {
                     <SortMenu
                         anchorE1={sort.anchorE1}
                         ContentProps={{
-                            categories: createCategories(Object.keys(items[0].traits)),
+                            categories: createCategories(
+                                Object.keys(items[0].traits).filter(value => value !== "Type")
+                            ),
                             chooseOrder: true,
                             onCategoryChange: this.onSortValueChange,
                             onOrderChange: this.onSortOrderChange,
