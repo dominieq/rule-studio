@@ -237,8 +237,12 @@ class Rules extends Component {
                     this.setState({alertProps: error});
                 }
             }).finally(() => {
+                const { displayedItems } = this.state;
+
                 if (this._isMounted) {
-                    this.setState({loading: false});
+                    this.setState({
+                        loading: false
+                    }, () => this.onSortChange(displayedItems));
                 }
             });
         });
@@ -279,8 +283,12 @@ class Rules extends Component {
                         this.setState({alertProps: error});
                     }
                 }).finally(() => {
+                    const { displayedItems } = this.state;
+
                     if (this._isMounted) {
-                        this.setState({loading: false});
+                        this.setState({
+                            loading: false
+                        }, () =>  this.onSortChange(displayedItems));
                     }
                 });
             });
