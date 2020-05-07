@@ -24,10 +24,6 @@ function NumberOfFoldsSelector(props) {
                         {tooltip.main}
                     </p>
                 }
-                TooltipProps={{
-                    placement: "right-start",
-                    PopperProps: { disablePortal: false }
-                }}
                 WrapperProps={{
                     style: { marginRight: 16 }
                 }}

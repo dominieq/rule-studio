@@ -99,11 +99,8 @@ function VirtualizedMatrix(props) {
                             </React.Fragment>
                             }
                         TooltipProps={{
-                            classes: {tooltip: matrixClasses.tooltip},
-                            placement: "top",
-                            PopperProps: {
-                                disablePortal: false
-                            }
+                            classes: { tooltip: matrixClasses.tooltip },
+                            placement: "top"
                         }}
                     />
                 }

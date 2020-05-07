@@ -101,10 +101,6 @@ class ThresholdSelector extends Component {
                             {tooltip["main" + variant[0].toUpperCase() + variant.slice(1)]}
                         </p>
                     }
-                    TooltipProps={{
-                        placement: "right-start",
-                        PopperProps: { disablePortal: false }
-                    }}
                     WrapperProps={{
                         style: { marginRight: 16 }
                     }}
