@@ -19,28 +19,28 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "CustomTooltip"});
 
-function DefaultElement(props, ref) {
+function DefaultWrapper(props, ref) {
     const { children, component, ...other } = props;
     return React.createElement(component, {ref, ...other}, children)
 }
 
-const DefaultForwardRef = React.forwardRef(DefaultElement);
+const WrapperForwardRef = React.forwardRef(DefaultWrapper);
 
 function CustomTooltip(props) {
     const { children,  classes: propsClasses, className, WrapperComponent, WrapperProps, ...other } = props;
-    let classes = useStyles();
 
+    let classes = useStyles();
     if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
         <Tooltip classes={{tooltip: classes.tooltip, arrow: classes.arrow}} {...other}>
-            <DefaultForwardRef
+            <WrapperForwardRef
                 className={clsx(classes.wrapper, className)}
                 component={WrapperComponent}
                 {...WrapperProps}
             >
                 {children}
-            </DefaultForwardRef>
+            </WrapperForwardRef>
         </Tooltip>
     )
 }

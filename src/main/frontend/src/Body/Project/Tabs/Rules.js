@@ -518,6 +518,7 @@ class Rules extends Component {
                             disabled: !resultsExists || loading,
                             onClick: this.onSortMenuOpen
                         }}
+                        invisible={sort.value === "" && sort.order === "asc"}
                         tooltip={resultsExists ? "Sort rules" : "No content to sort"}
                         TooltipProps={{
                             WrapperProps: { style: { marginRight: "0.5rem" } }
