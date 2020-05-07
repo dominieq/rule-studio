@@ -155,7 +155,7 @@ function SortMenu(props) {
                 orientation={"horizontal"}
             />
             <FormLabel classes={{...labelClasses}} component={"header"} style={{marginTop: "0.5rem"}}>
-                Choose sorting direction:
+                Choose sorting order:
             </FormLabel>
             {ContentProps.chooseOrder &&
                 <RadioGroup
