@@ -112,7 +112,8 @@ public class UnionsService {
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
         logger.info("Metadata:\t{}", metadata);
-        logger.info("Data:\t{}", data);
+        logger.info("Data size:\t{} B", data.length());
+        logger.debug("Data:\t{}", data);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 

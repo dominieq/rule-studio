@@ -134,7 +134,8 @@ public class DataService {
 
     public Project putData(UUID id, String data) throws IOException {
         logger.info("Id:\t" + id);
-        logger.info("Data:\t" + data);
+        logger.info("Data size:\t{} B", data.length());
+        logger.debug("Data:\t" + data);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -157,7 +158,8 @@ public class DataService {
     public void postData(UUID id, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
-        logger.info("Data:\t{}", data);
+        logger.info("Data size:\t{} B", data.length());
+        logger.debug("Data:\t{}", data);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -231,7 +233,8 @@ public class DataService {
         logger.info("Downloading data in json format");
         logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
-        logger.info("Data:\t{}", data);
+        logger.info("Data size:\t{} B", data.length());
+        logger.debug("Data:\t{}", data);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -248,7 +251,8 @@ public class DataService {
         logger.info("Downloading data in csv format");
         logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
-        logger.info("Data:\t{}", data);
+        logger.info("Data size:\t{} B", data.length());
+        logger.debug("Data:\t{}", data);
         logger.info("Separator:\t{}", separator);
         logger.info("Header:\t{}", header);
 

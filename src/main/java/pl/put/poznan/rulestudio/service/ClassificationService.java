@@ -374,7 +374,8 @@ public class ClassificationService {
         logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
         logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
         logger.info("Metadata:\t{}", metadata);
-        logger.info("Data:\t{}", data);
+        logger.info("Data size:\t{} B", data.length());
+        logger.debug("Data:\t{}", data);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
