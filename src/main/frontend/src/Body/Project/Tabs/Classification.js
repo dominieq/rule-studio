@@ -251,7 +251,7 @@ class Classification extends Component {
 
                 let method = project.dataUpToDate ? "PUT" : "POST";
                 let files = { data: this.csvFile };
-                let data = createFormData(parameters, files);
+                let data = createFormData({ ...parameters, ...csvSpecs }, files);
 
                 this.calculateClassification(method, data);
             }

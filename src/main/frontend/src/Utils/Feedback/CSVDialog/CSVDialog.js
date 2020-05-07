@@ -28,7 +28,7 @@ const separators = [
     },
     {
         label: "tab",
-        value: "%09"
+        value: "\t"
     }
 ];
 
