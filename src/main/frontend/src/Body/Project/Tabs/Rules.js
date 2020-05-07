@@ -237,8 +237,12 @@ class Rules extends Component {
                     this.setState({alertProps: error});
                 }
             }).finally(() => {
+                const { displayedItems } = this.state;
+
                 if (this._isMounted) {
-                    this.setState({loading: false});
+                    this.setState({
+                        loading: false
+                    }, () => this.onSortChange(displayedItems));
                 }
             });
         });
@@ -279,8 +283,12 @@ class Rules extends Component {
                         this.setState({alertProps: error});
                     }
                 }).finally(() => {
+                    const { displayedItems } = this.state;
+
                     if (this._isMounted) {
-                        this.setState({loading: false});
+                        this.setState({
+                            loading: false
+                        }, () =>  this.onSortChange(displayedItems));
                     }
                 });
             });
@@ -510,6 +518,7 @@ class Rules extends Component {
                             disabled: !resultsExists || loading,
                             onClick: this.onSortMenuOpen
                         }}
+                        invisible={sort.value === "" && sort.order === "asc"}
                         tooltip={resultsExists ? "Sort rules" : "No content to sort"}
                         TooltipProps={{
                             WrapperProps: { style: { marginRight: "0.5rem" } }

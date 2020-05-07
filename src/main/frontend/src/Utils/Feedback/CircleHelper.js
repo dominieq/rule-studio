@@ -55,34 +55,38 @@ const useStyles = makeStyles(theme => ({
 function CircleHelper(props) {
     const [open, setOpen] = useState(false);
 
-    const { AvatarProps, children, multiRow, size, title, TooltipProps, WrapperProps } = props;
+    const { AvatarProps, multiRow, size, title, TooltipProps, WrapperProps } = props;
     const { classes: tooltipClasses , ...other } = TooltipProps;
 
     let classes =  useStyles();
-    if (tooltipClasses) classes = mergeClasses(classes, tooltipClasses);
+    if (tooltipClasses && tooltipClasses.hasOwnProperty("multiRow")) {
+        classes = mergeClasses(classes, { multiRow: tooltipClasses.multiRow });
+    }
+
+    let newTooltipClasses = undefined;
+    if (tooltipClasses && tooltipClasses.hasOwnProperty("tooltip")) {
+        newTooltipClasses = { tooltip: tooltipClasses.tooltip };
+    }
 
     const onTooltipOpen = () => {
-        setOpen(true)
-    }
+        setOpen(true);
+    };
 
     const onTooltipClose = () => {
         setOpen(false);
-    }
+    };
 
     return (
         <ClickAwayListener onClickAway={onTooltipClose}>
             <div id={"click-away-wrapper"} {...WrapperProps}>
                 <CustomTooltip
-                    classes={multiRow ? {tooltip: classes.multiRow} : undefined}
+                    classes={multiRow ? {tooltip: classes.multiRow} : newTooltipClasses}
                     disableFocusListener={true}
                     disableHoverListener={true}
                     disableTouchListener={true}
                     onClose={onTooltipClose}
                     open={open}
-                    PopperProps={{
-                        disablePortal: true,
-                    }}
-                    title={!children ? title : children}
+                    title={title}
                     {...other}
                 >
                     <Avatar
@@ -101,7 +105,6 @@ function CircleHelper(props) {
 
 CircleHelper.propTypes = {
     AvatarProps: PropTypes.object,
-    children: PropTypes.string,
     multiRow: PropTypes.bool,
     size: PropTypes.oneOf(["small", "medium", "big"]),
     title: PropTypes.node.isRequired,
@@ -113,7 +116,7 @@ CircleHelper.defaultProps = {
     multiRow: false,
     size: "small",
     TooltipProps: {
-        placement: "right"
+        placement: "right-start"
     }
 };
 

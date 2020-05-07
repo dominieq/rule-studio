@@ -64,10 +64,6 @@ function TypeOfUnionsSelector(props) {
                         </p>
                     </React.Fragment>
                 }
-                TooltipProps={{
-                    placement: "right-start",
-                    PopperProps: { disablePortal: false }
-                }}
                 WrapperProps={{
                     style: { marginRight: 16 }
                 }}

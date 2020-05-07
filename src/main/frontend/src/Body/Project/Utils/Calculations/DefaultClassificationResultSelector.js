@@ -44,23 +44,19 @@ function DefaultClassificationResultSelector(props) {
                 multiRow={true}
                 title={
                     <React.Fragment>
-                        <p className={classes.paragraph}>
+                        <p aria-label={"main"} className={classes.paragraph}>
                             {tooltip.main}
                         </p>
-                        <p className={classes.paragraph}>
+                        <p aria-label={"result-one"} className={classes.paragraph}>
                             <b>Majority decision class</b>
                             {tooltip.majorityDecisionClass}
                         </p>
-                        <p className={classes.paragraph}>
+                        <p aria-label={"result-two"} className={classes.paragraph}>
                             <b>Median decision class</b>
                             {tooltip.medianDecisionClass}
                         </p>
                     </React.Fragment>
                 }
-                TooltipProps={{
-                    placement: "right-start",
-                    PopperProps: { disablePortal: false }
-                }}
                 WrapperProps={{
                     style: { marginRight: 16 }
                 }}

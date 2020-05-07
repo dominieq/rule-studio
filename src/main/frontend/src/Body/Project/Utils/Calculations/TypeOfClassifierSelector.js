@@ -96,8 +96,7 @@ function TypeOfClassifierSelector(props) {
                 }
                 TooltipProps={{
                     classes: { multiRow: classes.maxWidth },
-                    placement: "right-start",
-                    PopperProps: { disablePortal: false }
+                    placement: "right-start"
                 }}
                 WrapperProps={{
                     style: { marginRight: 16 }
