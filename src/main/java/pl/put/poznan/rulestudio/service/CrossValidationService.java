@@ -137,7 +137,8 @@ public class CrossValidationService {
         logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
         logger.info("NumberOfFolds:\t{}", numberOfFolds);
         logger.info("Metadata:\t{}", metadata);
-        logger.info("Data:\t{}", data);
+        logger.info("Data size:\t{} B", data.length());
+        logger.debug("Data:\t{}", data);
         logger.info("Seed:\t{}", seed);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
