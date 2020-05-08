@@ -42,7 +42,7 @@ class ConesDialog extends PureComponent {
         return (
             <ColouredTitle
                 text={[
-                    { primary: "Selected item:" },
+                    { primary: "Selected object:" },
                     { ...item.name, brackets: false, }
                 ]}
             />
