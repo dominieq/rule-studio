@@ -79,7 +79,7 @@ class RulesDialog extends PureComponent {
         return (
             <ColouredTitle
                 text={[
-                    { primary: "Selected rule: " },
+                    { primary: `Rule ${item.id + 1}: ` },
                     ...this.getDecisions(item.name.decisions),
                     { secondary: "\u2190" },
                     ...this.getConditions(item.name.conditions)
@@ -96,17 +96,20 @@ class RulesDialog extends PureComponent {
         } else {
             return undefined;
         }
-    }
+    };
 
     render() {
         const { itemInTableIndex } = this.state;
         const { item, projectResult, ...other } = this.props;
 
+        let displayTraits = { ...item.traits };
+        delete displayTraits["Type"];
+
         return (
             <DetailsDialog onExited={this.onExited} title={this.getRulesTitle()} {...other}>
                 <div id={"rules-traits"}>
                     <TraitsTable
-                        traits={item.traits}
+                        traits={displayTraits}
                     />
                 </div>
                 <div id={"rules-table-content"} style={{display: "flex", flexDirection: "column", width: "20%"}}>

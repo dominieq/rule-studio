@@ -26,7 +26,8 @@ function parseRulesItems(data) {
                         "strength " + this.traits["Strength"],
                         "confidence " + this.traits["Confidence"],
                         "coverage factor " + this.traits["Coverage factor"],
-                        "epsilon measure " + this.traits["Epsilon measure"]
+                        "epsilon measure " + this.traits["Epsilon measure"],
+                        "rule " + (this.id + 1)
                     ]
                 },
                 toSort(category) {

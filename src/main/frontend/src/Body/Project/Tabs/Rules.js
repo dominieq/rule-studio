@@ -579,6 +579,13 @@ class Rules extends Component {
                     ListProps={{
                         onItemSelected: this.onDetailsOpen
                     }}
+                    ListSubheaderProps={{
+                        disableHelper: false,
+                        helper: "First row of each rule presents decision condition. " +
+                            "Next rows present subsequent elementary conditions. " +
+                            "These elementary conditions are connected by AND. " +
+                            "Last row shows chosen rule’s characteristics."
+                    }}
                     noFilterResults={!displayedItems}
                     subheaderContent={[
                         {
