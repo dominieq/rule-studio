@@ -321,13 +321,13 @@ public class ClassificationService {
             UUID id,
             ClassifierType typeOfClassifier,
             DefaultClassificationResultType defaultClassificationResult,
-            MultipartFile dataFile,
+            MultipartFile externalDataFile,
             Character separator,
             Boolean header) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
         logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
-        logger.info("Data:\t{}\t{}", dataFile.getOriginalFilename(), dataFile.getContentType());
+        logger.info("Data:\t{}\t{}", externalDataFile.getOriginalFilename(), externalDataFile.getContentType());
         logger.info("Separator:\t{}", separator);
         logger.info("Header:\t{}", header);
 
@@ -347,19 +347,19 @@ public class ClassificationService {
             throw ex;
         }
 
-        InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
-        if(newInformationTable.getNumberOfObjects() == 0) {
-            NoDataException ex = new NoDataException("There are no objects in external data. Couldn't classify.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-
         if(project.getRules() == null) {
             NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
             logger.error(ex.getMessage());
             throw ex;
         }
         RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
+
+        InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, attributes, separator, header);
+        if(newInformationTable.getNumberOfObjects() == 0) {
+            NoDataException ex = new NoDataException("There are no objects in external data. Couldn't classify.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
 
         Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);
         Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
@@ -397,6 +397,51 @@ public class ClassificationService {
 
         Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, informationTable);
         Classification classification = calculateClassification(informationTable, informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
+        project.setClassification(classification);
+
+        return classification;
+    }
+
+    public Classification postClassificationNewData(
+            UUID id,
+            ClassifierType typeOfClassifier,
+            DefaultClassificationResultType defaultClassificationResult,
+            String metadata,
+            String data,
+            MultipartFile externalDataFile,
+            Character separator,
+            Boolean header) throws IOException {
+        logger.info("Id:\t{}", id);
+        logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
+        logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
+        logger.info("Metadata:\t{}", metadata);
+        logger.info("Data size:\t{} B", data.length());
+        logger.debug("Data:\t{}", data);
+        logger.info("ExternalDataFile:\t{}\t{}", externalDataFile.getOriginalFilename(), externalDataFile.getContentType());
+        logger.info("Separator:\t{}", separator);
+        logger.info("Header:\t{}", header);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        InformationTable projectInformationTable = ProjectService.createInformationTableFromString(metadata, data);
+        project.setInformationTable(projectInformationTable);
+
+        if(project.getRules() == null) {
+            NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
+
+        InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, projectInformationTable.getAttributes(), separator, header);
+        if(newInformationTable.getNumberOfObjects() == 0) {
+            NoDataException ex = new NoDataException("There are no objects in external data. Couldn't classify.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);
+        Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
         project.setClassification(classification);
 
         return classification;
