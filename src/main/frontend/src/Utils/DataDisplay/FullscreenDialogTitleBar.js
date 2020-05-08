@@ -68,6 +68,7 @@ const useStyles = makeStyles(theme => ({
     optionalFlex: {
         display: "flex",
         flexDirection: "column",
+        whiteSpace: "pre",
         '& > *': {
             lineHeight: 1,
             textAlign: "right"

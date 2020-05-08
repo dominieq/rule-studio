@@ -44,18 +44,6 @@ class CrossValidationDialog extends PureComponent {
         });
     };
 
-    getOriginalDecision = () => {
-        const { item: { id, traits: { attributes, objects } } } = this.props;
-
-        for (let i = 0; i < attributes.length; i++) {
-            if (attributes[i].type === 'decision') {
-                return objects[id][attributes[i].name];
-            }
-        }
-
-        return "?";
-    }
-
     getCrossValidationTitle = () => {
         const { item } = this.props;
 
@@ -67,14 +55,12 @@ class CrossValidationDialog extends PureComponent {
                 ]}
             />
         )
-    }
+    };
 
     render() {
         const { itemInTableIndex, ruleTableHeight } = this.state;
         const { item, ruleSet, ...other } = this.props;
-        const { attributes, objects, suggestedDecision } = item.traits;
-
-        let originalDecision = this.getOriginalDecision();
+        const { attributes, objects, originalDecision, suggestedDecision, certainty } = item.traits;
 
         return (
             <DetailsDialog
@@ -82,11 +68,11 @@ class CrossValidationDialog extends PureComponent {
                 onExited={this.onExited}
                 optional={
                     <React.Fragment>
-                        <span id={"original-decision"}>
-                            {"Original decision: " + originalDecision}
+                        <span aria-label={"original-decision"}>
+                            {`Original decision: ${originalDecision}`}
                         </span>
-                        <span id={"suggested-decision"}>
-                            {"Suggested decision: " + suggestedDecision}
+                        <span aria-label={"suggested-decision"}>
+                            {`Certainty: ${certainty}   |   Suggested decision: ${suggestedDecision}`}
                         </span>
                     </React.Fragment>
                 }
@@ -140,12 +126,14 @@ CrossValidationDialog.propTypes = {
             secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
             toString: PropTypes.func
         }),
-        traits: PropTypes.exact({
+        traits: PropTypes.shape({
             attributes: PropTypes.arrayOf(PropTypes.object),
             objects: PropTypes.arrayOf(PropTypes.object),
-            suggestedDecision: PropTypes.string
+            originalDecision: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            suggestedDecision: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            certainty: PropTypes.number
         }),
-        tables: PropTypes.exact({
+        tables: PropTypes.shape({
             indicesOfCoveringRules: PropTypes.arrayOf(PropTypes.number)
         }),
         toFilter: PropTypes.func

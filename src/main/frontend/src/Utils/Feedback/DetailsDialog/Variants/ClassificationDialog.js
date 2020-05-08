@@ -44,25 +44,13 @@ class ClassificationDialog extends PureComponent {
         });
     };
 
-    getOriginalDecision = () => {
-        const {item: { id, traits: { attributes, objects } } } = this.props;
-
-        for (let i = 0; i < attributes.length; i++) {
-            if (attributes[i].type === "decision") {
-                return objects[id][attributes[i].name];
-            }
-        }
-
-        return "?"
-    }
-
     getClassificationTitle = () => {
         const { item } = this.props;
 
         return (
             <ColouredTitle
                 text={[
-                    { primary: "Selected item:"},
+                    { primary: "Selected object:"},
                     { ...item.name, brackets: false, }
                 ]}
             />
@@ -72,19 +60,18 @@ class ClassificationDialog extends PureComponent {
     render() {
         const { itemInTableIndex, ruleTableHeight } = this.state;
         const { item, ruleSet, ...other } = this.props;
-
-        let originalDecision = this.getOriginalDecision();
+        const { attributes, objects, originalDecision, suggestedDecision, certainty } = item.traits;
 
         return (
             <DetailsDialog
                 onEnter={this.onEnter}
                 optional={
                     <React.Fragment>
-                        <span id={"original-decision"}>
-                            {"Original decision: " +  originalDecision}
+                        <span aria-label={"original-decision"}>
+                            {`Original decision: ${originalDecision}`}
                         </span>
-                        <span id={"suggested-decision"}>
-                            {"Suggested decision: " + item.traits.suggestedDecision}
+                        <span aria-label={"suggested-decision"}>
+                            {`Certainty: ${certainty}   |   Suggested decision: ${suggestedDecision}`}
                         </span>
                     </React.Fragment>
                 }
@@ -93,7 +80,7 @@ class ClassificationDialog extends PureComponent {
             >
                 <div id={"classification-object"} style={{width: "40%"}}>
                     <ObjectTable
-                        informationTable={item.traits}
+                        informationTable={{attributes, objects}}
                         objectIndex={item.id}
                         objectHeader={item.name.toString()}
                     />
@@ -138,7 +125,9 @@ ClassificationDialog.propTypes = {
         traits: PropTypes.shape({
             attributes: PropTypes.arrayOf(PropTypes.object),
             objects: PropTypes.arrayOf(PropTypes.object),
-            suggestedDecision: PropTypes.string,
+            originalDecision: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            suggestedDecision: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            certainty: PropTypes.number
         }),
         tables: PropTypes.shape({
             indicesOfCoveringRules: PropTypes.arrayOf(PropTypes.number)

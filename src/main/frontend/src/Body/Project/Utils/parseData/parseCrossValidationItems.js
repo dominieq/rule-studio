@@ -10,7 +10,8 @@ function parseCrossValidationItems(fold, settings) {
                 name: getItemName(i, fold.validationTable.objects, settings),
                 traits: {
                     ...fold.validationTable,
-                    ...fold.classificationValidationTable.classificationResults[i]
+                    ...fold.classificationValidationTable.classificationResults[i],
+                    originalDecision: fold.classificationValidationTable.originalDecisions[i]
                 },
                 tables: {
                     indicesOfCoveringRules: fold.classificationValidationTable.indicesOfCoveringRules[i],
@@ -18,7 +19,9 @@ function parseCrossValidationItems(fold, settings) {
                 toFilter() {
                     return [
                         this.name.toString().toLowerCase(),
+                        "original decision " + this.traits.originalDecision,
                         "suggested decision " + this.traits.suggestedDecision,
+                        "certainty " + this.traits.certainty,
                         "covered by " + this.tables.indicesOfCoveringRules.length + " rules"
                     ]
                 }
