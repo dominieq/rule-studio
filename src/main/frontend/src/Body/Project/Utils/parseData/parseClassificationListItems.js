@@ -1,3 +1,5 @@
+import { conjugateContent } from "./utilFunctions";
+
 function parseClassificationListItems(items) {
     let listItems = [];
 
@@ -7,7 +9,7 @@ function parseClassificationListItems(items) {
                 id: items[i].id,
                 header: items[i].name.toString(),
                 subheader: "Suggested decision: " + items[i].traits.suggestedDecision,
-                content: "Covered by " + items[i].tables.indicesOfCoveringRules.length + " rules"
+                content: "Covered by " + conjugateContent(items[i].tables.indicesOfCoveringRules.length, "rule")
             };
             listItems.push(listItem)
         }
