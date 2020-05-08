@@ -9,9 +9,9 @@ function parseClassificationItems(data, settings) {
                 id: i,
                 name: getItemName(i, data.informationTable.objects, settings),
                 traits: {
-                    attributes: data.informationTable.attributes.slice(),
-                    objects: data.informationTable.objects.slice(),
-                    suggestedDecision: data.classificationResults[i].suggestedDecision
+                    ...data.informationTable,
+                    ...data.classificationResults[i],
+                    originalDecision: data.originalDecisions[i],
                 },
                 tables: {
                     indicesOfCoveringRules: data.indicesOfCoveringRules[i].slice()
@@ -19,7 +19,9 @@ function parseClassificationItems(data, settings) {
                 toFilter() {
                     return [
                         this.name.toString().toLowerCase(),
+                        "original decision " + this.traits.originalDecision,
                         "suggested decision " + this.traits.suggestedDecision,
+                        "certainty " + this.traits.certainty,
                         "covered by " + this.tables.indicesOfCoveringRules.length + " rules"
                     ]
                 }

@@ -24,12 +24,13 @@ function parseRulesListItems(items) {
             listItems.push({
                 id: items[i].id,
                 header: items[i].name.decisionsToString(),
-                subheader: "Type: " + items[i].traits["Type"],
-                content: "Support: " + items[i].traits["Support"] +
+                subheader: `Rule ${items[i].id + 1}`,
+                caption: `Support: ${items[i].traits["Support"]}` +
                     ` | Strength: ${getFixed(items[i].traits["Strength"])}` +
                     ` | Coverage factor: ${getFixed(items[i].traits["Coverage factor"])}` +
                     ` | Confidence: ${getFixed(items[i].traits["Confidence"])}` +
                     ` | Epsilon measure: ${getFixed(items[i].traits["Epsilon measure"])}`,
+                subcaption: `Type: ${items[i].traits["Type"]}`,
                 multiContent: items[i].name.conditions.map(condition => (
                     {
                         title: condition.primary,

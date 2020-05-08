@@ -7,10 +7,10 @@ import MenuItem from "@material-ui/core/MenuItem";
 import styles from "./styles/Calculations.module.css"
 
 const tooltip = {
-    mainSimple: "Consistency measure is used when calculating lower approximations of unions of ordered decision classes " +
+    mainSimple: " is used when calculating lower approximations of unions of ordered decision classes " +
         "according to the Variable Consistency Dominance-based Rough Set Approach (VC-DRSA). " +
         "Available measures are defined as follows:",
-    mainExtended: "Consistency measure is used when calculating lower approximations of unions of ordered decision classes " +
+    mainExtended: " is used when calculating lower approximations of unions of ordered decision classes " +
         "according to the Variable Consistency Dominance-based Rough Set Approach (VC-DRSA), " +
         "and then, when inducing decision rules. The measures are defined as follows:",
     epsilon: " - measures, for a given object y and given union X, the ratio of " +
@@ -52,6 +52,7 @@ function TypeOfUnionsSelector(props) {
                 title={
                     <React.Fragment>
                         <p aria-label={"main"} className={tooltipClasses.paragraph}>
+                            <b>Consistency measure</b>
                             {tooltip["main" + variant[0].toUpperCase() + variant.slice(1)]}
                         </p>
                         <p aria-label={"epsilon"} className={tooltipClasses.paragraph}>

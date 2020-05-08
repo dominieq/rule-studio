@@ -9,7 +9,7 @@ const StyledList = withStyles(theme=> ({
     root: {
         backgroundColor: theme.palette.list.background,
         color: theme.palette.list.text,
-        maxWidth: "75%",
+        maxWidth: "90%",
         minWidth: "50%",
     }
 }), {name: "ResultList"})(props => <List {...props} />);
@@ -118,7 +118,6 @@ ResultList.propTypes = {
 };
 
 ResultList.defaultProps = {
-    component: "nav",
     disablePadding: true,
 };
 

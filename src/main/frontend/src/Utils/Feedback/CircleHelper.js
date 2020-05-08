@@ -26,17 +26,29 @@ const useStyles = makeStyles(theme => ({
             marginTop: "1em"
         }
     },
+    smaller: {
+        fontSize: 16,
+        height: 16,
+        width: 16
+    },
     small: {
+        fontSize: 24,
         height: 24,
-        width: 24,
+        width: 24
     },
     medium: {
+        fontSize: 36,
         height: 36,
-        width: 36,
+        width: 36
     },
     big: {
+        fontSize: 48,
         height: 48,
-        width: 48,
+        width: 48
+    },
+    smallerIcon: {
+        height: "1rem",
+        width: "1rem"
     },
     smallIcon: {
         height: "1em",
@@ -80,6 +92,7 @@ function CircleHelper(props) {
         <ClickAwayListener onClickAway={onTooltipClose}>
             <div id={"click-away-wrapper"} {...WrapperProps}>
                 <CustomTooltip
+                    arrow={true}
                     classes={multiRow ? {tooltip: classes.multiRow} : newTooltipClasses}
                     disableFocusListener={true}
                     disableHoverListener={true}
@@ -106,7 +119,7 @@ function CircleHelper(props) {
 CircleHelper.propTypes = {
     AvatarProps: PropTypes.object,
     multiRow: PropTypes.bool,
-    size: PropTypes.oneOf(["small", "medium", "big"]),
+    size: PropTypes.oneOf(["smaller", "small", "medium", "big"]),
     title: PropTypes.node.isRequired,
     TooltipProps: PropTypes.object,
     WrapperProps: PropTypes.object,

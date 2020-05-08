@@ -12,7 +12,7 @@ const paperStyles = makeStyles(theme => ({
     root: {
         backgroundColor: theme.palette.background.default,
     }
-}), {name: "fullscreen-dialog"});
+}), {name: "FullscreenDialog"});
 
 function FullscreenDialog(props) {
     const { children, onClose, open, ...other } = props;
@@ -40,4 +40,4 @@ FullscreenDialog.propTypes = {
     open: PropTypes.bool.isRequired,
 };
 
-export default FullscreenDialog
+export default FullscreenDialog;

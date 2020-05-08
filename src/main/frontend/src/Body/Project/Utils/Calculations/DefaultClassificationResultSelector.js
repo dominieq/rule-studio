@@ -7,7 +7,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import styles from "./styles/Calculations.module.css";
 
 const tooltip = {
-    main: "Default classification result is returned by the selected classifier if no rule matches classified object. " +
+    main: " is returned by the selected classifier if no rule matches classified object. " +
         "Available methods of determining default classification result:",
     majorityDecisionClass: " -  if no rule matches classified object, " +
         "then suggested decision is the most frequent class in the training data set",
@@ -45,6 +45,7 @@ function DefaultClassificationResultSelector(props) {
                 title={
                     <React.Fragment>
                         <p aria-label={"main"} className={classes.paragraph}>
+                            <b>Default classification result</b>
                             {tooltip.main}
                         </p>
                         <p aria-label={"result-one"} className={classes.paragraph}>

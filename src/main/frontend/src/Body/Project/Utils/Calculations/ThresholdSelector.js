@@ -6,14 +6,14 @@ import StyledSlider from "../../../../Utils/Inputs/StyledSlider";
 import styles from "./styles/Calculations.module.css";
 
 const tooltip = {
-    mainSimple: "Consistency threshold is used when calculating lower approximations of unions of ordered decision classes " +
+    mainSimple: " is used when calculating lower approximations of unions of ordered decision classes " +
         "according to the Variable Consistency Dominance-based Rough Set Approach (VC-DRSA). " +
         "In VC-DRSA, an object y, belonging to a union of ordered decision classes X, " +
         "is considered to belong to the lower approximation of X if selected consistency measure, " +
         "calculated with respect to y and X, satisfies considered consistency threshold t. " +
         "Note that for a gain-type consistency measure, like rough membership, one checks if measure’s value is \u2265 t. " +
         "However, for a cost-type consistency measure, like epsilon, one checks if measure’s value is \u2264 t.",
-    mainExtended: "Consistency threshold is used when calculating lower approximations of unions of ordered decision classes " +
+    mainExtended: " is used when calculating lower approximations of unions of ordered decision classes " +
         "according to the Variable Consistency Dominance-based Rough Set Approach (VC-DRSA) ), " +
         "and then, when inducing decision rules. " +
         "In VC-DRSA, an object y, belonging to a union of ordered decision classes X, " +
@@ -98,6 +98,7 @@ class ThresholdSelector extends Component {
                 <CircleHelper
                     title={
                         <p aria-label={"main"} style={{margin: 0, textAlign: "justify"}}>
+                            <b>Consistency threshold</b>
                             {tooltip["main" + variant[0].toUpperCase() + variant.slice(1)]}
                         </p>
                     }

@@ -459,7 +459,7 @@ class Rules extends Component {
                 <StyledPaper id={"rules-bar"} paperRef={this.upperBar}>
                     <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
-                    <CustomTooltip title={"Click on settings button to the left to customize parameters"}>
+                    <CustomTooltip title={"Click on settings button on the left to customize parameters"}>
                         <CalculateButton
                             aria-label={"rules-calculate-button"}
                             disabled={loading}
@@ -578,6 +578,13 @@ class Rules extends Component {
                     isLoading={loading}
                     ListProps={{
                         onItemSelected: this.onDetailsOpen
+                    }}
+                    ListSubheaderProps={{
+                        disableHelper: false,
+                        helper: "First row of each rule presents decision condition. " +
+                            "Next rows present subsequent elementary conditions. " +
+                            "These elementary conditions are connected by AND. " +
+                            "Last row shows chosen rule’s characteristics."
                     }}
                     noFilterResults={!displayedItems}
                     subheaderContent={[

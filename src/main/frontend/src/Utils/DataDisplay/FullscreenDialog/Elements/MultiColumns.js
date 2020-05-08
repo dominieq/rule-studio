@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import DialogContent from "@material-ui/core/DialogContent";
 
 const contentStyles = makeStyles({
@@ -15,9 +15,9 @@ const contentStyles = makeStyles({
             width: props => { return (90 / props.number) + "%" }
         }
     }
-}, {name: "multi-col-dialog-content"});
+}, {name: "MultiColumns"});
 
-function MultiColDialogContent(props) {
+function MultiColumns(props) {
     const contentClasses = contentStyles({number: props.numberOfColumns});
 
     return (
@@ -27,13 +27,13 @@ function MultiColDialogContent(props) {
     )
 }
 
-MultiColDialogContent.propTypes = {
+MultiColumns.propTypes = {
     children: PropTypes.node,
     numberOfColumns: PropTypes.number,
 };
 
-MultiColDialogContent.defaultProps = {
+MultiColumns.defaultProps = {
     numberOfColumns: 3
 };
 
-export default MultiColDialogContent;
+export default MultiColumns;

@@ -10,7 +10,7 @@ export const PlainText = withStyles({
         fontSize: "unset",
         fontWeight: "unset",
     }
-}, {name: "plain-text"})(props => <Typography component={"p"} {...props} />);
+}, {name: "PlainText"})(props => <Typography component={"p"} {...props} />);
 
 const wrapperStyles = makeStyles({
     wrapper: {
@@ -24,7 +24,7 @@ const wrapperStyles = makeStyles({
             marginLeft: 4
         }
     }
-}, {name: "text-with-hover-tooltip"});
+}, {name: "HoverTooltip"});
 
 function TextWithHoverTooltip(props) {
     const { children, roundNumbers, TooltipProps, tooltipTitle, TypographyProps } = props;
@@ -34,7 +34,7 @@ function TextWithHoverTooltip(props) {
     let displayedTitle = text;
 
     if (typeof text === "number" && roundNumbers) {
-        if (text.toFixed(2).length <= text.toString().length) {
+        if (text.toFixed(2).length < text.toString().length) {
             text = text.toFixed(2) + "...";
         }
     }
