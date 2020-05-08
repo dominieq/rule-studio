@@ -1,15 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import { addSubheaders } from "../../../Body/Project/Utils/parseData";
 import { CenteredColumn } from "./Elements";
+import { FullscreenDialog, MultiColumns, TitleBar } from "../FullscreenDialog";
+import TextWithHoverTooltip from "../TextWithHoverTooltip";
 import VirtualizedMatrix, { estimateMatrixHeight, estimateMatrixWidth } from "../VirtualizedMatrix";
 import { estimateTableHeight } from "../VirtualizedTable";
 import TraitsTable from "../../Feedback/DetailsDialog/Elements/TraitsTable";
-import FullscreenDialog from "../FullscreenDialog";
-import FullscreenDialogTitleBar from "../FullscreenDialogTitleBar";
-import MultiColDialogContent from "../MultiColDialogContent";
-import TextWithHoverTooltip from "../TextWithHoverTooltip";
+import { addSubheaders } from "../../../Body/Project/Utils/parseData";
 import Fade from "@material-ui/core/Fade";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -19,7 +17,7 @@ const StyledMenu = withStyles(theme => ({
         backgroundColor: theme.palette.popper.background,
         color: theme.palette.popper.text
     }
-}), {name: "MuiMenu"})(props => <Menu {...props} />);
+}), {name: "ContextMenu"})(props => <Menu {...props} />);
 
 class MatrixDialog extends React.PureComponent {
     constructor(props) {
@@ -151,11 +149,11 @@ class MatrixDialog extends React.PureComponent {
 
         return (
             <FullscreenDialog open={open} onEntering={this.onEntering} onClose={onClose}>
-                <FullscreenDialogTitleBar
+                <TitleBar
                     onClose={onClose}
                     title={title}
                 />
-                <MultiColDialogContent numberOfColumns={numberOfColumns}>
+                <MultiColumns numberOfColumns={numberOfColumns}>
                     <CenteredColumn
                         height={heightMatrix}
                         InnerWrapperProps={{
@@ -198,7 +196,7 @@ class MatrixDialog extends React.PureComponent {
                             traits={displayedTraits}
                         />
                     </CenteredColumn>
-                </MultiColDialogContent>
+                </MultiColumns>
                 <StyledMenu
                     anchorPosition={
                        mouseX !== null && mouseY !== null

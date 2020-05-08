@@ -2,9 +2,9 @@ import React, {useEffect} from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
-import CustomTooltip from "./CustomTooltip";
-import StyledButton from "../Inputs/StyledButton";
-import StyledPaper from "../Surfaces/StyledPaper";
+import CustomTooltip from "../../CustomTooltip";
+import StyledButton from "../../../Inputs/StyledButton";
+import StyledPaper from "../../../Surfaces/StyledPaper";
 import Typography from "@material-ui/core/Typography";
 import WindowClose from "mdi-material-ui/WindowClose";
 
@@ -16,6 +16,7 @@ const useStyles = makeStyles(theme => ({
     rootOverflow: {
         overflowX: "hidden",
         overflowY: "hidden",
+        scrollbarWidth: "thin",
         '&:hover': {
             overflowX: "auto",
         },
@@ -30,7 +31,7 @@ const useStyles = makeStyles(theme => ({
             }
         },
         '&::-webkit-scrollbar-track': {
-            "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.3)",
+            boxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
             borderRadius: 4
         }
     },
@@ -77,9 +78,9 @@ const useStyles = makeStyles(theme => ({
             marginTop: "1em",
         }
     }
-}), {name: "title-bar"});
+}), {name: "TitleBar"});
 
-function FullscreenDialogTitleBar(props) {
+function TitleBar(props) {
     const { onClose, optional, title } = props;
 
     const classes = useStyles();
@@ -150,10 +151,10 @@ function FullscreenDialogTitleBar(props) {
     )
 }
 
-FullscreenDialogTitleBar.propTypes = {
+TitleBar.propTypes = {
     onClose: PropTypes.func,
     optional: PropTypes.node,
     title: PropTypes.node,
 };
 
-export default FullscreenDialogTitleBar;
+export default TitleBar;

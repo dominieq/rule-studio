@@ -1,18 +1,16 @@
 import React from 'react';
 import PropTypes from "prop-types";
-import FullscreenDialog from "../../DataDisplay/FullscreenDialog";
-import MultiColDialogContent from "../../DataDisplay/MultiColDialogContent";
-import FullscreenDialogTitleBar from "../../DataDisplay/FullscreenDialogTitleBar";
+import { FullscreenDialog, MultiColumns, TitleBar } from "../../DataDisplay/FullscreenDialog";
 
 function DetailsDialog(props) {
     const {children, onClose, open, optional, title, ...other} = props;
 
     return (
         <FullscreenDialog onClose={onClose} open={open} {...other}>
-            <FullscreenDialogTitleBar onClose={onClose} optional={optional} title={title}/>
-            <MultiColDialogContent>
+            <TitleBar onClose={onClose} optional={optional} title={title}/>
+            <MultiColumns>
                 {children}
-            </MultiColDialogContent>
+            </MultiColumns>
         </FullscreenDialog>
     );
 }
