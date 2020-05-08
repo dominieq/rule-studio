@@ -339,6 +339,7 @@ class Classification extends Component {
                     <CustomButtonGroup
                         id={"classification-button-group"}
                         options={["Classify current data", "Choose new data & classify"]}
+                        tooltips={"Click on settings button on the left to customize parameters"}
                     >
                         <CalculateButton
                             aria-label={"classify-current-file"}
