@@ -269,7 +269,7 @@ class Unions extends Component {
                 <StyledPaper id={"unions-bar"} paperRef={this.upperBar}>
                     <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
-                    <CustomTooltip title={"Click on settings button to the left to customize parameters"}>
+                    <CustomTooltip title={"Click on settings button on the left to customize parameters"}>
                         <CalculateButton
                             aria-label={"unions-calculate-button"}
                             disabled={loading}
