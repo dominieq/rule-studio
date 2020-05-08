@@ -273,6 +273,24 @@ public class ClassificationService {
         return classification;
     }
 
+    private static void checkNumberOfClassifiedObjects(int numberOfObjects, String message) {
+        if(numberOfObjects == 0) {
+            NoDataException ex = new NoDataException(message);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+    }
+
+    private static RuleSetWithCharacteristics getRuleSetToClassify(Project project) {
+        if(project.getRules() == null) {
+            NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        return project.getRules().getRuleSet();
+    }
+
     public Classification getClassification(UUID id) {
         logger.info("Id;\t{}", id);
 
@@ -297,18 +315,10 @@ public class ClassificationService {
             logger.error(ex.getMessage());
             throw ex;
         }
-        if(informationTable.getNumberOfObjects() == 0) {
-            NoDataException ex = new NoDataException("There are no objects in project. Couldn't reclassify.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
 
-        if(project.getRules() == null) {
-            NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
+        checkNumberOfClassifiedObjects(informationTable.getNumberOfObjects(), "There are no objects in project. Couldn't reclassify.");
+
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
         Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, informationTable);
         Classification classification = calculateClassification(informationTable, informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
@@ -347,19 +357,10 @@ public class ClassificationService {
             throw ex;
         }
 
-        if(project.getRules() == null) {
-            NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
         InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, attributes, separator, header);
-        if(newInformationTable.getNumberOfObjects() == 0) {
-            NoDataException ex = new NoDataException("There are no objects in external data. Couldn't classify.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        checkNumberOfClassifiedObjects(newInformationTable.getNumberOfObjects(), "There are no objects in external data. Couldn't classify.");
 
         Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);
         Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
@@ -382,18 +383,9 @@ public class ClassificationService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        if(informationTable.getNumberOfObjects() == 0) {
-            NoDataException ex = new NoDataException("There are no objects in project. Couldn't reclassify.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        checkNumberOfClassifiedObjects(informationTable.getNumberOfObjects(), "There are no objects in project. Couldn't reclassify.");
 
-        if(project.getRules() == null) {
-            NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
         Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, informationTable);
         Classification classification = calculateClassification(informationTable, informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
@@ -426,19 +418,10 @@ public class ClassificationService {
         InformationTable projectInformationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(projectInformationTable);
 
-        if(project.getRules() == null) {
-            NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
         InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, projectInformationTable.getAttributes(), separator, header);
-        if(newInformationTable.getNumberOfObjects() == 0) {
-            NoDataException ex = new NoDataException("There are no objects in external data. Couldn't classify.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        checkNumberOfClassifiedObjects(newInformationTable.getNumberOfObjects(), "There are no objects in external data. Couldn't classify.");
 
         Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);
         Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
