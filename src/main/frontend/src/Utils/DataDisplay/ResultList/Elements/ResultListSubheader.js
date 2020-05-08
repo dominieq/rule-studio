@@ -1,78 +1,94 @@
-import React, { Fragment } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
+import CircleHelper from "../../../Feedback/CircleHelper";
 import ListSubheader from "@material-ui/core/ListSubheader";
 
-const subheaderStyles = makeStyles(theme => ({
+const useStyles = makeStyles(theme => ({
     root: {
         alignItems: "center",
         borderBottom: `1px solid ${theme.palette.list.text}`,
         display: "flex",
-        flexWrap: "wrap",
         fontSize: theme.typography.subheader.fontSize,
         lineHeight: "unset",
-        padding: "8px 16px",
-        '& > div ~ div': {
-            marginLeft: 8,
-        },
-        '& > div ~ hr': {
-            marginLeft: 8
-        }
-    }
-}), {name: "result-list-subheader"});
-
-const textStyles = makeStyles(theme => ({
+        padding: "8px 16px"
+    },
+    parameters: {
+        display: "flex",
+        flexGrow: 1,
+        flexWrap: "wrap",
+        paddingRight: 16
+    },
     parameterCell: {
         alignItems: "center",
-        display: "flex",
+        display: "flex"
     },
     textCell: {
         height: "fit-content",
-        width: "fit-content",
+        width: "fit-content"
     },
     label: {
         color: theme.palette.button.primary,
         marginRight: 8,
         letterSpacing: theme.typography.subheader.letterSpacing,
-        textTransform: theme.typography.subheader.textTransform,
+        textTransform: theme.typography.subheader.textTransform
     },
     value: {
-        color: theme.palette.button.secondary,
+        color: theme.palette.button.secondary
     },
     divider: {
         alignSelf: "stretch",
         backgroundColor: theme.palette.list.text,
         borderColor: theme.palette.list.text,
         height: "auto",
-        margin: 0,
+        margin: "0 8px",
         width: 1
+    },
+    helper: {
+        display: "flex",
+        flexDirection: "column"
     }
-}), {name: "subheader-text"});
+}), {name: "ResultListSubheader"});
 
 function ResultListSubheader(props) {
-    const { children, ...other } = props;
-    const subheaderClasses = subheaderStyles();
-    const textClasses = textStyles();
+    const { children, disableHelper, helper, ...other } = props;
+    const classes = useStyles();
 
     return (
-        <ListSubheader classes={{root: subheaderClasses.root}} {...other}>
-            {children.map((child, index) => (
-                <Fragment key={index}>
-                    <div className={textClasses.parameterCell}>
-                        <div className={clsx(textClasses.textCell, textClasses.label)}>
-                            { child.label }
+        <ListSubheader classes={{root: classes.root}} {...other}>
+            <div aria-label={"parameters"} className={classes.parameters}>
+                {children.map((child, index) => (
+                    <React.Fragment  key={index}>
+                        <div aria-label={"parameter"} className={classes.parameterCell}>
+                            <div aria-label={"label"} className={clsx(classes.textCell, classes.label)}>
+                                { child.label }
+                            </div>
+                            <div aria-label={"value"} className={clsx(classes.textCell, classes.value)}>
+                                { child.value }
+                            </div>
                         </div>
-                        <div className={clsx(textClasses.textCell, textClasses.value)}>
-                            { child.value }
-                        </div>
-                    </div>
-                    {index !== children.length - 1 &&
-                        <hr className={textClasses.divider} />
+                        {index !== children.length - 1 &&
+                            <hr aria-label={"divider"} className={classes.divider} />
+                        }
+                    </React.Fragment>
+                ))}
+            </div>
+            <div
+                aria-label={"helper"}
+                className={classes.helper}
+                style={disableHelper ? {display: "none"} : undefined}
+            >
+                <CircleHelper
+                    size={"smaller"}
+                    title={
+                        <p aria-label={"helper text"} style={{margin: 0, textAlign: "justify"}}>
+                            {helper}
+                        </p>
                     }
-                </Fragment>
-
-            ))}
+                    TooltipProps={{ placement: "left-end" }}
+                />
+            </div>
         </ListSubheader>
     );
 }
@@ -87,12 +103,15 @@ ResultListSubheader.propTypes = {
     component: PropTypes.elementType,
     disableGutters: PropTypes.bool,
     disableSticky: PropTypes.bool,
-    inset: PropTypes.bool,
+    disableHelper: PropTypes.bool,
+    helper: PropTypes.node,
+    inset: PropTypes.bool
 };
 
 ResultListSubheader.defaultProps = {
-    component: 'div',
+    component: "header",
     disableGutters: true,
+    disableHelper: true
 };
 
 export default ResultListSubheader;
