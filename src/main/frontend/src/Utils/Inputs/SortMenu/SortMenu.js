@@ -41,6 +41,7 @@ const labelStyles = makeStyles(theme => ({
 
 const virtualStyles = makeStyles(theme => ({
     root: {
+        scrollbarWidth: "thin",
         '&::-webkit-scrollbar': {
             width: 8
         },
@@ -96,6 +97,7 @@ function SortMenu(props) {
                     <StyledRadioButton
                         checkedIcon={<Check />}
                         icon={<span style={{display: "none"}} />}
+                        inputProps={{ style: {display: "none"}}}
                         style={{padding: 0}}
                     />
                 }
@@ -155,7 +157,7 @@ function SortMenu(props) {
                 orientation={"horizontal"}
             />
             <FormLabel classes={{...labelClasses}} component={"header"} style={{marginTop: "0.5rem"}}>
-                Choose order direction:
+                Choose sorting order:
             </FormLabel>
             {ContentProps.chooseOrder &&
                 <RadioGroup
@@ -170,7 +172,8 @@ function SortMenu(props) {
                                 :
                                 <StyledRadioButton
                                     checkedIcon={<Check />}
-                                    icon={<span style={{display: "none"}}/>}
+                                    icon={<span style={{display: "none"}} />}
+                                    inputProps={{ style: {display: "none"}}}
                                     style={{padding: 0}}
                                 />
                             }

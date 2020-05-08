@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
+import BigNumber from "bignumber.js";
 import {
     createFormData,
     downloadMatrix,
@@ -79,11 +80,10 @@ class CrossValidation extends Component {
     }
 
     getCrossValidation = () => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
 
         fetchCrossValidation(
-            base, project.result.id, 'GET', null
+            serverBase, project.result.id, 'GET', null
         ).then(result => {
             if (this._isMounted && result) {
                 const { project: { parametersSaved, foldIndex, settings } } = this.props
@@ -120,11 +120,18 @@ class CrossValidation extends Component {
         }).finally(() => {
             if ( this._isMounted ) {
                 const { parametersSaved } = this.state;
-                const { project: { parameters: propsParameters } } = this.props;
+                const { project: { parameters: propsParams, result: { informationTable: { objects }}}} = this.props;
+                let { numberOfFolds, ...otherParams } = propsParams;
+
+                if (objects.length < numberOfFolds) {
+                    otherParams = { ...otherParams, numberOfFolds: objects.length };
+                } else {
+                    otherParams = { ...otherParams, numberOfFolds: numberOfFolds };
+                }
 
                 this.setState(({parameters, selected}) => ({
                     loading: false,
-                    parameters: parametersSaved ? parameters : { ...parameters, ...propsParameters },
+                    parameters: parametersSaved ? parameters : { ...parameters, ...otherParams },
                     selected: { ...selected, item: null }
                 }));
             }
@@ -138,6 +145,7 @@ class CrossValidation extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        /* Check if default objects name has changed */
         if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
             const { folds, selected: { foldIndex } } = this.state;
             const { project } = this.props;
@@ -150,6 +158,7 @@ class CrossValidation extends Component {
         const { parameters: prevParameters } = prevState;
         const { parameters } = this.state;
 
+        /* Check if consistency measure has changed and whether consistency threshold had boundary value */
         if (parameters.typeOfUnions !== "monotonic") {
             if (parameters.consistencyThreshold === 1) {
                 this.setState(({parameters}) => ({
@@ -162,12 +171,14 @@ class CrossValidation extends Component {
             }
         }
 
+        /* Check if type of rules changed to possible */
         if (prevParameters.typeOfRules !== parameters.typeOfRules && parameters.typeOfRules === "possible") {
             this.setState(({parameters}) => ({
                 parameters: { ...parameters, consistencyThreshold: 0}
             }));
         }
 
+        /* Check if project has been changed by user and save changes from previous project */
         if (prevProps.project.result.id !== this.props.project.result.id) {
             const { parametersSaved } = prevState;
 
@@ -209,14 +220,12 @@ class CrossValidation extends Component {
     }
 
     onCalculateClick = () => {
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
+        const { parameters } = this.state;
 
         this.setState({
             loading: true,
         }, () => {
-            let project = { ...this.props.project };
-            const { parameters } = this.state;
-
             let method = project.dataUpToDate ? "PUT" : "POST";
             let files =  {
                 metadata: JSON.stringify(project.result.informationTable.attributes),
@@ -225,7 +234,7 @@ class CrossValidation extends Component {
             let data = createFormData(parameters, project.dataUpToDate ? null : files);
 
             fetchCrossValidation(
-                base, project.result.id, method, data
+                serverBase, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -246,20 +255,21 @@ class CrossValidation extends Component {
                             });
                         });
                     }
+                    let newProject = { ...project };
 
-                    project.result.crossValidation = result;
-                    project.dataUpToDate = true;
-                    project.tabsUpToDate[this.props.value] = true;
+                    newProject.result.crossValidation = result;
+                    newProject.dataUpToDate = true;
+                    newProject.tabsUpToDate[this.props.value] = true;
 
                     let resultParameters = parseCrossValidationParams(result);
 
-                    project.parameters = {
-                        ...project.parameters,
+                    newProject.parameters = {
+                        ...newProject.parameters,
                         ...resultParameters,
-                        typeOfUnions: project.parameters.typeOfUnions
+                        typeOfUnions: newProject.parameters.typeOfUnions
                     };
-                    project.parametersSaved = true;
-                    this.props.onTabChange(project);
+                    newProject.parametersSaved = true;
+                    this.props.onTabChange(newProject);
                 }
 
             }).catch(error => {
@@ -275,10 +285,9 @@ class CrossValidation extends Component {
     };
 
     onSaveToFile = (data) => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
 
-        downloadMatrix(base, project.result.id, data).catch(error => {
+        downloadMatrix(serverBase, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }
@@ -319,13 +328,26 @@ class CrossValidation extends Component {
         }
     };
 
-    onSeedChange = (event) => {
-        const { loading } = this.state;
-        const input = event.target.value;
+    onSeedChange = (number) => {
+        const javaLong = new BigNumber("9223372036854775807");
 
-        if (!loading && !isNaN(input)) {
+        const { loading } = this.state;
+        const bigNumber = new BigNumber(number);
+
+        if (!loading && !bigNumber.isNaN()) {
+            if (bigNumber.isGreaterThan(javaLong)) {
+                this.setState({
+                    alertProps: {
+                        message: "Seed shouldn't be greater than 9223372036854775807.",
+                        open: true,
+                        severity: "warning"
+                    }
+                })
+                return;
+            }
+
             this.setState(({parameters}) => ({
-                parameters: { ...parameters, seed: input },
+                parameters: { ...parameters, seed: bigNumber },
                 parametersSaved: false
             }));
         }
@@ -336,10 +358,7 @@ class CrossValidation extends Component {
         const newSeed = Math.round(Math.random() * Math.pow(10, 16));
 
         if (!loading) {
-            this.setState(({parameters}) => ({
-                parameters: { ...parameters, seed: newSeed },
-                parametersSaved: false
-            }));
+            this.onSeedChange(newSeed);
         }
     }
 
@@ -389,7 +408,7 @@ class CrossValidation extends Component {
 
     onNumberOfFoldsChange = (event) => {
         const { loading } = this.state;
-        const input = event.target.value;
+        let input = event.target.value;
 
         if (!loading && !isNaN(input)) {
             this.setState(({parameters}) => ({
@@ -398,6 +417,37 @@ class CrossValidation extends Component {
             }));
         }
     };
+
+    onNumberOfFoldsBlur = () => {
+        this.setState(({parameters}) => {
+            const { numberOfFolds } = parameters;
+            const { project: { result: { informationTable: { objects }}}} = this.props;
+
+            if (numberOfFolds > objects.length) {
+                return {
+                    parameters: { ...parameters, numberOfFolds: objects.length },
+                    alertProps: {
+                        message: "Number of folds should be less than or equal to number of objects.",
+                        open: true,
+                        severity: "warning"
+                    }
+                };
+            } else if (numberOfFolds < 2 && objects.length >= 2) {
+                return {
+                    parameters: { ...parameters, numberOfFolds: 2 },
+                    alertProps: {
+                        message: "Number of folds should be greater than or equal to 2.",
+                        open: true,
+                        severity: "warning"
+                    }
+                };
+            } else {
+                return {
+                    parameters: { ...parameters }
+                };
+            }
+        })
+    }
 
     onFoldIndexChange = (event) => {
         const { loading } = this.state;
@@ -449,7 +499,7 @@ class CrossValidation extends Component {
                 <StyledPaper id={"cross-validation-bar"} paperRef={this.upperBar}>
                     <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
-                    <CustomTooltip title={"Click on settings button to the left to customize parameters"}>
+                    <CustomTooltip title={"Click on settings button on the left to customize parameters"}>
                         <CalculateButton
                             aria-label={"cross-validation-calculate-button"}
                             disabled={loading}
@@ -465,7 +515,7 @@ class CrossValidation extends Component {
                                 onClick={() => this.toggleOpen("matrixMean")}
                                 title={"Show mean ordinal misclassification matrix"}
                             />
-                            <CustomTooltip title={"Show sum ordinal misclassification matrix"}>
+                            <CustomTooltip title={"Show accumulated ordinal misclassification matrix"}>
                                 <StyledButton
                                     aria-label={"sum-matrix-button"}
                                     isIcon={true}
@@ -546,13 +596,14 @@ class CrossValidation extends Component {
                     <SeedSelector
                         randomizeSeed={this.onSeedRandomize}
                         TextFieldProps={{
-                            onChange: this.onSeedChange,
+                            onChange: event => this.onSeedChange(event.target.value),
                             value: parameters.seed
                         }}
                     />
                     <NumberOfFoldsSelector
                         TextFieldProps={{
                             onChange: this.onNumberOfFoldsChange,
+                            onBlur: this.onNumberOfFoldsBlur,
                             value: parameters.numberOfFolds
                         }}
                     />
@@ -607,7 +658,7 @@ class CrossValidation extends Component {
                             <React.Fragment>
                                 <MatrixSwapButton
                                     onSwap={() => this.swapMatrix("matrixMean", "matrixSum")}
-                                    tooltip={"Go to sum ordinal misclassification matrix"}
+                                    tooltip={"Go to accumulated ordinal misclassification matrix"}
                                 />
                                 <MatrixDownloadButton
                                     onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
@@ -637,10 +688,10 @@ class CrossValidation extends Component {
                                 />
                                 <MatrixDownloadButton
                                     onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
-                                    tooltip={"Download sum matrix (txt)"}
+                                    tooltip={"Download accumulated matrix (txt)"}
                                 />
                                 <span aria-label={"sum matrix title"} style={{paddingLeft: 8}}>
-                                    Sum ordinal misclassification matrix and details
+                                    Accumulated ordinal misclassification matrix and details
                                 </span>
                             </React.Fragment>
 
@@ -692,7 +743,8 @@ class CrossValidation extends Component {
 CrossValidation.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    value: PropTypes.number,
+    serverBase: PropTypes.string,
+    value: PropTypes.number
 };
 
 export default CrossValidation;

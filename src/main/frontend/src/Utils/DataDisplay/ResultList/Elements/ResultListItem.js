@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     secondary: {
         color: theme.palette.button.secondary,
     }
-}), {name: "result-list-item"});
+}), {name: "ResultListItem"});
 
 function ResultListItem(props) {
     const { classes: propsClasses, object, ...other } = props;
@@ -84,10 +84,24 @@ function ResultListItem(props) {
                     ))}
                 </div>
             }
-            {object.content &&
-                <Typography className={classes.primary} component={"p"} variant={"body2"}>
-                    {object.content}
-                </Typography>
+            {(object.caption || object.subcaption) &&
+                <div className={classes.row} style={{width: "100%"}}>
+                    {object.caption &&
+                        <Typography
+                            className={classes.primary}
+                            component={"p"}
+                            style={{marginRight: "auto", paddingRight: 16}}
+                            variant={"body2"}
+                        >
+                            {object.caption}
+                        </Typography>
+                    }
+                    {object.subcaption &&
+                        <Typography className={classes.primary} component={"p"} variant={"body2"}>
+                            {object.subcaption}
+                        </Typography>
+                    }
+                </div>
             }
         </StyledListItem>
     )
@@ -110,11 +124,12 @@ ResultListItem.propTypes = {
         id: PropTypes.number,
         header: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         subheader: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-        content: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         multiContent: PropTypes.arrayOf(PropTypes.shape({
             title: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
             subtitle: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-        }))
+        })),
+        caption: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        subcaption: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
     }),
     selected: PropTypes.bool,
 };
@@ -122,7 +137,7 @@ ResultListItem.propTypes = {
 ResultListItem.defaultProps = {
     button: true,
     disableRipple: true,
-    divider: true,
+    divider: true
 };
 
-export default ResultListItem
+export default ResultListItem;

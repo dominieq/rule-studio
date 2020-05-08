@@ -8,7 +8,7 @@ import styles from "./styles/Calculations.module.css";
 import Shuffle from "@material-ui/icons/Shuffle";
 
 const tooltip = {
-    main: "Numeric value used by random number generator." +
+    main: "Numeric value used by random number generator. " +
         "Using the same seed guarantees the repeatability of cross-validation for given data set."
 };
 

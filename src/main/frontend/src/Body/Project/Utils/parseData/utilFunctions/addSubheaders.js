@@ -1,8 +1,8 @@
 function addSubheaders(subheaders, matrix) {
     let matrixWithSubheaders = [];
 
-    if (subheaders && Array.isArray(matrix)) {
-        let names = subheaders.map(domain => domain.evaluation.element);
+    if (Array.isArray(subheaders) && Array.isArray(matrix)) {
+        let names = [ ...subheaders ];
         names.unshift(0);
 
         matrixWithSubheaders = [

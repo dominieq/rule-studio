@@ -72,7 +72,8 @@ class ProjectTabs extends React.Component {
         return ({
             project: this.props.project,
             onTabChange: this.props.onTabChange,
-            value: index,
+            serverBase: this.props.serverBase,
+            value: index
         })
     };
 
@@ -155,7 +156,7 @@ class ProjectTabs extends React.Component {
                 </StyledTabs>
                 {
                     {
-                        0: <Data project={this.props.project} updateProject={this.props.onDataChange} />,
+                        0: <Data project={this.props.project} updateProject={this.props.onDataChange} serverBase={this.props.serverBase}/>,
                         1: <Cones {...this.getTabBodyProps(0)} />,
                         2: <Unions {...this.getTabBodyProps(1)} />,
                         3: <Rules {...this.getTabBodyProps(2)} />,
@@ -172,6 +173,7 @@ ProjectTabs.propTypes = {
     onDataChange: PropTypes.func,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
+    serverBase: PropTypes.string
 };
 
 export default ProjectTabs;

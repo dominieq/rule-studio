@@ -100,9 +100,9 @@ class SettingsProjectDialog extends PureComponent {
                                 {options}
                             </CustomTextField>
                             <CircleHelper
-                                title={"Sets names of objects that will be displayed in tabs."}
+                                title={"Sets default names of objects."}
                                 TooltipProps={{
-                                    placement: "top-start"
+                                    placement: "top-end"
                                 }}
                                 WrapperProps={{
                                     style: {marginLeft: 16}

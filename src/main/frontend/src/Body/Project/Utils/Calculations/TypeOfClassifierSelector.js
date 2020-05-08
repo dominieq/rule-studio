@@ -7,7 +7,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import styles from "./styles/Calculations.module.css";
 
 const tooltip = {
-    main: "Classifier is responsible for classification of each object using induced decision rules that match the object, " +
+    main: " is responsible for classification of each object using induced decision rules that match the object, " +
         "and for handling the situation when no rule matches the object. Available classifiers:",
     simpleRuleClassifier: " - takes into account separately at least and at most rules. " +
         "If all rules covering classified object are of the same type (at least or at most), " +
@@ -74,6 +74,7 @@ function TypeOfClassifierSelector(props) {
                 title={
                     <React.Fragment>
                         <p aria-label={"main"} className={classes.paragraph}>
+                            <b>Classifier</b>
                             {tooltip.main}
                         </p>
                         <p aria-label={"classifier-one"} className={classes.paragraph}>
@@ -96,8 +97,7 @@ function TypeOfClassifierSelector(props) {
                 }
                 TooltipProps={{
                     classes: { multiRow: classes.maxWidth },
-                    placement: "right-start",
-                    PopperProps: { disablePortal: false }
+                    placement: "right-start"
                 }}
                 WrapperProps={{
                     style: { marginRight: 16 }

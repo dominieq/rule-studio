@@ -31,9 +31,12 @@ public class ClassificationResultArraySerializer extends JsonSerializer<Classifi
             EvaluationField evaluationField = ((SimpleDecision)classificationResult.getSuggestedDecision()).getEvaluation();
             jsonGenerator.writeString(evaluationField.toString());
 
+
+            jsonGenerator.writeFieldName("certainty");
             if(classificationResult instanceof SimpleEvaluatedClassificationResult) {
-                jsonGenerator.writeFieldName("suggestedDecisionEvaluation");
                 jsonGenerator.writeNumber(((SimpleEvaluatedClassificationResult)classificationResult).getSuggestedDecisionEvaluation());
+            } else {
+                jsonGenerator.writeNumber(1);
             }
 
             jsonGenerator.writeEndObject();

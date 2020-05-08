@@ -1,6 +1,7 @@
-import React, {Component} from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import CustomTooltip from "../DataDisplay/CustomTooltip";
 import StyledButton from "./StyledButton";
 import StyledPaper from "../Surfaces/StyledPaper";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
@@ -26,7 +27,7 @@ const useStyles = makeStyles(theme => ({
             borderRadius: "0 4px 4px 0",
         },
     },
-}), {name: "button-wrapper"});
+}), {name: "ButtonWrapper"});
 
 function ButtonWrapper(props) {
     const {children, placement} = props;
@@ -41,10 +42,10 @@ function ButtonWrapper(props) {
 
 ButtonWrapper.propTypes = {
     children: PropTypes.element.isRequired,
-    placement: PropTypes.oneOf(["left", "right"]),
+    placement: PropTypes.oneOf(["left", "right"]).isRequired,
 };
 
-class CustomButtonGroup extends Component {
+class CustomButtonGroup extends React.Component {
     constructor(props) {
         super(props);
 
@@ -81,32 +82,37 @@ class CustomButtonGroup extends Component {
 
     render() {
         const {open, selected} = this.state;
-        const {children, options, ...other} = this.props;
+        const {children, options, tooltips, ...other} = this.props;
         const childrenArray = React.Children.toArray(children);
 
         return (
             <div {...other}>
                 <ButtonGroup aria-label={"split button"} ref={this.anchorRef}>
                     <ButtonWrapper placement={"left"}>
-                        <StyledButton
-                            aria-controls={open ? 'split-button-menu' : undefined}
-                            aria-expanded={open ? true : undefined}
-                            aria-label={"select classification method"}
-                            aria-haspopup={"menu"}
-                            disableElevation={true}
-                            onClick={this.onToggleButtonClick}
-                            themeVariant={"primary"}
-                            variant={"contained"}
-                        >
-                            <ArrowDropDownIcon />
-                        </StyledButton>
+                        <CustomTooltip enterDelay={1000} enterNextDelay={1000} title={"Open menu"}>
+                            <StyledButton
+                                aria-controls={open ? 'split-button-menu' : undefined}
+                                aria-expanded={open ? true : undefined}
+                                aria-label={"select classification method"}
+                                aria-haspopup={"menu"}
+                                disableElevation={true}
+                                onClick={this.onToggleButtonClick}
+                                themeVariant={"primary"}
+                                variant={"contained"}
+                            >
+                                <ArrowDropDownIcon />
+                            </StyledButton>
+                        </CustomTooltip>
                     </ButtonWrapper>
                     <ButtonWrapper placement={"right"}>
-                        {childrenArray[selected]}
+                        <CustomTooltip title={Array.isArray(tooltips) ? tooltips[selected] : tooltips}>
+                            {childrenArray[selected]}
+                        </CustomTooltip>
                     </ButtonWrapper>
                 </ButtonGroup>
                 <Popper
                     anchorEl={this.anchorRef.current}
+                    aria-label={'split-menu-button'}
                     disablePortal={true}
                     open={open}
                     role={undefined}
@@ -121,7 +127,7 @@ class CustomButtonGroup extends Component {
                         > 
                             <StyledPaper styleVariant={"popper"}>
                                 <ClickAwayListener onClickAway={this.onPopperClose}>
-                                    <MenuList >
+                                    <MenuList>
                                         {options.map((option, index) => (
                                             <MenuItem
                                                 key={index}
@@ -145,6 +151,10 @@ class CustomButtonGroup extends Component {
 CustomButtonGroup.propTypes = {
     children: PropTypes.arrayOf(PropTypes.node).isRequired,
     options: PropTypes.arrayOf(PropTypes.string).isRequired,
+    tooltips: PropTypes.oneOfType([
+        PropTypes.arrayOf(PropTypes.node),
+        PropTypes.node
+    ]).isRequired
 };
 
 export default CustomButtonGroup;

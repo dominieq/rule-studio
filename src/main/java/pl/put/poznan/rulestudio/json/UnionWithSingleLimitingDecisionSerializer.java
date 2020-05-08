@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.rulelearn.approximations.UnionWithSingleLimitingDecision;
-import org.rulelearn.types.EnumerationField;
 import org.rulelearn.types.EvaluationField;
-import org.rulelearn.types.IntegerField;
-import org.rulelearn.types.RealField;
 import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;
@@ -20,15 +17,7 @@ public class UnionWithSingleLimitingDecisionSerializer extends JsonSerializer<Un
         jsonGenerator.writeFieldName("limitingDecision");
         int attributeIndex = unionWithSingleLimitingDecision.getLimitingDecision().getAttributeIndices().iterator().nextInt(); //assumption that there is only one decision attribute
         EvaluationField evaluationField = unionWithSingleLimitingDecision.getLimitingDecision().getEvaluation(attributeIndex);
-        if(evaluationField instanceof EnumerationField) {
-            jsonGenerator.writeString(((EnumerationField)evaluationField).getElement());
-        } else if (evaluationField instanceof IntegerField) {
-            jsonGenerator.writeNumber(((IntegerField)evaluationField).getValue());
-        } else if (evaluationField instanceof RealField) {
-            jsonGenerator.writeNumber(((RealField)evaluationField).getValue());
-        } else {
-            jsonGenerator.writeString("Unrecognized type of EvaluationField");
-        }
+        jsonGenerator.writeString(evaluationField.toString());
     }
 
     @Override
@@ -36,6 +25,9 @@ public class UnionWithSingleLimitingDecisionSerializer extends JsonSerializer<Un
         ObjectMapper mapper = (ObjectMapper) jsonGenerator.getCodec();
 
         jsonGenerator.writeStartObject();
+
+        jsonGenerator.writeFieldName("Objects");
+        jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getObjects()));
 
         jsonGenerator.writeFieldName("Lower approximation");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getLowerApproximation()));
@@ -54,9 +46,6 @@ public class UnionWithSingleLimitingDecisionSerializer extends JsonSerializer<Un
 
         jsonGenerator.writeFieldName("Boundary region");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getBoundaryRegion()));
-
-        jsonGenerator.writeFieldName("Objects");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getObjects()));
 
         jsonGenerator.writeFieldName("unionType");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getUnionType()));

@@ -14,7 +14,7 @@ const StyledBadge = withStyles(theme => ({
             width: "0.75em"
         },
     },
-}), {name: "MuiBadge"})(props => <Badge {...props} />);
+}), {name: "AlertBadge"})(props => <Badge {...props} />);
 
 const useStyles = makeStyles({
     'update-width': {

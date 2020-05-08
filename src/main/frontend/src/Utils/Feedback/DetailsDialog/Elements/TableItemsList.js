@@ -16,9 +16,6 @@ const listStyles = makeStyles(theme => ({
         }
     },
     textItem: {
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
         '&:hover': {
             overflow: "visible",
             whiteSpace: "unset",
@@ -30,8 +27,7 @@ const listStyles = makeStyles(theme => ({
         color: theme.palette.list.subheader.text,
         display: "flex",
         height: 48,
-        justifyContent: "center",
-        lineHeight: "initial"
+        justifyContent: "center"
     },
     headerText: {
         ...theme.typography.subheader,
@@ -40,7 +36,7 @@ const listStyles = makeStyles(theme => ({
         flexGrow: 1,
         width: "100%",
     },
-}), {name: "virtualized-list"});
+}), {name: "TableItemsList"});
 
 function TableItemsList(props) {
     const { headerText, itemIndex, itemText, onItemInTableSelected, rowHeight, table } = props;
@@ -48,14 +44,19 @@ function TableItemsList(props) {
 
     const rowRenderer = ({key, index, style}) => {
         let primary = itemText + " " + (table[index] + 1);
-
         if (typeof props.getName === "function") {
             primary = props.getName(table[index]);
+        }
+
+        let className = undefined;
+        if (typeof props.getItemsClassName === "function") {
+            className = props.getItemsClassName(table[index])
         }
 
         return (
             <ListItem
                 button={true}
+                className={className}
                 divider={true}
                 key={key}
                 selected={table[index] === itemIndex}
@@ -76,13 +77,20 @@ function TableItemsList(props) {
     return (
         <Fragment>
             {headerText &&
-                <ListSubheader disableSticky={true} className={listClasses.header} component={"div"}>
-                    <Typography className={clsx(listClasses.textItem, listClasses.headerText)}>
+                <ListSubheader
+                    disableSticky={true}
+                    className={listClasses.header}
+                    component={"header"}
+                >
+                    <Typography
+                        className={clsx(listClasses.textItem, listClasses.headerText)}
+                        noWrap={true}
+                    >
                         {headerText}
                     </Typography>
                 </ListSubheader>
             }
-            <div className={listClasses.listWrapper}>
+            <div aria-label={"list wrapper"} className={listClasses.listWrapper}>
                 <AutoSizer>
                     {({height, width}) => (
                         <List
@@ -108,6 +116,7 @@ function TableItemsList(props) {
 // table (required) <-- array of integers (object indices) from chosen data table
 
 TableItemsList.propTypes = {
+    getItemsClassName: PropTypes.func,
     getName: PropTypes.func,
     headerText: PropTypes.string,
     itemIndex: PropTypes.number,

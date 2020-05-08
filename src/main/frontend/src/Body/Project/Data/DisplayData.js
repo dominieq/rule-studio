@@ -888,7 +888,7 @@ class DisplayData extends React.Component {
      * @method
      */
     onTransformAttributes = () => {
-        const base = window.location.origin.toString();
+        const base = this.props.serverBase;
         const x = true;
         if(x) {
             this.setState({
@@ -1154,7 +1154,7 @@ class DisplayData extends React.Component {
     } 
 
     saveDataToCsvOrJson = (name, header, separator) => {
-        const base = window.location.origin.toString();
+        const base = this.props.serverBase;
         //if(this.state.dataModified) { //modified?
         const x = true;
         if(x) {
@@ -1291,7 +1291,7 @@ class DisplayData extends React.Component {
     }
 
     saveMetaDataToJson = (name) => {
-        const base = window.location.origin.toString();
+        const base = this.props.serverBase;
         //if(this.state.dataModified) { //modified?
         const x = true;
         if(x) { 

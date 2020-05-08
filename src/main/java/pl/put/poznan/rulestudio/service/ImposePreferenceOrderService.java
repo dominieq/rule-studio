@@ -43,7 +43,8 @@ public class ImposePreferenceOrderService {
         logger.info("Id:\t{}", id);
         logger.info("BinarizeNominalAttributesWith3PlusValues:\t{}", binarizeNominalAttributesWith3PlusValues);
         logger.info("Metadata:\t{}", metadata);
-        logger.info("Data:\t{}", data);
+        logger.info("Data size:\t{} B", data.length());
+        logger.debug("Data:\t{}", data);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 

@@ -43,11 +43,10 @@ class Unions extends Component {
     }
 
     getUnions = () => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
 
         fetchUnions(
-            base, project.result.id, "GET", null
+            serverBase, project.result.id, "GET", null
         ).then(result => {
             if (this._isMounted && result) {
                 const items = parseUnionsItems(result);
@@ -141,9 +140,8 @@ class Unions extends Component {
     }
 
     onCountUnionsClick = () => {
-        let project = {...this.props.project};
+        const { project, serverBase }= this.props;
         const { parameters: { consistencyThreshold, typeOfUnions } } = this.state;
-        const base =  window.location.origin.toString();
 
         this.setState({
             loading: true,
@@ -164,7 +162,7 @@ class Unions extends Component {
             }
 
             fetchUnions(
-                base, project.result.id, method, data
+                serverBase, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -181,14 +179,15 @@ class Unions extends Component {
                             parametersSaved: true,
                         });
                     }
+                    let newProject = { ...project };
 
-                    project.result.unions = result;
-                    project.dataUpToDate = true;
-                    project.tabsUpToDate[this.props.value] = true;
-                    project.parameters.consistencyThreshold = result.consistencyThreshold;
-                    project.parameters.typeOfUnions = result.typeOfUnions.toLowerCase();
-                    project.parametersSaved = true;
-                    this.props.onTabChange(project);
+                    newProject.result.unions = result;
+                    newProject.dataUpToDate = true;
+                    newProject.tabsUpToDate[this.props.value] = true;
+                    newProject.parameters.consistencyThreshold = result.consistencyThreshold;
+                    newProject.parameters.typeOfUnions = result.typeOfUnions.toLowerCase();
+                    newProject.parametersSaved = true;
+                    this.props.onTabChange(newProject);
                 }
             }).catch(error => {
                 if (this._isMounted) {
@@ -270,7 +269,7 @@ class Unions extends Component {
                 <StyledPaper id={"unions-bar"} paperRef={this.upperBar}>
                     <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
-                    <CustomTooltip title={"Click on settings button to the left to customize parameters"}>
+                    <CustomTooltip title={"Click on settings button on the left to customize parameters"}>
                         <CalculateButton
                             aria-label={"unions-calculate-button"}
                             disabled={loading}
@@ -335,7 +334,8 @@ class Unions extends Component {
 Unions.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    value: PropTypes.number,
+    serverBase: PropTypes.string,
+    value: PropTypes.number
 };
 
 export default Unions;

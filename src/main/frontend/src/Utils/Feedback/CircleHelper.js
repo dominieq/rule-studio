@@ -26,17 +26,29 @@ const useStyles = makeStyles(theme => ({
             marginTop: "1em"
         }
     },
+    smaller: {
+        fontSize: 16,
+        height: 16,
+        width: 16
+    },
     small: {
+        fontSize: 24,
         height: 24,
-        width: 24,
+        width: 24
     },
     medium: {
+        fontSize: 36,
         height: 36,
-        width: 36,
+        width: 36
     },
     big: {
+        fontSize: 48,
         height: 48,
-        width: 48,
+        width: 48
+    },
+    smallerIcon: {
+        height: "1rem",
+        width: "1rem"
     },
     smallIcon: {
         height: "1em",
@@ -55,34 +67,39 @@ const useStyles = makeStyles(theme => ({
 function CircleHelper(props) {
     const [open, setOpen] = useState(false);
 
-    const { AvatarProps, children, multiRow, size, title, TooltipProps, WrapperProps } = props;
+    const { AvatarProps, multiRow, size, title, TooltipProps, WrapperProps } = props;
     const { classes: tooltipClasses , ...other } = TooltipProps;
 
     let classes =  useStyles();
-    if (tooltipClasses) classes = mergeClasses(classes, tooltipClasses);
+    if (tooltipClasses && tooltipClasses.hasOwnProperty("multiRow")) {
+        classes = mergeClasses(classes, { multiRow: tooltipClasses.multiRow });
+    }
+
+    let newTooltipClasses = undefined;
+    if (tooltipClasses && tooltipClasses.hasOwnProperty("tooltip")) {
+        newTooltipClasses = { tooltip: tooltipClasses.tooltip };
+    }
 
     const onTooltipOpen = () => {
-        setOpen(true)
-    }
+        setOpen(true);
+    };
 
     const onTooltipClose = () => {
         setOpen(false);
-    }
+    };
 
     return (
         <ClickAwayListener onClickAway={onTooltipClose}>
             <div id={"click-away-wrapper"} {...WrapperProps}>
                 <CustomTooltip
-                    classes={multiRow ? {tooltip: classes.multiRow} : undefined}
+                    arrow={true}
+                    classes={multiRow ? {tooltip: classes.multiRow} : newTooltipClasses}
                     disableFocusListener={true}
                     disableHoverListener={true}
                     disableTouchListener={true}
                     onClose={onTooltipClose}
                     open={open}
-                    PopperProps={{
-                        disablePortal: true,
-                    }}
-                    title={!children ? title : children}
+                    title={title}
                     {...other}
                 >
                     <Avatar
@@ -101,9 +118,8 @@ function CircleHelper(props) {
 
 CircleHelper.propTypes = {
     AvatarProps: PropTypes.object,
-    children: PropTypes.string,
     multiRow: PropTypes.bool,
-    size: PropTypes.oneOf(["small", "medium", "big"]),
+    size: PropTypes.oneOf(["smaller", "small", "medium", "big"]),
     title: PropTypes.node.isRequired,
     TooltipProps: PropTypes.object,
     WrapperProps: PropTypes.object,
@@ -113,7 +129,7 @@ CircleHelper.defaultProps = {
     multiRow: false,
     size: "small",
     TooltipProps: {
-        placement: "right"
+        placement: "right-start"
     }
 };
 

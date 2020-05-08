@@ -3,7 +3,7 @@ function parseUnionsItems(data) {
 
     if (data) {
         let counter = 0;
-        for (let type of ["downwardUnions", "upwardUnions"]) {
+        for (let type of ["upwardUnions", "downwardUnions"]) {
             for (let i = 0; i < data[type].length; i++) {
 
                 let unionType = data[type][i].unionType.replace("_", " ").toLowerCase();

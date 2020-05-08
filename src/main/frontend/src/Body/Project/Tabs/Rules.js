@@ -57,11 +57,10 @@ class Rules extends Component {
     }
 
     getRules = () => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
 
         fetchRules(
-            base, project.result.id, "GET", null
+            serverBase, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
                 const { project: { parametersSaved, sortParams } } = this.props;
@@ -181,8 +180,7 @@ class Rules extends Component {
     }
 
     onCalculateClick = () => {
-        let project = {...this.props.project};
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
         const { parameters } = this.state;
 
         this.setState({
@@ -201,7 +199,7 @@ class Rules extends Component {
             }
 
             fetchRules(
-                base, project.result.id, method, data
+                serverBase, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -216,29 +214,35 @@ class Rules extends Component {
                         });
                     }
 
-                    project.result.rules = result;
-                    project.dataUpToDate = true;
-                    project.tabsUpToDate[this.props.value] = true;
-                    project.tabsUpToDate[this.props.value - 1] = true;
-                    project.externalRules = result.externalRules;
+                    let newProject = { ...project };
+
+                    newProject.result.rules = result;
+                    newProject.dataUpToDate = true;
+                    newProject.tabsUpToDate[this.props.value] = true;
+                    newProject.tabsUpToDate[this.props.value - 1] = true;
+                    newProject.externalRules = result.externalRules;
 
                     const newParameters = parseRulesParams(result);
 
-                    project.parameters = {
-                        ...project.parameters,
+                    newProject.parameters = {
+                        ...newProject.parameters,
                         consistencyThreshold: newParameters.consistencyThreshold,
                         typeOfRules: newParameters.typeOfRules
                     };
-                    project.parametersSaved = true;
-                    this.props.onTabChange(project);
+                    newProject.parametersSaved = true;
+                    this.props.onTabChange(newProject);
                 }
             }).catch(error => {
                 if (this._isMounted) {
                     this.setState({alertProps: error});
                 }
             }).finally(() => {
+                const { displayedItems } = this.state;
+
                 if (this._isMounted) {
-                    this.setState({loading: false});
+                    this.setState({
+                        loading: false
+                    }, () => this.onSortChange(displayedItems));
                 }
             });
         });
@@ -246,8 +250,7 @@ class Rules extends Component {
 
     onUploadFileChanged = (event) => {
         if (event.target.files[0]) {
-            let project = {...this.props.project};
-            const base = window.location.origin.toString();
+            const { project, serverBase } = this.props;
 
             let data = new FormData();
             data.append("rules", event.target.files[0]);
@@ -256,7 +259,7 @@ class Rules extends Component {
                 loading: true,
             }, () => {
                 uploadRules(
-                    base, project.result.id, data
+                    serverBase, project.result.id, data
                 ).then(result => {
                     if (result) {
                         if (this._isMounted) {
@@ -269,18 +272,23 @@ class Rules extends Component {
                                 externalRules: result.rules.externalRules,
                             });
                         }
+                        let newProject = { ...project };
 
-                        project.result.rules = result.rules;
-                        project.externalRules = result.rules.externalRules;
-                        this.props.onTabChange(project);
+                        newProject.result.rules = result.rules;
+                        newProject.externalRules = result.rules.externalRules;
+                        this.props.onTabChange(newProject);
                     }
                 }).catch(error => {
                     if (this._isMounted) {
                         this.setState({alertProps: error});
                     }
                 }).finally(() => {
+                    const { displayedItems } = this.state;
+
                     if (this._isMounted) {
-                        this.setState({loading: false});
+                        this.setState({
+                            loading: false
+                        }, () =>  this.onSortChange(displayedItems));
                     }
                 });
             });
@@ -288,11 +296,10 @@ class Rules extends Component {
     };
 
     onSaveRulesToXMLClick = () => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
         let data = { format: "xml" };
 
-        downloadRules(base, project.result.id, data).catch(error => {
+        downloadRules(serverBase, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({alertProps: error});
             }
@@ -300,11 +307,10 @@ class Rules extends Component {
     };
 
     onSaveRulesToTXTClick = () => {
-        const { project } = this.props;
-        const base = window.location.origin.toString();
+        const { project, serverBase } = this.props;
         let data = { format: "txt" };
 
-        downloadRules(base, project.result.id, data).catch(error => {
+        downloadRules(serverBase, project.result.id, data).catch(error => {
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }
@@ -453,7 +459,7 @@ class Rules extends Component {
                 <StyledPaper id={"rules-bar"} paperRef={this.upperBar}>
                     <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
-                    <CustomTooltip title={"Click on settings button to the left to customize parameters"}>
+                    <CustomTooltip title={"Click on settings button on the left to customize parameters"}>
                         <CalculateButton
                             aria-label={"rules-calculate-button"}
                             disabled={loading}
@@ -512,6 +518,7 @@ class Rules extends Component {
                             disabled: !resultsExists || loading,
                             onClick: this.onSortMenuOpen
                         }}
+                        invisible={sort.value === "" && sort.order === "asc"}
                         tooltip={resultsExists ? "Sort rules" : "No content to sort"}
                         TooltipProps={{
                             WrapperProps: { style: { marginRight: "0.5rem" } }
@@ -550,7 +557,9 @@ class Rules extends Component {
                     <SortMenu
                         anchorE1={sort.anchorE1}
                         ContentProps={{
-                            categories: createCategories(Object.keys(items[0].traits)),
+                            categories: createCategories(
+                                Object.keys(items[0].traits).filter(value => value !== "Type")
+                            ),
                             chooseOrder: true,
                             onCategoryChange: this.onSortValueChange,
                             onOrderChange: this.onSortOrderChange,
@@ -569,6 +578,13 @@ class Rules extends Component {
                     isLoading={loading}
                     ListProps={{
                         onItemSelected: this.onDetailsOpen
+                    }}
+                    ListSubheaderProps={{
+                        disableHelper: false,
+                        helper: "First row of each rule presents decision condition. " +
+                            "Next rows present subsequent elementary conditions. " +
+                            "These elementary conditions are connected by AND. " +
+                            "Last row shows chosen rule’s characteristics."
                     }}
                     noFilterResults={!displayedItems}
                     subheaderContent={[
@@ -596,7 +612,8 @@ class Rules extends Component {
 Rules.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
-    value: PropTypes.number,
+    serverBase: PropTypes.string,
+    value: PropTypes.number
 };
 
 export default Rules;
