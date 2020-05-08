@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.rulelearn.data.Decision;
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.EvaluationField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +40,14 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
         jsonGenerator.writeFieldName("classificationResults");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getClassificationResults()));
 
+
+        InformationTable informationTable = classification.getInformationTable();
         jsonGenerator.writeFieldName("informationTable");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(classification.getInformationTable()));
+        jsonGenerator.writeRawValue(mapper.writeValueAsString(informationTable));
+
+        jsonGenerator.writeFieldName("originalDecisions");
+        serializeDecisionArray(informationTable.getDecisions(), jsonGenerator);
+
 
         jsonGenerator.writeFieldName("decisionsDomain");
         serializeDecisionArray(classification.getOrderOfDecisions(), jsonGenerator);
