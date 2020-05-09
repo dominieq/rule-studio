@@ -18,7 +18,7 @@ export default function IconLabelButtons(props) {
      <Fragment>
         {/*<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />*/}
 
-        <CustomTooltip title={`Add new example at the end of the table`}>
+        <CustomTooltip title={`Add new object at the end of the table`}>
           {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -28,7 +28,7 @@ export default function IconLabelButtons(props) {
               variant={"contained"}
               style={style}
             >
-            Add example
+            Add object
             </StyledButton>
           : <StyledButton
               isIcon={true}
@@ -40,7 +40,7 @@ export default function IconLabelButtons(props) {
         }
         </CustomTooltip>
 
-        <CustomTooltip title={`Delete selected examples`}>
+        <CustomTooltip title={`Delete selected objects`}>
           {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
