@@ -3,6 +3,7 @@ package pl.put.poznan.rulestudio.service;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
+import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.sampling.CrossValidator;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
@@ -72,7 +73,7 @@ public class CrossValidationService {
 
         CrossValidator crossValidator = new CrossValidator(new Random());
         crossValidator.setSeed(seed);
-        List<CrossValidator.CrossValidationFold<InformationTable>> folds = crossValidator.splitIntoKFold(informationTable, numberOfFolds);
+        List<CrossValidator.CrossValidationFold<InformationTable>> folds = crossValidator.splitStratifiedIntoKFold(new InformationTableWithDecisionDistributions(informationTable), numberOfFolds);
         for(int i = 0; i < folds.size(); i++) {
             logger.info("Creating fold: {}/{}", i+1, folds.size());
 
@@ -86,6 +87,9 @@ public class CrossValidationService {
             foldOrdinalMisclassificationMatrix[i] = classificationValidationTable.getOrdinalMisclassificationMatrix();
 
             crossValidationSingleFolds[i] = new CrossValidationSingleFold(validationTable, ruleSetWithCharacteristics, classificationValidationTable, trainingTable.getNumberOfObjects());
+
+            //let garbage collector clean memory occupied by trainingTable of i-th fold, which is useless after calculation
+            folds.set(i, null);
         }
 
         OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, foldOrdinalMisclassificationMatrix);
