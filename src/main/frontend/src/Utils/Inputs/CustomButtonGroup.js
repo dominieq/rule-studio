@@ -18,15 +18,17 @@ const useStyles = makeStyles(theme => ({
         borderRightColor: theme.palette.text.default,
         '& .MuiButton-root': {
             borderRadius: "4px 0 0 4px",
+            height: "100%",
             minWidth: 36,
-            padding: "6px 0",
-        },
+            padding: "6px 0"
+        }
     },
     right: {
         '& .MuiButton-root': {
             borderRadius: "0 4px 4px 0",
-        },
-    },
+            height: "100%"
+        }
+    }
 }), {name: "ButtonWrapper"});
 
 function ButtonWrapper(props) {
@@ -89,7 +91,14 @@ class CustomButtonGroup extends React.Component {
             <div {...other}>
                 <ButtonGroup aria-label={"split button"} ref={this.anchorRef}>
                     <ButtonWrapper placement={"left"}>
-                        <CustomTooltip enterDelay={1000} enterNextDelay={1000} title={"Open menu"}>
+                        <CustomTooltip
+                            enterDelay={1000}
+                            enterNextDelay={1000}
+                            title={"Open menu"}
+                            WrapperProps={{
+                                style: { height: "100%" }
+                            }}
+                        >
                             <StyledButton
                                 aria-controls={open ? 'split-button-menu' : undefined}
                                 aria-expanded={open ? true : undefined}
@@ -105,7 +114,12 @@ class CustomButtonGroup extends React.Component {
                         </CustomTooltip>
                     </ButtonWrapper>
                     <ButtonWrapper placement={"right"}>
-                        <CustomTooltip title={Array.isArray(tooltips) ? tooltips[selected] : tooltips}>
+                        <CustomTooltip
+                            title={Array.isArray(tooltips) ? tooltips[selected] : tooltips}
+                            WrapperProps={{
+                                style: { height: "100%" }
+                            }}
+                        >
                             {childrenArray[selected]}
                         </CustomTooltip>
                     </ButtonWrapper>
