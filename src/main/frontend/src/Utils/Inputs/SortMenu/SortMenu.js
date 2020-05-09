@@ -23,9 +23,6 @@ const orders = [
 ];
 
 const menuStyles = makeStyles(theme => ({
-    list: {
-        paddingLeft: 16,
-    },
     paper: {
         backgroundColor: theme.palette.paper.background,
         color: theme.palette.paper.text
@@ -121,6 +118,13 @@ function SortMenu(props) {
             keepMounted={true}
             onEntering={onEntering}
             open={Boolean(anchorE1)}
+            MenuListProps={{
+                style: {
+                    paddingLeft: 16,
+                    paddingRight: 0,
+                    width: "auto"
+                }
+            }}
             transformOrigin={{
                 vertical: 'top',
                 horizontal: 'right'
