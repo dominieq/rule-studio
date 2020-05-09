@@ -1,0 +1,30 @@
+.Body {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    padding: 2.5%;
+}
+
+.Tab {
+    overflow: hidden;
+    position: relative;
+}
+
+.TabBody {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100%;
+    position: relative;
+    overflow: auto;
+}
+
+.TabScrollable {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 2.5%;
+    position: relative;
+}

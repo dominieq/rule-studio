@@ -9,7 +9,7 @@ function TabBody(props) {
     const { content, id, isArray, isLoading, ListProps, ListSubheaderProps, noFilterResults, subheaderContent } = props;
 
     return (
-        <CustomBox id={id} styleVariant={"tab-body"}>
+        <CustomBox id={id} variant={"TabScrollable"}>
             {isLoading &&
                 <StyledCircularProgress />
             }

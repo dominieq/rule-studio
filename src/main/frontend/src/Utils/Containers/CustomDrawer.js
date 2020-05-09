@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, {Fragment} from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import StyledButton from "../Inputs/StyledButton";
@@ -11,7 +11,7 @@ const drawerStyles = makeStyles(theme => ({
     docked: {
         position: "absolute",
         maxWidth: "50%",
-        minWidth: "25%",
+        minWidth: "25%"
     },
     paper: {
         borderTop: `1px solid ${theme.palette.background.default}`,
@@ -20,8 +20,8 @@ const drawerStyles = makeStyles(theme => ({
             "1px 1px 0.5px 0.5px rgba(0,0,0,0.12)",
         marginTop: props => props.marginTop,
         position: "relative",
-        zIndex: theme.zIndex.appBar,
-    },
+        zIndex: theme.zIndex.appBar + 100
+    }
 }), {name: "CustomDrawer"});
 
 const paperStyles = makeStyles(theme => ({

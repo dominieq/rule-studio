@@ -9,7 +9,7 @@ function Home(props) {
     const { isDarkTheme } = props;
 
     return (
-        <CustomBox id={"home"} styleVariant={"body"}>
+        <CustomBox id={"home"} variant={"Body"}>
             <img
                 alt={"logo"}
                 className={styles.Logo}

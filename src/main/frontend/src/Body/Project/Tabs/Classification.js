@@ -350,46 +350,7 @@ class Classification extends Component {
         const { project } = this.props;
 
         return (
-            <CustomBox id={"classification"} styleVariant={"tab"}>
-                <CustomHeader id={"classification-header"} paperRef={this.upperBar}>
-                    <SettingsButton onClick={() => this.toggleOpen("settings")} />
-                    <StyledDivider margin={16} />
-                    <CustomButtonGroup
-                        id={"classification-button-group"}
-                        options={["Classify current data", "Choose new data & classify"]}
-                        tooltips={"Click on settings button on the left to customize parameters"}
-                    >
-                        <CalculateButton
-                            aria-label={"classify-current-file"}
-                            disabled={loading}
-                            onClick={this.onClassifyData}
-                        >
-                            Classify current data
-                        </CalculateButton>
-                        <CustomUpload
-                            accept={".json,.csv"}
-                            id={"classify-new-file"}
-                            onChange={this.onUploadData}
-                        >
-                            <CalculateButton
-                                aria-label={"classify-new-file"}
-                                disabled={loading}
-                                component={"span"}
-                            >
-                                Choose new data & classify
-                            </CalculateButton>
-                        </CustomUpload>
-                    </CustomButtonGroup>
-                    {data &&
-                        <MatrixButton
-                            onClick={() => this.toggleOpen("matrix")}
-                            style={{marginLeft: 16}}
-                            title={"Show ordinal misclassification matrix and it's details"}
-                        />
-                    }
-                    <span style={{flexGrow: 1}} />
-                    <FilterTextField onChange={this.onFilterChange} />
-                </CustomHeader>
+            <CustomBox id={"classification"} variant={"Tab"}>
                 <CustomDrawer
                     id={"classification-settings"}
                     open={open.settings}
@@ -409,51 +370,95 @@ class Classification extends Component {
                         }}
                     />
                 </CustomDrawer>
-                <TabBody
-                    content={parseClassificationListItems(displayedItems)}
-                    id={"classification-list"}
-                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
-                    isLoading={loading}
-                    ListProps={{
-                        onItemSelected: this.onDetailsOpen
-                    }}
-                    noFilterResults={!displayedItems}
-                    subheaderContent={[
-                        {
-                            label: "Number of objects:",
-                            value: displayedItems && displayedItems.length,
+                <CustomBox id={"classification-content"} variant={"TabBody"}>
+                    <CustomHeader id={"classification-header"} paperRef={this.upperBar}>
+                        <SettingsButton onClick={() => this.toggleOpen("settings")} />
+                        <StyledDivider margin={16} />
+                        <CustomButtonGroup
+                            id={"classification-button-group"}
+                            options={["Classify current data", "Choose new data & classify"]}
+                            tooltips={"Click on settings button on the left to customize parameters"}
+                        >
+                            <CalculateButton
+                                aria-label={"classify-current-file"}
+                                disabled={loading}
+                                onClick={this.onClassifyData}
+                            >
+                                Classify current data
+                            </CalculateButton>
+                            <CustomUpload
+                                accept={".json,.csv"}
+                                id={"classify-new-file"}
+                                onChange={this.onUploadData}
+                            >
+                                <CalculateButton
+                                    aria-label={"classify-new-file"}
+                                    disabled={loading}
+                                    component={"span"}
+                                >
+                                    Choose new data & classify
+                                </CalculateButton>
+                            </CustomUpload>
+                        </CustomButtonGroup>
+                        {data &&
+                        <MatrixButton
+                            onClick={() => this.toggleOpen("matrix")}
+                            style={{marginLeft: 16}}
+                            title={"Show ordinal misclassification matrix and it's details"}
+                        />
                         }
-                    ]}
-                />
-                {project.result.rules !== null && selectedItem !== null &&
-                    <ClassificationDialog
-                        item={selectedItem}
-                        onClose={() => this.toggleOpen("details")}
-                        open={open.details}
-                        ruleSet={project.result.rules.ruleSet}
+                        <span style={{flexGrow: 1}} />
+                        <FilterTextField onChange={this.onFilterChange} />
+                    </CustomHeader>
+                    <TabBody
+                        content={parseClassificationListItems(displayedItems)}
+                        id={"classification-list"}
+                        isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
+                        isLoading={loading}
+                        ListProps={{
+                            onItemSelected: this.onDetailsOpen
+                        }}
+                        ListSubheaderProps={{
+                            style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
+                        }}
+                        noFilterResults={!displayedItems}
+                        subheaderContent={[
+                            {
+                                label: "Number of objects:",
+                                value: displayedItems && displayedItems.length,
+                            }
+                        ]}
                     />
-                }
-                {data !== null &&
-                    <MatrixDialog
-                        matrix={parseMatrix(data.ordinalMisclassificationMatrix)}
-                        onClose={() => this.toggleOpen("matrix")}
-                        open={open.matrix}
-                        subheaders={data.decisionsDomain}
-                        saveMatrix={this.onSaveToFile}
-                        title={
-                            <React.Fragment>
-                                <MatrixDownloadButton
-                                    onSave={this.onSaveToFile}
-                                    tooltip={"Download matrix (txt)"}
-                                />
-                                <span aria-label={"matrix title"} style={{paddingLeft: 8}}>
-                                    Ordinal misclassification matrix and details
-                                </span>
-                            </React.Fragment>
-                        }
-                    />
-                }
-                <CSVDialog onConfirm={this.onCSVDialogClose} open={open.csv} />
+                    {project.result.rules !== null && selectedItem !== null &&
+                        <ClassificationDialog
+                            item={selectedItem}
+                            onClose={() => this.toggleOpen("details")}
+                            open={open.details}
+                            ruleSet={project.result.rules.ruleSet}
+                        />
+                    }
+                    {data !== null &&
+                        <MatrixDialog
+                            matrix={parseMatrix(data.ordinalMisclassificationMatrix)}
+                            onClose={() => this.toggleOpen("matrix")}
+                            open={open.matrix}
+                            subheaders={data.decisionsDomain}
+                            saveMatrix={this.onSaveToFile}
+                            title={
+                                <React.Fragment>
+                                    <MatrixDownloadButton
+                                        onSave={this.onSaveToFile}
+                                        tooltip={"Download matrix (txt)"}
+                                    />
+                                    <span aria-label={"matrix title"} style={{paddingLeft: 8}}>
+                                        Ordinal misclassification matrix and details
+                                    </span>
+                                </React.Fragment>
+                            }
+                        />
+                    }
+                    <CSVDialog onConfirm={this.onCSVDialogClose} open={open.csv} />
+                </CustomBox>
                 <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
             </CustomBox>
         )

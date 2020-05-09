@@ -142,7 +142,7 @@ class Import extends Component{
         const { checked, expand, name, open } = this.state;
 
         return (
-            <CustomBox id={"import"} onKeyPress={this.onEnterClick} styleVariant={"body"}>
+            <CustomBox id={"import"} onKeyPress={this.onEnterClick} variant={"Body"}>
                 <CustomSection id={"import-section"}>
                     <div aria-label={"text field row"} className={styles.Row}>
                         <CustomTextField

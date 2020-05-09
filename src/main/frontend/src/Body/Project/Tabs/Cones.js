@@ -179,7 +179,7 @@ class Cones extends Component {
         const { project: { result } } = this.props;
 
         return (
-            <CustomBox id={"cones"} styleVariant={"tab"}>
+            <CustomBox id={"cones"} variant={"TabBody"}>
                 <CustomHeader id={"cones-header"} paperRef={this.upperBar}>
                     <CalculateButton
                         aria-label={"cones-calculate-button"}
@@ -196,6 +196,9 @@ class Cones extends Component {
                     isLoading={loading}
                     ListProps={{
                         onItemSelected: this.onDetailsOpen
+                    }}
+                    ListSubheaderProps={{
+                        style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
                     }}
                     noFilterResults={!displayedItems}
                     subheaderContent={[
