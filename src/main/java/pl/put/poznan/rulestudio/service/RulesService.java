@@ -145,7 +145,8 @@ public class RulesService {
 
         RuleCoverageInformation[] ruleCoverageInformation = new RuleCoverageInformation[ruleSetWithCharacteristics.size()];
         for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
-            ruleCoverageInformation[i] = new RuleCoverageInformation(new IntArraySet(), new IntArraySet(), new IntArrayList(), new Int2ObjectArrayMap<>(), 0);
+            RuleConditions ruleConditions = new RuleConditions(new InformationTable(new Attribute[0], new ArrayList<>()), new IntArraySet(), new IntArraySet(), new IntArraySet(), org.rulelearn.rules.RuleType.POSSIBLE, RuleSemantics.AT_MOST);
+            ruleCoverageInformation[i] = new RuleCoverageInformation(ruleConditions);
         }
 
         return new RuleSetWithComputableCharacteristics(

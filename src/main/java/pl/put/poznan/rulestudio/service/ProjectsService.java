@@ -69,6 +69,10 @@ public class ProjectsService {
 
         if(rulesFile != null) { //load rules from file
             RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
+            if((informationTable != null) && (ruleSetWithCharacteristics.getLearningInformationTableHash().equals(informationTable.getHash()))) {
+                ruleSetWithCharacteristics.calculateBasicRuleCoverageInformation(informationTable);
+            }
+
             project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, true));
         }
 
