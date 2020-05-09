@@ -15,7 +15,7 @@ import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
 import { UnionsDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
-import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
+import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
 class Unions extends Component {
     constructor(props) {
@@ -266,7 +266,7 @@ class Unions extends Component {
 
         return (
             <CustomBox id={"unions"} styleVariant={"tab"}>
-                <StyledPaper id={"unions-bar"} paperRef={this.upperBar}>
+                <CustomHeader id={"unions-header"} paperRef={this.upperBar}>
                     <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
                     <CustomTooltip title={"Click on settings button on the left to customize parameters"}>
@@ -278,7 +278,7 @@ class Unions extends Component {
                     </CustomTooltip>
                     <span style={{flexGrow: 1}} />
                     <FilterTextField onChange={this.onFilterChange}/>
-                </StyledPaper>
+                </CustomHeader>
                 <CustomDrawer
                     id={"unions-settings"}
                     onClose={() => this.toggleOpen("settings")}

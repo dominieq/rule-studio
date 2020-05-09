@@ -29,7 +29,7 @@ import { ClassificationDialog } from "../../../Utils/Feedback/DetailsDialog"
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomButtonGroup from "../../../Utils/Inputs/CustomButtonGroup";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
-import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
+import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
 class Classification extends Component {
     constructor(props) {
@@ -351,7 +351,7 @@ class Classification extends Component {
 
         return (
             <CustomBox id={"classification"} styleVariant={"tab"}>
-                <StyledPaper id={"classification-bar"} paperRef={this.upperBar}>
+                <CustomHeader id={"classification-header"} paperRef={this.upperBar}>
                     <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
                     <CustomButtonGroup
@@ -389,7 +389,7 @@ class Classification extends Component {
                     }
                     <span style={{flexGrow: 1}} />
                     <FilterTextField onChange={this.onFilterChange} />
-                </StyledPaper>
+                </CustomHeader>
                 <CustomDrawer
                     id={"classification-settings"}
                     open={open.settings}

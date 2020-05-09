@@ -9,7 +9,7 @@ import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CustomBox from "../../../Utils/Containers/CustomBox"
 import { ConesDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
-import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
+import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
 class Cones extends Component {
     constructor(props) {
@@ -180,7 +180,7 @@ class Cones extends Component {
 
         return (
             <CustomBox id={"cones"} styleVariant={"tab"}>
-                <StyledPaper id={"cones-bar"} paperRef={this.upperBar}>
+                <CustomHeader id={"cones-header"} paperRef={this.upperBar}>
                     <CalculateButton
                         aria-label={"cones-calculate-button"}
                         disabled={loading}
@@ -188,7 +188,7 @@ class Cones extends Component {
                     />
                     <span style={{flexGrow: 1}}/>
                     <FilterTextField onChange={this.onFilterChange} />
-                </StyledPaper>
+                </CustomHeader>
                 <TabBody
                     content={parseConesListItems(displayedItems)}
                     id={"cones-list"}

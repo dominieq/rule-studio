@@ -37,7 +37,7 @@ import { CrossValidationDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomTextField from "../../../Utils/Inputs/CustomTextField";
 import StyledButton from "../../../Utils/Inputs/StyledButton";
-import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
+import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
 import Sigma from "mdi-material-ui/Sigma";
@@ -496,7 +496,7 @@ class CrossValidation extends Component {
 
         return (
             <CustomBox id={"cross-validation"} styleVariant={"tab"}>
-                <StyledPaper id={"cross-validation-bar"} paperRef={this.upperBar}>
+                <CustomHeader id={"cross-validation-header"} paperRef={this.upperBar}>
                     <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
                     <CustomTooltip title={"Click on settings button on the left to customize parameters"}>
@@ -554,7 +554,7 @@ class CrossValidation extends Component {
                     }
                     <span style={{flexGrow: 1}} />
                     <FilterTextField onChange={this.onFilterChange} />
-                </StyledPaper>
+                </CustomHeader>
                 <CustomDrawer
                     id={"cross-validation-settings"}
                     open={open.settings}

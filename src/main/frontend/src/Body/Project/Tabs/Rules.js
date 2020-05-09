@@ -19,11 +19,12 @@ import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import { createCategories, simpleSort, SortButton, SortMenu } from "../../../Utils/Inputs/SortMenu";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
 import StyledButton from "../../../Utils/Inputs/StyledButton";
-import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
+import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
 import { mdiTextBox } from '@mdi/js';
+
 
 class Rules extends Component {
     constructor(props) {
@@ -456,7 +457,7 @@ class Rules extends Component {
 
         return (
             <CustomBox id={"rules"} styleVariant={"tab"}>
-                <StyledPaper id={"rules-bar"} paperRef={this.upperBar}>
+                <CustomHeader id={"rules-header"} paperRef={this.upperBar}>
                     <SettingsButton onClick={() => this.toggleOpen("settings")} />
                     <StyledDivider margin={16} />
                     <CustomTooltip title={"Click on settings button on the left to customize parameters"}>
@@ -525,7 +526,7 @@ class Rules extends Component {
                         }}
                     />
                     <FilterTextField onChange={this.onFilterChange} />
-                </StyledPaper>
+                </CustomHeader>
                 <CustomDrawer
                     id={"rules-settings"}
                     open={open.settings}

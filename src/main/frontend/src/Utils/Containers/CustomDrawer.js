@@ -14,13 +14,15 @@ const drawerStyles = makeStyles(theme => ({
         minWidth: "25%",
     },
     paper: {
-        borderTop: `2px solid ${theme.palette.background.default}`,
-        boxShadow: theme.shadows[24],
+        borderTop: `1px solid ${theme.palette.background.default}`,
+        boxShadow: "3px 3px 1.5px 1.5px rgba(0,0,0,0.2), " +
+            "6px 6px 3px 3px rgba(0,0,0,0.14), " +
+            "1px 1px 0.5px 0.5px rgba(0,0,0,0.12)",
         marginTop: props => props.marginTop,
         position: "relative",
-        zIndex: theme.zIndex.appBar - 100,
+        zIndex: theme.zIndex.appBar,
     },
-}), {name: "MuiDrawer"});
+}), {name: "CustomDrawer"});
 
 const paperStyles = makeStyles(theme => ({
     root: {
@@ -28,7 +30,7 @@ const paperStyles = makeStyles(theme => ({
         color: theme.palette.paper.text,
         padding: "12px 16px 8px",
     }
-}), {name: "MuiDrawerPaper"});
+}), {name: "CustomDrawerPaper"});
 
 function CustomDrawer(props) {
     const { children, classes,  onClose, PaperProps,

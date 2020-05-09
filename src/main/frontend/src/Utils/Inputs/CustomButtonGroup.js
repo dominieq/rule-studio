@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
+import CustomPopper from "../Surfaces/CustomPopper";
 import CustomTooltip from "../DataDisplay/CustomTooltip";
 import StyledButton from "./StyledButton";
-import StyledPaper from "../Surfaces/StyledPaper";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Grow from "@material-ui/core/Grow";
@@ -125,7 +125,7 @@ class CustomButtonGroup extends React.Component {
                                 transformOrigin: placement === 'bottom' ? 'center-top' : 'center-bottom',
                             }}
                         > 
-                            <StyledPaper styleVariant={"popper"}>
+                            <CustomPopper style={{marginTop: "1%"}}>
                                 <ClickAwayListener onClickAway={this.onPopperClose}>
                                     <MenuList>
                                         {options.map((option, index) => (
@@ -139,7 +139,7 @@ class CustomButtonGroup extends React.Component {
                                         ))}
                                     </MenuList>
                                 </ClickAwayListener>
-                            </StyledPaper>
+                            </CustomPopper>
                         </Grow>
                     )}
                 </Popper>
