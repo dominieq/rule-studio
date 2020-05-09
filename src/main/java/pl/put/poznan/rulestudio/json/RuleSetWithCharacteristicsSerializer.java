@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import org.rulelearn.rules.ComputableRuleCharacteristics;
-import org.rulelearn.rules.RuleCharacteristics;
-import org.rulelearn.rules.RuleCoverageInformation;
-import org.rulelearn.rules.RuleSetWithCharacteristics;
+import org.rulelearn.rules.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.jackson.JsonComponent;
@@ -40,14 +37,14 @@ public class RuleSetWithCharacteristicsSerializer extends JsonSerializer<RuleSet
             jsonGenerator.writeFieldName("ruleCharacteristics");
             jsonGenerator.writeRawValue(mapper.writeValueAsString(ruleCharacteristics));
 
-            if(ruleCharacteristics instanceof ComputableRuleCharacteristics) {
-                RuleCoverageInformation ruleCoverageInformation = ((ComputableRuleCharacteristics) ruleCharacteristics).getRuleCoverageInformation();
-                IntList indicesOfCoveredObjects = ruleCoverageInformation.getIndicesOfCoveredObjects();
-                IntSet indicesOfCoveredNotSupportingObjects = ruleCoverageInformation.getIndicesOfCoveredNotSupportingObjects();
+
+            BasicRuleCoverageInformation basicRuleCoverageInformation = ruleCharacteristics.getRuleCoverageInformation();
+            if(basicRuleCoverageInformation != null) {
+                IntList indicesOfCoveredObjects = basicRuleCoverageInformation.getIndicesOfCoveredObjects();
+                IntSet indicesOfCoveredNotSupportingObjects = basicRuleCoverageInformation.getIndicesOfCoveredNotSupportingObjects();
 
                 jsonGenerator.writeFieldName("indicesOfCoveredObjects");
                 jsonGenerator.writeRawValue(mapper.writeValueAsString(indicesOfCoveredObjects));
-
 
                 int numberOfCoveredObjects = indicesOfCoveredObjects.size();
                 boolean[] isSupportingObject = new boolean[numberOfCoveredObjects];
@@ -62,6 +59,7 @@ public class RuleSetWithCharacteristicsSerializer extends JsonSerializer<RuleSet
                 jsonGenerator.writeFieldName("isSupportingObject");
                 jsonGenerator.writeRawValue(mapper.writeValueAsString(isSupportingObject));
             }
+
 
             jsonGenerator.writeEndObject();
         }

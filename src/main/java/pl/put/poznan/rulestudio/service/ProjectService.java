@@ -107,6 +107,10 @@ public class ProjectService {
                 throw ex;
             }
             RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
+            if((informationTable != null) && (ruleSetWithCharacteristics.getLearningInformationTableHash().equals(informationTable.getHash()))) {
+                ruleSetWithCharacteristics.calculateBasicRuleCoverageInformation(informationTable);
+            }
+
             project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, true));
         }
 
