@@ -10,10 +10,12 @@ public class RulesWithHttpParameters implements Cloneable {
     private Double consistencyThreshold;
     private RuleType typeOfRules;
     private boolean externalRules;
+    private String message;
 
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, Boolean externalRules) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, Boolean externalRules, String message) {
         this.ruleSet = rules;
         this.externalRules = externalRules;
+        this.message = message;
     }
 
     public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, Boolean externalRules) {
@@ -22,6 +24,7 @@ public class RulesWithHttpParameters implements Cloneable {
         this.consistencyThreshold = consistencyThreshold;
         this.typeOfRules = ruleType;
         this.externalRules = externalRules;
+        this.message = null;
     }
 
     public RuleSetWithCharacteristics getRuleSet() {
@@ -64,6 +67,14 @@ public class RulesWithHttpParameters implements Cloneable {
         this.externalRules = externalRules;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
@@ -72,6 +83,7 @@ public class RulesWithHttpParameters implements Cloneable {
                 ", consistencyThreshold=" + consistencyThreshold +
                 ", typeOfRules=" + typeOfRules +
                 ", externalRules=" + externalRules +
+                ", message='" + message + '\'' +
                 '}';
     }
 

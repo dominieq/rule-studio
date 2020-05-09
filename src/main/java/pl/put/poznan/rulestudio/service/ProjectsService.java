@@ -70,12 +70,20 @@ public class ProjectsService {
         if(rulesFile != null) { //load rules from file
             RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
             String ruleSetHash = ruleSetWithCharacteristics.getLearningInformationTableHash();
-            if((ruleSetHash != null) && (ruleSetHash.equals(informationTable.getHash()))) {
-                logger.info("Current metadata and objects in project are correct training set of uploaded rules. Calculating rule coverage information.");
+            String message;
+            if(ruleSetHash == null) {
+                message = String.format("Provided rules set doesn't have the learning information table hash. It can't be determined, if this rules set was generated based on the current data of the project. Rule coverage information can't be calculated without a valid training set. Current data hash: \"%s\".", informationTable.getHash());
+                logger.info(message);
+            } else if(ruleSetHash.equals(informationTable.getHash())) {
+                logger.info("Current metadata and objects in the project are correct training set of uploaded rules. Calculating rule coverage information.");
                 ruleSetWithCharacteristics.calculateBasicRuleCoverageInformation(informationTable);
+                message = null;
+            } else {
+                message = String.format("Uploaded rules are not induced from data in the current project. Access to a valid training set is required to calculate rule coverage information. Please upload new rules based on the current data or create a new project with a valid training set. Current data hash: \"%s\", rules hash: \"%s\".", informationTable.getHash(), ruleSetHash);
+                logger.info(message);
             }
 
-            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, true));
+            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, true, message));
         }
 
 

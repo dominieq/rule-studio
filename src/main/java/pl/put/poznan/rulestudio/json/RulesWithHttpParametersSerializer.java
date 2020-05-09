@@ -44,6 +44,11 @@ public class RulesWithHttpParametersSerializer extends JsonSerializer<RulesWithH
 
         jsonGenerator.writeBooleanField("externalRules", rulesWithHttpParameters.isExternalRules());
 
+        if(rulesWithHttpParameters.getMessage() != null) {
+            jsonGenerator.writeFieldName("message");
+            jsonGenerator.writeString(rulesWithHttpParameters.getMessage());
+        }
+
         jsonGenerator.writeEndObject();
     }
 }
