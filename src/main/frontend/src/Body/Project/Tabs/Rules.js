@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
-import { downloadRules, fetchRules, parseRulesParams, uploadRules } from "../Utils/fetchFunctions";
+import { createFormData, downloadRules, fetchRules, parseRulesParams, uploadRules } from "../Utils/fetchFunctions";
 import { parseRulesItems, parseRulesListItems } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
@@ -252,36 +252,53 @@ class Rules extends Component {
     onUploadFileChanged = (event) => {
         if (event.target.files[0]) {
             const { project, serverBase } = this.props;
+            const { parameters } = this.state;
 
-            let data = new FormData();
-            data.append("rules", event.target.files[0]);
+            let method = project.dataUpToDate ? "PUT" : "POST";
+            let files = { rules: event.target.files[0] }
+
+            if (!project.dataUpToDate) {
+                files = {
+                    ...files,
+                    metadata: JSON.stringify(project.result.informationTable.attributes),
+                    data: JSON.stringify(project.result.informationTable.objects)
+                };
+            }
+
+            let data = createFormData(project.dataUpToDate ? null : parameters, files);
 
             this.setState({
                 loading: true,
             }, () => {
                 uploadRules(
-                    serverBase, project.result.id, data
+                    serverBase, project.result.id, method, data
                 ).then(result => {
                     if (result) {
                         if (this._isMounted) {
-                            const items = parseRulesItems(result.rules);
+                            const items = parseRulesItems(result);
 
                             this.setState({
                                 data: result,
                                 items: items,
                                 displayedItems: items,
-                                externalRules: result.rules.externalRules,
+                                externalRules: result.externalRules,
                             });
                         }
                         let newProject = { ...project };
 
-                        newProject.result.rules = result.rules;
-                        newProject.externalRules = result.rules.externalRules;
+                        newProject.result.rules = result;
+                        newProject.dataUpToDate = true;
+                        newProject.externalRules = result.externalRules;
                         this.props.onTabChange(newProject);
                     }
                 }).catch(error => {
                     if (this._isMounted) {
-                        this.setState({alertProps: error});
+                        this.setState({
+                            data: null,
+                            items: null,
+                            selectedItem: null,
+                            alertProps: error
+                        });
                     }
                 }).finally(() => {
                     const { displayedItems } = this.state;
