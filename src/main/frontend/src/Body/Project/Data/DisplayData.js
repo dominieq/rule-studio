@@ -146,13 +146,13 @@ function RightClickContextMenu({
     return (
       <ContextMenu uniqueLP={uniqueLP}>
         <MenuItem data={{ rowIdx, idx }} onClick={onRowDelete}>
-          Delete example
+          Delete object
         </MenuItem>
         <MenuItem data={{ rowIdx, idx }} onClick={onRowInsertAbove}>
-          Add new example above
+          Add new object above
         </MenuItem>
         <MenuItem data={{ rowIdx, idx }} onClick={onRowInsertBelow}>
-         Add new example below
+         Add new object below
         </MenuItem>
       </ContextMenu>
     );
@@ -635,7 +635,7 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for removing certain row after choosing option "Delete example" from right click menu.
+     * Method responsible for removing certain row after choosing option "Delete object" from right click menu.
      * @method
      * @param {Number} rowIdx Indicates the row number from the top, to be removed.
      */
@@ -725,8 +725,8 @@ class DisplayData extends React.Component {
     };
     
     /**
-     * Method responsible for adding row. After right click menu one can add row above ("Add new example above") or below ("Add new example below") the clicked row.
-     * After "ADD NEW EXAMPLE" button click one can add row at the end of the rows array.
+     * Method responsible for adding row. After right click menu one can add row above ("Add new object above") or below ("Add new object below") the clicked row.
+     * After "ADD NEW OBJECT" button click one can add row at the end of the rows array.
      * @method
      * @param {Number} rowIdx Indicates the row number from the top.
      * @param {String} where Indicates where to add the row. The existing options are "above" or "below" (the clicked row) or any other name which means at the end of the rows array.
@@ -1455,28 +1455,37 @@ class DisplayData extends React.Component {
             let cols = [...history[this.state.historySnapshot].columns];
             for(let i=0; i<cols.length; i++) {
                 if(cols[i].key === this.state.columnKeyOfHeaderMenuOpened) {
-                    let col = {...cols[i]};
-                    let didIRemoveColumn = false;
-                    if(selected === "Mark attribute as: inactive" || selected === "Mark attribute as: active") {
-                        col.active = !col.active;
-                        cols[i] = col;
-                    } else if(selected === "Delete attribute") {
-                        cols.splice(i,1);
-                        didIRemoveColumn = true;
-                    }
+                    if(selected === "Edit attribute") {
+                        this.setState({
+                            isOpenedEditAttributes: true,
+                            editAttributeSelected: cols[i].name,
+                            isColumnHeaderMenuOpened: null,
+                            columnKeyOfHeaderMenuOpened: -1,
+                        })
+                    } else {
+                        let col = {...cols[i]};
+                        let didIRemoveColumn = false;
+                        if(selected === "Mark attribute as: inactive" || selected === "Mark attribute as: active") {
+                            col.active = !col.active;
+                            cols[i] = col;
+                        } else if(selected === "Delete attribute") {
+                            cols.splice(i,1);
+                            didIRemoveColumn = true;
+                        }
 
-                    const tmpHistory = history.slice(0, this.state.historySnapshot+1);
-                    tmpHistory.push({rows: history[this.state.historySnapshot].rows, columns: cols});
-                    if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
-                    this.setState({
-                        dataModified: true,
-                        isColumnHeaderMenuOpened: null,
-                        columnKeyOfHeaderMenuOpened: -1,
-                        history: tmpHistory, 
-                        historySnapshot: tmpHistory.length-1
-                    },() => {if(!didIRemoveColumn) this.setHeaderColorAndStyle(cols[i],i,false)});
-                    
-                    break;
+                        const tmpHistory = history.slice(0, this.state.historySnapshot+1);
+                        tmpHistory.push({rows: history[this.state.historySnapshot].rows, columns: cols});
+                        if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
+                        this.setState({
+                            dataModified: true,
+                            isColumnHeaderMenuOpened: null,
+                            columnKeyOfHeaderMenuOpened: -1,
+                            history: tmpHistory,
+                            historySnapshot: tmpHistory.length-1
+                        },() => {if(!didIRemoveColumn) this.setHeaderColorAndStyle(cols[i],i,false)});
+                        
+                        break;
+                    }
                 }
             }
         } else {
@@ -2043,6 +2052,7 @@ class DisplayData extends React.Component {
                 }
             }
 
+            tmp.push("Edit attribute");
             tmp.push("Delete attribute");
 
             return <ColumnHeaderMenu items={tmp} handleClose={this.closeOpenedColumnHeaderMenu} anchorEl={this.state.isColumnHeaderMenuOpened} />
