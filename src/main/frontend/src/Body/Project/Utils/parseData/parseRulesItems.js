@@ -15,6 +15,8 @@ function parseRulesItems(data) {
                 tables: {
                     indicesOfCoveredObjects: Array.isArray(data.ruleSet[i].indicesOfCoveredObjects) ?
                         data.ruleSet[i].indicesOfCoveredObjects.slice() : [],
+                    isSupportingObject: Array.isArray(data.ruleSet[i].isSupportingObject) ?
+                        data.ruleSet[i].isSupportingObject.slice() : []
                 },
                 toFilter() {
                     return [

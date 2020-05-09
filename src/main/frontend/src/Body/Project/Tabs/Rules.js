@@ -367,19 +367,10 @@ class Rules extends Component {
     };
 
     onFilterChange = (event) => {
-        const { loading } = this.state;
+        const { loading, items } = this.state;
 
-        if (!loading) {
-            const { items, sort: { order, value } } = this.state;
-            const filteredItems = filterFunction(event.target.value.toString(), items.slice());
-
-            if ( order && value ) {
-                this.onSortChange(filteredItems);
-            } else {
-                this.setState({
-                    displayedItems: filteredItems
-                });
-            }
+        if (!loading && Array.isArray(items) && items.length) {
+            this.onSortChange(filterFunction(event.target.value.toString(), items.slice()));
         }
     };
 
@@ -438,6 +429,10 @@ class Rules extends Component {
                     displayedItems: Boolean(originalItems) ? originalItems : []
                 });
             }
+        } else {
+            this.setState({
+                displayedItems: null
+            });
         }
     };
 

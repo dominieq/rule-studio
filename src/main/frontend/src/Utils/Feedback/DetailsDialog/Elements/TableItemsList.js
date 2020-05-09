@@ -48,20 +48,19 @@ function TableItemsList(props) {
             primary = props.getName(table[index]);
         }
 
-        let className = undefined;
-        if (typeof props.getItemsClassName === "function") {
-            className = props.getItemsClassName(table[index])
+        let border = undefined;
+        if (typeof props.getItemsStyle === "function") {
+            border = props.getItemsStyle(index);
         }
 
         return (
             <ListItem
                 button={true}
-                className={className}
                 divider={true}
                 key={key}
                 selected={table[index] === itemIndex}
                 onClick={() => onItemInTableSelected(table[index])}
-                style={style}
+                style={{ ...style, ...border }}
             >
                 <TextWithHoverTooltip
                     text={primary}
@@ -116,7 +115,7 @@ function TableItemsList(props) {
 // table (required) <-- array of integers (object indices) from chosen data table
 
 TableItemsList.propTypes = {
-    getItemsClassName: PropTypes.func,
+    getItemsStyle: PropTypes.func,
     getName: PropTypes.func,
     headerText: PropTypes.string,
     itemIndex: PropTypes.number,

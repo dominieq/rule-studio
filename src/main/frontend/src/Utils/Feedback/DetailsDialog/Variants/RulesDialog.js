@@ -88,6 +88,20 @@ class RulesDialog extends PureComponent {
         );
     };
 
+    getItemsStyle = (index) => {
+        const { item: { tables: { isSupportingObject } } } = this.props;
+
+        if (isSupportingObject[index]) {
+            return {
+                borderLeft: "4px solid green"
+            };
+        } else {
+            return {
+                borderLeft: "4px solid red"
+            };
+        }
+    };
+
     getName = (index) => {
         const { projectResult: { informationTable: { objects } }, settings } = this.props;
 
@@ -114,6 +128,7 @@ class RulesDialog extends PureComponent {
                 </div>
                 <div id={"rules-table-content"} style={{display: "flex", flexDirection: "column", width: "20%"}}>
                     <TableItemsList
+                        getItemsStyle={this.getItemsStyle}
                         getName={this.getName}
                         headerText={"Indices of covered objects"}
                         itemIndex={itemInTableIndex}
@@ -155,10 +170,11 @@ RulesDialog.propTypes = {
             toString: PropTypes.func
         }),
         traits: PropTypes.shape({
-            "Type": PropTypes.string.isRequired
+            "Type": PropTypes.string
         }),
-        tables: PropTypes.exact({
-            indicesOfCoveredObjects: PropTypes.arrayOf(PropTypes.number)
+        tables: PropTypes.shape({
+            indicesOfCoveredObjects: PropTypes.arrayOf(PropTypes.number),
+            isSupportingObject: PropTypes.arrayOf(PropTypes.bool)
         }),
         toFilter: PropTypes.func,
         toSort: PropTypes.func,
