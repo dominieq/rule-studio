@@ -81,6 +81,9 @@ class Classification extends Component {
                 }));
             }
         }).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if (this._isMounted) {
                 this.setState({
                     data: null,
@@ -193,12 +196,23 @@ class Classification extends Component {
                     this.props.onTabChange(newProject);
                 }
             }).catch(error => {
+                if (!error.hasOwnProperty("open")) {
+                    console.log(error);
+                }
                 if (this._isMounted) {
-                    this.setState({alertProps: error});
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: [],
+                        alertProps: error
+                    });
                 }
             }).finally(() => {
                 if (this._isMounted) {
-                    this.setState({loading: false});
+                    this.setState({
+                        loading: false,
+                        selectedItem: null
+                    });
                 }
             });
         });
@@ -281,6 +295,9 @@ class Classification extends Component {
         let data = {typeOfMatrix: "classification"};
 
         downloadMatrix(serverBase, project.result.id, data).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }

@@ -80,6 +80,9 @@ class Rules extends Component {
                 }));
             }
         }).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if (this._isMounted) {
                 this.setState({
                     data: null,
@@ -234,15 +237,24 @@ class Rules extends Component {
                     this.props.onTabChange(newProject);
                 }
             }).catch(error => {
+                if (!error.hasOwnProperty("open")) {
+                    console.log(error);
+                }
                 if (this._isMounted) {
-                    this.setState({alertProps: error});
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: [],
+                        alertProps: error
+                    });
                 }
             }).finally(() => {
                 const { displayedItems } = this.state;
 
                 if (this._isMounted) {
                     this.setState({
-                        loading: false
+                        loading: false,
+                        selectedItem: null
                     }, () => this.onSortChange(displayedItems));
                 }
             });
@@ -292,11 +304,14 @@ class Rules extends Component {
                         this.props.onTabChange(newProject);
                     }
                 }).catch(error => {
+                    if (!error.hasOwnProperty("open")) {
+                        console.log(error);
+                    }
                     if (this._isMounted) {
                         this.setState({
                             data: null,
                             items: null,
-                            selectedItem: null,
+                            displayedItems: [],
                             alertProps: error
                         });
                     }
@@ -305,7 +320,8 @@ class Rules extends Component {
 
                     if (this._isMounted) {
                         this.setState({
-                            loading: false
+                            loading: false,
+                            selectedItem: null
                         }, () =>  this.onSortChange(displayedItems));
                     }
                 });
@@ -318,6 +334,9 @@ class Rules extends Component {
         let data = { format: "xml" };
 
         downloadRules(serverBase, project.result.id, data).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if (this._isMounted) {
                 this.setState({alertProps: error});
             }
@@ -329,6 +348,9 @@ class Rules extends Component {
         let data = { format: "txt" };
 
         downloadRules(serverBase, project.result.id, data).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }

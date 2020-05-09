@@ -64,6 +64,9 @@ class Unions extends Component {
                 });
             }
         }).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if (this._isMounted) {
                 this.setState({
                     data: null,
@@ -190,12 +193,23 @@ class Unions extends Component {
                     this.props.onTabChange(newProject);
                 }
             }).catch(error => {
+                if (!error.hasOwnProperty("open")) {
+                    console.log(error);
+                }
                 if (this._isMounted) {
-                    this.setState({alertProps: error});
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: [],
+                        alertProps: error
+                    });
                 }
             }).finally(() => {
                 if (this._isMounted) {
-                    this.setState({loading: false});
+                    this.setState({
+                        loading: false,
+                        selectedItem: null
+                    });
                 }
             });
         });

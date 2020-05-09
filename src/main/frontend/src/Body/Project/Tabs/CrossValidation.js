@@ -108,6 +108,9 @@ class CrossValidation extends Component {
                 });
             }
         }).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if ( this._isMounted ) {
                 this.setState({
                     data: null,
@@ -273,12 +276,24 @@ class CrossValidation extends Component {
                 }
 
             }).catch(error => {
+                if (!error.hasOwnProperty("open")) {
+                    console.log(error);
+                }
                 if ( this._isMounted ) {
-                    this.setState({alertProps: error});
+                    this.setState({
+                        data: null,
+                        folds: null,
+                        items: null,
+                        displayedItems: [],
+                        alertProps: error
+                    });
                 }
             }).finally(() => {
                 if ( this._isMounted ) {
-                    this.setState({loading: false});
+                    this.setState(({selected}) => ({
+                        loading: false,
+                        selected: { ...selected, item: null }
+                    }));
                 }
             });
         });
@@ -288,6 +303,9 @@ class CrossValidation extends Component {
         const { project, serverBase } = this.props;
 
         downloadMatrix(serverBase, project.result.id, data).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }
