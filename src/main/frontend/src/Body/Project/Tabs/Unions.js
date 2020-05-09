@@ -15,7 +15,7 @@ import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
 import { UnionsDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
-import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
+import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
 class Unions extends Component {
     constructor(props) {
@@ -239,15 +239,14 @@ class Unions extends Component {
     };
 
     onFilterChange = (event) => {
-        const { loading } = this.state;
+        const { loading, items } = this.state;
 
-        if (!loading) {
-            const { items } = this.state;
+        if (!loading && Array.isArray(items) && items.length) {
             const filteredItems = filterFunction(event.target.value.toString(), items.slice());
 
             this.setState({
-                items: items,
-                displayedItems: filteredItems
+                displayedItems: filteredItems,
+                selectedItem: null
             });
         }
     };
@@ -265,20 +264,7 @@ class Unions extends Component {
         const { project: { result, settings } } = this.props;
 
         return (
-            <CustomBox id={"unions"} styleVariant={"tab"}>
-                <StyledPaper id={"unions-bar"} paperRef={this.upperBar}>
-                    <SettingsButton onClick={() => this.toggleOpen("settings")} />
-                    <StyledDivider margin={16} />
-                    <CustomTooltip title={"Click on settings button on the left to customize parameters"}>
-                        <CalculateButton
-                            aria-label={"unions-calculate-button"}
-                            disabled={loading}
-                            onClick={this.onCountUnionsClick}
-                        />
-                    </CustomTooltip>
-                    <span style={{flexGrow: 1}} />
-                    <FilterTextField onChange={this.onFilterChange}/>
-                </StyledPaper>
+            <CustomBox id={"unions"} variant={"Tab"}>
                 <CustomDrawer
                     id={"unions-settings"}
                     onClose={() => this.toggleOpen("settings")}
@@ -296,27 +282,44 @@ class Unions extends Component {
                         value={parameters.consistencyThreshold}
                     />
                 </CustomDrawer>
-                <TabBody
-                    content={parseUnionsListItems(displayedItems)}
-                    id={"unions-list"}
-                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
-                    isLoading={loading}
-                    ListProps={{
-                        onItemSelected: this.onDetailsOpen
-                    }}
-                    noFilterResults={!displayedItems}
-                    subheaderContent={[
-                        {
-                            label: "Number of unions:",
-                            value: displayedItems ? displayedItems.length : undefined
-                        },
-                        {
-                            label: "Quality of classification:",
-                            value: data ? data.qualityOfApproximation : undefined
-                        }
-                    ]}
-                />
-                {selectedItem !== null &&
+                <CustomBox id={"unions-content"} variant={"TabBody"}>
+                    <CustomHeader id={"unions-header"} paperRef={this.upperBar}>
+                        <SettingsButton onClick={() => this.toggleOpen("settings")} />
+                        <StyledDivider margin={16} />
+                        <CustomTooltip title={"Click on settings button on the left to customize parameters"}>
+                            <CalculateButton
+                                aria-label={"unions-calculate-button"}
+                                disabled={loading}
+                                onClick={this.onCountUnionsClick}
+                            />
+                        </CustomTooltip>
+                        <span style={{flexGrow: 1}} />
+                        <FilterTextField onChange={this.onFilterChange}/>
+                    </CustomHeader>
+                    <TabBody
+                        content={parseUnionsListItems(displayedItems)}
+                        id={"unions-list"}
+                        isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
+                        isLoading={loading}
+                        ListProps={{
+                            onItemSelected: this.onDetailsOpen
+                        }}
+                        ListSubheaderProps={{
+                            style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
+                        }}
+                        noFilterResults={!displayedItems}
+                        subheaderContent={[
+                            {
+                                label: "Number of unions:",
+                                value: displayedItems ? displayedItems.length : undefined
+                            },
+                            {
+                                label: "Quality of classification:",
+                                value: data ? data.qualityOfApproximation : undefined
+                            }
+                        ]}
+                    />
+                    {selectedItem !== null &&
                     <UnionsDialog
                         item={selectedItem}
                         onClose={() => this.toggleOpen("details")}
@@ -324,7 +327,8 @@ class Unions extends Component {
                         projectResult={result}
                         settings={settings}
                     />
-                }
+                    }
+                </CustomBox>
                 <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
             </CustomBox>
         )

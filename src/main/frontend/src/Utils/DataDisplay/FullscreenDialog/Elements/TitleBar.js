@@ -2,9 +2,9 @@ import React, {useEffect} from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
+import CustomHeader from "../../../Surfaces/CustomHeader";
 import CustomTooltip from "../../CustomTooltip";
 import StyledButton from "../../../Inputs/StyledButton";
-import StyledPaper from "../../../Surfaces/StyledPaper";
 import Typography from "@material-ui/core/Typography";
 import WindowClose from "mdi-material-ui/WindowClose";
 
@@ -115,9 +115,8 @@ function TitleBar(props) {
     });
 
     return (
-        <StyledPaper
+        <CustomHeader
             className={clsx(classes.root, classes.rootOverflow)}
-            elevation={6}
             id={"title-bar"}
             onWheel={onWheel}
         >
@@ -147,7 +146,7 @@ function TitleBar(props) {
                     </StyledButton>
                 </CustomTooltip>
             </div>
-        </StyledPaper>
+        </CustomHeader>
     )
 }
 

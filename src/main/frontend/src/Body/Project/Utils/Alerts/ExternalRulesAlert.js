@@ -25,7 +25,7 @@ function ExternalRulesAlert() {
         <CustomTooltip
             classes={{wrapper: tooltipClasses.wrapper}}
             leaveDelay={1000}
-            title={"You are currently using rule set from external file"}
+            title={"You are currently using rule set from external file."}
         >
             <UploadOutline classes={{...iconClasses}} />
         </CustomTooltip>

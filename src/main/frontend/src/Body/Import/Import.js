@@ -8,7 +8,7 @@ import { CSVDialog } from "../../Utils/Feedback/CSVDialog";
 import CustomSwitch from "../../Utils/Inputs/CustomSwitch";
 import CustomTextField from "../../Utils/Inputs/CustomTextField";
 import StyledButton  from "../../Utils/Inputs/StyledButton"
-import StyledPaper from "../../Utils/Surfaces/StyledPaper";
+import CustomSection from "../../Utils/Surfaces/CustomSection";
 import Collapse from "@material-ui/core/Collapse";
 import styles from "./styles/Import.module.css";
 
@@ -142,8 +142,8 @@ class Import extends Component{
         const { checked, expand, name, open } = this.state;
 
         return (
-            <CustomBox id={"import"} onKeyPress={this.onEnterClick} styleVariant={"body"}>
-                <StyledPaper id={"import-panel"} elevation={6} styleVariant={"panel"}>
+            <CustomBox id={"import"} onKeyPress={this.onEnterClick} variant={"Body"}>
+                <CustomSection id={"import-section"}>
                     <div aria-label={"text field row"} className={styles.Row}>
                         <CustomTextField
                             autoComplete={"off"}
@@ -224,7 +224,7 @@ class Import extends Component{
                             Clear
                         </StyledButton>
                     </div>
-                </StyledPaper>
+                </CustomSection>
                 <CSVDialog onConfirm={this.onCSVDialogClose} open={open} />
             </CustomBox>
         );
