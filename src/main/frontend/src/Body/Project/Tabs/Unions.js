@@ -239,15 +239,14 @@ class Unions extends Component {
     };
 
     onFilterChange = (event) => {
-        const { loading } = this.state;
+        const { loading, items } = this.state;
 
-        if (!loading) {
-            const { items } = this.state;
+        if (!loading && Array.isArray(items) && items.length) {
             const filteredItems = filterFunction(event.target.value.toString(), items.slice());
 
             this.setState({
-                items: items,
-                displayedItems: filteredItems
+                displayedItems: filteredItems,
+                selectedItem: null
             });
         }
     };
