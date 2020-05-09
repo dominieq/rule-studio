@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.enums.OrderByRuleCharacteristic;
 import pl.put.poznan.rulestudio.enums.RuleType;
 import pl.put.poznan.rulestudio.enums.RulesFormat;
@@ -95,6 +96,26 @@ public class RulesController {
                 logger.error(ex.getMessage());
                 throw ex;
         }
+    }
+
+    @RequestMapping(value = "/upload", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RulesWithHttpParameters> putUploadRules (
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "rules") MultipartFile rulesFile) throws IOException {
+        logger.info("Uploading rules (PUT)...");
+        RulesWithHttpParameters result = rulesService.putUploadRules(id, rulesFile);
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RulesWithHttpParameters> postUploadRules (
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "rules") MultipartFile rulesFile,
+            @RequestParam(name = "metadata") String metadata,
+            @RequestParam(name = "data") String data) throws IOException {
+        logger.info("Uploading rules (POST)...");
+        RulesWithHttpParameters result = rulesService.postUploadRules(id, rulesFile, metadata, data);
+        return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/arePossibleRulesAllowed", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
