@@ -43,14 +43,14 @@ public class ClassificationController {
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
             @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
-            @RequestParam(name = "data", required = false) MultipartFile dataFile,
+            @RequestParam(name = "externalDataFile", required = false) MultipartFile externalDataFile,
             @RequestParam(name = "separator", defaultValue = ",") Character separator,
             @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
         logger.info("Putting classification...");
 
         Classification result = null;
-        if(dataFile != null) {
-            result = classificationService.putClassificationNewData(id, typeOfClassifier, defaultClassificationResult, dataFile, separator, header);
+        if(externalDataFile != null) {
+            result = classificationService.putClassificationNewData(id, typeOfClassifier, defaultClassificationResult, externalDataFile, separator, header);
         } else {
             result = classificationService.putClassification(id, typeOfClassifier, defaultClassificationResult);
         }
@@ -64,10 +64,18 @@ public class ClassificationController {
             @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
             @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
             @RequestParam(name = "metadata") String metadata,
-            @RequestParam(name = "data") String data) throws IOException {
+            @RequestParam(name = "data") String data,
+            @RequestParam(name = "externalDataFile", required = false) MultipartFile externalDataFile,
+            @RequestParam(name = "separator", defaultValue = ",") Character separator,
+            @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
         logger.info("Posting classification...");
 
-        Classification result = classificationService.postClassification(id, typeOfClassifier, defaultClassificationResult, metadata, data);
+        Classification result = null;
+        if(externalDataFile != null) {
+            result = classificationService.postClassificationNewData(id, typeOfClassifier, defaultClassificationResult, metadata, data, externalDataFile, separator, header);
+        } else {
+            result = classificationService.postClassification(id, typeOfClassifier, defaultClassificationResult, metadata, data);
+        }
 
         return ResponseEntity.ok(result);
     }

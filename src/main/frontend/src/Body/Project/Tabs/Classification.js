@@ -233,7 +233,16 @@ class Classification extends Component {
                 const { parameters } = this.state;
 
                 let method = project.dataUpToDate ? "PUT" : "POST";
-                let files = { data: event.target.files[0] };
+                let files = { externalDataFile: event.target.files[0] };
+
+                if (!project.dataUpToDate) {
+                    files = {
+                        ...files,
+                        metadata: JSON.stringify(project.result.informationTable.attributes),
+                        data: JSON.stringify(project.result.informationTable.objects)
+                    };
+                }
+
                 let data = createFormData(parameters, files);
 
                 this.calculateClassification(method, data);
@@ -250,7 +259,16 @@ class Classification extends Component {
                 const { parameters } = this.state;
 
                 let method = project.dataUpToDate ? "PUT" : "POST";
-                let files = { data: this.csvFile };
+                let files = { externalDataFile: this.csvFile };
+
+                if (!project.dataUpToDate) {
+                    files = {
+                        ...files,
+                        metadata: JSON.stringify(project.result.informationTable.attributes),
+                        data: JSON.stringify(project.result.informationTable.objects)
+                    };
+                }
+
                 let data = createFormData({ ...parameters, ...csvSpecs }, files);
 
                 this.calculateClassification(method, data);
