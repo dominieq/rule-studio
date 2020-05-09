@@ -455,7 +455,8 @@ public class RulesService {
         }
 
         RuleSetWithCharacteristics ruleSetWithCharacteristics = parseRules(rulesFile, attributes);
-        if(ruleSetWithCharacteristics.getLearningInformationTableHash().equals(informationTable.getHash())) {
+        String ruleSetHash = ruleSetWithCharacteristics.getLearningInformationTableHash();
+        if((ruleSetHash != null) && (ruleSetHash.equals(informationTable.getHash()))) {
             logger.info("Current metadata and objects in project are correct training set of uploaded rules. Calculating rule coverage information.");
             ruleSetWithCharacteristics.calculateBasicRuleCoverageInformation(informationTable);
         }
