@@ -252,7 +252,7 @@ public class RulesService {
         RulesWithHttpParameters rules = project.getRules();
         if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (!rules.getConsistencyThreshold().equals(consistencyThreshold)) || (rules.getTypeOfRules() != typeOfRules)) {
             RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
-            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, false);
+            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules);
 
             project.setRules(rules);
             project.setCurrentRules(true);
@@ -469,7 +469,7 @@ public class RulesService {
             logger.info(message);
         }
 
-        project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, true, message));
+        project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, message, rulesFile.getOriginalFilename()));
     }
 
     public RulesWithHttpParameters putUploadRules(UUID id, MultipartFile rulesFile) throws IOException {

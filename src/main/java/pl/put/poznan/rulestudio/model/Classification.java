@@ -19,6 +19,7 @@ public class Classification {
     private ClassifierType typeOfClassifier;
     private DefaultClassificationResultType defaultClassificationResult;
     private boolean externalData;
+    private String externalDataFileName;
 
     public Classification(ClassificationResult[] simpleClassificationResults, InformationTable informationTable) {
         this.classificationResults = simpleClassificationResults;
@@ -108,6 +109,14 @@ public class Classification {
         this.externalData = externalData;
     }
 
+    public String getExternalDataFileName() {
+        return externalDataFileName;
+    }
+
+    public void setExternalDataFileName(String externalDataFileName) {
+        this.externalDataFileName = externalDataFileName;
+    }
+
     @Override
     public String toString() {
         return "Classification{" +
@@ -119,6 +128,7 @@ public class Classification {
                 ", typeOfClassifier=" + typeOfClassifier +
                 ", defaultClassificationResult=" + defaultClassificationResult +
                 ", externalData=" + externalData +
+                ", externalDataFileName='" + externalDataFileName + '\'' +
                 '}';
     }
 }

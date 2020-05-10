@@ -66,6 +66,11 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
 
         jsonGenerator.writeBooleanField("externalData", classification.isExternalData());
 
+        if(classification.getExternalDataFileName() != null) {
+            jsonGenerator.writeFieldName("externalDataFileName");
+            jsonGenerator.writeString(classification.getExternalDataFileName());
+        }
+
         jsonGenerator.writeEndObject();
     }
 }

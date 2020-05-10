@@ -11,20 +11,21 @@ public class RulesWithHttpParameters implements Cloneable {
     private RuleType typeOfRules;
     private boolean externalRules;
     private String message;
+    private String rulesFileName;
 
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, Boolean externalRules, String message) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String message, String rulesFileName) {
+        this.externalRules = true;
         this.ruleSet = rules;
-        this.externalRules = externalRules;
         this.message = message;
+        this.rulesFileName = rulesFileName;
     }
 
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, Boolean externalRules) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType) {
+        this.externalRules = false;
         this.ruleSet = rules;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
         this.typeOfRules = ruleType;
-        this.externalRules = externalRules;
-        this.message = null;
     }
 
     public RuleSetWithCharacteristics getRuleSet() {
@@ -75,6 +76,14 @@ public class RulesWithHttpParameters implements Cloneable {
         this.message = message;
     }
 
+    public String getRulesFileName() {
+        return rulesFileName;
+    }
+
+    public void setRulesFileName(String rulesFileName) {
+        this.rulesFileName = rulesFileName;
+    }
+
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
@@ -84,6 +93,7 @@ public class RulesWithHttpParameters implements Cloneable {
                 ", typeOfRules=" + typeOfRules +
                 ", externalRules=" + externalRules +
                 ", message='" + message + '\'' +
+                ", rulesFileName='" + rulesFileName + '\'' +
                 '}';
     }
 

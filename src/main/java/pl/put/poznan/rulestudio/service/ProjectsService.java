@@ -66,6 +66,8 @@ public class ProjectsService {
 
         project = new Project(name, informationTable);
 
+        project.setMetadataFileName(metadataFile.getOriginalFilename());
+        if(dataFile != null)    project.setDataFileName(dataFile.getOriginalFilename());
 
         if(rulesFile != null) { //load rules from file
             RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
@@ -83,7 +85,7 @@ public class ProjectsService {
                 logger.info(message);
             }
 
-            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, true, message));
+            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, message, rulesFile.getOriginalFilename()));
         }
 
 

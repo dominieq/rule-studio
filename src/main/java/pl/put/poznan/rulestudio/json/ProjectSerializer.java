@@ -56,6 +56,16 @@ public class ProjectSerializer extends JsonSerializer<Project> {
         jsonGenerator.writeFieldName("crossValidation");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getCrossValidation()));
 
+        if(project.getMetadataFileName() != null) {
+            jsonGenerator.writeFieldName("metadataFileName");
+            jsonGenerator.writeString(project.getMetadataFileName());
+        }
+
+        if(project.getDataFileName() != null) {
+            jsonGenerator.writeFieldName("dataFileName");
+            jsonGenerator.writeString(project.getDataFileName());
+        }
+
         jsonGenerator.writeEndObject();
     }
 }
