@@ -10,12 +10,12 @@ public class RulesWithHttpParameters implements Cloneable {
     private Double consistencyThreshold;
     private RuleType typeOfRules;
     private boolean externalRules;
-    private String message;
+    private String errorMessage;
 
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, Boolean externalRules, String message) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, Boolean externalRules, String errorMessage) {
         this.ruleSet = rules;
         this.externalRules = externalRules;
-        this.message = message;
+        this.errorMessage = errorMessage;
     }
 
     public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, Boolean externalRules) {
@@ -24,7 +24,7 @@ public class RulesWithHttpParameters implements Cloneable {
         this.consistencyThreshold = consistencyThreshold;
         this.typeOfRules = ruleType;
         this.externalRules = externalRules;
-        this.message = null;
+        this.errorMessage = null;
     }
 
     public RuleSetWithCharacteristics getRuleSet() {
@@ -67,12 +67,12 @@ public class RulesWithHttpParameters implements Cloneable {
         this.externalRules = externalRules;
     }
 
-    public String getMessage() {
-        return message;
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class RulesWithHttpParameters implements Cloneable {
                 ", consistencyThreshold=" + consistencyThreshold +
                 ", typeOfRules=" + typeOfRules +
                 ", externalRules=" + externalRules +
-                ", message='" + message + '\'' +
+                ", errorMessage='" + errorMessage + '\'' +
                 '}';
     }
 
