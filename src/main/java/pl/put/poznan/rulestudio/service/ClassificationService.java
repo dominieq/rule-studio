@@ -191,7 +191,7 @@ public class ClassificationService {
     private static void checkLearningInformationTableCompatibility(InformationTable learningInformationTable, RuleSetWithCharacteristics ruleSetWithCharacteristics) {
         String ruleSetHash = ruleSetWithCharacteristics.getLearningInformationTableHash();
         if(ruleSetHash == null) {
-            NoHashInRuleSetException ex = new NoHashInRuleSetException(String.format("Provided rules set doesn't have learning information table hash. It can't be determined, if this rules set was generated based on given learning information table. Chosen classifier can't be used. Learning data hash: \"%s\".", learningInformationTable.getHash()));
+            NoHashInRuleSetException ex = new NoHashInRuleSetException(String.format("Provided rule set doesn't have learning information table hash. It can't be determined, if this rule set was generated based on given learning information table. Chosen classifier can't be used. Learning data hash: \"%s\".", learningInformationTable.getHash()));
             logger.error(ex.getMessage());
             throw ex;
         }
