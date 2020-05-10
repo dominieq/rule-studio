@@ -589,7 +589,10 @@ class CrossValidation extends Component {
                     <CustomHeader id={"cross-validation-header"} paperRef={this.upperBar}>
                         <SettingsButton onClick={() => this.toggleOpen("settings")} />
                         <StyledDivider margin={16} />
-                        <CustomTooltip title={"Click on settings button on the left to customize parameters"}>
+                        <CustomTooltip
+                            disableMaxWidth={true}
+                            title={"Click on settings button on the left to customize parameters"}
+                        >
                             <CalculateButton
                                 aria-label={"cross-validation-calculate-button"}
                                 disabled={loading}

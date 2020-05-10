@@ -6,17 +6,19 @@ import { mergeClasses } from "../utilFunctions";
 import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles(theme => ({
+    arrow: {
+        color: theme.palette.popper.background
+    },
+    disableMaxWidth: {
+        maxWidth: "none"
+    },
     tooltip: {
         backgroundColor: theme.palette.popper.background,
         boxShadow: theme.shadows[6],
         color: theme.palette.popper.text,
+        fontSize: "smaller"
     },
-    arrow: {
-        color: theme.palette.popper.background
-    },
-    wrapper: {
-
-    }
+    wrapper: {}
 }), {name: "CustomTooltip"});
 
 function DefaultWrapper(props, ref) {
@@ -27,10 +29,14 @@ function DefaultWrapper(props, ref) {
 const WrapperForwardRef = React.forwardRef(DefaultWrapper);
 
 function CustomTooltip(props) {
-    const { children,  classes: propsClasses, className, WrapperComponent, WrapperProps, ...other } = props;
+    const { children,  classes: propsClasses, className, disableMaxWidth, WrapperComponent, WrapperProps, ...other } = props;
 
     let classes = useStyles();
     if (propsClasses) classes = mergeClasses(classes, propsClasses);
+
+    if (disableMaxWidth) {
+        classes = mergeClasses(classes, {tooltip: classes.disableMaxWidth})
+    }
 
     return (
         <Tooltip classes={{tooltip: classes.tooltip, arrow: classes.arrow}} {...other}>
@@ -48,11 +54,17 @@ function CustomTooltip(props) {
 CustomTooltip.propTypes = {
     arrow: PropTypes.bool,
     children: PropTypes.node,
-    classes: PropTypes.object,
+    classes: PropTypes.shape({
+        arrow: PropTypes.string,
+        disableMaxWidth: PropTypes.string,
+        tooltip: PropTypes.string,
+        wrapper: PropTypes.string
+    }),
     className: PropTypes.string,
     disableFocusListener: PropTypes.bool,
     disableHoverListener: PropTypes.bool,
     disableTouchListener: PropTypes.bool,
+    disableMaxWidth: PropTypes.bool,
     enterDelay: PropTypes.number,
     enterNextDelay: PropTypes.number,
     enterTouchDelay: PropTypes.number,
