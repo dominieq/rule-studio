@@ -94,7 +94,7 @@ class ThresholdSelector extends Component {
         const { CircleHelperProps, SliderProps, TextFieldProps, variant } = this.props;
 
         return (
-            <div aria-label={"outer wrapper"} className={styles.OuterWrapper}>
+            <div aria-label={"outer wrapper"} className={styles.OuterWrapper} style={this.props.style}>
                 <CircleHelper
                     title={
                         <p aria-label={"main"} style={{margin: 0, textAlign: "justify"}}>

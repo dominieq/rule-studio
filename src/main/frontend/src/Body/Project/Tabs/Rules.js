@@ -69,6 +69,11 @@ class Rules extends Component {
                 const items = parseRulesItems(result);
                 const resultParameters = parseRulesParams(result);
 
+                let alertProps = undefined;
+                if (result.hasOwnProperty("errorMessage")) {
+                    alertProps = { message: result.errorMessage, open: true, severity: "error" };
+                }
+
                 this.setState(({parameters, sort}) => ({
                     data: result,
                     items: items,
@@ -76,7 +81,8 @@ class Rules extends Component {
                     externalRules: result.externalRules,
                     parameters: { ...parameters, ...resultParameters},
                     parametersSaved: parametersSaved,
-                    sort: { ...sort, ...sortParams.rules }
+                    sort: { ...sort, ...sortParams.rules },
+                    alertProps: alertProps
                 }));
             }
         }).catch(error => {
@@ -209,12 +215,18 @@ class Rules extends Component {
                     if (this._isMounted) {
                         const items = parseRulesItems(result);
 
+                        let alertProps = undefined;
+                        if (result.hasOwnProperty("errorMessage")) {
+                            alertProps = { message: result.errorMessage, open: true, severity: "error" };
+                        }
+
                         this.setState({
                             data: result,
                             items: items,
                             displayedItems: items,
                             externalRules: result.externalRules,
                             parametersSaved: true,
+                            alertProps: alertProps
                         });
                     }
 
@@ -289,11 +301,17 @@ class Rules extends Component {
                         if (this._isMounted) {
                             const items = parseRulesItems(result);
 
+                            let alertProps = undefined;
+                            if (result.hasOwnProperty("errorMessage")) {
+                                alertProps = { message: result.errorMessage, open: true, severity: "error" };
+                            }
+
                             this.setState({
                                 data: result,
                                 items: items,
                                 displayedItems: items,
                                 externalRules: result.externalRules,
+                                alertProps: alertProps
                             });
                         }
                         let newProject = { ...project };
@@ -518,7 +536,7 @@ class Rules extends Component {
                         variant={"extended"}
                     />
                 </CustomDrawer>
-                <CustomBox id={"rules-content"} variant={"TabBody"}>
+                <CustomBox customScrollbar={true} id={"rules-content"} variant={"TabBody"}>
                     <CustomHeader id={"rules-header"} paperRef={this.upperBar}>
                         <SettingsButton onClick={() => this.toggleOpen("settings")} />
                         <StyledDivider margin={16} />

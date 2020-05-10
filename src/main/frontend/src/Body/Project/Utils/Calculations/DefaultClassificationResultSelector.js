@@ -39,7 +39,7 @@ function DefaultClassificationResultSelector(props) {
     const classes = useStyles();
 
     return (
-        <div aria-label={"outer wrapper"} className={styles.OuterWrapper}>
+        <div aria-label={"outer wrapper"} className={styles.OuterWrapper} style={props.style}>
             <CircleHelper
                 multiRow={true}
                 title={
