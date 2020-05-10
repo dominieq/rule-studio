@@ -17,7 +17,7 @@ function NumberOfFoldsSelector(props) {
     const { CircleHelperProps, TextFieldProps } = props;
 
     return (
-        <div aria-label={"outer wrapper"} className={styles.OuterWrapper}>
+        <div aria-label={"outer wrapper"} className={styles.OuterWrapper} style={props.style}>
             <CircleHelper
                 title={
                     <p aria-label={"main"} style={{ margin: 0, textAlign: "justify" }}>

@@ -15,12 +15,12 @@ const useStyles = makeStyles(theme => ({
 }), {name: "CustomDivider"});
 
 function StyledDivider(props) {
-    const { color, classes: propsClasses, className, margin, ...other } = props;
+    const { color, classes: propsClasses, className, margin, style: propsStyle, ...other } = props;
     let classes = useStyles();
 
     if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
-    let style = {}
+    let style = propsStyle;
     if (props.orientation === "horizontal") {
         style = { ...style, ...{ marginBottom: margin, marginTop: margin } };
     } else if (props.orientation === "vertical") {

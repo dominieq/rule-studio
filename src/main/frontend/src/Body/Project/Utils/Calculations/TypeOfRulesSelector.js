@@ -18,7 +18,7 @@ function TypeOfRulesSelector(props) {
     const { CircleHelperProps, TextFieldProps } = props;
 
     return (
-        <div aria-label={"outer wrapper"} className={styles.OuterWrapper}>
+        <div aria-label={"outer wrapper"} className={styles.OuterWrapper} style={props.style}>
             <CircleHelper
                 multiRow={true}
                 title={

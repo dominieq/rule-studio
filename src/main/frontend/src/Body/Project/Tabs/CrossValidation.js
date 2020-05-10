@@ -514,18 +514,21 @@ class CrossValidation extends Component {
         return (
             <CustomBox id={"cross-validation"} variant={"Tab"}>
                 <CustomDrawer
+                    dividers={false}
                     id={"cross-validation-settings"}
                     open={open.settings}
                     onClose={() => this.toggleOpen("settings")}
                     placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
                 >
                     <TypeOfRulesSelector
+                        style={{marginBottom: 16}}
                         TextFieldProps={{
                             onChange: this.onTypeOfRulesChange,
                             value: parameters.typeOfRules
                         }}
                     />
                     <TypeOfUnionsSelector
+                        style={{marginBottom: 16}}
                         TextFieldProps={{
                             disabledChildren: ["standard"],
                             onChange: this.onTypeOfUnionsChange,
@@ -539,7 +542,15 @@ class CrossValidation extends Component {
                         value={parameters.consistencyThreshold}
                         variant={"extended"}
                     />
+                    <StyledDivider
+                        color={"secondary"}
+                        flexItem={true}
+                        margin={16}
+                        orientation={"horizontal"}
+                        style={{height: 1}}
+                    />
                     <TypeOfClassifierSelector
+                        style={{marginBottom: 16}}
                         TextFieldProps={{
                             onChange: this.onTypeOfClassifierChange,
                             value: parameters.typeOfClassifier
@@ -551,8 +562,16 @@ class CrossValidation extends Component {
                             value: parameters.defaultClassificationResult
                         }}
                     />
+                    <StyledDivider
+                        color={"secondary"}
+                        flexItem={true}
+                        margin={16}
+                        orientation={"horizontal"}
+                        style={{height: 1}}
+                    />
                     <SeedSelector
                         randomizeSeed={this.onSeedRandomize}
+                        style={{marginBottom: 16}}
                         TextFieldProps={{
                             onChange: event => this.onSeedChange(event.target.value),
                             value: parameters.seed
