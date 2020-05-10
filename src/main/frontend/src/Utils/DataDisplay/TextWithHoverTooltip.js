@@ -12,7 +12,7 @@ export const PlainText = withStyles({
     }
 }, {name: "PlainText"})(props => <Typography component={"p"} {...props} />);
 
-const wrapperStyles = makeStyles({
+const useStyles = makeStyles({
     wrapper: {
         overflow: "hidden"
     },
@@ -29,7 +29,8 @@ const wrapperStyles = makeStyles({
 function TextWithHoverTooltip(props) {
     const { children, roundNumbers, TooltipProps, tooltipTitle, TypographyProps } = props;
     let { text } = props;
-    const wrapperClasses = wrapperStyles();
+
+    let classes = useStyles();
 
     let displayedTitle = text;
 
@@ -41,7 +42,8 @@ function TextWithHoverTooltip(props) {
 
     return (
         <CustomTooltip
-            classes={{wrapper: children ? wrapperClasses.wrapperFlex : wrapperClasses.wrapper}}
+            classes={{wrapper: children ? classes.wrapperFlex : classes.wrapper}}
+            disableMaxWidth={true}
             enterDelay={1500}
             enterNextDelay={1500}
             disableFocusListener={true}

@@ -92,6 +92,7 @@ class CustomButtonGroup extends React.Component {
                 <ButtonGroup aria-label={"split button"} ref={this.anchorRef}>
                     <ButtonWrapper placement={"left"}>
                         <CustomTooltip
+                            disableMaxWidth={true}
                             enterDelay={1000}
                             enterNextDelay={1000}
                             title={"Open menu"}
@@ -115,6 +116,7 @@ class CustomButtonGroup extends React.Component {
                     </ButtonWrapper>
                     <ButtonWrapper placement={"right"}>
                         <CustomTooltip
+                            disableMaxWidth={true}
                             title={Array.isArray(tooltips) ? tooltips[selected] : tooltips}
                             WrapperProps={{
                                 style: { height: "100%" }
