@@ -536,7 +536,7 @@ class Rules extends Component {
                         variant={"extended"}
                     />
                 </CustomDrawer>
-                <CustomBox id={"rules-content"} variant={"TabBody"}>
+                <CustomBox customScrollbar={true} id={"rules-content"} variant={"TabBody"}>
                     <CustomHeader id={"rules-header"} paperRef={this.upperBar}>
                         <SettingsButton onClick={() => this.toggleOpen("settings")} />
                         <StyledDivider margin={16} />

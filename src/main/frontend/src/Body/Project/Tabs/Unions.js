@@ -296,7 +296,7 @@ class Unions extends Component {
                         value={parameters.consistencyThreshold}
                     />
                 </CustomDrawer>
-                <CustomBox id={"unions-content"} variant={"TabBody"}>
+                <CustomBox customScrollbar={true} id={"unions-content"} variant={"TabBody"}>
                     <CustomHeader id={"unions-header"} paperRef={this.upperBar}>
                         <SettingsButton onClick={() => this.toggleOpen("settings")} />
                         <StyledDivider margin={16} />

@@ -566,7 +566,7 @@ class CrossValidation extends Component {
                         }}
                     />
                 </CustomDrawer>
-                <CustomBox id={"cross-validation-content"} variant={"TabBody"}>
+                <CustomBox customScrollbar={true} id={"cross-validation-content"} variant={"TabBody"}>
                     <CustomHeader id={"cross-validation-header"} paperRef={this.upperBar}>
                         <SettingsButton onClick={() => this.toggleOpen("settings")} />
                         <StyledDivider margin={16} />

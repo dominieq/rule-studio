@@ -387,7 +387,7 @@ class Classification extends Component {
                         }}
                     />
                 </CustomDrawer>
-                <CustomBox id={"classification-content"} variant={"TabBody"}>
+                <CustomBox customScrollbar={true} id={"classification-content"} variant={"TabBody"}>
                     <CustomHeader id={"classification-header"} paperRef={this.upperBar}>
                         <SettingsButton onClick={() => this.toggleOpen("settings")} />
                         <StyledDivider margin={16} />

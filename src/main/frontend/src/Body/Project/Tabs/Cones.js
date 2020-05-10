@@ -193,7 +193,7 @@ class Cones extends Component {
         const { project: { result } } = this.props;
 
         return (
-            <CustomBox id={"cones"} variant={"TabBody"}>
+            <CustomBox customScrollbar={true} id={"cones"} variant={"TabBody"}>
                 <CustomHeader id={"cones-header"} paperRef={this.upperBar}>
                     <CalculateButton
                         aria-label={"cones-calculate-button"}
