@@ -9,7 +9,7 @@ import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CustomBox from "../../../Utils/Containers/CustomBox"
 import { ConesDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
-import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
+import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
 class Cones extends Component {
     constructor(props) {
@@ -45,6 +45,9 @@ class Cones extends Component {
                 });
             }
         }).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if (this._isMounted) {
                 this.setState({
                     data: null,
@@ -127,26 +130,37 @@ class Cones extends Component {
                     this.props.onTabChange(newProject);
                 }
             }).catch(error => {
+                if (!error.hasOwnProperty("open")) {
+                    console.log(error);
+                }
                 if (this._isMounted) {
-                    this.setState({alertProps: error});
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: [],
+                        alertProps: error
+                    });
                 }
             }).finally(() => {
                 if (this._isMounted) {
-                    this.setState({loading: false});
+                    this.setState({
+                        loading: false,
+                        selectedItem: null
+                    });
                 }
             });
         });
     };
 
     onFilterChange = (event) => {
-        const { loading } = this.state;
+        const { loading, items } = this.state;
 
-        if (!loading) {
-            const { items } = this.state;
+        if (!loading && Array.isArray(items) && items.length) {
             const filteredItems = filterFunction(event.target.value.toString(), items.slice());
 
             this.setState({
-                displayedItems: filteredItems
+                displayedItems: filteredItems,
+                selectedItem: null
             });
         }
     };
@@ -179,8 +193,8 @@ class Cones extends Component {
         const { project: { result } } = this.props;
 
         return (
-            <CustomBox id={"cones"} styleVariant={"tab"}>
-                <StyledPaper id={"cones-bar"} paperRef={this.upperBar}>
+            <CustomBox customScrollbar={true} id={"cones"} variant={"TabBody"}>
+                <CustomHeader id={"cones-header"} paperRef={this.upperBar}>
                     <CalculateButton
                         aria-label={"cones-calculate-button"}
                         disabled={loading}
@@ -188,7 +202,7 @@ class Cones extends Component {
                     />
                     <span style={{flexGrow: 1}}/>
                     <FilterTextField onChange={this.onFilterChange} />
-                </StyledPaper>
+                </CustomHeader>
                 <TabBody
                     content={parseConesListItems(displayedItems)}
                     id={"cones-list"}
@@ -196,6 +210,9 @@ class Cones extends Component {
                     isLoading={loading}
                     ListProps={{
                         onItemSelected: this.onDetailsOpen
+                    }}
+                    ListSubheaderProps={{
+                        style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
                     }}
                     noFilterResults={!displayedItems}
                     subheaderContent={[

@@ -2,7 +2,6 @@ package pl.put.poznan.rulestudio.service;
 
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.rules.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +11,8 @@ import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.exception.ProjectNotFoundException;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
-import pl.put.poznan.rulestudio.model.RulesWithHttpParameters;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -54,26 +51,23 @@ public class ProjectService {
             UUID id,
             MultipartFile metadataFile,
             MultipartFile dataFile,
-            MultipartFile rulesFile,
             Character separator,
             Boolean header) throws IOException {
         logger.info("Id:\t" + id);
         if(metadataFile != null)    logger.info("Metadata:\t{}\t{}", metadataFile.getOriginalFilename(), metadataFile.getContentType());
         if(dataFile != null)        logger.info("Data:\t{}\t{}", dataFile.getOriginalFilename(), dataFile.getContentType());
-        if(rulesFile != null)       logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
         logger.info("Separator:\t{}", separator);
         logger.info("Header:\t{}", header);
 
         Project project = getProjectFromProjectsContainer(projectsContainer, id);
 
-        if((metadataFile == null) && (dataFile == null) && (rulesFile == null)) {
+        if((metadataFile == null) && (dataFile == null)) {
             project.setInformationTable(new InformationTable(new Attribute[0], new ArrayList<>()));
             project.setRules(null);
 
             return project;
         }
 
-        Reader reader;
         Attribute[] attributes;
         InformationTable informationTable = project.getInformationTable();
 
@@ -82,6 +76,7 @@ public class ProjectService {
 
             informationTable = new InformationTable(attributes, new ArrayList<>());
             project.setRules(null);
+            project.setMetadataFileName(metadataFile.getOriginalFilename());
         }
 
         if(dataFile != null) { //load new data from file
@@ -92,23 +87,10 @@ public class ProjectService {
                 throw ex;
             }
             informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
+            project.setDataFileName(dataFile.getOriginalFilename());
         }
 
-        if((metadataFile != null) || (dataFile != null)) { //don't use setter, when only rulesFile is provided - informationTable doesn't change
-            project.setInformationTable(informationTable);
-        }
-
-
-        if(rulesFile != null) { //load rules from file
-            attributes = informationTable.getAttributes();
-            if(attributes == null) {
-                NoDataException ex = new NoDataException("There is no metadata in project. Couldn't read rules file.");
-                logger.error(ex.getMessage());
-                throw ex;
-            }
-            RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
-            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, true));
-        }
+        project.setInformationTable(informationTable);
 
         return project;
     }

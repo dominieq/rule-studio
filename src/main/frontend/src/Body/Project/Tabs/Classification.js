@@ -29,7 +29,7 @@ import { ClassificationDialog } from "../../../Utils/Feedback/DetailsDialog"
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomButtonGroup from "../../../Utils/Inputs/CustomButtonGroup";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
-import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
+import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
 class Classification extends Component {
     constructor(props) {
@@ -81,6 +81,9 @@ class Classification extends Component {
                 }));
             }
         }).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if (this._isMounted) {
                 this.setState({
                     data: null,
@@ -193,12 +196,23 @@ class Classification extends Component {
                     this.props.onTabChange(newProject);
                 }
             }).catch(error => {
+                if (!error.hasOwnProperty("open")) {
+                    console.log(error);
+                }
                 if (this._isMounted) {
-                    this.setState({alertProps: error});
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: [],
+                        alertProps: error
+                    });
                 }
             }).finally(() => {
                 if (this._isMounted) {
-                    this.setState({loading: false});
+                    this.setState({
+                        loading: false,
+                        selectedItem: null
+                    });
                 }
             });
         });
@@ -233,7 +247,16 @@ class Classification extends Component {
                 const { parameters } = this.state;
 
                 let method = project.dataUpToDate ? "PUT" : "POST";
-                let files = { data: event.target.files[0] };
+                let files = { externalDataFile: event.target.files[0] };
+
+                if (!project.dataUpToDate) {
+                    files = {
+                        ...files,
+                        metadata: JSON.stringify(project.result.informationTable.attributes),
+                        data: JSON.stringify(project.result.informationTable.objects)
+                    };
+                }
+
                 let data = createFormData(parameters, files);
 
                 this.calculateClassification(method, data);
@@ -250,7 +273,16 @@ class Classification extends Component {
                 const { parameters } = this.state;
 
                 let method = project.dataUpToDate ? "PUT" : "POST";
-                let files = { data: this.csvFile };
+                let files = { externalDataFile: this.csvFile };
+
+                if (!project.dataUpToDate) {
+                    files = {
+                        ...files,
+                        metadata: JSON.stringify(project.result.informationTable.attributes),
+                        data: JSON.stringify(project.result.informationTable.objects)
+                    };
+                }
+
                 let data = createFormData({ ...parameters, ...csvSpecs }, files);
 
                 this.calculateClassification(method, data);
@@ -263,6 +295,9 @@ class Classification extends Component {
         let data = {typeOfMatrix: "classification"};
 
         downloadMatrix(serverBase, project.result.id, data).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }
@@ -292,14 +327,14 @@ class Classification extends Component {
     };
 
     onFilterChange = (event) => {
-        const { loading } = this.state;
+        const { loading, items } = this.state;
 
-        if (!loading) {
-            const { items } = this.state;
+        if (!loading && Array.isArray(items) && items.length) {
             const filteredItems = filterFunction(event.target.value.toString(), items.slice());
 
             this.setState({
-                displayedItems: filteredItems
+                displayedItems: filteredItems,
+                selectedItems: null
             });
         }
     };
@@ -332,46 +367,7 @@ class Classification extends Component {
         const { project } = this.props;
 
         return (
-            <CustomBox id={"classification"} styleVariant={"tab"}>
-                <StyledPaper id={"classification-bar"} paperRef={this.upperBar}>
-                    <SettingsButton onClick={() => this.toggleOpen("settings")} />
-                    <StyledDivider margin={16} />
-                    <CustomButtonGroup
-                        id={"classification-button-group"}
-                        options={["Classify current data", "Choose new data & classify"]}
-                        tooltips={"Click on settings button on the left to customize parameters"}
-                    >
-                        <CalculateButton
-                            aria-label={"classify-current-file"}
-                            disabled={loading}
-                            onClick={this.onClassifyData}
-                        >
-                            Classify current data
-                        </CalculateButton>
-                        <CustomUpload
-                            accept={".json,.csv"}
-                            id={"classify-new-file"}
-                            onChange={this.onUploadData}
-                        >
-                            <CalculateButton
-                                aria-label={"classify-new-file"}
-                                disabled={loading}
-                                component={"span"}
-                            >
-                                Choose new data & classify
-                            </CalculateButton>
-                        </CustomUpload>
-                    </CustomButtonGroup>
-                    {data &&
-                        <MatrixButton
-                            onClick={() => this.toggleOpen("matrix")}
-                            style={{marginLeft: 16}}
-                            title={"Show ordinal misclassification matrix and it's details"}
-                        />
-                    }
-                    <span style={{flexGrow: 1}} />
-                    <FilterTextField onChange={this.onFilterChange} />
-                </StyledPaper>
+            <CustomBox id={"classification"} variant={"Tab"}>
                 <CustomDrawer
                     id={"classification-settings"}
                     open={open.settings}
@@ -391,51 +387,95 @@ class Classification extends Component {
                         }}
                     />
                 </CustomDrawer>
-                <TabBody
-                    content={parseClassificationListItems(displayedItems)}
-                    id={"classification-list"}
-                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
-                    isLoading={loading}
-                    ListProps={{
-                        onItemSelected: this.onDetailsOpen
-                    }}
-                    noFilterResults={!displayedItems}
-                    subheaderContent={[
-                        {
-                            label: "Number of objects:",
-                            value: displayedItems && displayedItems.length,
+                <CustomBox customScrollbar={true} id={"classification-content"} variant={"TabBody"}>
+                    <CustomHeader id={"classification-header"} paperRef={this.upperBar}>
+                        <SettingsButton onClick={() => this.toggleOpen("settings")} />
+                        <StyledDivider margin={16} />
+                        <CustomButtonGroup
+                            id={"classification-button-group"}
+                            options={["Classify current data", "Choose new data & classify"]}
+                            tooltips={"Click on settings button on the left to customize parameters"}
+                        >
+                            <CalculateButton
+                                aria-label={"classify-current-file"}
+                                disabled={loading}
+                                onClick={this.onClassifyData}
+                            >
+                                Classify current data
+                            </CalculateButton>
+                            <CustomUpload
+                                accept={".json,.csv"}
+                                id={"classify-new-file"}
+                                onChange={this.onUploadData}
+                            >
+                                <CalculateButton
+                                    aria-label={"classify-new-file"}
+                                    disabled={loading}
+                                    component={"span"}
+                                >
+                                    Choose new data & classify
+                                </CalculateButton>
+                            </CustomUpload>
+                        </CustomButtonGroup>
+                        {data &&
+                        <MatrixButton
+                            onClick={() => this.toggleOpen("matrix")}
+                            style={{marginLeft: 16}}
+                            title={"Show ordinal misclassification matrix and it's details"}
+                        />
                         }
-                    ]}
-                />
-                {project.result.rules !== null && selectedItem !== null &&
-                    <ClassificationDialog
-                        item={selectedItem}
-                        onClose={() => this.toggleOpen("details")}
-                        open={open.details}
-                        ruleSet={project.result.rules.ruleSet}
+                        <span style={{flexGrow: 1}} />
+                        <FilterTextField onChange={this.onFilterChange} />
+                    </CustomHeader>
+                    <TabBody
+                        content={parseClassificationListItems(displayedItems)}
+                        id={"classification-list"}
+                        isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
+                        isLoading={loading}
+                        ListProps={{
+                            onItemSelected: this.onDetailsOpen
+                        }}
+                        ListSubheaderProps={{
+                            style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
+                        }}
+                        noFilterResults={!displayedItems}
+                        subheaderContent={[
+                            {
+                                label: "Number of objects:",
+                                value: displayedItems && displayedItems.length,
+                            }
+                        ]}
                     />
-                }
-                {data !== null &&
-                    <MatrixDialog
-                        matrix={parseMatrix(data.ordinalMisclassificationMatrix)}
-                        onClose={() => this.toggleOpen("matrix")}
-                        open={open.matrix}
-                        subheaders={data.decisionsDomain}
-                        saveMatrix={this.onSaveToFile}
-                        title={
-                            <React.Fragment>
-                                <MatrixDownloadButton
-                                    onSave={this.onSaveToFile}
-                                    tooltip={"Download matrix (txt)"}
-                                />
-                                <span aria-label={"matrix title"} style={{paddingLeft: 8}}>
-                                    Ordinal misclassification matrix and details
-                                </span>
-                            </React.Fragment>
-                        }
-                    />
-                }
-                <CSVDialog onConfirm={this.onCSVDialogClose} open={open.csv} />
+                    {project.result.rules !== null && selectedItem !== null &&
+                        <ClassificationDialog
+                            item={selectedItem}
+                            onClose={() => this.toggleOpen("details")}
+                            open={open.details}
+                            ruleSet={project.result.rules.ruleSet}
+                        />
+                    }
+                    {data !== null &&
+                        <MatrixDialog
+                            matrix={parseMatrix(data.ordinalMisclassificationMatrix)}
+                            onClose={() => this.toggleOpen("matrix")}
+                            open={open.matrix}
+                            subheaders={data.decisionsDomain}
+                            saveMatrix={this.onSaveToFile}
+                            title={
+                                <React.Fragment>
+                                    <MatrixDownloadButton
+                                        onSave={this.onSaveToFile}
+                                        tooltip={"Download matrix (txt)"}
+                                    />
+                                    <span aria-label={"matrix title"} style={{paddingLeft: 8}}>
+                                        Ordinal misclassification matrix and details
+                                    </span>
+                                </React.Fragment>
+                            }
+                        />
+                    }
+                    <CSVDialog onConfirm={this.onCSVDialogClose} open={open.csv} />
+                </CustomBox>
                 <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
             </CustomBox>
         )

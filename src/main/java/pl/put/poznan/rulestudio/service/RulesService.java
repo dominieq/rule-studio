@@ -1,7 +1,5 @@
 package pl.put.poznan.rulestudio.service;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import org.rulelearn.approximations.Union;
 import org.rulelearn.approximations.Unions;
@@ -23,10 +21,7 @@ import pl.put.poznan.rulestudio.enums.OrderByRuleCharacteristic;
 import pl.put.poznan.rulestudio.enums.RuleType;
 import pl.put.poznan.rulestudio.enums.RulesFormat;
 import pl.put.poznan.rulestudio.enums.UnionType;
-import pl.put.poznan.rulestudio.exception.EmptyResponseException;
-import pl.put.poznan.rulestudio.exception.NoRulesException;
-import pl.put.poznan.rulestudio.exception.NotSuitableForInductionOfPossibleRulesException;
-import pl.put.poznan.rulestudio.exception.WrongParameterException;
+import pl.put.poznan.rulestudio.exception.*;
 import pl.put.poznan.rulestudio.model.*;
 
 import java.io.ByteArrayInputStream;
@@ -145,7 +140,8 @@ public class RulesService {
 
         RuleCoverageInformation[] ruleCoverageInformation = new RuleCoverageInformation[ruleSetWithCharacteristics.size()];
         for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
-            ruleCoverageInformation[i] = new RuleCoverageInformation(new IntArraySet(), new IntArraySet(), new IntArrayList(), new Int2ObjectArrayMap<>(), 0);
+            RuleConditions ruleConditions = new RuleConditions(new InformationTable(new Attribute[0], new ArrayList<>()), new IntArraySet(), new IntArraySet(), new IntArraySet(), org.rulelearn.rules.RuleType.POSSIBLE, RuleSemantics.AT_MOST);
+            ruleCoverageInformation[i] = new RuleCoverageInformation(ruleConditions);
         }
 
         return new RuleSetWithComputableCharacteristics(
@@ -256,7 +252,7 @@ public class RulesService {
         RulesWithHttpParameters rules = project.getRules();
         if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (!rules.getConsistencyThreshold().equals(consistencyThreshold)) || (rules.getTypeOfRules() != typeOfRules)) {
             RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
-            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, false);
+            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules);
 
             project.setRules(rules);
             project.setCurrentRules(true);
@@ -441,6 +437,67 @@ public class RulesService {
         InputStreamResource resource = new InputStreamResource(is);
 
         return new NamedResource(project.getName(), resource);
+    }
+
+    private static void uploadRulesToProject(Project project, MultipartFile rulesFile) throws IOException {
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There is no data in project. Couldn't read rules file.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        Attribute[] attributes = informationTable.getAttributes();
+        if(attributes == null) {
+            NoDataException ex = new NoDataException("There is no metadata in project. Couldn't read rules file.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = parseRules(rulesFile, attributes);
+        String ruleSetHash = ruleSetWithCharacteristics.getLearningInformationTableHash();
+        String errorMessage;
+        if(ruleSetHash == null) {
+            errorMessage = String.format("Provided rule set doesn't have the learning information table hash. It can't be determined, if this rule set was generated based on the current data of the project. Rule coverage information can't be calculated without a valid training set. Current data hash: \"%s\".", informationTable.getHash());
+            logger.info(errorMessage);
+        } else if(ruleSetHash.equals(informationTable.getHash())) {
+            logger.info("Current metadata and objects in the project are correct training set of uploaded rules. Calculating rule coverage information.");
+            ruleSetWithCharacteristics.calculateBasicRuleCoverageInformation(informationTable);
+            errorMessage = null;
+        } else {
+            errorMessage = String.format("Uploaded rules are not induced from the data in the current project. Access to a valid training set is required to calculate rule coverage information. Please upload new rules based on the current data or create a new project with a valid training set. Current data hash: \"%s\", rules hash: \"%s\".", informationTable.getHash(), ruleSetHash);
+            logger.info(errorMessage);
+        }
+
+        project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, errorMessage, rulesFile.getOriginalFilename()));
+    }
+
+    public RulesWithHttpParameters putUploadRules(UUID id, MultipartFile rulesFile) throws IOException {
+        logger.info("Id:\t{}", id);
+        logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        uploadRulesToProject(project, rulesFile);
+
+        return project.getRules();
+    }
+
+    public RulesWithHttpParameters postUploadRules(UUID id, MultipartFile rulesFile, String metadata, String data) throws IOException {
+        logger.info("Id:\t{}", id);
+        logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
+        logger.info("Metadata:\t{}", metadata);
+        logger.info("Data size:\t{} B", data.length());
+        logger.debug("Data:\t{}", data);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        project.setInformationTable(informationTable);
+
+        uploadRulesToProject(project, rulesFile);
+
+        return project.getRules();
     }
 
     public Boolean arePossibleRulesAllowed(UUID id)  {

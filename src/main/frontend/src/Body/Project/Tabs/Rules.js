@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
-import { downloadRules, fetchRules, parseRulesParams, uploadRules } from "../Utils/fetchFunctions";
+import { createFormData, downloadRules, fetchRules, parseRulesParams, uploadRules } from "../Utils/fetchFunctions";
 import { parseRulesItems, parseRulesListItems } from "../Utils/parseData";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
@@ -19,11 +19,12 @@ import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import { createCategories, simpleSort, SortButton, SortMenu } from "../../../Utils/Inputs/SortMenu";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
 import StyledButton from "../../../Utils/Inputs/StyledButton";
-import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
+import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
 import { mdiTextBox } from '@mdi/js';
+
 
 class Rules extends Component {
     constructor(props) {
@@ -68,6 +69,11 @@ class Rules extends Component {
                 const items = parseRulesItems(result);
                 const resultParameters = parseRulesParams(result);
 
+                let alertProps = undefined;
+                if (result.hasOwnProperty("errorMessage")) {
+                    alertProps = { message: result.errorMessage, open: true, severity: "error" };
+                }
+
                 this.setState(({parameters, sort}) => ({
                     data: result,
                     items: items,
@@ -75,10 +81,14 @@ class Rules extends Component {
                     externalRules: result.externalRules,
                     parameters: { ...parameters, ...resultParameters},
                     parametersSaved: parametersSaved,
-                    sort: { ...sort, ...sortParams.rules }
+                    sort: { ...sort, ...sortParams.rules },
+                    alertProps: alertProps
                 }));
             }
         }).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if (this._isMounted) {
                 this.setState({
                     data: null,
@@ -205,12 +215,18 @@ class Rules extends Component {
                     if (this._isMounted) {
                         const items = parseRulesItems(result);
 
+                        let alertProps = undefined;
+                        if (result.hasOwnProperty("errorMessage")) {
+                            alertProps = { message: result.errorMessage, open: true, severity: "error" };
+                        }
+
                         this.setState({
                             data: result,
                             items: items,
                             displayedItems: items,
                             externalRules: result.externalRules,
                             parametersSaved: true,
+                            alertProps: alertProps
                         });
                     }
 
@@ -233,15 +249,24 @@ class Rules extends Component {
                     this.props.onTabChange(newProject);
                 }
             }).catch(error => {
+                if (!error.hasOwnProperty("open")) {
+                    console.log(error);
+                }
                 if (this._isMounted) {
-                    this.setState({alertProps: error});
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: [],
+                        alertProps: error
+                    });
                 }
             }).finally(() => {
                 const { displayedItems } = this.state;
 
                 if (this._isMounted) {
                     this.setState({
-                        loading: false
+                        loading: false,
+                        selectedItem: null
                     }, () => this.onSortChange(displayedItems));
                 }
             });
@@ -251,43 +276,70 @@ class Rules extends Component {
     onUploadFileChanged = (event) => {
         if (event.target.files[0]) {
             const { project, serverBase } = this.props;
+            const { parameters } = this.state;
 
-            let data = new FormData();
-            data.append("rules", event.target.files[0]);
+            let method = project.dataUpToDate ? "PUT" : "POST";
+            let files = { rules: event.target.files[0] }
+
+            if (!project.dataUpToDate) {
+                files = {
+                    ...files,
+                    metadata: JSON.stringify(project.result.informationTable.attributes),
+                    data: JSON.stringify(project.result.informationTable.objects)
+                };
+            }
+
+            let data = createFormData(project.dataUpToDate ? null : parameters, files);
 
             this.setState({
                 loading: true,
             }, () => {
                 uploadRules(
-                    serverBase, project.result.id, data
+                    serverBase, project.result.id, method, data
                 ).then(result => {
                     if (result) {
                         if (this._isMounted) {
-                            const items = parseRulesItems(result.rules);
+                            const items = parseRulesItems(result);
+
+                            let alertProps = undefined;
+                            if (result.hasOwnProperty("errorMessage")) {
+                                alertProps = { message: result.errorMessage, open: true, severity: "error" };
+                            }
 
                             this.setState({
                                 data: result,
                                 items: items,
                                 displayedItems: items,
-                                externalRules: result.rules.externalRules,
+                                externalRules: result.externalRules,
+                                alertProps: alertProps
                             });
                         }
                         let newProject = { ...project };
 
-                        newProject.result.rules = result.rules;
-                        newProject.externalRules = result.rules.externalRules;
+                        newProject.result.rules = result;
+                        newProject.dataUpToDate = true;
+                        newProject.externalRules = result.externalRules;
                         this.props.onTabChange(newProject);
                     }
                 }).catch(error => {
+                    if (!error.hasOwnProperty("open")) {
+                        console.log(error);
+                    }
                     if (this._isMounted) {
-                        this.setState({alertProps: error});
+                        this.setState({
+                            data: null,
+                            items: null,
+                            displayedItems: [],
+                            alertProps: error
+                        });
                     }
                 }).finally(() => {
                     const { displayedItems } = this.state;
 
                     if (this._isMounted) {
                         this.setState({
-                            loading: false
+                            loading: false,
+                            selectedItem: null
                         }, () =>  this.onSortChange(displayedItems));
                     }
                 });
@@ -300,6 +352,9 @@ class Rules extends Component {
         let data = { format: "xml" };
 
         downloadRules(serverBase, project.result.id, data).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if (this._isMounted) {
                 this.setState({alertProps: error});
             }
@@ -311,6 +366,9 @@ class Rules extends Component {
         let data = { format: "txt" };
 
         downloadRules(serverBase, project.result.id, data).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }
@@ -366,19 +424,10 @@ class Rules extends Component {
     };
 
     onFilterChange = (event) => {
-        const { loading } = this.state;
+        const { loading, items } = this.state;
 
-        if (!loading) {
-            const { items, sort: { order, value } } = this.state;
-            const filteredItems = filterFunction(event.target.value.toString(), items.slice());
-
-            if ( order && value ) {
-                this.onSortChange(filteredItems);
-            } else {
-                this.setState({
-                    displayedItems: filteredItems
-                });
-            }
+        if (!loading && Array.isArray(items) && items.length) {
+            this.onSortChange(filterFunction(event.target.value.toString(), items.slice()));
         }
     };
 
@@ -437,6 +486,10 @@ class Rules extends Component {
                     displayedItems: Boolean(originalItems) ? originalItems : []
                 });
             }
+        } else {
+            this.setState({
+                displayedItems: null
+            });
         }
     };
 
@@ -455,77 +508,7 @@ class Rules extends Component {
         const resultsExists = Array.isArray(items) && Boolean(items.length);
 
         return (
-            <CustomBox id={"rules"} styleVariant={"tab"}>
-                <StyledPaper id={"rules-bar"} paperRef={this.upperBar}>
-                    <SettingsButton onClick={() => this.toggleOpen("settings")} />
-                    <StyledDivider margin={16} />
-                    <CustomTooltip title={"Click on settings button on the left to customize parameters"}>
-                        <CalculateButton
-                            aria-label={"rules-calculate-button"}
-                            disabled={loading}
-                            onClick={this.onCalculateClick}
-                        />
-                    </CustomTooltip>
-                    <StyledDivider margin={16} />
-                    <CustomTooltip title={"Upload file"}>
-                        <CustomUpload
-                            accept={".xml"}
-                            disabled={loading}
-                            id={"rules-upload-button"}
-                            onChange={this.onUploadFileChanged}
-                        >
-                            <StyledButton
-                                aria-label={"rules-upload-button"}
-                                disabled={loading}
-                                isIcon={true}
-                                component={"span"}
-                                themeVariant={"primary"}
-                            >
-                                <CloudUploadIcon />
-                            </StyledButton>
-                        </CustomUpload>
-                    </CustomTooltip>
-                    <StyledDivider margin={16} />
-                    <CustomTooltip title={"Save rules to RuleML"}>
-                        <StyledButton
-                            aria-label={"rules-save-to-xml-button"}
-                            disabled={!resultsExists || loading}
-                            isIcon={true}
-                            onClick={this.onSaveRulesToXMLClick}
-                            themeVariant={"primary"}
-                        >
-                            <SaveIcon />
-                        </StyledButton>
-                    </CustomTooltip>
-                    <StyledDivider margin={16} />
-                    <CustomTooltip title={"Save rules to TXT"}>
-                        <StyledButton
-                            aria-label={"rules-save-to-txt-button"}
-                            disabled={!resultsExists || loading}
-                            isIcon={true}
-                            onClick={this.onSaveRulesToTXTClick}
-                            themeVariant={"primary"}
-                        >
-                            <SvgIcon><path d={mdiTextBox} /></SvgIcon>
-                        </StyledButton>
-                    </CustomTooltip>
-                    <span style={{flexGrow: 1}} />
-                    <SortButton
-                        ButtonProps={{
-                            "aria-controls": "rules-sort-menu",
-                            "aria-haspopup": true,
-                            "aria-label": "sort rules",
-                            disabled: !resultsExists || loading,
-                            onClick: this.onSortMenuOpen
-                        }}
-                        invisible={sort.value === "" && sort.order === "asc"}
-                        tooltip={resultsExists ? "Sort rules" : "No content to sort"}
-                        TooltipProps={{
-                            WrapperProps: { style: { marginRight: "0.5rem" } }
-                        }}
-                    />
-                    <FilterTextField onChange={this.onFilterChange} />
-                </StyledPaper>
+            <CustomBox id={"rules"} variant={"Tab"}>
                 <CustomDrawer
                     id={"rules-settings"}
                     open={open.settings}
@@ -553,58 +536,135 @@ class Rules extends Component {
                         variant={"extended"}
                     />
                 </CustomDrawer>
-                {resultsExists &&
-                    <SortMenu
-                        anchorE1={sort.anchorE1}
-                        ContentProps={{
-                            categories: createCategories(
-                                Object.keys(items[0].traits).filter(value => value !== "Type")
-                            ),
-                            chooseOrder: true,
-                            onCategoryChange: this.onSortValueChange,
-                            onOrderChange: this.onSortOrderChange,
-                            order: sort.order,
-                            rowHeight: 28,
-                            value: sort.value
+                <CustomBox customScrollbar={true} id={"rules-content"} variant={"TabBody"}>
+                    <CustomHeader id={"rules-header"} paperRef={this.upperBar}>
+                        <SettingsButton onClick={() => this.toggleOpen("settings")} />
+                        <StyledDivider margin={16} />
+                        <CustomTooltip
+                            disableMaxWidth={true}
+                            title={"Click on settings button on the left to customize parameters"}
+                        >
+                            <CalculateButton
+                                aria-label={"rules-calculate-button"}
+                                disabled={loading}
+                                onClick={this.onCalculateClick}
+                            />
+                        </CustomTooltip>
+                        <StyledDivider margin={16} />
+                        <CustomTooltip title={"Upload file"}>
+                            <CustomUpload
+                                accept={".xml"}
+                                disabled={loading}
+                                id={"rules-upload-button"}
+                                onChange={this.onUploadFileChanged}
+                            >
+                                <StyledButton
+                                    aria-label={"rules-upload-button"}
+                                    disabled={loading}
+                                    isIcon={true}
+                                    component={"span"}
+                                    themeVariant={"primary"}
+                                >
+                                    <CloudUploadIcon />
+                                </StyledButton>
+                            </CustomUpload>
+                        </CustomTooltip>
+                        <StyledDivider margin={16} />
+                        <CustomTooltip title={"Save rules to RuleML"}>
+                            <StyledButton
+                                aria-label={"rules-save-to-xml-button"}
+                                disabled={!resultsExists || loading}
+                                isIcon={true}
+                                onClick={this.onSaveRulesToXMLClick}
+                                themeVariant={"primary"}
+                            >
+                                <SaveIcon />
+                            </StyledButton>
+                        </CustomTooltip>
+                        <StyledDivider margin={16} />
+                        <CustomTooltip title={"Save rules to TXT"}>
+                            <StyledButton
+                                aria-label={"rules-save-to-txt-button"}
+                                disabled={!resultsExists || loading}
+                                isIcon={true}
+                                onClick={this.onSaveRulesToTXTClick}
+                                themeVariant={"primary"}
+                            >
+                                <SvgIcon><path d={mdiTextBox} /></SvgIcon>
+                            </StyledButton>
+                        </CustomTooltip>
+                        <span style={{flexGrow: 1}} />
+                        <SortButton
+                            ButtonProps={{
+                                "aria-controls": "rules-sort-menu",
+                                "aria-haspopup": true,
+                                "aria-label": "sort rules",
+                                disabled: !resultsExists || loading,
+                                onClick: this.onSortMenuOpen
+                            }}
+                            invisible={sort.value === "" && sort.order === "asc"}
+                            tooltip={resultsExists ? "Sort rules" : "No content to sort"}
+                            TooltipProps={{
+                                WrapperProps: { style: { marginRight: "0.5rem" } }
+                            }}
+                        />
+                        <FilterTextField onChange={this.onFilterChange} />
+                    </CustomHeader>
+                    {resultsExists &&
+                        <SortMenu
+                            anchorE1={sort.anchorE1}
+                            ContentProps={{
+                                categories: createCategories(
+                                    Object.keys(items[0].traits).filter(value => value !== "Type")
+                                ),
+                                chooseOrder: true,
+                                onCategoryChange: this.onSortValueChange,
+                                onOrderChange: this.onSortOrderChange,
+                                order: sort.order,
+                                rowHeight: 28,
+                                value: sort.value
+                            }}
+                            id={"rules-sort-menu"}
+                            onClose={this.onSortMenuClose}
+                        />
+                    }
+                    <TabBody
+                        content={parseRulesListItems(displayedItems)}
+                        id={"rules-list"}
+                        isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
+                        isLoading={loading}
+                        ListProps={{
+                            onItemSelected: this.onDetailsOpen
                         }}
-                        id={"rules-sort-menu"}
-                        onClose={this.onSortMenuClose}
+                        ListSubheaderProps={{
+                            disableHelper: false,
+                            helper: "First row of each rule presents decision condition. " +
+                                "Next rows present subsequent elementary conditions. " +
+                                "These elementary conditions are connected by AND. " +
+                                "Last row shows chosen rule’s characteristics.",
+                            style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
+                        }}
+                        noFilterResults={!displayedItems}
+                        subheaderContent={[
+                            {
+                                label: "Number of rules:",
+                                value: displayedItems && displayedItems.length
+                            }
+                        ]}
                     />
-                }
-                <TabBody
-                    content={parseRulesListItems(displayedItems)}
-                    id={"rules-list"}
-                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
-                    isLoading={loading}
-                    ListProps={{
-                        onItemSelected: this.onDetailsOpen
-                    }}
-                    ListSubheaderProps={{
-                        disableHelper: false,
-                        helper: "First row of each rule presents decision condition. " +
-                            "Next rows present subsequent elementary conditions. " +
-                            "These elementary conditions are connected by AND. " +
-                            "Last row shows chosen rule’s characteristics."
-                    }}
-                    noFilterResults={!displayedItems}
-                    subheaderContent={[
-                        {
-                            label: "Number of rules:",
-                            value: displayedItems && displayedItems.length
-                        }
-                    ]}
-                />
-                {selectedItem !== null &&
-                    <RulesDialog
-                        item={selectedItem}
-                        onClose={() => this.toggleOpen("details")}
-                        open={open.details}
-                        projectResult={result}
-                        settings={settings}
-                    />
-                }
+                    {selectedItem !== null &&
+                        <RulesDialog
+                            item={selectedItem}
+                            onClose={() => this.toggleOpen("details")}
+                            open={open.details}
+                            projectResult={result}
+                            settings={settings}
+                        />
+                    }
+                </CustomBox>
                 <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
             </CustomBox>
+
         )
     }
 }

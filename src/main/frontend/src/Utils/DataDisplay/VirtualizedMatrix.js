@@ -33,10 +33,10 @@ const matrixStyles = makeStyles(theme => ({
     tooltip: {
         display: "flex",
         flexDirection: "column",
-        '& > *:first-child': {
+        '& > header': {
             marginBottom: "1em"
         },
-        '& > *:last-child': {
+        '& > footer': {
             marginTop: "1em"
         }
     }
@@ -82,9 +82,9 @@ function VirtualizedMatrix(props) {
                     <CircleHelper
                         title={
                             <React.Fragment>
-                                <span aria-label={"tile"} style={{textAlign: "center"}}>
+                                <header aria-label={"tile"} style={{textAlign: "center"}}>
                                     <b>{type}</b>
-                                </span>
+                                </header>
                                 <span aria-label={"columns"} style={{textAlign: "left"}}>
                                     <b>Columns:</b>
                                     {" suggested decisions"}
@@ -93,9 +93,9 @@ function VirtualizedMatrix(props) {
                                     <b>Rows:</b>
                                     {" original decisions"}
                                 </span>
-                                <span aria-label={"save-info"} style={{textAlign: "left"}}>
+                                <footer aria-label={"save-info"} style={{textAlign: "left"}}>
                                     <b>{"Right click to save to file"}</b>
-                                </span>
+                                </footer>
                             </React.Fragment>
                             }
                         TooltipProps={{

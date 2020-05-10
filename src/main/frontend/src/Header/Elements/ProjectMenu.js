@@ -1,6 +1,7 @@
 import React, { Fragment, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from "@material-ui/core/styles";
+import FilesDetails from "./FilesDetails";
 import CustomTooltip from "../../Utils/DataDisplay/CustomTooltip";
 import StyledButton from "../../Utils/Inputs/StyledButton";
 import StyledDivider from "../../Utils/DataDisplay/StyledDivider";
@@ -30,8 +31,25 @@ function ProjectMenu(props) {
     const { currentProject, projects } = props;
 
     let primaryText = projects[0];
+    let files = []
     if (currentProject > 0) {
         primaryText = "Active project -";
+
+        const { result } = projects[currentProject];
+
+        if (result.hasOwnProperty("metadataFileName")) {
+            files = [ ...files, { label: "Metadata", value: result.metadataFileName }];
+        }
+        if (result.hasOwnProperty("dataFileName")) {
+            files = [ ...files, { label: "Data", value: result.dataFileName }];
+        }
+
+        if (result.rules && result.rules.hasOwnProperty("rulesFileName")) {
+            files = [ ...files, { label: "Rules", value: result.rules.rulesFileName}];
+        }
+        if (result.classification && result.classification.hasOwnProperty("externalDataFileName")) {
+            files = [ ...files, { label: "Classified data", value: result.classification.externalDataFileName }];
+        }
     }
 
     let displayedProjects = projects.slice(1);
@@ -112,6 +130,9 @@ function ProjectMenu(props) {
             }
             {currentProject > 0 ?
                 <Fragment>
+                    <FilesDetails
+                        files={files}
+                    />
                     <CustomTooltip title={"Project settings"}>
                         <StyledButton
                             aria-label={"project-settings"}
@@ -156,15 +177,8 @@ ProjectMenu.propTypes = {
         PropTypes.string,
         PropTypes.shape({
             result: PropTypes.object,
-            externalRules: PropTypes.bool,
-            threshold: PropTypes.number,
-            measure: PropTypes.string,
-            ruleType: PropTypes.string,
-            foldDisplay: PropTypes.number,
-            foldIndex: PropTypes.number,
-            foldNumber: PropTypes.number,
         })
-    ])),
+    ]))
 };
 
 export default ProjectMenu;

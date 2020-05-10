@@ -66,10 +66,26 @@ public class ProjectsService {
 
         project = new Project(name, informationTable);
 
+        project.setMetadataFileName(metadataFile.getOriginalFilename());
+        if(dataFile != null)    project.setDataFileName(dataFile.getOriginalFilename());
 
         if(rulesFile != null) { //load rules from file
             RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
-            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, true));
+            String ruleSetHash = ruleSetWithCharacteristics.getLearningInformationTableHash();
+            String errorMessage;
+            if(ruleSetHash == null) {
+                errorMessage = String.format("Provided rule set doesn't have the learning information table hash. It can't be determined, if this rule set was generated based on the current data of the project. Rule coverage information can't be calculated without a valid training set. Current data hash: \"%s\".", informationTable.getHash());
+                logger.info(errorMessage);
+            } else if(ruleSetHash.equals(informationTable.getHash())) {
+                logger.info("Current metadata and objects in the project are correct training set of uploaded rules. Calculating rule coverage information.");
+                ruleSetWithCharacteristics.calculateBasicRuleCoverageInformation(informationTable);
+                errorMessage = null;
+            } else {
+                errorMessage = String.format("Uploaded rules are not induced from the data in the current project. Access to a valid training set is required to calculate rule coverage information. Please upload new rules based on the current data or create a new project with a valid training set. Current data hash: \"%s\", rules hash: \"%s\".", informationTable.getHash(), ruleSetHash);
+                logger.info(errorMessage);
+            }
+
+            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, errorMessage, rulesFile.getOriginalFilename()));
         }
 
 

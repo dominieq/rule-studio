@@ -8,7 +8,7 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 const useStyles = makeStyles(theme => ({
     root: {
         alignItems: "center",
-        borderBottom: `1px solid ${theme.palette.list.text}`,
+        borderBottom: `2px solid ${theme.palette.list.text}`,
         display: "flex",
         fontSize: theme.typography.subheader.fontSize,
         lineHeight: "unset",

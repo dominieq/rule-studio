@@ -6,30 +6,32 @@ import { ResultList, ResultListSubheader } from "../../../Utils/DataDisplay/Resu
 import StyledCircularProgress from "../../../Utils/Feedback/StyledCircularProgress";
 
 function TabBody(props) {
-    const { content, id, isArray, isLoading, ListProps, ListSubheaderProps, noFilterResults, subheaderContent } = props;
-
     return (
-        <CustomBox id={id} styleVariant={"tab-body"}>
-            {isLoading &&
+        <React.Fragment>
+            {props.isLoading &&
                 <StyledCircularProgress />
             }
-            {!isLoading && isArray &&
-                <ResultList
-                    subheader={
-                        <ResultListSubheader {...ListSubheaderProps}>
-                            {subheaderContent}
-                        </ResultListSubheader>
+            {!props.isLoading &&
+                <CustomBox id={props.id} variant={"TabScrollable"}>
+                    {props.isArray &&
+                    <ResultList
+                        subheader={
+                            <ResultListSubheader {...props.ListSubheaderProps}>
+                                {props.subheaderContent}
+                            </ResultListSubheader>
+                        }
+                        {...props.ListProps}
+                    >
+                        {props.content}
+                    </ResultList>
                     }
-                    {...ListProps}
-                >
-                    {content}
-                </ResultList>
+                    {props.noFilterResults &&
+                    <FilterNoResults />
+                    }
+                </CustomBox>
             }
-            {noFilterResults &&
-                <FilterNoResults />
-            }
-        </CustomBox>
-    )
+        </React.Fragment>
+    );
 }
 
 TabBody.propTypes = {

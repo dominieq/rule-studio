@@ -48,7 +48,7 @@ const buttonStyles = makeStyles(theme => ({
 }), {name: "CustomButton"});
 
 function StyledButton(props) {
-    const { className, isIcon, themeVariant, variant, ...other } = props;
+    const { buttonRef, className, isIcon, themeVariant, variant, ...other } = props;
     const buttonClasses = buttonStyles({themeVariant: themeVariant});
 
     return (
@@ -56,11 +56,13 @@ function StyledButton(props) {
             {isIcon ?
                <IconButton
                    className={clsx(buttonClasses.icon, className)}
+                   ref={buttonRef}
                    {...other}
                />
                 :
                 <Button
                     className={clsx(buttonClasses[variant], className)}
+                    ref={buttonRef}
                     variant={variant}
                     {...other}
                 />
@@ -70,6 +72,7 @@ function StyledButton(props) {
 }
 
 StyledButton.propTypes = {
+    buttonRef: PropTypes.object,
     children: PropTypes.node,
     classes: PropTypes.object,
     className: PropTypes.string,

@@ -2,56 +2,43 @@ import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
-import { mergeClasses } from "../utilFunctions";
+import styles from "./styles/CustomBox.module.css";
 
-const useStyles = makeStyles({
-    body: {
-        margin: "2.5%",
-        flexGrow: 1,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    tab: {
-        display: "flex",
-        flexDirection: "column",
-        flexGrow: 1,
-        height: "100%",
-        overflow: "hidden",
-    },
-    "tab-body": {
-        alignItems: "center",
-        display: "flex",
-        flexDirection: "column",
-        flexGrow: 1,
-        marginTop: "2.5%",
-        padding: "0 2.5% 2.5%",
-        overflow: "auto",
-    },
-}, {name: "CustomBox"});
+const useStyles = makeStyles(theme => ({
+    Root: {
+        '&::-webkit-scrollbar': {
+            width: 17
+        },
+        '&::-webkit-scrollbar-thumb': {
+            backgroundColor: theme.palette.button.contained.background,
+            '&:hover': {
+                backgroundColor: theme.palette.button.contained.backgroundAction
+            }
+        },
+        '&::-webkit-scrollbar-track': {
+            boxShadow: "inset 0 0 6px rgba(0,0,0,0.3)"
+        }
+    }
+}), {name: "TabScroll"});
 
 function CustomBox(props) {
-    const {children, classes: propsClasses, className, styleVariant, ...other} =  props;
-    let classes = useStyles();
-
-    if (propsClasses) classes = mergeClasses(classes, propsClasses);
+    const { className, customScrollbar, variant, ...other } =  props;
+    const classes = useStyles();
 
     return (
-        <div className={clsx(classes[styleVariant], className)} {...other}>
-            {children}
-        </div>
+        <div className={clsx(styles[variant], {[classes.Root]: customScrollbar}, className)} {...other} />
     )
 }
 
 CustomBox.propTypes = {
     children: PropTypes.node,
-    classes: PropTypes.object,
     className: PropTypes.string,
-    styleVariant: PropTypes.oneOf(["body", "tab", "tab-body"]),
+    customScrollbar: PropTypes.bool,
+    variant: PropTypes.oneOf(["Body", "Tab", "TabBody", "TabScrollable"])
 };
 
 CustomBox.defaultProps = {
-    styleVariant: "body",
+    customScrollbar: false
 };
 
 export default CustomBox;

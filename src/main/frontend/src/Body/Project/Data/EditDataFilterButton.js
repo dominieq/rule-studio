@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react';
 import SearchIcon from '@material-ui/icons/Search';
 import './EditDataButtons.css';
+import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 import StyledButton from "../../../Utils/Inputs/StyledButton";
-import StyledPaper from "../../../Utils/Surfaces/StyledPaper";
 
 class EditDataFilterButton extends React.Component {
     constructor(props) {
@@ -48,29 +48,17 @@ class EditDataFilterButton extends React.Component {
         return(
             <Fragment>
                 <div id={"rule-studio-data-1"} className={"rule-studio-data-toolbar"}>
-                    <StyledPaper
-                        id={"rule-studio-data-1-bar"}
-                        paperRef={this.upperBar}
-                        styleVariant={"bar"}
-                        square={true}
-                        variant={"outlined"}
-                    >
+                    <CustomHeader elevation={0} id={"rule-studio-data-1-bar"} variant={"outlined"}>
                         {this.renderToggleFilterButton("desktop")}
                         {this.getAppropriateButtonsBar("desktop")}
-                    </StyledPaper>
+                    </CustomHeader>
                 </div>
 
                 <div id={"rule-studio-data-2"} className={"rule-studio-data-toolbar"}>
-                    <StyledPaper
-                        id={"rule-studio-data-2-bar"}
-                        paperRef={this.upperBar}
-                        styleVariant={"bar"}
-                        square={true}
-                        variant={"outlined"}
-                    >
+                    <CustomHeader elevation={0} id={"rule-studio-data-2-bar"} variant={"outlined"}>
                         {this.renderToggleFilterButton("mobile")}
                         {this.getAppropriateButtonsBar("mobile")}
-                    </StyledPaper>
+                    </CustomHeader>
                 </div>
             </Fragment>
         )
