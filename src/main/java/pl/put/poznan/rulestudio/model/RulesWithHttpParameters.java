@@ -11,20 +11,21 @@ public class RulesWithHttpParameters implements Cloneable {
     private RuleType typeOfRules;
     private boolean externalRules;
     private String errorMessage;
-
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, Boolean externalRules, String errorMessage) {
+    private String rulesFileName;
+  
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String errorMessage, String rulesFileName) {
+        this.externalRules = true;
         this.ruleSet = rules;
-        this.externalRules = externalRules;
         this.errorMessage = errorMessage;
+        this.rulesFileName = rulesFileName;
     }
 
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, Boolean externalRules) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType) {
+        this.externalRules = false;
         this.ruleSet = rules;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
         this.typeOfRules = ruleType;
-        this.externalRules = externalRules;
-        this.errorMessage = null;
     }
 
     public RuleSetWithCharacteristics getRuleSet() {
@@ -75,6 +76,14 @@ public class RulesWithHttpParameters implements Cloneable {
         this.errorMessage = errorMessage;
     }
 
+    public String getRulesFileName() {
+        return rulesFileName;
+    }
+
+    public void setRulesFileName(String rulesFileName) {
+        this.rulesFileName = rulesFileName;
+    }
+
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
@@ -84,6 +93,7 @@ public class RulesWithHttpParameters implements Cloneable {
                 ", typeOfRules=" + typeOfRules +
                 ", externalRules=" + externalRules +
                 ", errorMessage='" + errorMessage + '\'' +
+                ", rulesFileName='" + rulesFileName + '\'' +
                 '}';
     }
 

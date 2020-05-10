@@ -365,6 +365,7 @@ public class ClassificationService {
         Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);
         Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
         classification.setExternalData(true);
+        classification.setExternalDataFileName(externalDataFile.getOriginalFilename());
         project.setClassification(classification);
 
         return classification;
@@ -425,6 +426,8 @@ public class ClassificationService {
 
         Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);
         Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
+        classification.setExternalData(true);
+        classification.setExternalDataFileName(externalDataFile.getOriginalFilename());
         project.setClassification(classification);
 
         return classification;

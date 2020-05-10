@@ -13,6 +13,8 @@ public class Project {
     private RulesWithHttpParameters rules;
     private Classification classification;
     private CrossValidation crossValidation;
+    private String metadataFileName;
+    private String dataFileName;
 
     private boolean currentDominanceCones;
     private boolean currentUnionsWithSingleLimitingDecision;
@@ -127,6 +129,22 @@ public class Project {
         this.crossValidation = crossValidation;
     }
 
+    public String getMetadataFileName() {
+        return metadataFileName;
+    }
+
+    public void setMetadataFileName(String metadataFileName) {
+        this.metadataFileName = metadataFileName;
+    }
+
+    public String getDataFileName() {
+        return dataFileName;
+    }
+
+    public void setDataFileName(String dataFileName) {
+        this.dataFileName = dataFileName;
+    }
+
     @Override
     public String toString() {
         return "Project{" +
@@ -138,8 +156,11 @@ public class Project {
                 ", rules=" + rules +
                 ", classification=" + classification +
                 ", crossValidation=" + crossValidation +
+                ", metadataFileName='" + metadataFileName + '\'' +
+                ", dataFileName='" + dataFileName + '\'' +
                 ", currentDominanceCones=" + currentDominanceCones +
                 ", currentUnionsWithSingleLimitingDecision=" + currentUnionsWithSingleLimitingDecision +
+                ", currentRules=" + currentRules +
                 '}';
     }
 }

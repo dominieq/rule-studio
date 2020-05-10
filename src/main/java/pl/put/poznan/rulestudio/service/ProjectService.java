@@ -76,6 +76,7 @@ public class ProjectService {
 
             informationTable = new InformationTable(attributes, new ArrayList<>());
             project.setRules(null);
+            project.setMetadataFileName(metadataFile.getOriginalFilename());
         }
 
         if(dataFile != null) { //load new data from file
@@ -86,6 +87,7 @@ public class ProjectService {
                 throw ex;
             }
             informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
+            project.setDataFileName(dataFile.getOriginalFilename());
         }
 
         project.setInformationTable(informationTable);
