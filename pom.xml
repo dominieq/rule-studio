@@ -62,7 +62,7 @@
         <frontend-src-dir>${project.basedir}/src/main/frontend</frontend-src-dir>
         <node.version>v12.13.1</node.version>
         <yarn.version>v1.19.2</yarn.version>
-        <frontend-maven-plugin.version>1.7.6</frontend-maven-plugin.version>
+        <frontend-maven-plugin.version>1.10.0</frontend-maven-plugin.version>
     </properties>
 
     <build>
