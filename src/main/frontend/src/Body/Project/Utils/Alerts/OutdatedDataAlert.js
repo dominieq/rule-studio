@@ -7,7 +7,16 @@ function OutdatedDataAlert(props) {
     return (
         <AlertBadge
             icon={<AlertCircle />}
-            title={"Results in this tab are based on old data. Recalculate to refresh results."}
+            title={
+                <React.Fragment>
+                    <header style={{textAlign: "left"}}>
+                        Results in this tab are based on old data and may be invalid.
+                    </header>
+                    <footer style={{textAlign: "left"}}>
+                        Please recalculate to refresh results.
+                    </footer>
+                </React.Fragment>
+            }
         >
             {props.children}
         </AlertBadge>
