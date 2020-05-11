@@ -1,33 +1,39 @@
-const getAppropriateSign = (object1, object2, attribute) => {
-
-    if (Object.keys(attribute).includes("preferenceType")){
-        switch(attribute.preferenceType) {
-            case "gain":
-                if (object1[attribute.name] > object2[attribute.name]) {
-                    return "\u2ab0"; // >= \u227B >
-                }
-                else if (object1[attribute.name] < object2[attribute.name]) {
-                    return "\u2aaf"; // <= \u227A <
-                }
-                else {
-                    return "=";
-                }
-            case "cost":
-                if(object1[attribute.name] > object2[attribute.name]) {
-                    return "\u2aaf";
-                }
-                else if (object1[attribute.name] < object2[attribute.name]) {
-                    return "\u2ab0";
-                }
-                else {
-                    return "=";
-                }
-            default:
-                return "incomparable";
-        }
+const getAppropriateSign = (object1, object2, attribute, tableIndex) => {
+    if(attribute.type === "description" || Object.keys(attribute).includes("identifierType") || attribute.active === "false") {
+        return "--";
     } else {
-        return "incomparable"
-    }
+        if(object1[attribute.name] === object2[attribute.name] || object1[attribute.name] === "?" || object2[attribute.name] === "?") return "=";
+
+        if(attribute.type !== "decision") {
+            if(tableIndex === 0 || tableIndex === 2) return "\u227A";
+            else return "\u227B";
+        } else {
+            switch(attribute.preferenceType) {
+                case "gain":
+                    if(attribute.valueType === "enumeration") {
+                        const idx1 = attribute.domain.indexOf(object1[attribute.name]);
+                        const idx2 = attribute.domain.indexOf(object2[attribute.name]);
+                        if(idx1 > idx2) return "\u227B";
+                        else return "\u227A";
+                    } else {
+                        if(Number(object1[attribute.name]) > Number(object2[attribute.name])) return "\u227B";                         
+                        else return "\u227A";
+                    }
+                case "cost":
+                    if(attribute.valueType === "enumeration") {
+                        const idx1 = attribute.domain.indexOf(object1[attribute.name]);
+                        const idx2 = attribute.domain.indexOf(object2[attribute.name]);
+                        if(idx1 < idx2) return "\u227B";
+                        else return "\u227A";
+                    } else {
+                        if(Number(object1[attribute.name]) < Number(object2[attribute.name])) return "\u227B";                         
+                        else return "\u227A";
+                    }
+                case "none":
+                    return "--";
+            }
+        }
+    }    
 };
 
 export default getAppropriateSign

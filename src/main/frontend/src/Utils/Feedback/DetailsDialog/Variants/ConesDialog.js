@@ -87,6 +87,7 @@ class ConesDialog extends PureComponent {
                             objectHeader={item.name.toString()}
                             objectInTableIndex={itemInTableIndex}
                             objectInTableHeader={items ? items[itemInTableIndex].name.toString() : undefined}
+                            tableIndex={tableIndex}
                         />
                     }
                 </div>
