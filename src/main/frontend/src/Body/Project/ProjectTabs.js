@@ -7,8 +7,8 @@ import Cones from "./Tabs/Cones";
 import Data from "./Data/DisplayData";
 import Rules from "./Tabs/Rules";
 import Unions from "./Tabs/Unions";
-import ExternalRulesAlert from "./Utils/Alerts/ExternalRulesAlert";
-import OutdatedDataAlert from "./Utils/Alerts/OutdatedDataAlert";
+import ExternalRules from "../../Utils/Feedback/CustomIcons/ExternalRules";
+import OutdatedData from "../../Utils/Feedback/AlertBadge/Alerts/OutdatedData";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 
@@ -84,9 +84,9 @@ class ProjectTabs extends React.Component {
             return name;
         } else {
             return (
-                <OutdatedDataAlert>
+                <OutdatedData>
                     {name}
-                </OutdatedDataAlert>
+                </OutdatedData>
             );
         }
     };
@@ -97,15 +97,15 @@ class ProjectTabs extends React.Component {
         if (externalRules) {
             return (
                 <Fragment>
-                    <ExternalRulesAlert />
+                    <ExternalRules />
                     {"Rules"}
                 </Fragment>
             );
         } else if (!tabsUpToDate[2]) {
             return (
-                <OutdatedDataAlert>
+                <OutdatedData>
                     {"Rules"}
-                </OutdatedDataAlert>
+                </OutdatedData>
             );
         } else {
             return "Rules";
@@ -119,9 +119,9 @@ class ProjectTabs extends React.Component {
             return "Classification";
         } else if (!tabsUpToDate[3] && !externalData) {
             return (
-                <OutdatedDataAlert>
+                <OutdatedData>
                     {"Classification"}
-                </OutdatedDataAlert>
+                </OutdatedData>
             );
         }
     };
