@@ -1,12 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import AlertBadge from "./AlertBadge";
+import AlertBadge from "../AlertBadge";
 import AlertCircle from "mdi-material-ui/AlertCircle";
 
-function OutdatedDataAlert(props) {
+function OutdatedData(props) {
     return (
         <AlertBadge
-            icon={<AlertCircle />}
+            icon={<AlertCircle style={{height: "0.75em", width: "0.75em"}} />}
             title={
                 <React.Fragment>
                     <header style={{textAlign: "left"}}>
@@ -17,15 +17,15 @@ function OutdatedDataAlert(props) {
                     </footer>
                 </React.Fragment>
             }
+            severity={"error"}
         >
             {props.children}
         </AlertBadge>
     );
 }
 
-OutdatedDataAlert.propTypes = {
+OutdatedData.propTypes = {
     children: PropTypes.node,
 };
 
-export default OutdatedDataAlert;
-
+export default OutdatedData;
