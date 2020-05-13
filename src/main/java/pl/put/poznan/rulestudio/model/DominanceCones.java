@@ -25,6 +25,8 @@ public class DominanceCones {
     @JsonProperty("Negative inverse dominance cone")
     private IntSortedSet[] negativeInvDCones;
 
+    private String dataHash;
+
     public DominanceCones() {
         numberOfObjects = 0;
 
@@ -32,6 +34,8 @@ public class DominanceCones {
         this.negativeDCones = null;
         this.positiveInvDCones = null;
         this.negativeInvDCones = null;
+
+        this.dataHash = null;
     }
 
     public DominanceCones(InformationTable informationTable) {
@@ -78,6 +82,14 @@ public class DominanceCones {
         this.negativeInvDCones = negativeInvDCones;
     }
 
+    public String getDataHash() {
+        return dataHash;
+    }
+
+    public void setDataHash(String dataHash) {
+        this.dataHash = dataHash;
+    }
+
     @Override
     public String toString() {
         return "DominanceCones{" +
@@ -86,6 +98,7 @@ public class DominanceCones {
                 ", negativeDCones=" + Arrays.toString(negativeDCones) +
                 ", positiveInvDCones=" + Arrays.toString(positiveInvDCones) +
                 ", negativeInvDCones=" + Arrays.toString(negativeInvDCones) +
+                ", dataHash='" + dataHash + '\'' +
                 '}';
     }
 
@@ -110,6 +123,8 @@ public class DominanceCones {
             this.negativeInvDCones = new IntSortedSet[this.numberOfObjects];
             calculateNegativeInvDCones(informationTable);
         }
+
+        this.dataHash = informationTable.getHash();
     }
 
     private void calculatePositiveDCones(InformationTable informationTable) {

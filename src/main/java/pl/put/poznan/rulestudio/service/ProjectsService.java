@@ -85,7 +85,7 @@ public class ProjectsService {
                 logger.info(errorMessage);
             }
 
-            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, errorMessage, rulesFile.getOriginalFilename()));
+            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, errorMessage, rulesFile.getOriginalFilename(), ruleSetHash));
         }
 
 

@@ -27,6 +27,9 @@ public class InformationTableSerializer extends JsonSerializer<InformationTable>
         jsonGenerator.writeFieldName("objects");
         jsonGenerator.writeRawValue(objectsWriter.toString());
 
+        jsonGenerator.writeFieldName("hash");
+        jsonGenerator.writeString(informationTable.getHash());
+
         jsonGenerator.writeEndObject();
     }
 }
