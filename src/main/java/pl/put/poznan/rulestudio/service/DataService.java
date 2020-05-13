@@ -155,7 +155,7 @@ public class DataService {
         return project;
     }
 
-    public void postData(UUID id, String metadata, String data) throws IOException {
+    public InformationTable postData(UUID id, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
@@ -165,6 +165,8 @@ public class DataService {
 
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
+
+        return informationTable;
     }
 
     private InputStreamResource produceJsonResource(InformationTable informationTable) throws IOException {

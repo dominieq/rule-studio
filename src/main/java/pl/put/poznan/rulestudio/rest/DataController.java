@@ -1,5 +1,6 @@
 package pl.put.poznan.rulestudio.rest;
 
+import org.rulelearn.data.InformationTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,13 +51,13 @@ public class DataController {
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity postData(
+    public ResponseEntity<InformationTable> postData(
             @PathVariable("id") UUID id,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting data");
-        dataService.postData(id, metadata, data);
-        return ResponseEntity.ok().build();
+        InformationTable result = dataService.postData(id, metadata, data);
+        return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)

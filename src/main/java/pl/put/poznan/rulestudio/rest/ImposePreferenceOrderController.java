@@ -38,7 +38,7 @@ public class ImposePreferenceOrderController {
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<InformationTable> postUnionsWithSingleLimitingDecision(
+    public ResponseEntity<InformationTable> postImposePreferenceOrder(
             @PathVariable("id") UUID id,
             @RequestParam(name = "binarizeNominalAttributesWith3PlusValues") Boolean binarizeNominalAttributesWith3PlusValues,
             @RequestParam(name = "metadata") String metadata,
