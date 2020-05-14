@@ -43,8 +43,7 @@ public class UnionsWithHttpParametersSerializer extends JsonSerializer<UnionsWit
         jsonGenerator.writeFieldName("consistencyThreshold");
         jsonGenerator.writeNumber(unionsWithHttpParameters.getConsistencyThreshold());
 
-        jsonGenerator.writeFieldName("dataHash");
-        jsonGenerator.writeString(unionsWithHttpParameters.getDataHash());
+        jsonGenerator.writeBooleanField("isCurrentData", unionsWithHttpParameters.isCurrentData());
 
         jsonGenerator.writeEndObject();
     }

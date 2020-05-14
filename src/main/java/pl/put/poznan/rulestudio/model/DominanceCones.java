@@ -1,5 +1,6 @@
 package pl.put.poznan.rulestudio.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
@@ -25,7 +26,11 @@ public class DominanceCones {
     @JsonProperty("Negative inverse dominance cone")
     private IntSortedSet[] negativeInvDCones;
 
+    @JsonIgnore
     private String dataHash;
+
+    @JsonProperty("isCurrentData")
+    private Boolean isCurrentData;
 
     public DominanceCones() {
         numberOfObjects = 0;
@@ -36,6 +41,7 @@ public class DominanceCones {
         this.negativeInvDCones = null;
 
         this.dataHash = null;
+        this.isCurrentData = null;
     }
 
     public DominanceCones(InformationTable informationTable) {
@@ -90,6 +96,14 @@ public class DominanceCones {
         this.dataHash = dataHash;
     }
 
+    public boolean isCurrentData() {
+        return isCurrentData;
+    }
+
+    public void setCurrentData(Boolean currentData) {
+        isCurrentData = currentData;
+    }
+
     @Override
     public String toString() {
         return "DominanceCones{" +
@@ -99,6 +113,7 @@ public class DominanceCones {
                 ", positiveInvDCones=" + Arrays.toString(positiveInvDCones) +
                 ", negativeInvDCones=" + Arrays.toString(negativeInvDCones) +
                 ", dataHash='" + dataHash + '\'' +
+                ", isCurrentData=" + isCurrentData +
                 '}';
     }
 
@@ -125,6 +140,7 @@ public class DominanceCones {
         }
 
         this.dataHash = informationTable.getHash();
+        this.isCurrentData = true;
     }
 
     private void calculatePositiveDCones(InformationTable informationTable) {

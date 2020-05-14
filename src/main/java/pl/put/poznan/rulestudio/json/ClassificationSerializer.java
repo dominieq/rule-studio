@@ -71,12 +71,10 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
             jsonGenerator.writeString(classification.getExternalDataFileName());
         }
 
-        jsonGenerator.writeFieldName("learningDataHash");
-        jsonGenerator.writeString(classification.getLearningDataHash());
+        jsonGenerator.writeBooleanField("isCurrentLearningData", classification.isCurrentLearningData());
 
-        if(classification.getRuleSetHash() != null) {
-            jsonGenerator.writeFieldName("ruleSetHash");
-            jsonGenerator.writeString(classification.getRuleSetHash());
+        if(classification.isCurrentRuleSet() != null) {
+            jsonGenerator.writeBooleanField("isCurrentRuleSet", classification.isCurrentRuleSet());
         }
 
         jsonGenerator.writeEndObject();

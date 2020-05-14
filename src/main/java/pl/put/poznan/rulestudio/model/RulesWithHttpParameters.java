@@ -13,6 +13,7 @@ public class RulesWithHttpParameters implements Cloneable {
     private String errorMessage;
     private String rulesFileName;
     private String dataHash;
+    private Boolean isCurrentData;
   
     public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String errorMessage, String rulesFileName, String dataHash) {
         this.externalRules = true;
@@ -20,6 +21,8 @@ public class RulesWithHttpParameters implements Cloneable {
         this.errorMessage = errorMessage;
         this.rulesFileName = rulesFileName;
         this.dataHash = dataHash;
+
+        this.isCurrentData = true;
     }
 
     public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, String dataHash) {
@@ -29,6 +32,8 @@ public class RulesWithHttpParameters implements Cloneable {
         this.consistencyThreshold = consistencyThreshold;
         this.typeOfRules = ruleType;
         this.dataHash = dataHash;
+
+        this.isCurrentData = true;
     }
 
     public RuleSetWithCharacteristics getRuleSet() {
@@ -95,6 +100,14 @@ public class RulesWithHttpParameters implements Cloneable {
         this.dataHash = dataHash;
     }
 
+    public Boolean isCurrentData() {
+        return isCurrentData;
+    }
+
+    public void setCurrentData(Boolean currentData) {
+        isCurrentData = currentData;
+    }
+
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
@@ -106,6 +119,7 @@ public class RulesWithHttpParameters implements Cloneable {
                 ", errorMessage='" + errorMessage + '\'' +
                 ", rulesFileName='" + rulesFileName + '\'' +
                 ", dataHash='" + dataHash + '\'' +
+                ", isCurrentData=" + isCurrentData +
                 '}';
     }
 
