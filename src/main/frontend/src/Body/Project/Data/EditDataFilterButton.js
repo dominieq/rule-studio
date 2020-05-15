@@ -17,7 +17,7 @@ class EditDataFilterButton extends React.Component {
     renderToggleFilterButton = (name) => {
         if (this.props.enableFilter) {
           return (
-            <CustomTooltip title={`Show filter`}>
+            <CustomTooltip disableGpu={true} title={`Show filter`}>
                 {name === "desktop" ?
                     <StyledButton
                         disableElevation
