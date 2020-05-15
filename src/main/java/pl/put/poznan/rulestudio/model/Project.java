@@ -154,7 +154,7 @@ public class Project {
         if(this.classification != null) {
             if ((this.rules == null) || (this.rules.getDataHash() == null)) {
                 classification.setCurrentRuleSet(null);
-            } else if (classification.getRuleSetHash().equals(this.rules.getDataHash())) {
+            } else if (this.rules.getDataHash().equals(classification.getRuleSetHash())) {
                 classification.setCurrentRuleSet(true);
             } else {
                 classification.setCurrentRuleSet(false);

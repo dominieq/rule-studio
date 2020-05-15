@@ -15,14 +15,13 @@ public class RulesWithHttpParameters implements Cloneable {
     private String dataHash;
     private Boolean isCurrentData;
   
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String errorMessage, String rulesFileName, String dataHash) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String errorMessage, String rulesFileName, String dataHash, Boolean isCurrentData) {
         this.externalRules = true;
         this.ruleSet = rules;
         this.errorMessage = errorMessage;
         this.rulesFileName = rulesFileName;
         this.dataHash = dataHash;
-
-        this.isCurrentData = true;
+        this.isCurrentData = isCurrentData;
     }
 
     public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, String dataHash) {
