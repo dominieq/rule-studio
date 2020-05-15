@@ -64,6 +64,7 @@ class ProjectTabs extends React.Component {
                             selected: newValue
                         });
                     }
+                    this.props.onTabChange(currentProject);
                 });
             });
         } else {
