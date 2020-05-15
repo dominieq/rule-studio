@@ -96,6 +96,7 @@ public class DominanceCones {
         this.dataHash = dataHash;
     }
 
+    @JsonIgnore
     public boolean isCurrentData() {
         return isCurrentData;
     }

@@ -10,13 +10,12 @@ const useStyles = makeStyles(theme => ({
         color: theme.palette.button.secondary
     },
     wrapper: {
-        marginRight: 8,
         display: "flex",
         alignItems: "center"
     }
-}), {name: "ExternalRules"});
+}), {name: "ExternalFile"});
 
-function ExternalRules(props) {
+function ExternalFile(props) {
     const { classes: propsClasses, IconProps, ...other } = props;
 
     let classes = useStyles();
@@ -27,7 +26,7 @@ function ExternalRules(props) {
             classes={{wrapper: classes.wrapper}}
             enterDelay={500}
             enterNextDelay={500}
-            title={"You are currently using rule set from external file."}
+            title={"Results in this tab are based on an external file."}
             {...other}
         >
             <UploadOutline classes={{root: classes.icon}} {...IconProps} />
@@ -35,9 +34,12 @@ function ExternalRules(props) {
     );
 }
 
-ExternalRules.propTypes = {
-    classes: PropTypes.object,
+ExternalFile.propTypes = {
+    classes: PropTypes.shape({
+        icon: PropTypes.string,
+        wrapper: PropTypes.string
+    }),
     IconProps: PropTypes.object
 };
 
-export default ExternalRules;
+export default ExternalFile;
