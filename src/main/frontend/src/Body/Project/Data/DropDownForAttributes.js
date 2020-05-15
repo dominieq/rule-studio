@@ -4,7 +4,21 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 import clsx from "clsx";
+
+const tooltip = {
+  mv15: <p style={{textAlign: "justify"}}>
+          <b> mv<sub>1.5</sub> </b> – when comparing two evaluations with respect to the attribute, <b> the following relations hold: </b> <br/>
+          <b>{"? \u2ab0 x, ? \u2ab0 ?,"}</b> <br/>
+          <b>{"? \u2aaf x, ? \u2aaf ?."}</b> 
+        </p>,
+  mv2:  <p style={{textAlign: "justify"}}>
+          <b> mv<sub>2</sub> </b> – when comparing two evaluations with respect to the attribute, <b> apart from the above relations,</b> also <b> the following relations hold: </b> <br/>
+          <b>{"x \u2ab0 ?,"}</b> <br/>
+          <b>{"x \u2aaf ?."}</b> 
+        </p>
+};
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -78,7 +92,10 @@ export default function DropDownForAttributes(props) {
           MenuProps={{classes: {list: menuClasses.list}}}
         >
         {props.items.map((x,index) => { 
-          if(props.missingVal) return <MenuItem style={{display: "inherit"}} key={index} value={`mv${x}`}>mv<sub>{x}</sub></MenuItem>
+          if(props.missingVal) {
+            if(x === "1.5") return <MenuItem style={{display: "inherit"}} key={index} value={`mv${x}`}> <CustomTooltip arrow={true} disableGpu={true} placement={'right-end'} title={tooltip.mv15}>mv<sub>{x}</sub></CustomTooltip></MenuItem>
+            else return <MenuItem style={{display: "inherit"}} key={index} value={`mv${x}`}> <CustomTooltip arrow={true} disableGpu={true} placement={'right-end'} title={tooltip.mv2}>mv<sub>{x}</sub></CustomTooltip></MenuItem>
+          }
           return <MenuItem key={index} value={x}>{x}</MenuItem>
           })}
         </Select>
