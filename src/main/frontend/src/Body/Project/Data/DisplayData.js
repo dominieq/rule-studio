@@ -2280,7 +2280,7 @@ class DisplayData extends React.Component {
                                 </div>
                                 {
                                     this.state.saveToFileData === "csv" && <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                                    <CustomTooltip title="Save data with header row">
+                                    <CustomTooltip disableGpu={true} title="Save data with header row">
                                     <FormControlLabel 
                                         control={<StyledCheckbox name="csvHeader" 
                                         onChange={this.handleChangeSaveToFileCsvHeader}/>}
@@ -2312,7 +2312,7 @@ class DisplayData extends React.Component {
                 <SimpleDialog open={this.state.isOpenedTransform} onClose={this.closeOnTransform} aria-labelledby="transform-warning-dialog">
                     <DialogTitle id="transform-warning-title">{"Do you want to impose preference orders?"}</DialogTitle>
                     <DialogContent>
-                    <CustomTooltip title="Binarize nominal attributes with 3+ values?">
+                    <CustomTooltip disableGpu={true} title="Binarize nominal attributes with 3+ values?">
                     <FormControlLabel
                         control={<StyledCheckbox defaultChecked={false} name="binarize" onChange={this.handleChangeBinarize}/>}
                         label="Binarize"

@@ -18,7 +18,7 @@ export default function IconLabelButtons(props) {
      <Fragment>
         {/*<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />*/}
 
-        <CustomTooltip title={`Add new object at the end of the table`}>
+        <CustomTooltip disableGpu={true} title={`Add new object at the end of the table`}>
           {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -40,7 +40,7 @@ export default function IconLabelButtons(props) {
         }
         </CustomTooltip>
 
-        <CustomTooltip title={`Delete selected objects`}>
+        <CustomTooltip disableGpu={true} title={`Delete selected objects`}>
           {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -62,7 +62,7 @@ export default function IconLabelButtons(props) {
         }
         </CustomTooltip>
 
-        <CustomTooltip title={`Add new attribute`}>
+        <CustomTooltip disableGpu={true} title={`Add new attribute`}>
         {props.whichDevice === "desktop" ?
           <StyledButton
             disableElevation={true}
@@ -84,7 +84,7 @@ export default function IconLabelButtons(props) {
           }
         </CustomTooltip>
 
-        <CustomTooltip title={`Edit attributes`}>
+        <CustomTooltip disableGpu={true} title={`Edit attributes`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -106,7 +106,7 @@ export default function IconLabelButtons(props) {
           }
         </CustomTooltip>
 
-        <CustomTooltip title={`Save objects (data) and attributes (metadata) to files`}>
+        <CustomTooltip disableGpu={true} title={`Save objects (data) and attributes (metadata) to files`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -128,7 +128,7 @@ export default function IconLabelButtons(props) {
           }
         </CustomTooltip>
 
-        <CustomTooltip title={`Performs non-invasive transformation of the data according to the method
+        <CustomTooltip disableGpu={true} title={`Performs non-invasive transformation of the data according to the method
           described in Błaszczyński, J., Greco, S., Słowiński, R., Inductive
           discovery of laws using monotonic rules, Engineering Applications of
           Artificial Intelligence, 25, 2012, pp. 284-294. For an ordinal
@@ -163,7 +163,7 @@ export default function IconLabelButtons(props) {
             }
         </CustomTooltip>
 
-        <CustomTooltip title={`undo changes`}>
+        <CustomTooltip disableGpu={true} title={`undo changes`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -187,7 +187,7 @@ export default function IconLabelButtons(props) {
             }
         </CustomTooltip>
 
-        <CustomTooltip title={`redo changes`}>
+        <CustomTooltip disableGpu={true} title={`redo changes`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
