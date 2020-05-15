@@ -5,6 +5,18 @@ import { makeStyles } from "@material-ui/core/styles";
 import { mergeClasses } from "../utilFunctions";
 import Tooltip from "@material-ui/core/Tooltip";
 
+//To get unblurred tooltip text in Google Chrome
+const disableGpuProps = {
+    popperOptions: {
+        modifiers: {
+            applyStyle: {
+                enabled: true,
+                gpuAcceleration: false,
+            },
+        },
+    },
+}
+
 const useStyles = makeStyles(theme => ({
     arrow: {
         color: theme.palette.popper.background
@@ -29,7 +41,7 @@ function DefaultWrapper(props, ref) {
 const WrapperForwardRef = React.forwardRef(DefaultWrapper);
 
 function CustomTooltip(props) {
-    const { children,  classes: propsClasses, className, disableMaxWidth, WrapperComponent, WrapperProps, ...other } = props;
+    const { children,  classes: propsClasses, className, disableGpu, disableMaxWidth, PopperProps, WrapperComponent, WrapperProps, ...other } = props;
 
     let classes = useStyles();
     if (propsClasses) classes = mergeClasses(classes, propsClasses);
@@ -39,7 +51,7 @@ function CustomTooltip(props) {
     }
 
     return (
-        <Tooltip classes={{tooltip: classes.tooltip, arrow: classes.arrow}} {...other}>
+        <Tooltip classes={{tooltip: classes.tooltip, arrow: classes.arrow}} PopperProps={disableGpu ? disableGpuProps : PopperProps} {...other}>
             <WrapperForwardRef
                 className={clsx(classes.wrapper, className)}
                 component={WrapperComponent}
@@ -62,6 +74,7 @@ CustomTooltip.propTypes = {
     }),
     className: PropTypes.string,
     disableFocusListener: PropTypes.bool,
+    disableGpu: PropTypes.bool,
     disableHoverListener: PropTypes.bool,
     disableTouchListener: PropTypes.bool,
     disableMaxWidth: PropTypes.bool,
@@ -98,6 +111,8 @@ CustomTooltip.propTypes = {
 };
 
 CustomTooltip.defaultProps = {
+    disableGpu: false,
+    PopperProps: {},
     WrapperComponent: 'div'
 };
 
