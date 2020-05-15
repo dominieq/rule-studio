@@ -147,7 +147,7 @@ public class ClassificationService {
     }
 
     private static SimpleEvaluatedClassificationResult createDefaultSimpleEvaluatedClassificationResult(DefaultClassificationResultType defaultClassificationResult, InformationTable informationTable) {
-        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = new InformationTableWithDecisionDistributions(informationTable);
+        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = DataService.createInformationTableWithDecisionDistributions(informationTable);
         SimpleEvaluatedClassificationResult simpleEvaluatedClassificationResult = null;
 
         switch (defaultClassificationResult) {
@@ -169,7 +169,7 @@ public class ClassificationService {
     }
 
     private static SimpleClassificationResult createDefaultSimpleClassificationResult(DefaultClassificationResultType defaultClassificationResult, InformationTable informationTable) {
-        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = new InformationTableWithDecisionDistributions(informationTable);
+        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = DataService.createInformationTableWithDecisionDistributions(informationTable);
         SimpleClassificationResult simpleClassificationResult = null;
 
         switch (defaultClassificationResult) {

@@ -3,7 +3,6 @@ package pl.put.poznan.rulestudio.service;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.sampling.CrossValidator;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
@@ -73,7 +72,7 @@ public class CrossValidationService {
 
         CrossValidator crossValidator = new CrossValidator(new Random());
         crossValidator.setSeed(seed);
-        List<CrossValidator.CrossValidationFold<InformationTable>> folds = crossValidator.splitStratifiedIntoKFold(new InformationTableWithDecisionDistributions(informationTable), numberOfFolds);
+        List<CrossValidator.CrossValidationFold<InformationTable>> folds = crossValidator.splitStratifiedIntoKFold(DataService.createInformationTableWithDecisionDistributions(informationTable), numberOfFolds);
         for(int i = 0; i < folds.size(); i++) {
             logger.info("Creating fold: {}/{}", i+1, folds.size());
 

@@ -1,6 +1,7 @@
 package pl.put.poznan.rulestudio.service;
 
 import org.rulelearn.approximations.*;
+import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
 import org.rulelearn.measures.ConsistencyMeasure;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.put.poznan.rulestudio.enums.UnionType;
+import pl.put.poznan.rulestudio.exception.CalculationException;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
 import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
@@ -43,12 +45,21 @@ public class UnionsService {
                 WrongParameterException ex = new WrongParameterException(String.format("Given type of unions \"%s\" is unrecognized.", typeOfUnions));
                 logger.error(ex.getMessage());
                 throw ex;
-            }
+        }
 
-        UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = new UnionsWithSingleLimitingDecision(
-                new InformationTableWithDecisionDistributions(informationTable),
-                new VCDominanceBasedRoughSetCalculator(consistencyMeasure, consistencyThreshold)
-        );
+        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = DataService.createInformationTableWithDecisionDistributions(informationTable);
+
+        UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = null;
+        try {
+            unionsWithSingleLimitingDecision = new UnionsWithSingleLimitingDecision(
+                    informationTableWithDecisionDistributions,
+                    new VCDominanceBasedRoughSetCalculator(consistencyMeasure, consistencyThreshold)
+            );
+        } catch (InvalidSizeException e) {
+            CalculationException ex = new CalculationException("Cannot create unions for less than one fully-determined decision.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
 
         return unionsWithSingleLimitingDecision;
     }
