@@ -84,6 +84,14 @@ class Rules extends Component {
                     sort: { ...sort, ...sortParams.rules },
                     alertProps: alertProps
                 }));
+
+                if (result.hasOwnProperty("isCurrentData")) {
+                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                }
+
+                if (result.hasOwnProperty("externalRules")) {
+                    this.props.onRulesUploaded(result.externalRules);
+                }
             }
         }).catch(error => {
             if (!error.hasOwnProperty("open")) {
@@ -247,6 +255,14 @@ class Rules extends Component {
                     };
                     newProject.parametersSaved = true;
                     this.props.onTabChange(newProject);
+
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                    }
+
+                    if (result.hasOwnProperty("externalRules")) {
+                        this.props.onRulesUploaded(result.externalRules);
+                    }
                 }
             }).catch(error => {
                 if (!error.hasOwnProperty("open")) {
@@ -320,6 +336,14 @@ class Rules extends Component {
                         newProject.dataUpToDate = true;
                         newProject.externalRules = result.externalRules;
                         this.props.onTabChange(newProject);
+
+                        if (result.hasOwnProperty("isCurrentData")) {
+                            this.props.showAlert(this.props.value, !result.isCurrentData);
+                        }
+
+                        if (result.hasOwnProperty("externalRules")) {
+                            this.props.onRulesUploaded(result.externalRules);
+                        }
                     }
                 }).catch(error => {
                     if (!error.hasOwnProperty("open")) {
@@ -670,9 +694,11 @@ class Rules extends Component {
 }
 
 Rules.propTypes = {
+    onRulesUploaded: PropTypes.func,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
     value: PropTypes.number
 };
 

@@ -169,6 +169,12 @@ class App extends Component {
         }));
     };
 
+    onSnackbarOpen = (alertProps) => {
+        this.setState({
+            alertProps: alertProps
+        });
+    };
+
     onSnackbarClose = (event, reason) => {
         if (reason !== "clickaway") {
             this.setState(({alertProps}) => ({
@@ -371,10 +377,10 @@ class App extends Component {
                         "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
                             <ProjectTabs
-                                onDataChange={this.onDataChanges}
                                 onTabChange={this.onTabChanges}
                                 project={projects[currentProject]}
                                 serverBase={serverBase}
+                                showAlert={this.onSnackbarOpen}
                             />,
                     }[this.state.body]
                 }

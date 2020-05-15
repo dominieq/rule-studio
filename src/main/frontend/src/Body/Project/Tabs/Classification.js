@@ -79,6 +79,14 @@ class Classification extends Component {
                     parameters: { ...parameters, ...resultParameters },
                     parametersSaved: parametersSaved
                 }));
+
+                if (result.hasOwnProperty("isCurrentData")) {
+                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                }
+
+                if (result.hasOwnProperty("externalData")) {
+                    this.props.onDataUploaded(result.externalData);
+                }
             }
         }).catch(error => {
             if (!error.hasOwnProperty("open")) {
@@ -194,6 +202,14 @@ class Classification extends Component {
                     newProject.parameters = { ...project.parameters, ...resultParameters }
                     newProject.parametersSaved = true;
                     this.props.onTabChange(newProject);
+
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                    }
+
+                    if (result.hasOwnProperty("externalData")) {
+                        this.props.onDataUploaded(result.externalData);
+                    }
                 }
             }).catch(error => {
                 if (!error.hasOwnProperty("open")) {
@@ -483,9 +499,11 @@ class Classification extends Component {
 }
 
 Classification.propTypes = {
+    onDataUploaded: PropTypes.func,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
     value: PropTypes.number
 };
 

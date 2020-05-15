@@ -62,6 +62,10 @@ class Unions extends Component {
                     },
                     parametersSaved: parametersSaved
                 });
+
+                if (result.hasOwnProperty("isCurrentData")) {
+                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                }
             }
         }).catch(error => {
             if (!error.hasOwnProperty("open")) {
@@ -191,6 +195,10 @@ class Unions extends Component {
                     newProject.parameters.typeOfUnions = result.typeOfUnions.toLowerCase();
                     newProject.parametersSaved = true;
                     this.props.onTabChange(newProject);
+
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                    }
                 }
             }).catch(error => {
                 if (!error.hasOwnProperty("open")) {
@@ -356,6 +364,7 @@ Unions.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
     value: PropTypes.number
 };
 

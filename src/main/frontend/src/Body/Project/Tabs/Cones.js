@@ -41,8 +41,12 @@ class Cones extends Component {
                 this.setState({
                     data: result,
                     items: items,
-                    displayedItems: items,
+                    displayedItems: items
                 });
+
+                if (result.hasOwnProperty("isCurrentData")) {
+                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                }
             }
         }).catch(error => {
             if (!error.hasOwnProperty("open")) {
@@ -60,8 +64,8 @@ class Cones extends Component {
             if (this._isMounted) {
                 this.setState({
                     loading: false,
-                    selectedItem: null,
-                })
+                    selectedItem: null
+                });
             }
         });
     }
@@ -128,6 +132,10 @@ class Cones extends Component {
                     newProject.dataUpToDate = true;
                     newProject.tabsUpToDate[this.props.value] = true;
                     this.props.onTabChange(newProject);
+
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                    }
                 }
             }).catch(error => {
                 if (!error.hasOwnProperty("open")) {
@@ -241,6 +249,7 @@ Cones.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
     value: PropTypes.number
 };
 
