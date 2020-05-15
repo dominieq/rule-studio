@@ -49,8 +49,10 @@ public class ClassificationService {
         List<Decision> allDecisions = new ArrayList<>();
 
         Decision[] informationTableDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
-        for(int i = 0; i < informationTableDecisions.length; i++) {
-            allDecisions.add(informationTableDecisions[i]);
+        if(informationTableDecisions != null) {
+            for(int i = 0; i < informationTableDecisions.length; i++) {
+                allDecisions.add(informationTableDecisions[i]);
+            }
         }
 
         for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
