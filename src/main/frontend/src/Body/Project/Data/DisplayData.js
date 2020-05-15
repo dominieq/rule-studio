@@ -436,9 +436,9 @@ class DisplayData extends React.Component {
                                 historySnapshot: tmpHistory.length-1, 
                             }
                         }
-                    });
+                    }, () => this.updateProject())
                 },500)
-            }, () => this.updateProject());
+            });
         } else {
             let isTheSame = false;
             this.setState(prevState => {
