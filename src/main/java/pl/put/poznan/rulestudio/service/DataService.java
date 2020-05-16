@@ -18,6 +18,7 @@ import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.ValidityContainer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -155,7 +156,7 @@ public class DataService {
         return project;
     }
 
-    public InformationTable postData(UUID id, String metadata, String data) throws IOException {
+    public ValidityContainer postData(UUID id, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
@@ -166,7 +167,9 @@ public class DataService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        return informationTable;
+        ValidityContainer validityContainer = new ValidityContainer(project);
+
+        return validityContainer;
     }
 
     private InputStreamResource produceJsonResource(InformationTable informationTable) throws IOException {
