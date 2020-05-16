@@ -162,11 +162,13 @@ class ProjectTabs extends React.Component {
                         let objects = Object.keys(result);
 
                         for (let i = 0; i < objects.length; i++) {
-                            let bools = Object.keys(result[objects[i]])
+                            if (result[objects[i]] !== null && project.result[objects[i]] !== null) {
+                                let bools = Object.keys(result[objects[i]])
 
-                            for (let j = 0; j < objects.length; j++) {
-                                if (project.result[objects[i]].hasOwnProperty(bools[j])) {
-                                    project.result[objects[i]][bools[j]] = result[objects[i]][bools[j]];
+                                for (let j = 0; j < objects.length; j++) {
+                                    if (project.result[objects[i]].hasOwnProperty(bools[j])) {
+                                        project.result[objects[i]][bools[j]] = result[objects[i]][bools[j]];
+                                    }
                                 }
                             }
                         }
