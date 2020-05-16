@@ -908,8 +908,7 @@ class DisplayData extends React.Component {
      */
     onTransformAttributes = () => {
         const base = this.props.serverBase;
-        const x = true;
-        if(x) {
+        if(this.state.dataModified) {
             this.setState({
                     isLoading: true,
                     isOpenedTransform: false,
@@ -1176,9 +1175,7 @@ class DisplayData extends React.Component {
 
     saveDataToCsvOrJson = (name, header, separator) => {
         const base = this.props.serverBase;
-        //if(this.state.dataModified) { //modified?
-        const x = true;
-        if(x) {
+        if(this.state.dataModified) {
             let filename = name;
             let link = `${base}/projects/${this.props.project.result.id}/data/download`;
             if(header === -1) { //json
@@ -1313,9 +1310,7 @@ class DisplayData extends React.Component {
 
     saveMetaDataToJson = (name) => {
         const base = this.props.serverBase;
-        //if(this.state.dataModified) { //modified?
-        const x = true;
-        if(x) { 
+        if(this.state.dataModified) {
             let filename = name;
             let formData = new FormData();
             formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
