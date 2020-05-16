@@ -52,8 +52,7 @@ class CustomButtonGroup extends React.Component {
         super(props);
 
         this.state = {
-            open: false,
-            selected: 0,
+            open: false
         };
 
         this.anchorRef = React.createRef();
@@ -77,18 +76,19 @@ class CustomButtonGroup extends React.Component {
 
     onMenuItemClick = (event, index) => {
         this.setState({
-            open: false,
-            selected: index
-        })
+            open: false
+        }, () => {
+            this.props.onActionSelected(index);
+        });
     };
 
     render() {
-        const {open, selected} = this.state;
-        const {children, options, tooltips, ...other} = this.props;
+        const { open } = this.state;
+        const { children, options, tooltips, selected, WrapperProps } = this.props;
         const childrenArray = React.Children.toArray(children);
 
         return (
-            <div {...other}>
+            <div aria-label={"split button wrapper"} {...WrapperProps}>
                 <ButtonGroup aria-label={"split button"} ref={this.anchorRef}>
                     <ButtonWrapper placement={"left"}>
                         <CustomTooltip
@@ -167,10 +167,13 @@ class CustomButtonGroup extends React.Component {
 CustomButtonGroup.propTypes = {
     children: PropTypes.arrayOf(PropTypes.node).isRequired,
     options: PropTypes.arrayOf(PropTypes.string).isRequired,
+    selected: PropTypes.number.isRequired,
+    onActionSelected: PropTypes.func,
     tooltips: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.node),
         PropTypes.node
-    ]).isRequired
+    ]).isRequired,
+    WrapperProps: PropTypes.object
 };
 
 export default CustomButtonGroup;

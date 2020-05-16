@@ -26,6 +26,7 @@ class Project {
         };
 
         this.foldIndex = 0;
+        this.classifyAction = 0;
 
         this.settings = {
             indexOption: "default",
