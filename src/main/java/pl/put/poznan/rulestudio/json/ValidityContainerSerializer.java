@@ -23,32 +23,52 @@ public class ValidityContainerSerializer extends JsonSerializer<ValidityContaine
         jsonGenerator.writeStartObject();
 
         jsonGenerator.writeFieldName("dominanceCones");
-        jsonGenerator.writeStartObject();
-            jsonGenerator.writeBooleanField("isCurrentData", validityContainer.getDominanceCones());
-        jsonGenerator.writeEndObject();
+        if(validityContainer.getDominanceCones() != null) {
+            jsonGenerator.writeStartObject();
+                jsonGenerator.writeBooleanField("isCurrentData", validityContainer.getDominanceCones());
+            jsonGenerator.writeEndObject();
+        } else {
+            jsonGenerator.writeNull();
+        }
 
         jsonGenerator.writeFieldName("unions");
-        jsonGenerator.writeStartObject();
-            jsonGenerator.writeBooleanField("isCurrentData", validityContainer.getUnions());
-        jsonGenerator.writeEndObject();
+        if(validityContainer.getUnions() != null) {
+            jsonGenerator.writeStartObject();
+                jsonGenerator.writeBooleanField("isCurrentData", validityContainer.getUnions());
+            jsonGenerator.writeEndObject();
+        } else {
+            jsonGenerator.writeNull();
+        }
 
         jsonGenerator.writeFieldName("rules");
-        jsonGenerator.writeStartObject();
-            jsonGenerator.writeBooleanField("externalRules", validityContainer.getRulesExternal());
-            jsonGenerator.writeBooleanField("isCurrentData", validityContainer.getRulesData());
-        jsonGenerator.writeEndObject();
+        if(validityContainer.getRulesExternal() != null) {
+            jsonGenerator.writeStartObject();
+                jsonGenerator.writeBooleanField("externalRules", validityContainer.getRulesExternal());
+                jsonGenerator.writeBooleanField("isCurrentData", validityContainer.getRulesData());
+            jsonGenerator.writeEndObject();
+        } else {
+            jsonGenerator.writeNull();
+        }
 
         jsonGenerator.writeFieldName("classification");
-        jsonGenerator.writeStartObject();
-            jsonGenerator.writeBooleanField("externalData", validityContainer.getClassificationExternal());
-            jsonGenerator.writeBooleanField("isCurrentLearningData", validityContainer.getClassificationLearningData());
-            jsonGenerator.writeBooleanField("isCurrentRuleSet", validityContainer.getClassificationRules());
-        jsonGenerator.writeEndObject();
+        if(validityContainer.getClassificationExternal() != null) {
+            jsonGenerator.writeStartObject();
+                jsonGenerator.writeBooleanField("externalData", validityContainer.getClassificationExternal());
+                jsonGenerator.writeBooleanField("isCurrentLearningData", validityContainer.getClassificationLearningData());
+                jsonGenerator.writeBooleanField("isCurrentRuleSet", validityContainer.getClassificationRules());
+            jsonGenerator.writeEndObject();
+        } else {
+            jsonGenerator.writeNull();
+        }
 
         jsonGenerator.writeFieldName("crossValidation");
-        jsonGenerator.writeStartObject();
+        if(validityContainer.getCrossValidation() != null) {
+            jsonGenerator.writeStartObject();
             jsonGenerator.writeBooleanField("isCurrentData", validityContainer.getCrossValidation());
-        jsonGenerator.writeEndObject();
+            jsonGenerator.writeEndObject();
+        } else {
+            jsonGenerator.writeNull();
+        }
 
         jsonGenerator.writeEndObject();
     }
