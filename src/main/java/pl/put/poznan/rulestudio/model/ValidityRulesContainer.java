@@ -1,21 +1,14 @@
 package pl.put.poznan.rulestudio.model;
 
-public class ValidityContainer {
-    private Boolean dominanceCones;
+public class ValidityRulesContainer {
     private Boolean unions;
     private Boolean rulesExternal;
     private Boolean rulesData;
     private Boolean classificationExternal;
     private Boolean classificationLearningData;
     private Boolean classificationRules;
-    private Boolean crossValidation;
 
-    public ValidityContainer(Project project) {
-        DominanceCones dominanceCones = project.getDominanceCones();
-        if(dominanceCones != null) {
-            this.dominanceCones = project.getDominanceCones().isCurrentData();
-        }
-
+    public ValidityRulesContainer(Project project) {
         UnionsWithHttpParameters unions = project.getUnions();
         if(unions != null) {
             this.unions = project.getUnions().isCurrentData();
@@ -33,19 +26,6 @@ public class ValidityContainer {
             this.classificationLearningData = project.getClassification().isCurrentLearningData();
             this.classificationRules = project.getClassification().isCurrentRuleSet();
         }
-
-        CrossValidation crossValidation = project.getCrossValidation();
-        if(crossValidation != null) {
-            this.crossValidation = project.getCrossValidation().isCurrentData();
-        }
-    }
-
-    public Boolean getDominanceCones() {
-        return dominanceCones;
-    }
-
-    public void setDominanceCones(Boolean dominanceCones) {
-        this.dominanceCones = dominanceCones;
     }
 
     public Boolean getUnions() {
@@ -96,25 +76,15 @@ public class ValidityContainer {
         this.classificationRules = classificationRules;
     }
 
-    public Boolean getCrossValidation() {
-        return crossValidation;
-    }
-
-    public void setCrossValidation(Boolean crossValidation) {
-        this.crossValidation = crossValidation;
-    }
-
     @Override
     public String toString() {
-        return "ValidityContainer{" +
-                "dominanceCones=" + dominanceCones +
-                ", unions=" + unions +
+        return "ValidityProjectContainer{" +
+                "unions=" + unions +
                 ", rulesExternal=" + rulesExternal +
                 ", rulesData=" + rulesData +
                 ", classificationExternal=" + classificationExternal +
                 ", classificationLearningData=" + classificationLearningData +
                 ", classificationRules=" + classificationRules +
-                ", crossValidation=" + crossValidation +
                 '}';
     }
 }

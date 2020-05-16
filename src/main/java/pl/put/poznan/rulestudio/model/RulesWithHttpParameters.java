@@ -14,6 +14,7 @@ public class RulesWithHttpParameters implements Cloneable {
     private String rulesFileName;
     private String dataHash;
     private Boolean isCurrentData;
+    private ValidityRulesContainer validityRulesContainer;
   
     public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String errorMessage, String rulesFileName, String dataHash, Boolean isCurrentData) {
         this.externalRules = true;
@@ -107,6 +108,14 @@ public class RulesWithHttpParameters implements Cloneable {
         isCurrentData = currentData;
     }
 
+    public ValidityRulesContainer getValidityRulesContainer() {
+        return validityRulesContainer;
+    }
+
+    public void setValidityRulesContainer(ValidityRulesContainer validityRulesContainer) {
+        this.validityRulesContainer = validityRulesContainer;
+    }
+
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
@@ -119,6 +128,7 @@ public class RulesWithHttpParameters implements Cloneable {
                 ", rulesFileName='" + rulesFileName + '\'' +
                 ", dataHash='" + dataHash + '\'' +
                 ", isCurrentData=" + isCurrentData +
+                ", validityRulesContainer=" + validityRulesContainer +
                 '}';
     }
 

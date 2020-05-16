@@ -6,65 +6,65 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.jackson.JsonComponent;
-import pl.put.poznan.rulestudio.model.ValidityContainer;
+import pl.put.poznan.rulestudio.model.ValidityProjectContainer;
 
 import java.io.IOException;
 
 @JsonComponent
-public class ValidityContainerSerializer extends JsonSerializer<ValidityContainer> {
+public class ValidityContainerSerializer extends JsonSerializer<ValidityProjectContainer> {
 
     private static final Logger logger = LoggerFactory.getLogger(ValidityContainerSerializer.class);
 
     @Override
-    public void serialize(ValidityContainer validityContainer, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(ValidityProjectContainer validityProjectContainer, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
 
-        logger.debug("Serialization of ValidityContainer:\t{}", validityContainer);
+        logger.debug("Serialization of ValidityProjectContainer:\t{}", validityProjectContainer);
 
         jsonGenerator.writeStartObject();
 
         jsonGenerator.writeFieldName("dominanceCones");
-        if(validityContainer.getDominanceCones() != null) {
+        if(validityProjectContainer.getDominanceCones() != null) {
             jsonGenerator.writeStartObject();
-                jsonGenerator.writeBooleanField("isCurrentData", validityContainer.getDominanceCones());
+                jsonGenerator.writeBooleanField("isCurrentData", validityProjectContainer.getDominanceCones());
             jsonGenerator.writeEndObject();
         } else {
             jsonGenerator.writeNull();
         }
 
         jsonGenerator.writeFieldName("unions");
-        if(validityContainer.getUnions() != null) {
+        if(validityProjectContainer.getUnions() != null) {
             jsonGenerator.writeStartObject();
-                jsonGenerator.writeBooleanField("isCurrentData", validityContainer.getUnions());
+                jsonGenerator.writeBooleanField("isCurrentData", validityProjectContainer.getUnions());
             jsonGenerator.writeEndObject();
         } else {
             jsonGenerator.writeNull();
         }
 
         jsonGenerator.writeFieldName("rules");
-        if(validityContainer.getRulesExternal() != null) {
+        if(validityProjectContainer.getRulesExternal() != null) {
             jsonGenerator.writeStartObject();
-                jsonGenerator.writeBooleanField("externalRules", validityContainer.getRulesExternal());
-                jsonGenerator.writeBooleanField("isCurrentData", validityContainer.getRulesData());
+                jsonGenerator.writeBooleanField("externalRules", validityProjectContainer.getRulesExternal());
+                jsonGenerator.writeBooleanField("isCurrentData", validityProjectContainer.getRulesData());
             jsonGenerator.writeEndObject();
         } else {
             jsonGenerator.writeNull();
         }
 
         jsonGenerator.writeFieldName("classification");
-        if(validityContainer.getClassificationExternal() != null) {
+        if(validityProjectContainer.getClassificationExternal() != null) {
             jsonGenerator.writeStartObject();
-                jsonGenerator.writeBooleanField("externalData", validityContainer.getClassificationExternal());
-                jsonGenerator.writeBooleanField("isCurrentLearningData", validityContainer.getClassificationLearningData());
-                jsonGenerator.writeBooleanField("isCurrentRuleSet", validityContainer.getClassificationRules());
+                jsonGenerator.writeBooleanField("externalData", validityProjectContainer.getClassificationExternal());
+                jsonGenerator.writeBooleanField("isCurrentLearningData", validityProjectContainer.getClassificationLearningData());
+                jsonGenerator.writeBooleanField("isCurrentRuleSet", validityProjectContainer.getClassificationRules());
             jsonGenerator.writeEndObject();
         } else {
             jsonGenerator.writeNull();
         }
 
         jsonGenerator.writeFieldName("crossValidation");
-        if(validityContainer.getCrossValidation() != null) {
+        if(validityProjectContainer.getCrossValidation() != null) {
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeBooleanField("isCurrentData", validityContainer.getCrossValidation());
+            jsonGenerator.writeBooleanField("isCurrentData", validityProjectContainer.getCrossValidation());
             jsonGenerator.writeEndObject();
         } else {
             jsonGenerator.writeNull();

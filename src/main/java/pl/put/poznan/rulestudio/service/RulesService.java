@@ -268,6 +268,7 @@ public class RulesService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
+        project.checkValidityOfRules();
         RulesWithHttpParameters rules = project.getRules();
         if(rules == null) {
             EmptyResponseException ex = new EmptyResponseException("There are no rules in project to show.");

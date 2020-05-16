@@ -144,6 +144,13 @@ public class Project {
         this.currentRules = currentRules;
     }
 
+    public void checkValidityOfRules() {
+        if(rules !=null) {
+            ValidityRulesContainer validityRulesContainer = new ValidityRulesContainer(this);
+            rules.setValidityRulesContainer(validityRulesContainer);
+        }
+    }
+
     public RulesWithHttpParameters getRules() {
         return rules;
     }
@@ -160,6 +167,8 @@ public class Project {
                 classification.setCurrentRuleSet(false);
             }
         }
+
+        checkValidityOfRules();
     }
 
     public Classification getClassification() {
