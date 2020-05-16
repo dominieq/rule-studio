@@ -206,7 +206,7 @@ class DisplayData extends React.Component {
 
             historySnapshot: this.props.project.dataHistory.historySnapshot,
             history: this.props.project.dataHistory.history.length ? 
-                this.props.project.dataHistory.history 
+                this.prepareHistory(this.props.project.dataHistory.history)
                 :
                 [
                     {
@@ -268,7 +268,7 @@ class DisplayData extends React.Component {
 
                 historySnapshot: this.props.project.dataHistory.historySnapshot,
                 history: this.props.project.dataHistory.history.length ? 
-                this.props.project.dataHistory.history 
+                this.prepareHistory(this.props.project.dataHistory.history)
                 :
                 [
                     {
@@ -281,6 +281,22 @@ class DisplayData extends React.Component {
                 this.replaceMissingDataWithQuestionMarks();
             })
         }
+    }
+
+    prepareHistory = (history) => {
+        const historyTmp = JSON.parse(JSON.stringify(history));
+        for(let i in historyTmp) {
+            for(let j in historyTmp[i].columns) {
+                if(historyTmp[i].columns[j].domain !== undefined) {
+                    if(!historyTmp[i].columns[j].domain.includes("?")) historyTmp[i].columns[j].domain.push("?");
+                    historyTmp[i].columns[j].editor = <DropDownEditor options={historyTmp[i].columns[j].domain} />;
+                }
+                if(historyTmp[i].columns[j].valueType === "integer" || historyTmp[i].columns[j].valueType === "real") {
+                    historyTmp[i].columns[j].filterRenderer = NumericFilter;
+                }
+            }
+        }
+        return historyTmp;
     }
 
     /** 
@@ -390,7 +406,7 @@ class DisplayData extends React.Component {
     updateProject = () => {
         const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
         const tmpData = this.prepareDataFileBeforeSendingToServer();
-        const tmpProject = {...this.props.project}
+        const tmpProject = JSON.parse(JSON.stringify(this.props.project));
         tmpProject.result.informationTable.attributes = tmpMetaData;
         tmpProject.result.informationTable.objects = tmpData;
         tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history};
@@ -1061,7 +1077,7 @@ class DisplayData extends React.Component {
         
         //remove missing value sign ("?")
         newMetadata.forEach(col => {
-            if(col.domain !== undefined) col.domain.pop();
+            if(col.domain !== undefined && col.domain[col.domain.length-1] === "?") col.domain.pop();
         })
         return newMetadata;
     }
