@@ -35,7 +35,6 @@ class Rules extends Component {
             data: null,
             items: null,
             displayedItems: [],
-            externalRules: false,
             parameters: {
                 consistencyThreshold: 0,
                 typeOfRules: "certain",
@@ -78,7 +77,6 @@ class Rules extends Component {
                     data: result,
                     items: items,
                     displayedItems: items,
-                    externalRules: result.externalRules,
                     parameters: { ...parameters, ...resultParameters},
                     parametersSaved: parametersSaved,
                     sort: { ...sort, ...sortParams.rules },
@@ -204,17 +202,8 @@ class Rules extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let method = project.dataUpToDate ? "PUT" : "POST";
-            let data = new FormData();
-
-            Object.keys(parameters).map(key => {
-                data.append(key, parameters[key]);
-            });
-
-            if (!project.dataUpToDate) {
-                data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-                data.append("data", JSON.stringify(project.result.informationTable.objects));
-            }
+            let method = "PUT";
+            let data = createFormData(parameters, null);
 
             fetchRules(
                 serverBase, project.result.id, method, data
@@ -232,7 +221,6 @@ class Rules extends Component {
                             data: result,
                             items: items,
                             displayedItems: items,
-                            externalRules: result.externalRules,
                             parametersSaved: true,
                             alertProps: alertProps
                         });
@@ -241,10 +229,6 @@ class Rules extends Component {
                     let newProject = { ...project };
 
                     newProject.result.rules = result;
-                    newProject.dataUpToDate = true;
-                    newProject.tabsUpToDate[this.props.value] = true;
-                    newProject.tabsUpToDate[this.props.value - 1] = true;
-                    newProject.externalRules = result.externalRules;
 
                     const newParameters = parseRulesParams(result);
 
@@ -292,20 +276,11 @@ class Rules extends Component {
     onUploadFileChanged = (event) => {
         if (event.target.files[0]) {
             const { project, serverBase } = this.props;
-            const { parameters } = this.state;
 
-            let method = project.dataUpToDate ? "PUT" : "POST";
+            let method = "PUT";
             let files = { rules: event.target.files[0] }
 
-            if (!project.dataUpToDate) {
-                files = {
-                    ...files,
-                    metadata: JSON.stringify(project.result.informationTable.attributes),
-                    data: JSON.stringify(project.result.informationTable.objects)
-                };
-            }
-
-            let data = createFormData(project.dataUpToDate ? null : parameters, files);
+            let data = createFormData(null, files);
 
             this.setState({
                 loading: true,
@@ -326,15 +301,12 @@ class Rules extends Component {
                                 data: result,
                                 items: items,
                                 displayedItems: items,
-                                externalRules: result.externalRules,
                                 alertProps: alertProps
                             });
                         }
                         let newProject = { ...project };
 
                         newProject.result.rules = result;
-                        newProject.dataUpToDate = true;
-                        newProject.externalRules = result.externalRules;
                         this.props.onTabChange(newProject);
 
                         if (result.hasOwnProperty("isCurrentData")) {

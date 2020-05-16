@@ -104,16 +104,8 @@ class Cones extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let method = project.dataUpToDate ? "PUT" : "POST"
-            let data = new FormData();
-
-            if ( !project.dataUpToDate ) {
-                data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-                data.append("data", JSON.stringify(project.result.informationTable.objects));
-            }
-
             fetchCones(
-                serverBase, project.result.id, method, data
+                serverBase, project.result.id, "PUT", null
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -129,8 +121,6 @@ class Cones extends Component {
                     let newProject = { ...project };
 
                     newProject.result.dominanceCones = result;
-                    newProject.dataUpToDate = true;
-                    newProject.tabsUpToDate[this.props.value] = true;
                     this.props.onTabChange(newProject);
 
                     if (result.hasOwnProperty("isCurrentData")) {

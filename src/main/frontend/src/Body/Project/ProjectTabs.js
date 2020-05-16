@@ -26,8 +26,82 @@ class ProjectTabs extends React.Component {
         };
     }
 
+    updateAlerts = (result) => {
+        /* Update alerts in Dominance cones */
+        if (result.hasOwnProperty("dominanceCones") && result.dominanceCones.hasOwnProperty("isCurrentData")) {
+            this.setState(({showAlert}) => {
+                showAlert[0] = !result.dominanceCones.isCurrentData;
+                return { showAlert: showAlert };
+            });
+        }
+
+        /* Update alerts in Class unions */
+        if (result.hasOwnProperty("unions") && result.unions.hasOwnProperty("isCurrentData")) {
+            this.setState(({showAlert}) => {
+                showAlert[1] = !result.unions.isCurrentData;
+                return { showAlert: showAlert };
+            });
+        }
+
+        /* Update alerts in Rules */
+        if (result.hasOwnProperty("rules")) {
+            if (result.rules.hasOwnProperty("isCurrentData")) {
+                this.setState(({showAlert}) => {
+                    showAlert[2] = !result.rules.isCurrentData;
+                    return { showAlert: showAlert };
+                });
+            }
+
+            if (result.rules.hasOwnProperty("externalRules")) {
+                this.setState({
+                    showExternalRules: result.rules.externalRules
+                });
+            }
+        }
+
+        /* Update alerts in Classification */
+        if (result.hasOwnProperty("classification")) {
+            if (result.classification.hasOwnProperty("isCurrentLearningData")) {
+                if (result.classification.hasOwnProperty("isCurrentRuleSet")) {
+                    this.setState(({showAlert}) => {
+                        showAlert[3] = !(result.classification.isCurrentLearningData && result.classification.isCurrentRuleSet);
+                        return { showAlert: showAlert };
+                    });
+                } else {
+                    this.setState(({showAlert}) => {
+                        showAlert[3] = !result.classification.isCurrentLearningData;
+                        return { showAlert: showAlert };
+                    });
+                }
+            }
+
+            if (result.classification.hasOwnProperty("externalData")) {
+                this.setState({
+                    showExternalData: result.classification.externalData
+                });
+            }
+        }
+
+        /* Update alerts in CrossValidation */
+        if (result.hasOwnProperty("crossValidation")) {
+            if (result.crossValidation.hasOwnProperty("isCurrentData")) {
+                this.setState(({showAlert}) => {
+                    showAlert[4] = !result.crossValidation.isCurrentData;
+                    return { showAlert: showAlert };
+                })
+            }
+        }
+    };
+
     componentDidMount() {
         this._isMounted = true;
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            const { project: { result } } = this.props;
+            this.updateAlerts(result);
+        }
     }
 
     componentWillUnmount() {
