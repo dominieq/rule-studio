@@ -273,7 +273,7 @@ class CrossValidation extends Component {
                     this.props.onTabChange(newProject);
 
                     if (result.hasOwnProperty("isCurrentData")) {
-                        this.props.showAlert(this.props.showAlert, !result.isCurrentData);
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
                     }
                 }
 

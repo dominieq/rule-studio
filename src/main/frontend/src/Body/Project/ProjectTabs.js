@@ -27,24 +27,36 @@ class ProjectTabs extends React.Component {
     }
 
     updateAlerts = (result) => {
-        /* Update alerts in Dominance cones */
-        if (result.hasOwnProperty("dominanceCones") && result.dominanceCones.hasOwnProperty("isCurrentData")) {
+        /* Update alert in Dominance cones */
+        if (result.dominanceCones !== null && result.dominanceCones.hasOwnProperty("isCurrentData")) {
             this.setState(({showAlert}) => {
                 showAlert[0] = !result.dominanceCones.isCurrentData;
                 return { showAlert: showAlert };
             });
+        } else {
+            /* Reset alert if there are no dominance cones */
+            this.setState(({showAlert}) => {
+                showAlert[0] = false;
+                return { showAlert: showAlert }
+            })
         }
 
-        /* Update alerts in Class unions */
-        if (result.hasOwnProperty("unions") && result.unions.hasOwnProperty("isCurrentData")) {
+        /* Update alert in Class unions */
+        if (result.unions !== null && result.unions.hasOwnProperty("isCurrentData")) {
             this.setState(({showAlert}) => {
                 showAlert[1] = !result.unions.isCurrentData;
+                return { showAlert: showAlert };
+            });
+        } else {
+            /* Reset alert if there are no class unions */
+            this.setState(({showAlert}) => {
+                showAlert[1] = false;
                 return { showAlert: showAlert };
             });
         }
 
         /* Update alerts in Rules */
-        if (result.hasOwnProperty("rules")) {
+        if (result.rules !== null) {
             if (result.rules.hasOwnProperty("isCurrentData")) {
                 this.setState(({showAlert}) => {
                     showAlert[2] = !result.rules.isCurrentData;
@@ -57,10 +69,16 @@ class ProjectTabs extends React.Component {
                     showExternalRules: result.rules.externalRules
                 });
             }
+        } else {
+            /* Reset alerts if there are no rules*/
+            this.setState(({showAlert}) => {
+                showAlert[2] = false;
+                return { showAlert: showAlert, showExternalAlert: false };
+            });
         }
 
         /* Update alerts in Classification */
-        if (result.hasOwnProperty("classification")) {
+        if (result.classification !== null) {
             if (result.classification.hasOwnProperty("isCurrentLearningData")) {
                 if (result.classification.hasOwnProperty("isCurrentRuleSet")) {
                     this.setState(({showAlert}) => {
@@ -80,26 +98,41 @@ class ProjectTabs extends React.Component {
                     showExternalData: result.classification.externalData
                 });
             }
+        } else {
+            /* Reset alerts if there are no classification results */
+            this.setState(({showAlert}) => {
+                showAlert[3] = false;
+                return { showAlert: showAlert, showExternalData: false };
+            })
         }
 
         /* Update alerts in CrossValidation */
-        if (result.hasOwnProperty("crossValidation")) {
-            if (result.crossValidation.hasOwnProperty("isCurrentData")) {
-                this.setState(({showAlert}) => {
-                    showAlert[4] = !result.crossValidation.isCurrentData;
-                    return { showAlert: showAlert };
-                })
-            }
+        if (result.crossValidation !== null && result.crossValidation.hasOwnProperty("isCurrentData")) {
+            this.setState(({showAlert}) => {
+                showAlert[4] = !result.crossValidation.isCurrentData;
+                return { showAlert: showAlert };
+            });
+        } else {
+            /* Reset alert if there are no cross-validation results */
+            this.setState(({showAlert}) => {
+                showAlert[4] = false;
+                return { showAlert: showAlert };
+            })
         }
     };
 
     componentDidMount() {
         this._isMounted = true;
+
+        const { project: { result } } = this.props;
+        this.updateAlerts(result);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.project.result.id !== this.props.project.result.id) {
             const { project: { result } } = this.props;
+
+            this.setState({ currentProject: null });
             this.updateAlerts(result);
         }
     }
@@ -116,14 +149,32 @@ class ProjectTabs extends React.Component {
             this.setState({
                 loading: true
             }, () => {
+                let project = JSON.parse(JSON.stringify(currentProject));
+
                 let data = new FormData();
-                data.append("metadata", JSON.stringify(currentProject.result.informationTable.attributes));
-                data.append("data", JSON.stringify(currentProject.result.informationTable.objects));
+                data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
+                data.append("data", JSON.stringify(project.result.informationTable.objects));
 
                 fetchData(
-                    serverBase, currentProject.result.id, data
+                    serverBase, project.result.id, data
                 ).then(result => {
-                    console.log(result);
+                    if (result) {
+                        let objects = Object.keys(result);
+
+                        for (let i = 0; i < objects.length; i++) {
+                            let bools = Object.keys(result[objects[i]])
+
+                            for (let j = 0; j < objects.length; j++) {
+                                if (project.result[objects[i]].hasOwnProperty(bools[j])) {
+                                    project.result[objects[i]][bools[j]] = result[objects[i]][bools[j]];
+                                }
+                            }
+                        }
+
+                        if (this._isMounted) {
+                            this.updateAlerts(result);
+                        }
+                    }
                 }).catch(error => {
                     if (!error.hasOwnProperty("open")) {
                         console.log(error);
@@ -138,7 +189,7 @@ class ProjectTabs extends React.Component {
                             selected: newValue
                         });
                     }
-                    this.props.onTabChange(currentProject);
+                    this.props.onTabChange(project);
                 });
             });
         } else {
