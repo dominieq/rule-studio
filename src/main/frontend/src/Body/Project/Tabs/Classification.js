@@ -46,7 +46,10 @@ class Classification extends Component {
                 typeOfClassifier: "SimpleRuleClassifier",
             },
             parametersSaved: true,
-            selectedItem: null,
+            selected: {
+                item: null,
+                action: 0
+            },
             open: {
                 details: false,
                 matrix: false,
@@ -66,17 +69,18 @@ class Classification extends Component {
             serverBase, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
-                const { project: { parametersSaved, settings } } = this.props;
+                const { project: { parametersSaved, settings, classifyAction } } = this.props;
 
                 const items = parseClassificationItems(result, settings);
                 const resultParameters = parseClassificationParams(result);
 
-                this.setState(({parameters}) => ({
+                this.setState(({parameters, selected}) => ({
                     data: result,
                     items: items,
                     displayedItems: items,
                     parameters: { ...parameters, ...resultParameters },
-                    parametersSaved: parametersSaved
+                    parametersSaved: parametersSaved,
+                    selected: { ...selected, action: classifyAction }
                 }));
 
                 if (result.hasOwnProperty("isCurrentLearningData")) {
@@ -111,11 +115,11 @@ class Classification extends Component {
                     typeOfClassifier
                 }}} = this.props;
 
-                this.setState(({parameters}) => ({
+                this.setState(({parameters, selected}) => ({
                     loading: false,
                     parameters: parametersSaved ?
                         parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier } },
-                    selectedItem: null
+                    selected: { ...selected, item: null }
                 }));
             }
         });
@@ -141,33 +145,36 @@ class Classification extends Component {
         }
 
         if (prevProps.project.result.id !== this.props.project.result.id) {
-            const { parametersSaved } = prevState;
+            const { parametersSaved, selected: { action } } = prevState;
+            let project = { ...prevProps.project };
 
             if (!parametersSaved) {
-                let project = { ...prevProps.project };
                 const { parameters } = prevState;
 
                 project.parameters = { ...project.parameters, ...parameters};
                 project.parametersSaved = parametersSaved;
-                this.props.onTabChange(project);
             }
 
+            project.classifyAction = action;
+            this.props.onTabChange(project);
             this.setState({ loading: true }, this.getClassification);
         }
     }
 
     componentWillUnmount() {
         this._isMounted = false;
-        const { parametersSaved } = this.state;
+        const { parametersSaved, selected: { action } } = this.state;
+        let project = {...this.props.project};
 
         if (!parametersSaved) {
-            let project = {...this.props.project};
             const { parameters } = this.state;
 
             project.parameters = { ...project.parameters, ...parameters };
             project.parametersSaved = parametersSaved;
-            this.props.onTabChange(project);
         }
+
+        project.classifyAction = action;
+        this.props.onTabChange(project);
     }
 
     calculateClassification = (method, data) => {
@@ -226,10 +233,10 @@ class Classification extends Component {
                 }
             }).finally(() => {
                 if (this._isMounted) {
-                    this.setState({
+                    this.setState(({selected}) => ({
                         loading: false,
-                        selectedItem: null
-                    });
+                        selected: { ...selected, item: null }
+                    }));
                 }
             });
         });
@@ -318,16 +325,22 @@ class Classification extends Component {
         }
     };
 
+    onClassifyActionChange = (index) => {
+        this.setState(({selected}) => ({
+            selected: { ...selected, action: index }
+        }));
+    };
+
     onFilterChange = (event) => {
         const { loading, items } = this.state;
 
         if (!loading && Array.isArray(items) && items.length) {
             const filteredItems = filterFunction(event.target.value.toString(), items.slice());
 
-            this.setState({
+            this.setState(({selected}) => ({
                 displayedItems: filteredItems,
-                selectedItems: null
-            });
+                selected: { ...selected, item: null }
+            }));
         }
     };
 
@@ -340,9 +353,9 @@ class Classification extends Component {
     onDetailsOpen = (index) => {
         const { items } = this.state;
 
-        this.setState(({open}) => ({
-            open: {...open, details: true, settings: false},
-            selectedItem: items[index]
+        this.setState(({open, selected}) => ({
+            open: { ...open, details: true, settings: false },
+            selected: { ...selected, item: items[index] }
         }));
     };
 
@@ -355,7 +368,7 @@ class Classification extends Component {
     };
 
     render() {
-        const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
+        const { loading, data, displayedItems, parameters, selected, open, alertProps } = this.state;
         const { project } = this.props;
 
         return (
@@ -384,9 +397,13 @@ class Classification extends Component {
                         <SettingsButton onClick={() => this.toggleOpen("settings")} />
                         <StyledDivider margin={16} />
                         <CustomButtonGroup
-                            id={"classification-button-group"}
+                            onActionSelected={this.onClassifyActionChange}
                             options={["Classify current data", "Choose new data & classify"]}
+                            selected={selected.action}
                             tooltips={"Click on settings button on the left to customize parameters"}
+                            WrapperProps={{
+                                id: "classification-split-button"
+                            }}
                         >
                             <CalculateButton
                                 aria-label={"classify-current-file"}
@@ -438,9 +455,9 @@ class Classification extends Component {
                             }
                         ]}
                     />
-                    {project.result.rules !== null && selectedItem !== null &&
+                    {project.result.rules !== null && selected.item !== null &&
                         <ClassificationDialog
-                            item={selectedItem}
+                            item={selected.item}
                             onClose={() => this.toggleOpen("details")}
                             open={open.details}
                             ruleSet={project.result.rules.ruleSet}
