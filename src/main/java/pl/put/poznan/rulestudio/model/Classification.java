@@ -20,6 +20,10 @@ public class Classification {
     private DefaultClassificationResultType defaultClassificationResult;
     private boolean externalData;
     private String externalDataFileName;
+    private String learningDataHash;
+    private String ruleSetHash;
+    private Boolean isCurrentLearningData;
+    private Boolean isCurrentRuleSet;
 
     public Classification(ClassificationResult[] simpleClassificationResults, InformationTable informationTable) {
         this.classificationResults = simpleClassificationResults;
@@ -34,7 +38,7 @@ public class Classification {
         this.ordinalMisclassificationMatrix = ordinalMisclassificationMatrix;
     }
 
-    public Classification(ClassificationResult[] classificationResults, InformationTable informationTable, Decision[] orderOfDecisions, IntList[] indicesOfCoveringRules, OrdinalMisclassificationMatrix ordinalMisclassificationMatrix, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult) {
+    public Classification(ClassificationResult[] classificationResults, InformationTable informationTable, Decision[] orderOfDecisions, IntList[] indicesOfCoveringRules, OrdinalMisclassificationMatrix ordinalMisclassificationMatrix, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult, String learningDataHash, String ruleSetHash) {
         this.classificationResults = classificationResults;
         this.informationTable = informationTable;
         this.orderOfDecisions = orderOfDecisions;
@@ -42,7 +46,12 @@ public class Classification {
         this.ordinalMisclassificationMatrix = ordinalMisclassificationMatrix;
         this.typeOfClassifier = typeOfClassifier;
         this.defaultClassificationResult = defaultClassificationResult;
+        this.learningDataHash = learningDataHash;
+        this.ruleSetHash = ruleSetHash;
+
         this.externalData = false;
+        this.isCurrentLearningData = true;
+        this.isCurrentRuleSet = true;
     }
 
     public ClassificationResult[] getClassificationResults() {
@@ -117,6 +126,38 @@ public class Classification {
         this.externalDataFileName = externalDataFileName;
     }
 
+    public String getLearningDataHash() {
+        return learningDataHash;
+    }
+
+    public void setLearningDataHash(String learningDataHash) {
+        this.learningDataHash = learningDataHash;
+    }
+
+    public String getRuleSetHash() {
+        return ruleSetHash;
+    }
+
+    public void setRuleSetHash(String ruleSetHash) {
+        this.ruleSetHash = ruleSetHash;
+    }
+
+    public Boolean isCurrentLearningData() {
+        return isCurrentLearningData;
+    }
+
+    public void setCurrentLearningData(Boolean currentLearningData) {
+        isCurrentLearningData = currentLearningData;
+    }
+
+    public Boolean isCurrentRuleSet() {
+        return isCurrentRuleSet;
+    }
+
+    public void setCurrentRuleSet(Boolean currentRuleSet) {
+        isCurrentRuleSet = currentRuleSet;
+    }
+
     @Override
     public String toString() {
         return "Classification{" +
@@ -129,6 +170,10 @@ public class Classification {
                 ", defaultClassificationResult=" + defaultClassificationResult +
                 ", externalData=" + externalData +
                 ", externalDataFileName='" + externalDataFileName + '\'' +
+                ", learningDataHash='" + learningDataHash + '\'' +
+                ", ruleSetHash='" + ruleSetHash + '\'' +
+                ", isCurrentLearningData=" + isCurrentLearningData +
+                ", isCurrentRuleSet=" + isCurrentRuleSet +
                 '}';
     }
 }

@@ -70,7 +70,7 @@ public class UnionsService {
 
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(informationTable, typeOfUnions, consistencyThreshold);
 
-            unionsWithHttpParameters = new UnionsWithHttpParameters(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold);
+            unionsWithHttpParameters = new UnionsWithHttpParameters(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold, informationTable.getHash());
 
             project.setUnions(unionsWithHttpParameters);
             project.setCurrentUnionsWithSingleLimitingDecision(true);

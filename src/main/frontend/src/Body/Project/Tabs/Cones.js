@@ -41,8 +41,12 @@ class Cones extends Component {
                 this.setState({
                     data: result,
                     items: items,
-                    displayedItems: items,
+                    displayedItems: items
                 });
+
+                if (result.hasOwnProperty("isCurrentData")) {
+                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                }
             }
         }).catch(error => {
             if (!error.hasOwnProperty("open")) {
@@ -60,8 +64,8 @@ class Cones extends Component {
             if (this._isMounted) {
                 this.setState({
                     loading: false,
-                    selectedItem: null,
-                })
+                    selectedItem: null
+                });
             }
         });
     }
@@ -100,16 +104,8 @@ class Cones extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let method = project.dataUpToDate ? "PUT" : "POST"
-            let data = new FormData();
-
-            if ( !project.dataUpToDate ) {
-                data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-                data.append("data", JSON.stringify(project.result.informationTable.objects));
-            }
-
             fetchCones(
-                serverBase, project.result.id, method, data
+                serverBase, project.result.id, "PUT", null
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -125,9 +121,11 @@ class Cones extends Component {
                     let newProject = { ...project };
 
                     newProject.result.dominanceCones = result;
-                    newProject.dataUpToDate = true;
-                    newProject.tabsUpToDate[this.props.value] = true;
                     this.props.onTabChange(newProject);
+
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                    }
                 }
             }).catch(error => {
                 if (!error.hasOwnProperty("open")) {
@@ -241,6 +239,7 @@ Cones.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
     value: PropTypes.number
 };
 

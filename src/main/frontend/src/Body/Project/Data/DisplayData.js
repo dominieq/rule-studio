@@ -206,7 +206,7 @@ class DisplayData extends React.Component {
 
             historySnapshot: this.props.project.dataHistory.historySnapshot,
             history: this.props.project.dataHistory.history.length ? 
-                this.props.project.dataHistory.history 
+                this.prepareHistory(this.props.project.dataHistory.history)
                 :
                 [
                     {
@@ -268,7 +268,7 @@ class DisplayData extends React.Component {
 
                 historySnapshot: this.props.project.dataHistory.historySnapshot,
                 history: this.props.project.dataHistory.history.length ? 
-                this.props.project.dataHistory.history 
+                this.prepareHistory(this.props.project.dataHistory.history)
                 :
                 [
                     {
@@ -281,6 +281,22 @@ class DisplayData extends React.Component {
                 this.replaceMissingDataWithQuestionMarks();
             })
         }
+    }
+
+    prepareHistory = (history) => {
+        const historyTmp = JSON.parse(JSON.stringify(history));
+        for(let i in historyTmp) {
+            for(let j in historyTmp[i].columns) {
+                if(historyTmp[i].columns[j].domain !== undefined) {
+                    if(!historyTmp[i].columns[j].domain.includes("?")) historyTmp[i].columns[j].domain.push("?");
+                    historyTmp[i].columns[j].editor = <DropDownEditor options={historyTmp[i].columns[j].domain} />;
+                }
+                if(historyTmp[i].columns[j].valueType === "integer" || historyTmp[i].columns[j].valueType === "real") {
+                    historyTmp[i].columns[j].filterRenderer = NumericFilter;
+                }
+            }
+        }
+        return historyTmp;
     }
 
     /** 
@@ -387,21 +403,19 @@ class DisplayData extends React.Component {
         this.replaceMissingDataWithQuestionMarks();
     }
 
+    updateProject = () => {
+        const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
+        const tmpData = this.prepareDataFileBeforeSendingToServer();
+        const tmpProject = JSON.parse(JSON.stringify(this.props.project));
+        tmpProject.result.informationTable.attributes = tmpMetaData;
+        tmpProject.result.informationTable.objects = tmpData;
+        tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history};
+        tmpProject.isDataFromServer = false;
+        this.props.updateProject(tmpProject);
+    }
+
     componentWillUnmount() {
-        if(this.state.dataModified) {
-            const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
-            const tmpData = this.prepareDataFileBeforeSendingToServer();
-            const tmpProject = {...this.props.project}
-            tmpProject.result.informationTable.attributes = tmpMetaData;
-            tmpProject.result.informationTable.objects = tmpData;
-            tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history};
-            tmpProject.isDataFromServer = false;
-            this.props.updateProject(tmpProject);
-        }
         this._isMounted = false;
-        //let t0 = performance.now();
-        //this.sameData();
-        //let t1 = performance.now();
     }
 
     /** 
@@ -438,10 +452,11 @@ class DisplayData extends React.Component {
                                 historySnapshot: tmpHistory.length-1, 
                             }
                         }
-                    });
+                    }, () => this.updateProject())
                 },500)
             });
         } else {
+            let isTheSame = false;
             this.setState(prevState => {
                 const rows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
                 const filtered = this.filteredRows();
@@ -486,6 +501,7 @@ class DisplayData extends React.Component {
                     if(fromRow === toRow) //check if any change happend
                     {
                         if(rows[rows_index][tmp[0]] === tmp[1]) {
+                            isTheSame = true;
                             return ;
                         }
                     }
@@ -500,7 +516,9 @@ class DisplayData extends React.Component {
                     history: tmpHistory,
                     historySnapshot: tmpHistory.length-1, 
                 };
-            });
+            }, () => {
+                if(!isTheSame) this.updateProject();
+            })
         }
     };
 
@@ -550,7 +568,7 @@ class DisplayData extends React.Component {
                 history: tmpHistory,
                 historySnapshot: tmpHistory.length-1,
             }
-        });
+        }, () => this.updateProject());
     };
 
     /** 
@@ -657,7 +675,7 @@ class DisplayData extends React.Component {
                     historySnapshot: tmpHistory.length-1
                 };
             }
-        })
+        }, () => this.updateProject())
     };
 
     /**
@@ -721,6 +739,7 @@ class DisplayData extends React.Component {
             if(this.state.history[this.state.historySnapshot].rows.length > 0 && this.state.history[this.state.historySnapshot].rows.length * heightOfRow < document.getElementsByClassName("react-grid-Canvas")[0].scrollTop) {
                 document.getElementsByClassName("react-grid-Canvas")[0].scrollTop = this.state.history[this.state.historySnapshot].rows.length * heightOfRow;
             };
+            this.updateProject();
         })        
     };
     
@@ -808,7 +827,7 @@ class DisplayData extends React.Component {
                     historySnapshot: tmpHistory.length-1
                 };
             }
-        });
+        }, () => this.updateProject());
     
     };
 
@@ -889,8 +908,7 @@ class DisplayData extends React.Component {
      */
     onTransformAttributes = () => {
         const base = this.props.serverBase;
-        const x = true;
-        if(x) {
+        if(this.state.dataModified) {
             this.setState({
                     isLoading: true,
                     isOpenedTransform: false,
@@ -919,6 +937,7 @@ class DisplayData extends React.Component {
                                 }, () => {
                                     this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
                                     this.replaceMissingDataWithQuestionMarks();
+                                    this.updateProject();
                                 })
                             }
 
@@ -992,6 +1011,7 @@ class DisplayData extends React.Component {
                                 }, () => { 
                                     this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
                                     this.replaceMissingDataWithQuestionMarks();
+                                    this.updateProject();
                                 })
                             }
                         }).catch(err => {
@@ -1056,7 +1076,7 @@ class DisplayData extends React.Component {
         
         //remove missing value sign ("?")
         newMetadata.forEach(col => {
-            if(col.domain !== undefined) col.domain.pop();
+            if(col.domain !== undefined && col.domain[col.domain.length-1] === "?") col.domain.pop();
         })
         return newMetadata;
     }
@@ -1155,9 +1175,7 @@ class DisplayData extends React.Component {
 
     saveDataToCsvOrJson = (name, header, separator) => {
         const base = this.props.serverBase;
-        //if(this.state.dataModified) { //modified?
-        const x = true;
-        if(x) {
+        if(this.state.dataModified) {
             let filename = name;
             let link = `${base}/projects/${this.props.project.result.id}/data/download`;
             if(header === -1) { //json
@@ -1292,9 +1310,7 @@ class DisplayData extends React.Component {
 
     saveMetaDataToJson = (name) => {
         const base = this.props.serverBase;
-        //if(this.state.dataModified) { //modified?
-        const x = true;
-        if(x) { 
+        if(this.state.dataModified) {
             let filename = name;
             let formData = new FormData();
             formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
@@ -1482,7 +1498,10 @@ class DisplayData extends React.Component {
                             columnKeyOfHeaderMenuOpened: -1,
                             history: tmpHistory,
                             historySnapshot: tmpHistory.length-1
-                        },() => {if(!didIRemoveColumn) this.setHeaderColorAndStyle(cols[i],i,false)});
+                        },() => {
+                            if(!didIRemoveColumn) this.setHeaderColorAndStyle(cols[i],i,false);
+                            this.updateProject();
+                        });
                         
                         break;
                     }
@@ -1818,10 +1837,12 @@ class DisplayData extends React.Component {
                     history: tmpHistory,
                     historySnapshot: tmpHistory.length-1,
                     }
-                },() => {this.setRowsAndHeaderColorAndStyleAndRightClick(
-                    this.state.history[this.state.historySnapshot].columns[this.state.history[this.state.historySnapshot].columns.length-1], 
-                    this.state.history[this.state.historySnapshot].columns.length-1, true)}
-                );   
+                },() => {
+                    this.setRowsAndHeaderColorAndStyleAndRightClick(
+                        this.state.history[this.state.historySnapshot].columns[this.state.history[this.state.historySnapshot].columns.length-1], 
+                        this.state.history[this.state.historySnapshot].columns.length-1, true);
+                    this.updateProject();
+                });   
         } else {
             this.setState({
                 isOpenedNotification: true,
@@ -2014,8 +2035,10 @@ class DisplayData extends React.Component {
                 attributesDomainElements: [],
                 history: tmpHistory,
                 historySnapshot: tmpHistory.length-1
-            },() => this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, oldColumn)
-            );   
+            },() => {
+                this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, oldColumn);
+                this.updateProject();
+            });   
         } else {
             this.setState({
                 isOpenedNotification: true,
@@ -2098,8 +2121,10 @@ class DisplayData extends React.Component {
             dataModified: true,
             history: tmpHistory,
             historySnapshot: tmpHistory.length-1
-        }, () => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false))
-        )        
+        }, () => {
+            this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false));
+            this.updateProject();
+        })        
     };
 
     onBack = () => {
@@ -2110,7 +2135,10 @@ class DisplayData extends React.Component {
                     dataModified: true,
                 }
             }
-        },() => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false)))
+        },() => {
+            this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false));
+            this.updateProject();
+        })
     }
 
     onRedo = () => {
@@ -2121,7 +2149,10 @@ class DisplayData extends React.Component {
                     dataModified: true,
                 }
             }
-        },() => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false)))
+        },() => {
+            this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false));
+            this.updateProject();
+        })
     }
 
     onColumnResize = (columnIdx, newWidth) => {
@@ -2335,7 +2366,8 @@ class DisplayData extends React.Component {
                     closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
                 }
               
-                {this.state.isLoading ? <CustomLoadingIcon color="primary" /> : null }
+                {(this.state.isLoading || this.props.loading) ? <CustomLoadingIcon color="primary" /> : null }
+                
             </div>
         )
     }

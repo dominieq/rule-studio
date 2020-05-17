@@ -75,10 +75,21 @@ class Classification extends Component {
                     data: result,
                     items: items,
                     displayedItems: items,
-                    externalData: result.externalData,
                     parameters: { ...parameters, ...resultParameters },
                     parametersSaved: parametersSaved
                 }));
+
+                if (result.hasOwnProperty("isCurrentLearningData")) {
+                    if (result.hasOwnProperty("isCurrentRuleSet")) {
+                        this.props.showAlert(this.props.value, !(result.isCurrentLearningData && result.isCurrentRuleSet));
+                    } else {
+                        this.props.showAlert(this.props.value, !result.isCurrentLearningData);
+                    }
+                }
+
+                if (result.hasOwnProperty("externalData")) {
+                    this.props.onDataUploaded(result.externalData);
+                }
             }
         }).catch(error => {
             if (!error.hasOwnProperty("open")) {
@@ -176,24 +187,30 @@ class Classification extends Component {
                             data: result,
                             items: items,
                             displayedItems: items,
-                            externalData: result.externalData,
-                            parametersSaved: true,
+                            parametersSaved: true
                         });
                     }
                     let newProject = { ...project }
 
                     newProject.result.classification = result;
-                    newProject.dataUpToDate = result.externalData ?
-                        project.dataUpToDate : true;
-                    newProject.tabsUpToDate[this.props.value] = result.externalData ?
-                        project.tabsUpToDate[this.props.value] : true;
-                    newProject.externalData = result.externalData;
 
                     const resultParameters = parseClassificationParams(result);
 
                     newProject.parameters = { ...project.parameters, ...resultParameters }
                     newProject.parametersSaved = true;
                     this.props.onTabChange(newProject);
+
+                    if (result.hasOwnProperty("isCurrentLearningData")) {
+                        if (result.hasOwnProperty("isCurrentRuleSet")) {
+                            this.props.showAlert(this.props.value, !(result.isCurrentLearningData && result.isCurrentRuleSet));
+                        } else {
+                            this.props.showAlert(this.props.value, !result.isCurrentLearningData);
+                        }
+                    }
+
+                    if (result.hasOwnProperty("externalData")) {
+                        this.props.onDataUploaded(result.externalData);
+                    }
                 }
             }).catch(error => {
                 if (!error.hasOwnProperty("open")) {
@@ -219,15 +236,10 @@ class Classification extends Component {
     }
 
     onClassifyData = () => {
-        const { project } = this.props;
         const { parameters } = this.state;
 
-        let method = project.dataUpToDate ? "PUT" : "POST";
-        let files = {
-            metadata: JSON.stringify(project.result.informationTable.attributes),
-            data: JSON.stringify(project.result.informationTable.objects)
-        }
-        let data = createFormData(parameters, project.dataUpToDate ? null : files);
+        let method = "PUT";
+        let data = createFormData(parameters, null);
 
         this.calculateClassification(method, data);
     };
@@ -243,22 +255,12 @@ class Classification extends Component {
                     open: { ...open, csv: true }
                 }));
             } else {
-                const { project } = this.props;
                 const { parameters } = this.state;
 
-                let method = project.dataUpToDate ? "PUT" : "POST";
+                let method = "PUT";
                 let files = { externalDataFile: event.target.files[0] };
 
-                if (!project.dataUpToDate) {
-                    files = {
-                        ...files,
-                        metadata: JSON.stringify(project.result.informationTable.attributes),
-                        data: JSON.stringify(project.result.informationTable.objects)
-                    };
-                }
-
                 let data = createFormData(parameters, files);
-
                 this.calculateClassification(method, data);
             }
         }
@@ -269,22 +271,12 @@ class Classification extends Component {
             open: { ...open, csv: false }
         }), () => {
             if (csvSpecs && Object.keys(csvSpecs).length) {
-                const { project } = this.props;
                 const { parameters } = this.state;
 
-                let method = project.dataUpToDate ? "PUT" : "POST";
+                let method = "PUT";
                 let files = { externalDataFile: this.csvFile };
 
-                if (!project.dataUpToDate) {
-                    files = {
-                        ...files,
-                        metadata: JSON.stringify(project.result.informationTable.attributes),
-                        data: JSON.stringify(project.result.informationTable.objects)
-                    };
-                }
-
                 let data = createFormData({ ...parameters, ...csvSpecs }, files);
-
                 this.calculateClassification(method, data);
             }
         });
@@ -483,9 +475,11 @@ class Classification extends Component {
 }
 
 Classification.propTypes = {
+    onDataUploaded: PropTypes.func,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
     value: PropTypes.number
 };
 

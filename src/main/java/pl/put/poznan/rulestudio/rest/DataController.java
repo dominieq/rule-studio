@@ -12,6 +12,7 @@ import pl.put.poznan.rulestudio.enums.DataFormat;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.Project;
+import pl.put.poznan.rulestudio.model.ValidityProjectContainer;
 import pl.put.poznan.rulestudio.service.DataService;
 
 import java.io.IOException;
@@ -50,13 +51,13 @@ public class DataController {
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity postData(
+    public ResponseEntity<ValidityProjectContainer> postData(
             @PathVariable("id") UUID id,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting data");
-        dataService.postData(id, metadata, data);
-        return ResponseEntity.ok().build();
+        ValidityProjectContainer result = dataService.postData(id, metadata, data);
+        return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)

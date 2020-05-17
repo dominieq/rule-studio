@@ -12,20 +12,27 @@ public class RulesWithHttpParameters implements Cloneable {
     private boolean externalRules;
     private String errorMessage;
     private String rulesFileName;
+    private String dataHash;
+    private Boolean isCurrentData;
+    private ValidityRulesContainer validityRulesContainer;
+    private Boolean isCoveragePresent;
   
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String errorMessage, String rulesFileName) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String rulesFileName, String dataHash) {
         this.externalRules = true;
         this.ruleSet = rules;
-        this.errorMessage = errorMessage;
         this.rulesFileName = rulesFileName;
+        this.dataHash = dataHash;
     }
 
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, String dataHash) {
         this.externalRules = false;
         this.ruleSet = rules;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
         this.typeOfRules = ruleType;
+        this.dataHash = dataHash;
+
+        this.isCurrentData = true;
     }
 
     public RuleSetWithCharacteristics getRuleSet() {
@@ -84,6 +91,38 @@ public class RulesWithHttpParameters implements Cloneable {
         this.rulesFileName = rulesFileName;
     }
 
+    public String getDataHash() {
+        return dataHash;
+    }
+
+    public void setDataHash(String dataHash) {
+        this.dataHash = dataHash;
+    }
+
+    public Boolean isCurrentData() {
+        return isCurrentData;
+    }
+
+    public void setCurrentData(Boolean currentData) {
+        isCurrentData = currentData;
+    }
+
+    public ValidityRulesContainer getValidityRulesContainer() {
+        return validityRulesContainer;
+    }
+
+    public void setValidityRulesContainer(ValidityRulesContainer validityRulesContainer) {
+        this.validityRulesContainer = validityRulesContainer;
+    }
+
+    public Boolean isCoveragePresent() {
+        return isCoveragePresent;
+    }
+
+    public void setCoveragePresent(Boolean coveragePresent) {
+        isCoveragePresent = coveragePresent;
+    }
+
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
@@ -94,6 +133,10 @@ public class RulesWithHttpParameters implements Cloneable {
                 ", externalRules=" + externalRules +
                 ", errorMessage='" + errorMessage + '\'' +
                 ", rulesFileName='" + rulesFileName + '\'' +
+                ", dataHash='" + dataHash + '\'' +
+                ", isCurrentData=" + isCurrentData +
+                ", validityRulesContainer=" + validityRulesContainer +
+                ", isCoveragePresent=" + isCoveragePresent +
                 '}';
     }
 

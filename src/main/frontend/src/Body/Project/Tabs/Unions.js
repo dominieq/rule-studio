@@ -62,6 +62,10 @@ class Unions extends Component {
                     },
                     parametersSaved: parametersSaved
                 });
+
+                if (result.hasOwnProperty("isCurrentData")) {
+                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                }
             }
         }).catch(error => {
             if (!error.hasOwnProperty("open")) {
@@ -144,25 +148,13 @@ class Unions extends Component {
 
     onCountUnionsClick = () => {
         const { project, serverBase }= this.props;
-        const { parameters: { consistencyThreshold, typeOfUnions } } = this.state;
+        const { parameters } = this.state;
 
         this.setState({
             loading: true,
         }, () => {
-            let method = project.dataUpToDate ? "PUT" : "POST";
-            let data = new FormData();
-
-            if ( !project.dataUpToDate ) {
-                data.append("typeOfUnions", typeOfUnions)
-                data.append("consistencyThreshold", consistencyThreshold)
-                data.append("metadata", JSON.stringify(project.result.informationTable.attributes))
-                data.append("data", JSON.stringify(project.result.informationTable.objects));
-            } else {
-                data = {
-                    consistencyThreshold: consistencyThreshold,
-                    typeOfUnions: typeOfUnions
-                };
-            }
+            let method = "PUT";
+            let data = { ...parameters };
 
             fetchUnions(
                 serverBase, project.result.id, method, data
@@ -185,12 +177,14 @@ class Unions extends Component {
                     let newProject = { ...project };
 
                     newProject.result.unions = result;
-                    newProject.dataUpToDate = true;
-                    newProject.tabsUpToDate[this.props.value] = true;
                     newProject.parameters.consistencyThreshold = result.consistencyThreshold;
                     newProject.parameters.typeOfUnions = result.typeOfUnions.toLowerCase();
                     newProject.parametersSaved = true;
                     this.props.onTabChange(newProject);
+
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                    }
                 }
             }).catch(error => {
                 if (!error.hasOwnProperty("open")) {
@@ -356,6 +350,7 @@ Unions.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
     value: PropTypes.number
 };
 

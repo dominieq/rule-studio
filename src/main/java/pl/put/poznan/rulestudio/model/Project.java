@@ -1,6 +1,7 @@
 package pl.put.poznan.rulestudio.model;
 
 import org.rulelearn.data.InformationTable;
+import pl.put.poznan.rulestudio.service.RulesService;
 
 import java.util.UUID;
 
@@ -63,6 +64,45 @@ public class Project {
         this.setCurrentDominanceCones(false);
         this.setCurrentUnionsWithSingleLimitingDecision(false);
         this.setCurrentRules(false);
+
+        String dataHash = informationTable.getHash();
+        if(this.dominanceCones != null) {
+            if (dominanceCones.getDataHash().equals(dataHash)) {
+                dominanceCones.setCurrentData(true);
+            } else {
+                dominanceCones.setCurrentData(false);
+            }
+        }
+        if(this.unions != null) {
+            if (unions.getDataHash().equals(dataHash)) {
+                unions.setCurrentData(true);
+            } else {
+                unions.setCurrentData(false);
+            }
+        }
+        if(this.rules != null) {
+            if(rules.getDataHash() == null) {
+                rules.setCurrentData(null);
+            } else if (rules.getDataHash().equals(dataHash)) {
+                rules.setCurrentData(true);
+            } else {
+                rules.setCurrentData(false);
+            }
+        }
+        if(this.classification != null) {
+            if (classification.getLearningDataHash().equals(dataHash)) {
+                classification.setCurrentLearningData(true);
+            } else {
+                classification.setCurrentLearningData(false);
+            }
+        }
+        if(this.crossValidation != null) {
+            if (crossValidation.getDataHash().equals(dataHash)) {
+                crossValidation.setCurrentData(true);
+            } else {
+                crossValidation.setCurrentData(false);
+            }
+        }
     }
 
     public DominanceCones getDominanceCones() {
@@ -105,12 +145,35 @@ public class Project {
         this.currentRules = currentRules;
     }
 
+    public void checkValidityOfRules() {
+        if(rules !=null) {
+            ValidityRulesContainer validityRulesContainer = new ValidityRulesContainer(this);
+            rules.setValidityRulesContainer(validityRulesContainer);
+
+            if(informationTable != null) {
+                RulesService.checkCoverageOfUploadedRules(rules, informationTable);
+            }
+        }
+    }
+
     public RulesWithHttpParameters getRules() {
         return rules;
     }
 
     public void setRules(RulesWithHttpParameters rules) {
         this.rules = rules;
+
+        if(this.classification != null) {
+            if ((this.rules == null) || (this.rules.getDataHash() == null)) {
+                classification.setCurrentRuleSet(null);
+            } else if (this.rules.getDataHash().equals(classification.getRuleSetHash())) {
+                classification.setCurrentRuleSet(true);
+            } else {
+                classification.setCurrentRuleSet(false);
+            }
+        }
+
+        checkValidityOfRules();
     }
 
     public Classification getClassification() {

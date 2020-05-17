@@ -54,6 +54,15 @@ public class RulesWithHttpParametersSerializer extends JsonSerializer<RulesWithH
             jsonGenerator.writeString(rulesWithHttpParameters.getRulesFileName());
         }
 
+        if(rulesWithHttpParameters.isCurrentData() != null) {
+            jsonGenerator.writeBooleanField("isCurrentData", rulesWithHttpParameters.isCurrentData());
+        }
+
+        if(rulesWithHttpParameters.getValidityRulesContainer() != null) {
+            jsonGenerator.writeFieldName("validateCurrentData");
+            jsonGenerator.writeRawValue(mapper.writeValueAsString(rulesWithHttpParameters.getValidityRulesContainer()));
+        }
+
         jsonGenerator.writeEndObject();
     }
 }

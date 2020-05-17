@@ -75,46 +75,6 @@ class App extends Component {
         });
     };
 
-    onDataChanges = (project) => {
-        this.setState(({currentProject, projects}) => {
-            let index = currentProject;
-
-            if (index === -1 && projects.length) {
-                for (let i = 0; i < projects.length; i++) {
-                   if (projects[i].result.id === project) {
-                       index = i;
-                       break;
-                   }
-                }
-            } else if (index === -1 && !projects.length) {
-                return { projects: projects };
-            }
-
-            if (index > -1) {
-                return {
-                    projects: [
-                        ...projects.slice(0, index),
-                        {
-                            ...projects[index],
-                            ...project,
-                            dataUpToDate: false,
-                            tabsUpToDate: [
-                                !project.result.dominanceCones,
-                                !project.result.unions,
-                                !project.result.rules,
-                                !project.result.classification,
-                                !project.result.crossValidation,
-                            ]
-                        },
-                        ...projects.slice(index + 1)
-                    ]
-                };
-            } else {
-                return { projects: projects };
-            }
-        });
-    };
-
     onTabChanges = (project) => {
         this.setState(({projects}) => {
             if (projects.length) {
@@ -167,6 +127,12 @@ class App extends Component {
         this.setState(({open}) => ({
             open: {...open, [dialogName]: true}
         }));
+    };
+
+    onSnackbarOpen = (alertProps) => {
+        this.setState({
+            alertProps: alertProps
+        });
     };
 
     onSnackbarClose = (event, reason) => {
@@ -371,10 +337,10 @@ class App extends Component {
                         "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
                             <ProjectTabs
-                                onDataChange={this.onDataChanges}
                                 onTabChange={this.onTabChanges}
                                 project={projects[currentProject]}
                                 serverBase={serverBase}
+                                showAlert={this.onSnackbarOpen}
                             />,
                     }[this.state.body]
                 }

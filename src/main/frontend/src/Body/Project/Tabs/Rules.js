@@ -35,7 +35,6 @@ class Rules extends Component {
             data: null,
             items: null,
             displayedItems: [],
-            externalRules: false,
             parameters: {
                 consistencyThreshold: 0,
                 typeOfRules: "certain",
@@ -78,12 +77,23 @@ class Rules extends Component {
                     data: result,
                     items: items,
                     displayedItems: items,
-                    externalRules: result.externalRules,
                     parameters: { ...parameters, ...resultParameters},
                     parametersSaved: parametersSaved,
                     sort: { ...sort, ...sortParams.rules },
                     alertProps: alertProps
                 }));
+
+                if (result.hasOwnProperty("isCurrentData")) {
+                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                }
+
+                if (result.hasOwnProperty("externalRules")) {
+                    this.props.onRulesUploaded(result.externalRules);
+                }
+
+                if (result.hasOwnProperty("validateCurrentData")) {
+                    this.updateAlerts(result.validateCurrentData, null);
+                }
             }
         }).catch(error => {
             if (!error.hasOwnProperty("open")) {
@@ -196,17 +206,8 @@ class Rules extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let method = project.dataUpToDate ? "PUT" : "POST";
-            let data = new FormData();
-
-            Object.keys(parameters).map(key => {
-                data.append(key, parameters[key]);
-            });
-
-            if (!project.dataUpToDate) {
-                data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-                data.append("data", JSON.stringify(project.result.informationTable.objects));
-            }
+            let method = "PUT";
+            let data = createFormData(parameters, null);
 
             fetchRules(
                 serverBase, project.result.id, method, data
@@ -224,29 +225,35 @@ class Rules extends Component {
                             data: result,
                             items: items,
                             displayedItems: items,
-                            externalRules: result.externalRules,
                             parametersSaved: true,
                             alertProps: alertProps
                         });
                     }
 
-                    let newProject = { ...project };
-
-                    newProject.result.rules = result;
-                    newProject.dataUpToDate = true;
-                    newProject.tabsUpToDate[this.props.value] = true;
-                    newProject.tabsUpToDate[this.props.value - 1] = true;
-                    newProject.externalRules = result.externalRules;
+                    let projectCopy = JSON.parse(JSON.stringify(project));
+                    projectCopy.result.rules = result;
 
                     const newParameters = parseRulesParams(result);
-
-                    newProject.parameters = {
-                        ...newProject.parameters,
+                    projectCopy.parameters = {
+                        ...projectCopy.parameters,
                         consistencyThreshold: newParameters.consistencyThreshold,
                         typeOfRules: newParameters.typeOfRules
                     };
-                    newProject.parametersSaved = true;
-                    this.props.onTabChange(newProject);
+                    projectCopy.parametersSaved = true;
+
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                    }
+
+                    if (result.hasOwnProperty("externalRules")) {
+                        this.props.onRulesUploaded(result.externalRules);
+                    }
+
+                    if (result.hasOwnProperty("validateCurrentData")) {
+                        this.updateAlerts(result.validateCurrentData, projectCopy);
+                    }
+
+                    this.props.onTabChange(projectCopy);
                 }
             }).catch(error => {
                 if (!error.hasOwnProperty("open")) {
@@ -276,20 +283,11 @@ class Rules extends Component {
     onUploadFileChanged = (event) => {
         if (event.target.files[0]) {
             const { project, serverBase } = this.props;
-            const { parameters } = this.state;
 
-            let method = project.dataUpToDate ? "PUT" : "POST";
+            let method = "PUT";
             let files = { rules: event.target.files[0] }
 
-            if (!project.dataUpToDate) {
-                files = {
-                    ...files,
-                    metadata: JSON.stringify(project.result.informationTable.attributes),
-                    data: JSON.stringify(project.result.informationTable.objects)
-                };
-            }
-
-            let data = createFormData(project.dataUpToDate ? null : parameters, files);
+            let data = createFormData(null, files);
 
             this.setState({
                 loading: true,
@@ -310,16 +308,25 @@ class Rules extends Component {
                                 data: result,
                                 items: items,
                                 displayedItems: items,
-                                externalRules: result.externalRules,
                                 alertProps: alertProps
                             });
                         }
-                        let newProject = { ...project };
+                        let projectCopy = JSON.parse(JSON.stringify(project));
+                        projectCopy.result.rules = result;
 
-                        newProject.result.rules = result;
-                        newProject.dataUpToDate = true;
-                        newProject.externalRules = result.externalRules;
-                        this.props.onTabChange(newProject);
+                        if (result.hasOwnProperty("isCurrentData")) {
+                            this.props.showAlert(this.props.value, !result.isCurrentData);
+                        }
+
+                        if (result.hasOwnProperty("externalRules")) {
+                            this.props.onRulesUploaded(result.externalRules);
+                        }
+
+                        if (result.hasOwnProperty("validateCurrentData")) {
+                            this.updateAlerts(result.validateCurrentData, projectCopy);
+                        }
+
+                        this.props.onTabChange(projectCopy);
                     }
                 }).catch(error => {
                     if (!error.hasOwnProperty("open")) {
@@ -344,6 +351,48 @@ class Rules extends Component {
                     }
                 });
             });
+        }
+    };
+
+    updateAlerts = (validateCurrentData, project) => {
+        if (validateCurrentData.classification !== null) {
+            if (validateCurrentData.classification.hasOwnProperty("isCurrentLearningData")) {
+                const isCurrentLearningData = validateCurrentData.classification.isCurrentLearningData;
+
+                if (project !== null && project.result.classification !== null) {
+                    project.result.classification.isCurrentLearningData = isCurrentLearningData;
+                }
+
+                if (validateCurrentData.classification.hasOwnProperty("isCurrentRuleSet")) {
+                    const isCurrentRuleSet = validateCurrentData.classification.isCurrentRuleSet;
+
+                    if (project !== null && project.result.classification !== null) {
+                        project.result.classification.isCurrentRuleSet = isCurrentRuleSet;
+                    }
+
+                    this.props.showAlert(this.props.value + 1, !(isCurrentLearningData && isCurrentRuleSet));
+                } else {
+                    this.props.showAlert(this.props.value + 1, !isCurrentLearningData);
+                }
+            }
+
+            if (validateCurrentData.classification.hasOwnProperty("externalData")) {
+                if (project !== null && project.result.classification !== null) {
+                    project.result.classification.externalData = validateCurrentData.classification.externalData;
+                }
+
+                this.props.onDataUploaded(validateCurrentData.classification.externalData);
+            }
+        }
+
+        if (validateCurrentData.unions !== null) {
+            if (validateCurrentData.unions.hasOwnProperty("isCurrentData")) {
+                if (project !== null && project.result.unions !== null) {
+                    project.result.unions.isCurrentData = validateCurrentData.unions.isCurrentData;
+                }
+
+                this.props.showAlert(this.props.value - 1, !validateCurrentData.unions.isCurrentData);
+            }
         }
     };
 
@@ -670,9 +719,12 @@ class Rules extends Component {
 }
 
 Rules.propTypes = {
+    onDataUploaded: PropTypes.func,
+    onRulesUploaded: PropTypes.func,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
     value: PropTypes.number
 };
 

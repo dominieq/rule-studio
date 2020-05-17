@@ -18,14 +18,28 @@ function OutdatedData(props) {
                 </React.Fragment>
             }
             severity={"error"}
-        >
-            {props.children}
-        </AlertBadge>
+            {...props}
+        />
     );
 }
 
 OutdatedData.propTypes = {
+    anchorOrigin: PropTypes.shape({
+        horizontal: PropTypes.oneOf(["left", "right"]),
+        vertical: PropTypes.oneOf(["bottom", "top"])
+    }),
+    badgeContent: PropTypes.node,
     children: PropTypes.node,
+    classes: PropTypes.object,
+    color: PropTypes.oneOf(["default", "error", "primary", "secondary"]),
+    component: PropTypes.elementType,
+    invisible: PropTypes.bool,
+    max: PropTypes.number,
+    overlap: PropTypes.oneOf(["circle", "rectangle"]),
+    severity: PropTypes.oneOf(["error", "info", "success", "warning"]),
+    showZero: PropTypes.bool,
+    TooltipProps: PropTypes.object,
+    variant: PropTypes.oneOf(["dot", "standard"])
 };
 
 export default OutdatedData;

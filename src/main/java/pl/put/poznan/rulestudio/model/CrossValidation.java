@@ -19,6 +19,8 @@ public class CrossValidation {
     private ClassifierType typeOfClassifier;
     private DefaultClassificationResultType defaultClassificationResult;
     private Long seed;
+    private String dataHash;
+    private Boolean isCurrentData;
 
     public CrossValidation(Integer numberOfFolds, CrossValidationSingleFold[] crossValidationSingleFolds, OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix, OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix) {
         this.numberOfFolds = numberOfFolds;
@@ -36,7 +38,8 @@ public class CrossValidation {
             Double consistencyThreshold, RuleType typeOfRules,
             ClassifierType typeOfClassifier,
             DefaultClassificationResultType defaultClassificationResult,
-            Long seed) {
+            Long seed,
+            String dataHash) {
 
         this.numberOfFolds = numberOfFolds;
         this.crossValidationSingleFolds = crossValidationSingleFolds;
@@ -48,6 +51,9 @@ public class CrossValidation {
         this.typeOfClassifier = typeOfClassifier;
         this.defaultClassificationResult = defaultClassificationResult;
         this.seed = seed;
+        this.dataHash = dataHash;
+
+        this.isCurrentData = true;
     }
 
     public Integer getNumberOfFolds() {
@@ -130,6 +136,22 @@ public class CrossValidation {
         this.seed = seed;
     }
 
+    public String getDataHash() {
+        return dataHash;
+    }
+
+    public void setDataHash(String dataHash) {
+        this.dataHash = dataHash;
+    }
+
+    public Boolean isCurrentData() {
+        return isCurrentData;
+    }
+
+    public void setCurrentData(Boolean currentData) {
+        isCurrentData = currentData;
+    }
+
     @Override
     public String toString() {
         return "CrossValidation{" +
@@ -143,6 +165,8 @@ public class CrossValidation {
                 ", typeOfClassifier=" + typeOfClassifier +
                 ", defaultClassificationResult=" + defaultClassificationResult +
                 ", seed=" + seed +
+                ", dataHash='" + dataHash + '\'' +
+                ", isCurrentData=" + isCurrentData +
                 '}';
     }
 }

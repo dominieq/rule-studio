@@ -106,6 +106,10 @@ class CrossValidation extends Component {
                         displayedItems: items,
                     });
                 });
+
+                if (result.hasOwnProperty("isCurrentData")) {
+                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                }
             }
         }).catch(error => {
             if (!error.hasOwnProperty("open")) {
@@ -229,12 +233,8 @@ class CrossValidation extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let method = project.dataUpToDate ? "PUT" : "POST";
-            let files =  {
-                metadata: JSON.stringify(project.result.informationTable.attributes),
-                data: JSON.stringify(project.result.informationTable.objects)
-            };
-            let data = createFormData(parameters, project.dataUpToDate ? null : files);
+            let method = "PUT";
+            let data = createFormData(parameters, null);
 
             fetchCrossValidation(
                 serverBase, project.result.id, method, data
@@ -261,8 +261,6 @@ class CrossValidation extends Component {
                     let newProject = { ...project };
 
                     newProject.result.crossValidation = result;
-                    newProject.dataUpToDate = true;
-                    newProject.tabsUpToDate[this.props.value] = true;
 
                     let resultParameters = parseCrossValidationParams(result);
 
@@ -273,6 +271,10 @@ class CrossValidation extends Component {
                     };
                     newProject.parametersSaved = true;
                     this.props.onTabChange(newProject);
+
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                    }
                 }
 
             }).catch(error => {
@@ -787,6 +789,7 @@ CrossValidation.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
     value: PropTypes.number
 };
 
