@@ -291,7 +291,7 @@ class DisplayData extends React.Component {
                     if(!historyTmp[i].columns[j].domain.includes("?")) historyTmp[i].columns[j].domain.push("?");
                     historyTmp[i].columns[j].editor = <DropDownEditor options={historyTmp[i].columns[j].domain} />;
                 }
-                if(historyTmp[i].columns[j].valueType === "integer" || historyTmp[i].columns[j].valueType === "real") {
+                if(historyTmp[i].columns[j].valueType === "integer" || historyTmp[i].columns[j].valueType === "real" || historyTmp[i].columns[j].key === "uniqueLP") {
                     historyTmp[i].columns[j].filterRenderer = NumericFilter;
                 }
             }
