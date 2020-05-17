@@ -121,83 +121,104 @@ class ProjectTabs extends React.Component {
         }
     };
 
+    updateProjectOnServer = (currentProject, newValue) => {
+        const { serverBase } = this.props;
+        let project = JSON.parse(JSON.stringify(currentProject));
+
+        let data = new FormData();
+        data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
+        data.append("data", JSON.stringify(project.result.informationTable.objects));
+
+        fetchData(
+            serverBase, project.result.id, data
+        ).then(result => {
+            if (result) {
+                let objects = Object.keys(result);
+
+                for (let i = 0; i < objects.length; i++) {
+                    if (result[objects[i]] !== null && project.result[objects[i]] !== null) {
+                        let bools = Object.keys(result[objects[i]])
+
+                        for (let j = 0; j < objects.length; j++) {
+                            if (project.result[objects[i]].hasOwnProperty(bools[j])) {
+                                project.result[objects[i]][bools[j]] = result[objects[i]][bools[j]];
+                            }
+                        }
+                    }
+                }
+
+                if (this._isMounted) {
+                    this.updateAlerts(result);
+                }
+            }
+        }).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            } else {
+                this.props.showAlert(error);
+            }
+        }).finally(() => {
+            if (this._isMounted) {
+                this.setState({
+                    currentProject: null,
+                    loading: false,
+                    selected: newValue
+                });
+            }
+            this.props.onTabChange(project);
+        });
+    };
+
     componentDidMount() {
         this._isMounted = true;
 
         const { project: { result } } = this.props;
         this.updateAlerts(result);
-    }
+    };
+
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        const shallowComparison = this.props !== nextProps || this.state !== nextState;
+        const deepComparison = this.props.project.result.id !== nextProps.project.result.id;
+
+        return shallowComparison || deepComparison;
+    };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.project.result.id !== this.props.project.result.id) {
             const { project: { result } } = this.props;
-
-            this.setState({ currentProject: null });
             this.updateAlerts(result);
+
+            const { currentProject, selected } = this.state;
+            if (currentProject !== null && selected === 0) {
+                this.setState({
+                    loading: true
+                }, () => {
+                    this.updateProjectOnServer(currentProject, selected);
+                });
+            }
         }
-    }
+    };
 
     componentWillUnmount() {
         this._isMounted = false;
-    }
+
+        const { currentProject, selected } = this.state;
+        if (currentProject !== null && selected === 0) {
+            this.updateProjectOnServer(currentProject, selected);
+        }
+    };
 
     onTabChange = (event, newValue) => {
         const { currentProject, selected } = this.state;
-        const { serverBase } = this.props;
 
         if (currentProject !== null && selected === 0 && newValue !== 0) {
             this.setState({
                 loading: true
             }, () => {
-                let project = JSON.parse(JSON.stringify(currentProject));
-
-                let data = new FormData();
-                data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-                data.append("data", JSON.stringify(project.result.informationTable.objects));
-
-                fetchData(
-                    serverBase, project.result.id, data
-                ).then(result => {
-                    if (result) {
-                        let objects = Object.keys(result);
-
-                        for (let i = 0; i < objects.length; i++) {
-                            if (result[objects[i]] !== null && project.result[objects[i]] !== null) {
-                                let bools = Object.keys(result[objects[i]])
-
-                                for (let j = 0; j < objects.length; j++) {
-                                    if (project.result[objects[i]].hasOwnProperty(bools[j])) {
-                                        project.result[objects[i]][bools[j]] = result[objects[i]][bools[j]];
-                                    }
-                                }
-                            }
-                        }
-
-                        if (this._isMounted) {
-                            this.updateAlerts(result);
-                        }
-                    }
-                }).catch(error => {
-                    if (!error.hasOwnProperty("open")) {
-                        console.log(error);
-                    } else {
-                        this.props.showAlert(error);
-                    }
-                }).finally(() => {
-                    if (this._isMounted) {
-                        this.setState({
-                            currentProject: null,
-                            loading: false,
-                            selected: newValue
-                        });
-                    }
-                    this.props.onTabChange(project);
-                });
+                this.updateProjectOnServer(currentProject, newValue);
             });
         } else {
-            this.setState({
-                selected: newValue
-            });
+            this.setState({ selected: newValue });
         }
     };
 
@@ -315,7 +336,13 @@ class ProjectTabs extends React.Component {
                             ),
                         1: <Cones {...this.getTabBodyProps(0)} />,
                         2: <Unions {...this.getTabBodyProps(1)} />,
-                        3: <Rules onRulesUploaded={this.onRulesUploaded} {...this.getTabBodyProps(2)} />,
+                        3: (
+                                <Rules
+                                    onDataUploaded={this.onDataUploaded}
+                                    onRulesUploaded={this.onRulesUploaded}
+                                    {...this.getTabBodyProps(2)}
+                                />
+                            ),
                         4: <Classification onDataUploaded={this.onDataUploaded} {...this.getTabBodyProps(3)} />,
                         5: <CrossValidation {...this.getTabBodyProps(4)} />
                     }[selected]
