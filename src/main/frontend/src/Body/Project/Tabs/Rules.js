@@ -359,14 +359,14 @@ class Rules extends Component {
             if (validateCurrentData.classification.hasOwnProperty("isCurrentLearningData")) {
                 const isCurrentLearningData = validateCurrentData.classification.isCurrentLearningData;
 
-                if (project !== null) {
+                if (project !== null && project.result.classification !== null) {
                     project.result.classification.isCurrentLearningData = isCurrentLearningData;
                 }
 
                 if (validateCurrentData.classification.hasOwnProperty("isCurrentRuleSet")) {
                     const isCurrentRuleSet = validateCurrentData.classification.isCurrentRuleSet;
 
-                    if (project !== null) {
+                    if (project !== null && project.result.classification !== null) {
                         project.result.classification.isCurrentRuleSet = isCurrentRuleSet;
                     }
 
@@ -377,7 +377,7 @@ class Rules extends Component {
             }
 
             if (validateCurrentData.classification.hasOwnProperty("externalData")) {
-                if (project !== null) {
+                if (project !== null && project.result.classification !== null) {
                     project.result.classification.externalData = validateCurrentData.classification.externalData;
                 }
 
@@ -387,7 +387,7 @@ class Rules extends Component {
 
         if (validateCurrentData.unions !== null) {
             if (validateCurrentData.unions.hasOwnProperty("isCurrentData")) {
-                if (project !== null) {
+                if (project !== null && project.result.unions !== null) {
                     project.result.unions.isCurrentData = validateCurrentData.unions.isCurrentData;
                 }
 
