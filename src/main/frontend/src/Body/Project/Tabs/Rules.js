@@ -90,6 +90,10 @@ class Rules extends Component {
                 if (result.hasOwnProperty("externalRules")) {
                     this.props.onRulesUploaded(result.externalRules);
                 }
+
+                if (result.hasOwnProperty("validateCurrentData")) {
+                    this.updateAlerts(result.validateCurrentData, null);
+                }
             }
         }).catch(error => {
             if (!error.hasOwnProperty("open")) {
@@ -226,19 +230,16 @@ class Rules extends Component {
                         });
                     }
 
-                    let newProject = { ...project };
-
-                    newProject.result.rules = result;
+                    let projectCopy = JSON.parse(JSON.stringify(project));
+                    projectCopy.result.rules = result;
 
                     const newParameters = parseRulesParams(result);
-
-                    newProject.parameters = {
-                        ...newProject.parameters,
+                    projectCopy.parameters = {
+                        ...projectCopy.parameters,
                         consistencyThreshold: newParameters.consistencyThreshold,
                         typeOfRules: newParameters.typeOfRules
                     };
-                    newProject.parametersSaved = true;
-                    this.props.onTabChange(newProject);
+                    projectCopy.parametersSaved = true;
 
                     if (result.hasOwnProperty("isCurrentData")) {
                         this.props.showAlert(this.props.value, !result.isCurrentData);
@@ -247,6 +248,12 @@ class Rules extends Component {
                     if (result.hasOwnProperty("externalRules")) {
                         this.props.onRulesUploaded(result.externalRules);
                     }
+
+                    if (result.hasOwnProperty("validateCurrentData")) {
+                        this.updateAlerts(result.validateCurrentData, projectCopy);
+                    }
+
+                    this.props.onTabChange(projectCopy);
                 }
             }).catch(error => {
                 if (!error.hasOwnProperty("open")) {
@@ -304,10 +311,8 @@ class Rules extends Component {
                                 alertProps: alertProps
                             });
                         }
-                        let newProject = { ...project };
-
-                        newProject.result.rules = result;
-                        this.props.onTabChange(newProject);
+                        let projectCopy = JSON.parse(JSON.stringify(project));
+                        projectCopy.result.rules = result;
 
                         if (result.hasOwnProperty("isCurrentData")) {
                             this.props.showAlert(this.props.value, !result.isCurrentData);
@@ -316,6 +321,12 @@ class Rules extends Component {
                         if (result.hasOwnProperty("externalRules")) {
                             this.props.onRulesUploaded(result.externalRules);
                         }
+
+                        if (result.hasOwnProperty("validateCurrentData")) {
+                            this.updateAlerts(result.validateCurrentData, projectCopy);
+                        }
+
+                        this.props.onTabChange(projectCopy);
                     }
                 }).catch(error => {
                     if (!error.hasOwnProperty("open")) {
@@ -340,6 +351,48 @@ class Rules extends Component {
                     }
                 });
             });
+        }
+    };
+
+    updateAlerts = (validateCurrentData, project) => {
+        if (validateCurrentData.classification !== null) {
+            if (validateCurrentData.classification.hasOwnProperty("isCurrentLearningData")) {
+                const isCurrentLearningData = validateCurrentData.classification.isCurrentLearningData;
+
+                if (project !== null) {
+                    project.result.classification.isCurrentLearningData = isCurrentLearningData;
+                }
+
+                if (validateCurrentData.classification.isCurrentLearningData.hasOwnProperty("isCurrentRuleSet")) {
+                    const isCurrentRuleSet = validateCurrentData.classification.isCurrentRuleSet;
+
+                    if (project !== null) {
+                        project.result.classification.isCurrentRuleSet = isCurrentRuleSet;
+                    }
+
+                    this.props.showAlert(this.props.value + 1, !(isCurrentLearningData && isCurrentRuleSet));
+                } else {
+                    this.props.showAlert(this.props.value + 1, !isCurrentLearningData);
+                }
+            }
+
+            if (validateCurrentData.classification.hasOwnProperty("externalData")) {
+                if (project !== null) {
+                    project.result.classification.externalData = validateCurrentData.classification.externalData;
+                }
+
+                this.props.onDataUploaded(validateCurrentData.classification.externalData);
+            }
+        }
+
+        if (validateCurrentData.unions !== null) {
+            if (validateCurrentData.unions.hasOwnProperty("isCurrentData")) {
+                if (project !== null) {
+                    project.result.unions.isCurrentData = validateCurrentData.unions.isCurrentData;
+                }
+
+                this.props.showAlert(this.props.value - 1, !validateCurrentData.unions.isCurrentData);
+            }
         }
     };
 
@@ -666,6 +719,7 @@ class Rules extends Component {
 }
 
 Rules.propTypes = {
+    onDataUploaded: PropTypes.func,
     onRulesUploaded: PropTypes.func,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
