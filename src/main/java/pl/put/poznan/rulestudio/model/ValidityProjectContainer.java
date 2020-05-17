@@ -2,6 +2,8 @@ package pl.put.poznan.rulestudio.model;
 
 public class ValidityProjectContainer extends ValidityRulesContainer {
     private Boolean dominanceCones;
+    private Boolean rulesExternal;
+    private Boolean rulesData;
     private Boolean crossValidation;
 
     public ValidityProjectContainer(Project project) {
@@ -10,6 +12,12 @@ public class ValidityProjectContainer extends ValidityRulesContainer {
         DominanceCones dominanceCones = project.getDominanceCones();
         if(dominanceCones != null) {
             this.dominanceCones = project.getDominanceCones().isCurrentData();
+        }
+
+        RulesWithHttpParameters rules = project.getRules();
+        if(rules != null) {
+            this.rulesExternal = project.getRules().isExternalRules();
+            this.rulesData = project.getRules().isCurrentData();
         }
 
         CrossValidation crossValidation = project.getCrossValidation();
@@ -26,6 +34,22 @@ public class ValidityProjectContainer extends ValidityRulesContainer {
         this.dominanceCones = dominanceCones;
     }
 
+    public Boolean getRulesExternal() {
+        return rulesExternal;
+    }
+
+    public void setRulesExternal(Boolean rulesExternal) {
+        this.rulesExternal = rulesExternal;
+    }
+
+    public Boolean getRulesData() {
+        return rulesData;
+    }
+
+    public void setRulesData(Boolean rulesData) {
+        this.rulesData = rulesData;
+    }
+
     public Boolean getCrossValidation() {
         return crossValidation;
     }
@@ -38,6 +62,8 @@ public class ValidityProjectContainer extends ValidityRulesContainer {
     public String toString() {
         return "ValidityProjectContainer{" +
                 "dominanceCones=" + dominanceCones +
+                ", rulesExternal=" + rulesExternal +
+                ", rulesData=" + rulesData +
                 ", crossValidation=" + crossValidation +
                 "} " + super.toString();
     }

@@ -2,8 +2,6 @@ package pl.put.poznan.rulestudio.model;
 
 public class ValidityRulesContainer {
     private Boolean unions;
-    private Boolean rulesExternal;
-    private Boolean rulesData;
     private Boolean classificationExternal;
     private Boolean classificationLearningData;
     private Boolean classificationRules;
@@ -12,12 +10,6 @@ public class ValidityRulesContainer {
         UnionsWithHttpParameters unions = project.getUnions();
         if(unions != null) {
             this.unions = project.getUnions().isCurrentData();
-        }
-
-        RulesWithHttpParameters rules = project.getRules();
-        if(rules != null) {
-            this.rulesExternal = project.getRules().isExternalRules();
-            this.rulesData = project.getRules().isCurrentData();
         }
 
         Classification classification = project.getClassification();
@@ -34,22 +26,6 @@ public class ValidityRulesContainer {
 
     public void setUnions(Boolean unions) {
         this.unions = unions;
-    }
-
-    public Boolean getRulesExternal() {
-        return rulesExternal;
-    }
-
-    public void setRulesExternal(Boolean rulesExternal) {
-        this.rulesExternal = rulesExternal;
-    }
-
-    public Boolean getRulesData() {
-        return rulesData;
-    }
-
-    public void setRulesData(Boolean rulesData) {
-        this.rulesData = rulesData;
     }
 
     public Boolean getClassificationExternal() {
@@ -78,10 +54,8 @@ public class ValidityRulesContainer {
 
     @Override
     public String toString() {
-        return "ValidityProjectContainer{" +
+        return "ValidityRulesContainer{" +
                 "unions=" + unions +
-                ", rulesExternal=" + rulesExternal +
-                ", rulesData=" + rulesData +
                 ", classificationExternal=" + classificationExternal +
                 ", classificationLearningData=" + classificationLearningData +
                 ", classificationRules=" + classificationRules +

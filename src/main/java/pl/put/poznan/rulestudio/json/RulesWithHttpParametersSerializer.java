@@ -59,7 +59,7 @@ public class RulesWithHttpParametersSerializer extends JsonSerializer<RulesWithH
         }
 
         if(rulesWithHttpParameters.getValidityRulesContainer() != null) {
-            jsonGenerator.writeFieldName("validityRulesContainer");
+            jsonGenerator.writeFieldName("validateCurrentData");
             jsonGenerator.writeRawValue(mapper.writeValueAsString(rulesWithHttpParameters.getValidityRulesContainer()));
         }
 

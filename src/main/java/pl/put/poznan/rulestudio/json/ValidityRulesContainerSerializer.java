@@ -31,16 +31,6 @@ public class ValidityRulesContainerSerializer extends JsonSerializer<ValidityRul
             jsonGenerator.writeNull();
         }
 
-        jsonGenerator.writeFieldName("rules");
-        if(validityRulesContainer.getRulesExternal() != null) {
-            jsonGenerator.writeStartObject();
-            jsonGenerator.writeBooleanField("externalRules", validityRulesContainer.getRulesExternal());
-            jsonGenerator.writeBooleanField("isCurrentData", validityRulesContainer.getRulesData());
-            jsonGenerator.writeEndObject();
-        } else {
-            jsonGenerator.writeNull();
-        }
-
         jsonGenerator.writeFieldName("classification");
         if(validityRulesContainer.getClassificationExternal() != null) {
             jsonGenerator.writeStartObject();
