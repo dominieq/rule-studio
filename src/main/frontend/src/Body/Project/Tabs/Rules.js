@@ -363,7 +363,7 @@ class Rules extends Component {
                     project.result.classification.isCurrentLearningData = isCurrentLearningData;
                 }
 
-                if (validateCurrentData.classification.isCurrentLearningData.hasOwnProperty("isCurrentRuleSet")) {
+                if (validateCurrentData.classification.hasOwnProperty("isCurrentRuleSet")) {
                     const isCurrentRuleSet = validateCurrentData.classification.isCurrentRuleSet;
 
                     if (project !== null) {

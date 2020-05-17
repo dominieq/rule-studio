@@ -15,14 +15,13 @@ public class RulesWithHttpParameters implements Cloneable {
     private String dataHash;
     private Boolean isCurrentData;
     private ValidityRulesContainer validityRulesContainer;
+    private Boolean isCoveragePresent;
   
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String errorMessage, String rulesFileName, String dataHash, Boolean isCurrentData) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String rulesFileName, String dataHash) {
         this.externalRules = true;
         this.ruleSet = rules;
-        this.errorMessage = errorMessage;
         this.rulesFileName = rulesFileName;
         this.dataHash = dataHash;
-        this.isCurrentData = isCurrentData;
     }
 
     public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, String dataHash) {
@@ -116,6 +115,14 @@ public class RulesWithHttpParameters implements Cloneable {
         this.validityRulesContainer = validityRulesContainer;
     }
 
+    public Boolean isCoveragePresent() {
+        return isCoveragePresent;
+    }
+
+    public void setCoveragePresent(Boolean coveragePresent) {
+        isCoveragePresent = coveragePresent;
+    }
+
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
@@ -129,6 +136,7 @@ public class RulesWithHttpParameters implements Cloneable {
                 ", dataHash='" + dataHash + '\'' +
                 ", isCurrentData=" + isCurrentData +
                 ", validityRulesContainer=" + validityRulesContainer +
+                ", isCoveragePresent=" + isCoveragePresent +
                 '}';
     }
 

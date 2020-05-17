@@ -1,6 +1,7 @@
 package pl.put.poznan.rulestudio.model;
 
 import org.rulelearn.data.InformationTable;
+import pl.put.poznan.rulestudio.service.RulesService;
 
 import java.util.UUID;
 
@@ -148,6 +149,10 @@ public class Project {
         if(rules !=null) {
             ValidityRulesContainer validityRulesContainer = new ValidityRulesContainer(this);
             rules.setValidityRulesContainer(validityRulesContainer);
+
+            if(informationTable != null) {
+                RulesService.checkCoverageOfUploadedRules(rules, informationTable);
+            }
         }
     }
 
