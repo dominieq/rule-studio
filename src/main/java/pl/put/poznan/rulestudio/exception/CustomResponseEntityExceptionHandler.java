@@ -18,7 +18,7 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
         response.sendError(HttpStatus.NOT_ACCEPTABLE.value(), ex.getMessage());
     }
 
-    @ExceptionHandler({EmptyResponseException.class, NoRulesException.class, NoDataException.class})
+    @ExceptionHandler(EmptyResponseException.class)
     public void emptyResponseException(
             RuntimeException ex,
             HttpServletResponse response) throws IOException {
@@ -51,5 +51,19 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
             IncompatibleLearningInformationTableException ex,
             HttpServletResponse response) throws IOException {
         response.sendError(462, ex.getMessage());
+    }
+
+    @ExceptionHandler({NoDataException.class, NoRulesException.class})
+    public void noDataException(
+            NoDataException ex,
+            HttpServletResponse response) throws IOException {
+        response.sendError(463, ex.getMessage());
+    }
+
+    @ExceptionHandler(CalculationException.class)
+    public void calculationException(
+            CalculationException ex,
+            HttpServletResponse response) throws IOException {
+        response.sendError(464, ex.getMessage());
     }
 }

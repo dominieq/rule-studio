@@ -8,6 +8,7 @@ import org.rulelearn.data.*;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,10 @@ public class ClassificationService {
         List<Decision> allDecisions = new ArrayList<>();
 
         Decision[] informationTableDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
-        for(int i = 0; i < informationTableDecisions.length; i++) {
-            allDecisions.add(informationTableDecisions[i]);
+        if(informationTableDecisions != null) {
+            for(int i = 0; i < informationTableDecisions.length; i++) {
+                allDecisions.add(informationTableDecisions[i]);
+            }
         }
 
         for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
@@ -145,17 +148,32 @@ public class ClassificationService {
     }
 
     private static SimpleEvaluatedClassificationResult createDefaultSimpleEvaluatedClassificationResult(DefaultClassificationResultType defaultClassificationResult, InformationTable informationTable) {
-        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = new InformationTableWithDecisionDistributions(informationTable);
+        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = DataService.createInformationTableWithDecisionDistributions(informationTable);
         SimpleEvaluatedClassificationResult simpleEvaluatedClassificationResult = null;
+        SimpleDecision simpleDecision = null;
 
         switch (defaultClassificationResult) {
             case MAJORITY_DECISION_CLASS:
                 List<Decision> modes = informationTableWithDecisionDistributions.getDecisionDistribution().getMode();
-                simpleEvaluatedClassificationResult = new SimpleEvaluatedClassificationResult((SimpleDecision)modes.get(0), 1.0);
+
+                if (modes != null) {
+                    simpleDecision = (SimpleDecision)modes.get(0);
+                } else {
+                    simpleDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), 0);
+                }
+
+                simpleEvaluatedClassificationResult = new SimpleEvaluatedClassificationResult(simpleDecision, 1.0);
                 break;
             case MEDIAN_DECISION_CLASS:
                 Decision median = informationTableWithDecisionDistributions.getDecisionDistribution().getMedian(informationTableWithDecisionDistributions.getOrderedUniqueFullyDeterminedDecisions());
-                simpleEvaluatedClassificationResult = new SimpleEvaluatedClassificationResult((SimpleDecision)median, 1.0);
+
+                if (median != null) {
+                    simpleDecision = (SimpleDecision)median;
+                } else {
+                    simpleDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), 0);
+                }
+
+                simpleEvaluatedClassificationResult = new SimpleEvaluatedClassificationResult(simpleDecision, 1.0);
                 break;
             default:
                 WrongParameterException ex = new WrongParameterException(String.format("Given default classification result \"%s\" is unrecognized.", defaultClassificationResult));
@@ -167,17 +185,32 @@ public class ClassificationService {
     }
 
     private static SimpleClassificationResult createDefaultSimpleClassificationResult(DefaultClassificationResultType defaultClassificationResult, InformationTable informationTable) {
-        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = new InformationTableWithDecisionDistributions(informationTable);
+        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = DataService.createInformationTableWithDecisionDistributions(informationTable);
         SimpleClassificationResult simpleClassificationResult = null;
+        SimpleDecision simpleDecision = null;
 
         switch (defaultClassificationResult) {
             case MAJORITY_DECISION_CLASS:
                 List<Decision> modes = informationTableWithDecisionDistributions.getDecisionDistribution().getMode();
-                simpleClassificationResult = new SimpleClassificationResult((SimpleDecision)modes.get(0));
+
+                if (modes != null) {
+                    simpleDecision = (SimpleDecision)modes.get(0);
+                } else {
+                    simpleDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), 0);
+                }
+
+                simpleClassificationResult = new SimpleClassificationResult(simpleDecision);
                 break;
             case MEDIAN_DECISION_CLASS:
                 Decision median = informationTableWithDecisionDistributions.getDecisionDistribution().getMedian(informationTableWithDecisionDistributions.getOrderedUniqueFullyDeterminedDecisions());
-                simpleClassificationResult = new SimpleClassificationResult((SimpleDecision)median);
+
+                if (median != null) {
+                    simpleDecision = (SimpleDecision)median;
+                } else {
+                    simpleDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), 0);
+                }
+
+                simpleClassificationResult = new SimpleClassificationResult(simpleDecision);
                 break;
             default:
                 WrongParameterException ex = new WrongParameterException(String.format("Given default classification result \"%s\" is unrecognized.", defaultClassificationResult));
@@ -273,6 +306,14 @@ public class ClassificationService {
         return classification;
     }
 
+    private static void checkInformationTable(InformationTable informationTable, String message) {
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException(message);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+    }
+
     private static void checkNumberOfClassifiedObjects(int numberOfObjects, String message) {
         if(numberOfObjects == 0) {
             NoDataException ex = new NoDataException(message);
@@ -310,11 +351,7 @@ public class ClassificationService {
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InformationTable informationTable = project.getInformationTable();
-        if(informationTable == null) {
-            NoDataException ex = new NoDataException("There is no data in project. Couldn't reclassify.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        checkInformationTable(informationTable, "There is no data in project. Couldn't reclassify.");
 
         checkNumberOfClassifiedObjects(informationTable.getNumberOfObjects(), "There are no objects in project. Couldn't reclassify.");
 
@@ -344,11 +381,7 @@ public class ClassificationService {
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InformationTable projectInformationTable = project.getInformationTable();
-        if(projectInformationTable == null) {
-            NoDataException ex = new NoDataException("There is no data in project. Couldn't classify data from file.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        checkInformationTable(projectInformationTable, "There is no data in project. Couldn't classify data from file.");
 
         Attribute[] attributes = projectInformationTable.getAttributes();
         if(attributes == null) {
@@ -360,6 +393,7 @@ public class ClassificationService {
         RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
         InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, attributes, separator, header);
+        checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
         checkNumberOfClassifiedObjects(newInformationTable.getNumberOfObjects(), "There are no objects in external data. Couldn't classify.");
 
         Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);
@@ -422,6 +456,7 @@ public class ClassificationService {
         RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
         InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, projectInformationTable.getAttributes(), separator, header);
+        checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
         checkNumberOfClassifiedObjects(newInformationTable.getNumberOfObjects(), "There are no objects in external data. Couldn't classify.");
 
         Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);

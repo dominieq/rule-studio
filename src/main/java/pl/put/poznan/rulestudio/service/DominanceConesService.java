@@ -1,10 +1,12 @@
 package pl.put.poznan.rulestudio.service;
 
+import org.rulelearn.core.AttributeNotFoundException;
 import org.rulelearn.data.InformationTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.put.poznan.rulestudio.exception.CalculationException;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
 import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.model.DominanceCones;
@@ -37,7 +39,13 @@ public class DominanceConesService {
             }
 
             DominanceCones dominanceCones = new DominanceCones();
-            dominanceCones.calculateDCones(informationTable);
+            try {
+                dominanceCones.calculateDCones(informationTable);
+            } catch (AttributeNotFoundException e) {
+                CalculationException ex = new CalculationException("Cannot calculate dominance cones if there are no active condition evaluation attributes.");
+                logger.error(ex.getMessage());
+                throw ex;
+            }
 
             project.setDominanceCones(dominanceCones);
             project.setCurrentDominanceCones(true);

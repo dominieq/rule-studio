@@ -1,9 +1,8 @@
 package pl.put.poznan.rulestudio.service;
 
-import org.rulelearn.data.Attribute;
-import org.rulelearn.data.EvaluationAttribute;
-import org.rulelearn.data.InformationTable;
-import org.rulelearn.data.Table;
+import org.rulelearn.core.AttributeNotFoundException;
+import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.data.*;
 import org.rulelearn.data.json.InformationTableWriter;
 import org.rulelearn.data.json.ObjectParser;
 import org.rulelearn.types.EvaluationField;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulestudio.exception.CalculationException;
 import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
@@ -111,6 +111,23 @@ public class DataService {
 
         logger.info("End of processing data text.");
         return informationTable;
+    }
+
+    public static InformationTableWithDecisionDistributions createInformationTableWithDecisionDistributions(InformationTable informationTable) {
+        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions;
+        try {
+            informationTableWithDecisionDistributions = new InformationTableWithDecisionDistributions(informationTable);
+        } catch (AttributeNotFoundException e) {
+            CalculationException ex = new CalculationException("Cannot perform calculation if there are no active condition evaluation attributes.");
+            logger.error(ex.getMessage());
+            throw ex;
+        } catch (InvalidValueException e) {
+            CalculationException ex = new CalculationException("Cannot perform calculation if there is no active decision attribute.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        return informationTableWithDecisionDistributions;
     }
 
     public String getData(UUID id) throws IOException {

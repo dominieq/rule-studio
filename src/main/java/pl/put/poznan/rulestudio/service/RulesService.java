@@ -479,7 +479,7 @@ public class RulesService {
         }
 
         Attribute[] attributes = informationTable.getAttributes();
-        if(attributes == null) {
+        if((attributes == null) || (attributes.length == 0)) {
             NoDataException ex = new NoDataException("There is no metadata in project. Couldn't read rules file.");
             logger.error(ex.getMessage());
             throw ex;
