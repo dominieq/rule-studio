@@ -8,6 +8,7 @@ import org.rulelearn.data.*;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.types.EvaluationField;
+import org.rulelearn.types.UnknownSimpleFieldMV2;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,15 +150,30 @@ public class ClassificationService {
     private static SimpleEvaluatedClassificationResult createDefaultSimpleEvaluatedClassificationResult(DefaultClassificationResultType defaultClassificationResult, InformationTable informationTable) {
         InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = DataService.createInformationTableWithDecisionDistributions(informationTable);
         SimpleEvaluatedClassificationResult simpleEvaluatedClassificationResult = null;
+        SimpleDecision simpleDecision = null;
 
         switch (defaultClassificationResult) {
             case MAJORITY_DECISION_CLASS:
                 List<Decision> modes = informationTableWithDecisionDistributions.getDecisionDistribution().getMode();
-                simpleEvaluatedClassificationResult = new SimpleEvaluatedClassificationResult((SimpleDecision)modes.get(0), 1.0);
+
+                if (modes != null) {
+                    simpleDecision = (SimpleDecision)modes.get(0);
+                } else {
+                    simpleDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), 0);
+                }
+
+                simpleEvaluatedClassificationResult = new SimpleEvaluatedClassificationResult(simpleDecision, 1.0);
                 break;
             case MEDIAN_DECISION_CLASS:
                 Decision median = informationTableWithDecisionDistributions.getDecisionDistribution().getMedian(informationTableWithDecisionDistributions.getOrderedUniqueFullyDeterminedDecisions());
-                simpleEvaluatedClassificationResult = new SimpleEvaluatedClassificationResult((SimpleDecision)median, 1.0);
+
+                if (median != null) {
+                    simpleDecision = (SimpleDecision)median;
+                } else {
+                    simpleDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), 0);
+                }
+
+                simpleEvaluatedClassificationResult = new SimpleEvaluatedClassificationResult(simpleDecision, 1.0);
                 break;
             default:
                 WrongParameterException ex = new WrongParameterException(String.format("Given default classification result \"%s\" is unrecognized.", defaultClassificationResult));
@@ -171,15 +187,30 @@ public class ClassificationService {
     private static SimpleClassificationResult createDefaultSimpleClassificationResult(DefaultClassificationResultType defaultClassificationResult, InformationTable informationTable) {
         InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = DataService.createInformationTableWithDecisionDistributions(informationTable);
         SimpleClassificationResult simpleClassificationResult = null;
+        SimpleDecision simpleDecision = null;
 
         switch (defaultClassificationResult) {
             case MAJORITY_DECISION_CLASS:
                 List<Decision> modes = informationTableWithDecisionDistributions.getDecisionDistribution().getMode();
-                simpleClassificationResult = new SimpleClassificationResult((SimpleDecision)modes.get(0));
+
+                if (modes != null) {
+                    simpleDecision = (SimpleDecision)modes.get(0);
+                } else {
+                    simpleDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), 0);
+                }
+
+                simpleClassificationResult = new SimpleClassificationResult(simpleDecision);
                 break;
             case MEDIAN_DECISION_CLASS:
                 Decision median = informationTableWithDecisionDistributions.getDecisionDistribution().getMedian(informationTableWithDecisionDistributions.getOrderedUniqueFullyDeterminedDecisions());
-                simpleClassificationResult = new SimpleClassificationResult((SimpleDecision)median);
+
+                if (median != null) {
+                    simpleDecision = (SimpleDecision)median;
+                } else {
+                    simpleDecision = new SimpleDecision(new UnknownSimpleFieldMV2(), 0);
+                }
+
+                simpleClassificationResult = new SimpleClassificationResult(simpleDecision);
                 break;
             default:
                 WrongParameterException ex = new WrongParameterException(String.format("Given default classification result \"%s\" is unrecognized.", defaultClassificationResult));
