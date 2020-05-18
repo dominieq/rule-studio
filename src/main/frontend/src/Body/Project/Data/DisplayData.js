@@ -411,7 +411,30 @@ class DisplayData extends React.Component {
         tmpProject.result.informationTable.objects = tmpData;
         tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history};
         tmpProject.isDataFromServer = false;
-        this.props.updateProject(tmpProject);
+        this.props.onDataChange(tmpProject);
+    }
+
+    updateChangedIdentifOrDescriptAttribute = () => {
+        const attributes = this.prepareMetadataFileBeforeSendingToServer();
+        this.props.onAttributesChange(attributes);
+    }
+
+    checkIfUpdateOfAttributesNeeded = (oldCol, newCol) => {
+        //right click on header menu
+        if(typeof newCol === "boolean") {
+            if(newCol === false) { //column has been removed
+                if(oldCol.type === "description" || oldCol.identifierType !== undefined) this.updateChangedIdentifOrDescriptAttribute();
+            } else { //column activeness has been changed
+                if(oldCol.identifierType !== undefined) this.updateChangedIdentifOrDescriptAttribute();
+            }
+        } else { //column has been edited
+            if((oldCol.type === "description" && newCol.type !== "description") 
+                ||  (oldCol.type !== "description" && newCol.type === "description")
+                ||  (oldCol.identifierType !== undefined && newCol.identifierType === undefined) 
+                ||  (oldCol.identifierType === undefined && newCol.identifierType !== undefined)) {
+                this.updateChangedIdentifOrDescriptAttribute();
+            }
+        }
     }
 
     componentWillUnmount() {
@@ -1480,13 +1503,12 @@ class DisplayData extends React.Component {
                         })
                     } else {
                         let col = {...cols[i]};
-                        let didIRemoveColumn = false;
+                        let removedColumn = false;
                         if(selected === "Mark attribute as: inactive" || selected === "Mark attribute as: active") {
                             col.active = !col.active;
                             cols[i] = col;
                         } else if(selected === "Delete attribute") {
-                            cols.splice(i,1);
-                            didIRemoveColumn = true;
+                            removedColumn = cols.splice(i,1);
                         }
 
                         const tmpHistory = history.slice(0, this.state.historySnapshot+1);
@@ -1499,7 +1521,11 @@ class DisplayData extends React.Component {
                             history: tmpHistory,
                             historySnapshot: tmpHistory.length-1
                         },() => {
-                            if(!didIRemoveColumn) this.setHeaderColorAndStyle(cols[i],i,false);
+                            if(typeof removedColumn === "boolean") {
+                                this.setHeaderColorAndStyle(cols[i],i,false);
+                                this.checkIfUpdateOfAttributesNeeded({...col}, true);
+                            }
+                            else this.checkIfUpdateOfAttributesNeeded({...removedColumn[0]}, false);
                             this.updateProject();
                         });
                         
@@ -1842,6 +1868,7 @@ class DisplayData extends React.Component {
                         this.state.history[this.state.historySnapshot].columns[this.state.history[this.state.historySnapshot].columns.length-1], 
                         this.state.history[this.state.historySnapshot].columns.length-1, true);
                     this.updateProject();
+                    if(newColumn.type === "description" || newColumn.identifierType !== undefined) this.updateChangedIdentifOrDescriptAttribute();
                 });   
         } else {
             this.setState({
@@ -2038,6 +2065,7 @@ class DisplayData extends React.Component {
             },() => {
                 this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, oldColumn);
                 this.updateProject();
+                this.checkIfUpdateOfAttributesNeeded({...oldColumn}, {...col});
             });   
         } else {
             this.setState({
@@ -2375,7 +2403,8 @@ class DisplayData extends React.Component {
 
 DisplayData.propTypes = {
     project: PropTypes.any.isRequired,
-    updateProject: PropTypes.func.isRequired,
+    onDataChange: PropTypes.func.isRequired,
+    onAttributesChange: PropTypes.func.isRequired
 };
   
 export default withStyles(StyledReactDataGrid)(DisplayData);
