@@ -9,7 +9,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 const disableGpuProps = {
     popperOptions: {
         modifiers: {
-            applyStyle: {
+            computeStyle: {
                 enabled: true,
                 gpuAcceleration: false,
             },
