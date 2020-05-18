@@ -48,9 +48,8 @@ class Unions extends Component {
         fetchUnions(
             serverBase, project.result.id, "GET", null
         ).then(result => {
-            if (this._isMounted && result) {
+            if (result && this._isMounted) {
                 const items = parseUnionsItems(result);
-                const { project: { parametersSaved } } = this.props;
 
                 this.setState({
                     data: result,
@@ -59,8 +58,7 @@ class Unions extends Component {
                     parameters: {
                         consistencyThreshold: result.consistencyThreshold,
                         typeOfUnions: result.typeOfUnions.toLowerCase()
-                    },
-                    parametersSaved: parametersSaved
+                    }
                 });
 
                 if (result.hasOwnProperty("isCurrentData")) {
@@ -81,13 +79,14 @@ class Unions extends Component {
             }
         }).finally(() => {
             if (this._isMounted) {
-                const { parametersSaved } = this.state;
-                const { project: { parameters: { consistencyThreshold, typeOfUnions } } } = this.props;
+                const { project: { parameters, parametersSaved }} = this.props;
+                const { consistencyThreshold, typeOfUnions } = parameters;
 
                 this.setState(({parameters}) => ({
                     loading: false,
                     parameters: parametersSaved ?
-                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfUnions } },
+                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfUnions }},
+                    parametersSaved: parametersSaved,
                     selectedItems: null
                 }));
             }
@@ -138,7 +137,7 @@ class Unions extends Component {
 
         if (!parametersSaved) {
             const { parameters } = this.state;
-            let project = {...this.props.project};
+            let project = JSON.parse(JSON.stringify(this.props.project));
 
             project.parameters = { ...project.parameters, ...parameters }
             project.parametersSaved = parametersSaved;
@@ -174,13 +173,12 @@ class Unions extends Component {
                             parametersSaved: true,
                         });
                     }
-                    let newProject = { ...project };
-
-                    newProject.result.unions = result;
-                    newProject.parameters.consistencyThreshold = result.consistencyThreshold;
-                    newProject.parameters.typeOfUnions = result.typeOfUnions.toLowerCase();
-                    newProject.parametersSaved = true;
-                    this.props.onTabChange(newProject);
+                    let projectCopy = JSON.parse(JSON.stringify(project));
+                    projectCopy.result.unions = result;
+                    projectCopy.parameters.consistencyThreshold = result.consistencyThreshold;
+                    projectCopy.parameters.typeOfUnions = result.typeOfUnions.toLowerCase();
+                    projectCopy.parametersSaved = true;
+                    this.props.onTabChange(projectCopy);
 
                     if (result.hasOwnProperty("isCurrentData")) {
                         this.props.showAlert(this.props.value, !result.isCurrentData);

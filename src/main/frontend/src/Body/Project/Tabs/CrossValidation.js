@@ -86,7 +86,7 @@ class CrossValidation extends Component {
             serverBase, project.result.id, 'GET', null
         ).then(result => {
             if (this._isMounted && result) {
-                const { project: { parametersSaved, foldIndex, settings } } = this.props
+                const { project: { foldIndex, settings } } = this.props
 
                 let folds = parseCrossValidationFolds(result);
                 let resultParams = parseCrossValidationParams(result);
@@ -95,7 +95,6 @@ class CrossValidation extends Component {
                     data: result,
                     folds: folds,
                     parameters: {...parameters, ...resultParams},
-                    parametersSaved: parametersSaved,
                     selected: { ...selected, foldIndex: foldIndex }
                 }), () => {
                     const { folds, selected: { foldIndex } } = this.state;
@@ -126,9 +125,8 @@ class CrossValidation extends Component {
             }
         }).finally(() => {
             if ( this._isMounted ) {
-                const { parametersSaved } = this.state;
-                const { project: { parameters: propsParams, result: { informationTable: { objects }}}} = this.props;
-                let { numberOfFolds, ...otherParams } = propsParams;
+                const { project: { parameters, parametersSaved, result: { informationTable: { objects }}}} = this.props;
+                let { numberOfFolds, ...otherParams } = parameters;
 
                 if (objects.length < numberOfFolds) {
                     otherParams = { ...otherParams, numberOfFolds: objects.length };
@@ -139,6 +137,7 @@ class CrossValidation extends Component {
                 this.setState(({parameters, selected}) => ({
                     loading: false,
                     parameters: parametersSaved ? parameters : { ...parameters, ...otherParams },
+                    parametersSaved: parametersSaved,
                     selected: { ...selected, item: null }
                 }));
             }
@@ -212,7 +211,7 @@ class CrossValidation extends Component {
         const { parametersSaved } = this.state;
 
         if (!parametersSaved) {
-            let project = {...this.props.project};
+            let project = JSON.parse(JSON.stringify(this.props.project));
             const { parameters, selected: { foldIndex } } = this.state;
 
             project.parameters = {
@@ -258,25 +257,23 @@ class CrossValidation extends Component {
                             });
                         });
                     }
-                    let newProject = { ...project };
-
-                    newProject.result.crossValidation = result;
+                    let projectCopy = JSON.parse(JSON.stringify(project));
+                    projectCopy.result.crossValidation = result;
 
                     let resultParameters = parseCrossValidationParams(result);
 
-                    newProject.parameters = {
-                        ...newProject.parameters,
+                    projectCopy.parameters = {
+                        ...projectCopy.parameters,
                         ...resultParameters,
-                        typeOfUnions: newProject.parameters.typeOfUnions
+                        typeOfUnions: projectCopy.parameters.typeOfUnions
                     };
-                    newProject.parametersSaved = true;
-                    this.props.onTabChange(newProject);
+                    projectCopy.parametersSaved = true;
+                    this.props.onTabChange(projectCopy);
 
                     if (result.hasOwnProperty("isCurrentData")) {
                         this.props.showAlert(this.props.value, !result.isCurrentData);
                     }
                 }
-
             }).catch(error => {
                 if (!error.hasOwnProperty("open")) {
                     console.log(error);

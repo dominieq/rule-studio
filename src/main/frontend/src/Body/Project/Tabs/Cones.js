@@ -35,7 +35,9 @@ class Cones extends Component {
             serverBase, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
-                const { result: { informationTable: { objects } }, settings } = project;
+                let projectCopy = JSON.parse(JSON.stringify(project));
+
+                const { result: { informationTable: { objects } }, settings } = projectCopy;
                 const items = parseConesItems(result, objects, settings);
 
                 this.setState({
@@ -108,20 +110,21 @@ class Cones extends Component {
                 serverBase, project.result.id, "PUT", null
             ).then(result => {
                 if (result) {
+                    let projectCopy = JSON.parse(JSON.stringify(project));
+
                     if (this._isMounted) {
-                        const { result: { informationTable: { objects } }, settings } = project;
+                        const { result: { informationTable: { objects } }, settings } = projectCopy;
                         const items = parseConesItems(result, objects, settings);
 
                         this.setState({
                             data: result,
                             items: items,
-                            displayedItems: items,
+                            displayedItems: items
                         });
                     }
-                    let newProject = { ...project };
 
-                    newProject.result.dominanceCones = result;
-                    this.props.onTabChange(newProject);
+                    projectCopy.result.dominanceCones = result;
+                    this.props.onTabChange(projectCopy);
 
                     if (result.hasOwnProperty("isCurrentData")) {
                         this.props.showAlert(this.props.value, !result.isCurrentData);

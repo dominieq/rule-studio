@@ -69,18 +69,16 @@ class Classification extends Component {
             serverBase, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
-                const { project: { parametersSaved, settings, classifyAction } } = this.props;
+                const { project: { settings }} = this.props;
 
                 const items = parseClassificationItems(result, settings);
                 const resultParameters = parseClassificationParams(result);
 
-                this.setState(({parameters, selected}) => ({
+                this.setState(({parameters}) => ({
                     data: result,
                     items: items,
                     displayedItems: items,
-                    parameters: { ...parameters, ...resultParameters },
-                    parametersSaved: parametersSaved,
-                    selected: { ...selected, action: classifyAction }
+                    parameters: { ...parameters, ...resultParameters }
                 }));
 
                 if (result.hasOwnProperty("isCurrentLearningData")) {
@@ -109,17 +107,15 @@ class Classification extends Component {
             }
         }).finally(() => {
             if (this._isMounted) {
-                const { parametersSaved } = this.state;
-                const { project: { parameters: {
-                    defaultClassificationResult,
-                    typeOfClassifier
-                }}} = this.props;
+                const { project: { parameters, parametersSaved, classifyAction }} = this.props;
+                const { defaultClassificationResult, typeOfClassifier } = parameters;
 
                 this.setState(({parameters, selected}) => ({
                     loading: false,
                     parameters: parametersSaved ?
-                        parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier } },
-                    selected: { ...selected, item: null }
+                        parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier }},
+                    parametersSaved: parametersSaved,
+                    selected: { ...selected, item: null, action: classifyAction }
                 }));
             }
         });
@@ -164,7 +160,7 @@ class Classification extends Component {
     componentWillUnmount() {
         this._isMounted = false;
         const { parametersSaved, selected: { action } } = this.state;
-        let project = {...this.props.project};
+        let project = JSON.parse(JSON.stringify(this.props.project));
 
         if (!parametersSaved) {
             const { parameters } = this.state;
@@ -197,15 +193,14 @@ class Classification extends Component {
                             parametersSaved: true
                         });
                     }
-                    let newProject = { ...project }
-
-                    newProject.result.classification = result;
+                    let projectCopy = JSON.parse(JSON.stringify(project));
+                    projectCopy.result.classification = result;
 
                     const resultParameters = parseClassificationParams(result);
 
-                    newProject.parameters = { ...project.parameters, ...resultParameters }
-                    newProject.parametersSaved = true;
-                    this.props.onTabChange(newProject);
+                    projectCopy.parameters = { ...project.parameters, ...resultParameters }
+                    projectCopy.parametersSaved = true;
+                    this.props.onTabChange(projectCopy);
 
                     if (result.hasOwnProperty("isCurrentLearningData")) {
                         if (result.hasOwnProperty("isCurrentRuleSet")) {

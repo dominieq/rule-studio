@@ -75,7 +75,7 @@ class App extends Component {
         });
     };
 
-    onTabChanges = (project) => {
+    updateProject = (project) => {
         this.setState(({projects}) => {
             if (projects.length) {
                 let index;
@@ -337,7 +337,7 @@ class App extends Component {
                         "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
                             <ProjectTabs
-                                onTabChange={this.onTabChanges}
+                                updateProject={this.updateProject}
                                 project={projects[currentProject]}
                                 serverBase={serverBase}
                                 showAlert={this.onSnackbarOpen}

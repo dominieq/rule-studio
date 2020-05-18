@@ -165,7 +165,7 @@ class ProjectTabs extends React.Component {
                     selected: newValue
                 });
             }
-            this.props.onTabChange(project);
+            this.props.updateProject(project);
         });
     };
 
@@ -262,7 +262,7 @@ class ProjectTabs extends React.Component {
 
         return ({
             project: project,
-            onTabChange: this.props.onTabChange,
+            onTabChange: this.props.updateProject,
             serverBase: serverBase,
             showAlert: this.showAlert,
             value: index
@@ -353,10 +353,10 @@ class ProjectTabs extends React.Component {
 }
 
 ProjectTabs.propTypes = {
-    onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
-    showAlert: PropTypes.func
+    showAlert: PropTypes.func,
+    updateProject: PropTypes.func
 };
 
 export default ProjectTabs;
