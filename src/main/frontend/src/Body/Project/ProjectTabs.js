@@ -356,6 +356,7 @@ ProjectTabs.propTypes = {
     project: PropTypes.object,
     serverBase: PropTypes.string,
     showAlert: PropTypes.func,
+    updateIndexOptions: PropTypes.func,
     updateProject: PropTypes.func
 };
 

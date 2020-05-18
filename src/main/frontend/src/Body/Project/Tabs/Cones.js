@@ -35,9 +35,7 @@ class Cones extends Component {
             serverBase, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
-                let projectCopy = JSON.parse(JSON.stringify(project));
-
-                const { result: { informationTable: { objects } }, settings } = projectCopy;
+                const { project: { result: { informationTable: { objects }}, settings }} = this.props;
                 const items = parseConesItems(result, objects, settings);
 
                 this.setState({

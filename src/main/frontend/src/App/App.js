@@ -27,14 +27,15 @@ class App extends Component {
             body: "Home",
             currentProject: -1,
             projects: [],
+            indexOptions: [],
             darkTheme: true,
             serverBase: "http://localhost:8080",
             open: {
                 settingsDialog: false,
                 renameDialog: false,
-                deleteDialog: false,
+                deleteDialog: false
             },
-            alertProps: undefined,
+            alertProps: undefined
         };
     }
 
@@ -75,6 +76,23 @@ class App extends Component {
         });
     };
 
+    createNewIndexOptions = (attributes) => {
+        let indexOptions = ["default"];
+
+        if (attributes) {
+            for (let i = 0; i < attributes.length; i++) {
+                if (attributes[i].hasOwnProperty("identifierType") && attributes[i].active) {
+                    indexOptions = [ ...indexOptions, attributes[i].name ];
+                }
+                if (attributes[i].hasOwnProperty("type") && attributes[i].type === "description") {
+                    indexOptions = [ ...indexOptions, attributes[i].name ];
+                }
+            }
+        }
+
+        return indexOptions;
+    };
+
     updateProject = (project) => {
         this.setState(({projects}) => {
             if (projects.length) {
@@ -87,6 +105,13 @@ class App extends Component {
                     }
                 }
 
+                const { result: { informationTable: { attributes }}} = project;
+                let indexOptions = this.createNewIndexOptions(attributes);
+
+                if (!indexOptions.includes(project.settings.indexOption)) {
+                    project.settings.indexOption = "default";
+                }
+
                 return {
                     projects: [
                         ...projects.slice(0, index),
@@ -96,10 +121,19 @@ class App extends Component {
                         },
                         ...projects.slice(index + 1)
                     ],
+                    indexOptions: indexOptions,
                 };
             } else {
                 return { projects: projects };
             }
+        });
+    };
+
+    updateIndexOptions = (attributes) => {
+        const indexOptions = this.createNewIndexOptions(attributes);
+
+        this.setState({
+            indexOptions: indexOptions
         });
     };
 
@@ -111,9 +145,14 @@ class App extends Component {
     };
 
     onCurrentProjectChange = (index) => {
+        const { projects } = this.state;
+        const { result: {informationTable: { attributes }}} = projects[index];
+        let indexOptions = this.createNewIndexOptions(attributes);
+
         this.setState({
             body: "Project",
             currentProject: index,
+            indexOptions: indexOptions
         });
     };
 
@@ -229,6 +268,7 @@ class App extends Component {
                             ...projects.slice(0, currentProject),
                             ...projects.slice(currentProject + 1)
                         ],
+                        indexOptions: [],
                         alertProps: {
                             message: `${removedProject} has been successfully deleted!`,
                             open: true,
@@ -312,7 +352,7 @@ class App extends Component {
     };
 
     render() {
-        const {currentProject, projects, open, serverBase, alertProps} = this.state;
+        const {currentProject, projects, indexOptions, open, serverBase, alertProps} = this.state;
         const {renameDialog, deleteDialog, settingsDialog} = open;
         const showSnackbarNormally = !renameDialog || !deleteDialog || !settingsDialog;
 
@@ -337,10 +377,11 @@ class App extends Component {
                         "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
                             <ProjectTabs
-                                updateProject={this.updateProject}
                                 project={projects[currentProject]}
                                 serverBase={serverBase}
                                 showAlert={this.onSnackbarOpen}
+                                updateIndexOptions={this.updateIndexOptions}
+                                updateProject={this.updateProject}
                             />,
                     }[this.state.body]
                 }
@@ -354,11 +395,9 @@ class App extends Component {
                     {renameDialog && <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />}
                 </RenameProjectDialog>
                 <SettingsProjectDialog
-                    attributes={currentProject >= 0 ?
-                        projects[currentProject].result.informationTable.attributes : null
-                    }
                     open={settingsDialog}
                     onClose={this.onSettingsDialogClose}
+                    indexOptions={indexOptions}
                     settings={currentProject >= 0 ?
                         {...projects[currentProject].settings} : null
                     }
