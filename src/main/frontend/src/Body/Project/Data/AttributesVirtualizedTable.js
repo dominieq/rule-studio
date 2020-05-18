@@ -49,7 +49,7 @@ function AttributesVirtualizedTable(props) {
 
 
     const rowRenderer = ({key, index, style}) => {
-        let primary = table[index].name;
+        let primary = (index+1) + ". " + table[index].name;
 
         return (
             <ListItem
