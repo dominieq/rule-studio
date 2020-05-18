@@ -329,7 +329,8 @@ class ProjectTabs extends React.Component {
                         0: (
                                 <Data
                                     project={project}
-                                    updateProject={this.onDataChange}
+                                    onDataChange={this.onDataChange}
+                                    onAttributesChange={this.props.updateIndexOptions}
                                     loading={loading}
                                     serverBase={serverBase}
                                 />
