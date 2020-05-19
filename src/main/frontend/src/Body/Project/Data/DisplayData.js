@@ -212,6 +212,7 @@ class DisplayData extends React.Component {
                     {
                         rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
                         columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
+                        historyActionSubject: ''
                     }
                 ],
             wholeAppError: false,
@@ -274,6 +275,7 @@ class DisplayData extends React.Component {
                     {
                         rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
                         columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
+                        historyActionSubject: ''
                     }
                 ],
             }, () => {
@@ -950,13 +952,13 @@ class DisplayData extends React.Component {
                             if(this._isMounted) {
                                 this.isDataFromServer = true;
                                 const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
-				                tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes)});
+				                tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes), historyActionSubject: 'both'});
                                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                                 this.setState({
                                     isLoading: false,
                                     dataModified: true,
                                     history: tmpHistory, 
-                                    historySnapshot: tmpHistory.length-1
+                                    historySnapshot: tmpHistory.length-1,
                                 }, () => {
                                     this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
                                     this.replaceMissingDataWithQuestionMarks();
@@ -1024,7 +1026,7 @@ class DisplayData extends React.Component {
                             if(this._isMounted) {
                                 this.isDataFromServer = true;
                                 const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
-                                tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes)});
+                                tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes), historyActionSubject: 'both'});
                                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                                 this.setState({
                                     isLoading: false,
@@ -1512,7 +1514,7 @@ class DisplayData extends React.Component {
                         }
 
                         const tmpHistory = history.slice(0, this.state.historySnapshot+1);
-                        tmpHistory.push({rows: history[this.state.historySnapshot].rows, columns: cols});
+                        tmpHistory.push({rows: history[this.state.historySnapshot].rows, columns: cols, historyActionSubject: 'column'});
                         if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                         this.setState({
                             dataModified: true,
@@ -1848,7 +1850,7 @@ class DisplayData extends React.Component {
                 let tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
                 let cols = [...tmpHistory[prevState.historySnapshot].columns];
 
-                tmpHistory.push({rows: tmpHistory[prevState.historySnapshot].rows, columns: [...cols, newColumn]});
+                tmpHistory.push({rows: tmpHistory[prevState.historySnapshot].rows, columns: [...cols, newColumn], historyActionSubject: 'column'});
                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
 
                 return {
@@ -2047,7 +2049,7 @@ class DisplayData extends React.Component {
             const oldColumn = {...cols[i]};
             cols[i] = col;
             const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
-            tmpHistory.push({rows: this.state.history[this.state.historySnapshot].rows, columns: cols});
+            tmpHistory.push({rows: this.state.history[this.state.historySnapshot].rows, columns: cols, historyActionSubject: 'column'});
             if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
             
             this.setState({
@@ -2166,6 +2168,7 @@ class DisplayData extends React.Component {
         },() => {
             this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false));
             this.updateProject();
+            if(this.state.history[this.state.historySnapshot+1].historyActionSubject === "both" || this.state.history[this.state.historySnapshot+1].historyActionSubject === "column") this.updateChangedIdentifOrDescriptAttribute();
         })
     }
 
@@ -2180,6 +2183,7 @@ class DisplayData extends React.Component {
         },() => {
             this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false));
             this.updateProject();
+            if(this.state.history[this.state.historySnapshot].historyActionSubject === "both" || this.state.history[this.state.historySnapshot].historyActionSubject === "column") this.updateChangedIdentifOrDescriptAttribute();
         })
     }
 
