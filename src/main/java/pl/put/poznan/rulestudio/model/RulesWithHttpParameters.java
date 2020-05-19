@@ -12,25 +12,22 @@ public class RulesWithHttpParameters implements Cloneable {
     private boolean externalRules;
     private String errorMessage;
     private String rulesFileName;
-    private String dataHash;
     private Boolean isCurrentData;
     private ValidityRulesContainer validityRulesContainer;
     private Boolean isCoveragePresent;
   
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String rulesFileName, String dataHash) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String rulesFileName) {
         this.externalRules = true;
         this.ruleSet = rules;
         this.rulesFileName = rulesFileName;
-        this.dataHash = dataHash;
     }
 
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, String dataHash) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType) {
         this.externalRules = false;
         this.ruleSet = rules;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
         this.typeOfRules = ruleType;
-        this.dataHash = dataHash;
 
         this.isCurrentData = true;
     }
@@ -91,14 +88,6 @@ public class RulesWithHttpParameters implements Cloneable {
         this.rulesFileName = rulesFileName;
     }
 
-    public String getDataHash() {
-        return dataHash;
-    }
-
-    public void setDataHash(String dataHash) {
-        this.dataHash = dataHash;
-    }
-
     public Boolean isCurrentData() {
         return isCurrentData;
     }
@@ -133,7 +122,6 @@ public class RulesWithHttpParameters implements Cloneable {
                 ", externalRules=" + externalRules +
                 ", errorMessage='" + errorMessage + '\'' +
                 ", rulesFileName='" + rulesFileName + '\'' +
-                ", dataHash='" + dataHash + '\'' +
                 ", isCurrentData=" + isCurrentData +
                 ", validityRulesContainer=" + validityRulesContainer +
                 ", isCoveragePresent=" + isCoveragePresent +

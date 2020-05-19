@@ -71,9 +71,8 @@ public class ProjectsService {
 
         if(rulesFile != null) { //load rules from file
             RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
-            String ruleSetHash = ruleSetWithCharacteristics.getLearningInformationTableHash();
 
-            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, rulesFile.getOriginalFilename(), ruleSetHash));
+            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, rulesFile.getOriginalFilename()));
         }
 
 

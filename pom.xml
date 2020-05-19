@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.github.rulelearn</groupId>
             <artifactId>rulelearn</artifactId>
-            <version>0.21.0-rc.7</version>
+            <version>0.21.0-rc.8</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
         <dependency>
