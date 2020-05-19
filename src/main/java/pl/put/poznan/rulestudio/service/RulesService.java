@@ -252,7 +252,7 @@ public class RulesService {
         RulesWithHttpParameters rules = project.getRules();
         if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (!rules.getConsistencyThreshold().equals(consistencyThreshold)) || (rules.getTypeOfRules() != typeOfRules)) {
             RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
-            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, ruleSetWithCharacteristics.getLearningInformationTableHash());
+            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules);
 
             project.setRules(rules);
             project.setCurrentRules(true);
@@ -442,7 +442,7 @@ public class RulesService {
 
     public static void checkCoverageOfUploadedRules(RulesWithHttpParameters rules, InformationTable informationTable) {
         String errorMessage = null;
-        String ruleSetHash = rules.getDataHash();
+        String ruleSetHash = rules.getRuleSet().getLearningInformationTableHash();
 
         if((rules.isExternalRules()) && ((rules.isCoveragePresent() == null) || (!rules.isCoveragePresent()))) {
             if(ruleSetHash == null) {
@@ -486,9 +486,8 @@ public class RulesService {
         }
 
         RuleSetWithCharacteristics ruleSetWithCharacteristics = parseRules(rulesFile, attributes);
-        String ruleSetHash = ruleSetWithCharacteristics.getLearningInformationTableHash();
 
-        project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, rulesFile.getOriginalFilename(), ruleSetHash));
+        project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, rulesFile.getOriginalFilename()));
     }
 
     public RulesWithHttpParameters putUploadRules(UUID id, MultipartFile rulesFile) throws IOException {
