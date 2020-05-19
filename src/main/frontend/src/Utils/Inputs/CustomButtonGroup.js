@@ -12,6 +12,16 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Popper from "@material-ui/core/Popper";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
+// To get unblurred tooltip text in Google Chrome
+const disableGPUOptions = {
+    modifiers: {
+        computeStyle: {
+            enabled: true,
+            gpuAcceleration: false
+        }
+    }
+};
+
 const useStyles = makeStyles(theme => ({
     left: {
         borderRight: "1px solid",
@@ -84,7 +94,7 @@ class CustomButtonGroup extends React.Component {
 
     render() {
         const { open } = this.state;
-        const { children, options, tooltips, selected, WrapperProps } = this.props;
+        const { children, disableGPU, options, tooltips, selected, WrapperProps } = this.props;
         const childrenArray = React.Children.toArray(children);
 
         return (
@@ -131,6 +141,7 @@ class CustomButtonGroup extends React.Component {
                     aria-label={'split-menu-button'}
                     disablePortal={true}
                     open={open}
+                    popperOptions={disableGPU ? disableGPUOptions : undefined}
                     role={undefined}
                     transition={true}
                 >
@@ -166,6 +177,7 @@ class CustomButtonGroup extends React.Component {
 
 CustomButtonGroup.propTypes = {
     children: PropTypes.arrayOf(PropTypes.node).isRequired,
+    disableGPU: PropTypes.bool,
     options: PropTypes.arrayOf(PropTypes.string).isRequired,
     selected: PropTypes.number.isRequired,
     onActionSelected: PropTypes.func,
@@ -174,6 +186,10 @@ CustomButtonGroup.propTypes = {
         PropTypes.node
     ]).isRequired,
     WrapperProps: PropTypes.object
+};
+
+CustomButtonGroup.defaultProps = {
+    disableGPU: true
 };
 
 export default CustomButtonGroup;

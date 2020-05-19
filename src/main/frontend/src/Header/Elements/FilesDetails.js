@@ -11,6 +11,16 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import FileQuestion from "mdi-material-ui/FileQuestion";
 
+// To get unblurred tooltip text in Google Chrome
+const disableGPUOptions = {
+    modifiers: {
+        computeStyle: {
+            enabled: true,
+            gpuAcceleration: false
+        }
+    }
+};
+
 class FilesDetails extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -40,7 +50,7 @@ class FilesDetails extends React.PureComponent {
 
     render() {
         const { open } = this.state;
-        const { files } = this.props;
+        const { disableGPU, files } = this.props;
 
         return (
             <div>
@@ -61,6 +71,7 @@ class FilesDetails extends React.PureComponent {
                     anchorEl={this.anchorRef.current}
                     aria-label={"files-details"}
                     open={open}
+                    popperOptions={disableGPU ? disableGPUOptions : undefined}
                     role={undefined}
                     style={{zIndex: 2000}}
                     transition={true}
@@ -93,10 +104,15 @@ class FilesDetails extends React.PureComponent {
 }
 
 FilesDetails.propTypes = {
+    disableGPU: PropTypes.bool,
     files: PropTypes.arrayOf(PropTypes.shape({
         label: PropTypes.string,
         value: PropTypes.string
     }))
+};
+
+FilesDetails.defaultProps = {
+    disableGPU: true
 };
 
 export default FilesDetails;

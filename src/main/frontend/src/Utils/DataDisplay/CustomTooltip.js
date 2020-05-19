@@ -5,17 +5,17 @@ import { makeStyles } from "@material-ui/core/styles";
 import { mergeClasses } from "../utilFunctions";
 import Tooltip from "@material-ui/core/Tooltip";
 
-//To get unblurred tooltip text in Google Chrome
+// To get unblurred tooltip text in Google Chrome
 const disableGpuProps = {
     popperOptions: {
         modifiers: {
             computeStyle: {
                 enabled: true,
-                gpuAcceleration: false,
-            },
-        },
-    },
-}
+                gpuAcceleration: false
+            }
+        }
+    }
+};
 
 const useStyles = makeStyles(theme => ({
     arrow: {
@@ -41,7 +41,16 @@ function DefaultWrapper(props, ref) {
 const WrapperForwardRef = React.forwardRef(DefaultWrapper);
 
 function CustomTooltip(props) {
-    const { children,  classes: propsClasses, className, disableGpu, disableMaxWidth, PopperProps, WrapperComponent, WrapperProps, ...other } = props;
+    const {
+        children,
+        classes: propsClasses,
+        className,
+        disableGpu,
+        disableMaxWidth,
+        PopperProps,
+        WrapperComponent,
+        WrapperProps,
+        ...other } = props;
 
     let classes = useStyles();
     if (propsClasses) classes = mergeClasses(classes, propsClasses);
@@ -50,8 +59,17 @@ function CustomTooltip(props) {
         classes = mergeClasses(classes, {tooltip: classes.disableMaxWidth})
     }
 
+    let newPopperProps = { ...PopperProps };
+    if (disableGpu) {
+        newPopperProps = { ...PopperProps, ...disableGpuProps };
+    }
+
     return (
-        <Tooltip classes={{tooltip: classes.tooltip, arrow: classes.arrow}} PopperProps={disableGpu ? disableGpuProps : PopperProps} {...other}>
+        <Tooltip
+            classes={{tooltip: classes.tooltip, arrow: classes.arrow}}
+            PopperProps={{...newPopperProps}}
+            {...other}
+        >
             <WrapperForwardRef
                 className={clsx(classes.wrapper, className)}
                 component={WrapperComponent}
@@ -111,8 +129,7 @@ CustomTooltip.propTypes = {
 };
 
 CustomTooltip.defaultProps = {
-    disableGpu: false,
-    PopperProps: {},
+    disableGpu: true,
     WrapperComponent: 'div'
 };
 
