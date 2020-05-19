@@ -14,7 +14,7 @@ const tooltip = {
           <b>{"? \u2aaf x, ? \u2aaf ?."}</b> 
         </p>,
   mv2:  <p style={{textAlign: "justify"}}>
-          <b> mv<sub>2</sub> </b> – when comparing two evaluations with respect to the attribute, <b> apart from the above relations,</b> also <b> the following relations hold: </b> <br/>
+          <b> mv<sub>2</sub> </b> – when comparing two evaluations with respect to the attribute, <b> apart from the relations of mv<sub>1.5</sub>,</b> also <b> the following relations hold: </b> <br/>
           <b>{"x \u2ab0 ?,"}</b> <br/>
           <b>{"x \u2aaf ?."}</b> 
         </p>
