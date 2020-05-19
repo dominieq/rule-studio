@@ -63,8 +63,6 @@ class Rules extends Component {
             serverBase, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
-                const { project: { parametersSaved, sortParams } } = this.props;
-
                 const items = parseRulesItems(result);
                 const resultParameters = parseRulesParams(result);
 
@@ -73,13 +71,11 @@ class Rules extends Component {
                     alertProps = { message: result.errorMessage, open: true, severity: "error" };
                 }
 
-                this.setState(({parameters, sort}) => ({
+                this.setState(({parameters}) => ({
                     data: result,
                     items: items,
                     displayedItems: items,
                     parameters: { ...parameters, ...resultParameters},
-                    parametersSaved: parametersSaved,
-                    sort: { ...sort, ...sortParams.rules },
                     alertProps: alertProps
                 }));
 
@@ -109,18 +105,16 @@ class Rules extends Component {
             }
         }).finally(() => {
             if (this._isMounted) {
-                const { displayedItems, parametersSaved } = this.state;
-                const { project: { parameters: {
-                    consistencyThreshold,
-                    typeOfRules,
-                    typeOfUnions
-                }}} = this.props;
+                const { displayedItems } = this.state;
+                const { project: { parameters, parametersSaved, sortParams }} = this.props;
+                const { consistencyThreshold, typeOfRules, typeOfUnions } = parameters;
 
-
-                this.setState(({parameters}) => ({
+                this.setState(({parameters, sort}) => ({
                     loading: false,
                     parameters: parametersSaved ?
                         parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules, typeOfUnions } },
+                    parametersSaved: parametersSaved,
+                    sort: { ...sort, ...sortParams.rules },
                     selectedItem: null
                 }), () => this.onSortChange(displayedItems));
             }
@@ -181,7 +175,7 @@ class Rules extends Component {
     componentWillUnmount() {
         this._isMounted = false;
         const { parametersSaved , sort: { order, value } } = this.state;
-        let project = {...this.props.project};
+        let project = JSON.parse(JSON.stringify(this.props.project));
 
         project.sortParams.rules = { ...project.sortParams.rules, ...{ order, value } };
 

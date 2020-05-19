@@ -165,7 +165,7 @@ class ProjectTabs extends React.Component {
                     selected: newValue
                 });
             }
-            this.props.onTabChange(project);
+            this.props.updateProject(project);
         });
     };
 
@@ -184,6 +184,18 @@ class ProjectTabs extends React.Component {
     };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.project.settings.indexOption !== this.props.project.settings.indexOption && this.state.selected === 0) {
+            this.setState(({currentProject}) => {
+                if (currentProject !== null) {
+                    currentProject.settings.indexOption = this.props.project.settings.indexOption;
+                }
+
+                return {
+                    currentProject: currentProject
+                };
+            });
+        }
+
         if (prevProps.project.result.id !== this.props.project.result.id) {
             const { project: { result } } = this.props;
             this.updateAlerts(result);
@@ -262,7 +274,7 @@ class ProjectTabs extends React.Component {
 
         return ({
             project: project,
-            onTabChange: this.props.onTabChange,
+            onTabChange: this.props.updateProject,
             serverBase: serverBase,
             showAlert: this.showAlert,
             value: index
@@ -329,7 +341,8 @@ class ProjectTabs extends React.Component {
                         0: (
                                 <Data
                                     project={project}
-                                    updateProject={this.onDataChange}
+                                    onDataChange={this.onDataChange}
+                                    onAttributesChange={this.props.updateIndexOptions}
                                     loading={loading}
                                     serverBase={serverBase}
                                 />
@@ -353,10 +366,11 @@ class ProjectTabs extends React.Component {
 }
 
 ProjectTabs.propTypes = {
-    onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
-    showAlert: PropTypes.func
+    showAlert: PropTypes.func,
+    updateIndexOptions: PropTypes.func,
+    updateProject: PropTypes.func
 };
 
 export default ProjectTabs;
