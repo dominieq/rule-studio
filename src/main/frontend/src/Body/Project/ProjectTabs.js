@@ -184,6 +184,18 @@ class ProjectTabs extends React.Component {
     };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.project.settings.indexOption !== this.props.project.settings.indexOption && this.state.selected === 0) {
+            this.setState(({currentProject}) => {
+                if (currentProject !== null) {
+                    currentProject.settings.indexOption = this.props.project.settings.indexOption;
+                }
+
+                return {
+                    currentProject: currentProject
+                };
+            });
+        }
+
         if (prevProps.project.result.id !== this.props.project.result.id) {
             const { project: { result } } = this.props;
             this.updateAlerts(result);

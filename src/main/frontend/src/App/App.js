@@ -132,8 +132,23 @@ class App extends Component {
     updateIndexOptions = (attributes) => {
         const indexOptions = this.createNewIndexOptions(attributes);
 
-        this.setState({
-            indexOptions: indexOptions
+        this.setState(({projects, currentProject}) => {
+            if (currentProject >= 0) {
+                if (!indexOptions.includes(projects[currentProject].settings.indexOption)) {
+                    projects[currentProject].settings.indexOption = "default";
+                }
+            }
+
+            return {
+                projects: [
+                    ...projects.slice(0, currentProject),
+                    {
+                        ...projects[currentProject]
+                    },
+                    ...projects.slice(currentProject + 1)
+                ],
+                indexOptions: indexOptions
+            };
         });
     };
 
