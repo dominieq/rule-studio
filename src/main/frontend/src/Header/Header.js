@@ -9,18 +9,19 @@ import HomeIcon from "@material-ui/icons/Home";
 import Palette from "mdi-material-ui/Palette";
 
 const useStyles = makeStyles(theme => ({
-    colorPrimary: {
+    root: {
         backgroundColor: theme.palette.appbar.background,
         color: theme.palette.appbar.text,
+        zIndex: theme.zIndex.drawer + 100
     }
-}), {name: "MuiAppBar"});
+}), {name: "CustomAppBar"});
 
 function Header(props) {
-    const {children, onBodyChange, onColorsChange} = props;
+    const { appBarRef, children, onBodyChange, onColorsChange } = props;
     const classes = useStyles();
 
     return (
-        <AppBar classes={{colorPrimary: classes.colorPrimary}} position={"relative"}>
+        <AppBar classes={{root: classes.root}} color={"default"} position={"sticky"} ref={appBarRef}>
             <Toolbar>
                 <StyledButton color={"inherit"} isIcon={true} name={"home"} onClick={() => onBodyChange("Home")}>
                     <HomeIcon />
@@ -43,9 +44,10 @@ function Header(props) {
 }
 
 Header.propTypes = {
+    appBarRef: PropTypes.object,
     children: PropTypes.element,
     onBodyChange: PropTypes.func,
-    onColorsChange: PropTypes.func,
+    onColorsChange: PropTypes.func
 };
 
 export default Header;

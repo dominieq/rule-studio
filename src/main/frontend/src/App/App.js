@@ -37,6 +37,8 @@ class App extends Component {
             },
             alertProps: undefined
         };
+
+        this.appBarRef = React.createRef();
     }
 
     componentDidMount() {
@@ -375,6 +377,7 @@ class App extends Component {
             <MuiThemeProvider theme={this.state.darkTheme ? DarkTheme : LightTheme}>
                 <CssBaseline />
                 <Header
+                    appBarRef={this.appBarRef}
                     onBodyChange={this.onBodyChange}
                     onColorsChange={this.onColorsChange}
                 >
@@ -387,7 +390,10 @@ class App extends Component {
                 </Header>
                 {
                     {
-                        "Help": <Help />,
+                        "Help":
+                            <Help
+                                upperMargin={this.appBarRef.current ? this.appBarRef.current.offsetHeight : undefined}
+                            />,
                         "Home": <Home isDarkTheme={this.state.darkTheme} />,
                         "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
