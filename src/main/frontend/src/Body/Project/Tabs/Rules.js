@@ -525,9 +525,13 @@ class Rules extends Component {
                     displayedItems: newItems
                 });
             } else {
-                let newItems = originalItems.map(item => (
-                    items[item.id] != null ? items[item.id] : null
-                )).filter(element => element != null);
+                let newItems = [];
+
+                if (originalItems != null) {
+                    newItems = originalItems.map(item => (
+                        items[item.id] != null ? items[item.id] : null
+                    )).filter(element => element != null);
+                }
 
                 this.setState({
                     displayedItems: newItems
