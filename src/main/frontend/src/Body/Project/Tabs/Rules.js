@@ -521,12 +521,16 @@ class Rules extends Component {
                 newItems = simpleSort(newItems, value, order);
                 newItems = newItems.map(item => originalItems[item.id]);
 
-                this.setState({ displayedItems: newItems });
+                this.setState({
+                    displayedItems: newItems
+                });
             } else {
-                const { items: originalItems } = this.state;
+                let newItems = originalItems.map(item => (
+                    items[item.id] != null ? items[item.id] : null
+                )).filter(element => element != null);
 
                 this.setState({
-                    displayedItems: Boolean(originalItems) ? originalItems : []
+                    displayedItems: newItems
                 });
             }
         } else {
