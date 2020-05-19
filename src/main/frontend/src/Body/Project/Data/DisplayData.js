@@ -1733,7 +1733,7 @@ class DisplayData extends React.Component {
             
             if(isRightMB) {
                 this.setState({
-                    isColumnHeaderMenuOpened: e.currentTarget,
+                    isColumnHeaderMenuOpened: e,
                     columnKeyOfHeaderMenuOpened: column.key,
                 })
                 return(false);
@@ -2108,7 +2108,7 @@ class DisplayData extends React.Component {
             tmp.push("Edit attribute");
             tmp.push("Delete attribute");
 
-            return <ColumnHeaderMenu items={tmp} handleClose={this.closeOpenedColumnHeaderMenu} anchorEl={this.state.isColumnHeaderMenuOpened} />
+            return <ColumnHeaderMenu items={tmp} handleClose={this.closeOpenedColumnHeaderMenu} event={this.state.isColumnHeaderMenuOpened} />
         }
         return null;
     }
