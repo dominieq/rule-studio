@@ -433,7 +433,13 @@ class DisplayData extends React.Component {
             if((oldCol.type === "description" && newCol.type !== "description") 
                 ||  (oldCol.type !== "description" && newCol.type === "description")
                 ||  (oldCol.identifierType !== undefined && newCol.identifierType === undefined) 
-                ||  (oldCol.identifierType === undefined && newCol.identifierType !== undefined)) {
+                ||  (oldCol.identifierType === undefined && newCol.identifierType !== undefined)
+                ||  (oldCol.identifierType !== undefined && newCol.identifierType !== undefined && oldCol.identifierType !== newCol.identifierType)
+                ||  (
+                        oldCol.name !== newCol.name &&
+                        ((oldCol.type === newCol.type && oldCol.type === "description") || ((oldCol.identifierType === newCol.identifierType && oldCol.identifierType !== undefined)))
+                    )
+            ) {
                 this.updateChangedIdentifOrDescriptAttribute();
             }
         }
@@ -1830,11 +1836,25 @@ class DisplayData extends React.Component {
         let history = [...this.state.history];
         let newHistory = {...history[this.state.historySnapshot]};
         newHistory.rows = nextRows;
+
+        let tmpCols = [...newHistory.columns];
+        let tmpCol = {...tmpCols[idx]};
+        if(tmpCol.type !== undefined) tmpCol.width = Math.max(120, 20 + 10*tmpCol.name.length, 20+10*(tmpCol.type.length + 9));
+        else if(tmpCol.identifierType !== undefined) tmpCol.width = Math.max(120, 20 + 10*tmpCol.name.length, 20+10*(tmpCol.identifierType.length + 9));
+        else tmpCol.width = 120;
+        tmpCols[idx] = tmpCol;
+
+        newHistory.columns = tmpCols;
         history[this.state.historySnapshot] = newHistory;
 
         this.setState({
             history: history,
-        }, () => {this.setHeaderColorAndStyleAndRightClick(column, idx, true)}) 
+        }, () => {
+            this.setHeaderColorAndStyleAndRightClick(column, idx, false);
+            this.updateProject();
+            if(typeof ifIsNewColumnElseOldColumn !== "boolean") this.checkIfUpdateOfAttributesNeeded({...ifIsNewColumnElseOldColumn}, {...column});
+            else if(column.type === "description" || column.identifierType !== undefined) this.updateChangedIdentifOrDescriptAttribute();
+        }) 
         
     }
 
@@ -1869,8 +1889,6 @@ class DisplayData extends React.Component {
                     this.setRowsAndHeaderColorAndStyleAndRightClick(
                         this.state.history[this.state.historySnapshot].columns[this.state.history[this.state.historySnapshot].columns.length-1], 
                         this.state.history[this.state.historySnapshot].columns.length-1, true);
-                    this.updateProject();
-                    if(newColumn.type === "description" || newColumn.identifierType !== undefined) this.updateChangedIdentifOrDescriptAttribute();
                 });   
         } else {
             this.setState({
@@ -2066,8 +2084,6 @@ class DisplayData extends React.Component {
                 historySnapshot: tmpHistory.length-1
             },() => {
                 this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, oldColumn);
-                this.updateProject();
-                this.checkIfUpdateOfAttributesNeeded({...oldColumn}, {...col});
             });   
         } else {
             this.setState({
