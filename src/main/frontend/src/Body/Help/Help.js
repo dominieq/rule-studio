@@ -58,8 +58,6 @@ function Help(props) {
             >
                 <div aria-label={"scrollable"} className={styles.Scrollable}>
                     {/* Main text goes here */}
-
-        </CustomBox>
                 </div>
             </div>
             <Drawer
