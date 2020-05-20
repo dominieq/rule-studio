@@ -1769,19 +1769,27 @@ class DisplayData extends React.Component {
             const tmp = document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes;
             if((column.type !== undefined || column.identifierType !== undefined) && !(/<\/?[a-z][\s\S]*>/i.test(column.type))) { //make sure attribute type doesn't contain html tags
                 if(tmp.length === 2) {
-                    if(column.identifierType !== undefined) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(identification)");
-                    else if(column.active) {
+                    if(column.identifierType !== undefined) {
+                        if(column.active) { 
+                            document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(identification,active)");
+                        } else {
+                            document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(identification,inactive)");
+                        }
+                    } else if(column.active) {
                         document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",active)");
-                    }
-                    else {
+                    } else {
                         document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",inactive)");
                     }
                 } else if(tmp.length > 2) {
-                    if(column.identifierType !== undefined) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(identification)";
-                    else if(column.active) {
+                    if(column.identifierType !== undefined) {
+                        if(column.active) { 
+                            document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(identification,active)";
+                        } else {
+                            document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(identification,inactive)";
+                        }
+                    } else if(column.active) {
                         document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",active)";
-                    }
-                    else {
+                    } else {
                         document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",inactive)";
                     }
                 }
