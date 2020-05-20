@@ -1,19 +1,23 @@
-import React, {PureComponent, Fragment} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
-import DetailsDialog from "../DetailsDialog";
+import { FullscreenDialog, MultiColumns, TitleBar } from "../../../DataDisplay/FullscreenDialog";
+import { Slides } from "../../../Navigation/Slides";
 import ObjectTable from "../Elements/ObjectTable";
 import RuleTable, { estimateTableHeight } from "../Elements/RuleTable";
 import TableItemsList from "../Elements/TableItemsList";
 import TraitsTable from "../Elements/TraitsTable";
 
-class ClassificationDialog extends PureComponent {
+class ClassificationDialog extends React.PureComponent {
     constructor(props) {
         super(props);
 
         this.state = {
+            direction: "forward",
             itemInTableIndex: undefined,
             ruleTableHeight: 0,
+            slide: 0,
+            sliding: false
         };
     }
 
@@ -34,7 +38,9 @@ class ClassificationDialog extends PureComponent {
 
     onEnter = () => {
         this.setState({
-            itemInTableIndex: undefined
+            direction: "forward",
+            itemInTableIndex: undefined,
+            slide: 0
         });
     };
 
@@ -57,59 +63,86 @@ class ClassificationDialog extends PureComponent {
         );
     };
 
+    slide = (direction, nextSlide) => {
+        this.setState({
+            direction: direction,
+            sliding: true
+        }, () => {
+            setTimeout(() => this.setState({
+                direction: "forward",
+                slide: nextSlide,
+                sliding: false
+            }), 1000);
+        });
+    }
+
     render() {
-        const { itemInTableIndex, ruleTableHeight } = this.state;
+        const { direction, itemInTableIndex, ruleTableHeight, slide, sliding } = this.state;
         const { item, ruleSet, ...other } = this.props;
         const { attributes, objects, originalDecision, suggestedDecision, certainty } = item.traits;
 
         return (
-            <DetailsDialog
-                onEnter={this.onEnter}
-                optional={
-                    <React.Fragment>
+            <FullscreenDialog onEnter={this.onEnter} {...other}>
+                <TitleBar
+                    onClose={this.props.onClose}
+                    optional={
+                        <React.Fragment>
                         <span aria-label={"original-decision"}>
                             {`Original decision: ${originalDecision}`}
                         </span>
-                        <span aria-label={"suggested-decision"}>
+                            <span aria-label={"suggested-decision"}>
                             {`Certainty: ${certainty}   |   Suggested decision: ${suggestedDecision}`}
                         </span>
-                    </React.Fragment>
-                }
-                title={this.getClassificationTitle()}
-                {...other}
-            >
-                <div id={"classification-object"} style={{width: "40%"}}>
-                    <ObjectTable
-                        informationTable={{attributes, objects}}
-                        objectIndex={item.id}
-                        objectHeader={item.name.toString()}
-                    />
-                </div>
-                <div id={"classification-rules"} style={{display: "flex", flexDirection: "column", width: "15%"}}>
-                    <TableItemsList
-                        headerText={"Indices of covering rules"}
-                        itemIndex={itemInTableIndex}
-                        itemText={"Rule"}
-                        onItemInTableSelected={this.onItemInTableSelected}
-                        table={item.tables.indicesOfCoveringRules}
-                    />
-                </div>
-                <div
-                    id={"classification-rules-traits"}
-                    style={{display: "flex", flexDirection: "column", width: "40%"}}
-                >
-                    {!Number.isNaN(Number(itemInTableIndex)) &&
-                        <Fragment>
-                            <div id={"rule-table"} style={{marginBottom: "5%", minHeight: ruleTableHeight}}>
-                                <RuleTable rule={ruleSet[itemInTableIndex].rule} />
-                            </div>
-                            <div id={"traits-table"} style={{flexGrow: 1}}>
-                                <TraitsTable traits={ruleSet[itemInTableIndex].ruleCharacteristics} />
-                            </div>
-                        </Fragment>
+                        </React.Fragment>
                     }
-                </div>
-            </DetailsDialog>
+                    title={this.getClassificationTitle()}
+                />
+                <Slides direction={direction} sliding={sliding} value={slide}>
+                    <MultiColumns>
+                        <div id={"classification-object"} style={{width: "40%"}}>
+                            <ObjectTable
+                                informationTable={{attributes, objects}}
+                                objectIndex={item.id}
+                                objectHeader={item.name.toString()}
+                            />
+                        </div>
+                        <div
+                            id={"classification-rules"}
+                            style={{display: "flex", flexDirection: "column", width: "15%"}}
+                        >
+                            <TableItemsList
+                                headerText={"Indices of covering rules"}
+                                itemIndex={itemInTableIndex}
+                                itemText={"Rule"}
+                                onItemInTableSelected={this.onItemInTableSelected}
+                                table={item.tables.indicesOfCoveringRules}
+                            />
+                        </div>
+                        <div
+                            id={"classification-rules-traits"}
+                            style={{display: "flex", flexDirection: "column", width: "40%"}}
+                        >
+                            {!Number.isNaN(Number(itemInTableIndex)) &&
+                            <React.Fragment>
+                                <div
+                                    id={"rule-table"}
+                                    onClick={() => this.slide("forward", 1)}
+                                    style={{marginBottom: "5%", minHeight: ruleTableHeight}}
+                                >
+                                    <RuleTable rule={ruleSet[itemInTableIndex].rule} />
+                                </div>
+                                <div id={"traits-table"} style={{flexGrow: 1}}>
+                                    <TraitsTable traits={ruleSet[itemInTableIndex].ruleCharacteristics} />
+                                </div>
+                            </React.Fragment>
+                            }
+                        </div>
+                    </MultiColumns>
+                    <MultiColumns>
+
+                    </MultiColumns>
+                </Slides>
+            </FullscreenDialog>
         );
     }
 }
