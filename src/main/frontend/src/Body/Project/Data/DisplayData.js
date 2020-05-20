@@ -188,7 +188,8 @@ class DisplayData extends React.Component {
             saveToFileCsvSeparator: '',
             
             editAttributeSelected: '', //name of selected attribute
-            addAttributeErrorNotification: '',
+            errorMessage: '',
+            errorMessageSeverity: 'error',
             attributeTypeSelected: '',
             attributePreferenceTypeSelected: '',
             valueTypeSelected: '',
@@ -251,7 +252,8 @@ class DisplayData extends React.Component {
                 saveToFileCsvSeparator: '',
                 
                 editAttributeSelected: '', //name of selected attribute
-                addAttributeErrorNotification: '',
+                errorMessage: '',
+                errorMessageSeverity: 'error',
                 attributeTypeSelected: '',
                 attributePreferenceTypeSelected: '',
                 valueTypeSelected: '',
@@ -498,7 +500,8 @@ class DisplayData extends React.Component {
                     const message = <span> Cell hasn't been updated. <br/> Empty value isn't valid input. Use question mark (?) instead. </span>
                         return {
                             isOpenedNotification: true,
-                            addAttributeErrorNotification: message
+                            errorMessage: message,
+                            errorMessageSeverity: 'error'
                         }
                 }
                 if(editedCol.valueType === "real") { //enable only reals and "?"
@@ -506,7 +509,8 @@ class DisplayData extends React.Component {
                         const message = <span> Cell hasn't been updated. <br/> Column type: real <br/> The entered value: {tmp[1]}, which is invalid. </span>
                         return {
                             isOpenedNotification: true,
-                            addAttributeErrorNotification: message
+                            errorMessage: message,
+                            errorMessageSeverity: 'error'
                         }
                     }
                 } else if(editedCol.valueType === "integer") { //enable only integers and "?"
@@ -514,15 +518,17 @@ class DisplayData extends React.Component {
                         const message = <span> Cell hasn't been updated. <br/> Column type: integer <br/> The entered value: {tmp[1]}, which is invalid. </span>
                         return {
                             isOpenedNotification: true,
-                            addAttributeErrorNotification: message
+                            errorMessage: message,
+                            errorMessageSeverity: 'error'
                         }
                     }
                 } else if(editedCol.valueType === "enumeration") { //enable only domain elements and "?" - can happen only during ctrl+c, ctrl+v
                     if(tmp[1] !== "?" && !editedCol.domain.includes(tmp[1])) {
-                        const message = <span> Cell hasn't been updated. <br/> Column type: enumeration <br/> The entered value: {tmp[1]}, which is invalid. Please check the domain. </span>
+                        const message = <span> Cell hasn't been updated. <br/> Column type: enumeration <br/> The entered value: {tmp[1]}, which is invalid. <br/> Please check the domain. </span>
                         return {
                             isOpenedNotification: true,
-                            addAttributeErrorNotification: message
+                            errorMessage: message,
+                            errorMessageSeverity: 'error'
                         }
                     }
                 }
@@ -980,7 +986,8 @@ class DisplayData extends React.Component {
                             if(this._isMounted) {
                                 this.setState({
                                     isOpenedNotification: true,
-                                    addAttributeErrorNotification: message,
+                                    errorMessage: message,
+                                    errorMessageSeverity: 'error',
                                     isLoading: false,
                                 })
                             }
@@ -997,7 +1004,8 @@ class DisplayData extends React.Component {
                             if(this._isMounted) {
                                 this.setState({
                                     isOpenedNotification: true,
-                                    addAttributeErrorNotification: message,
+                                    errorMessage: message,
+                                    errorMessageSeverity: 'error',
                                     isLoading: false,
                                 })
                             }
@@ -1053,7 +1061,8 @@ class DisplayData extends React.Component {
                             if(this._isMounted) {
                                 this.setState({
                                     isOpenedNotification: true,
-		                            addAttributeErrorNotification: message,
+                                    errorMessage: message,
+                                    errorMessageSeverity: 'error',
                                     isLoading: false,
                                 })
                             }
@@ -1070,7 +1079,8 @@ class DisplayData extends React.Component {
                             if(this._isMounted) {
                                 this.setState({
                                     isOpenedNotification: true,
-                                    addAttributeErrorNotification: message,
+                                    errorMessage: message,
+                                    errorMessageSeverity: 'error',
                                     isLoading: false,
                                 })
                             }
@@ -1241,7 +1251,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1252,7 +1263,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1263,7 +1275,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1305,7 +1318,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1316,7 +1330,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1327,7 +1342,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1366,7 +1382,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1377,7 +1394,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1388,7 +1406,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1417,7 +1436,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1428,7 +1448,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1439,7 +1460,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1558,9 +1580,40 @@ class DisplayData extends React.Component {
         return false;
     }
 
-    attributeAlreadyExistAndIsDifferentThanSelected(name) {
-        for(let i in this.state.history[this.state.historySnapshot].columns) {
-            if(this.state.history[this.state.historySnapshot].columns[i].name === name && this.state.editAttributeSelected !== name) {
+    attributeAlreadyExistAndIsDifferentThanSelected(name, colIdx) {
+        for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
+            if(this.state.history[this.state.historySnapshot].columns[i].name === name && i !== colIdx) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    activeIdentificationAttributeAlreadyExists(isAddMethodElseIndex) {
+        if(isAddMethodElseIndex === -1) {
+            for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
+                if(this.state.history[this.state.historySnapshot].columns[i].identifierType !== undefined
+                    && this.state.history[this.state.historySnapshot].columns[i].active === true) {
+                        return true;
+                    }
+            }
+        } else {
+            for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
+                if(this.state.history[this.state.historySnapshot].columns[i].identifierType !== undefined
+                    && this.state.history[this.state.historySnapshot].columns[i].active === true
+                    && i !== isAddMethodElseIndex) {
+                        return true;
+                    }
+            }
+        }
+        return false;
+    }
+
+    activeDecisionAttributeAlreadyExists() {
+        for(let i=this.state.history[this.state.historySnapshot].columns.length-1; i>=0; i--) {
+            if(this.state.history[this.state.historySnapshot].columns[i].type === "decision" && this.state.history[this.state.historySnapshot].columns[i].active === true) {
+                console.log("Wysypuje sie (Decision) dla:")
+                console.log(this.state.history[this.state.historySnapshot].columns[i])
                 return true;
             }
         }
@@ -1571,71 +1624,84 @@ class DisplayData extends React.Component {
         this.setState({
             attributesDomainElements: array,
         })
-      }
+    }
 
-    validateOnAddAndEditAttribute = (isOnAddMethod, name, type, mvType, identifierType, preferenceType, valueType, domain) => {
+    validateOnAddAndEditAttribute = (isAddMethodElseIndex, active, name, type, mvType, identifierType, preferenceType, valueType, domain) => {
 
         let error = ''
 
         //name validation (restricted + already exist)
-        if(name === "uniqueLP" || name === "key" || name === "uniqueLP2") error = "You have chosen restricted name for the attribute! Please choose other name.";
+        if(name === "uniqueLP" || name === "key" || name === "uniqueLP2") error = <span> You have chosen restricted name for the attribute! Please choose other name.</span>;
 
-        if(isOnAddMethod) { //add new column
-            if(this.attributeAlreadyExists(name)) error = "The attribute with the same name ("+name+") already exists! Please choose other name.";
+        if(isAddMethodElseIndex === -1) { //add new column
+            if(this.attributeAlreadyExists(name)) error = <span> The attribute with the same name ({name}) already exists! Please choose other name.</span>;
         } else { //change existing column
-            if(this.attributeAlreadyExistAndIsDifferentThanSelected(name)) error = "The attribute with the same name ("+name+") already exists! Please choose other name.";
+            if(this.attributeAlreadyExistAndIsDifferentThanSelected(name, isAddMethodElseIndex)) error = <span> The attribute with the same name ({name}) already exists! Please choose other name.</span>;
         }
         
-            //type validation
-            if(type === '') error = "You didn't select any attribute type! Please select any.";
-            
-            else if(type !== "identification") {
-                //preference type validation
-                if(preferenceType === '') error = "You didn't select any attribute preference type! Please select any.";
+        //type validation
+        if(type === '') error = <span> You didn't select any attribute type! Please select any.</span>;
+        
+        else if(type !== "identification") {
+            //preference type validation
+            if(preferenceType === '') error = <span> You didn't select any attribute preference type! Please select any.</span>;
 
-                //value type validation
-                else if(valueType === '') error = "You didn't select any value type! Please select any.";
+            //value type validation
+            else if(valueType === '') error = <span> You didn't select any value type! Please select any.</span>;
 
-                //enumeration validation
-                else if(valueType === "enumeration") {
-                    if(domain.length === 0) error = <span> You have chosen enumeration type, but didn't provide any domain! <br/> Please add the domain to your enumeration value type. </span>;
+            //enumeration validation
+            else if(valueType === "enumeration") {
+                if(domain.length === 0) error = <span> You have chosen enumeration type, but didn't provide any domain! <br/> Please add the domain to your enumeration value type. </span>;
 
-                    for(let i=0; i<domain.length; i++) {
-                        if(domain[i].text === "") {
-                            error = "At least one attribute has empty domain! Please fill in the data.";
+                for(let i=0; i<domain.length; i++) {
+                    if(domain[i].text === "") {
+                        error = <span> At least one attribute has empty domain! Please fill in the data.</span>;
+                        break;
+                    }
+
+                    if(error === '' && domain[i].text === "?") {
+                        error = <span> You cannot choose '?' for the domain name! Please rename the domain element.</span>;
+                        break;
+                    }
+
+                    if(error === '') {
+                        const domainTmp = domain.map(x => x.text.trim());
+                        if(new Set(domainTmp).size !== domainTmp.length) {
+                            error = <span> There are at least 2 attributes, which have the same domain name! <br/> The domain name must be unique, so please rename them. </span>;
                             break;
-                        }
-
-                        if(error === '' && domain[i].text === "?") {
-                            error = "You cannot choose '?' for the domain name! Please rename the domain element.";
-                            break;
-                        }
-
-                        if(error === '') {
-                            const domainTmp = domain.map(x => x.text.trim());
-                            if(new Set(domainTmp).size !== domainTmp.length) {
-                                error = <span> There are at least 2 attributes, which have the same domain name! <br/> The domain name must be unique, so please rename them. </span>;
-                                break;
-                            }
                         }
                     }
                 }
             }
-            else {
+        } else {
+            if(error === '') {
+                //there can be only one active identification attribute
+                if(isAddMethodElseIndex === -1 && active) { //when adding new attribute
+                    if(this.activeIdentificationAttributeAlreadyExists(-1)) error = <span> There is already active identification attribute. <br/>
+                        Deactivate the other identification attribute in order to use this one. <br/> 
+                        Or set this one to inactive, apply and then do the change described above. </span>
+                } else if(isAddMethodElseIndex !== -1 && active) { //when editing existing attribute
+                    if(this.activeIdentificationAttributeAlreadyExists(isAddMethodElseIndex)) error = <span> There is already active identification attribute. <br/>
+                        Deactivate the other identification attribute in order to use this one. <br/> 
+                        Or set this one to inactive, apply and then do the change described above. </span>
+                }
+
                 //identifier type validation
                 if(identifierType === '') error = "You didn't select any identifier type! Please select any.";
             }
-            
-            this.setState({
-                addAttributeErrorNotification: error,
-            });  
-
-            //everything was fine
-            if(error === '') return true;
-
-            //there are some errors
-            return false;
+        }
         
+        this.setState({
+            errorMessage: error,
+            errorMessageSeverity: 'warning'
+        });  
+
+        //everything was fine
+        if(error === '') return true;
+
+        //there are some errors
+        return false;
+    
     }
 
     createColumn = (name, active, type, mvType, identifierType, preferenceType, valueType, domain) => {
@@ -1860,7 +1926,7 @@ class DisplayData extends React.Component {
 
     applyOnAddAttribute = (e) => {
         e.preventDefault();
-        const validationOk = this.validateOnAddAndEditAttribute(true,e.target.attributeName.value.trim(), this.state.attributeTypeSelected, this.state.missingValueTypeSelected,
+        const validationOk = this.validateOnAddAndEditAttribute(-1, e.target.attributeIsActive.checked, e.target.attributeName.value.trim(), this.state.attributeTypeSelected, this.state.missingValueTypeSelected,
                     this.state.identifierTypeSelected, this.state.attributePreferenceTypeSelected, this.state.valueTypeSelected, this.state.attributesDomainElements)
         if(validationOk) {
             const newColumn = this.createColumn(e.target.attributeName.value.trim(), e.target.attributeIsActive.checked, this.state.attributeTypeSelected, 
@@ -2037,7 +2103,7 @@ class DisplayData extends React.Component {
         }
         let col = {editable:true, sortable:true, resizable:true, filterable:true, draggable: true, visible: true}
 
-        const validationOk = this.validateOnAddAndEditAttribute(false,e.target.attributeName.value.trim(), this.state.attributeTypeSelected, this.state.missingValueTypeSelected,
+        const validationOk = this.validateOnAddAndEditAttribute(i, e.target.attributeIsActive.checked, e.target.attributeName.value.trim(), this.state.attributeTypeSelected, this.state.missingValueTypeSelected,
             this.state.identifierTypeSelected, this.state.attributePreferenceTypeSelected, this.state.valueTypeSelected, this.state.attributesDomainElements)
         
         if(validationOk) {
@@ -2285,8 +2351,8 @@ class DisplayData extends React.Component {
                             {this.displayAddAttributeFields()}
                         </div>        
                         {
-                            this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
-                            closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
+                            this.state.errorMessage !== '' ? <Notification open={this.state.isOpenedNotification} 
+                            closeOpenedNotification={this.closeOpenedNotification} message={this.state.errorMessage} variant={this.state.errorMessageSeverity} /> : null
                         }  
                     </DialogContent>
                     <DialogActions>
@@ -2320,8 +2386,8 @@ class DisplayData extends React.Component {
                             </Fragment>
                         }
                         {
-                            this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
-                            closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
+                            this.state.errorMessage !== '' ? <Notification open={this.state.isOpenedNotification} 
+                            closeOpenedNotification={this.closeOpenedNotification} message={this.state.errorMessage} variant={this.state.errorMessageSeverity} /> : null
                         }    
                     </DialogContent>
                     <DialogActions>
@@ -2410,8 +2476,8 @@ class DisplayData extends React.Component {
                 </SimpleDialog>
 
                 {
-                    this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
-                    closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
+                    this.state.errorMessage !== '' ? <Notification open={this.state.isOpenedNotification} 
+                    closeOpenedNotification={this.closeOpenedNotification} message={this.state.errorMessage} variant={this.state.errorMessageSeverity} /> : null
                 }
               
                 {(this.state.isLoading || this.props.loading) ? <CustomLoadingIcon color="primary" /> : null }
