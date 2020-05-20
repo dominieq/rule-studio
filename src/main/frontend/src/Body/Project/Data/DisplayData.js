@@ -1531,6 +1531,18 @@ class DisplayData extends React.Component {
                             isColumnHeaderMenuOpened: null,
                             columnKeyOfHeaderMenuOpened: -1,
                         })
+                    } else if(cols[i].type === "decision" && cols[i].active === false && selected === "Mark attribute as: active" && this.activeDecisionAttributeAlreadyExists(i)) {
+                        const message = <span>
+                                            There is already active decision attribute. <br/>
+                                            Deactivate the other decision attribute in order to use this one. 
+                                        </span>;
+                        this.setState({
+                            isOpenedNotification: true,
+                            errorMessage: message,
+                            errorMessageSeverity: 'error',
+                            isColumnHeaderMenuOpened: null,
+                            columnKeyOfHeaderMenuOpened: -1,
+                        })
                     } else {
                         let col = {...cols[i]};
                         let removedColumn = false;
@@ -1609,12 +1621,21 @@ class DisplayData extends React.Component {
         return false;
     }
 
-    activeDecisionAttributeAlreadyExists() {
-        for(let i=this.state.history[this.state.historySnapshot].columns.length-1; i>=0; i--) {
-            if(this.state.history[this.state.historySnapshot].columns[i].type === "decision" && this.state.history[this.state.historySnapshot].columns[i].active === true) {
-                console.log("Wysypuje sie (Decision) dla:")
-                console.log(this.state.history[this.state.historySnapshot].columns[i])
-                return true;
+    activeDecisionAttributeAlreadyExists(isAddMethodElseIndex) {
+        if(isAddMethodElseIndex === -1) {
+            for(let i=this.state.history[this.state.historySnapshot].columns.length-1; i>=0; i--) {
+                if(this.state.history[this.state.historySnapshot].columns[i].type === "decision" 
+                    && this.state.history[this.state.historySnapshot].columns[i].active === true) {
+                        return true;
+                    }
+            }
+        } else {
+            for(let i=this.state.history[this.state.historySnapshot].columns.length-1; i>=0; i--) {
+                if(this.state.history[this.state.historySnapshot].columns[i].type === "decision" 
+                    && this.state.history[this.state.historySnapshot].columns[i].active === true
+                    && i !== isAddMethodElseIndex) {
+                        return true;
+                    }
             }
         }
         return false;
@@ -1643,8 +1664,21 @@ class DisplayData extends React.Component {
         if(type === '') error = <span> You didn't select any attribute type! Please select any.</span>;
         
         else if(type !== "identification") {
+            //only one active decision attribute
+            if(type === "decision") {
+                if(isAddMethodElseIndex === -1 && active) { //when adding new attribute
+                    if(this.activeDecisionAttributeAlreadyExists(-1)) error = <span> There is already active decision attribute. <br/>
+                        Deactivate the other decision attribute in order to use this one. <br/> 
+                        Or set this one to inactive, apply and then do the change described above. </span>
+                } else if(isAddMethodElseIndex !== -1 && active) { //when editing existing attribute
+                    if(this.activeDecisionAttributeAlreadyExists(isAddMethodElseIndex)) error = <span> There is already active decision attribute. <br/>
+                        Deactivate the other decision attribute in order to use this one. <br/> 
+                        Or set this one to inactive, apply and then do the change described above. </span>
+                }
+            }
+
             //preference type validation
-            if(preferenceType === '') error = <span> You didn't select any attribute preference type! Please select any.</span>;
+            else if(preferenceType === '') error = <span> You didn't select any attribute preference type! Please select any.</span>;
 
             //value type validation
             else if(valueType === '') error = <span> You didn't select any value type! Please select any.</span>;
