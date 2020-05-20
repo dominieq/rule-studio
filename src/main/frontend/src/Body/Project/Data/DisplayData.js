@@ -2345,6 +2345,7 @@ class DisplayData extends React.Component {
                     onGridRowsUpdated={this.onGridRowsUpdated}
                     onGridSort = {this.onGridSort}
                     enableCellSelect={true}
+                    enableRowSelect={null}
                     onCellSelected={this.onCellSelected}
                     getValidFilterValues={columnKey => this.getValidFilterValues(this.state.history[this.state.historySnapshot].rows, columnKey)}
                     toolbar={<EditDataFilterButton enableFilter={true} > 
@@ -2371,7 +2372,7 @@ class DisplayData extends React.Component {
                     onColumnResize={this.onColumnResize}
                     minHeight={1400}
                     rowHeight={heightOfRow}
-                    rowScrollTimeout={200}
+                    rowScrollTimeout={null}
                     headerRowHeight={heightOfHeaderRow}
                     editorPortalTarget={document.getElementsByClassName("react-grid-Canvas")[0]}
                     contextMenu={
