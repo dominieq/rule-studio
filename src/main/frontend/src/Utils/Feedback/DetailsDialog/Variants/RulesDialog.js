@@ -130,7 +130,7 @@ class RulesDialog extends PureComponent {
                     <TableItemsList
                         getItemsStyle={this.getItemsStyle}
                         getName={this.getName}
-                        headerText={"Indices of covered objects"}
+                        headerText={"Covered objects"}
                         itemIndex={itemInTableIndex}
                         onItemInTableSelected={this.onItemInTableSelected}
                         table={item.tables.indicesOfCoveredObjects}

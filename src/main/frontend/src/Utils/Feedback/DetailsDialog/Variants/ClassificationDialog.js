@@ -87,7 +87,7 @@ class ClassificationDialog extends PureComponent {
                 </div>
                 <div id={"classification-rules"} style={{display: "flex", flexDirection: "column", width: "15%"}}>
                     <TableItemsList
-                        headerText={"Indices of covering rules"}
+                        headerText={"Covering rules"}
                         itemIndex={itemInTableIndex}
                         itemText={"Rule"}
                         onItemInTableSelected={this.onItemInTableSelected}
