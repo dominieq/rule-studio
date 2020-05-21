@@ -79,7 +79,7 @@ class App extends Component {
     createNewIndexOptions = (attributes) => {
         let indexOptions = ["default"];
 
-        if (attributes) {
+        if (Array.isArray(attributes) && attributes.length) {
             for (let i = 0; i < attributes.length; i++) {
                 if (attributes[i].hasOwnProperty("identifierType") && attributes[i].active) {
                     indexOptions = [ ...indexOptions, attributes[i].name ];
@@ -153,9 +153,10 @@ class App extends Component {
     };
 
     onBodyChange = (name) => {
-        this.setState(({currentProject}) => ({
+        this.setState(({currentProject, indexOptions}) => ({
             body: name,
             currentProject: name !== "Project" ? -1 : currentProject,
+            indexOptions: name !== "Project" ? [] : indexOptions
         }));
     };
 
@@ -226,10 +227,13 @@ class App extends Component {
                     serverBase,"POST", data
                 ).then(result => {
                     if (result) {
+                        const indexOptions = this.createNewIndexOptions(result.informationTable.attributes);
+
                         this.setState(({projects}) => ({
                             body: "Project",
                             currentProject: projects.length,
                             projects: [...projects, new Project(result)],
+                            indexOptions: indexOptions,
                             alertProps: {
                                 message: `${result.name} has been created!`,
                                 open: true,

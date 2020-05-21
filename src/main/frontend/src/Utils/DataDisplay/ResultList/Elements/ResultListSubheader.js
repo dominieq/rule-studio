@@ -81,11 +81,7 @@ function ResultListSubheader(props) {
             >
                 <CircleHelper
                     size={"smaller"}
-                    title={
-                        <p aria-label={"helper text"} style={{margin: 0, textAlign: "justify"}}>
-                            {helper}
-                        </p>
-                    }
+                    title={!disableHelper ? helper : <div aria-hidden={true} />}
                     TooltipProps={{ placement: "left-end" }}
                 />
             </div>
