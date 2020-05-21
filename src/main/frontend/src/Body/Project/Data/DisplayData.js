@@ -1884,73 +1884,56 @@ class DisplayData extends React.Component {
                 nextRows[i][column.key] = "?";
             }
         } else { //editing column
-
-            //both name and valueType of the column has been changed
-            if(ifIsNewColumnElseOldColumn.name !== column.name && ifIsNewColumnElseOldColumn.valueType !== column.valueType) {
-                if(ifIsNewColumnElseOldColumn.valueType === undefined) { //previously attribute was Identification, fill with "?"
-                    for(let i in nextRows) {
-                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
-                        nextRows[i][column.key] = "?";
-                    }
-                } else if(column.valueType === "enumeration") { 
-                    for(let i in nextRows) {
-                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
-                        nextRows[i][column.key] = nextRows[i][column.key].toString();
-                        if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
-                    }
-                } else if(column.valueType === "integer") {
-                    for(let i in nextRows) {
-                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
-                        let tmp = parseInt(nextRows[i][column.key],10);
-                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
-                        else nextRows[i][column.key] = tmp;
-                    }
-                } else if(column.valueType === "real") {
-                    for(let i in nextRows) {
-                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
-                        let tmp = parseFloat(nextRows[i][column.key]);
-                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
-                        else nextRows[i][column.key] = tmp;
-                    }
-                } else {
-                    for(let i in nextRows) {
-                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
-                        nextRows[i][column.key] = "?";
-                    }
-                }
-            // column valueType has been changed so check the content of each row
-            } else if(ifIsNewColumnElseOldColumn.valueType !== column.valueType) {
-                if(ifIsNewColumnElseOldColumn.valueType === undefined) { //previously attribute was Identification, fill with "?"
-                    for(let i in nextRows) {
-                        nextRows[i][column.key] = "?";
-                    }
-                } else if(column.valueType === "enumeration") {
-                    for(let i in nextRows) {
-                        if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
-                    }
-                } else if(column.valueType === "integer") {
-                    for(let i in nextRows) {
-                        let tmp = parseInt(nextRows[i][column.key],10);
-                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
-                        else nextRows[i][column.key] = tmp;
-                    }
-                } else if(column.valueType === "real") {
-                    for(let i in nextRows) {
-                        let tmp = parseFloat(nextRows[i][column.key]);
-                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
-                        else nextRows[i][column.key] = tmp;
-                    }
-                } else {
-                    for(let i in nextRows) {
-                        nextRows[i][column.key] = "?";
-                    }
-                }
-            //column name has been changed (rename all keys in rows)
-            } else if(ifIsNewColumnElseOldColumn.name !== column.name) {
+            
+            //name changed
+            if(ifIsNewColumnElseOldColumn.name !== column.name) {
                 for(let i in nextRows) {
                     nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
                 }
-            }             
+            }
+
+            //value type changed
+            if(ifIsNewColumnElseOldColumn.valueType !== column.valueType) {
+                //old attribute type is identification or new attribute type is identification 
+                if(ifIsNewColumnElseOldColumn.valueType === undefined || column.valueType === undefined) {
+                    for(let i in nextRows) {
+                        nextRows[i][column.key] = "?";
+                    }
+                //change from integer to real
+                } else if(ifIsNewColumnElseOldColumn.valueType === "integer" && column.valueType === "real") {
+                    //do nothing
+                //change from integer to enumeration
+                } else if(ifIsNewColumnElseOldColumn.valueType === "integer" && column.valueType === "enumeration") {
+                    for(let i in nextRows) {
+                        if(!column.domain.includes(nextRows[i][column.key].toString())) nextRows[i][column.key] = "?";
+                    }
+                //change from real to integer
+                } else if(ifIsNewColumnElseOldColumn.valueType === "real" && column.valueType === "integer") {
+                    for(let i in nextRows) {
+                        if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = Math.round(nextRows[i][column.key]);
+                    }
+                //change from real to enumeration
+                } else if(ifIsNewColumnElseOldColumn.valueType === "real" && column.valueType === "enumeration") {
+                    for(let i in nextRows) {
+                        if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
+                    }
+                //change from enumeration to integer
+                } else if(ifIsNewColumnElseOldColumn.valueType === "enumeration" && column.valueType === "integer") {
+                    for(let i in nextRows) {
+                        if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = ifIsNewColumnElseOldColumn.domain.indexOf(nextRows[i][column.key]) + 1;
+                    }
+                //change from enumeration to real
+                } else if(ifIsNewColumnElseOldColumn.valueType === "enumeration" && column.valueType === "real") {
+                    for(let i in nextRows) {
+                        if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = ifIsNewColumnElseOldColumn.domain.indexOf(nextRows[i][column.key]) + 1.0;
+                    }
+                }
+            //just domain changed
+            } else if(ifIsNewColumnElseOldColumn.valueType === "enumeration") {
+                for(let i in nextRows) {
+                    if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
+                }
+            }   
         }
         
         let history = [...this.state.history];
