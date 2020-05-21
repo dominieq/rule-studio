@@ -689,10 +689,16 @@ class Rules extends Component {
                         }}
                         ListSubheaderProps={{
                             disableHelper: false,
-                            helper: "First row of each rule presents decision condition. " +
-                                "Next rows present subsequent elementary conditions. " +
-                                "These elementary conditions are connected by AND. " +
-                                "Last row shows chosen rule’s characteristics.",
+                            helper: (
+                                <p aria-label={"helper-text"} style={{margin: 0, textAlign: "justify"}}>
+                                    {
+                                        "First row of each rule presents decision condition. " +
+                                        "Next rows present subsequent elementary conditions. " +
+                                        "These elementary conditions are connected by AND. " +
+                                        "Last row shows chosen rule’s characteristics."
+                                    }
+                                </p>
+                            ),
                             style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
                         }}
                         noFilterResults={!displayedItems}

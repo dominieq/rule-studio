@@ -211,6 +211,40 @@ class Cones extends Component {
                         onItemSelected: this.onDetailsOpen
                     }}
                     ListSubheaderProps={{
+                        disableHelper: false,
+                        helper: (
+                            <React.Fragment>
+                                <header style={{textAlign: "left"}}>
+                                    {"For an object x, cones are defined as follows:"}
+                                </header>
+                                <ul style={{margin: 0, paddingInlineStart: 16}}>
+                                    <li style={{textAlign: "left"}}>
+                                        <b>a positive cone</b>
+                                        {" is the set of objects that dominate x,"}
+                                    </li>
+                                    <li style={{textAlign: "left"}}>
+                                        <b>a negative cone</b>
+                                        {" contains objects that x dominates,"}
+                                    </li>
+                                    <li style={{textAlign: "left"}}>
+                                        <b>a positive inverse cone</b>
+                                        {" contains objects that x is dominated by,"}
+                                    </li>
+                                    <li style={{textAlign: "left"}}>
+                                        <b>a negative inverse cone</b>
+                                        {" is the set of objects that are dominated by x."}
+                                    </li>
+                                </ul>
+                                <p aria-label={"helper text"} style={{margin: 0, textAlign: "justify"}}>
+                                    {
+                                        "Inverse dominance cones are displayed when it is necessary. " +
+                                        "Inverse dominance cones are going to be hidden " +
+                                        "when they are equal to normal cones."
+                                    }
+                                </p>
+                            </React.Fragment>
+
+                        ),
                         style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
                     }}
                     noFilterResults={!displayedItems}
