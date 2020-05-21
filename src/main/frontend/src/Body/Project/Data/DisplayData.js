@@ -1543,6 +1543,18 @@ class DisplayData extends React.Component {
                             isColumnHeaderMenuOpened: null,
                             columnKeyOfHeaderMenuOpened: -1,
                         })
+                    } else if(cols[i].identifierType !== undefined && cols[i].active === false && selected === "Mark attribute as: active" && this.activeIdentificationAttributeAlreadyExists(i)) {
+                        const message = <span>
+                                            There is already active identification attribute. <br/>
+                                            Deactivate the other identification attribute in order to use this one. 
+                                        </span>;
+                        this.setState({
+                            isOpenedNotification: true,
+                            errorMessage: message,
+                            errorMessageSeverity: 'error',
+                            isColumnHeaderMenuOpened: null,
+                            columnKeyOfHeaderMenuOpened: -1,
+                        })
                     } else {
                         let col = {...cols[i]};
                         let removedColumn = false;
@@ -2218,12 +2230,10 @@ class DisplayData extends React.Component {
             const tmp = [];
             for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
                 if(this.state.history[this.state.historySnapshot].columns[i].key === this.state.columnKeyOfHeaderMenuOpened) {
-                    if(this.state.history[this.state.historySnapshot].columns[i].identifierType === undefined) {
-                        if(this.state.history[this.state.historySnapshot].columns[i].active)
-                            tmp.push("Mark attribute as: inactive");
-                        else if(this.state.history[this.state.historySnapshot].columns[i].active === false)
-                            tmp.push("Mark attribute as: active");
-                    }
+                    if(this.state.history[this.state.historySnapshot].columns[i].active)
+                        tmp.push("Mark attribute as: inactive");
+                    else if(this.state.history[this.state.historySnapshot].columns[i].active === false)
+                        tmp.push("Mark attribute as: active");
 
                     break;
                 }
