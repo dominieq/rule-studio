@@ -1,34 +1,34 @@
 import React from "react";
 import PropTypes from "prop-types";
+import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
-import DialogContent from "@material-ui/core/DialogContent";
+import { mergeClasses } from "../../../utilFunctions";
+import styles from "../styles/MultiColumns.module.css";
 
-const contentStyles = makeStyles({
-    root: {
-        display: "flex",
-        justifyContent: "space-between",
-        margin: "2.5%",
-        overflow: "hidden",
-        padding: 0,
+const useStyles = makeStyles({
+    Children: {
         '& > *': {
-            paddingBottom: 1,
             width: props => { return (90 / props.number) + "%" }
         }
     }
 }, {name: "MultiColumns"});
 
 function MultiColumns(props) {
-    const contentClasses = contentStyles({number: props.numberOfColumns});
+    const { classes: propsClasses, numberOfColumns, ...other } = props;
+    let classes = useStyles({ number: numberOfColumns });
+
+    if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
-        <DialogContent classes={{root: contentClasses.root}}>
-            {props.children}
-        </DialogContent>
-    )
+        <div className={clsx(styles.Root, classes.Children)} {...other} />
+    );
 }
 
 MultiColumns.propTypes = {
     children: PropTypes.node,
+    classes: PropTypes.shape({
+        Children: PropTypes.string
+    }),
     numberOfColumns: PropTypes.number,
 };
 

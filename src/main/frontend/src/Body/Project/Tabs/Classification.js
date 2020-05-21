@@ -25,7 +25,7 @@ import CustomDrawer from "../../../Utils/Containers/CustomDrawer";
 import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import { CSVDialog } from "../../../Utils/Feedback/CSVDialog";
-import { ClassificationDialog } from "../../../Utils/Feedback/DetailsDialog"
+import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog"
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomButtonGroup from "../../../Utils/Inputs/CustomButtonGroup";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
@@ -451,7 +451,7 @@ class Classification extends Component {
                         ]}
                     />
                     {project.result.rules !== null && selected.item !== null &&
-                        <ClassificationDialog
+                        <ClassifiedObjectDialog
                             item={selected.item}
                             onClose={() => this.toggleOpen("details")}
                             open={open.details}

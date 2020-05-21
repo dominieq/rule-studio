@@ -1,14 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
-import { FullscreenDialog, MultiColumns, TitleBar } from "../../../DataDisplay/FullscreenDialog";
+import { FullscreenDialog, MultiColumns, FullscreenHeader } from "../../../DataDisplay/FullscreenDialog";
 import { Slides } from "../../../Navigation/Slides";
 import ObjectTable from "../Elements/ObjectTable";
 import RuleTable, { estimateTableHeight } from "../Elements/RuleTable";
 import TableItemsList from "../Elements/TableItemsList";
 import TraitsTable from "../Elements/TraitsTable";
 
-class ClassificationDialog extends React.PureComponent {
+class ClassifiedObjectDialog extends React.PureComponent {
     constructor(props) {
         super(props);
 
@@ -83,7 +83,8 @@ class ClassificationDialog extends React.PureComponent {
 
         return (
             <FullscreenDialog onEnter={this.onEnter} {...other}>
-                <TitleBar
+                <FullscreenHeader
+                    id={"classified-details-header"}
                     onClose={this.props.onClose}
                     optional={
                         <React.Fragment>
@@ -99,7 +100,7 @@ class ClassificationDialog extends React.PureComponent {
                 />
                 <Slides direction={direction} sliding={sliding} value={slide}>
                     <MultiColumns>
-                        <div id={"classification-object"} style={{width: "40%"}}>
+                        <div id={"classified-object"} style={{width: "40%"}}>
                             <ObjectTable
                                 informationTable={{attributes, objects}}
                                 objectIndex={item.id}
@@ -107,7 +108,7 @@ class ClassificationDialog extends React.PureComponent {
                             />
                         </div>
                         <div
-                            id={"classification-rules"}
+                            id={"classified-covering-rules"}
                             style={{display: "flex", flexDirection: "column", width: "15%"}}
                         >
                             <TableItemsList
@@ -119,22 +120,22 @@ class ClassificationDialog extends React.PureComponent {
                             />
                         </div>
                         <div
-                            id={"classification-rules-traits"}
+                            id={"classified-rules-traits"}
                             style={{display: "flex", flexDirection: "column", width: "40%"}}
                         >
                             {!Number.isNaN(Number(itemInTableIndex)) &&
-                            <React.Fragment>
-                                <div
-                                    id={"rule-table"}
-                                    onClick={() => this.slide("forward", 1)}
-                                    style={{marginBottom: "5%", minHeight: ruleTableHeight}}
-                                >
-                                    <RuleTable rule={ruleSet[itemInTableIndex].rule} />
-                                </div>
-                                <div id={"traits-table"} style={{flexGrow: 1}}>
-                                    <TraitsTable traits={ruleSet[itemInTableIndex].ruleCharacteristics} />
-                                </div>
-                            </React.Fragment>
+                                <React.Fragment>
+                                    <div
+                                        id={"rule-table"}
+                                        onClick={() => this.slide("forward", 1)}
+                                        style={{marginBottom: "5%", minHeight: ruleTableHeight}}
+                                    >
+                                        <RuleTable rule={ruleSet[itemInTableIndex].rule} />
+                                    </div>
+                                    <div id={"traits-table"} style={{flexGrow: 1}}>
+                                        <TraitsTable traits={ruleSet[itemInTableIndex].ruleCharacteristics} />
+                                    </div>
+                                </React.Fragment>
                             }
                         </div>
                     </MultiColumns>
@@ -147,7 +148,7 @@ class ClassificationDialog extends React.PureComponent {
     }
 }
 
-ClassificationDialog.propTypes = {
+ClassifiedObjectDialog.propTypes = {
     item: PropTypes.exact({
         id: PropTypes.number,
         name: PropTypes.shape({
@@ -172,4 +173,4 @@ ClassificationDialog.propTypes = {
     ruleSet: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default ClassificationDialog;
+export default ClassifiedObjectDialog;

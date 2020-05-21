@@ -33,7 +33,7 @@ import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
-import { CrossValidationDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomTextField from "../../../Utils/Inputs/CustomTextField";
 import StyledButton from "../../../Utils/Inputs/StyledButton";
@@ -679,7 +679,7 @@ class CrossValidation extends Component {
                         ]}
                     />
                     {Array.isArray(folds) && Boolean(folds.length) && selected.item !== null &&
-                        <CrossValidationDialog
+                        <ClassifiedObjectDialog
                             item={selected.item}
                             onClose={() => this.toggleOpen("details")}
                             open={open.details}
