@@ -163,7 +163,7 @@ export default function IconLabelButtons(props) {
             }
         </CustomTooltip>
 
-        <CustomTooltip disableGpu={true} title={`undo changes`}>
+        <CustomTooltip disableGpu={true} title={`Undo changes`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
@@ -187,7 +187,7 @@ export default function IconLabelButtons(props) {
             }
         </CustomTooltip>
 
-        <CustomTooltip disableGpu={true} title={`redo changes`}>
+        <CustomTooltip disableGpu={true} title={`Redo changes`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
               disableElevation={true}
