@@ -1,17 +1,16 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import CustomHeader from "../../../Surfaces/CustomHeader";
+import Typography from "@material-ui/core/Typography";
 import CustomTooltip from "../../CustomTooltip";
 import StyledButton from "../../../Inputs/StyledButton";
-import Typography from "@material-ui/core/Typography";
 import WindowClose from "mdi-material-ui/WindowClose";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(theme=> ({
     root: {
-        flex: "0 0 auto",
-        padding: "16px 0 16px 24px",
+        padding: "16px 0 16px 24px"
     },
     rootOverflow: {
         overflowX: "hidden",
@@ -41,7 +40,7 @@ const useStyles = makeStyles(theme => ({
         marginRight: "auto",
         paddingRight: 8,
     },
-    flexTitle: {
+    titleFlex: {
         alignItems: "center",
         display: "flex",
         minWidth: "fit-content",
@@ -78,26 +77,45 @@ const useStyles = makeStyles(theme => ({
             marginTop: "1em",
         }
     }
-}), {name: "TitleBar"});
+}), {name: "FullscreenHeader"});
 
-function TitleBar(props) {
-    const { onClose, optional, title } = props;
+function HeaderElement(props) {
+    const { children, component, ...other } = props;
+    return React.createElement(component, { ...other }, children);
+}
+
+HeaderElement.propTypes = {
+    component: PropTypes.elementType.isRequired
+};
+
+function FullscreenHeader(props) {
+    const {
+        closeIcon,
+        CloseButtonProps,
+        CloseTooltipProps,
+        HeaderComponent,
+        HeaderProps,
+        id,
+        onClose,
+        optional,
+        title
+    } = props;
 
     const classes = useStyles();
     const titleIsArray = React.isValidElement(title);
     const optionalIsArray = React.isValidElement(optional);
 
     const onMouseEnter = () => {
-        document.getElementById("title-bar").style.overflowX = "hidden";
+        document.getElementById(id).style.overflowX = "hidden";
     }
 
     const onMouseLeave = () => {
-        document.getElementById("title-bar").style.overflowX = "";
+        document.getElementById(id).style.overflowX = "";
     }
 
     const onWheel = (event) => {
-        let bar = document.getElementById("title-bar");
-        let barScrollPosition = document.getElementById("title-bar").scrollLeft;
+        let bar = document.getElementById(id);
+        let barScrollPosition = document.getElementById(id).scrollLeft;
 
         bar.scrollTo({
             behavior: "auto",
@@ -115,12 +133,14 @@ function TitleBar(props) {
     });
 
     return (
-        <CustomHeader
+        <HeaderElement
             className={clsx(classes.root, classes.rootOverflow)}
-            id={"title-bar"}
+            component={HeaderComponent}
+            id={id}
             onWheel={onWheel}
+            {...HeaderProps}
         >
-            <div className={clsx(classes.title, {[classes.flexTitle]: titleIsArray})}>
+            <div className={clsx(classes.title, {[classes.titleFlex]: titleIsArray})}>
                 {title}
             </div>
             <div className={clsx(classes.close, classes.closeSticky)}>
@@ -133,7 +153,7 @@ function TitleBar(props) {
                         {optional}
                     </Typography>
                 }
-                <CustomTooltip title={"Close details"}>
+                <CustomTooltip title={"Close details"} {...CloseTooltipProps}>
                     <StyledButton
                         aria-label={"close-button"}
                         isIcon={true}
@@ -141,19 +161,30 @@ function TitleBar(props) {
                         onMouseEnter={onMouseEnter}
                         onMouseLeave={onMouseLeave}
                         themeVariant={"secondary"}
+                        {...CloseButtonProps}
                     >
-                        <WindowClose />
+                        {closeIcon != null ? closeIcon : <WindowClose />}
                     </StyledButton>
                 </CustomTooltip>
             </div>
-        </CustomHeader>
+        </HeaderElement>
     )
 }
 
-TitleBar.propTypes = {
+FullscreenHeader.propTypes = {
+    closeIcon: PropTypes.node,
+    CloseButtonProps: PropTypes.object,
+    CloseTooltipProps: PropTypes.object,
+    HeaderComponent: PropTypes.elementType,
+    HeaderProps: PropTypes.object,
+    id: PropTypes.string.isRequired,
     onClose: PropTypes.func,
     optional: PropTypes.node,
-    title: PropTypes.node,
+    title: PropTypes.node
 };
 
-export default TitleBar;
+FullscreenHeader.defaultProps = {
+    HeaderComponent: CustomHeader
+};
+
+export default FullscreenHeader;

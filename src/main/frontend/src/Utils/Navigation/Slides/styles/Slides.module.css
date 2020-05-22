@@ -1,0 +1,16 @@
+.Root {
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+}
+
+.Slidable {
+    display: flex;
+    height: 100%;
+}
+
+.Element {
+    display: flex;
+    flex: 1 0 100%;
+    height: 100%;
+}
