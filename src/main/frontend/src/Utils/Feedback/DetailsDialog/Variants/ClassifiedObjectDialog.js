@@ -280,7 +280,7 @@ class ClassifiedObjectDialog extends React.PureComponent {
                             style={{display: "flex", flexDirection: "column", width: "15%"}}
                         >
                             <TableItemsList
-                                headerText={"Indices of covering rules"}
+                                headerText={"Covering rules"}
                                 itemIndex={ruleInTableIndex}
                                 itemText={"Rule"}
                                 onItemInTableSelected={this.onRuleInTableSelected}
