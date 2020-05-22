@@ -10,7 +10,7 @@ function OutdatedData(props) {
             title={
                 <React.Fragment>
                     <header style={{textAlign: "left"}}>
-                        Results in this tab are based on other data and may be invalid.
+                        Results in this tab are outdated.
                     </header>
                     <footer style={{textAlign: "left"}}>
                         Please recalculate to refresh results.

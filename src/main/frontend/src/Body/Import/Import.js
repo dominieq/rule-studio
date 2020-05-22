@@ -28,7 +28,7 @@ class Import extends Component{
 
     onProjectNameChange = (event) => {
         this.setState({
-            name: event.target.value,
+            name: event.target.value
         });
     };
 
@@ -42,7 +42,7 @@ class Import extends Component{
         }), () => {
             if (!this.state.checked) {
                 this.setState({
-                    expand: false,
+                    expand: false
                 });
             }
         });
@@ -50,7 +50,7 @@ class Import extends Component{
 
     onExpandClick = () => {
         this.setState(prevState => ({
-            expand: !prevState.expand,
+            expand: !prevState.expand
         }));
     };
 
@@ -112,18 +112,8 @@ class Import extends Component{
         if (csvFile) {
             this.setState({ open: true });
         } else {
-            this.props.onFilesAccepted(name, files, null);
+            this.props.onFilesAccepted(name.toString().trim(), files, null);
         }
-    };
-
-    onClearClick = () => {
-        this.setState({
-            checked: false,
-            csvFile: false,
-            expand: false,
-            files: [],
-            name: "new project"
-        })
     };
 
     onCSVDialogClose = (csvSpecs) => {
@@ -136,6 +126,16 @@ class Import extends Component{
                 this.props.onFilesAccepted(name, files, csvSpecs);
             }
         });
+    };
+
+    onClearClick = () => {
+        this.setState({
+            checked: false,
+            csvFile: false,
+            expand: false,
+            files: [],
+            name: "new project"
+        })
     };
 
     render() {
@@ -167,7 +167,7 @@ class Import extends Component{
                             onChange={this.onCheckboxChange}
                         />
                     </div>
-                    <Collapse in={checked} unmountOnExit={true}>
+                    <Collapse in={checked} mountOnEnter={true} unmountOnExit={true}>
                         <div aria-label={"outer collapse"} className={styles.Collapse}>
                             <FileSelectZone
                                 variant={"metadata"}
@@ -180,7 +180,7 @@ class Import extends Component{
                                 onClick={this.onExpandClick}
                                 expanded={expand}
                             />
-                            <Collapse in={expand} unmountOnExit={true}>
+                            <Collapse in={expand} mountOnEnter={true} unmountOnExit={true}>
                                 <div aria-label={"inner collapse"} className={styles.Collapse}>
                                     <FileSelectZone
                                         variant={"data"}

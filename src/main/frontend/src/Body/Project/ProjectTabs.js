@@ -330,7 +330,7 @@ class ProjectTabs extends React.Component {
                     <StyledTab
                         label={
                             <OutdatedData invisible={!showAlert[4]}>
-                                CrossValidation
+                                Cross-Validation
                             </OutdatedData>
                         }
                         {...this.getTabProps(5)}

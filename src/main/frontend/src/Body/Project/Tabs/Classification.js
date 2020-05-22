@@ -24,6 +24,7 @@ import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer";
 import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
+import CircleHelper from "../../../Utils/Feedback/CircleHelper";
 import { CSVDialog } from "../../../Utils/Feedback/CSVDialog";
 import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog"
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
@@ -421,12 +422,20 @@ class Classification extends Component {
                                 </CalculateButton>
                             </CustomUpload>
                         </CustomButtonGroup>
-                        {data &&
-                        <MatrixButton
-                            onClick={() => this.toggleOpen("matrix")}
-                            style={{marginLeft: 16}}
-                            title={"Show ordinal misclassification matrix and it's details"}
+                        <CircleHelper
+                            size={"smaller"}
+                            title={"Attributes are taken from DATA."}
+                            TooltipProps={{ placement: "bottom"}}
+                            WrapperProps={{ style: { marginLeft: 16 }}}
                         />
+                        {data &&
+                            <React.Fragment>
+                                <StyledDivider margin={16} />
+                                <MatrixButton
+                                    onClick={() => this.toggleOpen("matrix")}
+                                    title={"Show ordinal misclassification matrix and it's details"}
+                                />
+                            </React.Fragment>
                         }
                         <span style={{flexGrow: 1}} />
                         <FilterTextField onChange={this.onFilterChange} />
