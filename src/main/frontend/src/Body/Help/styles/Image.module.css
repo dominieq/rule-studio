@@ -1,0 +1,10 @@
+.Root {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.Image {
+    height: 75%;
+    width: 75%;
+}
