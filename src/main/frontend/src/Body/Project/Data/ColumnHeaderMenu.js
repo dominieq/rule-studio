@@ -21,14 +21,12 @@ export default function SimpleMenu(props) {
     <div>
       <Menu
         id="simple-menu"
-        anchorEl={props.anchorEl}
         keepMounted
-        open={Boolean(props.anchorEl)}
+        open={Boolean(props.event.currentTarget)}
         onClose={handleClose}
         classes={{...menuClasses}}
-        anchorOrigin={{ vertical: "center", horizontal: "center" }}
-        transformOrigin={{ vertical: "top", horizontal: "center" }}
-        getContentAnchorEl={null}
+        anchorPosition={{ top: props.event.clientY, left: props.event.clientX }}
+        anchorReference={"anchorPosition"}
       >
         {props.items.map((x,index) => { 
           return <MenuItem key={index} onClick={handleClose} data-chosen-option={x}>{x}</MenuItem>})

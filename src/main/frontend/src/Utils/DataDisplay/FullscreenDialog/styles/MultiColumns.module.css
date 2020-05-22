@@ -1,0 +1,7 @@
+.Root {
+    display: flex;
+    flex: 1 1 100%;
+    justify-content: space-between;
+    padding: 2.5%;
+    overflow: hidden;
+}

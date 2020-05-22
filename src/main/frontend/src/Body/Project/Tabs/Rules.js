@@ -14,6 +14,7 @@ import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
+import CircleHelper from "../../../Utils/Feedback/CircleHelper";
 import { RulesDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import { createCategories, simpleSort, SortButton, SortMenu } from "../../../Utils/Inputs/SortMenu";
@@ -21,7 +22,7 @@ import CustomUpload from "../../../Utils/Inputs/CustomUpload";
 import StyledButton from "../../../Utils/Inputs/StyledButton";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import SvgIcon from "@material-ui/core/SvgIcon";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import FileUpload from "mdi-material-ui/FileUpload";
 import SaveIcon from "@material-ui/icons/Save";
 import { mdiTextBox } from '@mdi/js';
 
@@ -525,9 +526,13 @@ class Rules extends Component {
                     displayedItems: newItems
                 });
             } else {
-                let newItems = originalItems.map(item => (
-                    items[item.id] != null ? items[item.id] : null
-                )).filter(element => element != null);
+                let newItems = [];
+
+                if (originalItems != null) {
+                    newItems = originalItems.map(item => (
+                        items[item.id] != null ? items[item.id] : null
+                    )).filter(element => element != null);
+                }
 
                 this.setState({
                     displayedItems: newItems
@@ -612,10 +617,16 @@ class Rules extends Component {
                                     component={"span"}
                                     themeVariant={"primary"}
                                 >
-                                    <CloudUploadIcon />
+                                    <FileUpload />
                                 </StyledButton>
                             </CustomUpload>
                         </CustomTooltip>
+                        <CircleHelper
+                            size={"smaller"}
+                            title={"Attributes are taken from DATA."}
+                            TooltipProps={{ placement: "bottom" }}
+                            WrapperProps={{ style: { marginLeft: 16 }}}
+                        />
                         <StyledDivider margin={16} />
                         <CustomTooltip title={"Save rules to RuleML"}>
                             <StyledButton
@@ -685,10 +696,16 @@ class Rules extends Component {
                         }}
                         ListSubheaderProps={{
                             disableHelper: false,
-                            helper: "First row of each rule presents decision condition. " +
-                                "Next rows present subsequent elementary conditions. " +
-                                "These elementary conditions are connected by AND. " +
-                                "Last row shows chosen rule’s characteristics.",
+                            helper: (
+                                <p aria-label={"helper-text"} style={{margin: 0, textAlign: "justify"}}>
+                                    {
+                                        "First row of each rule presents decision condition. " +
+                                        "Next rows present subsequent elementary conditions. " +
+                                        "These elementary conditions are connected by AND. " +
+                                        "Last row shows chosen rule’s characteristics."
+                                    }
+                                </p>
+                            ),
                             style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
                         }}
                         noFilterResults={!displayedItems}

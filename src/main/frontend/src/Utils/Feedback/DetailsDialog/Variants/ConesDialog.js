@@ -1,12 +1,12 @@
-import React, {PureComponent} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
-import DetailsDialog from "../DetailsDialog";
+import { FullscreenDialog, MultiColumns, FullscreenHeader} from "../../../DataDisplay/FullscreenDialog";
 import TablesList from "../Elements/TablesList";
 import ObjectsComparisonTable from "../Elements/ObjectsComparisonTable";
 import TableItemsList from "../Elements/TableItemsList";
 
-class ConesDialog extends PureComponent {
+class ConesDialog extends React.PureComponent {
     constructor(props) {
         super(props);
 
@@ -59,39 +59,46 @@ class ConesDialog extends PureComponent {
         const { item, items, projectResult, ...other } = this.props;
 
         return (
-            <DetailsDialog onExited={this.onExited} title={this.getConesTitle()} {...other}>
-                <div id={"cones-tables"} style={{width: "22.5%"}}>
-                    <TablesList
-                        headerText={"Dominance cones"}
-                        onTableSelected={this.onTableSelected}
-                        tableIndex={tableIndex}
-                        tables={item.tables}
-                    />
-                </div>
-                <div id={"cones-table-content"} style={{display: "flex", flexDirection: "column", width: "22.5%"}}>
-                    {!Number.isNaN(Number(tableIndex)) &&
-                        <TableItemsList
-                            getName={this.getName}
-                            headerText={Object.keys(item.tables)[tableIndex]}
-                            itemIndex={itemInTableIndex}
-                            onItemInTableSelected={this.onItemInTableSelected}
-                            table={Object.values(item.tables)[tableIndex]}
-                        />
-                    }
-                </div>
-                <div id={"cones-comparison"} style={{width: "50%"}}>
-                    {!Number.isNaN(Number(itemInTableIndex)) &&
-                        <ObjectsComparisonTable
-                            informationTable={projectResult.informationTable}
-                            objectIndex={item.id}
-                            objectHeader={item.name.toString()}
-                            objectInTableIndex={itemInTableIndex}
-                            objectInTableHeader={items ? items[itemInTableIndex].name.toString() : undefined}
+            <FullscreenDialog onExited={this.onExited} {...other}>
+                <FullscreenHeader
+                    id={"cones-details-header"}
+                    onClose={this.props.onClose}
+                    title={this.getConesTitle()}
+                />
+                <MultiColumns>
+                    <div id={"cones-tables"} style={{width: "22.5%"}}>
+                        <TablesList
+                            headerText={"Dominance cones"}
+                            onTableSelected={this.onTableSelected}
                             tableIndex={tableIndex}
+                            tables={item.tables}
                         />
-                    }
-                </div>
-            </DetailsDialog>
+                    </div>
+                    <div id={"cones-table-content"} style={{display: "flex", flexDirection: "column", width: "22.5%"}}>
+                        {!Number.isNaN(Number(tableIndex)) &&
+                            <TableItemsList
+                                getName={this.getName}
+                                headerText={Object.keys(item.tables)[tableIndex]}
+                                itemIndex={itemInTableIndex}
+                                onItemInTableSelected={this.onItemInTableSelected}
+                                table={Object.values(item.tables)[tableIndex]}
+                            />
+                        }
+                    </div>
+                    <div id={"cones-comparison"} style={{width: "50%"}}>
+                        {!Number.isNaN(Number(itemInTableIndex)) &&
+                            <ObjectsComparisonTable
+                                informationTable={projectResult.informationTable}
+                                objectIndex={item.id}
+                                objectHeader={item.name.toString()}
+                                objectInTableIndex={itemInTableIndex}
+                                objectInTableHeader={items ? items[itemInTableIndex].name.toString() : undefined}
+                                tableIndex={tableIndex}
+                            />
+                        }
+                    </div>
+                </MultiColumns>
+            </FullscreenDialog>
         );
     }
 }

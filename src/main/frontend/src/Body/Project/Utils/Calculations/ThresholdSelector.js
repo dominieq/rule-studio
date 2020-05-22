@@ -14,7 +14,7 @@ const tooltip = {
         "Note that for a gain-type consistency measure, like rough membership, one checks if measure’s value is \u2265 t. " +
         "However, for a cost-type consistency measure, like epsilon, one checks if measure’s value is \u2264 t.",
     mainExtended: " is used when calculating lower approximations of unions of ordered decision classes " +
-        "according to the Variable Consistency Dominance-based Rough Set Approach (VC-DRSA) ), " +
+        "according to the Variable Consistency Dominance-based Rough Set Approach (VC-DRSA), " +
         "and then, when inducing decision rules. " +
         "In VC-DRSA, an object y, belonging to a union of ordered decision classes X, " +
         "is considered to belong to the lower approximation of X if selected consistency measure, " +

@@ -302,7 +302,7 @@ public class ClassificationService {
         }
         OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, testingInformationTable.getDecisions(), suggestedDecisions);
 
-        Classification classification = new Classification(classificationResults, testingInformationTable, orderOfDecisions, indicesOfCoveringRules, ordinalMisclassificationMatrix, typeOfClassifier, typeOfDefaultClassificationResult, learningInformationTable.getHash(), ruleSetWithCharacteristics.getLearningInformationTableHash());
+        Classification classification = new Classification(classificationResults, testingInformationTable, orderOfDecisions, indicesOfCoveringRules, ordinalMisclassificationMatrix, typeOfClassifier, typeOfDefaultClassificationResult, learningInformationTable.getHash(), ruleSetWithCharacteristics.getHash());
         return classification;
     }
 

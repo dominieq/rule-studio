@@ -81,9 +81,9 @@ public class Project {
             }
         }
         if(this.rules != null) {
-            if(rules.getDataHash() == null) {
+            if(rules.getRuleSet().getLearningInformationTableHash() == null) {
                 rules.setCurrentData(null);
-            } else if (rules.getDataHash().equals(dataHash)) {
+            } else if (rules.getRuleSet().getLearningInformationTableHash().equals(dataHash)) {
                 rules.setCurrentData(true);
             } else {
                 rules.setCurrentData(false);
@@ -164,9 +164,9 @@ public class Project {
         this.rules = rules;
 
         if(this.classification != null) {
-            if ((this.rules == null) || (this.rules.getDataHash() == null)) {
+            if (this.rules == null) {
                 classification.setCurrentRuleSet(null);
-            } else if (this.rules.getDataHash().equals(classification.getRuleSetHash())) {
+            } else if (this.rules.getRuleSet().getHash().equals(classification.getRuleSetHash())) {
                 classification.setCurrentRuleSet(true);
             } else {
                 classification.setCurrentRuleSet(false);
