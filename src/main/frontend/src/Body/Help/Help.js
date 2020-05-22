@@ -36,6 +36,10 @@ const drawerStyles = makeStyles(theme => ({
 
 function Help(props) {
     const [marginRight, setMarginRight] = React.useState(0);
+    const [selected, setSelected] = React.useState("chapter-1");
+    let chapterPositions = [];
+
+    const timer = null;
 
     const { upperMargin } = props;
     const textClasses = textStyles();
@@ -44,20 +48,51 @@ function Help(props) {
     const drawerRef = React.useRef(null);
 
     useEffect(() => {
-        if (drawerRef.current !== null) {
+        if (drawerRef.current != null) {
             setMarginRight(drawerRef.current.offsetWidth);
         }
+
+        if (Array.isArray(chapterPositions) && chapterPositions.length === 0) {
+
+        }
+
+        return () => {
+            clearTimeout(timer);
+        }
     });
+
+    const onScroll = () => {
+        const scrollable = document.getElementById("scrollable");
+
+        clearTimeout(timer);
+        setTimeout(() => {
+            for (let i = 1; i <= chapterPositions.length; i++) {
+                if (chapterPositions[i] - 20 >= scrollable.scrollTop && chapterPositions[i] + 20 <= scrollable.scrollTop) {
+                    setSelected(`chapter-${i}`);
+                }
+            }
+        }, 250);
+    };
+
+    const scrollTo = (id) => {
+        const chapter = document.getElementById(id);
+        const scrollable = document.getElementById("scrollable");
+
+        scrollable.scrollTop = chapter.offsetTop - chapter.offsetHeight - 20;
+        setSelected(id);
+    };
 
     return (
         <div className={styles.Root} id={"help"}>
             <div
                 aria-label={"container"}
                 className={clsx(styles.Text, textClasses.root)}
+                id={"scrollable"}
+                onScroll={onScroll}
                 style={{marginRight: marginRight}}
             >
                 <div aria-label={"scrollable"} className={styles.Scrollable}>
-                    {/* Main text goes here */}
+                    {/* Chapter 1: Creating project */}
                 </div>
             </div>
             <Drawer
