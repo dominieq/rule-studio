@@ -450,12 +450,14 @@ class Classification extends Component {
                             }
                         ]}
                     />
-                    {project.result.rules !== null && selected.item !== null &&
+                    {project.result.rules != null && selected.item != null &&
                         <ClassifiedObjectDialog
+                            informationTable={project.result.informationTable}
                             item={selected.item}
                             onClose={() => this.toggleOpen("details")}
                             open={open.details}
                             ruleSet={project.result.rules.ruleSet}
+                            settings={project.settings}
                         />
                     }
                     {data !== null &&

@@ -509,6 +509,7 @@ class CrossValidation extends Component {
 
     render() {
         const { alertProps, data, folds, displayedItems, loading, open, parameters, selected } = this.state;
+        const { project } = this.props;
 
         return (
             <CustomBox id={"cross-validation"} variant={"Tab"}>
@@ -680,10 +681,12 @@ class CrossValidation extends Component {
                     />
                     {Array.isArray(folds) && Boolean(folds.length) && selected.item !== null &&
                         <ClassifiedObjectDialog
+                            informationTable={folds[selected.foldIndex].validationTable}
                             item={selected.item}
                             onClose={() => this.toggleOpen("details")}
                             open={open.details}
                             ruleSet={folds[selected.foldIndex].ruleSet}
+                            settings={project.settings}
                         />
                     }
                     {data !== null &&

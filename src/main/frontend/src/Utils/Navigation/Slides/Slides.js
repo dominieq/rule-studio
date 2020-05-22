@@ -24,7 +24,16 @@ const getOrder = (index, value, count, reverse) => {
 };
 
 function Slides(props) {
-    const { children, direction, duration, mountNeighboursOnly, orientation, sliding, value } = props;
+    const {
+        children,
+        direction,
+        duration,
+        getSlotStyle,
+        mountNeighboursOnly,
+        orientation,
+        sliding,
+        value
+    } = props;
 
     const horizontalTransition = getHorizontalTransition(sliding, direction, duration);
     const verticalTransition = getVerticalTransition(sliding, direction, duration);
@@ -55,7 +64,10 @@ function Slides(props) {
                         className={styles.Element}
                         key={index}
                         role={"listitem"}
-                        style={{order: getOrder(index, value, count, direction === "backward")}}
+                        style={{
+                            order: getOrder(index, value, count, direction === "backward"),
+                            ...typeof getSlotStyle === "function" ? getSlotStyle(index) : {}
+                        }}
                     >
                         {mountNeighboursOnly ?
                             index <= value + 1 && index >= value - 1 ? child : null
@@ -72,6 +84,7 @@ Slides.propTypes = {
     children: PropTypes.node,
     direction: PropTypes.oneOf(["backward", "forward"]).isRequired,
     duration: PropTypes.number,
+    getSlotStyle: PropTypes.func,
     mountNeighboursOnly: PropTypes.bool,
     orientation: PropTypes.oneOf(["horizontal", "vertical"]),
     sliding: PropTypes.bool.isRequired,
