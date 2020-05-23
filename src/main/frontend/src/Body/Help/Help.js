@@ -67,11 +67,11 @@ function Help(props) {
         clearTimeout(timer);
         setTimeout(() => {
             for (let i = 1; i <= chapterPositions.length; i++) {
-                if (chapterPositions[i] - 20 >= scrollable.scrollTop && chapterPositions[i] + 20 <= scrollable.scrollTop) {
+                if (chapterPositions[i-1] - 20 <= scrollable.scrollTop ) {
                     setSelected(`chapter-${i}`);
                 }
             }
-        }, 250);
+        }, 100);
     };
 
     const scrollTo = (id) => {
