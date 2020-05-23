@@ -22,6 +22,15 @@ export const LightTheme = createMuiTheme( {
             default: "#D3D3D3",
             defaultDark: "#939393",
             defaultLight: "#DBDBDB",
+            main: "#FFF",
+            mainDark: "#B2B2B2",
+            mainLight: "#FFF",
+            sub: "#2196F3",
+            subDark: "#1769AA", // TODO change color
+            subLight: "#4DABF5",
+            special: "#1769AA",
+            specialDark: "#104976",
+            specialLight: "#4587BB"
         },
         button: {
             primary: "#2196f3",
@@ -65,6 +74,17 @@ export const LightTheme = createMuiTheme( {
         },
         text: {
             default: "#000",
+            defaultDark: "#000",
+            defaultLight: "#333333",
+            main: "#2196F3",
+            mainDark: "#1769AA",
+            mainLight: "#4DABF5",
+            sub: "#FFF",
+            subDark: "#B2B2B2",
+            subLight: "#FFF",
+            special: "#F50057",
+            specialDark: "#AB003C",
+            specialLight: "#F73378"
         },
         reactDataGrid: {
             cell: {
@@ -154,7 +174,16 @@ export const DarkTheme = createMuiTheme({
         background: {
             default: "#2A3439",
             defaultDark: "#1D2427",
-            defaultLight: "#545C60"
+            defaultLight: "#545C60",
+            main: "#545F66",
+            mainDark: "#3A4247",
+            mainLight: "#767F84",
+            sub: "#ABFAA9",
+            subDark: "#6CE06A", // "#77AF76",
+            subLight: "#BBFBBA",
+            special: "#66FF66",
+            specialDark: "#47B247",
+            specialLight: "#84FF84"
         },
         button: {
             primary: "#ABFAA9",
@@ -197,7 +226,18 @@ export const DarkTheme = createMuiTheme({
             textIdle: "rgb(102,255,102, 0.4)"
         },
         text: {
-            default: "#66FF66",
+            default: "#ABFAA9",
+            defaultDark: "#6CE06A", //"#77AF76",
+            defaultLight: "#BBFBBA",
+            main: "#66FF66",
+            mainDark: "#47B247",
+            mainLight: "#84FF84",
+            sub: "#2A3439",
+            subDark: "#1D2427",
+            subLight: "#545C60",
+            special: "#E8D963",
+            specialDark: "#A29745",
+            specialLight: "#ECE082"
         },
         reactDataGrid: {
             cell: {
