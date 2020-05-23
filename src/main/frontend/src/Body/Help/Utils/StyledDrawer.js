@@ -6,7 +6,8 @@ const StyledDrawer = withStyles(theme => ({
     paper: {
         backgroundColor: theme.palette.background.main1,
         borderLeft: "none",
-        color: theme.palette.background.sub
+        color: theme.palette.background.sub,
+        minWidth: "15%"
     }
 }), {name: "Help"})(props => <Drawer {...props} />);
 

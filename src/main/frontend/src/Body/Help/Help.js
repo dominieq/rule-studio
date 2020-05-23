@@ -1,9 +1,37 @@
 import React from 'react';
 import PropTypes from "prop-types";
-import { CreatingProject } from "./Chapters";
+import {
+    Classification,
+    ClassUnions,
+    CreatingProject,
+    CrossValidation,
+    Data,
+    DeletingProject,
+    DominanceCones,
+    Navigating,
+    ProjectFiles,
+    ProjectSettings,
+    RenamingProject,
+    Rules
+} from "./Chapters";
 import { StyledDrawer, StyledListItem, StyledScrollable } from "./Utils";
 import List from "@material-ui/core/List";
 import styles from "./styles/Help.module.css";
+
+const CHAPTERS = [
+    "Navigating",
+    "Creating project",
+    "Renaming project",
+    "Deleting project",
+    "Project settings",
+    "Project files",
+    "Data",
+    "Dominance cones",
+    "Class unions",
+    "Rules",
+    "Classification",
+    "Cross-validation"
+];
 
 class Help extends React.PureComponent {
     constructor(props) {
@@ -11,7 +39,7 @@ class Help extends React.PureComponent {
 
         this.state = {
             marginRight: 0,
-            selected: "chapter-1"
+            selected: 1
         };
 
         this.chapterPositions = [];
@@ -26,8 +54,12 @@ class Help extends React.PureComponent {
             });
         }
 
-        if (Array.isArray(this.chapterPositions) && this.chapterPositions.length === 0) {
+        if (Array.isArray(this.chapterPositions)) {
+            for (let i = 1; i <= CHAPTERS.length; i++) {
+                const chapter = document.getElementById(`chapter-${i}`);
 
+                this.chapterPositions.push(chapter.offsetTop - chapter.offsetHeight - 20);
+            }
         }
     }
 
@@ -40,10 +72,12 @@ class Help extends React.PureComponent {
 
         clearTimeout(this.timer);
         setTimeout(() => {
-            for (let i = 1; i <= this.chapterPositions.length; i++) {
-                if (this.chapterPositions[i-1] - 20 <= scrollable.scrollTop ) {
+            for (let i = 1; i <= CHAPTERS.length; i++) {
+                if (this.chapterPositions[i - 1] - 20 <= scrollable.scrollTop &&
+                    this.chapterPositions[i - 1] + 20 >= scrollable.scrollTop ) {
+
                     this.setState({
-                        selected: `chapter-${i}`
+                        selected: i
                     });
                 }
             }
@@ -51,7 +85,7 @@ class Help extends React.PureComponent {
     };
 
     scrollTo = (id) => {
-        const chapter = document.getElementById(id);
+        const chapter = document.getElementById(`chapter-${id}`);
         const scrollable = document.getElementById("scrollable");
 
         scrollable.scrollTop = chapter.offsetTop - chapter.offsetHeight - 20;
@@ -73,7 +107,18 @@ class Help extends React.PureComponent {
                     style={{marginRight: marginRight}}
                 >
                     <div aria-label={"text-container"} className={styles.Scrollable}>
-                        {/* Chapter 1: Creating project */}
+                        <Navigating chapterId={"chapter-1"} />
+                        <CreatingProject chapterId={"chapter-2"} />
+                        <RenamingProject chapterId={"chapter-3"} />
+                        <DeletingProject chapterId={"chapter-4"} />
+                        <ProjectSettings chapterId={"chapter-5"} />
+                        <ProjectFiles chapterId={"chapter-6"} />
+                        <Data chapterId={"chapter-7"} />
+                        <DominanceCones chapterId={"chapter-8"} />
+                        <ClassUnions chapterId={"chapter-9"} />
+                        <Rules chapterId={"chapter-10"} />
+                        <Classification chapterId={"chapter-11"} />
+                        <CrossValidation chapterId={"chapter-12"} />
                     </div>
                 </StyledScrollable>
                 <StyledDrawer
@@ -87,12 +132,15 @@ class Help extends React.PureComponent {
                     variant={"permanent"}
                 >
                     <List disablePadding={true}>
-                        <StyledListItem
-                            selected={selected === "chapter-1"}
-                            onClick={() => this.scrollTo("chapter-1")}
-                        >
-                            Chapter 1
-                        </StyledListItem>
+                        {CHAPTERS.map((value, index) => (
+                            <StyledListItem
+                                onClick={() => this.scrollTo(index + 1)}
+                                key={index}
+                                selected={selected === index + 1}
+                            >
+                                {value}
+                            </StyledListItem>
+                        ))}
                     </List>
                 </StyledDrawer>
             </div>

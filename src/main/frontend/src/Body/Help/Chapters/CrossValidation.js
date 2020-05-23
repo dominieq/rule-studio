@@ -45,7 +45,7 @@ function CrossValidation(props) {
                         dialog for the first time. The table on the left contains evaluations of the selected object with respect to the considered
                         attributes. Furthermore, the list in the middle consists of rules that are covering selected object. In order to display rule’s
                         decision, conditions and characteristics, click on an item from the list in the middle. Then, a list and a table appear on the
-                        right. The list at the top depicts rule’s decisionin the first row and conditions in subsequent rows. The table at the bottom
+                        right. The list at the top depicts rule’s decision in the first row and conditions in subsequent rows. The table at the bottom
                         shows rule’s characteristics. Note that you can also see in the title the original and suggested decision, as well as the
                         certainty of provided suggestion. There is an option to examine objects from a different fold. In order to do that,
                         click on the select menu and pick another fold number from the list.

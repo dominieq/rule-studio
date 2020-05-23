@@ -31,7 +31,7 @@ function DominanceCones(props) {
                         enter this dialog for the first time. The list on the left contains all dominance cones for the selected object.
                         If you click on one of the elements, a new list is displayed in the middle. This new list contains objects that belong
                         to the selected dominance cone. You can go further and select one of the objects from this list. Then, you are going
-                        to see a table with a comparison between the object in the origin ofthe cone and selected object.
+                        to see a table with a comparison between the object in the origin of the cone and selected object.
                     </Typography>
                 </React.Fragment>
             }

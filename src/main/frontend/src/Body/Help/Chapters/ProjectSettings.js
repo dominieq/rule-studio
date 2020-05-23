@@ -15,9 +15,9 @@ function ProjectSettings(props) {
                 <React.Fragment>
                     <Typography>
                         RuLeStudio has an option to customize some of project’s settings. Currently there is a menu
-                        to select default names for objects. If you wish to choose different name to bedisplayed for
-                        your objects, click on “Project settings” button. A dialog is goingto be displayed.
-                        If there are no description or identification attributes in yourproject, you won’t be able 
+                        to select default names for objects. If you wish to choose different name to be displayed for
+                        your objects, click on “Project settings” button. A dialog is going to be displayed.
+                        If there are no description or identification attributes in your project, you won’t be able
                         to alter default selection.
                     </Typography>
                     <Image src={settings} caption={"Rename project dialog"} />

@@ -29,7 +29,7 @@ function CreatingProject(props) {
                     <Typography>
                         Metadata represents attributes in your project. It should be a valid JSON file. At this point,
                         you are able to create new project. In “Data” tab you will be able to see a table with attributes
-                        as names of columns. However, if you wish to add data or rules, click onthe divider with 
+                        as names of columns. However, if you wish to add data or rules, click on the divider with
                         “Optional files” label. New content will be displayed below this divider.
                     </Typography>
                     <Image src={full} caption={"Creating new project with metadata, data and rules"} />
