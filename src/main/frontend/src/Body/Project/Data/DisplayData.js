@@ -1910,7 +1910,7 @@ class DisplayData extends React.Component {
                 //change from real to integer
                 } else if(ifIsNewColumnElseOldColumn.valueType === "real" && column.valueType === "integer") {
                     for(let i in nextRows) {
-                        if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = Math.round(nextRows[i][column.key]);
+                        if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = Math.round(nextRows[i][column.key]).toString();
                     }
                 //change from real to enumeration
                 } else if(ifIsNewColumnElseOldColumn.valueType === "real" && column.valueType === "enumeration") {
@@ -1920,12 +1920,12 @@ class DisplayData extends React.Component {
                 //change from enumeration to integer
                 } else if(ifIsNewColumnElseOldColumn.valueType === "enumeration" && column.valueType === "integer") {
                     for(let i in nextRows) {
-                        if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = ifIsNewColumnElseOldColumn.domain.indexOf(nextRows[i][column.key]) + 1;
+                        if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = (ifIsNewColumnElseOldColumn.domain.indexOf(nextRows[i][column.key]) + 1).toString();
                     }
                 //change from enumeration to real
                 } else if(ifIsNewColumnElseOldColumn.valueType === "enumeration" && column.valueType === "real") {
                     for(let i in nextRows) {
-                        if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = ifIsNewColumnElseOldColumn.domain.indexOf(nextRows[i][column.key]) + 1.0;
+                        if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = (ifIsNewColumnElseOldColumn.domain.indexOf(nextRows[i][column.key]) + 1.0).toString();
                     }
                 }
             //just domain changed
