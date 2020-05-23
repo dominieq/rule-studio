@@ -10,8 +10,8 @@ import Typography from "@material-ui/core/Typography";
 
 const listStyles = makeStyles(theme => ({
     root: {
-        backgroundColor: theme.palette.list.background,
-        color: theme.palette.list.text,
+        backgroundColor: theme.palette.background.main1,
+        color: theme.palette.text.main1
     },
     multiline: {
         display: "flex",
@@ -30,8 +30,8 @@ const listStyles = makeStyles(theme => ({
     },
     header: {
         alignItems: "center",
-        backgroundColor: theme.palette.list.subheader.background,
-        color: theme.palette.list.subheader.text,
+        backgroundColor: theme.palette.background.subLight,
+        color: theme.palette.text.special2,
         display: "flex",
         height: 48,
         justifyContent: "center",
@@ -41,7 +41,7 @@ const listStyles = makeStyles(theme => ({
         ...theme.typography.subheader
     },
     textItemNumber: {
-        color: theme.palette.button.secondary,
+        color: theme.palette.text.special1,
     }
 }), {name: "tables-list"});
 

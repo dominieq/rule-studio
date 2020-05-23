@@ -16,9 +16,9 @@ const switchStyles = makeStyles(theme => ({
         '&$checked': {
             transform: 'translateX(16px)',
             '& + $track': {
-                backgroundColor: theme.palette.button.contained.backgroundAction,
-                opacity: 1,
-                border: 'none',
+                backgroundColor: theme.palette.background.subDark,
+                border: `1px solid ${theme.palette.background.subDark}`,
+                opacity: 1
             },
         },
         '&$focusVisible $thumb': {
@@ -28,13 +28,12 @@ const switchStyles = makeStyles(theme => ({
     thumb: {
         width: 17,
         height: 17,
-        color: theme.palette.button.contained.background,
+        color: theme.palette.background.sub,
     },
     track: {
-        borderRadius: 20 / 2,
-        border: "1px solid",
-        borderColor: theme.palette.button.contained.text,
         backgroundColor: theme.palette.background.default,
+        border: `1px solid ${theme.palette.background.default}`,
+        borderRadius: 20 / 2,
         opacity: 1,
         transition: theme.transitions.create(['background-color', 'border']),
     },

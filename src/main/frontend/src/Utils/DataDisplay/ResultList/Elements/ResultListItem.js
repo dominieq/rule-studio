@@ -37,10 +37,10 @@ const useStyles = makeStyles(theme => ({
         lineHeight: theme.typography.body1.lineHeight
     },
     primary: {
-        color: theme.palette.button.primary
+        color: theme.palette.text.main1
     },
     secondary: {
-        color: theme.palette.button.secondary,
+        color: theme.palette.text.special1,
     }
 }), {name: "ResultListItem"});
 

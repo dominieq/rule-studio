@@ -9,9 +9,9 @@ const useStyles = makeStyles(theme => ({
     root: {
         borderRadius: 4,
         '& .MuiSnackbarContent-root': {
-            backgroundColor: theme.palette.paper.background,
-            color: theme.palette.paper.text,
-            minWidth: 190,
+            backgroundColor: theme.palette.background.main1,
+            color: theme.palette.text.main1,
+            minWidth: 190
         }
     }
 }), {name: "LoadingSnackbar"});

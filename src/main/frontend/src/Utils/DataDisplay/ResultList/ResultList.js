@@ -7,8 +7,8 @@ import List from "@material-ui/core/List";
 
 const StyledList = withStyles(theme=> ({
     root: {
-        backgroundColor: theme.palette.list.background,
-        color: theme.palette.list.text,
+        backgroundColor: theme.palette.background.main1,
+        color: theme.palette.text.main1,
         maxWidth: "90%",
         minWidth: "50%",
     }

@@ -6,12 +6,12 @@ import ListItem from "@material-ui/core/ListItem";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        color: theme.palette.text.defaultDark,
+        color: theme.palette.background.subDark,
         paddingLeft: 4,
         '&.Mui-selected': {
             backgroundColor: "transparent",
-            borderLeft: `4px solid ${theme.palette.text.default}`,
-            color: theme.palette.text.default,
+            borderLeft: `4px solid ${theme.palette.background.sub}`,
+            color: theme.palette.background.sub,
             '&:hover': {
                 backgroundColor: "transparent",
                 borderLeft: "4px solid currentColor",
@@ -20,8 +20,8 @@ const useStyles = makeStyles(theme => ({
         },
         '&:hover': {
             backgroundColor: "transparent",
-            borderLeft: `4px solid ${theme.palette.text.defaultLight}`,
-            color: theme.palette.text.defaultLight
+            borderLeft: `4px solid ${theme.palette.background.sub}`,
+            color: theme.palette.background.sub
         }
     }
 }), {name: "ChapterNav"});

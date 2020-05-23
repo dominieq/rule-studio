@@ -12,12 +12,12 @@ export const estimateTableHeight = (data, rowHeight = 48) => {
 const tableStyles = makeStyles(theme => ({
     table: {
         '& .ReactVirtualized__Grid__innerScrollContainer': {
-            background: theme.palette.list.background,
-            color: theme.palette.list.text,
+            background: theme.palette.background.main1,
+            color: theme.palette.text.main1,
         },
         '& .ReactVirtualized__Table__headerRow': {
-            backgroundColor: theme.palette.list.subheader.background,
-            color: theme.palette.list.subheader.text
+            backgroundColor: theme.palette.background.subLight,
+            color: theme.palette.text.special2
         }
     },
     tableRow: {

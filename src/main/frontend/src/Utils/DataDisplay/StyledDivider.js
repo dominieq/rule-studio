@@ -7,10 +7,10 @@ import Divider from "@material-ui/core/Divider";
 
 const useStyles = makeStyles(theme => ({
     primary: {
-        backgroundColor: theme.palette.background.default
+        backgroundColor: theme.palette.text.main2
     },
     secondary: {
-        backgroundColor: theme.palette.paper.text
+        backgroundColor: theme.palette.text.main1
     }
 }), {name: "CustomDivider"});
 

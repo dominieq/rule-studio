@@ -4,8 +4,8 @@ import Dialog from "@material-ui/core/Dialog";
 
 const SimpleDialog = withStyles( theme => ({
     paper: {
-        backgroundColor: theme.palette.paper.background,
-        color: theme.palette.paper.text,
+        backgroundColor: theme.palette.background.main1,
+        color: theme.palette.text.main1,
     }
 }), {name: "simple-dialog"})(props => (
     <Dialog {...props}/>

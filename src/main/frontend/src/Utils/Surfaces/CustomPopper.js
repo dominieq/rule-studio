@@ -7,8 +7,8 @@ import Paper from "@material-ui/core/Paper";
 
 const useStyles = makeStyles(theme => ({
     popper: {
-        backgroundColor: theme.palette.popper.background,
-        color: theme.palette.popper.text
+        backgroundColor: theme.palette.background.sub,
+        color: theme.palette.text.main2
     }
 }), {name: "CustomPopper"});
 

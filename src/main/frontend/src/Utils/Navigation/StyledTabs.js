@@ -6,7 +6,7 @@ import Tabs from "@material-ui/core/Tabs";
 
 const useStyles = makeStyles(theme => ({
     indicator: {
-        backgroundColor: theme.palette.tab.background
+        backgroundColor: theme.palette.background.main1
     }
 }), {name: "CustomTabs"});
 

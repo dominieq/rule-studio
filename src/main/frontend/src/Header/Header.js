@@ -10,8 +10,8 @@ import Palette from "mdi-material-ui/Palette";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        backgroundColor: theme.palette.appbar.background,
-        color: theme.palette.appbar.text,
+        backgroundColor: theme.palette.background.main2,
+        color: theme.palette.text.main2,
         zIndex: theme.zIndex.drawer + 100
     }
 }), {name: "CustomAppBar"});

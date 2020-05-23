@@ -6,15 +6,15 @@ import { mergeClasses } from "../../../Utils/utilFunctions";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        backgroundColor: theme.palette.paper.background,
-        color: theme.palette.paper.text,
+        backgroundColor: theme.palette.background.main1,
+        color: theme.palette.text.main1,
         '&::-webkit-scrollbar': {
             width: 17
         },
         '&::-webkit-scrollbar-thumb': {
-            backgroundColor: theme.palette.button.contained.background,
+            backgroundColor: theme.palette.background.sub,
             '&:hover': {
-                backgroundColor: theme.palette.button.contained.backgroundAction
+                backgroundColor: theme.palette.background.subDark
             }
         },
         '&::-webkit-scrollbar-track': {

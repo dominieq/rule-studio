@@ -9,7 +9,7 @@ const CustomControlLabel = withStyles(theme => ({
         marginLeft: 0,
         marginRight: 0,
         '&:hover': {
-            color: theme.palette.button.contained.backgroundAction
+            color: theme.palette.background.subDark
         }
     }
 }), {name: "CustomControlLabel"})(props => (

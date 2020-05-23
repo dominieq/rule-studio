@@ -23,10 +23,10 @@ const useStyles = makeStyles(theme=> ({
             height: 8,
         },
         '&::-webkit-scrollbar-thumb': {
-            backgroundColor: theme.palette.button.contained.background,
+            backgroundColor: theme.palette.background.sub,
             borderRadius: 4,
             '&:hover': {
-                backgroundColor: theme.palette.button.contained.backgroundAction,
+                backgroundColor: theme.palette.background.subDark,
             }
         },
         '&::-webkit-scrollbar-track': {
@@ -55,8 +55,8 @@ const useStyles = makeStyles(theme=> ({
         padding: "0 24px 0 16px",
     },
     closeSticky: {
-        backgroundColor: theme.palette.paper.background,
-        boxShadow: `-8px 0 6px -6px ${theme.palette.paper.background}`,
+        backgroundColor: theme.palette.background.main1,
+        boxShadow: `-8px 0 6px -6px ${theme.palette.background.main1}`,
         position: "sticky",
         right: 0,
     },

@@ -4,9 +4,9 @@ import Drawer from "@material-ui/core/Drawer";
 
 const StyledDrawer = withStyles(theme => ({
     paper: {
-        backgroundColor: theme.palette.background.main,
+        backgroundColor: theme.palette.background.main1,
         borderLeft: "none",
-        color: theme.palette.text.default
+        color: theme.palette.background.sub
     }
 }), {name: "Help"})(props => <Drawer {...props} />);
 

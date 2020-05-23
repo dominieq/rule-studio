@@ -40,7 +40,7 @@ const maxNoOfHistorySteps = 30;
 const SimpleDialog = withStyles( theme => ({
     paper: {
         backgroundColor: theme.palette.background.default,
-        color: theme.palette.paper.text,
+        color: theme.palette.text.main1,
     },    
     paperWidthSm: {
         maxWidth: "700px"

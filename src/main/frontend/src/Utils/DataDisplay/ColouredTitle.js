@@ -15,10 +15,10 @@ const titleStyles = makeStyles(theme => ({
         },
     },
     primary: {
-        color: theme.palette.button.primary,
+        color: theme.palette.text.main1,
     },
     secondary: {
-        color: theme.palette.button.secondary,
+        color: theme.palette.text.special1,
     }
 }), {name: "coloured-title"});
 

@@ -6,10 +6,10 @@ import Radio from "@material-ui/core/Radio";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        color: theme.palette.button.contained.background,
+        color: theme.palette.background.sub,
         '&:hover': {
             backgroundColor: 'transparent',
-            color: theme.palette.button.contained.backgroundAction
+            color: theme.palette.background.subDark
         }
     }
 }), {name: "CustomRadioButton"});
