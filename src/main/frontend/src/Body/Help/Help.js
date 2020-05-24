@@ -51,15 +51,18 @@ class Help extends React.PureComponent {
         if (this.drawerRef.current != null) {
             this.setState({
                 marginRight: this.drawerRef.current.offsetWidth
+            }, () => {
+                clearTimeout(this.timer);
+                setTimeout(() => {
+                    if (Array.isArray(this.chapterPositions)) {
+                        for (let i = 1; i <= CHAPTERS.length; i++) {
+                            const chapter = document.getElementById(`chapter-${i}`);
+
+                            this.chapterPositions.push(chapter.offsetTop - chapter.offsetHeight - 20);
+                        }
+                    }
+                }, 1000);
             });
-        }
-
-        if (Array.isArray(this.chapterPositions)) {
-            for (let i = 1; i <= CHAPTERS.length; i++) {
-                const chapter = document.getElementById(`chapter-${i}`);
-
-                this.chapterPositions.push(chapter.offsetTop - chapter.offsetHeight - 20);
-            }
         }
     }
 
@@ -72,15 +75,14 @@ class Help extends React.PureComponent {
 
         clearTimeout(this.timer);
         setTimeout(() => {
-            for (let i = 1; i <= CHAPTERS.length; i++) {
-                if (this.chapterPositions[i - 1] - 20 <= scrollable.scrollTop &&
-                    this.chapterPositions[i - 1] + 20 >= scrollable.scrollTop ) {
+            let i = 0;
 
-                    this.setState({
-                        selected: i
-                    });
-                }
-            }
+            while (i < CHAPTERS.length && this.chapterPositions[i] - 20 <= scrollable.scrollTop) i++;
+            if (i <= 0) i = 1;
+
+            this.setState({
+                selected: i
+            });
         }, 100);
     };
 
@@ -154,7 +156,7 @@ Help.propTypes = {
 };
 
 Help.default = {
-    selected: "chapter-1"
+    selected: 1
 };
 
 export default Help;
