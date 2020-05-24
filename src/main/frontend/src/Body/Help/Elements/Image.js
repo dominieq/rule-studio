@@ -4,13 +4,22 @@ import Typography from "@material-ui/core/Typography";
 import styles from "../styles/Image.module.css";
 
 function Image(props) {
-    const { caption, src } = props;
+    const { ["aria-label"]: ariaLabel, caption, height, src, width } = props;
 
     return (
         <figure className={styles.Root}>
-            <img alt={caption} className={styles.Image} src={src}/>
+            <img
+                alt={caption}
+                aria-labelledby={ariaLabel}
+                className={styles.Image}
+                height={height}
+                src={src}
+                title={caption}
+                width={width}
+            />
             <Typography
                 align={"center"}
+                aria-label={ariaLabel}
                 component={"figcaption"}
                 variant={"caption"}
             >
@@ -22,8 +31,11 @@ function Image(props) {
 }
 
 Image.propTypes = {
+    "aria-label": PropTypes.string,
     caption: PropTypes.node,
-    src: PropTypes.string
+    height: PropTypes.number,
+    src: PropTypes.string,
+    width: PropTypes.number
 };
 
 export default Image;

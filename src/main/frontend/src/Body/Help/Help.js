@@ -38,46 +38,58 @@ class Help extends React.PureComponent {
         super(props);
 
         this.state = {
+            chapterPositions: [],
             marginRight: 0,
             selected: 1
         };
 
-        this.chapterPositions = [];
         this.drawerRef = React.createRef();
         this.timer = null;
     }
 
     componentDidMount() {
         if (this.drawerRef.current != null) {
-            this.setState({
-                marginRight: this.drawerRef.current.offsetWidth
-            }, () => {
-                clearTimeout(this.timer);
-                setTimeout(() => {
-                    if (Array.isArray(this.chapterPositions)) {
-                        for (let i = 1; i <= CHAPTERS.length; i++) {
-                            const chapter = document.getElementById(`chapter-${i}`);
-
-                            this.chapterPositions.push(chapter.offsetTop - chapter.offsetHeight - 20);
-                        }
-                    }
-                }, 1000);
-            });
+            this.updatePositions();
         }
+
+        window.addEventListener("resize", this.updatePositions);
     }
 
     componentWillUnmount() {
         clearTimeout(this.timer);
+        window.removeEventListener("resize", this.updatePositions);
+    }
+
+    updatePositions = () => {
+        this.setState({
+            marginRight: this.drawerRef.current.offsetWidth
+        }, () => {
+            clearTimeout(this.timer);
+            setTimeout(() => {
+                let chapterPositions = [];
+
+                for (let i = 1; i <= CHAPTERS.length; i++) {
+                    const chapter = document.getElementById(`chapter-${i}`);
+
+                    chapterPositions.push(chapter.offsetTop - chapter.offsetHeight - 20);
+                }
+
+                this.setState({
+                    chapterPositions: chapterPositions
+                });
+            }, 1000);
+        });
     }
 
     onScroll = () => {
+        const { chapterPositions } = this.state;
         const scrollable = document.getElementById("scrollable");
 
         clearTimeout(this.timer);
         setTimeout(() => {
             let i = 0;
 
-            while (i < CHAPTERS.length && this.chapterPositions[i] - 20 <= scrollable.scrollTop) i++;
+            while (i < CHAPTERS.length && chapterPositions[i] - 20 <= scrollable.scrollTop) i++;
             if (i <= 0) i = 1;
 
             this.setState({
