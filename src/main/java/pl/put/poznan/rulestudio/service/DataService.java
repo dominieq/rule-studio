@@ -44,7 +44,8 @@ public class DataService {
             informationTable = jsonObjectParser.parseObjects(reader);
             logger.info("Successfully parsed as json file.");
         } catch (RuntimeException eJson) {
-            logger.error("Failed to parse as json file:\t{}", eJson.getMessage());
+            String jsonMessage = new StringBuilder("Failed to parse as json file:\t").append(eJson.getMessage()).toString();
+            logger.error(jsonMessage);
 
             try {
                 logger.info("Trying parse as csv file...");
@@ -56,9 +57,18 @@ public class DataService {
                 informationTable = csvObjectParser.parseObjects(reader);
                 logger.info("Successfully parsed as csv file.");
             } catch (RuntimeException eCsv) {
-                logger.error("Failed to parse as csv file:\t{}", eCsv.getMessage());
+                String csvMessage = new StringBuilder("Failed to parse as csv file:\t").append(eCsv.getMessage()).toString();
+                logger.error(csvMessage);
 
-                WrongParameterException ex = new WrongParameterException("Wrong file. Data should be a valid json or csv file.");
+                WrongParameterException ex;
+                if (dataFile.getOriginalFilename().endsWith(".json")) {
+                    ex = new WrongParameterException(jsonMessage);
+                } else if (dataFile.getOriginalFilename().endsWith(".csv")) {
+                    ex = new WrongParameterException(csvMessage);
+                } else {
+                    ex = new WrongParameterException("Wrong file. Data should be a valid json or csv file.");
+                }
+
                 throw ex;
             }
         }

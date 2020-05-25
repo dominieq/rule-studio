@@ -10,6 +10,7 @@ import org.rulelearn.data.InformationTable;
 import org.rulelearn.measures.dominance.EpsilonConsistencyMeasure;
 import org.rulelearn.rules.*;
 import org.rulelearn.rules.ruleml.RuleMLBuilder;
+import org.rulelearn.rules.ruleml.RuleParseException;
 import org.rulelearn.rules.ruleml.RuleParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,7 +154,13 @@ public class RulesService {
     public static RuleSetWithCharacteristics parseRules(MultipartFile rulesFile, Attribute[] attributes) throws IOException {
         Map<Integer, RuleSetWithCharacteristics> parsedRules = null;
         RuleParser ruleParser = new RuleParser(attributes);
-        parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
+        try {
+            parsedRules = ruleParser.parseRulesWithCharacteristics(rulesFile.getInputStream());
+        } catch (RuleParseException e) {
+            WrongParameterException ex = new WrongParameterException(e.getMessage());
+            logger.error(ex.getMessage());
+            throw ex;
+        }
 
         if(parsedRules == null) {
             WrongParameterException ex = new WrongParameterException(String.format("Given file with rules could not be successfully read as RuleML file."));
