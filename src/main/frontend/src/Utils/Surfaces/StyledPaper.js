@@ -6,8 +6,8 @@ import Paper from "@material-ui/core/Paper";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        backgroundColor: theme.palette.paper.background,
-        color: theme.palette.paper.text,
+        backgroundColor: theme.palette.background.main1,
+        color: theme.palette.text.main1,
     }
 }), {name: "StyledPaper"});
 

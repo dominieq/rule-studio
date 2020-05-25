@@ -18,8 +18,8 @@ import styles from "../styles/ProjectMenu.module.css";
 
 const menuStyles = makeStyles(theme => ({
     list: {
-        backgroundColor: theme.palette.popper.background,
-        color: theme.palette.popper.text
+        backgroundColor: theme.palette.background.sub,
+        color: theme.palette.text.main2
     }
 }), {name: "ProjectMenu"});
 

@@ -14,8 +14,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 const StyledMenu = withStyles(theme => ({
     list: {
-        backgroundColor: theme.palette.popper.background,
-        color: theme.palette.popper.text
+        backgroundColor: theme.palette.background.sub,
+        color: theme.palette.text.main2
     }
 }), {name: "ContextMenu"})(props => <Menu {...props} />);
 

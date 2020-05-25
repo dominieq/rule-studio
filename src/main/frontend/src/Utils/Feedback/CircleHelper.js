@@ -10,13 +10,13 @@ import HelpCircle from "mdi-material-ui/HelpCircle";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: theme.palette.text.main2,
         color: theme.palette.text.default,
-        cursor: "help",
+        cursor: "help"
     },
     button: {
         '&:hover': {
-            color: theme.palette.button.secondary,
+            color: theme.palette.text.special1
         },
     },
     multiRow: {

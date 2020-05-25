@@ -10,9 +10,9 @@ const useStyles = makeStyles(theme => ({
             width: 17
         },
         '&::-webkit-scrollbar-thumb': {
-            backgroundColor: theme.palette.button.contained.background,
+            backgroundColor: theme.palette.background.sub,
             '&:hover': {
-                backgroundColor: theme.palette.button.contained.backgroundAction
+                backgroundColor: theme.palette.background.subDark
             }
         },
         '&::-webkit-scrollbar-track': {

@@ -26,8 +26,8 @@ const drawerStyles = makeStyles(theme => ({
 
 const paperStyles = makeStyles(theme => ({
     root: {
-        backgroundColor: theme.palette.paper.background,
-        color: theme.palette.paper.text,
+        backgroundColor: theme.palette.background.main1,
+        color: theme.palette.text.main1,
         padding: "12px 16px 8px",
     }
 }), {name: "CustomDrawerPaper"});

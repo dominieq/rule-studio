@@ -6,17 +6,17 @@ import PaginationItem from "@material-ui/lab/PaginationItem";
 
 const StyledPaginationItem = withStyles(theme => ({
     root: {
-        color: theme.palette.paper.text,
+        color: theme.palette.text.main1,
     },
     outlined: {
-        borderColor: theme.palette.paper.text,
+        borderColor: theme.palette.text.main1,
     },
     page: {
         '&.Mui-selected': {
-            backgroundColor: theme.palette.paper.text,
+            backgroundColor: theme.palette.text.main1,
             color: theme.palette.background.default,
             '&:hover': {
-                backgroundColor: theme.palette.paper.text,
+                backgroundColor: theme.palette.text.main1,
             },
         },
     }

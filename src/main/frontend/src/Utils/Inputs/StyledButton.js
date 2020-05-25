@@ -9,40 +9,40 @@ const buttonStyles = makeStyles(theme => ({
     text: {
         color: props => ({
             "inherit": "inherit",
-            "primary": theme.palette.button.primary,
-            "secondary": theme.palette.button.secondary
+            "primary": theme.palette.background.sub,
+            "secondary": theme.palette.text.special1
         }[props.themeVariant]),
     },
     contained: {
-        color: theme.palette.button.contained.text,
-        backgroundColor: theme.palette.button.contained.background,
+        color: theme.palette.text.main2,
+        backgroundColor: theme.palette.background.sub,
         "&:hover": {
-            color: theme.palette.button.contained.text,
-            backgroundColor: theme.palette.button.contained.backgroundAction,
+            color: theme.palette.text.main2,
+            backgroundColor: theme.palette.background.subDark
         },
         "&:active": {
-            color: theme.palette.button.contained.text,
-            backgroundColor: theme.palette.button.contained.backgroundAction,
+            color: theme.palette.text.main2,
+            backgroundColor: theme.palette.background.subDark
         }
     },
     outlined: {
         color: props => ({
             "inherit": "inherit",
-            "primary": theme.palette.button.primary,
-            "secondary": theme.palette.button.secondary,
+            "primary": theme.palette.background.sub,
+            "secondary": theme.palette.text.special1
         }[props.themeVariant]),
         borderColor: props => ({
             "inherit": "inherit",
-            "primary": theme.palette.button.primary,
-            "secondary": theme.palette.button.secondary,
-        }[props.themeVariant]),
+            "primary": theme.palette.background.sub,
+            "secondary": theme.palette.text.special1
+        }[props.themeVariant])
     },
     icon: {
         padding: 6,
         color: props => ({
             "inherit": "inherit",
-            "primary": theme.palette.button.primary,
-            "secondary": theme.palette.button.secondary
+            "primary": theme.palette.background.sub,
+            "secondary": theme.palette.text.special1
         })[props.themeVariant]
     },
 }), {name: "CustomButton"});

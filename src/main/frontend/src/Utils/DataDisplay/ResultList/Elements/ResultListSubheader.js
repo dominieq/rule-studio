@@ -8,7 +8,7 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 const useStyles = makeStyles(theme => ({
     root: {
         alignItems: "center",
-        borderBottom: `2px solid ${theme.palette.list.text}`,
+        borderBottom: `2px solid ${theme.palette.text.main1}`,
         display: "flex",
         fontSize: theme.typography.subheader.fontSize,
         lineHeight: "unset",
@@ -29,18 +29,18 @@ const useStyles = makeStyles(theme => ({
         width: "fit-content"
     },
     label: {
-        color: theme.palette.button.primary,
+        color: theme.palette.text.main1,
         marginRight: 8,
         letterSpacing: theme.typography.subheader.letterSpacing,
         textTransform: theme.typography.subheader.textTransform
     },
     value: {
-        color: theme.palette.button.secondary
+        color: theme.palette.text.special1
     },
     divider: {
         alignSelf: "stretch",
-        backgroundColor: theme.palette.list.text,
-        borderColor: theme.palette.list.text,
+        backgroundColor: theme.palette.text.main1,
+        borderColor: theme.palette.text.main1,
         height: "auto",
         margin: "0 8px",
         width: 1

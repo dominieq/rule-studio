@@ -24,8 +24,7 @@ const disableGPUOptions = {
 
 const useStyles = makeStyles(theme => ({
     left: {
-        borderRight: "1px solid",
-        borderRightColor: theme.palette.text.default,
+        borderRight: `1px solid ${theme.palette.text.special2}`,
         '& .MuiButton-root': {
             borderRadius: "4px 0 0 4px",
             height: "100%",

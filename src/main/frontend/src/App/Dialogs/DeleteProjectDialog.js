@@ -11,7 +11,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 
 const useStyles = makeStyles(theme => ({
     projectName: {
-        color: theme.palette.button.secondary
+        color: theme.palette.text.special1
     }
 }), {name: "Delete"});
 

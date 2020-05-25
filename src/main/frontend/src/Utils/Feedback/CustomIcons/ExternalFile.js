@@ -7,7 +7,7 @@ import CustomTooltip from "../../DataDisplay/CustomTooltip";
 
 const useStyles = makeStyles(theme => ({
     icon: {
-        color: theme.palette.button.secondary
+        color: theme.palette.text.special1
     },
     wrapper: {
         display: "flex",

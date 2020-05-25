@@ -25,9 +25,9 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2)
   },
   root: {
-    backgroundColor: theme.palette.button.contained.background,
+    backgroundColor: theme.palette.background.sub,
     '& fieldset': {
-        borderColor: theme.palette.button.contained.background,
+        borderColor: theme.palette.background.sub,
     },
     '&:hover .MuiOutlinedInput-notchedOutline': {
         borderColor: theme.palette.text.default
@@ -36,18 +36,18 @@ const useStyles = makeStyles(theme => ({
         borderColor: theme.palette.text.default,
     },
     '&:hover': {
-        backgroundColor: theme.palette.button.contained.backgroundAction
+        backgroundColor: theme.palette.background.subDark
     },
     '&.Mui-focused': {
-        backgroundColor: theme.palette.button.contained.backgroundAction
+        backgroundColor: theme.palette.background.subDark
     },
     '& label.MuiInputLabel-shrink': {
       backgroundColor: theme.palette.background.default,
-      color: theme.palette.button.contained.background,
+      color: theme.palette.background.sub,
       transform: "translate(14px, -13px) scale(0.75)",
     },
     '& label.Mui-focused': {
-        color: theme.palette.button.contained.backgroundAction
+        color: theme.palette.background.subDark
     },
     '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
       borderColor:  theme.palette.text.default
@@ -58,8 +58,8 @@ const useStyles = makeStyles(theme => ({
 
 const menuStyles = makeStyles(theme => ({
   list: {
-    backgroundColor: theme.palette.popper.background,
-    color: theme.palette.popper.text,
+    backgroundColor: theme.palette.background.sub,
+    color: theme.palette.text.main2,
   }
 }), {name: "CustomMenu"});
 

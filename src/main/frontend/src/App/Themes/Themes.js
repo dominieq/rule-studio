@@ -14,57 +14,36 @@ const typography = {
 export const LightTheme = createMuiTheme( {
     ...typography,
     palette: {
-        appbar: {
-            background:"#1769AA",
-            text: "#FFF"
-        },
         background: {
             default: "#D3D3D3",
             defaultDark: "#939393",
             defaultLight: "#DBDBDB",
-        },
-        button: {
-            primary: "#2196f3",
-            secondary: "#f50057",
-            contained: {
-                background: "#2196F3",
-                backgroundAction: "#1769AA",
-                text: "#000",
-            }
-        },
-        chip: {
-            background: "#1769AA",
-            text: "#FFF",
-        },
-        list: {
-            background: "#FFF",
-            text: "#000",
-            subheader: {
-                background: "#4DABF5",
-                text: "#FFF"
-            }
-        },
-        paper: {
-            background: "#FFF",
-            text: "#000",
-        },
-        popper: {
-            background: "#4DABF5",
-            text: "#000",
-        },
-        slider: {
-            main: "#4DABF5",
-            rail: "#F5F5F5"
-        },
-        tab: {
-            background: "#FFF",
-            backgroundAction: "#E8E8E8",
-            text: "#000",
-            textAction: "#000",
-            textIdle: "#000",
+            main1: "#FFF",
+            main1Dark: "#B2B2B2",
+            main1Light: "#FFF",
+            main2: "#1769AA",
+            main2Dark: "#104976",
+            main2Light: "#4587BB",
+            sub: "#2196F3",
+            subDark: "#1C7FCF",
+            subLight: "#4DABF5"
         },
         text: {
-            default: "#000",
+            default: "#2196F3",
+            defaultDark: "#1769AA",
+            defaultLight: "#4DABF5",
+            main1: "#000",
+            main1Dark: "#000",
+            main1Light: "#333333",
+            main2: "#000",
+            main2Dark: "#000",
+            main2Light: "#333333",
+            special1: "#F50057",
+            special1Dark: "#AB003C",
+            special1Light: "#F73378",
+            special2: "#FFF",
+            special2Dark: "#B2B2B2",
+            special2Light: "#FFF"
         },
         reactDataGrid: {
             cell: {
@@ -147,57 +126,36 @@ export const LightTheme = createMuiTheme( {
 export const DarkTheme = createMuiTheme({
     ...typography,
     palette: {
-        appbar: {
-            background: "#66FF66",
-            text: "#2A3439"
-        },
         background: {
             default: "#2A3439",
             defaultDark: "#1D2427",
-            defaultLight: "#545C60"
-        },
-        button: {
-            primary: "#ABFAA9",
-            secondary: "#E8D963",
-            contained: {
-                background: "#ABFAA9",
-                backgroundAction: "#6CE06A",
-                text: "#2A3439",
-            }
-        },
-        chip: {
-            background: "#6BD425",
-            text: "#2A3439",
-        },
-        list: {
-            background: "#545F66",
-            text: "#ABFAA9",
-            subheader: {
-                background: "#ABFAA9",
-                text: "#147911"
-            }
-        },
-        paper: {
-            background: "#545F66",
-            text: "#ABFAA9",
-        },
-        popper: {
-            background: "#ABFAA9",
-            text: "#2A3439"
-        },
-        slider: {
-            main: "#66FF66",
-            rail: "#2A3439"
-        },
-        tab: {
-            background: "#545F66",
-            backgroundAction: "rgb(84,95,102, 0.8)",
-            text: "#66FF66",
-            textAction: "rgb(102,255,102, 0.8)",
-            textIdle: "rgb(102,255,102, 0.4)"
+            defaultLight: "#545C60",
+            main1: "#545F66",
+            main1Dark: "#3A4247",
+            main1Light: "#767F84",
+            main2: "#66FF66",
+            main2Dark: "#47B247",
+            main2Light: "#84FF84",
+            sub: "#ABFAA9",
+            subDark: "#6CE06A",
+            subLight: "#BBFBBA"
         },
         text: {
             default: "#66FF66",
+            defaultDark: "#47B247",
+            defaultLight: "#84FF84",
+            main1: "#ABFAA9",
+            main1Dark: "#6CE06A",
+            main1Light: "#BBFBBA",
+            main2: "#2A3439",
+            main2Dark: "#1D2427",
+            main2Light: "#545C60",
+            special1: "#E8D963",
+            special1Dark: "#A29745",
+            special1Light: "#ECE082",
+            special2: "#147911",
+            special2Dark: "#0E540B",
+            special2Light: "#439340"
         },
         reactDataGrid: {
             cell: {

@@ -19,15 +19,15 @@ const disableGpuProps = {
 
 const useStyles = makeStyles(theme => ({
     arrow: {
-        color: theme.palette.popper.background
+        color: theme.palette.background.sub
     },
     disableMaxWidth: {
         maxWidth: "none"
     },
     tooltip: {
-        backgroundColor: theme.palette.popper.background,
+        backgroundColor: theme.palette.background.sub,
         boxShadow: theme.shadows[6],
-        color: theme.palette.popper.text,
+        color: theme.palette.text.main2,
         fontSize: "smaller"
     },
     wrapper: {}

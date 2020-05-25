@@ -24,14 +24,14 @@ const orders = [
 
 const menuStyles = makeStyles(theme => ({
     paper: {
-        backgroundColor: theme.palette.paper.background,
-        color: theme.palette.paper.text
+        backgroundColor: theme.palette.background.main1,
+        color: theme.palette.text.main1
     }
 }), {name: "SortMenu"});
 
 const labelStyles = makeStyles(theme => ({
     root: {
-        color: theme.palette.button.secondary,
+        color: theme.palette.text.special1,
         marginBottom: "0.5rem"
     }
 }), {name: "CustomLabel"});
@@ -43,10 +43,10 @@ const virtualStyles = makeStyles(theme => ({
             width: 8
         },
         '&::-webkit-scrollbar-thumb': {
-            backgroundColor: theme.palette.button.contained.background,
+            backgroundColor: theme.palette.background.sub,
             borderRadius: 4,
             '&:hover': {
-                backgroundColor: theme.palette.button.contained.backgroundAction
+                backgroundColor: theme.palette.background.subDark
             }
         },
         '&::-webkit-scrollbar-track': {

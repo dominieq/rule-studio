@@ -9,8 +9,8 @@ const SimpleContent = withStyles(theme=> ({
         justifyContent: "space-evenly",
     },
     dividers: {
-        borderTopColor: theme.palette.text.default,
-        borderBottomColor: theme.palette.text.default,
+        borderTopColor: theme.palette.text.main1,
+        borderBottomColor: theme.palette.text.main1,
     }
 }),{name: "simple-content"})(props => (
     <DialogContent dividers={true} {...props} />

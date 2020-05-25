@@ -8,7 +8,7 @@ import Sort from "@material-ui/icons/Sort";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        backgroundColor: theme.palette.button.secondary
+        backgroundColor: theme.palette.text.special1
     }
 }), {name: "SortDot"});
 

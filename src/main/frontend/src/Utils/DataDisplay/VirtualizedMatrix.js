@@ -9,12 +9,12 @@ import { AutoSizer, MultiGrid } from "react-virtualized";
 const matrixStyles = makeStyles(theme => ({
     matrix: {
         '& .ReactVirtualized__Grid__innerScrollContainer': {
-            backgroundColor: theme.palette.paper.background
+            backgroundColor: theme.palette.background.main1
         }
     },
     subheader: {
         '& .ReactVirtualized__Grid__innerScrollContainer': {
-            backgroundColor: theme.palette.list.subheader.background
+            backgroundColor: theme.palette.background.subLight
         }
     },
     cellFlex: {
@@ -24,11 +24,11 @@ const matrixStyles = makeStyles(theme => ({
     },
     cellMatrix: {
         border: `1px solid ${theme.palette.text.default}`,
-        color: theme.palette.button.secondary,
+        color: theme.palette.text.special1,
     },
     cellSubheader: {
-        border: `1px solid ${theme.palette.list.subheader.text}`,
-        color: theme.palette.list.subheader.text
+        border: `1px solid ${theme.palette.text.special2}`,
+        color: theme.palette.text.special2
     },
     tooltip: {
         display: "flex",

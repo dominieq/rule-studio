@@ -6,22 +6,22 @@ import Tab from "@material-ui/core/Tab";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        color: theme.palette.tab.textIdle,
+        color: theme.palette.text.defaultDark,
         minHeight: 48,
         padding: "6px 12px",
         '&:hover': {
-            backgroundColor: theme.palette.tab.backgroundAction,
-            color: theme.palette.tab.textAction
+            backgroundColor: theme.palette.background.main1Dark,
+            color: theme.palette.text.defaultDark
         },
         '&:focus': {
-            backgroundColor: theme.palette.tab.backgroundAction,
-            color: theme.palette.tab.textAction
+            backgroundColor: theme.palette.background.main1Dark,
+            color: theme.palette.text.defaultDark
         }
     },
     textColorInherit: {
         '&.Mui-selected': {
-            backgroundColor: theme.palette.tab.background,
-            color: theme.palette.tab.text
+            backgroundColor: theme.palette.background.main1,
+            color: theme.palette.text.default
         }
     },
     wrapper: {
