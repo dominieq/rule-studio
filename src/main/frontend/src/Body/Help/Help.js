@@ -44,7 +44,8 @@ class Help extends React.PureComponent {
         };
 
         this.drawerRef = React.createRef();
-        this.timer = null;
+        this.timerPositions = null;
+        this.timerScroll = null
     }
 
     componentDidMount() {
@@ -56,7 +57,8 @@ class Help extends React.PureComponent {
     }
 
     componentWillUnmount() {
-        clearTimeout(this.timer);
+        clearTimeout(this.timerPositions);
+        clearTimeout(this.timerScroll);
         window.removeEventListener("resize", this.updatePositions);
     }
 
@@ -64,8 +66,8 @@ class Help extends React.PureComponent {
         this.setState({
             marginRight: this.drawerRef.current.offsetWidth
         }, () => {
-            clearTimeout(this.timer);
-            this.timer = setTimeout(() => {
+            clearTimeout(this.timerPositions);
+            this.timerPositions = setTimeout(() => {
                 let chapterPositions = [];
 
                 for (let i = 1; i <= CHAPTERS.length; i++) {
@@ -85,8 +87,8 @@ class Help extends React.PureComponent {
         const { chapterPositions } = this.state;
         const scrollable = document.getElementById("scrollable");
 
-        clearTimeout(this.timer);
-        this.timer = setTimeout(() => {
+        clearTimeout(this.timerScroll);
+        this.timerScroll = setTimeout(() => {
             let i = 0;
 
             while (i < CHAPTERS.length && chapterPositions[i] - 32 <= scrollable.scrollTop) i++;
