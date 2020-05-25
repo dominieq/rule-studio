@@ -7,7 +7,7 @@ function Chapter(props) {
     const { content, titleId, title } = props;
 
     return (
-        <section  className={styles.Root}>
+        <section className={styles.Root}>
             <Typography
                 align={"left"}
                 id={titleId}

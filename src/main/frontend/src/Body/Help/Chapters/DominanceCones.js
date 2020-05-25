@@ -14,18 +14,19 @@ function DominanceCones(props) {
             titleId={chapterId}
             content={
                 <React.Fragment>
-                    <Image src={fullTab} caption={"Dominance cones"} />
+                    <Image src={fullTab} caption={"FIGURE 22: Dominance cones"} />
                     <Typography>
-                        Dominance cones are the first thing that you can calculate. The tab is empty, when you visit it for the first time. 
+                        Dominance cones are the first thing that you can calculate. The concept of dominance cones can be found in the user's guide.
+                        The tab is empty, when you visit it for the first time. 
                         In order to see dominance cones for each object in your data set, click on the “CALCULATE” button. 
                         If there are more than 50 objects, pagination is displayed at the top and at the bottom of the page. 
                         If there are less than 6 objects on a page, the upper pagination is hidden.You can filter the result list by using 
                         the “Search” input field. In order to filter objects, use one of the characteristics visible on list items.
                         For example, if you want to filter out objects that have 20 other objects in their positive dominance cone, you can
                         type “positive 20”. It is possible to see the details of dominance cones of an object. In order to do that,
-                        you have to click on one of the objects from the result list. A new dialog is going to be displayed.
+                        you have to click on one of the objects from the result list. A new dialog is going to be displayed (Fig. 23).
                     </Typography>
-                    <Image src={objectsDetails} caption={"Dominance cones details"} />
+                    <Image src={objectsDetails} caption={"FIGURE 23: Dominance cones details"} />
                     <Typography>
                         There are two lists and one table in this dialog. The list in the middle and table on the right aren’t visible when you
                         enter this dialog for the first time. The list on the left contains all dominance cones for the selected object.

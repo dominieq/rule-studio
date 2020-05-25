@@ -14,7 +14,7 @@ function Navigating(props) {
             titleId={chapterId}
             content={
                 <React.Fragment>
-                    <Image src={appBarStart} caption={"App bar when no project is selected"} />
+                    <Image src={appBarStart} caption={"FIGURE 1: App bar when no project is selected"} />
                     <Typography component={'span'}>
                         From left to right:
                         <ol>
@@ -25,7 +25,7 @@ function Navigating(props) {
                             <li> Change colors button - changes palette from dark to light or the other way around. </li>
                         </ol>
                     </Typography>
-                    <Image src={appBarProject} caption={"App bar after selecting a project"} />
+                    <Image src={appBarProject} caption={"FIGURE 2: App bar after selecting a project"} />
                     <Typography component={'span'}>
                     New buttons appear after creating or selecting an existing project. From left to right:
                     <ol>

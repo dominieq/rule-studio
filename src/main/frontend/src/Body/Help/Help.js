@@ -71,7 +71,7 @@ class Help extends React.PureComponent {
                 for (let i = 1; i <= CHAPTERS.length; i++) {
                     const chapter = document.getElementById(`chapter-${i}`);
 
-                    chapterPositions.push(chapter.offsetTop - chapter.offsetHeight - 20);
+                    chapterPositions.push(chapter.offsetTop - chapter.offsetHeight - 32);
                 }
 
                 this.setState({
@@ -89,7 +89,7 @@ class Help extends React.PureComponent {
         setTimeout(() => {
             let i = 0;
 
-            while (i < CHAPTERS.length && chapterPositions[i] - 20 <= scrollable.scrollTop) i++;
+            while (i < CHAPTERS.length && chapterPositions[i] - 32 <= scrollable.scrollTop) i++;
             if (i <= 0) i = 1;
 
             this.setState({
@@ -102,7 +102,7 @@ class Help extends React.PureComponent {
         const chapter = document.getElementById(`chapter-${id}`);
         const scrollable = document.getElementById("scrollable");
 
-        scrollable.scrollTop = chapter.offsetTop - chapter.offsetHeight - 20;
+        scrollable.scrollTop = chapter.offsetTop - chapter.offsetHeight - 32;
 
         this.setState({
             selected: id

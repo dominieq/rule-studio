@@ -14,13 +14,13 @@ function DeletingProject(props) {
             content={
                 <React.Fragment>
                     <Typography>
-                        If you wish to delete current project, click on “Delete project” button. A dialog
-                        is going to be displayed with an input field to write your current project’s name.
+                        If you wish to delete current project, click on “Delete project” button (Fig. 2). A dialog
+                        is going to be displayed with an input field to write your current project’s name (Fig. 8).
                         You can confirm deletion by clicking on “Ok” button or by pressing “Enter”.
                         You can cancel this process by clicking on “Cancel” button, pressing “Escape” 
                         or clicking outside this dialog.
                     </Typography>
-                    <Image src={deleteDialog} caption={"Delete project dialog"} />
+                    <Image src={deleteDialog} caption={"FIGURE 8: Delete project dialog"} />
                 </React.Fragment>
             }
         />

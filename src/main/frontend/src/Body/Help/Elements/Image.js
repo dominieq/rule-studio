@@ -7,15 +7,13 @@ function Image(props) {
     const { ["aria-label"]: ariaLabel, caption, height, src, width } = props;
 
     return (
-        <figure className={styles.Root}>
+        <figure className={styles.Root} style={{height, width}}>
             <img
                 alt={caption}
                 aria-labelledby={ariaLabel}
                 className={styles.Image}
-                height={height}
                 src={src}
                 title={caption}
-                width={width}
             />
             <Typography
                 align={"center"}
@@ -33,9 +31,9 @@ function Image(props) {
 Image.propTypes = {
     "aria-label": PropTypes.string,
     caption: PropTypes.node,
-    height: PropTypes.number,
+    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     src: PropTypes.string,
-    width: PropTypes.number
+    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 };
 
 export default Image;
