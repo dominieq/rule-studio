@@ -65,7 +65,7 @@ class Help extends React.PureComponent {
             marginRight: this.drawerRef.current.offsetWidth
         }, () => {
             clearTimeout(this.timer);
-            setTimeout(() => {
+            this.timer = setTimeout(() => {
                 let chapterPositions = [];
 
                 for (let i = 1; i <= CHAPTERS.length; i++) {
@@ -86,7 +86,7 @@ class Help extends React.PureComponent {
         const scrollable = document.getElementById("scrollable");
 
         clearTimeout(this.timer);
-        setTimeout(() => {
+        this.timer = setTimeout(() => {
             let i = 0;
 
             while (i < CHAPTERS.length && chapterPositions[i] - 32 <= scrollable.scrollTop) i++;
