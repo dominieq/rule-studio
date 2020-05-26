@@ -25,7 +25,7 @@ function ClassUnions(props) {
                         write your number in the text field or use the slider. The concept of class unions and the description 
                         of parameters can be found in the user's guide.
                     </Typography>
-                    <Image src={settings} caption={"FIGURE 25: Parameters in “Class unions”"} />
+                    <Image src={settings} caption={"FIGURE 25: Parameters in “CLASS UNIONS”"} />
                     <Typography>
                         If there are more than 50 class unions, pagination is displayed at the top and at the bottom of the page.
                         If there are less than 6 class unions on a page, the upper pagination is hidden. You can filter the result

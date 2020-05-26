@@ -25,7 +25,7 @@ function Rules(props) {
                         from the list. To choose consistency threshold, write a number in the text field or use the slider.
                         The concept of decision rules can be found in the user's guide.
                     </Typography>
-                    <Image src={settings} caption={"FIGURE 28: Parameters in “Rules”"} />
+                    <Image src={settings} caption={"FIGURE 28: Parameters in “RULES”"} />
                     <Typography>
                         If there are more than 50 rules, pagination is displayed at the top and at the bottom of the page.
                         If there are less than 6 rules on the page, the upper pagination is hidden. You can filter result 
@@ -36,11 +36,12 @@ function Rules(props) {
                         It contains a list of rule’s characteristics and two sorting orders: ascending and descending.
                         Default values are shown in Fig. 29. Main rule characteristics are described in the user's guide.
                     </Typography>
-                    <Image src={sort} caption={"FIGURE 29: Sort menu in “Rules”"} />
+                    <Image src={sort} caption={"FIGURE 29: Sort menu in “RULES”"} />
                     <Typography>
                         In RuLeStudio, you can upload your own rule set. Click on “Upload file” button and select your file.
-                        It should be a valid XML file that implements RuleML standard. Note that the data in your project should 
-                        be a valid training set for uploaded rules. If it is not, you will be able to see uploaded rules, however
+                        It should be a valid XML file that implements RuleML standard. Reading of this file is going to be executed
+                        with the attributes from the “DATA” tab. Note that the data in your project should be a valid training set
+                        for uploaded rules. If it is not, you will be able to see uploaded rules, however
                         there won’t be any information about covered and supporting objects. There is an option to export current
                         rule set to XML or TXT file. In order to do that, click on “Save rules to RuleML” or “Save rules to TXT” button.
                         The current rule set is going to be automatically downloaded to your default download folder. It is possible 

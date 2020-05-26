@@ -30,7 +30,7 @@ function CrossValidation(props) {
                         and classification (“Classification”). To customize seed, write an integer value in the text field or click on the 
                         button on the right to draw a random number. To choose the number of cross-validation folds, write that number in the text field.
                     </Typography>
-                    <Image src={settings} caption={"FIGURE 37: Parameters in “Cross-Validation”"} />
+                    <Image src={settings} caption={"FIGURE 37: Parameters in “CROSS-VALIDATION”"} />
                     <Typography>
                         If there are more than 50 test objects in a fold, pagination is displayed at the top and at the bottom of the page.
                         If there are less than 6 objects on the page, the upper pagination is hidden. For each calculated fold, you can filter
@@ -47,7 +47,10 @@ function CrossValidation(props) {
                         decision, conditions and characteristics, click on an item from the list in the middle. Then, a list and a table appear on the
                         right. The list at the top depicts rule’s decision in the first row and conditions in subsequent rows. The table at the bottom
                         shows rule’s characteristics. Note that you can also see in the title the original and suggested decision, as well as the
-                        certainty of provided suggestion. There is an option to examine objects from a different fold. In order to do that,
+                        certainty of provided suggestion. There is an option to see more detailed description of a selected covering rule. In order to do that,
+                        right click on the upper right list. A context menu is going to be displayed. Select an option to display rule’s details.
+                        New content is going to slide into the dialog from the right. Composition of this content was presented in “Rules”.
+                        There is an option to examine objects from a different fold. In order to do that,
                         click on the select menu and pick another fold number from the list (Fig. 39).
                     </Typography>
                     <Image src={foldSelect} caption={"FIGURE 39: Selection of different fold"} />

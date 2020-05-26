@@ -20,11 +20,16 @@ function DominanceCones(props) {
                         The tab is empty, when you visit it for the first time. 
                         In order to see dominance cones for each object in your data set, click on the “CALCULATE” button. 
                         If there are more than 50 objects, pagination is displayed at the top and at the bottom of the page. 
-                        If there are less than 6 objects on a page, the upper pagination is hidden.You can filter the result list by using 
-                        the “Search” input field. In order to filter objects, use one of the characteristics visible on list items.
-                        For example, if you want to filter out objects that have 20 other objects in their positive dominance cone, you can
-                        type “positive 20”. It is possible to see the details of dominance cones of an object. In order to do that,
-                        you have to click on one of the objects from the result list. A new dialog is going to be displayed (Fig. 23).
+                        If there are less than 6 objects on a page, the upper pagination is hidden. 
+                        In the user's guide, there are presented four different types of dominance cones. Not always all of them are going
+                        to be presented in RuLeStudio. If it is true that whenever object a dominates object b, also object b is 
+                        dominated by object a, then only the cones reflecting dominance relation are shown. The above equivalence holds,
+                        if in the data there are no missing values for an attribute whose missing value type is mv1.5.
+                        You can filter the result list by using the “Search” input field. In order to filter objects,
+                        use one of the characteristics visible on list items. For example, if you want to filter out objects that have 20
+                        other objects in their positive dominance cone, you can type “positive 20”. It is possible to see the details of
+                        dominance cones of an object. In order to do that, you have to click on one of the objects from the result list.
+                        A new dialog is going to be displayed (Fig. 23).
                     </Typography>
                     <Image src={objectsDetails} caption={"FIGURE 23: Dominance cones details"} />
                     <Typography>

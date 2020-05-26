@@ -21,14 +21,16 @@ function CreatingProject(props) {
                         After clicking on “New project” button, RuLeStudio displays a page where you can customize
                         name for your new project and upload files. Although it is easier to have a dataset ready 
                         for calculations, you don’t have to upload any files to create a project. You will have 
-                        the opportunity to add attributes and objects in “Data” tab. However, if you wish to add 
+                        the opportunity to add attributes and objects in the “DATA” tab. However, if you wish to add 
                         files to your project click on the switch with “Create project with metadata” label.
                         New content will be displayed below this switch (Fig. 4).
                     </Typography>
                     <Image src={middle} caption={"FIGURE 4: Creating new project with metadata"} />
                     <Typography>
-                        Metadata represents attributes in your project. It should be a valid JSON file. At this point,
-                        you are able to create new project. In “Data” tab you will be able to see a table with attributes
+                        Metadata represents attributes in your project. It should be a valid JSON file. 
+                        There should be an array in this file and each element from this array should describe one attribute.
+                        The way of writing attributes to a file was specifically prepared for the needs of ruleLearn library.
+                        At this point, you are able to create new project. In the “DATA” tab you will be able to see a table with attributes
                         as names of columns. However, if you wish to add data or rules, click on the divider with
                         “Optional files” label. New content will be displayed below this divider.
                     </Typography>
@@ -39,6 +41,9 @@ function CreatingProject(props) {
                         an additional dialog will be displayed (Fig. 6), where you can select a separator and choose 
                         if the first row of the file should be treated as a header row. The default separator
                         is a comma. Other options are tab, space and semicolon.
+                        The data written in a JSON file does not require any extra options. For this type of a file,
+                        RuLeStudio reads and writes data as an array of elements, where each element corresponds to a single object.
+                        The values of an object for subsequent attributes are written as “key”:“value” pairs (where the key equals attribute’s name).
                     </Typography>
                     <Image src={csvDialog} caption={"FIGURE 6: CSV dialog"} />
                 </React.Fragment>
