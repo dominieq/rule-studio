@@ -100,8 +100,8 @@ public class DataService {
         try {
             informationTable = objectParser.parseObjects(reader);
         } catch (RuntimeException e) {
-            WrongParameterException ex = new WrongParameterException("Invalid format of json data, couldn't be successfully parsed.");
-            logger.error("{}:\t{}", ex.getMessage(), e.getMessage());
+            WrongParameterException ex = new WrongParameterException(new StringBuilder("Invalid format of json data, couldn't be successfully parsed.\t").append(e.getMessage()).toString());
+            logger.error(ex.getMessage());
             throw ex;
         }
 
