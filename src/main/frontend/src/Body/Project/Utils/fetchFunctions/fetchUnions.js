@@ -2,7 +2,7 @@ import { responseJson } from "./utilFunctions";
 
 async function fetchUnions(base, projectId, method, data) {
     let query = ""
-    if (data && !(data instanceof FormData)) {
+    if (data && Object.keys(data).length) {
         query = `?typeOfUnions=${data.typeOfUnions}&consistencyThreshold=${data.consistencyThreshold}`;
         data = null;
     }

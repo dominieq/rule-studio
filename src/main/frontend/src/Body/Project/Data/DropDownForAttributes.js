@@ -4,16 +4,30 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 import clsx from "clsx";
+
+const tooltip = {
+  mv15: <p style={{textAlign: "justify"}}>
+          <b> mv<sub>1.5</sub> </b> – when comparing two evaluations with respect to the attribute, <b> the following relations hold: </b> <br/>
+          <b>{"? \u2ab0 x, ? \u2ab0 ?,"}</b> <br/>
+          <b>{"? \u2aaf x, ? \u2aaf ?."}</b> 
+        </p>,
+  mv2:  <p style={{textAlign: "justify"}}>
+          <b> mv<sub>2</sub> </b> – when comparing two evaluations with respect to the attribute, <b> apart from the relations of mv<sub>1.5</sub>,</b> also <b> the following relations hold: </b> <br/>
+          <b>{"x \u2ab0 ?,"}</b> <br/>
+          <b>{"x \u2aaf ?."}</b> 
+        </p>
+};
 
 const useStyles = makeStyles(theme => ({
   formControl: {
     marginTop: theme.spacing(2)
   },
   root: {
-    backgroundColor: theme.palette.button.contained.background,
+    backgroundColor: theme.palette.background.sub,
     '& fieldset': {
-        borderColor: theme.palette.button.contained.background,
+        borderColor: theme.palette.background.sub,
     },
     '&:hover .MuiOutlinedInput-notchedOutline': {
         borderColor: theme.palette.text.default
@@ -22,18 +36,18 @@ const useStyles = makeStyles(theme => ({
         borderColor: theme.palette.text.default,
     },
     '&:hover': {
-        backgroundColor: theme.palette.button.contained.backgroundAction
+        backgroundColor: theme.palette.background.subDark
     },
     '&.Mui-focused': {
-        backgroundColor: theme.palette.button.contained.backgroundAction
+        backgroundColor: theme.palette.background.subDark
     },
     '& label.MuiInputLabel-shrink': {
       backgroundColor: theme.palette.background.default,
-      color: theme.palette.button.contained.background,
+      color: theme.palette.background.sub,
       transform: "translate(14px, -13px) scale(0.75)",
     },
     '& label.Mui-focused': {
-        color: theme.palette.button.contained.backgroundAction
+        color: theme.palette.background.subDark
     },
     '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
       borderColor:  theme.palette.text.default
@@ -44,8 +58,8 @@ const useStyles = makeStyles(theme => ({
 
 const menuStyles = makeStyles(theme => ({
   list: {
-    backgroundColor: theme.palette.popper.background,
-    color: theme.palette.popper.text,
+    backgroundColor: theme.palette.background.sub,
+    color: theme.palette.text.main2,
   }
 }), {name: "CustomMenu"});
 
@@ -78,7 +92,10 @@ export default function DropDownForAttributes(props) {
           MenuProps={{classes: {list: menuClasses.list}}}
         >
         {props.items.map((x,index) => { 
-          if(props.missingVal) return <MenuItem style={{display: "inherit"}} key={index} value={`mv${x}`}>mv<sub>{x}</sub></MenuItem>
+          if(props.missingVal) {
+            if(x === "1.5") return <MenuItem style={{display: "inherit"}} key={index} value={`mv${x}`}> <CustomTooltip arrow={true} disableGpu={true} placement={'right-end'} title={tooltip.mv15}>mv<sub>{x}</sub></CustomTooltip></MenuItem>
+            else return <MenuItem style={{display: "inherit"}} key={index} value={`mv${x}`}> <CustomTooltip arrow={true} disableGpu={true} placement={'right-end'} title={tooltip.mv2}>mv<sub>{x}</sub></CustomTooltip></MenuItem>
+          }
           return <MenuItem key={index} value={x}>{x}</MenuItem>
           })}
         </Select>

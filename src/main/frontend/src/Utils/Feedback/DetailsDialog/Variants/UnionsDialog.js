@@ -1,14 +1,14 @@
-import React, { PureComponent } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { getItemName } from "../../../../Body/Project/Utils/parseData";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
-import DetailsDialog from "../DetailsDialog";
+import { FullscreenDialog, FullscreenHeader, MultiColumns} from "../../../DataDisplay/FullscreenDialog";
 import ObjectTable from "../Elements/ObjectTable";
 import TableItemsList from "../Elements/TableItemsList";
 import TablesList from "../Elements/TablesList";
 import TraitsTable from "../Elements/TraitsTable";
 
-class UnionsDialog extends PureComponent {
+class UnionsDialog extends React.PureComponent {
     constructor(props) {
         super(props);
 
@@ -66,44 +66,51 @@ class UnionsDialog extends PureComponent {
         const { item, projectResult, ...other}  = this.props;
 
         return (
-            <DetailsDialog onExited={this.onExited} title={this.getUnionsTitle()} {...other}>
-                <div id={"unions-tables"}>
-                    <TablesList
-                        headerText={"Union's characteristics"}
-                        tableIndex={tableIndex}
-                        onTableSelected={this.onTableSelected}
-                        tables={item.tables}
-                    />
-                </div>
-                <div id={"unions-table-content"} style={{display: "flex", flexDirection: "column"}}>
-                    {!Number.isNaN(Number(tableIndex)) &&
-                        <TableItemsList
-                            getName={this.getName}
-                            headerText={Object.keys(item.tables)[tableIndex]}
-                            itemIndex={itemInTableIndex}
-                            onItemInTableSelected={this.onItemInTableSelected}
-                            table={Object.values(item.tables)[tableIndex]}
-                        />
-                    }
-                </div>
-                <div id={"unions-table-item"} style={{display: "flex", flexDirection: "column"}}>
-                    <div style={{minHeight: "30%"}}>
-                        <TraitsTable
-                            columnsLabels={{key: "Name", value: "Value"}}
-                            traits={item.traits}
+            <FullscreenDialog onExited={this.onExited} {...other}>
+                <FullscreenHeader
+                    id={"unions-details-header"}
+                    onClose={this.props.onClose}
+                    title={this.getUnionsTitle()}
+                />
+                <MultiColumns>
+                    <div id={"unions-tables"}>
+                        <TablesList
+                            headerText={"Union's characteristics"}
+                            tableIndex={tableIndex}
+                            onTableSelected={this.onTableSelected}
+                            tables={item.tables}
                         />
                     </div>
-                    <div style={{flexGrow: 1}}>
-                        {!Number.isNaN(Number(itemInTableIndex)) &&
-                            <ObjectTable
-                                informationTable={projectResult.informationTable}
-                                objectIndex={itemInTableIndex}
-                                objectHeader={this.getName(itemInTableIndex).toString()}
+                    <div id={"unions-table-content"} style={{display: "flex", flexDirection: "column"}}>
+                        {!Number.isNaN(Number(tableIndex)) &&
+                            <TableItemsList
+                                getName={this.getName}
+                                headerText={Object.keys(item.tables)[tableIndex]}
+                                itemIndex={itemInTableIndex}
+                                onItemInTableSelected={this.onItemInTableSelected}
+                                table={Object.values(item.tables)[tableIndex]}
                             />
                         }
                     </div>
-                </div>
-            </DetailsDialog>
+                    <div id={"unions-table-item"} style={{display: "flex", flexDirection: "column"}}>
+                        <div style={{minHeight: "30%"}}>
+                            <TraitsTable
+                                columnsLabels={{key: "Name", value: "Value"}}
+                                traits={item.traits}
+                            />
+                        </div>
+                        <div style={{flexGrow: 1}}>
+                            {!Number.isNaN(Number(itemInTableIndex)) &&
+                                <ObjectTable
+                                    informationTable={projectResult.informationTable}
+                                    objectIndex={itemInTableIndex}
+                                    objectHeader={this.getName(itemInTableIndex).toString()}
+                                />
+                            }
+                        </div>
+                    </div>
+                </MultiColumns>
+            </FullscreenDialog>
         );
     }
 }

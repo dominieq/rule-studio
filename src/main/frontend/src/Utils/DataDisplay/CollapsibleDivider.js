@@ -7,7 +7,7 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 
 const expandStyles = makeStyles(theme => ({
     root: {
-        color: theme.palette.paper.text,
+        color: theme.palette.text.main1,
         padding: 0,
     },
     expand: {
@@ -51,7 +51,7 @@ const dividerStyles = makeStyles(theme => ({
     },
     label: {
         fontSize: "smaller",
-        color: theme.palette.paper.text,
+        color: theme.palette.text.main1,
         minWidth: "fit-content",
         marginRight: "1em",
         marginTop: "-1px",
@@ -59,7 +59,7 @@ const dividerStyles = makeStyles(theme => ({
     'horizontal-line': {
         height: "1px",
         width: "100%",
-        backgroundColor: theme.palette.paper.text,
+        backgroundColor: theme.palette.text.main1,
     },
 }), {name: "collapsible-divider"});
 

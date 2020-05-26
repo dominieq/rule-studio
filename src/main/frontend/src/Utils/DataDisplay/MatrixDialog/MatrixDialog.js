@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import { CenteredColumn } from "./Elements";
-import { FullscreenDialog, MultiColumns, TitleBar } from "../FullscreenDialog";
+import { FullscreenDialog, MultiColumns, FullscreenHeader } from "../FullscreenDialog";
 import TextWithHoverTooltip from "../TextWithHoverTooltip";
 import VirtualizedMatrix, { estimateMatrixHeight, estimateMatrixWidth } from "../VirtualizedMatrix";
 import { estimateTableHeight } from "../VirtualizedTable";
@@ -14,8 +14,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 const StyledMenu = withStyles(theme => ({
     list: {
-        backgroundColor: theme.palette.popper.background,
-        color: theme.palette.popper.text
+        backgroundColor: theme.palette.background.sub,
+        color: theme.palette.text.main2
     }
 }), {name: "ContextMenu"})(props => <Menu {...props} />);
 
@@ -149,7 +149,8 @@ class MatrixDialog extends React.PureComponent {
 
         return (
             <FullscreenDialog open={open} onEntering={this.onEntering} onClose={onClose}>
-                <TitleBar
+                <FullscreenHeader
+                    id={"matrix-details-header"}
                     onClose={onClose}
                     title={title}
                 />

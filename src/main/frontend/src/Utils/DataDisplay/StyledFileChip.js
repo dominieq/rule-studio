@@ -6,19 +6,19 @@ import Chip from "@material-ui/core/Chip";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        color: theme.palette.chip.text,
-        backgroundColor: theme.palette.chip.background,
+        color: theme.palette.text.main2,
+        backgroundColor: theme.palette.background.subDark,
     },
     clickable: {
         '&:hover': {
-            color: theme.palette.chip.text,
-            backgroundColor: theme.palette.chip.background,
+            color: theme.palette.text.main2,
+            backgroundColor: theme.palette.background.subDark,
         }
     },
     deletable: {
         '&:focus': {
-            color: theme.palette.chip.text,
-            backgroundColor: theme.palette.chip.background,
+            color: theme.palette.text.main2,
+            backgroundColor: theme.palette.background.subDark,
         }
     }
 }), {name: "MuiFileChip"});

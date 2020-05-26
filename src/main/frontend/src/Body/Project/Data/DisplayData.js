@@ -40,7 +40,7 @@ const maxNoOfHistorySteps = 30;
 const SimpleDialog = withStyles( theme => ({
     paper: {
         backgroundColor: theme.palette.background.default,
-        color: theme.palette.paper.text,
+        color: theme.palette.text.main1,
     },    
     paperWidthSm: {
         maxWidth: "700px"
@@ -188,7 +188,8 @@ class DisplayData extends React.Component {
             saveToFileCsvSeparator: '',
             
             editAttributeSelected: '', //name of selected attribute
-            addAttributeErrorNotification: '',
+            errorMessage: '',
+            errorMessageSeverity: 'error',
             attributeTypeSelected: '',
             attributePreferenceTypeSelected: '',
             valueTypeSelected: '',
@@ -206,12 +207,13 @@ class DisplayData extends React.Component {
 
             historySnapshot: this.props.project.dataHistory.historySnapshot,
             history: this.props.project.dataHistory.history.length ? 
-                this.props.project.dataHistory.history 
+                this.prepareHistory(this.props.project.dataHistory.history)
                 :
                 [
                     {
                         rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
                         columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
+                        historyActionSubject: ''
                     }
                 ],
             wholeAppError: false,
@@ -250,7 +252,8 @@ class DisplayData extends React.Component {
                 saveToFileCsvSeparator: '',
                 
                 editAttributeSelected: '', //name of selected attribute
-                addAttributeErrorNotification: '',
+                errorMessage: '',
+                errorMessageSeverity: 'error',
                 attributeTypeSelected: '',
                 attributePreferenceTypeSelected: '',
                 valueTypeSelected: '',
@@ -268,12 +271,13 @@ class DisplayData extends React.Component {
 
                 historySnapshot: this.props.project.dataHistory.historySnapshot,
                 history: this.props.project.dataHistory.history.length ? 
-                this.props.project.dataHistory.history 
+                this.prepareHistory(this.props.project.dataHistory.history)
                 :
                 [
                     {
                         rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
                         columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
+                        historyActionSubject: ''
                     }
                 ],
             }, () => {
@@ -281,6 +285,22 @@ class DisplayData extends React.Component {
                 this.replaceMissingDataWithQuestionMarks();
             })
         }
+    }
+
+    prepareHistory = (history) => {
+        const historyTmp = JSON.parse(JSON.stringify(history));
+        for(let i in historyTmp) {
+            for(let j in historyTmp[i].columns) {
+                if(historyTmp[i].columns[j].domain !== undefined) {
+                    if(!historyTmp[i].columns[j].domain.includes("?")) historyTmp[i].columns[j].domain.push("?");
+                    historyTmp[i].columns[j].editor = <DropDownEditor options={historyTmp[i].columns[j].domain} />;
+                }
+                if(historyTmp[i].columns[j].valueType === "integer" || historyTmp[i].columns[j].valueType === "real" || historyTmp[i].columns[j].key === "uniqueLP") {
+                    historyTmp[i].columns[j].filterRenderer = NumericFilter;
+                }
+            }
+        }
+        return historyTmp;
     }
 
     /** 
@@ -387,21 +407,48 @@ class DisplayData extends React.Component {
         this.replaceMissingDataWithQuestionMarks();
     }
 
-    componentWillUnmount() {
-        if(this.state.dataModified) {
-            const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
-            const tmpData = this.prepareDataFileBeforeSendingToServer();
-            const tmpProject = {...this.props.project}
-            tmpProject.result.informationTable.attributes = tmpMetaData;
-            tmpProject.result.informationTable.objects = tmpData;
-            tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history};
-            tmpProject.isDataFromServer = false;
-            this.props.updateProject(tmpProject);
+    updateProject = () => {
+        const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
+        const tmpData = this.prepareDataFileBeforeSendingToServer();
+        const tmpProject = JSON.parse(JSON.stringify(this.props.project));
+        tmpProject.result.informationTable.attributes = tmpMetaData;
+        tmpProject.result.informationTable.objects = tmpData;
+        tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history};
+        tmpProject.isDataFromServer = false;
+        this.props.onDataChange(tmpProject);
+    }
+
+    updateChangedIdentifOrDescriptAttribute = () => {
+        const attributes = this.prepareMetadataFileBeforeSendingToServer();
+        this.props.onAttributesChange(attributes);
+    }
+
+    checkIfUpdateOfAttributesNeeded = (oldCol, newCol) => {
+        //right click on header menu
+        if(typeof newCol === "boolean") {
+            if(newCol === false) { //column has been removed
+                if(oldCol.type === "description" || oldCol.identifierType !== undefined) this.updateChangedIdentifOrDescriptAttribute();
+            } else { //column activeness has been changed
+                if(oldCol.identifierType !== undefined) this.updateChangedIdentifOrDescriptAttribute();
+            }
+        } else { //column has been edited
+            if((oldCol.type === "description" && newCol.type !== "description") 
+                ||  (oldCol.type !== "description" && newCol.type === "description")
+                ||  (oldCol.identifierType !== undefined && newCol.identifierType === undefined) 
+                ||  (oldCol.identifierType === undefined && newCol.identifierType !== undefined)
+                ||  (oldCol.identifierType !== undefined && newCol.identifierType !== undefined && oldCol.identifierType !== newCol.identifierType)
+                ||  (
+                        oldCol.name !== newCol.name &&
+                        ((oldCol.type === newCol.type && oldCol.type === "description") || ((oldCol.identifierType === newCol.identifierType && oldCol.identifierType !== undefined)))
+                    )
+            ) {
+                this.updateChangedIdentifOrDescriptAttribute();
+            }
         }
+    }
+
+    componentWillUnmount() {
         this._isMounted = false;
-        //let t0 = performance.now();
-        //this.sameData();
-        //let t1 = performance.now();
     }
 
     /** 
@@ -438,10 +485,11 @@ class DisplayData extends React.Component {
                                 historySnapshot: tmpHistory.length-1, 
                             }
                         }
-                    });
+                    }, () => this.updateProject())
                 },500)
             });
         } else {
+            let isTheSame = false;
             this.setState(prevState => {
                 const rows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
                 const filtered = this.filteredRows();
@@ -452,7 +500,8 @@ class DisplayData extends React.Component {
                     const message = <span> Cell hasn't been updated. <br/> Empty value isn't valid input. Use question mark (?) instead. </span>
                         return {
                             isOpenedNotification: true,
-                            addAttributeErrorNotification: message
+                            errorMessage: message,
+                            errorMessageSeverity: 'error'
                         }
                 }
                 if(editedCol.valueType === "real") { //enable only reals and "?"
@@ -460,7 +509,8 @@ class DisplayData extends React.Component {
                         const message = <span> Cell hasn't been updated. <br/> Column type: real <br/> The entered value: {tmp[1]}, which is invalid. </span>
                         return {
                             isOpenedNotification: true,
-                            addAttributeErrorNotification: message
+                            errorMessage: message,
+                            errorMessageSeverity: 'error'
                         }
                     }
                 } else if(editedCol.valueType === "integer") { //enable only integers and "?"
@@ -468,15 +518,17 @@ class DisplayData extends React.Component {
                         const message = <span> Cell hasn't been updated. <br/> Column type: integer <br/> The entered value: {tmp[1]}, which is invalid. </span>
                         return {
                             isOpenedNotification: true,
-                            addAttributeErrorNotification: message
+                            errorMessage: message,
+                            errorMessageSeverity: 'error'
                         }
                     }
                 } else if(editedCol.valueType === "enumeration") { //enable only domain elements and "?" - can happen only during ctrl+c, ctrl+v
                     if(tmp[1] !== "?" && !editedCol.domain.includes(tmp[1])) {
-                        const message = <span> Cell hasn't been updated. <br/> Column type: enumeration <br/> The entered value: {tmp[1]}, which is invalid. Please check the domain. </span>
+                        const message = <span> Cell hasn't been updated. <br/> Column type: enumeration <br/> The entered value: {tmp[1]}, which is invalid. <br/> Please check the domain. </span>
                         return {
                             isOpenedNotification: true,
-                            addAttributeErrorNotification: message
+                            errorMessage: message,
+                            errorMessageSeverity: 'error'
                         }
                     }
                 }
@@ -486,6 +538,7 @@ class DisplayData extends React.Component {
                     if(fromRow === toRow) //check if any change happend
                     {
                         if(rows[rows_index][tmp[0]] === tmp[1]) {
+                            isTheSame = true;
                             return ;
                         }
                     }
@@ -500,7 +553,9 @@ class DisplayData extends React.Component {
                     history: tmpHistory,
                     historySnapshot: tmpHistory.length-1, 
                 };
-            });
+            }, () => {
+                if(!isTheSame) this.updateProject();
+            })
         }
     };
 
@@ -550,7 +605,7 @@ class DisplayData extends React.Component {
                 history: tmpHistory,
                 historySnapshot: tmpHistory.length-1,
             }
-        });
+        }, () => this.updateProject());
     };
 
     /** 
@@ -657,7 +712,7 @@ class DisplayData extends React.Component {
                     historySnapshot: tmpHistory.length-1
                 };
             }
-        })
+        }, () => this.updateProject())
     };
 
     /**
@@ -721,6 +776,7 @@ class DisplayData extends React.Component {
             if(this.state.history[this.state.historySnapshot].rows.length > 0 && this.state.history[this.state.historySnapshot].rows.length * heightOfRow < document.getElementsByClassName("react-grid-Canvas")[0].scrollTop) {
                 document.getElementsByClassName("react-grid-Canvas")[0].scrollTop = this.state.history[this.state.historySnapshot].rows.length * heightOfRow;
             };
+            this.updateProject();
         })        
     };
     
@@ -808,7 +864,7 @@ class DisplayData extends React.Component {
                     historySnapshot: tmpHistory.length-1
                 };
             }
-        });
+        }, () => this.updateProject());
     
     };
 
@@ -889,8 +945,7 @@ class DisplayData extends React.Component {
      */
     onTransformAttributes = () => {
         const base = this.props.serverBase;
-        const x = true;
-        if(x) {
+        if(this.state.dataModified) {
             this.setState({
                     isLoading: true,
                     isOpenedTransform: false,
@@ -909,16 +964,17 @@ class DisplayData extends React.Component {
                             if(this._isMounted) {
                                 this.isDataFromServer = true;
                                 const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
-				                tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes)});
+				                tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes), historyActionSubject: 'both'});
                                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                                 this.setState({
                                     isLoading: false,
                                     dataModified: true,
                                     history: tmpHistory, 
-                                    historySnapshot: tmpHistory.length-1
+                                    historySnapshot: tmpHistory.length-1,
                                 }, () => {
                                     this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
                                     this.replaceMissingDataWithQuestionMarks();
+                                    this.updateProject();
                                 })
                             }
 
@@ -930,7 +986,8 @@ class DisplayData extends React.Component {
                             if(this._isMounted) {
                                 this.setState({
                                     isOpenedNotification: true,
-                                    addAttributeErrorNotification: message,
+                                    errorMessage: message,
+                                    errorMessageSeverity: 'error',
                                     isLoading: false,
                                 })
                             }
@@ -947,7 +1004,8 @@ class DisplayData extends React.Component {
                             if(this._isMounted) {
                                 this.setState({
                                     isOpenedNotification: true,
-                                    addAttributeErrorNotification: message,
+                                    errorMessage: message,
+                                    errorMessageSeverity: 'error',
                                     isLoading: false,
                                 })
                             }
@@ -982,7 +1040,7 @@ class DisplayData extends React.Component {
                             if(this._isMounted) {
                                 this.isDataFromServer = true;
                                 const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
-                                tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes)});
+                                tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes), historyActionSubject: 'both'});
                                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                                 this.setState({
                                     isLoading: false,
@@ -992,6 +1050,7 @@ class DisplayData extends React.Component {
                                 }, () => { 
                                     this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
                                     this.replaceMissingDataWithQuestionMarks();
+                                    this.updateProject();
                                 })
                             }
                         }).catch(err => {
@@ -1002,7 +1061,8 @@ class DisplayData extends React.Component {
                             if(this._isMounted) {
                                 this.setState({
                                     isOpenedNotification: true,
-		                            addAttributeErrorNotification: message,
+                                    errorMessage: message,
+                                    errorMessageSeverity: 'error',
                                     isLoading: false,
                                 })
                             }
@@ -1019,7 +1079,8 @@ class DisplayData extends React.Component {
                             if(this._isMounted) {
                                 this.setState({
                                     isOpenedNotification: true,
-                                    addAttributeErrorNotification: message,
+                                    errorMessage: message,
+                                    errorMessageSeverity: 'error',
                                     isLoading: false,
                                 })
                             }
@@ -1056,7 +1117,7 @@ class DisplayData extends React.Component {
         
         //remove missing value sign ("?")
         newMetadata.forEach(col => {
-            if(col.domain !== undefined) col.domain.pop();
+            if(col.domain !== undefined && col.domain[col.domain.length-1] === "?") col.domain.pop();
         })
         return newMetadata;
     }
@@ -1155,9 +1216,7 @@ class DisplayData extends React.Component {
 
     saveDataToCsvOrJson = (name, header, separator) => {
         const base = this.props.serverBase;
-        //if(this.state.dataModified) { //modified?
-        const x = true;
-        if(x) {
+        if(this.state.dataModified) {
             let filename = name;
             let link = `${base}/projects/${this.props.project.result.id}/data/download`;
             if(header === -1) { //json
@@ -1192,7 +1251,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1203,7 +1263,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1214,7 +1275,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1256,7 +1318,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1267,7 +1330,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1278,7 +1342,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1292,9 +1357,7 @@ class DisplayData extends React.Component {
 
     saveMetaDataToJson = (name) => {
         const base = this.props.serverBase;
-        //if(this.state.dataModified) { //modified?
-        const x = true;
-        if(x) { 
+        if(this.state.dataModified) {
             let filename = name;
             let formData = new FormData();
             formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
@@ -1319,7 +1382,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1330,7 +1394,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1341,7 +1406,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1370,7 +1436,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1381,7 +1448,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1392,7 +1460,8 @@ class DisplayData extends React.Component {
                         if(this._isMounted) {
                             this.setState({
                                 isOpenedNotification: true,
-                                addAttributeErrorNotification: message
+                                errorMessage: message,
+                                errorMessageSeverity: 'error'
                             })
                         }
                     }).catch(err => {
@@ -1462,19 +1531,42 @@ class DisplayData extends React.Component {
                             isColumnHeaderMenuOpened: null,
                             columnKeyOfHeaderMenuOpened: -1,
                         })
+                    } else if(cols[i].type === "decision" && cols[i].active === false && selected === "Mark attribute as: active" && this.activeDecisionAttributeAlreadyExists(i)) {
+                        const message = <span>
+                                            There is already active decision attribute. <br/>
+                                            Deactivate the other decision attribute in order to use this one. 
+                                        </span>;
+                        this.setState({
+                            isOpenedNotification: true,
+                            errorMessage: message,
+                            errorMessageSeverity: 'error',
+                            isColumnHeaderMenuOpened: null,
+                            columnKeyOfHeaderMenuOpened: -1,
+                        })
+                    } else if(cols[i].identifierType !== undefined && cols[i].active === false && selected === "Mark attribute as: active" && this.activeIdentificationAttributeAlreadyExists(i)) {
+                        const message = <span>
+                                            There is already active identification attribute. <br/>
+                                            Deactivate the other identification attribute in order to use this one. 
+                                        </span>;
+                        this.setState({
+                            isOpenedNotification: true,
+                            errorMessage: message,
+                            errorMessageSeverity: 'error',
+                            isColumnHeaderMenuOpened: null,
+                            columnKeyOfHeaderMenuOpened: -1,
+                        })
                     } else {
                         let col = {...cols[i]};
-                        let didIRemoveColumn = false;
+                        let removedColumn = false;
                         if(selected === "Mark attribute as: inactive" || selected === "Mark attribute as: active") {
                             col.active = !col.active;
                             cols[i] = col;
                         } else if(selected === "Delete attribute") {
-                            cols.splice(i,1);
-                            didIRemoveColumn = true;
+                            removedColumn = cols.splice(i,1);
                         }
 
                         const tmpHistory = history.slice(0, this.state.historySnapshot+1);
-                        tmpHistory.push({rows: history[this.state.historySnapshot].rows, columns: cols});
+                        tmpHistory.push({rows: history[this.state.historySnapshot].rows, columns: cols, historyActionSubject: 'column'});
                         if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                         this.setState({
                             dataModified: true,
@@ -1482,7 +1574,14 @@ class DisplayData extends React.Component {
                             columnKeyOfHeaderMenuOpened: -1,
                             history: tmpHistory,
                             historySnapshot: tmpHistory.length-1
-                        },() => {if(!didIRemoveColumn) this.setHeaderColorAndStyle(cols[i],i,false)});
+                        },() => {
+                            if(typeof removedColumn === "boolean") {
+                                this.setHeaderColorAndStyle(cols[i],i,false);
+                                this.checkIfUpdateOfAttributesNeeded({...col}, true);
+                            }
+                            else this.checkIfUpdateOfAttributesNeeded({...removedColumn[0]}, false);
+                            this.updateProject();
+                        });
                         
                         break;
                     }
@@ -1505,10 +1604,50 @@ class DisplayData extends React.Component {
         return false;
     }
 
-    attributeAlreadyExistAndIsDifferentThanSelected(name) {
-        for(let i in this.state.history[this.state.historySnapshot].columns) {
-            if(this.state.history[this.state.historySnapshot].columns[i].name === name && this.state.editAttributeSelected !== name) {
+    attributeAlreadyExistAndIsDifferentThanSelected(name, colIdx) {
+        for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
+            if(this.state.history[this.state.historySnapshot].columns[i].name === name && i !== colIdx) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    activeIdentificationAttributeAlreadyExists(isAddMethodElseIndex) {
+        if(isAddMethodElseIndex === -1) {
+            for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
+                if(this.state.history[this.state.historySnapshot].columns[i].identifierType !== undefined
+                    && this.state.history[this.state.historySnapshot].columns[i].active === true) {
+                        return true;
+                    }
+            }
+        } else {
+            for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
+                if(this.state.history[this.state.historySnapshot].columns[i].identifierType !== undefined
+                    && this.state.history[this.state.historySnapshot].columns[i].active === true
+                    && i !== isAddMethodElseIndex) {
+                        return true;
+                    }
+            }
+        }
+        return false;
+    }
+
+    activeDecisionAttributeAlreadyExists(isAddMethodElseIndex) {
+        if(isAddMethodElseIndex === -1) {
+            for(let i=this.state.history[this.state.historySnapshot].columns.length-1; i>=0; i--) {
+                if(this.state.history[this.state.historySnapshot].columns[i].type === "decision" 
+                    && this.state.history[this.state.historySnapshot].columns[i].active === true) {
+                        return true;
+                    }
+            }
+        } else {
+            for(let i=this.state.history[this.state.historySnapshot].columns.length-1; i>=0; i--) {
+                if(this.state.history[this.state.historySnapshot].columns[i].type === "decision" 
+                    && this.state.history[this.state.historySnapshot].columns[i].active === true
+                    && i !== isAddMethodElseIndex) {
+                        return true;
+                    }
             }
         }
         return false;
@@ -1518,71 +1657,97 @@ class DisplayData extends React.Component {
         this.setState({
             attributesDomainElements: array,
         })
-      }
+    }
 
-    validateOnAddAndEditAttribute = (isOnAddMethod, name, type, mvType, identifierType, preferenceType, valueType, domain) => {
+    validateOnAddAndEditAttribute = (isAddMethodElseIndex, active, name, type, mvType, identifierType, preferenceType, valueType, domain) => {
 
         let error = ''
 
         //name validation (restricted + already exist)
-        if(name === "uniqueLP" || name === "key" || name === "uniqueLP2") error = "You have chosen restricted name for the attribute! Please choose other name.";
+        if(name === "uniqueLP" || name === "key" || name === "uniqueLP2") error = <span> You have chosen restricted name for the attribute! Please choose other name.</span>;
 
-        if(isOnAddMethod) { //add new column
-            if(this.attributeAlreadyExists(name)) error = "The attribute with the same name ("+name+") already exists! Please choose other name.";
+        if(isAddMethodElseIndex === -1) { //add new column
+            if(this.attributeAlreadyExists(name)) error = <span> The attribute with the same name ({name}) already exists! Please choose other name.</span>;
         } else { //change existing column
-            if(this.attributeAlreadyExistAndIsDifferentThanSelected(name)) error = "The attribute with the same name ("+name+") already exists! Please choose other name.";
+            if(this.attributeAlreadyExistAndIsDifferentThanSelected(name, isAddMethodElseIndex)) error = <span> The attribute with the same name ({name}) already exists! Please choose other name.</span>;
         }
         
-            //type validation
-            if(type === '') error = "You didn't select any attribute type! Please select any.";
-            
-            else if(type !== "identification") {
-                //preference type validation
-                if(preferenceType === '') error = "You didn't select any attribute preference type! Please select any.";
+        //type validation
+        if(type === '') error = <span> You didn't select any attribute type! Please select any.</span>;
+        
+        else if(type !== "identification") {
+            //only one active decision attribute
+            if(type === "decision") {
+                if(isAddMethodElseIndex === -1 && active) { //when adding new attribute
+                    if(this.activeDecisionAttributeAlreadyExists(-1)) error = <span> There is already active decision attribute. <br/>
+                        Deactivate the other decision attribute in order to use this one. <br/> 
+                        Or set this one to inactive, apply and then do the change described above. </span>
+                } else if(isAddMethodElseIndex !== -1 && active) { //when editing existing attribute
+                    if(this.activeDecisionAttributeAlreadyExists(isAddMethodElseIndex)) error = <span> There is already active decision attribute. <br/>
+                        Deactivate the other decision attribute in order to use this one. <br/> 
+                        Or set this one to inactive, apply and then do the change described above. </span>
+                }
+            }
 
-                //value type validation
-                else if(valueType === '') error = "You didn't select any value type! Please select any.";
+            //preference type validation
+            else if(preferenceType === '') error = <span> You didn't select any attribute preference type! Please select any.</span>;
 
-                //enumeration validation
-                else if(valueType === "enumeration") {
-                    if(domain.length === 0) error = <span> You have chosen enumeration type, but didn't provide any domain! <br/> Please add the domain to your enumeration value type. </span>;
+            //value type validation
+            else if(valueType === '') error = <span> You didn't select any value type! Please select any.</span>;
 
-                    for(let i=0; i<domain.length; i++) {
-                        if(domain[i].text === "") {
-                            error = "At least one attribute has empty domain! Please fill in the data.";
+            //enumeration validation
+            else if(valueType === "enumeration") {
+                if(domain.length === 0) error = <span> You have chosen enumeration type, but didn't provide any domain! <br/> Please add the domain to your enumeration value type. </span>;
+
+                for(let i=0; i<domain.length; i++) {
+                    if(domain[i].text === "") {
+                        error = <span> At least one attribute has empty domain! Please fill in the data.</span>;
+                        break;
+                    }
+
+                    if(error === '' && domain[i].text === "?") {
+                        error = <span> You cannot choose '?' for the domain name! Please rename the domain element.</span>;
+                        break;
+                    }
+
+                    if(error === '') {
+                        const domainTmp = domain.map(x => x.text.trim());
+                        if(new Set(domainTmp).size !== domainTmp.length) {
+                            error = <span> There are at least 2 attributes, which have the same domain name! <br/> The domain name must be unique, so please rename them. </span>;
                             break;
-                        }
-
-                        if(error === '' && domain[i].text === "?") {
-                            error = "You cannot choose '?' for the domain name! Please rename the domain element.";
-                            break;
-                        }
-
-                        if(error === '') {
-                            const domainTmp = domain.map(x => x.text.trim());
-                            if(new Set(domainTmp).size !== domainTmp.length) {
-                                error = <span> There are at least 2 attributes, which have the same domain name! <br/> The domain name must be unique, so please rename them. </span>;
-                                break;
-                            }
                         }
                     }
                 }
             }
-            else {
+        } else {
+            if(error === '') {
+                //there can be only one active identification attribute
+                if(isAddMethodElseIndex === -1 && active) { //when adding new attribute
+                    if(this.activeIdentificationAttributeAlreadyExists(-1)) error = <span> There is already active identification attribute. <br/>
+                        Deactivate the other identification attribute in order to use this one. <br/> 
+                        Or set this one to inactive, apply and then do the change described above. </span>
+                } else if(isAddMethodElseIndex !== -1 && active) { //when editing existing attribute
+                    if(this.activeIdentificationAttributeAlreadyExists(isAddMethodElseIndex)) error = <span> There is already active identification attribute. <br/>
+                        Deactivate the other identification attribute in order to use this one. <br/> 
+                        Or set this one to inactive, apply and then do the change described above. </span>
+                }
+
                 //identifier type validation
                 if(identifierType === '') error = "You didn't select any identifier type! Please select any.";
             }
-            
-            this.setState({
-                addAttributeErrorNotification: error,
-            });  
-
-            //everything was fine
-            if(error === '') return true;
-
-            //there are some errors
-            return false;
+        }
         
+        this.setState({
+            errorMessage: error,
+            errorMessageSeverity: 'warning'
+        });  
+
+        //everything was fine
+        if(error === '') return true;
+
+        //there are some errors
+        return false;
+    
     }
 
     createColumn = (name, active, type, mvType, identifierType, preferenceType, valueType, domain) => {
@@ -1616,19 +1781,27 @@ class DisplayData extends React.Component {
             const tmp = document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes;
             if((column.type !== undefined || column.identifierType !== undefined) && !(/<\/?[a-z][\s\S]*>/i.test(column.type))) { //make sure attribute type doesn't contain html tags
                 if(tmp.length === 2) {
-                    if(column.identifierType !== undefined) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(identification)");
-                    else if(column.active) {
+                    if(column.identifierType !== undefined) {
+                        if(column.active) { 
+                            document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(identification,active)");
+                        } else {
+                            document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(identification,inactive)");
+                        }
+                    } else if(column.active) {
                         document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",active)");
-                    }
-                    else {
+                    } else {
                         document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(" + column.type + ",inactive)");
                     }
                 } else if(tmp.length > 2) {
-                    if(column.identifierType !== undefined) document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(identification)";
-                    else if(column.active) {
+                    if(column.identifierType !== undefined) {
+                        if(column.active) { 
+                            document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(identification,active)";
+                        } else {
+                            document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(identification,inactive)";
+                        }
+                    } else if(column.active) {
                         document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",active)";
-                    }
-                    else {
+                    } else {
                         document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(" + column.type + ",inactive)";
                     }
                 }
@@ -1686,7 +1859,7 @@ class DisplayData extends React.Component {
             
             if(isRightMB) {
                 this.setState({
-                    isColumnHeaderMenuOpened: e.currentTarget,
+                    isColumnHeaderMenuOpened: e,
                     columnKeyOfHeaderMenuOpened: column.key,
                 })
                 return(false);
@@ -1711,89 +1884,86 @@ class DisplayData extends React.Component {
                 nextRows[i][column.key] = "?";
             }
         } else { //editing column
-
-            //both name and valueType of the column has been changed
-            if(ifIsNewColumnElseOldColumn.name !== column.name && ifIsNewColumnElseOldColumn.valueType !== column.valueType) {
-                if(ifIsNewColumnElseOldColumn.valueType === undefined) { //previously attribute was Identification, fill with "?"
-                    for(let i in nextRows) {
-                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
-                        nextRows[i][column.key] = "?";
-                    }
-                } else if(column.valueType === "enumeration") { 
-                    for(let i in nextRows) {
-                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
-                        nextRows[i][column.key] = nextRows[i][column.key].toString();
-                        if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
-                    }
-                } else if(column.valueType === "integer") {
-                    for(let i in nextRows) {
-                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
-                        let tmp = parseInt(nextRows[i][column.key],10);
-                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
-                        else nextRows[i][column.key] = tmp;
-                    }
-                } else if(column.valueType === "real") {
-                    for(let i in nextRows) {
-                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
-                        let tmp = parseFloat(nextRows[i][column.key]);
-                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
-                        else nextRows[i][column.key] = tmp;
-                    }
-                } else {
-                    for(let i in nextRows) {
-                        nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
-                        nextRows[i][column.key] = "?";
-                    }
-                }
-            // column valueType has been changed so check the content of each row
-            } else if(ifIsNewColumnElseOldColumn.valueType !== column.valueType) {
-                if(ifIsNewColumnElseOldColumn.valueType === undefined) { //previously attribute was Identification, fill with "?"
-                    for(let i in nextRows) {
-                        nextRows[i][column.key] = "?";
-                    }
-                } else if(column.valueType === "enumeration") {
-                    for(let i in nextRows) {
-                        if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
-                    }
-                } else if(column.valueType === "integer") {
-                    for(let i in nextRows) {
-                        let tmp = parseInt(nextRows[i][column.key],10);
-                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
-                        else nextRows[i][column.key] = tmp;
-                    }
-                } else if(column.valueType === "real") {
-                    for(let i in nextRows) {
-                        let tmp = parseFloat(nextRows[i][column.key]);
-                        if(isNaN(tmp)) nextRows[i][column.key] = "?";
-                        else nextRows[i][column.key] = tmp;
-                    }
-                } else {
-                    for(let i in nextRows) {
-                        nextRows[i][column.key] = "?";
-                    }
-                }
-            //column name has been changed (rename all keys in rows)
-            } else if(ifIsNewColumnElseOldColumn.name !== column.name) {
+            
+            //name changed
+            if(ifIsNewColumnElseOldColumn.name !== column.name) {
                 for(let i in nextRows) {
                     nextRows[i] = this.renameKeyInObject(ifIsNewColumnElseOldColumn.key, column.key, nextRows[i]);
                 }
-            }             
+            }
+
+            //value type changed
+            if(ifIsNewColumnElseOldColumn.valueType !== column.valueType) {
+                //old attribute type is identification or new attribute type is identification 
+                if(ifIsNewColumnElseOldColumn.valueType === undefined || column.valueType === undefined) {
+                    for(let i in nextRows) {
+                        nextRows[i][column.key] = "?";
+                    }
+                //change from integer to real
+                } else if(ifIsNewColumnElseOldColumn.valueType === "integer" && column.valueType === "real") {
+                    //do nothing
+                //change from integer to enumeration
+                } else if(ifIsNewColumnElseOldColumn.valueType === "integer" && column.valueType === "enumeration") {
+                    for(let i in nextRows) {
+                        if(!column.domain.includes(nextRows[i][column.key].toString())) nextRows[i][column.key] = "?";
+                    }
+                //change from real to integer
+                } else if(ifIsNewColumnElseOldColumn.valueType === "real" && column.valueType === "integer") {
+                    for(let i in nextRows) {
+                        if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = Math.round(nextRows[i][column.key]).toString();
+                    }
+                //change from real to enumeration
+                } else if(ifIsNewColumnElseOldColumn.valueType === "real" && column.valueType === "enumeration") {
+                    for(let i in nextRows) {
+                        if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
+                    }
+                //change from enumeration to integer
+                } else if(ifIsNewColumnElseOldColumn.valueType === "enumeration" && column.valueType === "integer") {
+                    for(let i in nextRows) {
+                        if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = (ifIsNewColumnElseOldColumn.domain.indexOf(nextRows[i][column.key]) + 1).toString();
+                    }
+                //change from enumeration to real
+                } else if(ifIsNewColumnElseOldColumn.valueType === "enumeration" && column.valueType === "real") {
+                    for(let i in nextRows) {
+                        if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = (ifIsNewColumnElseOldColumn.domain.indexOf(nextRows[i][column.key]) + 1.0).toString();
+                    }
+                }
+            //just domain changed
+            } else if(ifIsNewColumnElseOldColumn.valueType === "enumeration") {
+                for(let i in nextRows) {
+                    if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
+                }
+            }   
         }
         
         let history = [...this.state.history];
         let newHistory = {...history[this.state.historySnapshot]};
         newHistory.rows = nextRows;
+
+        let tmpCols = [...newHistory.columns];
+        let tmpCol = {...tmpCols[idx]};
+        if(tmpCol.type !== undefined) tmpCol.width = Math.max(120, 20 + 10*tmpCol.name.length, 20+10*(tmpCol.type.length + 9));
+        else if(tmpCol.identifierType !== undefined) tmpCol.width = Math.max(120, 20 + 10*tmpCol.name.length, 20+10*(tmpCol.identifierType.length + 9));
+        else tmpCol.width = 120;
+        tmpCols[idx] = tmpCol;
+
+        newHistory.columns = tmpCols;
         history[this.state.historySnapshot] = newHistory;
 
         this.setState({
             history: history,
-        }, () => {this.setHeaderColorAndStyleAndRightClick(column, idx, true)}) 
+        }, () => {
+            this.setHeaderColorAndStyleAndRightClick(column, idx, false);
+            this.updateProject();
+            if(typeof ifIsNewColumnElseOldColumn !== "boolean") this.checkIfUpdateOfAttributesNeeded({...ifIsNewColumnElseOldColumn}, {...column});
+            else if(column.type === "description" || column.identifierType !== undefined) this.updateChangedIdentifOrDescriptAttribute();
+        }) 
         
     }
 
     applyOnAddAttribute = (e) => {
         e.preventDefault();
-        const validationOk = this.validateOnAddAndEditAttribute(true,e.target.attributeName.value.trim(), this.state.attributeTypeSelected, this.state.missingValueTypeSelected,
+        const validationOk = this.validateOnAddAndEditAttribute(-1, e.target.attributeIsActive.checked, e.target.attributeName.value.trim(), this.state.attributeTypeSelected, this.state.missingValueTypeSelected,
                     this.state.identifierTypeSelected, this.state.attributePreferenceTypeSelected, this.state.valueTypeSelected, this.state.attributesDomainElements)
         if(validationOk) {
             const newColumn = this.createColumn(e.target.attributeName.value.trim(), e.target.attributeIsActive.checked, this.state.attributeTypeSelected, 
@@ -1803,7 +1973,7 @@ class DisplayData extends React.Component {
                 let tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
                 let cols = [...tmpHistory[prevState.historySnapshot].columns];
 
-                tmpHistory.push({rows: tmpHistory[prevState.historySnapshot].rows, columns: [...cols, newColumn]});
+                tmpHistory.push({rows: tmpHistory[prevState.historySnapshot].rows, columns: [...cols, newColumn], historyActionSubject: 'column'});
                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
 
                 return {
@@ -1818,10 +1988,11 @@ class DisplayData extends React.Component {
                     history: tmpHistory,
                     historySnapshot: tmpHistory.length-1,
                     }
-                },() => {this.setRowsAndHeaderColorAndStyleAndRightClick(
-                    this.state.history[this.state.historySnapshot].columns[this.state.history[this.state.historySnapshot].columns.length-1], 
-                    this.state.history[this.state.historySnapshot].columns.length-1, true)}
-                );   
+                },() => {
+                    this.setRowsAndHeaderColorAndStyleAndRightClick(
+                        this.state.history[this.state.historySnapshot].columns[this.state.history[this.state.historySnapshot].columns.length-1], 
+                        this.state.history[this.state.historySnapshot].columns.length-1, true);
+                });   
         } else {
             this.setState({
                 isOpenedNotification: true,
@@ -1969,7 +2140,7 @@ class DisplayData extends React.Component {
         }
         let col = {editable:true, sortable:true, resizable:true, filterable:true, draggable: true, visible: true}
 
-        const validationOk = this.validateOnAddAndEditAttribute(false,e.target.attributeName.value.trim(), this.state.attributeTypeSelected, this.state.missingValueTypeSelected,
+        const validationOk = this.validateOnAddAndEditAttribute(i, e.target.attributeIsActive.checked, e.target.attributeName.value.trim(), this.state.attributeTypeSelected, this.state.missingValueTypeSelected,
             this.state.identifierTypeSelected, this.state.attributePreferenceTypeSelected, this.state.valueTypeSelected, this.state.attributesDomainElements)
         
         if(validationOk) {
@@ -1999,7 +2170,7 @@ class DisplayData extends React.Component {
             const oldColumn = {...cols[i]};
             cols[i] = col;
             const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
-            tmpHistory.push({rows: this.state.history[this.state.historySnapshot].rows, columns: cols});
+            tmpHistory.push({rows: this.state.history[this.state.historySnapshot].rows, columns: cols, historyActionSubject: 'column'});
             if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
             
             this.setState({
@@ -2014,8 +2185,9 @@ class DisplayData extends React.Component {
                 attributesDomainElements: [],
                 history: tmpHistory,
                 historySnapshot: tmpHistory.length-1
-            },() => this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, oldColumn)
-            );   
+            },() => {
+                this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, oldColumn);
+            });   
         } else {
             this.setState({
                 isOpenedNotification: true,
@@ -2041,12 +2213,10 @@ class DisplayData extends React.Component {
             const tmp = [];
             for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
                 if(this.state.history[this.state.historySnapshot].columns[i].key === this.state.columnKeyOfHeaderMenuOpened) {
-                    if(this.state.history[this.state.historySnapshot].columns[i].identifierType === undefined) {
-                        if(this.state.history[this.state.historySnapshot].columns[i].active)
-                            tmp.push("Mark attribute as: inactive");
-                        else if(this.state.history[this.state.historySnapshot].columns[i].active === false)
-                            tmp.push("Mark attribute as: active");
-                    }
+                    if(this.state.history[this.state.historySnapshot].columns[i].active)
+                        tmp.push("Mark attribute as: inactive");
+                    else if(this.state.history[this.state.historySnapshot].columns[i].active === false)
+                        tmp.push("Mark attribute as: active");
 
                     break;
                 }
@@ -2055,7 +2225,7 @@ class DisplayData extends React.Component {
             tmp.push("Edit attribute");
             tmp.push("Delete attribute");
 
-            return <ColumnHeaderMenu items={tmp} handleClose={this.closeOpenedColumnHeaderMenu} anchorEl={this.state.isColumnHeaderMenuOpened} />
+            return <ColumnHeaderMenu items={tmp} handleClose={this.closeOpenedColumnHeaderMenu} event={this.state.isColumnHeaderMenuOpened} />
         }
         return null;
     }
@@ -2098,8 +2268,10 @@ class DisplayData extends React.Component {
             dataModified: true,
             history: tmpHistory,
             historySnapshot: tmpHistory.length-1
-        }, () => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false))
-        )        
+        }, () => {
+            this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false));
+            this.updateProject();
+        })        
     };
 
     onBack = () => {
@@ -2110,7 +2282,11 @@ class DisplayData extends React.Component {
                     dataModified: true,
                 }
             }
-        },() => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false)))
+        },() => {
+            this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false));
+            this.updateProject();
+            if(this.state.history[this.state.historySnapshot+1].historyActionSubject === "both" || this.state.history[this.state.historySnapshot+1].historyActionSubject === "column") this.updateChangedIdentifOrDescriptAttribute();
+        })
     }
 
     onRedo = () => {
@@ -2121,7 +2297,11 @@ class DisplayData extends React.Component {
                     dataModified: true,
                 }
             }
-        },() => this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false)))
+        },() => {
+            this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false));
+            this.updateProject();
+            if(this.state.history[this.state.historySnapshot].historyActionSubject === "both" || this.state.history[this.state.historySnapshot].historyActionSubject === "column") this.updateChangedIdentifOrDescriptAttribute();
+        })
     }
 
     onColumnResize = (columnIdx, newWidth) => {
@@ -2158,6 +2338,7 @@ class DisplayData extends React.Component {
                     onGridRowsUpdated={this.onGridRowsUpdated}
                     onGridSort = {this.onGridSort}
                     enableCellSelect={true}
+                    enableRowSelect={null}
                     onCellSelected={this.onCellSelected}
                     getValidFilterValues={columnKey => this.getValidFilterValues(this.state.history[this.state.historySnapshot].rows, columnKey)}
                     toolbar={<EditDataFilterButton enableFilter={true} > 
@@ -2184,7 +2365,7 @@ class DisplayData extends React.Component {
                     onColumnResize={this.onColumnResize}
                     minHeight={1400}
                     rowHeight={heightOfRow}
-                    rowScrollTimeout={200}
+                    rowScrollTimeout={null}
                     headerRowHeight={heightOfHeaderRow}
                     editorPortalTarget={document.getElementsByClassName("react-grid-Canvas")[0]}
                     contextMenu={
@@ -2206,8 +2387,8 @@ class DisplayData extends React.Component {
                             {this.displayAddAttributeFields()}
                         </div>        
                         {
-                            this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
-                            closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
+                            this.state.errorMessage !== '' ? <Notification open={this.state.isOpenedNotification} 
+                            closeOpenedNotification={this.closeOpenedNotification} message={this.state.errorMessage} variant={this.state.errorMessageSeverity} /> : null
                         }  
                     </DialogContent>
                     <DialogActions>
@@ -2241,8 +2422,8 @@ class DisplayData extends React.Component {
                             </Fragment>
                         }
                         {
-                            this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
-                            closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
+                            this.state.errorMessage !== '' ? <Notification open={this.state.isOpenedNotification} 
+                            closeOpenedNotification={this.closeOpenedNotification} message={this.state.errorMessage} variant={this.state.errorMessageSeverity} /> : null
                         }    
                     </DialogContent>
                     <DialogActions>
@@ -2280,7 +2461,7 @@ class DisplayData extends React.Component {
                                 </div>
                                 {
                                     this.state.saveToFileData === "csv" && <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                                    <CustomTooltip title="Save data with header row">
+                                    <CustomTooltip disableGpu={true} title="Save data with header row">
                                     <FormControlLabel 
                                         control={<StyledCheckbox name="csvHeader" 
                                         onChange={this.handleChangeSaveToFileCsvHeader}/>}
@@ -2312,7 +2493,7 @@ class DisplayData extends React.Component {
                 <SimpleDialog open={this.state.isOpenedTransform} onClose={this.closeOnTransform} aria-labelledby="transform-warning-dialog">
                     <DialogTitle id="transform-warning-title">{"Do you want to impose preference orders?"}</DialogTitle>
                     <DialogContent>
-                    <CustomTooltip title="Binarize nominal attributes with 3+ values?">
+                    <CustomTooltip disableGpu={true} title="Binarize nominal attributes with 3+ values?">
                     <FormControlLabel
                         control={<StyledCheckbox defaultChecked={false} name="binarize" onChange={this.handleChangeBinarize}/>}
                         label="Binarize"
@@ -2331,11 +2512,12 @@ class DisplayData extends React.Component {
                 </SimpleDialog>
 
                 {
-                    this.state.addAttributeErrorNotification !== '' ? <Notification open={this.state.isOpenedNotification} 
-                    closeOpenedNotification={this.closeOpenedNotification} message={this.state.addAttributeErrorNotification} variant={"error"} /> : null
+                    this.state.errorMessage !== '' ? <Notification open={this.state.isOpenedNotification} 
+                    closeOpenedNotification={this.closeOpenedNotification} message={this.state.errorMessage} variant={this.state.errorMessageSeverity} /> : null
                 }
               
-                {this.state.isLoading ? <CustomLoadingIcon color="primary" /> : null }
+                {(this.state.isLoading || this.props.loading) ? <CustomLoadingIcon color="primary" /> : null }
+                
             </div>
         )
     }
@@ -2343,7 +2525,8 @@ class DisplayData extends React.Component {
 
 DisplayData.propTypes = {
     project: PropTypes.any.isRequired,
-    updateProject: PropTypes.func.isRequired,
+    onDataChange: PropTypes.func.isRequired,
+    onAttributesChange: PropTypes.func.isRequired
 };
   
 export default withStyles(StyledReactDataGrid)(DisplayData);

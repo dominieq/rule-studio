@@ -12,10 +12,19 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Popper from "@material-ui/core/Popper";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
+// To get unblurred tooltip text in Google Chrome
+const disableGPUOptions = {
+    modifiers: {
+        computeStyle: {
+            enabled: true,
+            gpuAcceleration: false
+        }
+    }
+};
+
 const useStyles = makeStyles(theme => ({
     left: {
-        borderRight: "1px solid",
-        borderRightColor: theme.palette.text.default,
+        borderRight: `1px solid ${theme.palette.text.special2}`,
         '& .MuiButton-root': {
             borderRadius: "4px 0 0 4px",
             height: "100%",
@@ -52,8 +61,7 @@ class CustomButtonGroup extends React.Component {
         super(props);
 
         this.state = {
-            open: false,
-            selected: 0,
+            open: false
         };
 
         this.anchorRef = React.createRef();
@@ -77,18 +85,19 @@ class CustomButtonGroup extends React.Component {
 
     onMenuItemClick = (event, index) => {
         this.setState({
-            open: false,
-            selected: index
-        })
+            open: false
+        }, () => {
+            this.props.onActionSelected(index);
+        });
     };
 
     render() {
-        const {open, selected} = this.state;
-        const {children, options, tooltips, ...other} = this.props;
+        const { open } = this.state;
+        const { children, disableGPU, options, tooltips, selected, WrapperProps } = this.props;
         const childrenArray = React.Children.toArray(children);
 
         return (
-            <div {...other}>
+            <div aria-label={"split button wrapper"} {...WrapperProps}>
                 <ButtonGroup aria-label={"split button"} ref={this.anchorRef}>
                     <ButtonWrapper placement={"left"}>
                         <CustomTooltip
@@ -131,6 +140,7 @@ class CustomButtonGroup extends React.Component {
                     aria-label={'split-menu-button'}
                     disablePortal={true}
                     open={open}
+                    popperOptions={disableGPU ? disableGPUOptions : undefined}
                     role={undefined}
                     transition={true}
                 >
@@ -166,11 +176,19 @@ class CustomButtonGroup extends React.Component {
 
 CustomButtonGroup.propTypes = {
     children: PropTypes.arrayOf(PropTypes.node).isRequired,
+    disableGPU: PropTypes.bool,
     options: PropTypes.arrayOf(PropTypes.string).isRequired,
+    selected: PropTypes.number.isRequired,
+    onActionSelected: PropTypes.func,
     tooltips: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.node),
         PropTypes.node
-    ]).isRequired
+    ]).isRequired,
+    WrapperProps: PropTypes.object
+};
+
+CustomButtonGroup.defaultProps = {
+    disableGPU: true
 };
 
 export default CustomButtonGroup;

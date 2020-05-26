@@ -11,7 +11,7 @@ const tooltip = {
         "which implies that VC-DRSA boils down to DRSA. " +
         "For instance, to most restrictive value for measure epsilon is 0.0, while for measure rough membership, it is 1.0. " +
         "Moreover, possible rules cannot be induced if data contain missing values " +
-        "that can lead to non-transitivity of dominance relation, i.e., of type mv2."
+        "that can lead to non-transitivity of dominance relation, i.e., of type "
 };
 
 function TypeOfRulesSelector(props) {
@@ -30,6 +30,7 @@ function TypeOfRulesSelector(props) {
                         <span aria-label={"possible"} style={{ textAlign: "justify" }}>
                             <b>Possible decision rules</b>
                             {tooltip.possible}
+                            mv<sub>2</sub>.
                         </span>
                     </React.Fragment>
                 }

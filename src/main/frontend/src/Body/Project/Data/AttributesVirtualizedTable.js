@@ -11,8 +11,8 @@ import TextWithHoverTooltip from "../../../Utils/DataDisplay/TextWithHoverToolti
 const listStyles = makeStyles(theme => ({
     root: {
         '& > .ReactVirtualized__Grid__innerScrollContainer': {
-            backgroundColor: theme.palette.list.background,
-            color: theme.palette.list.text,
+            backgroundColor: theme.palette.background.main1,
+            color: theme.palette.text.main1,
         }
     },
     textItem: {
@@ -27,8 +27,8 @@ const listStyles = makeStyles(theme => ({
     },
     header: {
         alignItems: "center",
-        backgroundColor: theme.palette.list.subheader.background,
-        color: theme.palette.list.subheader.text,
+        backgroundColor: theme.palette.background.subLight,
+        color: theme.palette.text.special2,
         display: "flex",
         height: 48,
         justifyContent: "center",
@@ -49,7 +49,7 @@ function AttributesVirtualizedTable(props) {
 
 
     const rowRenderer = ({key, index, style}) => {
-        let primary = table[index].name;
+        let primary = (index+1) + ". " + table[index].name;
 
         return (
             <ListItem

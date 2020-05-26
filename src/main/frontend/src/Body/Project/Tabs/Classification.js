@@ -24,8 +24,9 @@ import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer";
 import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
+import CircleHelper from "../../../Utils/Feedback/CircleHelper";
 import { CSVDialog } from "../../../Utils/Feedback/CSVDialog";
-import { ClassificationDialog } from "../../../Utils/Feedback/DetailsDialog"
+import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog"
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomButtonGroup from "../../../Utils/Inputs/CustomButtonGroup";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
@@ -46,7 +47,10 @@ class Classification extends Component {
                 typeOfClassifier: "SimpleRuleClassifier",
             },
             parametersSaved: true,
-            selectedItem: null,
+            selected: {
+                item: null,
+                action: 0
+            },
             open: {
                 details: false,
                 matrix: false,
@@ -66,7 +70,7 @@ class Classification extends Component {
             serverBase, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
-                const { project: { parametersSaved, settings } } = this.props;
+                const { project: { settings }} = this.props;
 
                 const items = parseClassificationItems(result, settings);
                 const resultParameters = parseClassificationParams(result);
@@ -75,10 +79,20 @@ class Classification extends Component {
                     data: result,
                     items: items,
                     displayedItems: items,
-                    externalData: result.externalData,
-                    parameters: { ...parameters, ...resultParameters },
-                    parametersSaved: parametersSaved
+                    parameters: { ...parameters, ...resultParameters }
                 }));
+
+                if (result.hasOwnProperty("isCurrentLearningData")) {
+                    if (result.hasOwnProperty("isCurrentRuleSet")) {
+                        this.props.showAlert(this.props.value, !(result.isCurrentLearningData && result.isCurrentRuleSet));
+                    } else {
+                        this.props.showAlert(this.props.value, !result.isCurrentLearningData);
+                    }
+                }
+
+                if (result.hasOwnProperty("externalData")) {
+                    this.props.onDataUploaded(result.externalData);
+                }
             }
         }).catch(error => {
             if (!error.hasOwnProperty("open")) {
@@ -94,17 +108,15 @@ class Classification extends Component {
             }
         }).finally(() => {
             if (this._isMounted) {
-                const { parametersSaved } = this.state;
-                const { project: { parameters: {
-                    defaultClassificationResult,
-                    typeOfClassifier
-                }}} = this.props;
+                const { project: { parameters, parametersSaved, classifyAction }} = this.props;
+                const { defaultClassificationResult, typeOfClassifier } = parameters;
 
-                this.setState(({parameters}) => ({
+                this.setState(({parameters, selected}) => ({
                     loading: false,
                     parameters: parametersSaved ?
-                        parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier } },
-                    selectedItem: null
+                        parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier }},
+                    parametersSaved: parametersSaved,
+                    selected: { ...selected, item: null, action: classifyAction }
                 }));
             }
         });
@@ -130,33 +142,36 @@ class Classification extends Component {
         }
 
         if (prevProps.project.result.id !== this.props.project.result.id) {
-            const { parametersSaved } = prevState;
+            const { parametersSaved, selected: { action } } = prevState;
+            let project = { ...prevProps.project };
 
             if (!parametersSaved) {
-                let project = { ...prevProps.project };
                 const { parameters } = prevState;
 
                 project.parameters = { ...project.parameters, ...parameters};
                 project.parametersSaved = parametersSaved;
-                this.props.onTabChange(project);
             }
 
+            project.classifyAction = action;
+            this.props.onTabChange(project);
             this.setState({ loading: true }, this.getClassification);
         }
     }
 
     componentWillUnmount() {
         this._isMounted = false;
-        const { parametersSaved } = this.state;
+        const { parametersSaved, selected: { action } } = this.state;
+        let project = JSON.parse(JSON.stringify(this.props.project));
 
         if (!parametersSaved) {
-            let project = {...this.props.project};
             const { parameters } = this.state;
 
             project.parameters = { ...project.parameters, ...parameters };
             project.parametersSaved = parametersSaved;
-            this.props.onTabChange(project);
         }
+
+        project.classifyAction = action;
+        this.props.onTabChange(project);
     }
 
     calculateClassification = (method, data) => {
@@ -176,24 +191,29 @@ class Classification extends Component {
                             data: result,
                             items: items,
                             displayedItems: items,
-                            externalData: result.externalData,
-                            parametersSaved: true,
+                            parametersSaved: true
                         });
                     }
-                    let newProject = { ...project }
-
-                    newProject.result.classification = result;
-                    newProject.dataUpToDate = result.externalData ?
-                        project.dataUpToDate : true;
-                    newProject.tabsUpToDate[this.props.value] = result.externalData ?
-                        project.tabsUpToDate[this.props.value] : true;
-                    newProject.externalData = result.externalData;
+                    let projectCopy = JSON.parse(JSON.stringify(project));
+                    projectCopy.result.classification = result;
 
                     const resultParameters = parseClassificationParams(result);
 
-                    newProject.parameters = { ...project.parameters, ...resultParameters }
-                    newProject.parametersSaved = true;
-                    this.props.onTabChange(newProject);
+                    projectCopy.parameters = { ...project.parameters, ...resultParameters }
+                    projectCopy.parametersSaved = true;
+                    this.props.onTabChange(projectCopy);
+
+                    if (result.hasOwnProperty("isCurrentLearningData")) {
+                        if (result.hasOwnProperty("isCurrentRuleSet")) {
+                            this.props.showAlert(this.props.value, !(result.isCurrentLearningData && result.isCurrentRuleSet));
+                        } else {
+                            this.props.showAlert(this.props.value, !result.isCurrentLearningData);
+                        }
+                    }
+
+                    if (result.hasOwnProperty("externalData")) {
+                        this.props.onDataUploaded(result.externalData);
+                    }
                 }
             }).catch(error => {
                 if (!error.hasOwnProperty("open")) {
@@ -209,25 +229,20 @@ class Classification extends Component {
                 }
             }).finally(() => {
                 if (this._isMounted) {
-                    this.setState({
+                    this.setState(({selected}) => ({
                         loading: false,
-                        selectedItem: null
-                    });
+                        selected: { ...selected, item: null }
+                    }));
                 }
             });
         });
     }
 
     onClassifyData = () => {
-        const { project } = this.props;
         const { parameters } = this.state;
 
-        let method = project.dataUpToDate ? "PUT" : "POST";
-        let files = {
-            metadata: JSON.stringify(project.result.informationTable.attributes),
-            data: JSON.stringify(project.result.informationTable.objects)
-        }
-        let data = createFormData(parameters, project.dataUpToDate ? null : files);
+        let method = "PUT";
+        let data = createFormData(parameters, null);
 
         this.calculateClassification(method, data);
     };
@@ -243,22 +258,12 @@ class Classification extends Component {
                     open: { ...open, csv: true }
                 }));
             } else {
-                const { project } = this.props;
                 const { parameters } = this.state;
 
-                let method = project.dataUpToDate ? "PUT" : "POST";
+                let method = "PUT";
                 let files = { externalDataFile: event.target.files[0] };
 
-                if (!project.dataUpToDate) {
-                    files = {
-                        ...files,
-                        metadata: JSON.stringify(project.result.informationTable.attributes),
-                        data: JSON.stringify(project.result.informationTable.objects)
-                    };
-                }
-
                 let data = createFormData(parameters, files);
-
                 this.calculateClassification(method, data);
             }
         }
@@ -269,22 +274,12 @@ class Classification extends Component {
             open: { ...open, csv: false }
         }), () => {
             if (csvSpecs && Object.keys(csvSpecs).length) {
-                const { project } = this.props;
                 const { parameters } = this.state;
 
-                let method = project.dataUpToDate ? "PUT" : "POST";
+                let method = "PUT";
                 let files = { externalDataFile: this.csvFile };
 
-                if (!project.dataUpToDate) {
-                    files = {
-                        ...files,
-                        metadata: JSON.stringify(project.result.informationTable.attributes),
-                        data: JSON.stringify(project.result.informationTable.objects)
-                    };
-                }
-
                 let data = createFormData({ ...parameters, ...csvSpecs }, files);
-
                 this.calculateClassification(method, data);
             }
         });
@@ -326,16 +321,22 @@ class Classification extends Component {
         }
     };
 
+    onClassifyActionChange = (index) => {
+        this.setState(({selected}) => ({
+            selected: { ...selected, action: index }
+        }));
+    };
+
     onFilterChange = (event) => {
         const { loading, items } = this.state;
 
         if (!loading && Array.isArray(items) && items.length) {
             const filteredItems = filterFunction(event.target.value.toString(), items.slice());
 
-            this.setState({
+            this.setState(({selected}) => ({
                 displayedItems: filteredItems,
-                selectedItems: null
-            });
+                selected: { ...selected, item: null }
+            }));
         }
     };
 
@@ -348,9 +349,9 @@ class Classification extends Component {
     onDetailsOpen = (index) => {
         const { items } = this.state;
 
-        this.setState(({open}) => ({
-            open: {...open, details: true, settings: false},
-            selectedItem: items[index]
+        this.setState(({open, selected}) => ({
+            open: { ...open, details: true, settings: false },
+            selected: { ...selected, item: items[index] }
         }));
     };
 
@@ -363,7 +364,7 @@ class Classification extends Component {
     };
 
     render() {
-        const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
+        const { loading, data, displayedItems, parameters, selected, open, alertProps } = this.state;
         const { project } = this.props;
 
         return (
@@ -392,9 +393,13 @@ class Classification extends Component {
                         <SettingsButton onClick={() => this.toggleOpen("settings")} />
                         <StyledDivider margin={16} />
                         <CustomButtonGroup
-                            id={"classification-button-group"}
+                            onActionSelected={this.onClassifyActionChange}
                             options={["Classify current data", "Choose new data & classify"]}
+                            selected={selected.action}
                             tooltips={"Click on settings button on the left to customize parameters"}
+                            WrapperProps={{
+                                id: "classification-split-button"
+                            }}
                         >
                             <CalculateButton
                                 aria-label={"classify-current-file"}
@@ -417,12 +422,20 @@ class Classification extends Component {
                                 </CalculateButton>
                             </CustomUpload>
                         </CustomButtonGroup>
-                        {data &&
-                        <MatrixButton
-                            onClick={() => this.toggleOpen("matrix")}
-                            style={{marginLeft: 16}}
-                            title={"Show ordinal misclassification matrix and it's details"}
+                        <CircleHelper
+                            size={"smaller"}
+                            title={"Attributes are taken from DATA."}
+                            TooltipProps={{ placement: "bottom"}}
+                            WrapperProps={{ style: { marginLeft: 16 }}}
                         />
+                        {data &&
+                            <React.Fragment>
+                                <StyledDivider margin={16} />
+                                <MatrixButton
+                                    onClick={() => this.toggleOpen("matrix")}
+                                    title={"Show ordinal misclassification matrix and it's details"}
+                                />
+                            </React.Fragment>
                         }
                         <span style={{flexGrow: 1}} />
                         <FilterTextField onChange={this.onFilterChange} />
@@ -446,12 +459,14 @@ class Classification extends Component {
                             }
                         ]}
                     />
-                    {project.result.rules !== null && selectedItem !== null &&
-                        <ClassificationDialog
-                            item={selectedItem}
+                    {project.result.rules != null && selected.item != null &&
+                        <ClassifiedObjectDialog
+                            informationTable={project.result.informationTable}
+                            item={selected.item}
                             onClose={() => this.toggleOpen("details")}
                             open={open.details}
                             ruleSet={project.result.rules.ruleSet}
+                            settings={project.settings}
                         />
                     }
                     {data !== null &&
@@ -483,9 +498,11 @@ class Classification extends Component {
 }
 
 Classification.propTypes = {
+    onDataUploaded: PropTypes.func,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
     value: PropTypes.number
 };
 

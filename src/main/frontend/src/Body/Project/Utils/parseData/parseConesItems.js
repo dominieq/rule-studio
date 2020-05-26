@@ -9,7 +9,7 @@ function parseConesItems(data, objects, settings) {
                 id: i,
                 name: getItemName(i, objects, settings),
                 tables: Object.keys(data).map(key => {
-                    if (key !== "numberOfObjects") {
+                    if (Array.isArray(data[key])) {
                         return {
                             [key]: data[key][i].slice()
                         }

@@ -55,6 +55,8 @@ public class CrossValidationSerializer extends JsonSerializer<CrossValidation> {
         jsonGenerator.writeFieldName("seed");
         jsonGenerator.writeNumber(crossValidation.getSeed());
 
+        jsonGenerator.writeBooleanField("isCurrentData", crossValidation.isCurrentData());
+
         jsonGenerator.writeEndObject();
     }
 }

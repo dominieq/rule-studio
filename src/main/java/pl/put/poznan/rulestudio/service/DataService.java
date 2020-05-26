@@ -1,9 +1,8 @@
 package pl.put.poznan.rulestudio.service;
 
-import org.rulelearn.data.Attribute;
-import org.rulelearn.data.EvaluationAttribute;
-import org.rulelearn.data.InformationTable;
-import org.rulelearn.data.Table;
+import org.rulelearn.core.AttributeNotFoundException;
+import org.rulelearn.core.InvalidValueException;
+import org.rulelearn.data.*;
 import org.rulelearn.data.json.InformationTableWriter;
 import org.rulelearn.data.json.ObjectParser;
 import org.rulelearn.types.EvaluationField;
@@ -13,11 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulestudio.exception.CalculationException;
 import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.ValidityProjectContainer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -43,7 +44,8 @@ public class DataService {
             informationTable = jsonObjectParser.parseObjects(reader);
             logger.info("Successfully parsed as json file.");
         } catch (RuntimeException eJson) {
-            logger.error("Failed to parse as json file:\t{}", eJson.getMessage());
+            String jsonMessage = new StringBuilder("Failed to parse as json file:\t").append(eJson.getMessage()).toString();
+            logger.error(jsonMessage);
 
             try {
                 logger.info("Trying parse as csv file...");
@@ -55,9 +57,18 @@ public class DataService {
                 informationTable = csvObjectParser.parseObjects(reader);
                 logger.info("Successfully parsed as csv file.");
             } catch (RuntimeException eCsv) {
-                logger.error("Failed to parse as csv file:\t{}", eCsv.getMessage());
+                String csvMessage = new StringBuilder("Failed to parse as csv file:\t").append(eCsv.getMessage()).toString();
+                logger.error(csvMessage);
 
-                WrongParameterException ex = new WrongParameterException("Wrong file. Data should be a valid json or csv file.");
+                WrongParameterException ex;
+                if (dataFile.getOriginalFilename().endsWith(".json")) {
+                    ex = new WrongParameterException(jsonMessage);
+                } else if (dataFile.getOriginalFilename().endsWith(".csv")) {
+                    ex = new WrongParameterException(csvMessage);
+                } else {
+                    ex = new WrongParameterException("Wrong file. Data should be a valid json or csv file.");
+                }
+
                 throw ex;
             }
         }
@@ -89,8 +100,8 @@ public class DataService {
         try {
             informationTable = objectParser.parseObjects(reader);
         } catch (RuntimeException e) {
-            WrongParameterException ex = new WrongParameterException("Invalid format of json data, couldn't be successfully parsed.");
-            logger.error("{}:\t{}", ex.getMessage(), e.getMessage());
+            WrongParameterException ex = new WrongParameterException(new StringBuilder("Invalid format of json data, couldn't be successfully parsed.\t").append(e.getMessage()).toString());
+            logger.error(ex.getMessage());
             throw ex;
         }
 
@@ -110,6 +121,23 @@ public class DataService {
 
         logger.info("End of processing data text.");
         return informationTable;
+    }
+
+    public static InformationTableWithDecisionDistributions createInformationTableWithDecisionDistributions(InformationTable informationTable) {
+        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions;
+        try {
+            informationTableWithDecisionDistributions = new InformationTableWithDecisionDistributions(informationTable);
+        } catch (AttributeNotFoundException e) {
+            CalculationException ex = new CalculationException("Cannot perform calculation if there are no active condition evaluation attributes.");
+            logger.error(ex.getMessage());
+            throw ex;
+        } catch (InvalidValueException e) {
+            CalculationException ex = new CalculationException("Cannot perform calculation if there is no active decision attribute.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        return informationTableWithDecisionDistributions;
     }
 
     public String getData(UUID id) throws IOException {
@@ -155,7 +183,7 @@ public class DataService {
         return project;
     }
 
-    public void postData(UUID id, String metadata, String data) throws IOException {
+    public ValidityProjectContainer postData(UUID id, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
@@ -165,6 +193,10 @@ public class DataService {
 
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
+
+        ValidityProjectContainer validityProjectContainer = new ValidityProjectContainer(project);
+
+        return validityProjectContainer;
     }
 
     private InputStreamResource produceJsonResource(InformationTable informationTable) throws IOException {

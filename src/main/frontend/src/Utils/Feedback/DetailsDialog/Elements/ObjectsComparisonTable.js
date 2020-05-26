@@ -10,7 +10,8 @@ function ObjectsComparisonTable(props) {
         objectHeader,
         objectIndex,
         objectInTableHeader,
-        objectInTableIndex
+        objectInTableIndex,
+        tableIndex
     } = props;
 
     const rowCount = attributes.length;
@@ -43,7 +44,7 @@ function ObjectsComparisonTable(props) {
         rows.push({
             name: attributes[i].name,
             'object-left': objects[objectIndex][attributes[i].name],
-            relation: getAppropriateSign(objects[objectIndex], objects[objectInTableIndex], attributes[i]),
+            relation: getAppropriateSign(objects[objectIndex], objects[objectInTableIndex], attributes[i], tableIndex),
             'object-right': objects[objectInTableIndex][attributes[i].name],
         });
     }
@@ -64,6 +65,7 @@ ObjectsComparisonTable.propTypes = {
     objectIndex: PropTypes.number.isRequired,
     objectInTableHeader: PropTypes.string,
     objectInTableIndex: PropTypes.number.isRequired,
+    tableIndex: PropTypes.number,
 };
 
 export default ObjectsComparisonTable;

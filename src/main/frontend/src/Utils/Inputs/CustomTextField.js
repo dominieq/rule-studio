@@ -15,29 +15,29 @@ const labelStyles = makeStyles({
 const inputStyles = makeStyles(theme => ({
     root: {
         height: 40,
-        backgroundColor: theme.palette.button.contained.background,
+        backgroundColor: theme.palette.background.sub,
         '& fieldset': {
-            borderColor: theme.palette.button.contained.background,
+            borderColor: theme.palette.background.sub
         },
         '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: theme.palette.text.default
+            borderColor: theme.palette.background.main2
         },
         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: theme.palette.text.default,
+            borderColor: theme.palette.background.main2
         },
         '&:hover': {
-            backgroundColor: theme.palette.button.contained.backgroundAction
+            backgroundColor: theme.palette.background.subDark
         },
         '&.Mui-focused': {
-            backgroundColor: theme.palette.button.contained.backgroundAction
-        },
-    },
+            backgroundColor: theme.palette.background.subDark
+        }
+    }
 }), {name: "CustomOutlinedInput"});
 
 const menuStyles = makeStyles(theme => ({
     list: {
-        backgroundColor: theme.palette.popper.background,
-        color: theme.palette.popper.text,
+        backgroundColor: theme.palette.background.sub,
+        color: theme.palette.text.main2,
     }
 }), {name: "CustomMenu"});
 

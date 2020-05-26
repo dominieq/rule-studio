@@ -60,17 +60,7 @@ class SettingsProjectDialog extends PureComponent {
 
     render() {
         const { indexOption } = this.state;
-        const { attributes, children, open } = this.props;
-        let options = ["default"];
-        if (attributes) {
-            for (let i = 0; i < attributes.length; i++) {
-                if (Object.keys(attributes[i]).includes("identifierType") && attributes[i].active) {
-                    options = [...options, attributes[i].name];
-                } else if (Object.keys(attributes[i]).includes("type") && attributes[i].type === "description") {
-                    options = [...options, attributes[i].name]
-                }
-            }
-        }
+        const { children, indexOptions, open } = this.props;
 
         return (
             <SimpleDialog
@@ -97,7 +87,7 @@ class SettingsProjectDialog extends PureComponent {
                                 select={true}
                                 value={indexOption}
                             >
-                                {options}
+                                {indexOptions}
                             </CustomTextField>
                             <CircleHelper
                                 title={"Sets default names of objects."}
@@ -122,13 +112,16 @@ class SettingsProjectDialog extends PureComponent {
 }
 
 SettingsProjectDialog.propTypes = {
-    attributes: PropTypes.arrayOf(PropTypes.object),
     children: PropTypes.node,
+    indexOptions: PropTypes.arrayOf(PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+    ])),
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,
     settings: PropTypes.shape({
-        indexOption: PropTypes.string,
-    }),
+        indexOption: PropTypes.string
+    })
 };
 
 export default SettingsProjectDialog;

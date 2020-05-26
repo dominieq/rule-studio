@@ -7,9 +7,9 @@ import CustomTextField from "../../../Utils/Inputs/CustomTextField";
 
 export const StyledCheckbox = withStyles(theme => ({
     root: {
-      color: theme.palette.button.primary,
+      color: theme.palette.background.sub,
       '&$checked': {
-        color: theme.palette.button.primary,
+        color: theme.palette.background.sub,
       },
     },
     checked: {},
@@ -18,9 +18,9 @@ export const StyledCheckbox = withStyles(theme => ({
 
 export const StyledRadio = withStyles(theme => ({
     root: {
-      color: theme.palette.button.primary,
+      color: theme.palette.background.sub,
       '&$checked': {
-        color: theme.palette.button.primary,
+        color: theme.palette.background.sub,
       },
     },
     checked: {},
@@ -31,12 +31,12 @@ export const StyledCustomTextField = withStyles(theme => ({
     root: {
         '& label.MuiInputLabel-shrink': {
             backgroundColor: theme.palette.background.default,
-            color: theme.palette.button.contained.background,
+            color: theme.palette.background.sub,
             transform: "translate(14px, -12px) scale(0.75)",
             
         },
         '& label.Mui-focused': {
-            color: theme.palette.button.contained.backgroundAction
+            color: theme.palette.background.subDark
         },
         marginTop: theme.spacing(2)
     },
@@ -45,25 +45,25 @@ export const StyledCustomTextField = withStyles(theme => ({
 export const StyledDefaultTextField = withStyles(theme => ({
     root: {
         '& label': {
-          color: theme.palette.button.contained.background,
+          color: theme.palette.background.sub,
         },
         '& .MuiInputBase-input': {
           color: theme.palette.text.default,
         },
         '& label.MuiInputLabel-shrink': {
             backgroundColor: theme.palette.background.default,
-            color: theme.palette.button.contained.background,            
+            color: theme.palette.background.sub,
         },
         
         '& .MuiInput-underline:before': {
-          borderBottomColor: theme.palette.button.contained.background,
+          borderBottomColor: theme.palette.background.sub,
         },
        
         '& .MuiInput-underline:after': {
-          borderBottomColor: theme.palette.button.contained.backgroundAction,
+          borderBottomColor: theme.palette.background.subDark,
         },
         '& label.Mui-focused': {
-            color: theme.palette.button.contained.backgroundAction
+            color: theme.palette.background.subDark
         },
     },
   }))(TextField);

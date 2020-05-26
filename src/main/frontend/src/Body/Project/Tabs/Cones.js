@@ -35,14 +35,18 @@ class Cones extends Component {
             serverBase, project.result.id, "GET", null
         ).then(result => {
             if (result && this._isMounted) {
-                const { result: { informationTable: { objects } }, settings } = project;
+                const { project: { result: { informationTable: { objects }}, settings }} = this.props;
                 const items = parseConesItems(result, objects, settings);
 
                 this.setState({
                     data: result,
                     items: items,
-                    displayedItems: items,
+                    displayedItems: items
                 });
+
+                if (result.hasOwnProperty("isCurrentData")) {
+                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                }
             }
         }).catch(error => {
             if (!error.hasOwnProperty("open")) {
@@ -60,8 +64,8 @@ class Cones extends Component {
             if (this._isMounted) {
                 this.setState({
                     loading: false,
-                    selectedItem: null,
-                })
+                    selectedItem: null
+                });
             }
         });
     }
@@ -100,34 +104,29 @@ class Cones extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let method = project.dataUpToDate ? "PUT" : "POST"
-            let data = new FormData();
-
-            if ( !project.dataUpToDate ) {
-                data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-                data.append("data", JSON.stringify(project.result.informationTable.objects));
-            }
-
             fetchCones(
-                serverBase, project.result.id, method, data
+                serverBase, project.result.id, "PUT", null
             ).then(result => {
                 if (result) {
+                    let projectCopy = JSON.parse(JSON.stringify(project));
+
                     if (this._isMounted) {
-                        const { result: { informationTable: { objects } }, settings } = project;
+                        const { result: { informationTable: { objects } }, settings } = projectCopy;
                         const items = parseConesItems(result, objects, settings);
 
                         this.setState({
                             data: result,
                             items: items,
-                            displayedItems: items,
+                            displayedItems: items
                         });
                     }
-                    let newProject = { ...project };
 
-                    newProject.result.dominanceCones = result;
-                    newProject.dataUpToDate = true;
-                    newProject.tabsUpToDate[this.props.value] = true;
-                    this.props.onTabChange(newProject);
+                    projectCopy.result.dominanceCones = result;
+                    this.props.onTabChange(projectCopy);
+
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                    }
                 }
             }).catch(error => {
                 if (!error.hasOwnProperty("open")) {
@@ -212,6 +211,40 @@ class Cones extends Component {
                         onItemSelected: this.onDetailsOpen
                     }}
                     ListSubheaderProps={{
+                        disableHelper: false,
+                        helper: (
+                            <React.Fragment>
+                                <header style={{textAlign: "left"}}>
+                                    {"For an object x, cones are defined as follows:"}
+                                </header>
+                                <ul style={{margin: 0, paddingInlineStart: 16}}>
+                                    <li style={{textAlign: "left"}}>
+                                        <b>a positive cone</b>
+                                        {" is the set of objects that dominate x,"}
+                                    </li>
+                                    <li style={{textAlign: "left"}}>
+                                        <b>a negative cone</b>
+                                        {" contains objects that x dominates,"}
+                                    </li>
+                                    <li style={{textAlign: "left"}}>
+                                        <b>a positive inverse cone</b>
+                                        {" contains objects that x is dominated by,"}
+                                    </li>
+                                    <li style={{textAlign: "left"}}>
+                                        <b>a negative inverse cone</b>
+                                        {" is the set of objects that are dominated by x."}
+                                    </li>
+                                </ul>
+                                <p aria-label={"helper text"} style={{margin: 0, textAlign: "justify"}}>
+                                    {
+                                        "Inverse dominance cones are displayed when it is necessary. " +
+                                        "Inverse dominance cones are going to be hidden " +
+                                        "when they are equal to normal cones."
+                                    }
+                                </p>
+                            </React.Fragment>
+
+                        ),
                         style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
                     }}
                     noFilterResults={!displayedItems}
@@ -241,6 +274,7 @@ Cones.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
     value: PropTypes.number
 };
 

@@ -34,8 +34,8 @@ const separators = [
 
 const StyledDialog = withStyles(theme => ({
     paper: {
-        backgroundColor: theme.palette.paper.background,
-        color: theme.palette.paper.text,
+        backgroundColor: theme.palette.background.main1,
+        color: theme.palette.text.main1,
         minWidth: "fit-content",
         width: "25%"
     }

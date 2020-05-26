@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import CustomTextField from "../../../../Utils/Inputs/CustomTextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -10,14 +10,23 @@ function FilterTextField(props) {
     const startTime = (event) => {
         event.persist();
 
-        clearTimeout(timer)
+        clearTimeout(timer);
         timer = setTimeout(() => props.onChange(event), 300);
+    };
+
+    const startTimeOnFocus = (event) => {
+        event.persist();
+
+        if (event.target.value.toString() != null) {
+            clearTimeout(timer);
+            timer = setTimeout(() => props.onChange(event), 300);
+        }
     };
 
     useEffect(() => {
         return () => {
-            clearTimeout(timer)
-        }
+            clearTimeout(timer);
+        };
     });
 
     return (
@@ -31,13 +40,16 @@ function FilterTextField(props) {
                     </InputAdornment>
                 )
             }}
+            inputRef={props.inputRef}
             onChange={startTime}
+            onFocus={startTimeOnFocus}
         />
-    )
+    );
 }
 
 FilterTextField.propTypes = {
-    onChange: PropTypes.func,
+    inputRef: PropTypes.object,
+    onChange: PropTypes.func
 };
 
 export default FilterTextField;

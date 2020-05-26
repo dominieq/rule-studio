@@ -8,7 +8,7 @@ import { AutoSizer, List } from "react-virtualized";
 const listStyles = makeStyles(theme => ({
     root: {
         '& .ReactVirtualized__Grid__innerScrollContainer': {
-            backgroundColor: theme.palette.list.background
+            backgroundColor: theme.palette.background.main1
         }
     },
     row: {
@@ -17,10 +17,10 @@ const listStyles = makeStyles(theme => ({
         padding: "8px 16px",
     },
     primary: {
-        color: theme.palette.button.primary
+        color: theme.palette.text.main1
     },
     secondary: {
-        color: theme.palette.button.secondary
+        color: theme.palette.text.special1
     }
 }), {name: "rule-table"});
 

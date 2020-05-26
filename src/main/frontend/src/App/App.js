@@ -27,15 +27,18 @@ class App extends Component {
             body: "Home",
             currentProject: -1,
             projects: [],
+            indexOptions: [],
             darkTheme: true,
             serverBase: "http://localhost:8080",
             open: {
                 settingsDialog: false,
                 renameDialog: false,
-                deleteDialog: false,
+                deleteDialog: false
             },
-            alertProps: undefined,
+            alertProps: undefined
         };
+
+        this.appBarRef = React.createRef();
     }
 
     componentDidMount() {
@@ -75,47 +78,24 @@ class App extends Component {
         });
     };
 
-    onDataChanges = (project) => {
-        this.setState(({currentProject, projects}) => {
-            let index = currentProject;
+    createNewIndexOptions = (attributes) => {
+        let indexOptions = ["default"];
 
-            if (index === -1 && projects.length) {
-                for (let i = 0; i < projects.length; i++) {
-                   if (projects[i].result.id === project) {
-                       index = i;
-                       break;
-                   }
+        if (Array.isArray(attributes) && attributes.length) {
+            for (let i = 0; i < attributes.length; i++) {
+                if (attributes[i].hasOwnProperty("identifierType") && attributes[i].active) {
+                    indexOptions = [ ...indexOptions, attributes[i].name ];
                 }
-            } else if (index === -1 && !projects.length) {
-                return { projects: projects };
+                if (attributes[i].hasOwnProperty("type") && attributes[i].type === "description") {
+                    indexOptions = [ ...indexOptions, attributes[i].name ];
+                }
             }
+        }
 
-            if (index > -1) {
-                return {
-                    projects: [
-                        ...projects.slice(0, index),
-                        {
-                            ...projects[index],
-                            ...project,
-                            dataUpToDate: false,
-                            tabsUpToDate: [
-                                !project.result.dominanceCones,
-                                !project.result.unions,
-                                !project.result.rules,
-                                !project.result.classification,
-                                !project.result.crossValidation,
-                            ]
-                        },
-                        ...projects.slice(index + 1)
-                    ]
-                };
-            } else {
-                return { projects: projects };
-            }
-        });
+        return indexOptions;
     };
 
-    onTabChanges = (project) => {
+    updateProject = (project) => {
         this.setState(({projects}) => {
             if (projects.length) {
                 let index;
@@ -127,6 +107,13 @@ class App extends Component {
                     }
                 }
 
+                const { result: { informationTable: { attributes }}} = project;
+                let indexOptions = this.createNewIndexOptions(attributes);
+
+                if (!indexOptions.includes(project.settings.indexOption)) {
+                    project.settings.indexOption = "default";
+                }
+
                 return {
                     projects: [
                         ...projects.slice(0, index),
@@ -136,6 +123,7 @@ class App extends Component {
                         },
                         ...projects.slice(index + 1)
                     ],
+                    indexOptions: indexOptions,
                 };
             } else {
                 return { projects: projects };
@@ -143,17 +131,46 @@ class App extends Component {
         });
     };
 
+    updateIndexOptions = (attributes) => {
+        const indexOptions = this.createNewIndexOptions(attributes);
+
+        this.setState(({projects, currentProject}) => {
+            if (currentProject >= 0) {
+                if (!indexOptions.includes(projects[currentProject].settings.indexOption)) {
+                    projects[currentProject].settings.indexOption = "default";
+                }
+            }
+
+            return {
+                projects: [
+                    ...projects.slice(0, currentProject),
+                    {
+                        ...projects[currentProject]
+                    },
+                    ...projects.slice(currentProject + 1)
+                ],
+                indexOptions: indexOptions
+            };
+        });
+    };
+
     onBodyChange = (name) => {
-        this.setState(({currentProject}) => ({
+        this.setState(({currentProject, indexOptions}) => ({
             body: name,
             currentProject: name !== "Project" ? -1 : currentProject,
+            indexOptions: name !== "Project" ? [] : indexOptions
         }));
     };
 
     onCurrentProjectChange = (index) => {
+        const { projects } = this.state;
+        const { result: {informationTable: { attributes }}} = projects[index];
+        let indexOptions = this.createNewIndexOptions(attributes);
+
         this.setState({
             body: "Project",
             currentProject: index,
+            indexOptions: indexOptions
         });
     };
 
@@ -167,6 +184,12 @@ class App extends Component {
         this.setState(({open}) => ({
             open: {...open, [dialogName]: true}
         }));
+    };
+
+    onSnackbarOpen = (alertProps) => {
+        this.setState({
+            alertProps: alertProps
+        });
     };
 
     onSnackbarClose = (event, reason) => {
@@ -206,10 +229,13 @@ class App extends Component {
                     serverBase,"POST", data
                 ).then(result => {
                     if (result) {
+                        const indexOptions = this.createNewIndexOptions(result.informationTable.attributes);
+
                         this.setState(({projects}) => ({
                             body: "Project",
                             currentProject: projects.length,
                             projects: [...projects, new Project(result)],
+                            indexOptions: indexOptions,
                             alertProps: {
                                 message: `${result.name} has been created!`,
                                 open: true,
@@ -263,6 +289,7 @@ class App extends Component {
                             ...projects.slice(0, currentProject),
                             ...projects.slice(currentProject + 1)
                         ],
+                        indexOptions: [],
                         alertProps: {
                             message: `${removedProject} has been successfully deleted!`,
                             open: true,
@@ -346,7 +373,7 @@ class App extends Component {
     };
 
     render() {
-        const {currentProject, projects, open, serverBase, alertProps} = this.state;
+        const {currentProject, projects, indexOptions, open, serverBase, alertProps} = this.state;
         const {renameDialog, deleteDialog, settingsDialog} = open;
         const showSnackbarNormally = !renameDialog || !deleteDialog || !settingsDialog;
 
@@ -354,6 +381,7 @@ class App extends Component {
             <MuiThemeProvider theme={this.state.darkTheme ? DarkTheme : LightTheme}>
                 <CssBaseline />
                 <Header
+                    appBarRef={this.appBarRef}
                     onBodyChange={this.onBodyChange}
                     onColorsChange={this.onColorsChange}
                 >
@@ -366,15 +394,19 @@ class App extends Component {
                 </Header>
                 {
                     {
-                        "Help": <Help />,
+                        "Help":
+                            <Help
+                                upperMargin={this.appBarRef.current ? this.appBarRef.current.offsetHeight : undefined}
+                            />,
                         "Home": <Home isDarkTheme={this.state.darkTheme} />,
                         "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
                             <ProjectTabs
-                                onDataChange={this.onDataChanges}
-                                onTabChange={this.onTabChanges}
                                 project={projects[currentProject]}
                                 serverBase={serverBase}
+                                showAlert={this.onSnackbarOpen}
+                                updateIndexOptions={this.updateIndexOptions}
+                                updateProject={this.updateProject}
                             />,
                     }[this.state.body]
                 }
@@ -388,11 +420,9 @@ class App extends Component {
                     {renameDialog && <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />}
                 </RenameProjectDialog>
                 <SettingsProjectDialog
-                    attributes={currentProject >= 0 ?
-                        projects[currentProject].result.informationTable.attributes : null
-                    }
                     open={settingsDialog}
                     onClose={this.onSettingsDialogClose}
+                    indexOptions={indexOptions}
                     settings={currentProject >= 0 ?
                         {...projects[currentProject].settings} : null
                     }

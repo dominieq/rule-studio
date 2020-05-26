@@ -9,6 +9,7 @@ import org.rulelearn.types.EvaluationField;
 import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @JsonComponent
 public class UnionWithSingleLimitingDecisionSerializer extends JsonSerializer<UnionWithSingleLimitingDecision> {
@@ -38,14 +39,20 @@ public class UnionWithSingleLimitingDecisionSerializer extends JsonSerializer<Un
         jsonGenerator.writeFieldName("Boundary");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getBoundary()));
 
+        int[] positiveRegion = unionWithSingleLimitingDecision.getPositiveRegion().toIntArray();
+        Arrays.sort(positiveRegion);
         jsonGenerator.writeFieldName("Positive region");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getPositiveRegion()));
+        jsonGenerator.writeRawValue(mapper.writeValueAsString(positiveRegion));
 
+        int[] negativeRegion = unionWithSingleLimitingDecision.getNegativeRegion().toIntArray();
+        Arrays.sort(negativeRegion);
         jsonGenerator.writeFieldName("Negative region");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getNegativeRegion()));
+        jsonGenerator.writeRawValue(mapper.writeValueAsString(negativeRegion));
 
+        int[] boundaryRegion = unionWithSingleLimitingDecision.getBoundaryRegion().toIntArray();
+        Arrays.sort(boundaryRegion);
         jsonGenerator.writeFieldName("Boundary region");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getBoundaryRegion()));
+        jsonGenerator.writeRawValue(mapper.writeValueAsString(boundaryRegion));
 
         jsonGenerator.writeFieldName("unionType");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(unionWithSingleLimitingDecision.getUnionType()));

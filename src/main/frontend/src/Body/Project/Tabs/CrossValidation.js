@@ -33,7 +33,7 @@ import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
-import { CrossValidationDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomTextField from "../../../Utils/Inputs/CustomTextField";
 import StyledButton from "../../../Utils/Inputs/StyledButton";
@@ -86,7 +86,7 @@ class CrossValidation extends Component {
             serverBase, project.result.id, 'GET', null
         ).then(result => {
             if (this._isMounted && result) {
-                const { project: { parametersSaved, foldIndex, settings } } = this.props
+                const { project: { foldIndex, settings } } = this.props
 
                 let folds = parseCrossValidationFolds(result);
                 let resultParams = parseCrossValidationParams(result);
@@ -95,7 +95,6 @@ class CrossValidation extends Component {
                     data: result,
                     folds: folds,
                     parameters: {...parameters, ...resultParams},
-                    parametersSaved: parametersSaved,
                     selected: { ...selected, foldIndex: foldIndex }
                 }), () => {
                     const { folds, selected: { foldIndex } } = this.state;
@@ -106,6 +105,10 @@ class CrossValidation extends Component {
                         displayedItems: items,
                     });
                 });
+
+                if (result.hasOwnProperty("isCurrentData")) {
+                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                }
             }
         }).catch(error => {
             if (!error.hasOwnProperty("open")) {
@@ -122,9 +125,8 @@ class CrossValidation extends Component {
             }
         }).finally(() => {
             if ( this._isMounted ) {
-                const { parametersSaved } = this.state;
-                const { project: { parameters: propsParams, result: { informationTable: { objects }}}} = this.props;
-                let { numberOfFolds, ...otherParams } = propsParams;
+                const { project: { parameters, parametersSaved, result: { informationTable: { objects }}}} = this.props;
+                let { numberOfFolds, ...otherParams } = parameters;
 
                 if (objects.length < numberOfFolds) {
                     otherParams = { ...otherParams, numberOfFolds: objects.length };
@@ -135,6 +137,7 @@ class CrossValidation extends Component {
                 this.setState(({parameters, selected}) => ({
                     loading: false,
                     parameters: parametersSaved ? parameters : { ...parameters, ...otherParams },
+                    parametersSaved: parametersSaved,
                     selected: { ...selected, item: null }
                 }));
             }
@@ -208,7 +211,7 @@ class CrossValidation extends Component {
         const { parametersSaved } = this.state;
 
         if (!parametersSaved) {
-            let project = {...this.props.project};
+            let project = JSON.parse(JSON.stringify(this.props.project));
             const { parameters, selected: { foldIndex } } = this.state;
 
             project.parameters = {
@@ -229,12 +232,8 @@ class CrossValidation extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let method = project.dataUpToDate ? "PUT" : "POST";
-            let files =  {
-                metadata: JSON.stringify(project.result.informationTable.attributes),
-                data: JSON.stringify(project.result.informationTable.objects)
-            };
-            let data = createFormData(parameters, project.dataUpToDate ? null : files);
+            let method = "PUT";
+            let data = createFormData(parameters, null);
 
             fetchCrossValidation(
                 serverBase, project.result.id, method, data
@@ -258,23 +257,23 @@ class CrossValidation extends Component {
                             });
                         });
                     }
-                    let newProject = { ...project };
-
-                    newProject.result.crossValidation = result;
-                    newProject.dataUpToDate = true;
-                    newProject.tabsUpToDate[this.props.value] = true;
+                    let projectCopy = JSON.parse(JSON.stringify(project));
+                    projectCopy.result.crossValidation = result;
 
                     let resultParameters = parseCrossValidationParams(result);
 
-                    newProject.parameters = {
-                        ...newProject.parameters,
+                    projectCopy.parameters = {
+                        ...projectCopy.parameters,
                         ...resultParameters,
-                        typeOfUnions: newProject.parameters.typeOfUnions
+                        typeOfUnions: projectCopy.parameters.typeOfUnions
                     };
-                    newProject.parametersSaved = true;
-                    this.props.onTabChange(newProject);
-                }
+                    projectCopy.parametersSaved = true;
+                    this.props.onTabChange(projectCopy);
 
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                    }
+                }
             }).catch(error => {
                 if (!error.hasOwnProperty("open")) {
                     console.log(error);
@@ -510,6 +509,7 @@ class CrossValidation extends Component {
 
     render() {
         const { alertProps, data, folds, displayedItems, loading, open, parameters, selected } = this.state;
+        const { project } = this.props;
 
         return (
             <CustomBox id={"cross-validation"} variant={"Tab"}>
@@ -680,11 +680,13 @@ class CrossValidation extends Component {
                         ]}
                     />
                     {Array.isArray(folds) && Boolean(folds.length) && selected.item !== null &&
-                        <CrossValidationDialog
+                        <ClassifiedObjectDialog
+                            informationTable={folds[selected.foldIndex].validationTable}
                             item={selected.item}
                             onClose={() => this.toggleOpen("details")}
                             open={open.details}
                             ruleSet={folds[selected.foldIndex].ruleSet}
+                            settings={project.settings}
                         />
                     }
                     {data !== null &&
@@ -787,6 +789,7 @@ CrossValidation.propTypes = {
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
     value: PropTypes.number
 };
 

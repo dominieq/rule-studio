@@ -12,11 +12,13 @@ public class RulesWithHttpParameters implements Cloneable {
     private boolean externalRules;
     private String errorMessage;
     private String rulesFileName;
+    private Boolean isCurrentData;
+    private ValidityRulesContainer validityRulesContainer;
+    private Boolean isCoveragePresent;
   
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String errorMessage, String rulesFileName) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String rulesFileName) {
         this.externalRules = true;
         this.ruleSet = rules;
-        this.errorMessage = errorMessage;
         this.rulesFileName = rulesFileName;
     }
 
@@ -26,6 +28,8 @@ public class RulesWithHttpParameters implements Cloneable {
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
         this.typeOfRules = ruleType;
+
+        this.isCurrentData = true;
     }
 
     public RuleSetWithCharacteristics getRuleSet() {
@@ -84,6 +88,30 @@ public class RulesWithHttpParameters implements Cloneable {
         this.rulesFileName = rulesFileName;
     }
 
+    public Boolean isCurrentData() {
+        return isCurrentData;
+    }
+
+    public void setCurrentData(Boolean currentData) {
+        isCurrentData = currentData;
+    }
+
+    public ValidityRulesContainer getValidityRulesContainer() {
+        return validityRulesContainer;
+    }
+
+    public void setValidityRulesContainer(ValidityRulesContainer validityRulesContainer) {
+        this.validityRulesContainer = validityRulesContainer;
+    }
+
+    public Boolean isCoveragePresent() {
+        return isCoveragePresent;
+    }
+
+    public void setCoveragePresent(Boolean coveragePresent) {
+        isCoveragePresent = coveragePresent;
+    }
+
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
@@ -94,6 +122,9 @@ public class RulesWithHttpParameters implements Cloneable {
                 ", externalRules=" + externalRules +
                 ", errorMessage='" + errorMessage + '\'' +
                 ", rulesFileName='" + rulesFileName + '\'' +
+                ", isCurrentData=" + isCurrentData +
+                ", validityRulesContainer=" + validityRulesContainer +
+                ", isCoveragePresent=" + isCoveragePresent +
                 '}';
     }
 
