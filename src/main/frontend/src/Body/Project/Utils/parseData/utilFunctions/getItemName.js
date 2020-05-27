@@ -7,8 +7,10 @@ function getItemName(index, objects, settings, defaultName = "Object") {
         }
     };
 
-    if (settings && Object.keys(settings).includes("indexOption") && settings.indexOption !== "default") {
-        if (Object.keys(objects[index]).includes(settings.indexOption)) {
+    if (settings != null && objects != null && objects[index] != null) {
+        if (settings.hasOwnProperty("indexOption") && settings.indexOption !== "default"
+            && objects[index].hasOwnProperty(settings.indexOption)) {
+
             name = {
                 secondary: objects[index][settings.indexOption],
                 toString() {
@@ -16,6 +18,8 @@ function getItemName(index, objects, settings, defaultName = "Object") {
                 }
             };
         }
+    } else {
+        // TODO throw error
     }
 
     return name;

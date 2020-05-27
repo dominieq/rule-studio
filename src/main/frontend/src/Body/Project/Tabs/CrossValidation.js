@@ -681,7 +681,7 @@ class CrossValidation extends Component {
                     />
                     {Array.isArray(folds) && Boolean(folds.length) && selected.item !== null &&
                         <ClassifiedObjectDialog
-                            informationTable={folds[selected.foldIndex].validationTable}
+                            informationTable={folds[selected.foldIndex].trainingTable}
                             item={selected.item}
                             onClose={() => this.toggleOpen("details")}
                             open={open.details}
