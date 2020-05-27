@@ -8,13 +8,13 @@ public class CrossValidationSingleFold {
     private InformationTable validationTable;
     private RuleSetWithCharacteristics ruleSetWithCharacteristics;
     private Classification classificationValidationTable;
-    private Integer numberOfLearningObjects;
+    private InformationTable trainingTable;
 
-    public CrossValidationSingleFold(InformationTable validationTable, RuleSetWithCharacteristics ruleSetWithCharacteristics, Classification classificationValidationTable, Integer numberOfLearningObjects) {
+    public CrossValidationSingleFold(InformationTable validationTable, RuleSetWithCharacteristics ruleSetWithCharacteristics, Classification classificationValidationTable, InformationTable trainingTable) {
         this.validationTable = validationTable;
         this.ruleSetWithCharacteristics = ruleSetWithCharacteristics;
         this.classificationValidationTable = classificationValidationTable;
-        this.numberOfLearningObjects = numberOfLearningObjects;
+        this.trainingTable = trainingTable;
     }
 
     public InformationTable getValidationTable() {
@@ -43,11 +43,11 @@ public class CrossValidationSingleFold {
         this.classificationValidationTable = classificationValidationTable;
     }
 
-    public Integer getNumberOfLearningObjects() {
-        return numberOfLearningObjects;
+    public InformationTable getTrainingTable() {
+        return trainingTable;
     }
 
-    public void setNumberOfLearningObjects(Integer numberOfLearningObjects) {
-        this.numberOfLearningObjects = numberOfLearningObjects;
+    public void setTrainingTable(InformationTable trainingTable) {
+        this.trainingTable = trainingTable;
     }
 }

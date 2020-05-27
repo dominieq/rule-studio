@@ -85,9 +85,9 @@ public class CrossValidationService {
 
             foldOrdinalMisclassificationMatrix[i] = classificationValidationTable.getOrdinalMisclassificationMatrix();
 
-            crossValidationSingleFolds[i] = new CrossValidationSingleFold(validationTable, ruleSetWithCharacteristics, classificationValidationTable, trainingTable.getNumberOfObjects());
+            crossValidationSingleFolds[i] = new CrossValidationSingleFold(validationTable, ruleSetWithCharacteristics, classificationValidationTable, trainingTable);
 
-            //let garbage collector clean memory occupied by trainingTable of i-th fold, which is useless after calculation
+            //let garbage collector clean memory occupied by i-th fold
             folds.set(i, null);
         }
 
