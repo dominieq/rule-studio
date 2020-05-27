@@ -1,4 +1,4 @@
-function createFullCategories(labels, values) {
+function createFullCategories(labels, values, noneLabel = "none", noneValue = "") {
     if (labels.length === values.length) {
         let categories = [];
 
@@ -10,8 +10,8 @@ function createFullCategories(labels, values) {
         }
 
         categories.unshift({
-            label: "none (original order)",
-            value: ""
+            label: noneLabel,
+            value: noneValue
         });
 
         return categories;

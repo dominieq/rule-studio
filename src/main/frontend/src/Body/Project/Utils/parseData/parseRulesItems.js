@@ -33,7 +33,11 @@ function parseRulesItems(data) {
                     ]
                 },
                 toSort(category) {
-                    if (Object.keys(this.traits).includes(category)) {
+                    if (category === "id") {
+                        return {
+                            id: this.id
+                        }
+                    }else if (this.traits.hasOwnProperty(category)) {
                         return {
                             id: this.id,
                             [category]: this.traits[category]

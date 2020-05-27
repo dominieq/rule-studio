@@ -49,7 +49,7 @@ class Rules extends Component {
             sort: {
                 anchorE1: null,
                 order: "asc",
-                value: ""
+                value: "id"
             },
             alertProps: undefined,
         };
@@ -517,27 +517,13 @@ class Rules extends Component {
         if (items) {
             const { items: originalItems, sort: { order, value } } = this.state;
 
-            if (order && value) {
-                let newItems = items.map(item => item.toSort(value));
-                newItems = simpleSort(newItems, value, order);
-                newItems = newItems.map(item => originalItems[item.id]);
+            let newItems = items.map(item => item.toSort(value));
+            newItems = simpleSort(newItems, value, order);
+            newItems = newItems.map(item => originalItems[item.id]);
 
-                this.setState({
-                    displayedItems: newItems
-                });
-            } else {
-                let newItems = [];
-
-                if (originalItems != null) {
-                    newItems = originalItems.map(item => (
-                        items[item.id] != null ? items[item.id] : null
-                    )).filter(element => element != null);
-                }
-
-                this.setState({
-                    displayedItems: newItems
-                });
-            }
+            this.setState({
+                displayedItems: newItems
+            });
         } else {
             this.setState({
                 displayedItems: null
@@ -660,7 +646,7 @@ class Rules extends Component {
                                 disabled: !resultsExists || loading,
                                 onClick: this.onSortMenuOpen
                             }}
-                            invisible={sort.value === "" && sort.order === "asc"}
+                            invisible={sort.value === "id" && sort.order === "asc"}
                             tooltip={resultsExists ? "Sort rules" : "No content to sort"}
                             TooltipProps={{
                                 WrapperProps: { style: { marginRight: "0.5rem" } }
@@ -673,7 +659,9 @@ class Rules extends Component {
                             anchorE1={sort.anchorE1}
                             ContentProps={{
                                 categories: createCategories(
-                                    Object.keys(items[0].traits).filter(value => value !== "Type")
+                                    Object.keys(items[0].traits).filter(value => value !== "Type"),
+                                    "none (default index)",
+                                    "id"
                                 ),
                                 chooseOrder: true,
                                 onCategoryChange: this.onSortValueChange,

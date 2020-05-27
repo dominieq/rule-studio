@@ -16,7 +16,7 @@ class Project {
         this.sortParams = {
             rules: {
                 order: "asc",
-                value: ""
+                value: "id"
             }
         };
 
