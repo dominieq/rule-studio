@@ -221,6 +221,8 @@ class DisplayData extends React.Component {
         
         this.isDataFromServer = this.props.project.isDataFromServer;
         this._isMounted = false;
+        this.ctrlKeyDown = -1;
+        this.ctrlPlusC = false;
     }
 
     static getDerivedStateFromError(error) {
@@ -236,6 +238,8 @@ class DisplayData extends React.Component {
      */
     componentDidUpdate(prevProps, prevState) {
         if(prevProps.project.result.id !== this.props.project.result.id) {
+            this.ctrlKeyDown = -1;
+            this.ctrlPlusC = false;
             this.isDataFromServer = this.props.project.isDataFromServer;
             this.setState({
                 enableRowInsert: 0, //-1 no sort, 0-sort asc, 1-sort desc
@@ -570,7 +574,7 @@ class DisplayData extends React.Component {
         const tmpCol = this.state.history[this.state.historySnapshot].columns.find(col => col.key === sortColumn);
         let numberSorting = false;
         if(tmpCol.valueType !== undefined && (tmpCol.valueType === "integer" || tmpCol.valueType === "real")) numberSorting = true;
-        
+        if(this.ctrlPlusC) this.turnOffCellCopyPaste();
         const comparer = (a, b) => {
             if (sortDirection === "ASC") {
                 ((sortColumn === "uniqueLP") ? tmpEnableRowInsert = 0 : tmpEnableRowInsert = -1)
@@ -698,6 +702,7 @@ class DisplayData extends React.Component {
         this.setState(prevState => {
             const nextRows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
             if( nextRows[rowIdx] !== undefined) {
+                if(this.ctrlPlusC) this.turnOffCellCopyPaste();
                 const removedRowUniqueLP = nextRows[rowIdx].uniqueLP;
                 nextRows.splice(rowIdx, 1);
                 nextRows.forEach(r => {
@@ -796,6 +801,7 @@ class DisplayData extends React.Component {
             });
             
             if( nextRows[rowIdx] !== undefined) { //if the cell is selected (and exists)
+                if(this.ctrlPlusC) this.turnOffCellCopyPaste();
                 switch(where) {
                     case "above": //above the chosen row
                         if(this.state.enableRowInsert === 0) { //sort-asc
@@ -1562,6 +1568,7 @@ class DisplayData extends React.Component {
                             col.active = !col.active;
                             cols[i] = col;
                         } else if(selected === "Delete attribute") {
+                            if(this.ctrlPlusC) this.turnOffCellCopyPaste();
                             removedColumn = cols.splice(i,1);
                         }
 
@@ -2274,6 +2281,29 @@ class DisplayData extends React.Component {
         })        
     };
 
+    onGridKeyUp = (e) => {
+        if(e.keyCode === 27) {
+            this.ctrlPlusC = false;
+        }
+        else if(e.keyCode === this.ctrlKeyDown) {
+            this.ctrlKeyDown = -1;
+        }
+    }
+
+    onGridKeyDown = (e) => {
+        if(e.keyCode === 67 && (e.ctrlKey === true || e.metaKey === true)) {
+            this.ctrlPlusC = true;
+        }
+        else if(e.ctrlKey === true || e.metaKey === true) {
+            this.ctrlKeyDown = e.keyCode;
+        }
+    }
+
+    turnOffCellCopyPaste = () => {
+        this.ctrlPlusC = false;
+        if(this.grid) this.grid.base.viewport.canvas.interactionMasks.onPressEscape();
+    }
+
     onBack = () => {
         this.setState( prevState => {
             if(prevState.historySnapshot > 0) {
@@ -2337,6 +2367,8 @@ class DisplayData extends React.Component {
                     rowsCount={this.filteredRows().length}
                     onGridRowsUpdated={this.onGridRowsUpdated}
                     onGridSort = {this.onGridSort}
+                    onGridKeyUp={this.onGridKeyUp}
+                    onGridKeyDown={this.onGridKeyDown}
                     enableCellSelect={true}
                     enableRowSelect={null}
                     onCellSelected={this.onCellSelected}
