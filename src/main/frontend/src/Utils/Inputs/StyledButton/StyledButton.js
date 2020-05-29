@@ -87,11 +87,9 @@ StyledButton.propTypes = {
     endIcon: PropTypes.node,
     fullWidth: PropTypes.bool,
     href: PropTypes.string,
-    isIcon: PropTypes.bool,
     size: PropTypes.oneOf(["small", "medium", "large"]),
     startIcon: PropTypes.node,
-    themeVariant: PropTypes.oneOf(["inherit", "primary", "secondary"]),
-    variant: PropTypes.oneOf(["text", "outlined", "contained"]),
+    variant: PropTypes.oneOf(["text", "outlined", "contained"])
 };
 
 StyledButton.defaultProps = {

@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { mergeClasses} from "../../utilFunctions";
+import { mergeClasses } from "../../utilFunctions";
 import { hexToRgb } from "../../utilFunctions/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
@@ -30,7 +30,7 @@ function StyledIconButton(props) {
     if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
-        <IconButton ref={ButtonRef} classes={{...classes}} {...other} />
+        <IconButton classes={{...classes}} ref={ButtonRef} {...other} />
     );
 }
 
