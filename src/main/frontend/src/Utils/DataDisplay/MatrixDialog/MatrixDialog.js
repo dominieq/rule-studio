@@ -7,7 +7,7 @@ import TextWithHoverTooltip from "../TextWithHoverTooltip";
 import VirtualizedMatrix, { estimateMatrixHeight, estimateMatrixWidth } from "../VirtualizedMatrix";
 import { estimateTableHeight } from "../VirtualizedTable";
 import TraitsTable from "../../Feedback/DetailsDialog/Elements/TraitsTable";
-import { addSubheaders } from "../../../Body/Project/Utils/parseData";
+import { addSubheaders } from "../../utilFunctions/parseMatrix/parseElements";
 import Fade from "@material-ui/core/Fade";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -38,9 +38,10 @@ class MatrixDialog extends React.PureComponent {
         switch(abbrev) {
             case "gmean": return { text: "GMean", tooltip: "Geometric Mean"};
             case "mae": return { text: "MAE", tooltip: "Mean Absolute Error"};
-            case "rmse": return { text: "RMSE", tooltip: "Root Mean Square Error"}
+            case "rmse": return { text: "RMSE", tooltip: "Root Mean Square Error"};
+            default: return {};
         }
-    }
+    };
 
     cellRenderer = ({cellData, dataKey}) => {
         const abbrevs = ["gmean", "mae", "rmse"];
@@ -117,6 +118,8 @@ class MatrixDialog extends React.PureComponent {
                 return {
                     [key]: traits[key]
                 };
+            } else {
+                return {};
             }
         }).reduce((previousValue, currentValue) => {
             return {...previousValue, ...currentValue};

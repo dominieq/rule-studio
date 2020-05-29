@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
-import { createFormData, downloadRules, fetchRules, parseRulesParams, uploadRules } from "../Utils/fetchFunctions";
-import { parseRulesItems, parseRulesListItems } from "../Utils/parseData";
+import { downloadRules, fetchRules, uploadRules } from "../../../Utils/utilFunctions/fetchFunctions";
+import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
+import { parseRulesItems } from  "../../../Utils/utilFunctions/parseItems";
+import { parseRulesListItems } from "../../../Utils/utilFunctions/parseListItems";
+import { parseRulesParams } from "../../../Utils/utilFunctions/parseParams";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -202,7 +205,7 @@ class Rules extends Component {
             loading: true,
         }, () => {
             let method = "PUT";
-            let data = createFormData(parameters, null);
+            let data = parseFormData(parameters, null);
 
             fetchRules(
                 serverBase, project.result.id, method, data
@@ -282,7 +285,7 @@ class Rules extends Component {
             let method = "PUT";
             let files = { rules: event.target.files[0] }
 
-            let data = createFormData(null, files);
+            let data = parseFormData(null, files);
 
             this.setState({
                 loading: true,

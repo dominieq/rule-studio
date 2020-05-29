@@ -1,4 +1,4 @@
-import { getRelationSign } from "../parseData";
+import { getRelationSign } from "../../../../Utils/utilFunctions/parseItems/parseDetails";
 
 const relationSigns = ["<=", ">="];
 

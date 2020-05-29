@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
-import { fetchCones } from "../Utils/fetchFunctions";
-import { parseConesItems, parseConesListItems } from "../Utils/parseData";
+import { fetchCones } from "../../../Utils/utilFunctions/fetchFunctions";
+import { parseConesItems } from "../../../Utils/utilFunctions/parseItems"
+import { parseConesListItems } from "../../../Utils/utilFunctions/parseListItems";
 import TabBody from "../Utils/TabBody";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
 import filterFunction from "../Utils/Filtering/FilterFunction";
