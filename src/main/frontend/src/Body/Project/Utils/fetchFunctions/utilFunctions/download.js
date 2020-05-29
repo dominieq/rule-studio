@@ -1,10 +1,11 @@
 import { responseBlob } from "./index";
+import { AlertError } from "../../../../../Utils/Classes";
 
 async function download(link) {
     const response = await fetch(link, {
         method: "GET"
     }).catch(() => {
-        throw { message: "Server not responding", open: true, severity: "error" };
+        throw new AlertError("Server not responding", true, "error");
     });
 
     const result = await responseBlob(response);

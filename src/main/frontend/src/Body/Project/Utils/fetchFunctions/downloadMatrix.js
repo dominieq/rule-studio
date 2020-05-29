@@ -2,6 +2,7 @@ import { download } from "./utilFunctions";
 
 async function downloadMatrix(base, projectId, data ) {
     let link = `${base}/projects/${projectId}/misclassificationMatrix/download`;
+
     if (data) {
         if (Object.keys(data).includes("typeOfMatrix")) {
             link = link + `?typeOfMatrix=${data.typeOfMatrix}`;

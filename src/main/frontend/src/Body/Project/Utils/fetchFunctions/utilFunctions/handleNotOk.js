@@ -1,10 +1,11 @@
+import { AlertError } from "../../../../../Utils/Classes";
+
 async function handleNotOk(response) {
     const result = await response.json().catch(() => null);
 
     if (result) {
         if (result.status === 404) {
-            throw { message: result.message, open: true, severity: "info" }
-
+            throw new AlertError(result.message, true, "info");
         } else {
             let httpStatus = Math.trunc(result.status / 100);
             let severity;
@@ -21,7 +22,7 @@ async function handleNotOk(response) {
                 default: severity = "info";
             }
 
-            throw { message: result.message, open: true, severity: severity }
+            throw new AlertError(result.message, true, severity);
         }
     } else {
         return null;

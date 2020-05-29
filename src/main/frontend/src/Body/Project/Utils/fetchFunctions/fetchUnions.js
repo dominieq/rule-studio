@@ -1,4 +1,5 @@
 import { responseJson } from "./utilFunctions";
+import { AlertError } from "../../../../Utils/Classes";
 
 async function fetchUnions(base, projectId, method, data) {
     let query = ""
@@ -11,7 +12,7 @@ async function fetchUnions(base, projectId, method, data) {
         method: method,
         body: data,
     }).catch(() => {
-        throw { message: "Server not responding", open: true, severity: "error" };
+        throw new AlertError("Server not responding", true, "error");
     });
 
     return await responseJson(response);
