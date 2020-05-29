@@ -22,7 +22,7 @@ import { RulesDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import { createCategories, simpleSort, SortButton, SortMenu } from "../../../Utils/Inputs/SortMenu";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
-import StyledButton from "../../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import FileUpload from "mdi-material-ui/FileUpload";
@@ -599,15 +599,14 @@ class Rules extends Component {
                                 id={"rules-upload-button"}
                                 onChange={this.onUploadFileChanged}
                             >
-                                <StyledButton
+                                <StyledIconButton
                                     aria-label={"rules-upload-button"}
-                                    disabled={loading}
-                                    isIcon={true}
+                                    color={"primary"}
                                     component={"span"}
-                                    themeVariant={"primary"}
+                                    disabled={loading}
                                 >
                                     <FileUpload />
-                                </StyledButton>
+                                </StyledIconButton>
                             </CustomUpload>
                         </CustomTooltip>
                         <CircleHelper
@@ -618,27 +617,25 @@ class Rules extends Component {
                         />
                         <StyledDivider margin={16} />
                         <CustomTooltip title={"Save rules to RuleML"}>
-                            <StyledButton
+                            <StyledIconButton
                                 aria-label={"rules-save-to-xml-button"}
+                                color={"primary"}
                                 disabled={!resultsExists || loading}
-                                isIcon={true}
                                 onClick={this.onSaveRulesToXMLClick}
-                                themeVariant={"primary"}
                             >
                                 <SaveIcon />
-                            </StyledButton>
+                            </StyledIconButton>
                         </CustomTooltip>
                         <StyledDivider margin={16} />
                         <CustomTooltip title={"Save rules to TXT"}>
-                            <StyledButton
+                            <StyledIconButton
                                 aria-label={"rules-save-to-txt-button"}
+                                color={"primary"}
                                 disabled={!resultsExists || loading}
-                                isIcon={true}
                                 onClick={this.onSaveRulesToTXTClick}
-                                themeVariant={"primary"}
                             >
                                 <SvgIcon><path d={mdiTextBox} /></SvgIcon>
-                            </StyledButton>
+                            </StyledIconButton>
                         </CustomTooltip>
                         <span style={{flexGrow: 1}} />
                         <SortButton

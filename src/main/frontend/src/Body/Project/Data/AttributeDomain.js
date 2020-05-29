@@ -6,7 +6,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import { withStyles } from '@material-ui/styles';
-import StyledButton from "../../../Utils/Inputs/StyledButton";
+import { StyledButton, StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 import { StyledDefaultTextField } from './StyledComponents';
 
 const styles = ({
@@ -164,40 +164,40 @@ class AttributeDomain extends React.Component {
               required
             />
 
-            <StyledButton
-              isIcon={true}
+            <StyledIconButton
               aria-label="up"
               className={classes.root}
+              color={"primary"}
+              onClick={this.switchUpward}
               size="small"
               value={x.id}
-              onClick={this.switchUpward}
             >
               <ArrowUpwardIcon fontSize="inherit" />
-            </StyledButton>
-            <StyledButton
-              isIcon={true}
+            </StyledIconButton>
+            <StyledIconButton
               aria-label="down"
               className={classes.root}
+              color={"primary"}
               disableRipple={false}
               disableFocusRipple={false}
+              onClick={this.switchDownward}
               size="small"
               value={x.id}
-              onClick={this.switchDownward}
             >
               <ArrowDownwardIcon fontSize="inherit" />
-            </StyledButton>
+            </StyledIconButton>
             
-            <StyledButton
-              isIcon={true}
-              edge="start"
+            <StyledIconButton
               aria-label="delete"
               className={classes.root}
+              color={"primary"}
+              edge="start"
               onClick={this.onClickRemoveElement}
               size="small"
               value={x.id}
             >
               <DeleteIcon />
-            </StyledButton>
+            </StyledIconButton>
           </ListItem>
        
       );
@@ -210,11 +210,11 @@ class AttributeDomain extends React.Component {
     return (
         <React.Fragment>
           <StyledButton
+            color={"primary"}
             disableElevation={true}
             onClick={this.onClickAddElement}
-            themeVariant={"primary"}
-            variant={"contained"}
             style={{display: "flex", margin: "0 auto"}}
+            variant={"contained"}
           >
             Add domain element
           </StyledButton>

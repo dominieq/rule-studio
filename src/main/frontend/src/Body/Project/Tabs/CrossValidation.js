@@ -31,7 +31,7 @@ import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
 import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomTextField from "../../../Utils/Inputs/CustomTextField";
-import StyledButton from "../../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -604,14 +604,13 @@ class CrossValidation extends Component {
                                     title={"Show mean ordinal misclassification matrix"}
                                 />
                                 <CustomTooltip title={"Show accumulated ordinal misclassification matrix"}>
-                                    <StyledButton
+                                    <StyledIconButton
                                         aria-label={"sum-matrix-button"}
-                                        isIcon={true}
+                                        color={"secondary"}
                                         onClick={() => this.toggleOpen("matrixSum")}
-                                        themeVariant={"secondary"}
                                     >
                                         <Sigma />
-                                    </StyledButton>
+                                    </StyledIconButton>
                                 </CustomTooltip>
                                 <StyledDivider margin={16} />
                                 {/* Part regarding specific fold */}

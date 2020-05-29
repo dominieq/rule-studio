@@ -1,7 +1,7 @@
 import React, {Fragment} from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import StyledButton from "../Inputs/StyledButton";
+import { StyledIconButton } from "../Inputs/StyledButton";
 import StyledDivider from "../DataDisplay/StyledDivider";
 import Drawer from "@material-ui/core/Drawer";
 import WindowClose from "mdi-material-ui/WindowClose";
@@ -74,15 +74,14 @@ function CustomDrawer(props) {
                     className={styles.Footer}
                     style={props.anchor === "right" ? {flexDirection: "unset"} : undefined}
                 >
-                    <StyledButton
+                    <StyledIconButton
                         aria-label={"drawer close button"}
                         aria-labelledby={"drawer footer"}
-                        isIcon={true}
+                        color={"secondary"}
                         onClick={onClose}
-                        themeVariant={"secondary"}
                     >
                         <WindowClose />
-                    </StyledButton>
+                    </StyledIconButton>
                 </div>
             }
         </Drawer>

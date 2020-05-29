@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
-import StyledButton from "../../../Utils/Inputs/StyledButton";
+import { StyledButton } from "../../../Utils/Inputs/StyledButton";
 import Typography from "@material-ui/core/Typography";
 import styles from "../styles/NavigateButton.module.css";
 
@@ -44,8 +44,7 @@ function NavigateButton(props) {
             >
                 <StyledButton
                     className={clsx(classes.buttonRoot, classes.buttonText)}
-                    themeVariant={"primary"}
-                    variant={"text"}
+                    color={"primary"}
                     {...other}
                 >
                     {buttonText}

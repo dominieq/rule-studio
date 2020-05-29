@@ -7,7 +7,7 @@ import StyledDivider from "../../Utils/DataDisplay/StyledDivider";
 import { CSVDialog } from "../../Utils/Feedback/CSVDialog";
 import CustomSwitch from "../../Utils/Inputs/CustomSwitch";
 import CustomTextField from "../../Utils/Inputs/CustomTextField";
-import StyledButton  from "../../Utils/Inputs/StyledButton"
+import { StyledButton }  from "../../Utils/Inputs/StyledButton"
 import CustomSection from "../../Utils/Surfaces/CustomSection";
 import Collapse from "@material-ui/core/Collapse";
 import styles from "./styles/Import.module.css";
@@ -207,18 +207,18 @@ class Import extends Component{
                     />
                     <div aria-label={"footer"} className={styles.Footer}>
                         <StyledButton
+                            color={"primary"}
                             id={"footer-accept-button"}
                             onClick={this.onAcceptButtonClick}
-                            themeVariant={"primary"}
                             variant={"outlined"}
                         >
                             Accept
                         </StyledButton>
                         <StyledButton
+                            color={"secondary"}
                             id={"footer-cancel-button"}
                             onClick={this.onClearClick}
                             style={{marginRight: 12}}
-                            themeVariant={"secondary"}
                             variant={"outlined"}
                         >
                             Clear
