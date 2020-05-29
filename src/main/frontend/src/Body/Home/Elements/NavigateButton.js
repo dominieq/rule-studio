@@ -20,6 +20,7 @@ const useStyles = makeStyles(theme => ({
     },
     buttonText: {
         color: theme.palette.text.main1,
+        textDecoration: "underline",
         textTransform: "none",
         ...theme.typography.body1
     }
