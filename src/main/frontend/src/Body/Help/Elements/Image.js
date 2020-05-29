@@ -4,7 +4,7 @@ import Typography from "@material-ui/core/Typography";
 import styles from "../styles/Image.module.css";
 
 function Image(props) {
-    const { ["aria-label"]: ariaLabel, caption, height, src, width } = props;
+    const { "aria-label": ariaLabel, caption, height, src, width } = props;
 
     return (
         <figure className={styles.Root} style={{height, width}}>
