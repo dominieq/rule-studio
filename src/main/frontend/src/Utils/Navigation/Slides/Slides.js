@@ -52,7 +52,6 @@ function Slides(props) {
         >
             <div
                 aria-label={"slide-view"}
-                aria-orientation={orientation}
                 className={styles.Slidable}
                 style={{ flexDirection: flexDirection, ...transition }}
                 role={"list"}

@@ -1,18 +1,13 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import BigNumber from "bignumber.js";
-import {
-    createFormData,
-    downloadMatrix,
-    fetchCrossValidation,
-    parseCrossValidationParams
-} from "../Utils/fetchFunctions";
-import {
-    parseMatrix,
-    parseCrossValidationFolds,
-    parseCrossValidationItems,
-    parseCrossValidationListItems
-} from "../Utils/parseData";
+import { downloadMatrix, fetchCrossValidation } from "../../../Utils/utilFunctions/fetchFunctions";
+import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
+import { parseCrossValidationItems } from "../../../Utils/utilFunctions/parseItems";
+import { parseClassifiedListItems } from "../../../Utils/utilFunctions/parseListItems";
+import { parseCrossValidationParams } from "../../../Utils/utilFunctions/parseParams";
+import { parseFolds } from "../../../Utils/utilFunctions/parseFolds";
+import { parseMatrix } from "../../../Utils/utilFunctions/parseMatrix";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -88,7 +83,7 @@ class CrossValidation extends Component {
             if (this._isMounted && result) {
                 const { project: { foldIndex, settings } } = this.props
 
-                let folds = parseCrossValidationFolds(result);
+                let folds = parseFolds(result);
                 let resultParams = parseCrossValidationParams(result);
 
                 this.setState(({parameters, selected}) => ({
@@ -233,14 +228,14 @@ class CrossValidation extends Component {
             loading: true,
         }, () => {
             let method = "PUT";
-            let data = createFormData(parameters, null);
+            let data = parseFormData(parameters, null);
 
             fetchCrossValidation(
                 serverBase, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
-                        let folds = parseCrossValidationFolds(result);
+                        let folds = parseFolds(result);
 
                         this.setState(({selected}) => ({
                             data: result,
@@ -649,7 +644,7 @@ class CrossValidation extends Component {
                         <FilterTextField onChange={this.onFilterChange} />
                     </CustomHeader>
                     <TabBody
-                        content={parseCrossValidationListItems(displayedItems)}
+                        content={parseClassifiedListItems(displayedItems)}
                         id={"cross-validation-list"}
                         isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
                         isLoading={loading}

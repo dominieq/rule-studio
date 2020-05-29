@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { getItemName } from "../../../../Body/Project/Utils/parseData";
+import { getItemName } from "../../../utilFunctions/parseItems";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 import { FullscreenDialog, FullscreenHeader, MultiColumns } from "../../../DataDisplay/FullscreenDialog";
 import { getTitleConditions, getTitleDecisions } from "../Utils";

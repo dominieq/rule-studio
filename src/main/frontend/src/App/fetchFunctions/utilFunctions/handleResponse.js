@@ -1,3 +1,5 @@
+import { AlertError } from "../../../Utils/Classes";
+
 async function handleResponse(response) {
     let httpStatus = Math.trunc(response.status / 100);
 
@@ -21,7 +23,7 @@ async function handleResponse(response) {
                 default: severity = "info";
             }
 
-            throw { message: result.message, open: true, severity: severity }
+            throw new AlertError(result.message, true, severity);
         }
     }
 }

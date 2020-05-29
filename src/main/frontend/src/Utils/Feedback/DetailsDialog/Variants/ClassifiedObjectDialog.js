@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core";
-import { getItemName, getRuleName } from "../../../../Body/Project/Utils/parseData";
+import { getItemName, getRuleName } from "../../../utilFunctions/parseItems";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 import CustomTooltip from "../../../DataDisplay/CustomTooltip";
 import { FullscreenDialog, MultiColumns, FullscreenHeader } from "../../../DataDisplay/FullscreenDialog";

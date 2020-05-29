@@ -1,7 +1,8 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import { fetchUnions } from "../Utils/fetchFunctions";
-import { parseUnionsItems, parseUnionsListItems } from "../Utils/parseData";
+import { fetchUnions } from "../../../Utils/utilFunctions/fetchFunctions";
+import { parseUnionsItems } from "../../../Utils/utilFunctions/parseItems";
+import { parseUnionsListItems } from "../../../Utils/utilFunctions/parseListItems";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";

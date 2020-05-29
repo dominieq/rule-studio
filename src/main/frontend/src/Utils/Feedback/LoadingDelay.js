@@ -1,7 +1,7 @@
-import React, {PureComponent} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 
-class LoadingDelay extends PureComponent {
+class LoadingDelay extends React.PureComponent {
     constructor(props) {
         super(props);
 

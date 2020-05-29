@@ -35,6 +35,8 @@ const getAppropriateSign = (object1, object2, attribute, tableIndex) => {
                     }
                 case "none":
                     return "--";
+                default:
+                    return "";
             }
         }
     }    

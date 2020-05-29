@@ -6,7 +6,7 @@ import Cones from "./Tabs/Cones";
 import Data from "./Data/DisplayData";
 import Rules from "./Tabs/Rules";
 import Unions from "./Tabs/Unions";
-import { fetchData } from "./Utils/fetchFunctions";
+import { fetchData } from "../../Utils/utilFunctions/fetchFunctions";
 import StyledTab from "../../Utils/Navigation/StyledTab";
 import StyledTabs from "../../Utils/Navigation/StyledTabs";
 import ExternalFile from "../../Utils/Feedback/CustomIcons/ExternalFile";

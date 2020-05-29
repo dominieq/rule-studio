@@ -1,16 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import {
-    createFormData,
-    downloadMatrix,
-    fetchClassification,
-    parseClassificationParams
-} from "../Utils/fetchFunctions";
-import {
-    parseClassificationItems,
-    parseClassificationListItems,
-    parseMatrix
-} from "../Utils/parseData";
+import { downloadMatrix, fetchClassification } from "../../../Utils/utilFunctions/fetchFunctions";
+import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
+import { parseClassificationItems } from "../../../Utils/utilFunctions/parseItems";
+import { parseClassifiedListItems } from "../../../Utils/utilFunctions/parseListItems";
+import { parseClassificationParams } from "../../../Utils/utilFunctions/parseParams";
+import { parseMatrix } from "../../../Utils/utilFunctions/parseMatrix";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -242,7 +237,7 @@ class Classification extends Component {
         const { parameters } = this.state;
 
         let method = "PUT";
-        let data = createFormData(parameters, null);
+        let data = parseFormData(parameters, null);
 
         this.calculateClassification(method, data);
     };
@@ -263,7 +258,7 @@ class Classification extends Component {
                 let method = "PUT";
                 let files = { externalDataFile: event.target.files[0] };
 
-                let data = createFormData(parameters, files);
+                let data = parseFormData(parameters, files);
                 this.calculateClassification(method, data);
             }
         }
@@ -279,7 +274,7 @@ class Classification extends Component {
                 let method = "PUT";
                 let files = { externalDataFile: this.csvFile };
 
-                let data = createFormData({ ...parameters, ...csvSpecs }, files);
+                let data = parseFormData({ ...parameters, ...csvSpecs }, files);
                 this.calculateClassification(method, data);
             }
         });
@@ -441,7 +436,7 @@ class Classification extends Component {
                         <FilterTextField onChange={this.onFilterChange} />
                     </CustomHeader>
                     <TabBody
-                        content={parseClassificationListItems(displayedItems)}
+                        content={parseClassifiedListItems(displayedItems)}
                         id={"classification-list"}
                         isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
                         isLoading={loading}

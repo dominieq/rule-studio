@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import { getRuleName } from "../../../../Body/Project/Utils/parseData";
+import { getRuleName } from "../../../utilFunctions/parseItems";
 import TextWithHoverTooltip, { PlainText } from "../../../DataDisplay/TextWithHoverTooltip";
 import { AutoSizer, List } from "react-virtualized";
 
