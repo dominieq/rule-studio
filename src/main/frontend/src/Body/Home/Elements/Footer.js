@@ -14,6 +14,12 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "Footer"});
 
+/**
+ * An element displayed at the bottom of the Home page. There is a list of authors on the left
+ * and a button linking to a GitHub repository on the right.
+ * @returns {React.ReactElement}
+ * @constructor
+ */
 function Footer() {
     const classes = useStyles();
     return (
