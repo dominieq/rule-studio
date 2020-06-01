@@ -36,6 +36,7 @@ const { DraggableContainer } = DraggableHeader;
 const heightOfRow = 40; //50
 const heightOfHeaderRow = 50; //60
 const maxNoOfHistorySteps = 30;
+const MAX_INT = 2147483647;
 
 const SimpleDialog = withStyles( theme => ({
     paper: {
@@ -455,6 +456,28 @@ class DisplayData extends React.Component {
         this._isMounted = false;
     }
 
+    getNumberPartAndConstantPart(text) {
+        let main = "";
+        let num = "";
+        let numberPartEnd = false 
+        for(let i=text.length-1; i>=0; i--) {
+            if(text[i] >= '0' && text[i] <= '9' && !numberPartEnd) {
+                num = text[i] + num;
+            } else {
+                numberPartEnd = true;
+                main = text[i] + main;
+            }
+        }
+        return {
+            constantPart: main,
+            numberPart: num
+        }
+    }
+
+    absoluteValue(x) {
+        return x < 0 ? -x : x; 
+    }
+
     /** 
      * Method responsible for updating displayed data when the value in the cell changes (or multiple values when dragging). First row has index 0.
      * @method
@@ -463,8 +486,9 @@ class DisplayData extends React.Component {
      * @param {Object} updated Indicates on which column and to which value changes happend. 
      * It is a pair key - value, where the key is the column key and the value is the value of the cell to which the cell has been changed.
      */
-    onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-        if(toRow - fromRow > 15) {
+    onGridRowsUpdated = ({ action, cellKey, fromRow, toRow, updated }) => {
+        const ctrlKeyPressed = this.ctrlKeyDown !== -1;
+        if(action === "COLUMN_FILL") {
             this.setState({
                 isLoading: true
             }, () => {
@@ -472,15 +496,68 @@ class DisplayData extends React.Component {
                     this.setState(prevState => {
                         const rows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
                         const filtered = this.filteredRows();
-                        for (let i = fromRow; i <= toRow; i++) {
-                            const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
-                            rows[rows_index] = { ...filtered[i], ...updated };
+                        const editedCol = prevState.history[prevState.historySnapshot].columns.find(x => x.key === cellKey)
+
+                        if(ctrlKeyPressed && updated[cellKey] !== "?") {
+                            let NumOfValsToReplaceThatExceededMax = 0;
+                            let updatedTmp = {...updated};
+                           
+                            if(editedCol.valueType === "integer") {
+                                const tmp = parseInt(updated[cellKey],10);
+                                if(toRow - fromRow + tmp - MAX_INT > 0) {
+                                    NumOfValsToReplaceThatExceededMax = toRow - fromRow + tmp - MAX_INT;
+                                }                                
+                                
+                                for (let i = fromRow; i <= toRow; i++) {
+                                    const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                    if(NumOfValsToReplaceThatExceededMax > 0 && i > toRow - NumOfValsToReplaceThatExceededMax) {
+                                        updatedTmp[cellKey] = "?";
+                                        rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                    }
+                                    else {
+                                        updatedTmp[cellKey] = i-fromRow+tmp;
+                                        rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                    }
+                                }
+                            } else if(editedCol.valueType === "real") {
+                                const tmp = Number(updated[cellKey]);
+                                for (let i = fromRow; i <= toRow; i++) {
+                                    const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                    updatedTmp[cellKey] = i-fromRow+tmp;
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                            } else if(editedCol.identifierType === "text") {
+                                const {constantPart, numberPart } = this.getNumberPartAndConstantPart(updated[cellKey]);
+                                if(numberPart !== "") {
+                                    const tmpNumberPart = Number(numberPart);
+                                    for (let i = fromRow; i <= toRow; i++) {
+                                        const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                        updatedTmp[cellKey] = constantPart + (i-fromRow+tmpNumberPart).toString();
+                                        rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                    }
+                                } else {
+                                    for (let i = fromRow; i <= toRow; i++) {
+                                        const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                        rows[rows_index] = { ...filtered[i], ...updated };
+                                    }
+                                }
+                                
+                            } else {
+                                for (let i = fromRow; i <= toRow; i++) {
+                                    const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                    rows[rows_index] = { ...filtered[i], ...updated };
+                                }
+                            }
+                        } else {
+                            for (let i = fromRow; i <= toRow; i++) {
+                                const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                rows[rows_index] = { ...filtered[i], ...updated };
+                            }
                         }
 
                         const tmpHistory = prevState.history.slice(0,prevState.historySnapshot+1);
                         tmpHistory.push({rows: rows, columns: prevState.history[prevState.historySnapshot].columns});
                         if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
-
                         if(this._isMounted) {
                             return {
                                 dataModified: true,
@@ -492,6 +569,126 @@ class DisplayData extends React.Component {
                     }, () => this.updateProject())
                 },500)
             });
+        } else if(action === "CELL_DRAG") {
+            const { rowIdx, overRowIdx } = this.grid.base.viewport.canvas.interactionMasks.state.draggedPosition || {};
+            this.setState(prevState => {
+                const rows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
+                const filtered = this.filteredRows();
+                const editedCol = prevState.history[prevState.historySnapshot].columns.find(x => x.key === cellKey)
+
+                //the Ctrl key has been pressed and hold
+                if(ctrlKeyPressed && updated[cellKey] !== "?") {
+                    let NumOfValsToReplaceThatExceededMax = 0;
+                    let updatedTmp = {...updated};
+                    //a column type is integer
+                    if(editedCol.valueType === "integer") {
+                        const tmp = parseInt(updated[cellKey],10);
+                        //dragging downwards
+                        if(rowIdx < overRowIdx) {
+                            //check if rows that exceeded max integer value exists
+                            if(toRow - fromRow + tmp - MAX_INT > 0) {
+                                NumOfValsToReplaceThatExceededMax = toRow - fromRow + tmp - MAX_INT;
+                            }                                
+                            for (let i = fromRow; i <= toRow; i++) {
+                                const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                //if the value exceeded max integer place missing value sign "?"
+                                if(NumOfValsToReplaceThatExceededMax > 0 && i > toRow - NumOfValsToReplaceThatExceededMax) {
+                                    updatedTmp[cellKey] = "?";
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                                //update with consecutive number
+                                else {
+                                    updatedTmp[cellKey] = i-fromRow+tmp;
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                            }
+                        //dragging upwards
+                        } else {
+                            if(tmp - toRow + fromRow + MAX_INT + 1 < 0) {
+                                NumOfValsToReplaceThatExceededMax = - tmp + toRow - fromRow - MAX_INT - 1;
+                            }
+                            for (let i = toRow - 1; i >= fromRow; i--) {
+                                const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                if(NumOfValsToReplaceThatExceededMax > 0 && i < fromRow + NumOfValsToReplaceThatExceededMax) {
+                                    updatedTmp[cellKey] = "?";
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                                else {
+                                    updatedTmp[cellKey] = i-toRow+tmp;
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                            }
+                        }
+                    //a column type is real
+                    } else if(editedCol.valueType === "real") {
+                        const tmp = Number(updated[cellKey]);
+                        //dragging downwards
+                        if(rowIdx < overRowIdx) {
+                            for (let i = fromRow; i <= toRow; i++) {
+                                const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                updatedTmp[cellKey] = i-fromRow+tmp;
+                                rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                            }
+                        //dragging upwards
+                        } else {
+                            for (let i = toRow - 1; i >= fromRow; i--) {
+                                const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                updatedTmp[cellKey] = i-toRow+tmp;
+                                rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                            }
+                        }
+                    //a column type is identification, identifierType is text
+                    } else if(editedCol.identifierType === "text") {
+                        const {constantPart, numberPart } = this.getNumberPartAndConstantPart(updated[cellKey]);
+                        if(numberPart !== "") {
+                            const tmpNumberPart = Number(numberPart);
+                            //dragging downwards
+                            if(rowIdx < overRowIdx) {
+                                for (let i = fromRow; i <= toRow; i++) {
+                                    const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                    updatedTmp[cellKey] = constantPart + (i-fromRow+tmpNumberPart).toString();
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                            //dragging upwards
+                            } else {
+                                for (let i = toRow - 1; i >= fromRow; i--) {
+                                    const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                    updatedTmp[cellKey] = constantPart + (this.absoluteValue(i-toRow+tmpNumberPart)).toString();
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                            }
+                        } else {
+                            for (let i = fromRow; i <= toRow; i++) {
+                                const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                rows[rows_index] = { ...filtered[i], ...updated };
+                            }
+                        }
+                    } else {
+                        for (let i = fromRow; i <= toRow; i++) {
+                            const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                            rows[rows_index] = { ...filtered[i], ...updated };
+                        }
+                    }
+                } else {
+                    for (let i = fromRow; i <= toRow; i++) {
+                        const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                        rows[rows_index] = { ...filtered[i], ...updated };
+                    }
+                }
+
+                const tmpHistory = prevState.history.slice(0,prevState.historySnapshot+1);
+                tmpHistory.push({rows: rows, columns: prevState.history[prevState.historySnapshot].columns});
+                if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
+
+                if(this._isMounted) {
+                    return {
+                        dataModified: true,
+                        isLoading: false,
+                        history: tmpHistory,
+                        historySnapshot: tmpHistory.length-1, 
+                    }
+                }
+            }, () => this.updateProject())
         } else {
             let isTheSame = false;
             this.setState(prevState => {
@@ -561,6 +758,7 @@ class DisplayData extends React.Component {
                 if(!isTheSame) this.updateProject();
             })
         }
+        this.ctrlKeyDown = -1;
     };
 
     /** 
@@ -2365,6 +2563,7 @@ class DisplayData extends React.Component {
                     columns={this.getColumns()}
                     rowGetter={i => this.filteredRows()[i]}
                     rowsCount={this.filteredRows().length}
+                    rowKey={"uniqueLP"}
                     onGridRowsUpdated={this.onGridRowsUpdated}
                     onGridSort = {this.onGridSort}
                     onGridKeyUp={this.onGridKeyUp}
