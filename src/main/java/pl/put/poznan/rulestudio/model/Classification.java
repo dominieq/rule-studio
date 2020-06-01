@@ -24,6 +24,7 @@ public class Classification {
     private String ruleSetHash;
     private Boolean isCurrentLearningData;
     private Boolean isCurrentRuleSet;
+    private Boolean isCrossValidation;
 
     public Classification(ClassificationResult[] simpleClassificationResults, InformationTable informationTable) {
         this.classificationResults = simpleClassificationResults;
@@ -52,6 +53,7 @@ public class Classification {
         this.externalData = false;
         this.isCurrentLearningData = true;
         this.isCurrentRuleSet = true;
+        this.isCrossValidation = false;
     }
 
     public ClassificationResult[] getClassificationResults() {
@@ -158,6 +160,14 @@ public class Classification {
         isCurrentRuleSet = currentRuleSet;
     }
 
+    public Boolean isCrossValidation() {
+        return isCrossValidation;
+    }
+
+    public void setCrossValidation(Boolean crossValidation) {
+        isCrossValidation = crossValidation;
+    }
+
     @Override
     public String toString() {
         return "Classification{" +
@@ -174,6 +184,7 @@ public class Classification {
                 ", ruleSetHash='" + ruleSetHash + '\'' +
                 ", isCurrentLearningData=" + isCurrentLearningData +
                 ", isCurrentRuleSet=" + isCurrentRuleSet +
+                ", isCrossValidation=" + isCrossValidation +
                 '}';
     }
 }
