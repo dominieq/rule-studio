@@ -2,6 +2,7 @@ package pl.put.poznan.rulestudio.service;
 
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.Decision;
+import org.rulelearn.data.Index2IdMapper;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.sampling.CrossValidator;
@@ -70,6 +71,17 @@ public class CrossValidationService {
         Decision[] orderOfDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
         OrdinalMisclassificationMatrix[] foldOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix[numberOfFolds];
 
+
+        StringBuilder logBuilder;
+        Index2IdMapper index2IdMapper = informationTable.getIndex2IdMapper();
+        for(int l = 0; l < informationTable.getNumberOfObjects(); l++) {
+            logBuilder = new StringBuilder("l=").append(l);
+            logBuilder.append("\tgetId(").append(l).append(")=").append(index2IdMapper.getId(l));
+            logBuilder.append("\tgetIndex(").append(l).append(")=").append(index2IdMapper.getIndex(l));
+            logBuilder.append("\tgetIndex(getId(").append(l).append("))=").append(index2IdMapper.getIndex( index2IdMapper.getId(l) ));
+            logger.info(logBuilder.toString());
+        }
+
         CrossValidator crossValidator = new CrossValidator(new Random());
         crossValidator.setSeed(seed);
         List<CrossValidator.CrossValidationFold<InformationTable>> folds = crossValidator.splitStratifiedIntoKFold(DataService.createInformationTableWithDecisionDistributions(informationTable), numberOfFolds);
@@ -78,6 +90,15 @@ public class CrossValidationService {
 
             InformationTable trainingTable = folds.get(i).getTrainingTable();
             InformationTable validationTable = folds.get(i).getValidationTable();
+
+            index2IdMapper = validationTable.getIndex2IdMapper();
+            for(int j = 0; j < validationTable.getNumberOfObjects(); j++) {
+                logBuilder = new StringBuilder("j=").append(j);
+                logBuilder.append("\tgetId(").append(j).append(")=").append(index2IdMapper.getId(j));
+                logBuilder.append("\tgetIndex(").append(j).append(")=").append(index2IdMapper.getIndex(j));
+                logBuilder.append("\tgetIndex(getId(").append(j).append("))=").append(index2IdMapper.getIndex( index2IdMapper.getId(j) ));
+                logger.info(logBuilder.toString());
+            }
 
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsService.calculateUnionsWithSingleLimitingDecision(trainingTable, typeOfUnions, consistencyThreshold);
             RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.calculateRuleSetWithCharacteristics(unionsWithSingleLimitingDecision, typeOfRules);
