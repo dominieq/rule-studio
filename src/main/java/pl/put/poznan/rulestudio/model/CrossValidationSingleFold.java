@@ -5,24 +5,32 @@ import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 
 public class CrossValidationSingleFold {
-    private InformationTable validationTable;
+    private int[] indicesOfTrainingObjects;
+    private int[] indicesOfValidationObjects;
     private RuleSetWithCharacteristics ruleSetWithCharacteristics;
     private Classification classificationValidationTable;
-    private InformationTable trainingTable;
 
-    public CrossValidationSingleFold(InformationTable validationTable, RuleSetWithCharacteristics ruleSetWithCharacteristics, Classification classificationValidationTable, InformationTable trainingTable) {
-        this.validationTable = validationTable;
+    public CrossValidationSingleFold(int[] indicesOfTrainingObjects, int[] indicesOfValidationObjects, RuleSetWithCharacteristics ruleSetWithCharacteristics, Classification classificationValidationTable) {
+        this.indicesOfTrainingObjects = indicesOfTrainingObjects;
+        this.indicesOfValidationObjects = indicesOfValidationObjects;
         this.ruleSetWithCharacteristics = ruleSetWithCharacteristics;
         this.classificationValidationTable = classificationValidationTable;
-        this.trainingTable = trainingTable;
     }
 
-    public InformationTable getValidationTable() {
-        return validationTable;
+    public int[] getIndicesOfTrainingObjects() {
+        return indicesOfTrainingObjects;
     }
 
-    public void setValidationTable(InformationTable validationTable) {
-        this.validationTable = validationTable;
+    public void setIndicesOfTrainingObjects(int[] indicesOfTrainingObjects) {
+        this.indicesOfTrainingObjects = indicesOfTrainingObjects;
+    }
+
+    public int[] getIndicesOfValidationObjects() {
+        return indicesOfValidationObjects;
+    }
+
+    public void setIndicesOfValidationObjects(int[] indicesOfValidationObjects) {
+        this.indicesOfValidationObjects = indicesOfValidationObjects;
     }
 
     @JsonProperty("ruleSet")
@@ -41,13 +49,5 @@ public class CrossValidationSingleFold {
 
     public void setClassificationValidationTable(Classification classificationValidationTable) {
         this.classificationValidationTable = classificationValidationTable;
-    }
-
-    public InformationTable getTrainingTable() {
-        return trainingTable;
-    }
-
-    public void setTrainingTable(InformationTable trainingTable) {
-        this.trainingTable = trainingTable;
     }
 }
