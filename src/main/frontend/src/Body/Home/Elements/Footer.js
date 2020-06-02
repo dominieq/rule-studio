@@ -34,7 +34,12 @@ function Footer() {
                 placement={"top"}
                 title={"Open GitHub repository"}
             >
-                <StyledIconButton component={"a"} href={"https://github.com/dominieq/rule-studio"}>
+                <StyledIconButton
+                    component={"a"}
+                    href={"https://github.com/dominieq/rule-studio"}
+                    rel={"external"}
+                    target={"_blank"}
+                >
                     <GitHub />
                 </StyledIconButton>
             </CustomTooltip>
