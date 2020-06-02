@@ -103,7 +103,7 @@ class SettingsProjectDialog extends PureComponent {
                 </SimpleContent>
                 <DialogActions>
                     <Cancel onClick={this.onCancelClick} />
-                    <Accept disabled={false} onClick={this.onAcceptClick} />
+                    <Accept onClick={this.onAcceptClick} />
                 </DialogActions>
                 {children}
             </SimpleDialog>

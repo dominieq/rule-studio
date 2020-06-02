@@ -398,7 +398,12 @@ class App extends Component {
                             <Help
                                 upperMargin={this.appBarRef.current ? this.appBarRef.current.offsetHeight : undefined}
                             />,
-                        "Home": <Home isDarkTheme={this.state.darkTheme} />,
+                        "Home":
+                            <Home
+                                goToHelp={() => this.onBodyChange("Help")}
+                                goToNewProject={() => this.onBodyChange("Import")}
+                                isDarkTheme={this.state.darkTheme}
+                            />,
                         "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
                             <ProjectTabs

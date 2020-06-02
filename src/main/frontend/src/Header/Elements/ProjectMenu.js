@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from "@material-ui/core/styles";
 import FilesDetails from "./FilesDetails";
 import CustomTooltip from "../../Utils/DataDisplay/CustomTooltip";
-import StyledButton from "../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../Utils/Inputs/StyledButton";
 import StyledDivider from "../../Utils/DataDisplay/StyledDivider";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -134,31 +134,28 @@ function ProjectMenu(props) {
                         files={files}
                     />
                     <CustomTooltip title={"Project settings"}>
-                        <StyledButton
+                        <StyledIconButton
                             aria-label={"project-settings"}
-                            isIcon={true}
                             onClick={() => props.onDialogOpen("settingsDialog")}
                         >
                             <SvgIcon><path d={mdiCog} /></SvgIcon>
-                        </StyledButton>
+                        </StyledIconButton>
                     </CustomTooltip>
                     <CustomTooltip title={"Rename project"}>
-                        <StyledButton
+                        <StyledIconButton
                             aria-label={"rename-project-button"}
-                            isIcon={true}
                             onClick={() => props.onDialogOpen("renameDialog")}
                         >
                             <RenameBox />
-                        </StyledButton>
+                        </StyledIconButton>
                     </CustomTooltip>
                     <span style={{ flexGrow: 1 }} />
                     <CustomTooltip title={"Delete project"}>
-                        <StyledButton
+                        <StyledIconButton
                             aria-label={"delete-project-button"}
-                            isIcon={true}
                             onClick={() => props.onDialogOpen("deleteDialog")}>
                             <DeleteIcon />
-                        </StyledButton>
+                        </StyledIconButton>
                     </CustomTooltip>
                 </Fragment>
                 :

@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CustomHeader from "../../../Surfaces/CustomHeader";
 import Typography from "@material-ui/core/Typography";
 import CustomTooltip from "../../CustomTooltip";
-import StyledButton from "../../../Inputs/StyledButton";
+import { StyledIconButton } from "../../../Inputs/StyledButton";
 import WindowClose from "mdi-material-ui/WindowClose";
 
 const useStyles = makeStyles(theme=> ({
@@ -154,17 +154,16 @@ function FullscreenHeader(props) {
                     </Typography>
                 }
                 <CustomTooltip title={"Close details"} {...CloseTooltipProps}>
-                    <StyledButton
+                    <StyledIconButton
                         aria-label={"close-button"}
-                        isIcon={true}
+                        color={"secondary"}
                         onClick={onClose}
                         onMouseEnter={onMouseEnter}
                         onMouseLeave={onMouseLeave}
-                        themeVariant={"secondary"}
                         {...CloseButtonProps}
                     >
                         {closeIcon != null ? closeIcon : <WindowClose />}
-                    </StyledButton>
+                    </StyledIconButton>
                 </CustomTooltip>
             </div>
         </HeaderElement>

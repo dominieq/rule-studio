@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core";
 import CustomTextField from "../../Inputs/CustomTextField";
 import CustomTooltip from "../../DataDisplay/CustomTooltip";
-import StyledButton from "../../Inputs/StyledButton";
+import { StyledButton } from "../../Inputs/StyledButton";
 import StyledCheckbox from "../../Inputs/StyledCheckbox";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -134,16 +134,16 @@ class CSVDialog extends React.PureComponent {
                 <DialogActions>
                     <StyledButton
                         aria-label={"cancel upload"}
+                        color={"secondary"}
                         onClick={this.onCancel}
-                        themeVariant={"secondary"}
                         variant={"outlined"}
                     >
                         Cancel
                     </StyledButton>
                     <StyledButton
                         aria-label={"confirm upload"}
+                        color={"primary"}
                         onClick={this.onConfirm}
-                        themeVariant={"primary"}
                         variant={"outlined"}
                     >
                         Confirm

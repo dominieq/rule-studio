@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import CustomTooltip from "../../../../Utils/DataDisplay/CustomTooltip";
-import StyledButton from "../../../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../../../Utils/Inputs/StyledButton";
 import GetApp from "@material-ui/icons/GetApp";
 
 const useStyles = makeStyles(theme => ({
@@ -21,16 +21,15 @@ function MatrixDownloadButton(props) {
 
     return (
         <CustomTooltip title={tooltip} {...TooltipProps}>
-            <StyledButton
+            <StyledIconButton
                 aria-label={"download matrix"}
                 className={classes.root}
-                isIcon={true}
+                color={"primary"}
                 onClick={props.onSave}
-                themeVariant={"primary"}
                 {...ButtonProps}
             >
                 <GetApp />
-            </StyledButton>
+            </StyledIconButton>
         </CustomTooltip>
     )
 }

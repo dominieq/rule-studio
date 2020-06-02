@@ -3,7 +3,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import './EditDataButtons.css';
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
-import StyledButton from "../../../Utils/Inputs/StyledButton";
+import { StyledButton, StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 
 class EditDataFilterButton extends React.Component {
     constructor(props) {
@@ -20,20 +20,19 @@ class EditDataFilterButton extends React.Component {
             <CustomTooltip disableGpu={true} title={`Show filter`}>
                 {name === "desktop" ?
                     <StyledButton
-                        disableElevation
+                        color={"primary"}
+                        disableElevation={true}
                         onClick={this.props.onToggleFilter}
                         startIcon={<SearchIcon />}
-                        themeVariant={"primary"}
                         variant={"contained"}
                     >
                         Filter
                     </StyledButton>
-                :   <StyledButton
-                        isIcon={true}
+                :   <StyledIconButton
                         onClick={this.props.onToggleFilter}
                     >
                         <SearchIcon />
-                    </StyledButton>
+                    </StyledIconButton>
                 }
             </CustomTooltip>
           );

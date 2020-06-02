@@ -4,7 +4,7 @@ import AddIcon from '@material-ui/icons/Add';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import EditIcon from '@material-ui/icons/Edit';
 import TransformIcon from '@material-ui/icons/Transform';
-import StyledButton from "../../../Utils/Inputs/StyledButton";
+import { StyledButton, StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';
@@ -21,110 +21,105 @@ export default function IconLabelButtons(props) {
         <CustomTooltip disableGpu={true} title={`Add new object at the end of the table`}>
           {props.whichDevice === "desktop" ?
             <StyledButton
+              color={"primary"}
               disableElevation={true}
               onClick={() => props.insertRow(0,0)}
               startIcon={<AddIcon />}
-              themeVariant={"primary"}
-              variant={"contained"}
               style={style}
+              variant={"contained"}
             >
             Add object
             </StyledButton>
-          : <StyledButton
-              isIcon={true}
+          : <StyledIconButton
               onClick={() => props.insertRow(0,0)}
               style={style}
             >
               <AddIcon />
-            </StyledButton>
+            </StyledIconButton>
         }
         </CustomTooltip>
 
         <CustomTooltip disableGpu={true} title={`Delete selected objects`}>
           {props.whichDevice === "desktop" ?
             <StyledButton
+              color={"primary"}
               disableElevation={true}
               onClick={() => props.deleteRow()}
               startIcon={<DeleteIcon />}
-              themeVariant={"primary"}
-              variant={"contained"}
               style={style}
+              variant={"contained"}
             >
               Delete Selected
             </StyledButton>
-          : <StyledButton
-              isIcon={true}
+          : <StyledIconButton
               onClick={() => props.deleteRow()}
               style={style}
             >
               <DeleteIcon />
-            </StyledButton>
+            </StyledIconButton>
         }
         </CustomTooltip>
 
         <CustomTooltip disableGpu={true} title={`Add new attribute`}>
         {props.whichDevice === "desktop" ?
           <StyledButton
+            color={"primary"}
             disableElevation={true}
             onClick={() => props.onAddAttribute()}
             startIcon={<AddIcon />}
-            themeVariant={"primary"}
-            variant={"contained"}
             style={style}
+            variant={"contained"}
           >
             Add attribute
           </StyledButton>
-          : <StyledButton
-              isIcon={true}
+          : <StyledIconButton
               onClick={() => props.onAddAttribute()}
               style={style}
             >
               <AddIcon />
-            </StyledButton>
+            </StyledIconButton>
           }
         </CustomTooltip>
 
         <CustomTooltip disableGpu={true} title={`Edit attributes`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
+              color={"primary"}
               disableElevation={true}
               onClick={() => props.onEditAttributes()}
               startIcon={<EditIcon />}
-              themeVariant={"primary"}
-              variant={"contained"}
               style={style}
+              variant={"contained"}
             >
               Edit attributes
             </StyledButton>
-          : <StyledButton
-              isIcon={true}
+          : <StyledIconButton
               onClick={() => props.onEditAttributes()}
               style={style}
             >
               <EditIcon />
-            </StyledButton>
+            </StyledIconButton>
           }
         </CustomTooltip>
 
         <CustomTooltip disableGpu={true} title={`Save objects (data) and attributes (metadata) to files`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
+              color={"primary"}
               disableElevation={true}
               onClick={() => props.saveToFileDialog()}
               startIcon={<SaveAltIcon />}
-              themeVariant={"primary"}
-              variant={"contained"}
               style={style}
+              variant={"contained"}
             >
               Save to file
             </StyledButton>
-          : <StyledButton
-              isIcon={true}
+          : <StyledIconButton
               onClick={() => props.saveToFileDialog()}
               style={style}
             >
               <SaveAltIcon />
-            </StyledButton>
+            </StyledIconButton>
           }
         </CustomTooltip>
 
@@ -144,70 +139,67 @@ export default function IconLabelButtons(props) {
           (domain), it can be binarized, depending on user’s choice.`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
+              color={"primary"}
               disableElevation={true}
               onClick={() => props.openOnTransform()}
               startIcon={<TransformIcon />}
-              themeVariant={"primary"}
-              variant={"contained"}
               style={style}
+              variant={"contained"}
             >
               Transform
             </StyledButton>
-        :   <StyledButton
-              isIcon={true}
+        :   <StyledIconButton
               onClick={() => props.openOnTransform()}
               style={style}
             >
               <TransformIcon />
-            </StyledButton>
+            </StyledIconButton>
             }
         </CustomTooltip>
 
         <CustomTooltip disableGpu={true} title={`Undo changes`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
+              color={"primary"}
+              disabled={props.historySnapshot <= 0}
               disableElevation={true}
               onClick={() => props.onBack()}
               startIcon={<UndoIcon />}
-              themeVariant={"primary"}
-              variant={"contained"}
               style={style}
-              disabled={props.historySnapshot <= 0}
+              variant={"contained"}
             >
               Undo
             </StyledButton>
-        :   <StyledButton
-              isIcon={true}
+        :   <StyledIconButton
+              disabled={props.historySnapshot <= 0}
               onClick={() => props.onBack()}
               style={style}
-              disabled={props.historySnapshot <= 0}
             >
               <UndoIcon />
-            </StyledButton>
+            </StyledIconButton>
             }
         </CustomTooltip>
 
         <CustomTooltip disableGpu={true} title={`Redo changes`}>
         {props.whichDevice === "desktop" ?
             <StyledButton
+              color={"primary"}
+              disabled={props.historyLength-props.historySnapshot <= 1}
               disableElevation={true}
               onClick={() => props.onRedo()}
               startIcon={<RedoIcon />}
-              themeVariant={"primary"}
-              variant={"contained"}
               style={style}
-              disabled={props.historyLength-props.historySnapshot <= 1}
+              variant={"contained"}
             >
               Redo
             </StyledButton>
-        :   <StyledButton
-              isIcon={true}
+        :   <StyledIconButton
+              disabled={props.historyLength-props.historySnapshot <= 1}
               onClick={() => props.onRedo()}
               style={style}
-              disabled={props.historyLength-props.historySnapshot <= 1}
             >
               <RedoIcon />
-            </StyledButton>
+            </StyledIconButton>
             }
         </CustomTooltip>
 

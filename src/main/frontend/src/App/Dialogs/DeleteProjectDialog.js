@@ -104,12 +104,8 @@ class DeleteProjectDialog extends PureComponent {
                     />
                 </SimpleContent>
                 <DialogActions>
-                    <Cancel onClick={this.onCancelClick} themeVariant={"primary"} />
-                    <Accept
-                        disabled={!correct}
-                        onClick={this.onDeleteClick}
-                        themeVariant={"secondary"}
-                    >
+                    <Cancel color={"primary"} onClick={this.onCancelClick} />
+                    <Accept color={"secondary"} disabled={!correct} onClick={this.onDeleteClick}>
                         Delete
                     </Accept>
                 </DialogActions>
