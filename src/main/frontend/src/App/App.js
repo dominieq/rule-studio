@@ -31,9 +31,10 @@ class App extends Component {
             darkTheme: true,
             serverBase: "http://localhost:8080",
             open: {
-                settingsDialog: false,
+                deleteDialog: false,
+                importDialog: false,
                 renameDialog: false,
-                deleteDialog: false
+                settingsDialog: false
             },
             alertProps: undefined
         };
@@ -252,6 +253,10 @@ class App extends Component {
         }
     };
 
+    onSaveProject = () => {
+        console.log("Saving project");
+    };
+
     onSettingsDialogClose = (newSettings) => {
         if (newSettings && Object.keys(newSettings).length) {
             this.setState(({currentProject, projects, open}) => ({
@@ -373,9 +378,8 @@ class App extends Component {
     };
 
     render() {
-        const {currentProject, projects, indexOptions, open, serverBase, alertProps} = this.state;
-        const {renameDialog, deleteDialog, settingsDialog} = open;
-        const showSnackbarNormally = !renameDialog || !deleteDialog || !settingsDialog;
+        const { currentProject, projects, indexOptions, open, serverBase, alertProps } = this.state;
+        const { renameDialog, deleteDialog, settingsDialog } = open;
 
         return (
             <MuiThemeProvider theme={this.state.darkTheme ? DarkTheme : LightTheme}>
@@ -389,6 +393,7 @@ class App extends Component {
                         currentProject={currentProject + 1}
                         onProjectClick={this.onCurrentProjectChange}
                         onDialogOpen={this.onDialogOpen}
+                        onSaveProject={this.onSaveProject}
                         projects={["Select your project", ...projects]}
                     />
                 </Header>
@@ -415,34 +420,33 @@ class App extends Component {
                             />,
                     }[this.state.body]
                 }
-                <RenameProjectDialog
-                    currentName={currentProject >= 0 ?
-                        projects[currentProject].result.name : ""
-                    }
-                    open={renameDialog}
-                    onClose={this.onRenameDialogClose}
-                >
-                    {renameDialog && <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />}
-                </RenameProjectDialog>
-                <SettingsProjectDialog
-                    open={settingsDialog}
-                    onClose={this.onSettingsDialogClose}
-                    indexOptions={indexOptions}
-                    settings={currentProject >= 0 ?
-                        {...projects[currentProject].settings} : null
-                    }
-                />
-                <DeleteProjectDialog
-                    currentName={currentProject >= 0 ?
-                        projects[currentProject].result.name : ""
-                    }
-                    open={deleteDialog}
-                    onClose={this.onDeleteDialogClose}
-                />
-                {showSnackbarNormally && <StyledAlert {...alertProps} onClose={this.onSnackbarClose}/>}
+                {currentProject >= 0 &&
+                    <React.Fragment>
+                        <RenameProjectDialog
+                            currentName={projects[currentProject].result.name}
+                            open={renameDialog}
+                            onClose={this.onRenameDialogClose}
+                        />
+                        <SettingsProjectDialog
+                            indexOptions={indexOptions}
+                            open={settingsDialog}
+                            onClose={this.onSettingsDialogClose}
+                            settings={{ ...projects[currentProject].settings }}
+                        />
+                        <DeleteProjectDialog
+                            currentName={projects[currentProject].result.name}
+                            open={deleteDialog}
+                            onClose={this.onDeleteDialogClose}
+                        />
+                    </React.Fragment>
+                }
+                <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
                 {this.state.loading &&
                     <LoadingDelay>
-                        <LoadingSnackbar message={this.state.loadingTitle} open={this.state.loading} />
+                        <LoadingSnackbar
+                            message={this.state.loadingTitle}
+                            open={this.state.loading}
+                        />
                     </LoadingDelay>
                 }
             </MuiThemeProvider>
