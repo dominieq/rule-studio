@@ -20,7 +20,7 @@ import { withStyles, createStyles } from '@material-ui/core/styles';
 import { DraggableHeader } from 'react-data-grid-addons';
 import PropTypes from 'prop-types';
 import CustomLoadingIcon from './CustomLoadingIcon';
-import StyledButton from '../../../Utils/Inputs/StyledButton';
+import { StyledButton } from '../../../Utils/Inputs/StyledButton';
 import NumericFilter from './NumericFilter';
 import AttributesVirtualizedTable from './AttributesVirtualizedTable';
 import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
@@ -2623,8 +2623,8 @@ class DisplayData extends React.Component {
                         }  
                     </DialogContent>
                     <DialogActions>
-                        <StyledButton onClick={this.closeOnAddAttribute} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
-                        <StyledButton type="submit" themeVariant={"primary"} variant={"outlined"} disabled={false}> Apply </StyledButton>
+                        <StyledButton color={"secondary"} onClick={this.closeOnAddAttribute} variant={"outlined"}> Cancel </StyledButton>
+                        <StyledButton color={"primary"} disabled={false} type="submit" variant={"outlined"}> Apply </StyledButton>
                     </DialogActions>
                     </form>
                 </SimpleDialog>
@@ -2658,8 +2658,8 @@ class DisplayData extends React.Component {
                         }    
                     </DialogContent>
                     <DialogActions>
-                        <StyledButton onClick={this.closeOnEditAttributes} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
-                        <StyledButton type="submit" themeVariant={"primary"} variant={"outlined"} disabled={this.state.editAttributeSelected === ''}> Apply </StyledButton>
+                        <StyledButton color={"secondary"} onClick={this.closeOnEditAttributes} variant={"outlined"}> Cancel </StyledButton>
+                        <StyledButton color={"primary"}  disabled={this.state.editAttributeSelected === ''} type="submit" variant={"outlined"}> Apply </StyledButton>
                     </DialogActions>
                     </form>
                 </SimpleDialog>
@@ -2710,8 +2710,8 @@ class DisplayData extends React.Component {
                         </div>
                     </DialogContent>
                     <DialogActions>
-                        <StyledButton onClick={this.closeOnSaveToFile} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
-                        <StyledButton onClick={this.saveToFile} themeVariant={"primary"} variant={"outlined"} autoFocus
+                        <StyledButton color={"secondary"} onClick={this.closeOnSaveToFile} variant={"outlined"}> Cancel </StyledButton>
+                        <StyledButton color={"primary"} onClick={this.saveToFile} variant={"outlined"} autoFocus
                             disabled={!((this.state.saveToFileMetaData && this.state.saveToFileData==='') || (this.state.saveToFileData==='json') ||
                                         (this.state.saveToFileData!=='' && this.state.saveToFileCsvSeparator!==''))}> 
                             Ok 
@@ -2736,8 +2736,8 @@ class DisplayData extends React.Component {
                     </DialogContent>
                     <DialogActions>
 
-                    <StyledButton onClick={this.closeOnTransform} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
-                    <StyledButton onClick={this.onTransformAttributes} themeVariant={"primary"} variant={"outlined"} > Submit </StyledButton>
+                    <StyledButton color={"secondary"} onClick={this.closeOnTransform} variant={"outlined"}> Cancel </StyledButton>
+                    <StyledButton color={"primary"} onClick={this.onTransformAttributes} variant={"outlined"} > Submit </StyledButton>
 
                     </DialogActions>
                 </SimpleDialog>

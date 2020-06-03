@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
 import CustomTooltip from "../Utils/DataDisplay/CustomTooltip";
-import StyledButton from "../Utils/Inputs/StyledButton";
+import { StyledButton, StyledIconButton } from "../Utils/Inputs/StyledButton";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import HomeIcon from "@material-ui/icons/Home";
@@ -23,9 +23,9 @@ function Header(props) {
     return (
         <AppBar classes={{root: classes.root}} color={"default"} position={"sticky"} ref={appBarRef}>
             <Toolbar>
-                <StyledButton color={"inherit"} isIcon={true} name={"home"} onClick={() => onBodyChange("Home")}>
+                <StyledIconButton name={"home"} onClick={() => onBodyChange("Home")}>
                     <HomeIcon />
-                </StyledButton>
+                </StyledIconButton>
                 <StyledButton name={"new project"} onClick={() => onBodyChange("Import")}>
                     New Project
                 </StyledButton>
@@ -34,9 +34,9 @@ function Header(props) {
                     Help
                 </StyledButton>
                 <CustomTooltip title={"Change colors"}>
-                    <StyledButton color={"inherit"} isIcon={true} name={"change colors"} onClick={onColorsChange}>
+                    <StyledIconButton name={"change colors"} onClick={onColorsChange}>
                         <Palette />
-                    </StyledButton>
+                    </StyledIconButton>
                 </CustomTooltip>
             </Toolbar>
         </AppBar>

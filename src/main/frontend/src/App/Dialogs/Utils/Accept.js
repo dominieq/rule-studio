@@ -1,30 +1,20 @@
 import React from "react";
 import PropTypes from "prop-types";
-import StyledButton from "../../../Utils/Inputs/StyledButton";
+import { StyledButton } from "../../../Utils/Inputs/StyledButton";
 
 function Accept(props) {
-    const {children, ...other} = props;
+    const { children, ...other } = props;
 
     return (
-        <StyledButton {...other}>
-            {children}
+        <StyledButton color={"primary"} variant={"outlined"} {...other}>
+            { children == null ? "Ok" : children }
         </StyledButton>
-    )
+    );
 }
 
 Accept.propTypes = {
     children: PropTypes.node,
-    disabled: PropTypes.bool,
-    onClick: PropTypes.func.isRequired,
-    themeVariant: PropTypes.oneOf(["inherit", "primary", "secondary"]),
-    variant: PropTypes.oneOf(["text", "outlined", "contained"])
-};
-
-Accept.defaultProps = {
-    children: "Ok",
-    disabled: true,
-    themeVariant: "primary",
-    variant: "outlined",
+    onClick: PropTypes.func
 };
 
 export default Accept;

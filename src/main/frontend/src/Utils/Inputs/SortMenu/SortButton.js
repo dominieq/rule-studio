@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import CustomTooltip from "../../DataDisplay/CustomTooltip";
-import StyledButton from "../StyledButton";
+import { StyledIconButton } from "../StyledButton";
 import Badge from "@material-ui/core/Badge";
 import Sort from "@material-ui/icons/Sort";
 
@@ -34,14 +34,13 @@ function SortButton(props) {
     return (
         <CustomTooltip title={tooltip} {...TooltipProps}>
             <DotBadge invisible={invisible}>
-                <StyledButton
+                <StyledIconButton
                     aria-label={"sort button"}
-                    isIcon={true}
-                    themeVariant={"secondary"}
+                    color={"secondary"}
                     {...ButtonProps}
                 >
                     { Boolean(icon) ? icon : <Sort /> }
-                </StyledButton>
+                </StyledIconButton>
             </DotBadge>
         </CustomTooltip>
     )

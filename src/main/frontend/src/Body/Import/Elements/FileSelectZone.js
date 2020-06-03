@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip"
 import StyledFileChip from "../../../Utils/DataDisplay/StyledFileChip";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
-import StyledButton from "../../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Typography from "@material-ui/core/Typography";
 import DeleteCircle from "mdi-material-ui/DeleteCircle"
@@ -95,14 +95,13 @@ function FileSelectZone(props)  {
                     id={"upload-" + variant}
                     onChange={onInputChange}
                 >
-                    <StyledButton
+                    <StyledIconButton
                         aria-label={"upload-" + variant}
-                        isIcon={true}
+                        color={"primary"}
                         component={"span"}
-                        themeVariant={"primary"}
                     >
                         <FileUpload/>
-                    </StyledButton>
+                    </StyledIconButton>
                 </CustomUpload>
             </CustomTooltip>
         </div>

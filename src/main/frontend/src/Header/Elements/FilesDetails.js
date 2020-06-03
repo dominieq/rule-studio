@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import CustomPopper from "../../Utils/Surfaces/CustomPopper";
 import CustomTooltip from "../../Utils/DataDisplay/CustomTooltip";
-import StyledButton from "../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../Utils/Inputs/StyledButton";
 import Popper from "@material-ui/core/Popper";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Grow from "@material-ui/core/Grow";
@@ -55,17 +55,16 @@ class FilesDetails extends React.PureComponent {
         return (
             <div>
                 <CustomTooltip title={"Show project's files details"}>
-                    <StyledButton
+                    <StyledIconButton
                         aria-controls={open ? 'files-details' : undefined}
                         aria-expanded={open ? true : undefined}
                         aria-label={"show-files-details"}
                         aria-haspopup={"menu"}
-                        buttonRef={this.anchorRef}
-                        isIcon={true}
+                        ButtonRef={this.anchorRef}
                         onClick={this.onToggleButtonClick}
                     >
                         <FileQuestion />
-                    </StyledButton>
+                    </StyledIconButton>
                 </CustomTooltip>
                 <Popper
                     anchorEl={this.anchorRef.current}
