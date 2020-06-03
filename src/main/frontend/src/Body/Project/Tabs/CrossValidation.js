@@ -43,7 +43,9 @@ class CrossValidation extends Component {
 
         this.state = {
             loading: false,
-            data: null,
+            dataInformationTable: null,
+            dataMeanMatrix: null,
+            dataSumMatrix: null,
             folds: null,
             items: null,
             displayedItems: [],
@@ -87,17 +89,19 @@ class CrossValidation extends Component {
                 let resultParams = parseCrossValidationParams(result);
 
                 this.setState(({parameters, selected}) => ({
-                    data: result,
+                    dataInformationTable: result.informationTable,
+                    dataMeanMatrix: result.meanOrdinalMisclassificationMatrix,
+                    dataSumMatrix: result.sumOrdinalMisclassificationMatrix,
                     folds: folds,
                     parameters: {...parameters, ...resultParams},
                     selected: { ...selected, foldIndex: foldIndex }
                 }), () => {
-                    const { folds, selected: { foldIndex } } = this.state;
-                    let items = parseCrossValidationItems(folds[foldIndex], settings);
+                    const { dataInformationTable, folds, selected: { foldIndex } } = this.state;
+                    let items = parseCrossValidationItems(dataInformationTable, folds[foldIndex], settings);
 
                     this.setState({
                         items: items,
-                        displayedItems: items,
+                        displayedItems: items
                     });
                 });
 
@@ -111,7 +115,9 @@ class CrossValidation extends Component {
             }
             if ( this._isMounted ) {
                 this.setState({
-                    data: null,
+                    dataInformationTable: null,
+                    dataMeanMatrix: null,
+                    dataSumMatrix: null,
                     folds: null,
                     items: null,
                     displayedItems: [],
@@ -238,13 +244,15 @@ class CrossValidation extends Component {
                         let folds = parseFolds(result);
 
                         this.setState(({selected}) => ({
-                            data: result,
+                            dataInformationTable: result.informationTable,
+                            dataMeanMatrix: result.meanOrdinalMisclassificationMatrix,
+                            dataSumMatrix: result.sumOrdinalMisclassificationMatrix,
                             folds: folds,
                             parametersSaved: true,
                             selected: { ...selected, foldIndex: 0 }
                         }), () => {
-                            const { folds, selected: { foldIndex } } = this.state;
-                            let items = parseCrossValidationItems(folds[foldIndex], project.settings);
+                            const { dataInformationTable, folds, selected: { foldIndex } } = this.state;
+                            let items = parseCrossValidationItems(dataInformationTable, folds[foldIndex], project.settings);
 
                             this.setState({
                                 items: items,
@@ -275,7 +283,9 @@ class CrossValidation extends Component {
                 }
                 if ( this._isMounted ) {
                     this.setState({
-                        data: null,
+                        dataInformationTable: null,
+                        dataMeanMatrix: null,
+                        dataSumMatrix: null,
                         folds: null,
                         items: null,
                         displayedItems: [],
@@ -470,8 +480,8 @@ class CrossValidation extends Component {
                 selected: {...selected, foldIndex: Number(event.target.value)},
                 parametersSaved: false
             }), () => {
-                const { folds, selected: { foldIndex }} = this.state;
-                let items = parseCrossValidationItems(folds[foldIndex], project.settings);
+                const { dataInformationTable, folds, selected: { foldIndex }} = this.state;
+                let items = parseCrossValidationItems(dataInformationTable, folds[foldIndex], project.settings);
 
                 this.setState({
                     items: items,
@@ -503,7 +513,18 @@ class CrossValidation extends Component {
     };
 
     render() {
-        const { alertProps, data, folds, displayedItems, loading, open, parameters, selected } = this.state;
+        const {
+            alertProps,
+            dataInformationTable,
+            dataMeanMatrix,
+            dataSumMatrix,
+            folds,
+            displayedItems,
+            loading,
+            open,
+            parameters,
+            selected
+        } = this.state;
         const { project } = this.props;
 
         return (
@@ -673,9 +694,9 @@ class CrossValidation extends Component {
                             }
                         ]}
                     />
-                    {Array.isArray(folds) && Boolean(folds.length) && selected.item !== null &&
+                    {selected.item != null && folds != null &&
                         <ClassifiedObjectDialog
-                            informationTable={folds[selected.foldIndex].trainingTable}
+                            informationTable={dataInformationTable}
                             item={selected.item}
                             onClose={() => this.toggleOpen("details")}
                             open={open.details}
@@ -683,10 +704,10 @@ class CrossValidation extends Component {
                             settings={project.settings}
                         />
                     }
-                    {data !== null &&
+                    {dataMeanMatrix != null && folds != null &&
                         <MatrixDialog
                             disableDeviation={false}
-                            matrix={parseMatrix(data.meanOrdinalMisclassificationMatrix)}
+                            matrix={parseMatrix(dataMeanMatrix)}
                             onClose={() => this.toggleOpen("matrixMean")}
                             open={open.matrixMean}
                             saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
@@ -710,9 +731,9 @@ class CrossValidation extends Component {
                             }
                         />
                     }
-                    {data !== null &&
+                    {dataSumMatrix != null && folds != null &&
                         <MatrixDialog
-                            matrix={parseMatrix(data.sumOrdinalMisclassificationMatrix)}
+                            matrix={parseMatrix(dataSumMatrix)}
                             onClose={() => this.toggleOpen("matrixSum")}
                             open={open.matrixSum}
                             saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
@@ -736,7 +757,7 @@ class CrossValidation extends Component {
                             }
                         />
                     }
-                    {Array.isArray(folds) && Boolean(folds.length) &&
+                    {folds != null &&
                         <MatrixDialog
                             matrix={
                                 parseMatrix(
