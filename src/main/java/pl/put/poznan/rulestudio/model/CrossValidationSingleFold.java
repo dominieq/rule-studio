@@ -1,19 +1,17 @@
 package pl.put.poznan.rulestudio.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.rulelearn.data.InformationTable;
-import org.rulelearn.rules.RuleSetWithCharacteristics;
 
 public class CrossValidationSingleFold {
     private int[] indicesOfTrainingObjects;
     private int[] indicesOfValidationObjects;
-    private RuleSetWithCharacteristics ruleSetWithCharacteristics;
+    private RuLeStudioRuleSet ruLeStudioRuleSet;
     private Classification classificationValidationTable;
 
-    public CrossValidationSingleFold(int[] indicesOfTrainingObjects, int[] indicesOfValidationObjects, RuleSetWithCharacteristics ruleSetWithCharacteristics, Classification classificationValidationTable) {
+    public CrossValidationSingleFold(int[] indicesOfTrainingObjects, int[] indicesOfValidationObjects, RuLeStudioRuleSet ruLeStudioRuleSet, Classification classificationValidationTable) {
         this.indicesOfTrainingObjects = indicesOfTrainingObjects;
         this.indicesOfValidationObjects = indicesOfValidationObjects;
-        this.ruleSetWithCharacteristics = ruleSetWithCharacteristics;
+        this.ruLeStudioRuleSet = ruLeStudioRuleSet;
         this.classificationValidationTable = classificationValidationTable;
     }
 
@@ -34,13 +32,13 @@ public class CrossValidationSingleFold {
     }
 
     @JsonProperty("ruleSet")
-    public RuleSetWithCharacteristics getRuleSetWithCharacteristics() {
-        return ruleSetWithCharacteristics;
+    public RuLeStudioRuleSet getRuLeStudioRuleSet() {
+        return ruLeStudioRuleSet;
     }
 
     @JsonProperty("ruleSet")
-    public void setRuleSetWithCharacteristics(RuleSetWithCharacteristics ruleSetWithCharacteristics) {
-        this.ruleSetWithCharacteristics = ruleSetWithCharacteristics;
+    public void setRuLeStudioRuleSet(RuLeStudioRuleSet ruLeStudioRuleSet) {
+        this.ruLeStudioRuleSet = ruLeStudioRuleSet;
     }
 
     public Classification getClassificationValidationTable() {

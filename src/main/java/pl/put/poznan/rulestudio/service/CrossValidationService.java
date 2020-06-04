@@ -4,7 +4,7 @@ import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.Index2IdMapper;
 import org.rulelearn.data.InformationTable;
-import org.rulelearn.rules.RuleSetWithCharacteristics;
+import org.rulelearn.rules.*;
 import org.rulelearn.sampling.CrossValidator;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
@@ -21,7 +21,6 @@ import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.*;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -54,6 +53,18 @@ public class CrossValidationService {
         }
 
         return indices;
+    }
+
+    private void rearrangeIndicesOfCoveredObject(RuLeStudioRuleSet ruLeStudioRuleSet, int[] indicesOfTrainingObjects) {
+        RuLeStudioRule[] ruLeStudioRules = ruLeStudioRuleSet.getRuLeStudioRules();
+        for(int ruleIndex = 0; ruleIndex < ruLeStudioRules.length; ruleIndex++) {
+            Integer[] indicesOfCoveredObjects = ruLeStudioRules[ruleIndex].getIndicesOfCoveredObjects();
+            for(int listIndex = 0; listIndex < indicesOfCoveredObjects.length; listIndex++) {
+                int oldIndex = indicesOfCoveredObjects[listIndex];
+                int newIndex = indicesOfTrainingObjects[oldIndex];
+                indicesOfCoveredObjects[listIndex] = newIndex;
+            }
+        }
     }
 
     private CrossValidation calculateCrossValidation(InformationTable informationTable, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult, Integer numberOfFolds, Long seed) {
@@ -106,9 +117,11 @@ public class CrossValidationService {
 
             indicesOfTrainingObjects = extractIndices(trainingTable, mainIndex2IdMapper);
             indicesOfValidationObjects = extractIndices(validationTable, mainIndex2IdMapper);
-            Arrays.sort(indicesOfValidationObjects);
 
-            crossValidationSingleFolds[i] = new CrossValidationSingleFold(indicesOfTrainingObjects, indicesOfValidationObjects, ruleSetWithCharacteristics, classificationValidationTable);
+            RuLeStudioRuleSet ruLeStudioRuleSet = new RuLeStudioRuleSet(ruleSetWithCharacteristics);
+            rearrangeIndicesOfCoveredObject(ruLeStudioRuleSet, indicesOfTrainingObjects);
+
+            crossValidationSingleFolds[i] = new CrossValidationSingleFold(indicesOfTrainingObjects, indicesOfValidationObjects, ruLeStudioRuleSet, classificationValidationTable);
 
             //let garbage collector clean memory occupied by i-th fold
             folds.set(i, null);
