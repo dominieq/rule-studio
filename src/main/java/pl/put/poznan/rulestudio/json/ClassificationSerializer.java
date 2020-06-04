@@ -42,8 +42,11 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
 
 
         InformationTable informationTable = classification.getInformationTable();
-        jsonGenerator.writeFieldName("informationTable");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(informationTable));
+
+        if(!classification.isCrossValidation()) {
+            jsonGenerator.writeFieldName("informationTable");
+            jsonGenerator.writeRawValue(mapper.writeValueAsString(informationTable));
+        }
 
         jsonGenerator.writeFieldName("originalDecisions");
         serializeDecisionArray(informationTable.getDecisions(), jsonGenerator);

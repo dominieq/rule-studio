@@ -1,5 +1,6 @@
 package pl.put.poznan.rulestudio.model;
 
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import pl.put.poznan.rulestudio.enums.ClassifierType;
 import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
@@ -10,6 +11,7 @@ import java.util.Arrays;
 
 public class CrossValidation {
     private Integer numberOfFolds;
+    private InformationTable informationTable;
     private CrossValidationSingleFold crossValidationSingleFolds[];
     private OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix;
     private OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix;
@@ -31,6 +33,7 @@ public class CrossValidation {
 
     public CrossValidation(
             Integer numberOfFolds,
+            InformationTable informationTable,
             CrossValidationSingleFold[] crossValidationSingleFolds,
             OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix,
             OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix,
@@ -42,6 +45,7 @@ public class CrossValidation {
             String dataHash) {
 
         this.numberOfFolds = numberOfFolds;
+        this.informationTable = informationTable;
         this.crossValidationSingleFolds = crossValidationSingleFolds;
         this.meanOrdinalMisclassificationMatrix = meanOrdinalMisclassificationMatrix;
         this.sumOrdinalMisclassificationMatrix = sumOrdinalMisclassificationMatrix;
@@ -62,6 +66,14 @@ public class CrossValidation {
 
     public void setNumberOfFolds(Integer numberOfFolds) {
         this.numberOfFolds = numberOfFolds;
+    }
+
+    public InformationTable getInformationTable() {
+        return informationTable;
+    }
+
+    public void setInformationTable(InformationTable informationTable) {
+        this.informationTable = informationTable;
     }
 
     public CrossValidationSingleFold[] getCrossValidationSingleFolds() {
@@ -156,6 +168,7 @@ public class CrossValidation {
     public String toString() {
         return "CrossValidation{" +
                 "numberOfFolds=" + numberOfFolds +
+                ", informationTable=" + informationTable +
                 ", crossValidationSingleFolds=" + Arrays.toString(crossValidationSingleFolds) +
                 ", meanOrdinalMisclassificationMatrix=" + meanOrdinalMisclassificationMatrix +
                 ", sumOrdinalMisclassificationMatrix=" + sumOrdinalMisclassificationMatrix +
