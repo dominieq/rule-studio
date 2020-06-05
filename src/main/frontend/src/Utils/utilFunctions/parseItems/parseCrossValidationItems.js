@@ -1,20 +1,23 @@
 import { getItemName } from "./parseElements";
 
-function parseCrossValidationItems(fold, settings) {
+function parseCrossValidationItems(dataInformationTable, fold, settings) {
     let items = [];
 
     if (fold && Object.keys(fold).length) {
-        for (let i = 0; i < fold.validationTable.objects.length; i++) {
+        const indices = [ ...fold.indicesOfValidationObjects ];
+
+        for (let i = 0; i < indices.length; i++) {
             items.push({
                 id: i,
-                name: getItemName(i, fold.validationTable.objects, settings),
+                name: getItemName(indices[i], dataInformationTable.objects, settings),
                 traits: {
-                    ...fold.validationTable,
+                    attributes: dataInformationTable.attributes,
+                    objects: indices.map(value => dataInformationTable.objects[value]),
                     ...fold.classificationValidationTable.classificationResults[i],
                     originalDecision: fold.classificationValidationTable.originalDecisions[i]
                 },
                 tables: {
-                    indicesOfCoveringRules: fold.classificationValidationTable.indicesOfCoveringRules[i],
+                    indicesOfCoveringRules: fold.classificationValidationTable.indicesOfCoveringRules[i]
                 },
                 toFilter() {
                     return [
@@ -23,7 +26,7 @@ function parseCrossValidationItems(fold, settings) {
                         "suggested decision " + this.traits.suggestedDecision,
                         "certainty " + this.traits.certainty,
                         "covered by " + this.tables.indicesOfCoveringRules.length + " rules"
-                    ]
+                    ];
                 }
             });
         }
