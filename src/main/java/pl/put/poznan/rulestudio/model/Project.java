@@ -3,17 +3,18 @@ package pl.put.poznan.rulestudio.model;
 import org.rulelearn.data.InformationTable;
 import pl.put.poznan.rulestudio.service.RulesService;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Project {
+public class Project implements Serializable {
     private UUID id;
     private String name;
-    private InformationTable informationTable;
+    private transient InformationTable informationTable;
     private DominanceCones dominanceCones;
-    private UnionsWithHttpParameters unions;
-    private RulesWithHttpParameters rules;
-    private Classification classification;
-    private CrossValidation crossValidation;
+    private transient UnionsWithHttpParameters unions;
+    private transient RulesWithHttpParameters rules;
+    private transient Classification classification;
+    private transient CrossValidation crossValidation;
     private String metadataFileName;
     private String dataFileName;
 

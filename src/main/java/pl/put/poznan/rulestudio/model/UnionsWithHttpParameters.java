@@ -3,7 +3,9 @@ package pl.put.poznan.rulestudio.model;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import pl.put.poznan.rulestudio.enums.UnionType;
 
-public class UnionsWithHttpParameters {
+import java.io.Serializable;
+
+public class UnionsWithHttpParameters implements Serializable {
     private UnionsWithSingleLimitingDecision unions;
     private UnionType typeOfUnions;
     private Double consistencyThreshold;
