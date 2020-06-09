@@ -5,7 +5,7 @@ import pl.put.poznan.rulestudio.enums.UnionType;
 
 import java.io.Serializable;
 
-public class UnionsWithHttpParameters implements Serializable {
+public class UnionsWithHttpParameters {
     private UnionsWithSingleLimitingDecision unions;
     private UnionType typeOfUnions;
     private Double consistencyThreshold;

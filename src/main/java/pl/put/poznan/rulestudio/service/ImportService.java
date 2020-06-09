@@ -1,5 +1,6 @@
 package pl.put.poznan.rulestudio.service;
 
+import com.thoughtworks.xstream.XStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 
 @Service
 public class ImportService {
@@ -22,8 +22,8 @@ public class ImportService {
     public Project getImport(MultipartFile importFile) throws IOException, ClassNotFoundException {
         Project project = null;
 
-        ObjectInputStream ois = new ObjectInputStream(importFile.getInputStream());
-        project = (Project)ois.readObject();
+        XStream xStream = new XStream();
+        project = (Project)xStream.fromXML(importFile.getInputStream());
 
         projectsContainer.addProject(project);
         return project;

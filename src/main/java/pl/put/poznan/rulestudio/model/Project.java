@@ -6,15 +6,15 @@ import pl.put.poznan.rulestudio.service.RulesService;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class Project implements Serializable {
+public class Project {
     private UUID id;
     private String name;
-    private transient InformationTable informationTable;
+    private InformationTable informationTable;
     private DominanceCones dominanceCones;
-    private transient UnionsWithHttpParameters unions;
-    private transient RulesWithHttpParameters rules;
-    private transient Classification classification;
-    private transient CrossValidation crossValidation;
+    private UnionsWithHttpParameters unions;
+    private RulesWithHttpParameters rules;
+    private Classification classification;
+    private CrossValidation crossValidation;
     private String metadataFileName;
     private String dataFileName;
 

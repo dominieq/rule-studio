@@ -28,7 +28,7 @@ public class ExportController {
         this.exportService = exportService;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<Resource> getExport(
             @PathVariable("id") UUID id) throws IOException {
         logger.info("Getting export...");
@@ -37,8 +37,7 @@ public class ExportController {
         Resource resource = namedResource.getResource();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " export")
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " export.xml")
                 .body(resource);
     }
 }

@@ -7,10 +7,9 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.dominance.DominanceConeCalculator;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
-public class DominanceCones implements Serializable {
+public class DominanceCones {
     private int numberOfObjects;
 
     @JsonProperty("Positive dominance cone")
