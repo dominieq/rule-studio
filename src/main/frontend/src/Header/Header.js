@@ -42,7 +42,7 @@ function Header(props) {
                 </StyledButton>
                 <StyledButton
                     name={"open project"}
-                    onClick={() => props.onImportOpen}
+                    onClick={props.onImportOpen}
                 >
                     Open Project
                 </StyledButton>

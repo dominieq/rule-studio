@@ -12,27 +12,31 @@ import FileUpload from "mdi-material-ui/FileUpload";
 import styles from "../styles/FileSelectZone.module.css";
 
 const useStyles = makeStyles({
-    tooltip: {
+    multilineTooltip: {
         display: "flex",
         flexDirection: "column",
         '& > *:not(:first-child)': {
             marginTop: "1em"
         }
-    },
-    tooltipTitle: {
-        margin: 0,
-        textAlign: "center"
-    },
-    tooltipDesc: {
-        margin: 0,
-        textAlign: "justify"
     }
-}, {name: "file-select-zone"})
+}, {name: "FileSelectZone"});
 
 function FileSelectZone(props)  {
     const [file, setFile] = useState(null);
+    const {
+        accept,
+        ButtonProps,
+        id,
+        label,
+        LabelProps,
+        multilineTooltip,
+        title,
+        TooltipProps,
+        type,
+        UploadProps
+    } = props;
+
     const classes = useStyles();
-    const { accept, title, variant } = props;
 
     const onInputChange = (event) => {
         if (event.target.files.length !== 1) return;
@@ -40,24 +44,18 @@ function FileSelectZone(props)  {
         const uploadedFile = event.target.files[0];
 
         setFile(uploadedFile);
-        props.onInputChange({
-            file: uploadedFile,
-            type: variant
-        });
+        props.onInputChange({ file: uploadedFile, type: type });
     };
 
     const onInputDelete = () => {
-        props.onInputDelete({
-            file: file,
-            type: variant
-        });
+        props.onInputDelete({ file: file, type: type });
         setFile(null);
     };
 
     return (
         <div className={styles.Root}>
-            <Typography className={styles.Label} style={{marginRight: 8}}>
-                {"Choose " + variant + " file: "}
+            <Typography className={styles.Label} style={{ marginRight: 8 }} {...LabelProps}>
+                {label}
             </Typography>
             {file ?
                 <StyledFileChip
@@ -68,37 +66,26 @@ function FileSelectZone(props)  {
                     size={"small"}
                 />
                 :
-                <Skeleton
-                    animation={"wave"}
-                    width={"100%"}
-                />
+                <Skeleton animation={"wave"} width={"100%"} />
             }
             <CustomTooltip
                 arrow={true}
-                classes={{tooltip: classes.tooltip}}
+                classes={multilineTooltip ? {tooltip: classes.tooltip} : undefined}
                 placement={"right"}
-                title={
-                    <React.Fragment>
-                        <p aria-label={"title"} className={classes.tooltipTitle} >
-                            <b>{"Upload " + variant}</b>
-                        </p>
-                        {title &&
-                            <p aria-label={"desc"} className={classes.tooltipDesc} >
-                                {title}
-                            </p>
-                        }
-                    </React.Fragment>
-                }
+                title={title}
+                {...TooltipProps}
             >
                 <CustomUpload
                     accept={accept}
-                    id={"upload-" + variant}
+                    id={id}
                     onChange={onInputChange}
+                    {...UploadProps}
                 >
                     <StyledIconButton
-                        aria-label={"upload-" + variant}
+                        aria-label={id}
                         color={"primary"}
                         component={"span"}
+                        {...ButtonProps}
                     >
                         <FileUpload/>
                     </StyledIconButton>
@@ -110,14 +97,22 @@ function FileSelectZone(props)  {
 
 FileSelectZone.propTypes = {
     accept: PropTypes.string,
+    ButtonProps: PropTypes.object,
+    id: PropTypes.string,
+    label: PropTypes.string.isRequired,
+    LabelProps: PropTypes.object,
+    multilineTooltip: PropTypes.bool,
     onInputChange: PropTypes.func,
     onInputDelete: PropTypes.func,
-    title: PropTypes.node,
-    variant: PropTypes.oneOf(["metadata", "data", "rules"])
+    title: PropTypes.node.isRequired,
+    TooltipProps: PropTypes.object,
+    type: PropTypes.string.isRequired,
+    UploadProps: PropTypes.object
 };
 
 FileSelectZone.defaultProps = {
-    accept: ".json,.xml,.csv"
+    accept: ".json,.xml,.csv",
+    multilineTooltip: false
 };
 
 export default FileSelectZone;

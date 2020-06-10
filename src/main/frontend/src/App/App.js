@@ -11,6 +11,7 @@ import LoadingDelay from "../Utils/Feedback/LoadingDelay";
 import LoadingSnackbar from "../Utils/Feedback/LoadingSnackbar";
 import StyledAlert from "../Utils/Feedback/StyledAlert";
 import DeleteProjectDialog from "./Dialogs/DeleteProjectDialog";
+import ImportProjectDialog from "./Dialogs/ImportProjectDialog";
 import RenameProjectDialog from "./Dialogs/RenameProjectDialog";
 import SettingsProjectDialog from "./Dialogs/SettingsProjectDialog";
 import {DarkTheme, LightTheme} from "./Themes/Themes";
@@ -257,6 +258,16 @@ class App extends Component {
         console.log("Saving project");
     };
 
+    onUploadProject = (file) => {
+        if (file != null) {
+            console.log(file);
+        }
+
+        this.setState(({open}) => ({
+            open: { ...open, importDialog: false }
+        }));
+    }
+
     onSettingsDialogClose = (newSettings) => {
         if (newSettings && Object.keys(newSettings).length) {
             this.setState(({currentProject, projects, open}) => ({
@@ -379,7 +390,7 @@ class App extends Component {
 
     render() {
         const { currentProject, projects, indexOptions, open, serverBase, alertProps } = this.state;
-        const { renameDialog, deleteDialog, settingsDialog } = open;
+        const { deleteDialog, importDialog, renameDialog, settingsDialog } = open;
 
         return (
             <MuiThemeProvider theme={this.state.darkTheme ? DarkTheme : LightTheme}>
@@ -388,6 +399,7 @@ class App extends Component {
                     appBarRef={this.appBarRef}
                     onBodyChange={this.onBodyChange}
                     onColorsChange={this.onColorsChange}
+                    onImportOpen={() => this.onDialogOpen("importDialog")}
                 >
                     <ProjectMenu
                         currentProject={currentProject + 1}
@@ -440,6 +452,7 @@ class App extends Component {
                         />
                     </React.Fragment>
                 }
+                <ImportProjectDialog onImportProject={this.onUploadProject} open={importDialog} />
                 <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
                 {this.state.loading &&
                     <LoadingDelay>
