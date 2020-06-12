@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { fetchProject, fetchProjects, } from "./fetchFunctions";
-import { exportProject } from "../Utils/utilFunctions/fetchFunctions";
+import { exportProject, importProject } from "../Utils/utilFunctions/fetchFunctions";
 import Header from "../Header/Header";
 import { ProjectMenu } from "../Header/Elements";
 import Help from '../Body/Help/Help';
@@ -271,7 +271,43 @@ class App extends Component {
 
     onUploadProject = (file) => {
         if (file != null) {
-            console.log(file);
+            const { serverBase } = this.state;
+
+            this.setState({
+                loading: true,
+                loadingTitle: "Importing project"
+            }, () => {
+                let data = new FormData();
+                data.append("importFile", file);
+
+                importProject(
+                    serverBase, data
+                ).then(result => {
+                    if (result) {
+                        const indexOptions = this.createNewIndexOptions(result.informationTable.attributes);
+
+                        this.setState(({projects}) => ({
+                            body: "Project",
+                            currentProject: projects.length,
+                            projects: [...projects, new Project(result)],
+                            indexOptions: indexOptions,
+                            alertProps: {
+                                message: `${result.name} has been imported!`,
+                                open: true,
+                                severity: "success"
+                            }
+                        }));
+                    }
+                }).catch(error => {
+                    if (!error.hasOwnProperty("open")) {
+                        console.log(error);
+                    } else {
+                        this.setState({ alertProps: error });
+                    }
+                }).finally(() => {
+                    this.setState({ loading: false, loadingTitle: "" });
+                });
+            });
         }
 
         this.setState(({open}) => ({

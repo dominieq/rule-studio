@@ -7,4 +7,5 @@ export {default as fetchCrossValidation} from "./fetchCrossValidation";
 export {default as fetchData} from "./fetchData";
 export {default as fetchRules} from "./fetchRules";
 export {default as fetchUnions} from "./fetchUnions";
+export {default as importProject} from "./project/importProject";
 export {default as uploadRules} from "./uploadRules";
