@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.put.poznan.rulestudio.enums.ProjectFormat;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 
@@ -19,7 +20,9 @@ public class ImportService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    public Project getImport(MultipartFile importFile) throws IOException, ClassNotFoundException {
+    public Project postImport(MultipartFile importFile) throws IOException {
+        logger.info("ImportFile:\t{}\t{}", importFile.getOriginalFilename(), importFile.getContentType());
+
         Project project = null;
 
         XStream xStream = new XStream();

@@ -15,7 +15,7 @@ import pl.put.poznan.rulestudio.service.ExportService;
 
 import java.util.UUID;
 
-@CrossOrigin
+@CrossOrigin(exposedHeaders = {"Content-Disposition"})
 @RequestMapping("/projects/{id}/export")
 @RestController
 public class ExportController {

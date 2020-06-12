@@ -27,11 +27,11 @@ public class ImportController {
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Project> getImport(
-            @RequestParam(name = "importFile") MultipartFile importFile) throws IOException, ClassNotFoundException {
-        logger.info("Getting import...");
+    public ResponseEntity<Project> postImport(
+            @RequestParam(name = "importFile") MultipartFile importFile) throws IOException {
+        logger.info("Posting import...");
 
-        Project result = importService.getImport(importFile);
+        Project result = importService.postImport(importFile);
 
         logger.info(result.toString());
         return ResponseEntity.ok(result);
