@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import { fetchProject, fetchProjects } from "./fetchFunctions";
+import { fetchProject, fetchProjects, } from "./fetchFunctions";
+import { exportProject } from "../Utils/utilFunctions/fetchFunctions";
 import Header from "../Header/Header";
 import { ProjectMenu } from "../Header/Elements";
 import Help from '../Body/Help/Help';
@@ -255,7 +256,17 @@ class App extends Component {
     };
 
     onSaveProject = () => {
-        console.log("Saving project");
+        const { serverBase, currentProject, projects } = this.state;
+
+        if (currentProject >= 0) {
+            exportProject(serverBase, projects[currentProject].result.id, "xml").catch(error => {
+                if (!error.hasOwnProperty("open")) {
+                    console.log(error);
+                } else {
+                    this.setState({ alertProps: error });
+                }
+            });
+        }
     };
 
     onUploadProject = (file) => {
