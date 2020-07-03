@@ -23,6 +23,18 @@ const titleStyles = makeStyles(theme => ({
 }), {name: "coloured-title"});
 
 
+/**
+ * Renders a node array based on the provided list of objects.
+ *
+ * @constructor
+ * @param props {Object}
+ * @param props.text {Object[]} - The list of objects that represent to be rendered nodes.
+ * @param [props.text[].primary] {number|string} - An element that will be coloured with primary colour.
+ * @param [props.text[].secondary] {number|string} - An element that will be coloured with secondary colour.
+ * @param [props.text[].brackets] {boolean} - If <code>true</code> brackets will be added before and after a node.
+ * @param [props.text[].toString] {function} - Returns a string that represents current object.
+ * @returns {React.ReactNodeArray}
+ */
 function ColouredTitle(props) {
     const { text } = props;
     const titleClasses = titleStyles();

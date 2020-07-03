@@ -26,6 +26,24 @@ const useStyles = makeStyles({
     }
 }, {name: "HoverTooltip"});
 
+/**
+ * The {@link CustomTooltip} component with wrapper element that hides overly long content.
+ * You can override default Typography element that wraps the text property by using the children property.
+ * You can provide your own title (tooltip) for a component by using the tooltipTitle property.
+ *
+ * @constructor
+ * @param props {Object}
+ * @param [props.children] {React.ReactNode} - The content of the component. <br>
+ *     This property is optional and if present will override text property.
+ * @param [props.roundNumbers=true] {boolean} - If <code>true</code> any numbers will have only 2 digits after decimal point.
+ * @param props.text {React.ReactNode} - The content of the component. <br>
+ *     The value from this property is transferred to the tooltip as well.
+ * @param [props.TooltipProps] {Object} - Props applied to the {@link CustomTooltip} element.
+ * @param [props.tooltipTitle] {React.ReactNode} - The title of the component. <br>
+ *     This property is optional and if present will override text property.
+ * @param [props.TypographyProps] {Object} - Props applied to the Typography component.
+ * @returns {React.Component} {@link CustomTooltip}
+ */
 function TextWithHoverTooltip(props) {
     const { children, roundNumbers, TooltipProps, tooltipTitle, TypographyProps } = props;
     let { text } = props;

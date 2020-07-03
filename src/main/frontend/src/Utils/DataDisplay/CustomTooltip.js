@@ -40,6 +40,23 @@ function DefaultWrapper(props, ref) {
 
 const WrapperForwardRef = React.forwardRef(DefaultWrapper);
 
+/**
+ * The Tooltip component from Material-UI library with custom styling.
+ * There is a custom <code>Wrapper</code> element that can hold reference.
+ * This composition enables you to forward children without the ability to hold ref to the Tooltip component.
+ * For full documentation <a href="https://material-ui.com/api/tooltip/"> check out Material-UI docs</a>
+ *
+ * @constructor
+ * @param props {Object} - Any other props will be forwarded to the Tooltip component.
+ * @param [props.classes] {Object} - Override or extend the styles applied to the component.
+ * @param [props.className] {string} - The class name of the Wrapper element.
+ * @param [props.disableGpu=true] {boolean} - If <code>true</code> GPU acceleration will be disabled. <br>
+ *     Disable GPU acceleration to get unblurred tooltip text in Google Chrome.
+ * @param [props.disableMaxWidth=false] {boolean} - If <code>true</code> <code>maxWidth</code> property will be set to "none".
+ * @param [props.WrapperComponent=div] {React.ElementType} - The component used for the wrapper element.
+ * @param [props.WrapperProps] {Object} - Props applied to the <code>Wrapper</code> element.
+ * @returns {React.Component} The Tooltip component from Material-UI library.
+ */
 function CustomTooltip(props) {
     const {
         children,

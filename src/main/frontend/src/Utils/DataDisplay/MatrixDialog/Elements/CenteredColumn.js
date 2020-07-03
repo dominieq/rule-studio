@@ -1,6 +1,22 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+/**
+ * A container that centers auto-sizing child. The outer wrapper element takes care of the width of a child.
+ * It takes all space given by a parent and centers the inner wrapper.
+ * The inner wrapper element takes care of the height of a child. It takes all width given by an outer wrapper.
+ *
+ * @constructor
+ * @param props {Object}
+ * @param props.children {React.ReactNode} - The content of the component.
+ * @param props.height {number|string} - The height of the InnerWrapper. Should be the same as the height of a child.
+ * @param [props.maxWidth=100%] {number|string} - The max-width attribute of the OuterWrapper.
+ * @param [props.minWidth=0%] {number|string} - The min-width attribute of the OuterWrapper.
+ * @param [props.InnerWrapperProps] {Object} - Props applied to the InnerWrapper element.
+ * @param [props.OuterWrapperProps] {Object} - Props applied to the OuterWrapper element.
+ * @param props.width {number|string} - The width of the OuterWrapper. Should be the same as the width of a child.
+ * @returns {React.ReactElement}
+ */
 function CenteredColumn(props) {
     const { children, height, maxWidth, minWidth, InnerWrapperProps, OuterWrapperProps, width } = props;
 

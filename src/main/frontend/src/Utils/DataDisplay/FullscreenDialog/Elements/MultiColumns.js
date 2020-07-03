@@ -13,6 +13,19 @@ const useStyles = makeStyles({
     }
 }, {name: "MultiColumns"});
 
+/**
+ * A component that is going to display an array of elements inside of a 'div'
+ * and assign width property to each one of them.
+ *
+ * @constructor
+ * @param props {Object} - Any other props will be forwarded to 'div' element.
+ * @param [props.children] {React.ReactNode} - The content of the component. <br>
+ *     Preferably, it should be an array of elements.
+ * @param [props.classes] {Object} - Override or extend the styles applied to the component.
+ * @param [props.numberOfColumns=3] {number} - Determines how much space should each column have: <br>
+ *     <code>90% / numberOfColumns</code>.
+ * @returns {React.ReactElement} A 'div' element with content inside of it.
+ */
 function MultiColumns(props) {
     const { classes: propsClasses, numberOfColumns, ...other } = props;
     let classes = useStyles({ number: numberOfColumns });

@@ -88,6 +88,24 @@ HeaderElement.propTypes = {
     component: PropTypes.elementType.isRequired
 };
 
+/**
+ * A component that renders a vertically scrollable header.
+ * This component should be used with a <code>{@link FullscreenDialog}</code> as a root node.
+ * You are able to define your own root node as well as icon and tooltip for <code>CloseButton</code>.
+ *
+ * @constructor
+ * @param props {Object}
+ * @param [props.closeIcon] {React.ReactNode} - An element placed inside of the <code>CloseButton</code> element.
+ * @param [props.CloseButtonProps] {Object} - Props applied to the <code>CloseButton</code> element.
+ * @param [props.CloseTooltipProps] {Object} - Props applied to the <code>CloseButton</code> tooltip.
+ * @param [props.HeaderComponent=HeaderElement] {React.ElementType} - The component used for the root node.
+ * @param [props.HeaderProps] {Object} - Props applied to the root node.
+ * @param props.id {string} - The id of the component.
+ * @param [props.onClose] {function} - Callback fired when the component requests to be closed.
+ * @param [props.optional] {React.ReactNode} - An element placed before <code>CloseButton</code>.
+ * @param [props.title] {React.ReactNode} - The content of the component.
+ * @returns {React.Component}
+ */
 function FullscreenHeader(props) {
     const {
         closeIcon,

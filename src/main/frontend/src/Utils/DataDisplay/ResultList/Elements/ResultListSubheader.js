@@ -51,6 +51,22 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "ResultListSubheader"});
 
+/**
+ * The ListSubheader component from Material-UI library with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/list-subheader/" target="_blank">ListSubheader</a>
+ *  The composition of ListSubheader in RuLeStudio is as follows. There is an array of simple label-value pairs.
+ *  If set visible, there is a helper on the right side.
+ *
+ * @constructor
+ * @param props {Object} - Any other props will be forwarded to the ListSubheader component.
+ * @param [props.children] {Object[]} - The content of the component. An array of simple label-value pairs.
+ * @param props.children[].label {string} - The content of the label inside a pair.
+ * @param props.children[].value {number|string} - The content of the value inside a pair.
+ * @param props.disableHelper {boolean} - If <code>true</code> helper will be visible.
+ * @param props.helper {React.ReactNode} - The content of the helper.
+ * @returns {React.ReactElement} The ListSubheader component from Material-UI library.
+ */
 function ResultListSubheader(props) {
     const { children, disableHelper, helper, ...other } = props;
     const classes = useStyles();

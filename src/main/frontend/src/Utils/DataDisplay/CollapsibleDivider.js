@@ -63,6 +63,16 @@ const dividerStyles = makeStyles(theme => ({
     },
 }), {name: "collapsible-divider"});
 
+/**
+ * A horizontal divider with an arrow button at the beginning.
+ * The arrow is going to point different directions - rightwards or downwards, based on expanded property.
+ *
+ * @constructor
+ * @param props {Object}
+ * @param [props.onClick] {function} - Callback fired when the component was clicked on.
+ * @param [props.expanded] {boolean} - If <code>true</code> the {@link ExpandButton} will be pointing downwards.
+ * @returns {React.ReactElement} A 'div' element.
+ */
 function CollapsibleDivider(props) {
     const {onClick, expanded} = props;
     const classes = dividerStyles();
