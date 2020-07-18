@@ -18,6 +18,17 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "CustomHeader"});
 
+/**
+ * The {@link StyledPaper} component customized as a sticky header.
+ * Styles applied to this component are different than in Material-UI.
+ * "Root" class defines layout of elements inside of the header.
+ * "Sticky" class defines the header as a sticky HTML element.
+ *
+ * @constructor
+ * @param props {Object} - Any other props will be forwarded to the {@link StyledPaper} component.
+ * @param [props.classes] {Object} - Override or extend the styles applied to the component.
+ * @returns {React.ReactElement} - The StyledPaper component customized as a sticky header.
+ */
 function CustomHeader(props) {
     const { classes: propsClasses, className: propsClassName, ...other } = props;
 

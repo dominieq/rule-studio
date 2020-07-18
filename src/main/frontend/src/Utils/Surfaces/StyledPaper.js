@@ -11,6 +11,15 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "StyledPaper"});
 
+/**
+ * The Paper component from Material-UI with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/paper/" target="_blank">Paper</a>.
+ *
+ * @constructor
+ * @param props {Object} - Any other props will be forwarded to the Paper component.
+ * @returns {React.ReactElement} - The Paper component from Material-UI library.
+ */
 function StyledPaper(props) {
     const { classes: propsClasses, paperRef, ...other } = props;
 

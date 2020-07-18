@@ -10,6 +10,15 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "CustomTabs"});
 
+/**
+ * The Tabs component from Material-UI with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/tabs/" target="_blank">Tabs</a>.
+ *
+ * @constructor
+ * @param props {Object} - Any other props will be forwarded to the Tabs component.
+ * @returns {React.ReactElement} - The Tabs component from Material-UI library.
+ */
 function StyledTabs(props) {
     const { classes: propsClasses, ...other } = props;
 
