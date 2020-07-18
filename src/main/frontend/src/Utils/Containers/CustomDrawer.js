@@ -39,8 +39,8 @@ const paperStyles = makeStyles(theme => ({
  *
  * @constructor
  * @param props Any other props are going to be forwarded to the Drawer component.
- * @param props.closeFooter {boolean} If {@code true} a footer with closing button is going to be added at the bottom.
- * @param props.dividers {boolean} If {@code true} horizontal dividers are going to be added between content.
+ * @param props.closeFooter {boolean} If <code>true</code> a footer with closing button is going to be added at the bottom.
+ * @param props.dividers {boolean} If <code>true</code> horizontal dividers are going to be added between content.
  * @param props.id {string} The id of an element. Should be unique within a page.
  * @param props.placeholder {number} A top margin that is going to be applied to Paper component.
  * @returns {React.Component} The Drawer component from Material-UI library.
@@ -102,61 +102,19 @@ function CustomDrawer(props) {
 }
 
 CustomDrawer.propTypes = {
-    /**
-     * @ignore
-     */
     anchor: PropTypes.oneOf(["bottom", "left", "right", "top"]),
-    /**
-     * @ignore
-     */
     children: PropTypes.node,
-    /**
-     * @ignore
-     */
     classes: PropTypes.object,
-    /**
-     * If {@code true} a footer with closing button is going to be added at the bottom.
-     */
     closeFooter: PropTypes.bool,
-    /**
-     * If {@code true} horizontal dividers are going to be added between content.
-     */
     dividers: PropTypes.bool,
-    /**
-     * @ignore
-     */
     elevation: PropTypes.number,
-    /**
-     * The id of an element. Should be unique within a page.
-     */
     id: PropTypes.string,
-    /**
-     * @ignore
-     */
     ModalProps: PropTypes.object,
-    /**
-     * @ignore
-     */
     onClose: PropTypes.func,
-    /**
-     * @ignore
-     */
     open: PropTypes.bool,
-    /**
-     * @ignore
-     */
     PaperProps: PropTypes.object,
-    /**
-     * A top margin that is going to be applied to Paper component.
-     */
     placeholder: PropTypes.number,
-    /**
-     * @ignore
-     */
     SlideProps: PropTypes.object,
-    /**
-     * @ignore
-     */
     transitionDuration: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.shape({
@@ -165,9 +123,6 @@ CustomDrawer.propTypes = {
             exit: PropTypes.number
         })
     ]),
-    /**
-     * @ignore
-     */
     variant: PropTypes.oneOf(["permanent", "persistent", "temporary"])
 };
 
