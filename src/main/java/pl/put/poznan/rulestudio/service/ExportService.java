@@ -1,5 +1,9 @@
 package pl.put.poznan.rulestudio.service;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.thoughtworks.xstream.XStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +45,27 @@ public class ExportService {
                 resource = new InputStreamResource(is);
                 break;
             case JSON:
-                WrongParameterException ex = new WrongParameterException(String.format("Given format of project \"%s\" is not supported.", projectFormat));
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+                objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+                objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+                objectMapper.configure(SerializationFeature.INDENT_OUTPUT, false);
+
+                baos = new ByteArrayOutputStream();
+                try {
+                    objectMapper.writeValue(baos, project);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                is = new ByteArrayInputStream(baos.toByteArray());
+                resource = new InputStreamResource(is);
+                break;
+                /*WrongParameterException ex = new WrongParameterException(String.format("Given format of project \"%s\" is not supported.", projectFormat));
                 logger.error(ex.getMessage());
-                throw ex;
+                throw ex;*/
             case BIN:
-                ex = new WrongParameterException(String.format("Given format of project \"%s\" is not supported.", projectFormat));
+                WrongParameterException ex = new WrongParameterException(String.format("Given format of project \"%s\" is not supported yet.", projectFormat));
                 logger.error(ex.getMessage());
                 throw ex;
             default:

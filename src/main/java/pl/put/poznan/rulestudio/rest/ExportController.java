@@ -41,19 +41,21 @@ public class ExportController {
         switch (projectFormat) {
             case XML:
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " export.xml")
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + ".xml")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_XML_VALUE)
                         .body(resource);
             case JSON:
-                WrongParameterException ex = new WrongParameterException(String.format("Given format of project \"%s\" is not supported.", projectFormat));
-                logger.error(ex.getMessage());
-                throw ex;
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + ".json")
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .body(resource);
             case BIN:
-                ex = new WrongParameterException(String.format("Given format of project \"%s\" is not supported.", projectFormat));
-                logger.error(ex.getMessage());
-                throw ex;
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + ".bin")
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                        .body(resource);
             default:
-                ex = new WrongParameterException(String.format("Given format of project \"%s\" is unrecognized.", projectFormat));
+                WrongParameterException ex = new WrongParameterException(String.format("Given format of project \"%s\" is unrecognized.", projectFormat));
                 logger.error(ex.getMessage());
                 throw ex;
         }
