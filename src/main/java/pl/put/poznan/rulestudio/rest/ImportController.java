@@ -33,7 +33,7 @@ public class ImportController {
 
         Project result = importService.postImport(importFile);
 
-        logger.info(result.toString());
+        logger.debug(result.toString());
         return ResponseEntity.ok(result);
     }
 }
