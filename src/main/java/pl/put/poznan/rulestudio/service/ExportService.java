@@ -44,26 +44,6 @@ public class ExportService {
                 InputStream is = new ByteArrayInputStream(baos.toByteArray());
                 resource = new InputStreamResource(is);
                 break;
-            case JSON:
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
-                objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-                objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-                objectMapper.configure(SerializationFeature.INDENT_OUTPUT, false);
-
-                baos = new ByteArrayOutputStream();
-                try {
-                    objectMapper.writeValue(baos, project);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                is = new ByteArrayInputStream(baos.toByteArray());
-                resource = new InputStreamResource(is);
-                break;
-                /*WrongParameterException ex = new WrongParameterException(String.format("Given format of project \"%s\" is not supported.", projectFormat));
-                logger.error(ex.getMessage());
-                throw ex;*/
             case BIN:
                 WrongParameterException ex = new WrongParameterException(String.format("Given format of project \"%s\" is not supported yet.", projectFormat));
                 logger.error(ex.getMessage());

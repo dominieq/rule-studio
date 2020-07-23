@@ -44,11 +44,6 @@ public class ExportController {
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + ".xml")
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_XML_VALUE)
                         .body(resource);
-            case JSON:
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + ".json")
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .body(resource);
             case BIN:
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + ".bin")
