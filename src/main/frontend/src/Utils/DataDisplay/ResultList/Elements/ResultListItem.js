@@ -52,7 +52,10 @@ const useStyles = makeStyles(theme => ({
  * Between them there is a place for multiple verses that consists of a title and subtitle.
  * Header is made of header itself and a subheader. Caption is made of caption itself and a subcaption.
  *
+ * @name Result List Item
  * @constructor
+ * @category Utils
+ * @subcategory Result List
  * @param props {Object} - Any other props will be forwarded to the ListItem component.
  * @param props.object {Object} - An entity to be displayed inside the ListItem.
  * @param props.object.id {number} - The id of an entity.

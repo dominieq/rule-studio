@@ -24,7 +24,10 @@ const StyledMenu = withStyles(theme => ({
  * It's possible to hide deviations as sometimes they don't provide useful information.
  * All tables are going to be vertically centered. A context menu is going to pop up after right clicking on a matrix.
  *
+ * @name Matrix Dialog
  * @constructor
+ * @category Utils
+ * @subcategory Matrix Dialog
  * @param props {Object}
  * @param [props.cellDimensions] {number|Object} - Dimensions of a cell from the {@link VirtualizedMatrix}.
  * @param props.cellDimensions.x {number} - The width of a matrix cell.

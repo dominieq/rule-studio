@@ -18,7 +18,10 @@ const useStyles = makeStyles(theme => ({
  * The Divider component from Material-UI library. A color and class name properties were added as well as margin.
  * For full documentation <a href="https://material-ui.com/api/divider/">check out Material-UI docs</a>
  *
+ * @name Styled Divider
  * @constructor
+ * @category Utils
+ * @subcategory Data Display
  * @param props {Object} - Any other props will be forwarded to the Divider component.
  * @param [props.className] {string} - The class name of the component.
  * @param [props.color="primary"] {string} - The color of the component.

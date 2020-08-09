@@ -24,7 +24,10 @@ const useStyles = makeStyles(theme => ({
  * "Root" class defines layout of elements inside of the header.
  * "Sticky" class defines the header as a sticky HTML element.
  *
+ * @name Custom Header
  * @constructor
+ * @category Utils
+ * @subcategory Surfaces
  * @param props {Object} - Any other props will be forwarded to the {@link StyledPaper} component.
  * @param [props.classes] {Object} - Override or extend the styles applied to the component.
  * @returns {React.ReactElement} - The StyledPaper component customized as a sticky header.

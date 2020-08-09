@@ -46,7 +46,10 @@ const WrapperForwardRef = React.forwardRef(DefaultWrapper);
  * This composition enables you to forward children without the ability to hold ref to the Tooltip component.
  * For full documentation <a href="https://material-ui.com/api/tooltip/"> check out Material-UI docs</a>
  *
+ * @name Custom Tooltip
  * @constructor
+ * @category Utils
+ * @subcategory Data Display
  * @param props {Object} - Any other props will be forwarded to the Tooltip component.
  * @param [props.classes] {Object} - Override or extend the styles applied to the component.
  * @param [props.className] {string} - The class name of the Wrapper element.

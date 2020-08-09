@@ -57,6 +57,8 @@ const getOrder = (index, value, count, reverse) => {
  * It is possible to have different orientations between two distinct slots.
  *
  * @constructor
+ * @category Utils
+ * @subcategory Navigation
  * @param props {Object}
  * @param [props.children] {React.ReactNode} - The content of the component.
  * @param props.direction {('backward'|'forward')} - The direction of current slide.

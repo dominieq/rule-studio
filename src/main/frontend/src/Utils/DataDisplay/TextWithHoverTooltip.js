@@ -31,7 +31,10 @@ const useStyles = makeStyles({
  * You can override default Typography element that wraps the text property by using the children property.
  * You can provide your own title (tooltip) for a component by using the tooltipTitle property.
  *
+ * @name Text with Hover Tooltip
  * @constructor
+ * @category Utils
+ * @subcategory Data Display
  * @param props {Object}
  * @param [props.children] {React.ReactNode} - The content of the component. <br>
  *     This property is optional and if present will override text property.

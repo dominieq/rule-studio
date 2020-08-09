@@ -22,7 +22,10 @@ const StyledList = withStyles(theme=> ({
  * <a href="https://material-ui.com/api/pagination/" target="_blank">Pagination</a>.
  * There are max 50 items per page. When there are less then 5 elements on a page, upper pagination is hidden.
  *
+ * @name Result List
  * @constructor
+ * @category Utils
+ * @subcategory Result List
  * @param props {Object} - Any other props will be forwarded to the List component.
  * @param [props.children] {Object[]} - The content of the component.
  * @param [props.children[].id] {number} - The id an entity.

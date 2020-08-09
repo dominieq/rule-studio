@@ -26,7 +26,10 @@ const titleStyles = makeStyles(theme => ({
 /**
  * Renders a node array based on the provided list of objects.
  *
+ * @name Coloured Title
  * @constructor
+ * @category Utils
+ * @subcategory Data Display
  * @param props {Object}
  * @param props.text {Object[]} - The list of objects that represent to be rendered nodes.
  * @param [props.text[].primary] {number|string} - An element that will be coloured with primary colour.

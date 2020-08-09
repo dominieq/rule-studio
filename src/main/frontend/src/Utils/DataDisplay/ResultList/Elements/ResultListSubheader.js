@@ -58,7 +58,10 @@ const useStyles = makeStyles(theme => ({
  *  The composition of ListSubheader in RuLeStudio is as follows. There is an array of simple label-value pairs.
  *  If set visible, there is a helper on the right side.
  *
+ * @name Result List Subheader
  * @constructor
+ * @category Utils
+ * @subcategory Result List
  * @param props {Object} - Any other props will be forwarded to the ListSubheader component.
  * @param [props.children] {Object[]} - The content of the component. An array of simple label-value pairs.
  * @param props.children[].label {string} - The content of the label inside a pair.

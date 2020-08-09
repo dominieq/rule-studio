@@ -59,7 +59,10 @@ const tableStyles = makeStyles(theme => ({
  *  <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/AutoSizer.md">AutoSizer</a> and
  *  <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/Column.md">Column</a>.
  *
+ * @name Virtualized Table
  * @constructor
+ * @category Utils
+ * @subcategory Data Display
  * @param props {Object} - Any other props will be forwarded to the Table component.
  * @param [props.classes] {Object} - Override or extend the styles applied to the component.
  * @param props.columns {Object[]} - A data set that is going to be displayed in VirtualizedTable.

@@ -19,7 +19,10 @@ const useStyles = makeStyles(theme => ({
  * Styles applied to this component are different than in Material-UI.
  * "Popper" defines colors of the element.
  *
+ * @name Custom Popper
  * @constructor
+ * @category Utils
+ * @subcategory Surfaces
  * @param props {Object} - Any other props will be forwarded to the Paper component.
  * @param [props.classes] {Object} - Override or extend the styles applied to the component.
  * @returns {React.ReactElement} - The Paper component from Material-UI library.

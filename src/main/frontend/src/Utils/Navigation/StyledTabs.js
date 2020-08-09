@@ -15,7 +15,10 @@ const useStyles = makeStyles(theme => ({
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/tabs/" target="_blank">Tabs</a>.
  *
+ * @name Styled Tabs
  * @constructor
+ * @category Utils
+ * @subcategory Navigation
  * @param props {Object} - Any other props will be forwarded to the Tabs component.
  * @returns {React.ReactElement} - The Tabs component from Material-UI library.
  */

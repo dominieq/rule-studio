@@ -4,6 +4,8 @@
  * User settings are also stored inside project.
  *
  * @constructor
+ * @category Utils
+ * @subcategory Classes
  * @param {Object} result An object received from server with data and calculation results.
  */
 class Project {

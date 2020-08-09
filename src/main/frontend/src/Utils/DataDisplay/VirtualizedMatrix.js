@@ -81,7 +81,10 @@ export const estimateMatrixWidth = (matrix, cellWidth = 64) => {
  * <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/MultiGrid.md">MultiGrid</a> and
  * <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/AutoSizer.md">AutoSizer</a>.
  *
+ * @name Virtualized Matrix
  * @constructor
+ * @category Utils
+ * @subcategory Data Display
  * @param props {Object}
  * @param [props.cellDimensions=64] {number|Object} - Dimensions of a cell from the MultiGrid.
  * @param [props.matrix] {Array[]} - A data set that is going to be displayed inside of the matrix.

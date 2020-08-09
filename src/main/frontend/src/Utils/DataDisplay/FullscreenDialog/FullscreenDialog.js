@@ -18,7 +18,10 @@ const paperStyles = makeStyles(theme => ({
  * The Dialog component from Material-UI with Slide transition and different background color.
  * For full documentation <a href="https://material-ui.com/api/dialog/">check out Material-UI docs</a>
  *
+ * @name Fullscreen Dialog
  * @constructor
+ * @category Utils
+ * @subcategory Fullscreen Dialog
  * @param props {Object} Any other props will be forwarded to the Dialog component.
  * @returns {React.Component} The Dialog component from Material-UI library.
  */

@@ -26,7 +26,10 @@ const useStyles = makeStyles(theme => ({
  * The content is going to be displayed inside of a 'div' element.
  * You can apply special class name to the 'div' element (it customizes scrollbar if it's visible).
  *
+ * @name Custom Box
  * @constructor
+ * @category Utils
+ * @subcategory Containers
  * @param props {Object} Any other props will be forwarded to 'div' element.
  * @param props.children {React.ReactNode} The content of the component.
  * @param props.className {string} The class name of the component.

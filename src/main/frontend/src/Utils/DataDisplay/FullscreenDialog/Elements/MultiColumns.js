@@ -17,7 +17,10 @@ const useStyles = makeStyles({
  * A component that is going to display an array of elements inside of a 'div'
  * and assign width property to each one of them.
  *
+ * @name Multi Columns
  * @constructor
+ * @category Utils
+ * @subcategory Fullscreen Dialog
  * @param props {Object} - Any other props will be forwarded to 'div' element.
  * @param [props.children] {React.ReactNode} - The content of the component. <br>
  *     Preferably, it should be an array of elements.

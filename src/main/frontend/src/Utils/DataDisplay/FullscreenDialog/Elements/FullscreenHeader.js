@@ -93,7 +93,10 @@ HeaderElement.propTypes = {
  * This component should be used with a <code>{@link FullscreenDialog}</code> as a root node.
  * You are able to define your own root node as well as icon and tooltip for <code>CloseButton</code>.
  *
+ * @name Fullscreen Header
  * @constructor
+ * @category Utils
+ * @subcategory Fullscreen Dialog
  * @param props {Object}
  * @param [props.closeIcon] {React.ReactNode} - An element placed inside of the <code>CloseButton</code> element.
  * @param [props.CloseButtonProps] {Object} - Props applied to the <code>CloseButton</code> element.
