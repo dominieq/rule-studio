@@ -1,3 +1,11 @@
+/**
+ * Compares property values from sorted objects.
+ *
+ * @memberOf Sort Menu
+ * @param key {string} - The value of a property from sorted objects.
+ * @param [order="asc"] {"asc"|"desc"} - The order of sorting.
+ * @returns {function} - The function that compares objects.
+ */
 function compareValues(key, order = "asc") {
     return function innerSort(a, b) {
         if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {

@@ -34,6 +34,22 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "MuiSlider"});
 
+/**
+ * The Slider component from Material-UI library with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/slider/" target="_blank">Slider</a>.
+ * <br>
+ * Style was taken from this
+ * <a href="https://material-ui.com/components/slider/#customized-sliders" target="_blank">tutorial</a>
+ * with some changes.
+ *
+ * @name Styled Slider
+ * @constructor
+ * @category Utils
+ * @subcategory Inputs
+ * @param props {Object} - Any other props will be forwarded to the Slider component.
+ * @returns {React.ReactElement} - The Slider component from Material-UI library.
+ */
 function StyledSlider(props) {
     const {...other} = props;
     const classes = useStyles();

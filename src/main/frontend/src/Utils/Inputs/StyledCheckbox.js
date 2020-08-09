@@ -14,6 +14,18 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "CustomCheckbox"});
 
+/**
+ * The CheckBox component from Material-UI library with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/checkbox/" target="_blank">CheckBox</a>.
+ *
+ * @name Styled Checkbox
+ * @constructor
+ * @category Utils
+ * @subcategory Inputs
+ * @param props {Object} - Any other props will be forwarded to the CheckBox component.
+ * @returns {React.ReactElement} - The CheckBox component from Material-UI library.
+ */
 function StyledCheckbox(props) {
     const { classes: propsClasses, inputProps, ...other } = props;
     let classes = useStyles();

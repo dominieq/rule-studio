@@ -56,6 +56,28 @@ const virtualStyles = makeStyles(theme => ({
     }
 }), {name: "CategoriesBox"});
 
+/**
+ * The Menu component that displays categories and orders to sort by.
+ * Categories are stored inside a virtualized list.
+ *
+ * @name Sort Menu
+ * @constructor
+ * @category Utils
+ * @subcategory Sort Menu
+ * @param props {Object} - Any other props will be forwarded to the Menu component.
+ * @param [props.ContentProps] {Object} - Props applied to content elements.
+ * @param [props.ContentProps.categories] {Object[]} - The array of categories to sort by.
+ * @param [props.ContentProps.categories[].label] {string} - The label of a category.
+ * @param [props.ContentProps.categories[].value] {string} - The value of a category.
+ * @param [props.ContentProps.chooseOrder] {boolean} - If <code>true</code> choosing order will be enabled.
+ * @param [props.ContentProps.onCategoryChange] {function} - The callback fired when category was changed.
+ * @param [props.ContentProps.onOrderChange] {function} - The callback fired when order was changed.
+ * @param [props.ContentProps.order] - The currently selected order.
+ * @param [props.ContentProps.RadioComponent] - The component used to render radio button elements.
+ * @param [props.ContentProps.rowHeight] - The height of a row in the virtualized radio button group.
+ * @param [props.ContentProps.value] - The currently selected category.
+ * @returns {React.ReactElement} - The sort menu with order and categories displayed as radio button groups
+ */
 function SortMenu(props) {
     const { anchorE1, ContentProps, ...other } = props;
     const rowCount = ContentProps.categories.length;
