@@ -41,6 +41,19 @@ const StyledDialog = withStyles(theme => ({
     }
 }), {name: "CSVDialog"})(props => <Dialog {...props} />);
 
+/**
+ * Allows user to choose properties for uploaded CSV file.
+ * User can choose delimiter and check header.
+ *
+ * @name CSV Dialog
+ * @constructor
+ * @category Utils
+ * @subcategory Feedback
+ * @param props {Object}
+ * @param [props.onConfirm] {function} - Callback fired when the dialog requests to be closed.
+ * @param props.open {boolean} - If <code>true</code> the dialog will show up.
+ * @returns {React.ReactElement}
+ */
 class CSVDialog extends React.PureComponent {
     constructor(props) {
         super(props);

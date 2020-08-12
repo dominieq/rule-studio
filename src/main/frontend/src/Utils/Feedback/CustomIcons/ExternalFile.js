@@ -15,6 +15,17 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "ExternalFile"});
 
+/**
+ * Used to signal that results shown in a particular tab are from an external source.
+ *
+ * @name External File
+ * @constructor
+ * @category Utils
+ * @subcategory Feedback
+ * @param props {Object} - Any other props will be forwarded to the {@link CustomTooltip} element.
+ * @param [props.IconProps] - Props applied to the icon element.
+ * @returns {React.ReactElement}
+ */
 function ExternalFile(props) {
     const { classes: propsClasses, IconProps, ...other } = props;
 

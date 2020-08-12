@@ -3,6 +3,16 @@ import PropTypes from "prop-types";
 import AlertBadge from "../AlertBadge";
 import AlertCircle from "mdi-material-ui/AlertCircle";
 
+/**
+ * Used to signal that results shown in a particular tab are outdated.
+ *
+ * @name Outdated Data
+ * @constructor
+ * @category Utils
+ * @subcategory Feedback
+ * @param props {Object} - All props forwarded to the {@link AlertBadge} element.
+ * @returns {React.ReactElement}
+ */
 function OutdatedData(props) {
     return (
         <AlertBadge

@@ -1,3 +1,11 @@
+/**
+ * Returns appropriate styling for given attribute.
+ *
+ * @category Details Dialog
+ * @subcategory Functions
+ * @param {Object} attribute - An attribute from information table.
+ * @returns {Object} - Style object with background colour and colour.
+ */
 const getAppropriateColor = (attribute) => {
     let style = {
         color: "#000"
