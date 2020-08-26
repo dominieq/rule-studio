@@ -12,6 +12,7 @@ import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.model.DominanceCones;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse;
 
 import java.io.*;
 import java.util.UUID;
@@ -54,7 +55,7 @@ public class DominanceConesService {
         }
     }
 
-    public DominanceCones getDominanceCones(UUID id) {
+    public MainDominanceConesResponse getDominanceCones(UUID id) {
         logger.info("Id:\t{}", id);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
@@ -66,8 +67,9 @@ public class DominanceConesService {
             throw ex;
         }
 
-        logger.debug("dominanceCones:\t{}", dominanceCones.toString());
-        return dominanceCones;
+        MainDominanceConesResponse mainDominanceConesResponse = new MainDominanceConesResponse.MainDominanceConesResponseBuilder().build(dominanceCones);
+        logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
+        return mainDominanceConesResponse;
     }
 
     public DominanceCones putDominanceCones(UUID id) {

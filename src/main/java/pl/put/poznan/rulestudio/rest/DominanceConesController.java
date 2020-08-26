@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.model.DominanceCones;
+import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse;
 import pl.put.poznan.rulestudio.service.DominanceConesService;
 
 import java.io.IOException;
@@ -27,11 +28,11 @@ public class DominanceConesController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DominanceCones> getDominanceCones(
+    public ResponseEntity<MainDominanceConesResponse> getDominanceCones(
             @PathVariable("id") UUID id) {
         logger.info("Getting dominance cones...");
 
-        DominanceCones result = dominanceConesService.getDominanceCones(id);
+        MainDominanceConesResponse result = dominanceConesService.getDominanceCones(id);
 
         return ResponseEntity.ok(result);
     }
