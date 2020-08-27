@@ -76,6 +76,10 @@ public class MainDominanceConesResponse {
         private int[] positiveInverseDominanceConeCounts;
         private int[] negativeInverseDominanceConeCounts;
 
+        public static MainDominanceConesResponseBuilder newInstance() {
+            return new MainDominanceConesResponseBuilder();
+        }
+
         public MainDominanceConesResponseBuilder setNumberOfObjects(int numberOfObjects) {
             this.numberOfObjects = numberOfObjects;
             return this;

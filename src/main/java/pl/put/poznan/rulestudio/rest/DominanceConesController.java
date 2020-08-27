@@ -38,23 +38,23 @@ public class DominanceConesController {
     }
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DominanceCones> putDominanceCones(
+    public ResponseEntity<MainDominanceConesResponse> putDominanceCones(
             @PathVariable("id") UUID id) {
         logger.info("Putting dominance cones...");
 
-        DominanceCones result = dominanceConesService.putDominanceCones(id);
+        MainDominanceConesResponse result = dominanceConesService.putDominanceCones(id);
 
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DominanceCones> postDominanceCones(
+    public ResponseEntity<MainDominanceConesResponse> postDominanceCones(
             @PathVariable("id") UUID id,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting dominance cones...");
 
-        DominanceCones result = dominanceConesService.postDominanceCones(id, metadata, data);
+        MainDominanceConesResponse result = dominanceConesService.postDominanceCones(id, metadata, data);
 
         return ResponseEntity.ok(result);
     }

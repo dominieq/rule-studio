@@ -13,6 +13,7 @@ import pl.put.poznan.rulestudio.model.DominanceCones;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse;
+import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse.MainDominanceConesResponseBuilder;
 
 import java.io.*;
 import java.util.UUID;
@@ -67,23 +68,25 @@ public class DominanceConesService {
             throw ex;
         }
 
-        MainDominanceConesResponse mainDominanceConesResponse = new MainDominanceConesResponse.MainDominanceConesResponseBuilder().build(dominanceCones);
+        MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
         logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
         return mainDominanceConesResponse;
     }
 
-    public DominanceCones putDominanceCones(UUID id) {
+    public MainDominanceConesResponse putDominanceCones(UUID id) {
         logger.info("Id:\t{}", id);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         calculateDominanceCones(project);
 
-        logger.debug("dominanceCones:\t{}", project.getDominanceCones().toString());
-        return project.getDominanceCones();
+        DominanceCones dominanceCones = project.getDominanceCones();
+        MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
+        logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
+        return mainDominanceConesResponse;
     }
 
-    public DominanceCones postDominanceCones(UUID id, String metadata, String data) throws IOException {
+    public MainDominanceConesResponse postDominanceCones(UUID id, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
@@ -96,7 +99,9 @@ public class DominanceConesService {
 
         calculateDominanceCones(project);
 
-        logger.debug("dominanceCones:\t{}", project.getDominanceCones().toString());
-        return project.getDominanceCones();
+        DominanceCones dominanceCones = project.getDominanceCones();
+        MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
+        logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
+        return mainDominanceConesResponse;
     }
 }
