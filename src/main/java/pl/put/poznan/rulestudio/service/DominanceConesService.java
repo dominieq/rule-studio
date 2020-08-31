@@ -6,12 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.put.poznan.rulestudio.enums.ConeType;
 import pl.put.poznan.rulestudio.exception.CalculationException;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
 import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.model.DominanceCones;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.response.ChosenConeResponse;
 import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse;
 import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse.MainDominanceConesResponseBuilder;
 
@@ -103,5 +105,24 @@ public class DominanceConesService {
         MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
         logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
         return mainDominanceConesResponse;
+    }
+
+    public ChosenConeResponse getChosenCone(UUID id, Integer objectId, ConeType coneType) {
+        logger.info("Id:\t{}", id);
+        logger.info("ObjectId:\t{}", objectId);
+        logger.info("ConeTyped:\t{}", coneType);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        DominanceCones dominanceCones = project.getDominanceCones();
+        if(dominanceCones == null) {
+            EmptyResponseException ex = new EmptyResponseException("Dominance cones haven't been calculated.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        ChosenConeResponse chosenConeResponse = ChosenConeResponse.ChosenConeResponseBuilder.newInstance().build(dominanceCones, objectId, coneType);
+        logger.debug("chosenConeResponse:\t{}", chosenConeResponse.toString());
+        return chosenConeResponse;
     }
 }
