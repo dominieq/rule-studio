@@ -1,3 +1,11 @@
+/**
+ * Converts items to list items that will be displayed in {@link ResultList}.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object[]} items - An array of items prepared by {@link parseUnionsItems}.
+ * @returns {Object[]} - An array of list items displayed in {@link ResultList}.
+ */
 function parseUnionsListItems(items) {
     let listItems = [];
 

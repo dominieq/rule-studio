@@ -1,5 +1,14 @@
 import { getRuleName } from "./parseElements";
 
+/**
+ * Converts server response to an array of items. Single item can be displayed in {@link RulesDialog}.
+ * Uses {@link getRuleName} to obtain special name for an item.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object} data - Server response.
+ * @returns {Object[]} - An array of items.
+ */
 function parseRulesItems(data) {
     let items = [];
 

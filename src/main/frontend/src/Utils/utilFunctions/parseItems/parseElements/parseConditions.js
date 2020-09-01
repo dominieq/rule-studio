@@ -1,5 +1,13 @@
 import { getRelationSign } from "../parseDetails";
 
+/**
+ * Converts conditions from server response to conditions used in a rule name.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object[][]} conditions - Conditions from a single rule received from server.
+ * @returns {Object[][]} - An array of conditions.
+ */
 function parseConditions(conditions) {
     let parsed = [];
 

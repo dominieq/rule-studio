@@ -1,5 +1,15 @@
 import { getItemName } from "./parseElements";
 
+/**
+ * Converts server response to an array of items. Single item can be displayed in {@link ClassifiedObjectDialog}.
+ * Uses {@link getItemName} as well as 'settings' to obtain special name for an item.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object} data - Server response.
+ * @param {Object} settings - Project settings.
+ * @returns {Object[]} - An array of items.
+ */
 function parseClassificationItems(data, settings) {
     let items = [];
 

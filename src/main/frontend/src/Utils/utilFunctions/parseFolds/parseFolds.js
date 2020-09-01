@@ -1,3 +1,11 @@
+/**
+ * Retrieves folds from cross-validation results received from server.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object} data - Server response.
+ * @returns {Object[]} - Parsed folds.
+ */
 function parseFolds(data) {
     let folds = [];
 

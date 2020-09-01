@@ -1,3 +1,12 @@
+/**
+ * Converts color in HEX to RGB and adds opacity.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {string} hex - Colour in HEX that will be converted to RGB.
+ * @param {number} opacity - Opacity of a colour that will be added to RGB.
+ * @returns {string} - Colour in RGB.
+ */
 function hexToRgb(hex, opacity) {
     let r = 0, g = 0, b = 0;
     let result;

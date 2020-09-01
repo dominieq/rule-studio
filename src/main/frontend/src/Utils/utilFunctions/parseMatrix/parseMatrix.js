@@ -1,5 +1,13 @@
 const exclude = ["value", "Deviation of value"];
 
+/**
+ * Creates a matrix item to display in {@link MatrixDialog}.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object} matrixObject - The part of a server response containing misclassification matrix.
+ * @returns {Object} - The matrix item displayed in {@link MatrixDialog}.
+ */
 function parseMatrix(matrixObject) {
      let details = {};
 

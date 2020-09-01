@@ -1,6 +1,14 @@
 import { responseBlob } from "../parseResponse";
 import { AlertError } from "../../../Classes";
 
+/**
+ * Downloads data from provided link.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {string} link - The link to download data from.
+ * @throws AlertError
+ */
 async function downloadFunction(link) {
     const response = await fetch(link, {
         method: "GET"

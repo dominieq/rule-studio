@@ -1,6 +1,14 @@
 import parseConditions from "./parseConditions";
 import parseDecisions from "./parseDecisions";
 
+/**
+ * Generates name for rules. Uses {@link parseDecisions} and {@link parseDecisions} to obtain decisions and conditions.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object} rule - A single rule from a rule set.
+ * @returns {Object} - Generated name for provided rule.
+ */
 function getRuleName(rule) {
     return {
         decisions: parseDecisions(rule.decisions),

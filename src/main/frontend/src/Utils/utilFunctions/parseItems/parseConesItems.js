@@ -1,5 +1,16 @@
 import { getItemName } from "./parseElements";
 
+/**
+ * Converts server response to an array of items. Single item can be displayed in {@link ConesDialog}.
+ * Uses {@link getItemName} as well as 'objects' and 'settings' to obtain special name for an item.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object} data - Server response.
+ * @param {Object[]} objects - An 'objects' array from information table obtained from current project.
+ * @param {Object} settings - Project settings.
+ * @returns {Object[]} - An array of items.
+ */
 function parseConesItems(data, objects, settings) {
     let items = [];
 
