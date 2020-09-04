@@ -11,7 +11,7 @@ public class ChosenConeResponse {
 
     private static final Logger logger = LoggerFactory.getLogger(ChosenConeResponse.class);
 
-    IntSortedSet dominanceCone;
+    private IntSortedSet dominanceCone;
 
     private ChosenConeResponse() {
         //empty constructor

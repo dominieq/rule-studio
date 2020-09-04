@@ -16,6 +16,7 @@ import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.response.ChosenConeResponse;
 import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse;
 import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse.MainDominanceConesResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 
 import java.io.*;
 import java.util.UUID;
@@ -124,5 +125,23 @@ public class DominanceConesService {
         ChosenConeResponse chosenConeResponse = ChosenConeResponse.ChosenConeResponseBuilder.newInstance().build(dominanceCones, objectId, coneType);
         logger.debug("chosenConeResponse:\t{}", chosenConeResponse.toString());
         return chosenConeResponse;
+    }
+
+    public ObjectResponse getObject(UUID id, Integer objectId) {
+        logger.info("Id:\t{}", id);
+        logger.info("ObjectId:\t{}", objectId);
+
+        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        DominanceCones dominanceCones = project.getDominanceCones();
+        if(dominanceCones == null) {
+            EmptyResponseException ex = new EmptyResponseException("Dominance cones haven't been calculated.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        ObjectResponse objectResponse = ObjectResponse.ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectId);
+        logger.debug("objectResponse:\t{}", objectResponse.toString());
+        return objectResponse;
     }
 }
