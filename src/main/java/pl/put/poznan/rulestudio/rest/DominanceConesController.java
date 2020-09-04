@@ -62,14 +62,14 @@ public class DominanceConesController {
         return ResponseEntity.ok(result);
     }
 
-    @RequestMapping(value = "/{objectId}/{coneType}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{objectIndex}/{coneType}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChosenConeResponse> getChosenCone(
             @PathVariable("id") UUID id,
-            @PathVariable("objectId") Integer objectId,
+            @PathVariable("objectIndex") Integer objectIndex,
             @PathVariable("coneType") ConeType coneType) {
         logger.info("Getting chosen cone...");
 
-        ChosenConeResponse result = dominanceConesService.getChosenCone(id, objectId, coneType);
+        ChosenConeResponse result = dominanceConesService.getChosenCone(id, objectIndex, coneType);
 
         return ResponseEntity.ok(result);
     }
@@ -77,10 +77,10 @@ public class DominanceConesController {
     @RequestMapping(value = "/object", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ObjectResponse> getObject(
             @PathVariable("id") UUID id,
-            @RequestParam("objectId") Integer objectId) {
+            @RequestParam("objectIndex") Integer objectIndex) {
         logger.info("Getting object from dominance cones...");
 
-        ObjectResponse result = dominanceConesService.getObject(id, objectId);
+        ObjectResponse result = dominanceConesService.getObject(id, objectIndex);
 
         return ResponseEntity.ok(result);
     }

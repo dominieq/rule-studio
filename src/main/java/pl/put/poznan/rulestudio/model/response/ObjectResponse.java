@@ -1,5 +1,6 @@
 package pl.put.poznan.rulestudio.model.response;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.types.Field;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ public class ObjectResponse {
 
     private static final Logger logger = LoggerFactory.getLogger(ObjectResponse.class);
 
+    @JsonValue
     private LinkedHashMap<String, String> value;
 
     private ObjectResponse() {
@@ -49,16 +51,16 @@ public class ObjectResponse {
             return objectResponse;
         }
 
-        public ObjectResponse build(InformationTable informationTable, Integer objectId) {
-            if((objectId < 0) || (objectId >= informationTable.getNumberOfObjects())) {
-                WrongParameterException ex = new WrongParameterException(String.format("Given object id \"%d\" is incorrect. You can choose object from %d to %d", objectId, 0, informationTable.getNumberOfObjects() - 1));
+        public ObjectResponse build(InformationTable informationTable, Integer objectIndex) {
+            if((objectIndex < 0) || (objectIndex >= informationTable.getNumberOfObjects())) {
+                WrongParameterException ex = new WrongParameterException(String.format("Given object's index \"%d\" is incorrect. You can choose object from %d to %d", objectIndex, 0, informationTable.getNumberOfObjects() - 1));
                 logger.error(ex.getMessage());
                 throw ex;
             }
 
             ObjectResponse objectResponse = new ObjectResponse();
 
-            Field[] fields = informationTable.getFields(objectId);
+            Field[] fields = informationTable.getFields(objectIndex);
             objectResponse.value = new LinkedHashMap<>();
             for(int i = 0; i < informationTable.getNumberOfAttributes(); i++) {
                 objectResponse.value.put(informationTable.getAttribute(i).getName(), fields[i].toString());

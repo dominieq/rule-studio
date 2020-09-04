@@ -108,9 +108,9 @@ public class DominanceConesService {
         return mainDominanceConesResponse;
     }
 
-    public ChosenConeResponse getChosenCone(UUID id, Integer objectId, ConeType coneType) {
+    public ChosenConeResponse getChosenCone(UUID id, Integer objectIndex, ConeType coneType) {
         logger.info("Id:\t{}", id);
-        logger.info("ObjectId:\t{}", objectId);
+        logger.info("ObjectIndex:\t{}", objectIndex);
         logger.info("ConeTyped:\t{}", coneType);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
@@ -122,14 +122,14 @@ public class DominanceConesService {
             throw ex;
         }
 
-        ChosenConeResponse chosenConeResponse = ChosenConeResponse.ChosenConeResponseBuilder.newInstance().build(dominanceCones, objectId, coneType);
+        ChosenConeResponse chosenConeResponse = ChosenConeResponse.ChosenConeResponseBuilder.newInstance().build(dominanceCones, objectIndex, coneType);
         logger.debug("chosenConeResponse:\t{}", chosenConeResponse.toString());
         return chosenConeResponse;
     }
 
-    public ObjectResponse getObject(UUID id, Integer objectId) {
+    public ObjectResponse getObject(UUID id, Integer objectIndex) {
         logger.info("Id:\t{}", id);
-        logger.info("ObjectId:\t{}", objectId);
+        logger.info("ObjectIndex:\t{}", objectIndex);
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -140,7 +140,7 @@ public class DominanceConesService {
             throw ex;
         }
 
-        ObjectResponse objectResponse = ObjectResponse.ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectId);
+        ObjectResponse objectResponse = ObjectResponse.ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
         logger.debug("objectResponse:\t{}", objectResponse.toString());
         return objectResponse;
     }

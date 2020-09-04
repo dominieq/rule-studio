@@ -1,5 +1,6 @@
 package pl.put.poznan.rulestudio.model.response;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ public class ChosenConeResponse {
 
     private static final Logger logger = LoggerFactory.getLogger(ChosenConeResponse.class);
 
+    @JsonValue
     private IntSortedSet dominanceCone;
 
     private ChosenConeResponse() {
@@ -48,9 +50,9 @@ public class ChosenConeResponse {
             return chosenConeResponse;
         }
 
-        public ChosenConeResponse build(DominanceCones dominanceCones, Integer objectId, ConeType coneType) {
-            if((objectId < 0) || (objectId >= dominanceCones.getNumberOfObjects())) {
-                WrongParameterException ex = new WrongParameterException(String.format("Given object id \"%d\" is incorrect. You can choose object from %d to %d", objectId, 0, dominanceCones.getNumberOfObjects() - 1));
+        public ChosenConeResponse build(DominanceCones dominanceCones, Integer objectIndex, ConeType coneType) {
+            if((objectIndex < 0) || (objectIndex >= dominanceCones.getNumberOfObjects())) {
+                WrongParameterException ex = new WrongParameterException(String.format("Given object's index \"%d\" is incorrect. You can choose object from %d to %d", objectIndex, 0, dominanceCones.getNumberOfObjects() - 1));
                 logger.error(ex.getMessage());
                 throw ex;
             }
@@ -58,16 +60,16 @@ public class ChosenConeResponse {
             ChosenConeResponse chosenConeResponse = new ChosenConeResponse();
             switch (coneType) {
                 case POSITIVE:
-                    chosenConeResponse.dominanceCone = dominanceCones.getPositiveDCones()[objectId];
+                    chosenConeResponse.dominanceCone = dominanceCones.getPositiveDCones()[objectIndex];
                     break;
                 case NEGATIVE:
-                    chosenConeResponse.dominanceCone = dominanceCones.getNegativeDCones()[objectId];
+                    chosenConeResponse.dominanceCone = dominanceCones.getNegativeDCones()[objectIndex];
                     break;
                 case POSITIVE_INVERTED:
-                    chosenConeResponse.dominanceCone = dominanceCones.getPositiveInvDCones()[objectId];
+                    chosenConeResponse.dominanceCone = dominanceCones.getPositiveInvDCones()[objectIndex];
                     break;
                 case NEGATIVE_INVERTED:
-                    chosenConeResponse.dominanceCone = dominanceCones.getNegativeInvDCones()[objectId];
+                    chosenConeResponse.dominanceCone = dominanceCones.getNegativeInvDCones()[objectIndex];
                     break;
                 default:
                     WrongParameterException ex = new WrongParameterException(String.format("Given type of cone \"%s\" is unrecognized.", coneType));
