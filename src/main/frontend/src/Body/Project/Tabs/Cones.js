@@ -12,6 +12,21 @@ import { ConesDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
+/**
+ * The dominance cones tab in RuLeStudio.
+ * Presents the list of all objects from information table with details about their dominance cones.
+ *
+ * @class
+ * @category Tabs
+ * @subcategory Tabs
+ * @param {Object} props
+ * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
+ * @param {Object} props.project - Current project.
+ * @param {string} props.serverBase - The name of the host.
+ * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
+ * @param {number} props.value - The id of a tab.
+ * @returns {React.Component}
+ */
 class Cones extends Component {
     constructor(props) {
         super(props);
@@ -29,6 +44,13 @@ class Cones extends Component {
         this.upperBar = React.createRef();
     }
 
+    /**
+     * Makes an API call on cones to receive current copy of dominance cones from server.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Cones
+     */
     getData = () => {
         const { project, serverBase } = this.props;
 
@@ -71,12 +93,37 @@ class Cones extends Component {
         });
     }
 
+    /**
+     * A component's lifecycle method. Fired once when component was mounted.
+     * <br>
+     * <br>
+     * Method calls {@link getData}.
+     *
+     * @function
+     * @memberOf Cones
+     */
     componentDidMount() {
         this._isMounted = true;
 
         this.setState({ loading: true }, this.getData);
     }
 
+    /**
+     * A component's lifecycle method. Fired after a component was updated.
+     * <br>
+     * <br>
+     * If index option was changed, method sets object's names according to new value.
+     * <br>
+     * <br>
+     * If project was changed, method saves changes from previous project
+     * and calls {@link getData} to receive the latest copy of dominance cones.
+     *
+     * @function
+     * @memberOf Cones
+     * @param {Object} prevProps - Old props that were already replaced.
+     * @param {Object} prevState - Old state that was already replaced.
+     * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
+     */
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
             const { data } = this.state;
@@ -95,10 +142,23 @@ class Cones extends Component {
         }
     }
 
+    /**
+     * A component's lifecycle method. Fired when component was requested to be unmounted.
+     *
+     * @function
+     * @memberOf Cones
+     */
     componentWillUnmount() {
         this._isMounted = false;
     }
 
+    /**
+     * Makes an API call on cones to generate new dominance cones from current information table.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Cones
+     */
     onCalculateClick = () => {
         const { project, serverBase } = this.props;
 
@@ -152,6 +212,14 @@ class Cones extends Component {
         });
     };
 
+    /**
+     * Filters items from {@link Cones}'s state.
+     * Method uses {@link filterFunction} to filter items.
+     *
+     * @function
+     * @memberOf Cones
+     * @param {Object} event - Represents an event that takes place in DOM.
+     */
     onFilterChange = (event) => {
         const { loading, items } = this.state;
 

@@ -46,6 +46,8 @@ const matrixStyles = makeStyles(theme => ({
  * Estimates a height of a {@link VirtualizedMatrix} for given data.
  *
  * @function
+ * @category Utils
+ * @subcategory Functions
  * @param matrix {Array[]} - A matrix that  is going to be displayed in {@link VirtualizedMatrix}.
  * @param [cellHeight=64] - Height of a cell from the matrix.
  * @returns {number} An estimated height of a matrix.
@@ -62,6 +64,8 @@ export const estimateMatrixHeight = (matrix, cellHeight = 64) => {
  * Estimates a width of a {@link VirtualizedMatrix} for given data.
  *
  * @function
+ * @category Utils
+ * @subcategory Functions
  * @param matrix {Array[]} - A matrix that is going to be displayed in {@link VirtualizedMatrix}.
  * @param [cellWidth=64] {number} - Width of a cell from the matrix.
  * @returns {number} An estimated width of a matrix.

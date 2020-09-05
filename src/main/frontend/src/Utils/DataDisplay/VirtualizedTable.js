@@ -9,6 +9,8 @@ import { AutoSizer, Column, Table } from 'react-virtualized';
  * Estimates height of the VirtualizedTable for given data.
  *
  * @function
+ * @category Utils
+ * @subcategory Functions
  * @param data {Array} - An array of objects that is going to be displayed in {@link VirtualizedTable}.
  * @param [rowHeight=48] {number} - Height of a row from the table.
  * @returns {number} An estimated height of the table.

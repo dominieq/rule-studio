@@ -162,7 +162,11 @@ function RightClickContextMenu({
 /**
  * Component responsible for displaying data i.e. attributes and objects, which are received from
  * the import tab via props (more specifically props.project.informationTable)
+ *
+ * @name Data
  * @class
+ * @category Tabs
+ * @subcategory Tabs
  * @param {Object} props Arguments received from the parent component
  * @param {Object} props.project Holds data about the current project like id, name and everything associated with the project e.g. information table, unions, cones etc.
  * @param {Object} props.project.result.informationTable InformationTable received from the server, holds attributes and objects
