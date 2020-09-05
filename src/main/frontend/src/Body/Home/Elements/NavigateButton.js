@@ -27,15 +27,18 @@ const useStyles = makeStyles(theme => ({
 }), {name: "NavigateButton"});
 
 /**
- * An element that consists of a paragraph and a button wrapped in a tooltip.
+ * An element that consists of a paragraph and a button wrapped around in a tooltip.
  * The purpose of this element is to display a sentence where the navigate button is a part of it
  * and is navigating to something that was mentioned in the sentence.
- * @param {object} props Any other props supplied will be provided to StyledButton element.
- * @param {string} props.buttonText A text that is going to be displayed inside of a button.
- * @param {React.ReactNode} props.introText A text that is going to be displayed before a button.
- * @param {React.ReactNode} props.tooltipText A text that is going to be displayed in a tooltip.
+ *
+ * @class
+ * @category Home
+ * @subcategory Elements
+ * @param {Object} props - Any other props will be forwarded to the {@link StyledButton} element.
+ * @param {string} props.buttonText - The content of the {@link StyledButton} element.
+ * @param {React.ReactNode} props.introText - A text that is displayed before the {@link StyledButton} element.
+ * @param {React.ReactNode} props.tooltipText - The content of the {@link CustomTooltip} element.
  * @returns {React.ReactElement}
- * @constructor
  */
 function NavigateButton(props) {
     const { buttonText, introText, tooltipText, ...other } = props;
@@ -67,25 +70,10 @@ function NavigateButton(props) {
 }
 
 NavigateButton.propTypes = {
-    /**
-     * @ignore
-     */
     "aria-label": PropTypes.string,
-    /**
-     * A text that is going to be displayed inside of a button.
-     */
     buttonText: PropTypes.string,
-    /**
-     * @ignore
-     */
     onClick: PropTypes.func,
-    /**
-     * A text that is going to be displayed before a button.
-     */
     introText: PropTypes.node,
-    /**
-     * A text that is going to be displayed in a tooltip.
-     */
     tooltipText: PropTypes.node
 };
 

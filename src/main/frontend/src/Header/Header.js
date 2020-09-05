@@ -16,6 +16,22 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "CustomAppBar"});
 
+/**
+ * The AppBar and Toolbar components from Material-UI with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/app-bar/" target="_blank">AppBar</a>
+ * and
+ * <a href="https://material-ui.com/api/toolbar/" target="_blank">Toolbar</a>.
+ *
+ * @category Header
+ * @constructor
+ * @param {Object} props
+ * @param {Object} props.appBarRef - A reference object forwarded to the AppBar component.
+ * @param {React.ReactElement} props.children - Should be the {@link ProjectMenu} element.
+ * @param {function} props.onBodyChange - Callback fired when body was changed.
+ * @param {function} props.onColorsChange - Callback fired when colours were changed.
+ * @returns {React.ReactElement}
+ */
 function Header(props) {
     const { appBarRef, children, onBodyChange, onColorsChange } = props;
     const classes = useStyles();
