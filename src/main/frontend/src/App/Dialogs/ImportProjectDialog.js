@@ -75,7 +75,7 @@ class ImportProjectDialog extends React.PureComponent {
                 </DialogTitle>
                 <StyledContent>
                     <FileSelectZone
-                        accept={".xml,.bin"}
+                        accept={".zip"}
                         id={"upload-project"}
                         label={"Choose project file:"}
                         onInputChange={this.onFileChange}
