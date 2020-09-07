@@ -13,6 +13,7 @@ import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.service.ExportService;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @CrossOrigin(exposedHeaders = {"Content-Disposition"})
@@ -32,7 +33,7 @@ public class ExportController {
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Resource> getExport(
             @PathVariable("id") UUID id,
-            @RequestParam("format") ProjectFormat projectFormat) {
+            @RequestParam("format") ProjectFormat projectFormat) throws IOException {
         logger.info("Getting export...");
         NamedResource namedResource = exportService.getExport(id, projectFormat);
         String projectName = namedResource.getName();
@@ -41,8 +42,8 @@ public class ExportController {
         switch (projectFormat) {
             case XML:
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + ".xml")
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_XML_VALUE)
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + ".zip")
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
                         .body(resource);
             case BIN:
                 return ResponseEntity.ok()

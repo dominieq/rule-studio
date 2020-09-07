@@ -1,9 +1,5 @@
 package pl.put.poznan.rulestudio.service;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.thoughtworks.xstream.XStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +14,8 @@ import pl.put.poznan.rulestudio.model.ProjectsContainer;
 
 import java.io.*;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 public class ExportService {
@@ -27,7 +25,7 @@ public class ExportService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    public NamedResource getExport(UUID id, ProjectFormat projectFormat) {
+    public NamedResource getExport(UUID id, ProjectFormat projectFormat) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("ProjectFormat:\t{}", projectFormat);
 
@@ -41,7 +39,25 @@ public class ExportService {
                 XStream xStream = new XStream();
                 xStream.toXML(project, baos);
 
-                InputStream is = new ByteArrayInputStream(baos.toByteArray());
+                logger.info("Size before compressing:\t{} B", baos.size());
+                logger.info("Compressing...");
+
+                InputStream zipIs = new ByteArrayInputStream(baos.toByteArray());
+                ByteArrayOutputStream zipBaos = new ByteArrayOutputStream();
+                ZipOutputStream zipOs = new ZipOutputStream(zipBaos);
+                ZipEntry zipEntry = new ZipEntry(project.getName() + ".xml");
+                zipOs.putNextEntry(zipEntry);
+                byte[] bytes = new byte[1024];
+                int length;
+                while((length = zipIs.read(bytes)) >= 0) {
+                    zipOs.write(bytes, 0, length);
+                }
+                zipOs.closeEntry();
+                zipOs.close();
+
+                logger.info("Size after compressing:\t{} B", zipBaos.size());
+
+                InputStream is = new ByteArrayInputStream(zipBaos.toByteArray());
                 resource = new InputStreamResource(is);
                 break;
             case BIN:

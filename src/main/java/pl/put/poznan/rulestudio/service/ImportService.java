@@ -6,13 +6,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.put.poznan.rulestudio.enums.ProjectFormat;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
+import java.util.zip.ZipInputStream;
 
 @Service
 public class ImportService {
@@ -28,12 +31,30 @@ public class ImportService {
         Project project = null;
 
         try {
-            logger.info("Trying import project from xml file...");
+            logger.info("Trying import project from zip file...");
 
+            logger.info("Size before decompressing:\t{} B", importFile.getSize());
+            logger.info("Decompressing...");
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ZipInputStream zipIs = new ZipInputStream(importFile.getInputStream());
+            zipIs.getNextEntry();
+            byte[] bytes = new byte[1024];
+            int length;
+            while((length = zipIs.read(bytes)) >= 0) {
+                baos.write(bytes, 0, length);
+            }
+            baos.close();
+            zipIs.closeEntry();
+            zipIs.close();
+
+            logger.info("Size after decompressing:\t{} B", baos.size());
+
+            InputStream is = new ByteArrayInputStream(baos.toByteArray());
             XStream xStream = new XStream();
-            project = (Project)xStream.fromXML(importFile.getInputStream());
+            project = (Project)xStream.fromXML(is);
 
-            logger.info("Successfully imported from xml file.");
+            logger.info("Successfully imported from zip file.");
         } catch (RuntimeException eXml) {
             String xmlMessage = new StringBuilder("Failed to import from xml file:\t").append(eXml.getMessage()).toString();
             logger.error(xmlMessage);
