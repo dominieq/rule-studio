@@ -55,28 +55,28 @@ public class ImportService {
             project = (Project)xStream.fromXML(is);
 
             logger.info("Successfully imported from zip file.");
-        } catch (RuntimeException eXml) {
-            String xmlMessage = new StringBuilder("Failed to import from xml file:\t").append(eXml.getMessage()).toString();
-            logger.error(xmlMessage);
+        } catch (RuntimeException eZip) {
+            String zipMessage = new StringBuilder("Failed to import from zip file:\t").append(eZip.getMessage()).toString();
+            logger.error(zipMessage);
 
             try {
-                logger.info("Trying import from binary file...");
+                logger.info("Trying import project from xml file...");
 
-                WrongParameterException exBin = new WrongParameterException("Project import from binary file is not supported yet.");
-                throw exBin;/*
+                XStream xStream = new XStream();
+                project = (Project)xStream.fromXML(importFile.getInputStream());
 
-                logger.info("Successfully imported from binary file.");*/
-            } catch (RuntimeException eBin) {
-                String binMessage = new StringBuilder("Failed to import form binary file:\t").append(eBin.getMessage()).toString();
-                logger.error(binMessage);
+                logger.info("Successfully imported from xml file.");
+            } catch (RuntimeException eXml) {
+                String xmlMessage = new StringBuilder("Failed to import form xml file:\t").append(eXml.getMessage()).toString();
+                logger.error(xmlMessage);
 
                 WrongParameterException ex;
-                if (importFile.getOriginalFilename().endsWith(".xml")) {
+                if (importFile.getOriginalFilename().endsWith(".zip")) {
+                    ex = new WrongParameterException(zipMessage);
+                } else if (importFile.getOriginalFilename().endsWith(".xml")) {
                     ex = new WrongParameterException(xmlMessage);
-                } else if (importFile.getOriginalFilename().endsWith(".bin")) {
-                    ex = new WrongParameterException(binMessage);
                 } else {
-                    ex = new WrongParameterException("Wrong file. File should be written in a valid xml or binary format.");
+                    ex = new WrongParameterException("Wrong file. File should be written in a valid zip or xml format.");
                 }
 
                 throw ex;

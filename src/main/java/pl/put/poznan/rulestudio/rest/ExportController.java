@@ -8,8 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.put.poznan.rulestudio.enums.ProjectFormat;
-import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.service.ExportService;
 
@@ -30,30 +28,16 @@ public class ExportController {
         this.exportService = exportService;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<Resource> getExport(
-            @PathVariable("id") UUID id,
-            @RequestParam("format") ProjectFormat projectFormat) throws IOException {
+            @PathVariable("id") UUID id) throws IOException {
         logger.info("Getting export...");
-        NamedResource namedResource = exportService.getExport(id, projectFormat);
+        NamedResource namedResource = exportService.getExport(id);
         String projectName = namedResource.getName();
         Resource resource = namedResource.getResource();
 
-        switch (projectFormat) {
-            case XML:
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + ".zip")
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                        .body(resource);
-            case BIN:
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + ".bin")
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                        .body(resource);
-            default:
-                WrongParameterException ex = new WrongParameterException(String.format("Given format of project \"%s\" is unrecognized.", projectFormat));
-                logger.error(ex.getMessage());
-                throw ex;
-        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + ".zip")
+                .body(resource);
     }
 }
