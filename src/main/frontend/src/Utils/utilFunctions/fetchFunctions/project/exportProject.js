@@ -1,7 +1,7 @@
 import { downloadFunction } from "../downloadFunction";
 
-async function exportProject(base, projectId, format) {
-    const link = `${base}/projects/${projectId}/export?format=${format}`;
+async function exportProject(base, projectId) {
+    const link = `${base}/projects/${projectId}/export`;
 
     await downloadFunction(link);
 }

@@ -259,7 +259,7 @@ class App extends Component {
         const { serverBase, currentProject, projects } = this.state;
 
         if (currentProject >= 0) {
-            exportProject(serverBase, projects[currentProject].result.id, "xml").catch(error => {
+            exportProject(serverBase, projects[currentProject].result.id).catch(error => {
                 if (!error.hasOwnProperty("open")) {
                     console.log(error);
                 } else {
