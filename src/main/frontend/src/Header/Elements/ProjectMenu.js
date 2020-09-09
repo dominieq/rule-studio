@@ -1,4 +1,4 @@
-import React, { Fragment, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from "@material-ui/core/styles";
 import FilesDetails from "./FilesDetails";
@@ -12,6 +12,7 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import DeleteIcon from "@material-ui/icons/Delete";
 import RenameBox from "mdi-material-ui/RenameBox";
+import SaveAlt from "@material-ui/icons/SaveAlt";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import {mdiCog} from "@mdi/js";
 import styles from "../styles/ProjectMenu.module.css";
@@ -90,9 +91,9 @@ function ProjectMenu(props) {
     };
 
     return (
-        <div aria-label={"project-menu"} className={styles.Root}>
+        <section id={"project-panel"} className={styles.Root}>
             <StyledDivider margin={16} />
-            <List component={"nav"} disablePadding={true}>
+            <List component={"div"} disablePadding={true}>
                 <ListItem
                     aria-controls={"project-menu"}
                     aria-haspopup={"true"}
@@ -151,19 +152,26 @@ function ProjectMenu(props) {
                 </Menu>
             }
             {currentProject > 0 ?
-                <Fragment>
+                <section className={styles.Buttons}>
                     <FilesDetails
                         files={files}
+                        WrapperProps={{ id: "files-details-button" }}
                     />
-                    <CustomTooltip title={"Project settings"}>
+                    <CustomTooltip
+                        title={"Project settings"}
+                        WrapperProps={{ id: "project-settings-button" }}
+                    >
                         <StyledIconButton
-                            aria-label={"project-settings"}
+                            aria-label={"project-settings-button"}
                             onClick={() => props.onDialogOpen("settingsDialog")}
                         >
                             <SvgIcon><path d={mdiCog} /></SvgIcon>
                         </StyledIconButton>
                     </CustomTooltip>
-                    <CustomTooltip title={"Rename project"}>
+                    <CustomTooltip
+                        title={"Rename project"}
+                        WrapperProps={{ id: "rename-project-button" }}
+                    >
                         <StyledIconButton
                             aria-label={"rename-project-button"}
                             onClick={() => props.onDialogOpen("renameDialog")}
@@ -171,20 +179,36 @@ function ProjectMenu(props) {
                             <RenameBox />
                         </StyledIconButton>
                     </CustomTooltip>
-                    <span style={{ flexGrow: 1 }} />
-                    <CustomTooltip title={"Delete project"}>
+                    <CustomTooltip
+                        title={"Save project to ZIP file"}
+                        WrapperProps={{ id: "save-project-button" }}
+                    >
+                        <StyledIconButton
+                            aria-label={"save-project-button"}
+                            onClick={props.onSaveProject}
+                        >
+                            <SaveAlt />
+                        </StyledIconButton>
+                    </CustomTooltip>
+                    <CustomTooltip
+                        title={"Delete project"}
+                        WrapperProps={{
+                            id: "delete-project-button",
+                            style: { marginLeft: "auto" }
+                        }}
+                    >
                         <StyledIconButton
                             aria-label={"delete-project-button"}
                             onClick={() => props.onDialogOpen("deleteDialog")}>
                             <DeleteIcon />
                         </StyledIconButton>
                     </CustomTooltip>
-                </Fragment>
+                </section>
                 :
                 <span style={{ flexGrow: 1 }} />
             }
             <StyledDivider margin={16} />
-        </div>
+        </section>
     );
 }
 
@@ -192,6 +216,7 @@ ProjectMenu.propTypes = {
     currentProject: PropTypes.number,
     onProjectClick: PropTypes.func,
     onDialogOpen: PropTypes.func,
+    onSaveProject: PropTypes.func,
     projects: PropTypes.arrayOf(PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.shape({
