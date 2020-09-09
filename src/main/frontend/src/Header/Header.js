@@ -17,24 +17,48 @@ const useStyles = makeStyles(theme => ({
 }), {name: "CustomAppBar"});
 
 function Header(props) {
-    const { appBarRef, children, onBodyChange, onColorsChange } = props;
     const classes = useStyles();
 
     return (
-        <AppBar classes={{root: classes.root}} color={"default"} position={"sticky"} ref={appBarRef}>
-            <Toolbar>
-                <StyledIconButton name={"home"} onClick={() => onBodyChange("Home")}>
+        <AppBar
+            classes={{root: classes.root}}
+            color={"default"}
+            position={"sticky"}
+            ref={props.appBarRef}
+        >
+            <Toolbar component={"section"}>
+                <StyledIconButton
+                    name={"home"}
+                    onClick={() => props.onBodyChange("Home")}
+                >
                     <HomeIcon />
                 </StyledIconButton>
-                <StyledButton name={"new project"} onClick={() => onBodyChange("Import")}>
+                <StyledButton
+                    name={"new project"}
+                    onClick={() => props.onBodyChange("Import")}
+                    style={{ marginLeft: 8, marginRight: 8 }}
+                >
                     New Project
                 </StyledButton>
-                {children}
-                <StyledButton name={"help"} onClick={() => onBodyChange("Help")}>
+                <StyledButton
+                    name={"open project"}
+                    onClick={props.onImportOpen}
+                >
+                    Open Project
+                </StyledButton>
+                { props.children }
+                <StyledButton
+                    name={"help"}
+                    onClick={() => props.onBodyChange("Help")}
+                    style={{ marginRight: 8 }}
+                >
                     Help
                 </StyledButton>
                 <CustomTooltip title={"Change colors"}>
-                    <StyledIconButton name={"change colors"} onClick={onColorsChange}>
+                    <StyledIconButton
+                        name={"change colors"}
+                        onClick={props.onColorsChange}
+                    >
                         <Palette />
                     </StyledIconButton>
                 </CustomTooltip>
@@ -47,7 +71,8 @@ Header.propTypes = {
     appBarRef: PropTypes.object,
     children: PropTypes.element,
     onBodyChange: PropTypes.func,
-    onColorsChange: PropTypes.func
+    onColorsChange: PropTypes.func,
+    onImportOpen: PropTypes.func
 };
 
 export default Header;

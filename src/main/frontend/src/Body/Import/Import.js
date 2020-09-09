@@ -170,11 +170,13 @@ class Import extends Component{
                     <Collapse in={checked} mountOnEnter={true} unmountOnExit={true}>
                         <div aria-label={"outer collapse"} className={styles.Collapse}>
                             <FileSelectZone
-                                variant={"metadata"}
                                 accept={".json"}
+                                id={"upload-metadata"}
+                                label={"Choose metadata file:"}
                                 onInputChange={this.onInputChange}
                                 onInputDelete={this.onInputDelete}
-                                title={"A file defining structure of attributes"}
+                                title={"Upload metadata"}
+                                type={"metadata"}
                             />
                             <CollapsibleDivider
                                 onClick={this.onExpandClick}
@@ -183,16 +185,22 @@ class Import extends Component{
                             <Collapse in={expand} mountOnEnter={true} unmountOnExit={true}>
                                 <div aria-label={"inner collapse"} className={styles.Collapse}>
                                     <FileSelectZone
-                                        variant={"data"}
                                         accept={".json,.csv"}
+                                        id={"upload-data"}
+                                        label={"Choose data file:"}
                                         onInputChange={this.onInputChange}
                                         onInputDelete={this.onInputDelete}
+                                        title={"Upload data"}
+                                        type={"data"}
                                     />
                                     <FileSelectZone
-                                        variant={"rules"}
                                         accept={".xml"}
+                                        id={"upload-rules"}
+                                        label={"Choose rules file:"}
                                         onInputChange={this.onInputChange}
                                         onInputDelete={this.onInputDelete}
+                                        title={"Upload rules"}
+                                        type={"rules"}
                                     />
                                 </div>
                             </Collapse>

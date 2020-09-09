@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import { fetchProject, fetchProjects } from "./fetchFunctions";
+import { fetchProject, fetchProjects, } from "./fetchFunctions";
+import { exportProject, importProject } from "../Utils/utilFunctions/fetchFunctions";
 import Header from "../Header/Header";
 import { ProjectMenu } from "../Header/Elements";
 import Help from '../Body/Help/Help';
@@ -11,6 +12,7 @@ import LoadingDelay from "../Utils/Feedback/LoadingDelay";
 import LoadingSnackbar from "../Utils/Feedback/LoadingSnackbar";
 import StyledAlert from "../Utils/Feedback/StyledAlert";
 import DeleteProjectDialog from "./Dialogs/DeleteProjectDialog";
+import ImportProjectDialog from "./Dialogs/ImportProjectDialog";
 import RenameProjectDialog from "./Dialogs/RenameProjectDialog";
 import SettingsProjectDialog from "./Dialogs/SettingsProjectDialog";
 import {DarkTheme, LightTheme} from "./Themes/Themes";
@@ -31,9 +33,10 @@ class App extends Component {
             darkTheme: true,
             serverBase: "http://localhost:8080",
             open: {
-                settingsDialog: false,
+                deleteDialog: false,
+                importDialog: false,
                 renameDialog: false,
-                deleteDialog: false
+                settingsDialog: false
             },
             alertProps: undefined
         };
@@ -252,6 +255,66 @@ class App extends Component {
         }
     };
 
+    onSaveProject = () => {
+        const { serverBase, currentProject, projects } = this.state;
+
+        if (currentProject >= 0) {
+            exportProject(serverBase, projects[currentProject].result.id).catch(error => {
+                if (!error.hasOwnProperty("open")) {
+                    console.log(error);
+                } else {
+                    this.setState({ alertProps: error });
+                }
+            });
+        }
+    };
+
+    onUploadProject = (file) => {
+        if (file != null) {
+            const { serverBase } = this.state;
+
+            this.setState({
+                loading: true,
+                loadingTitle: "Importing project"
+            }, () => {
+                let data = new FormData();
+                data.append("importFile", file);
+
+                importProject(
+                    serverBase, data
+                ).then(result => {
+                    if (result) {
+                        const indexOptions = this.createNewIndexOptions(result.informationTable.attributes);
+
+                        this.setState(({projects}) => ({
+                            body: "Project",
+                            currentProject: projects.length,
+                            projects: [...projects, new Project(result)],
+                            indexOptions: indexOptions,
+                            alertProps: {
+                                message: `${result.name} has been imported!`,
+                                open: true,
+                                severity: "success"
+                            }
+                        }));
+                    }
+                }).catch(error => {
+                    if (!error.hasOwnProperty("open")) {
+                        console.log(error);
+                    } else {
+                        this.setState({ alertProps: error });
+                    }
+                }).finally(() => {
+                    this.setState({ loading: false, loadingTitle: "" });
+                });
+            });
+        }
+
+        this.setState(({open}) => ({
+            open: { ...open, importDialog: false }
+        }));
+    }
+
     onSettingsDialogClose = (newSettings) => {
         if (newSettings && Object.keys(newSettings).length) {
             this.setState(({currentProject, projects, open}) => ({
@@ -373,9 +436,8 @@ class App extends Component {
     };
 
     render() {
-        const {currentProject, projects, indexOptions, open, serverBase, alertProps} = this.state;
-        const {renameDialog, deleteDialog, settingsDialog} = open;
-        const showSnackbarNormally = !renameDialog || !deleteDialog || !settingsDialog;
+        const { currentProject, projects, indexOptions, open, serverBase, alertProps } = this.state;
+        const { deleteDialog, importDialog, renameDialog, settingsDialog } = open;
 
         return (
             <MuiThemeProvider theme={this.state.darkTheme ? DarkTheme : LightTheme}>
@@ -384,11 +446,13 @@ class App extends Component {
                     appBarRef={this.appBarRef}
                     onBodyChange={this.onBodyChange}
                     onColorsChange={this.onColorsChange}
+                    onImportOpen={() => this.onDialogOpen("importDialog")}
                 >
                     <ProjectMenu
                         currentProject={currentProject + 1}
                         onProjectClick={this.onCurrentProjectChange}
                         onDialogOpen={this.onDialogOpen}
+                        onSaveProject={this.onSaveProject}
                         projects={["Select your project", ...projects]}
                     />
                 </Header>
@@ -415,34 +479,34 @@ class App extends Component {
                             />,
                     }[this.state.body]
                 }
-                <RenameProjectDialog
-                    currentName={currentProject >= 0 ?
-                        projects[currentProject].result.name : ""
-                    }
-                    open={renameDialog}
-                    onClose={this.onRenameDialogClose}
-                >
-                    {renameDialog && <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />}
-                </RenameProjectDialog>
-                <SettingsProjectDialog
-                    open={settingsDialog}
-                    onClose={this.onSettingsDialogClose}
-                    indexOptions={indexOptions}
-                    settings={currentProject >= 0 ?
-                        {...projects[currentProject].settings} : null
-                    }
-                />
-                <DeleteProjectDialog
-                    currentName={currentProject >= 0 ?
-                        projects[currentProject].result.name : ""
-                    }
-                    open={deleteDialog}
-                    onClose={this.onDeleteDialogClose}
-                />
-                {showSnackbarNormally && <StyledAlert {...alertProps} onClose={this.onSnackbarClose}/>}
+                {currentProject >= 0 &&
+                    <React.Fragment>
+                        <RenameProjectDialog
+                            currentName={projects[currentProject].result.name}
+                            open={renameDialog}
+                            onClose={this.onRenameDialogClose}
+                        />
+                        <SettingsProjectDialog
+                            indexOptions={indexOptions}
+                            open={settingsDialog}
+                            onClose={this.onSettingsDialogClose}
+                            settings={{ ...projects[currentProject].settings }}
+                        />
+                        <DeleteProjectDialog
+                            currentName={projects[currentProject].result.name}
+                            open={deleteDialog}
+                            onClose={this.onDeleteDialogClose}
+                        />
+                    </React.Fragment>
+                }
+                <ImportProjectDialog onImportProject={this.onUploadProject} open={importDialog} />
+                <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
                 {this.state.loading &&
                     <LoadingDelay>
-                        <LoadingSnackbar message={this.state.loadingTitle} open={this.state.loading} />
+                        <LoadingSnackbar
+                            message={this.state.loadingTitle}
+                            open={this.state.loading}
+                        />
                     </LoadingDelay>
                 }
             </MuiThemeProvider>
