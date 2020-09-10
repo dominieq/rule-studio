@@ -19,6 +19,10 @@ import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.ValidityProjectContainer;
+import pl.put.poznan.rulestudio.model.response.ObjectResponse;
+import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse;
+import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse.ObjectsComparisonResponseBuilder;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -297,5 +301,42 @@ public class DataService {
         InputStreamResource resource = produceCsvResource(informationTable, separator, header);
 
         return new NamedResource(project.getName(), resource);
+    }
+
+    public ObjectResponse getObject(UUID id, Integer objectIndex) throws IOException {
+        logger.info("Id:\t" + id);
+        logger.info("ObjectIndex:\t{}", objectIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There are no objects in project. Couldn't get any of them.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        final ObjectResponse objectResponse = ObjectResponseBuilder.newInstance().build(informationTable, objectIndex);
+        logger.debug("objectResponse:\t{}", objectResponse.toString());
+        return objectResponse;
+    }
+
+    public ObjectsComparisonResponse getObjectsComparison(UUID id, Integer firstObjectIndex, Integer secondObjectIndex) throws IOException {
+        logger.info("Id:\t" + id);
+        logger.info("firstObjectIndex:\t{}", firstObjectIndex);
+        logger.info("secondObjectIndex:\t{}", secondObjectIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException("There are no objects in project. Couldn't get any of them.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        final ObjectsComparisonResponse objectsComparisonResponse = ObjectsComparisonResponseBuilder.newInstance().build(informationTable, firstObjectIndex, secondObjectIndex);
+        logger.debug("objectsComparisonResponse:\t{}", objectsComparisonResponse.toString());
+        return objectsComparisonResponse;
     }
 }
