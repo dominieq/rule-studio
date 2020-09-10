@@ -1,6 +1,8 @@
 package pl.put.poznan.rulestudio.service;
 
-import org.rulelearn.approximations.*;
+import org.rulelearn.approximations.Union;
+import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
+import org.rulelearn.approximations.VCDominanceBasedRoughSetCalculator;
 import org.rulelearn.core.InvalidSizeException;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.data.InformationTableWithDecisionDistributions;
@@ -19,6 +21,8 @@ import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.UnionsWithHttpParameters;
+import pl.put.poznan.rulestudio.model.response.ObjectResponse;
+import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -134,5 +138,23 @@ public class UnionsService {
         calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
 
         return project.getUnions();
+    }
+
+    public ObjectResponse getObject(UUID id, Integer objectIndex) {
+        logger.info("Id:\t{}", id);
+        logger.info("ObjectIndex:\t{}", objectIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
+        if(unionsWithHttpParameters == null) {
+            EmptyResponseException ex = new EmptyResponseException("Unions haven't been calculated.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        final ObjectResponse objectResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+        logger.debug("objectResponse:\t{}", objectResponse.toString());
+        return objectResponse;
     }
 }

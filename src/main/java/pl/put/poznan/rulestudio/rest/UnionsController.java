@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.model.UnionsWithHttpParameters;
+import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.service.UnionsService;
 
 import java.io.IOException;
@@ -59,6 +60,17 @@ public class UnionsController {
         logger.info("Posting unions with single limiting decision...");
 
         UnionsWithHttpParameters result = unionsService.postUnions(id, typeOfUnions, consistencyThreshold, metadata, data);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/object", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ObjectResponse> getObject(
+            @PathVariable("id") UUID id,
+            @RequestParam("objectIndex") Integer objectIndex) {
+        logger.info("Getting object from class unions cones...");
+
+        final ObjectResponse result = unionsService.getObject(id, objectIndex);
 
         return ResponseEntity.ok(result);
     }
