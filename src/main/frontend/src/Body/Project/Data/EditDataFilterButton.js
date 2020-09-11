@@ -6,10 +6,6 @@ import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 import { StyledButton, StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 
 class EditDataFilterButton extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount() {
         this.props.onToggleFilter();
     }

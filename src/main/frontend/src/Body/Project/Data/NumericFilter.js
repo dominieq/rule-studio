@@ -99,7 +99,7 @@ class NumericFilter extends React.Component {
   }
 
   handleKeyPress(e) { // Validate the input
-    const regex = '>|<|:|,|([0-9?.\-])';
+    const regex = '>|<|:|,|([0-9?.-])';
     const result = RegExp(regex).test(e.key);
     if (result === false) {
       e.preventDefault();
