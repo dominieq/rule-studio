@@ -64,35 +64,40 @@ const menuStyles = makeStyles(theme => ({
 }), {name: "CustomMenu"});
 
 export default function DropDownForAttributes(props) { 
-  const [selectedOption, setSelectedOption] = React.useState(props.defaultValue);
+  const { defaultValue, defaultWidth, displayName, getSelected, items, missingVal, name } = props;
+
+  const [selectedOption, setSelectedOption] = React.useState(defaultValue);
   const classes = useStyles();
   const menuClasses = menuStyles();
 
-  const inputLabel = React.useRef(null);
-  const [labelWidth, setLabelWidth] = React.useState(0);
-  React.useEffect(() => { setLabelWidth(inputLabel.current.offsetWidth); props.getSelected(props.defaultValue); }, []);
+  React.useEffect(() => { 
+      if(defaultValue === selectedOption) {
+        getSelected(defaultValue); 
+      }
+  }, [defaultValue, getSelected, selectedOption]);
 
-  const handleChange = event => {
-    setSelectedOption(event.target.value);
-    props.getSelected(event.target.value);
+  const handleChange = (event) => {
+    if(selectedOption !== event.target.value) {
+      setSelectedOption(event.target.value);
+      getSelected(event.target.value);
+    }
   };
 
   return (
     <Fragment key="dropDownForAttributes">
-      <FormControl margin={"dense"} required variant="outlined" style={{minWidth: props.defaultWidth}} className={clsx(classes.formControl, classes.root)}>
-        <InputLabel ref={inputLabel} id="dialog-dropdown">
-          {props.displayName}
+      <FormControl margin={"dense"} required variant="outlined" style={{minWidth: defaultWidth}} className={clsx(classes.formControl, classes.root)}>
+        <InputLabel id="dialog-dropdown">
+          {displayName}
         </InputLabel>
         <Select
           labelId="dialog-dropdown"
-          id={props.name}  
+          id={name}  
           value={selectedOption}
           onChange={handleChange}
-          labelWidth={labelWidth}
           MenuProps={{classes: {list: menuClasses.list}}}
         >
-        {props.items.map((x,index) => { 
-          if(props.missingVal) {
+        {items.map((x,index) => { 
+          if(missingVal) {
             if(x === "1.5") return <MenuItem style={{display: "inherit"}} key={index} value={`mv${x}`}> <CustomTooltip arrow={true} disableGpu={true} placement={'right-end'} title={tooltip.mv15}>mv<sub>{x}</sub></CustomTooltip></MenuItem>
             else return <MenuItem style={{display: "inherit"}} key={index} value={`mv${x}`}> <CustomTooltip arrow={true} disableGpu={true} placement={'right-end'} title={tooltip.mv2}>mv<sub>{x}</sub></CustomTooltip></MenuItem>
           }
