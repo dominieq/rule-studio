@@ -160,15 +160,21 @@ function RightClickContextMenu({
 }
 
 /**
- * Component responsible for displaying data i.e. attributes and objects, which are received from
- * the import tab via props (more specifically props.project.informationTable)
+ * The data tab in RuleStudio. 
+ * Presents the list of all objects (and attributes) from information table, allows to add, remove and edit them.
+ * 
+ * @name Data
  * @class
- * @param {Object} props Arguments received from the parent component
- * @param {Object} props.project Holds data about the current project like id, name and everything associated with the project e.g. information table, unions, cones etc.
- * @param {Object} props.project.result.informationTable InformationTable received from the server, holds attributes and objects
- * @param {Array} props.project.result.informationTable.attributes Attributes (metadata, might be empty)
- * @param {Array} props.project.result.informationTable.objects Objects (data, might be empty)
- * @param {Function} props.updateProject Method for updating project in the parent component (which is ProjectTabs.js)
+ * @category Tabs
+ * @subcategory Tabs
+ * @param {Object} props - Arguments received from the parent component
+ * @param {Object} props.project - Holds data about the current project like id, name and everything associated with the project e.g. information table, unions, cones etc.
+ * @param {Object} props.project.result.informationTable - InformationTable received from the server, holds attributes and objects
+ * @param {Array} props.project.result.informationTable.attributes - Attributes (metadata, might be empty)
+ * @param {Array} props.project.result.informationTable.objects - Objects (data, might be empty)
+ * @param {function} props.onAttributesChange - Method responsible for updating project attributes, makes them visible to choose in the "project settings" (object's visible description).
+ * @param {function} props.onDataChange - Method responsible for updating the whole project in the parent component (which is ProjectTabs.js)
+ * @returns {React.Component}
  */
 class DisplayData extends React.Component {
     constructor(props) {
@@ -217,7 +223,6 @@ class DisplayData extends React.Component {
                         historyActionSubject: ''
                     }
                 ],
-            wholeAppError: false,
         };    
         
         this.isDataFromServer = this.props.project.isDataFromServer;
@@ -226,16 +231,15 @@ class DisplayData extends React.Component {
         this.ctrlPlusC = false;
     }
 
-    static getDerivedStateFromError(error) {
-        // Update state so the next render will show the fallback UI.
-        return { wholeAppError: true };
-    }
-
     /**
+     * A component's lifecycle method. Fired after a component was updated.
      * Method responsible for changing displayed data when project is changed. Runs after every [render()]{@link DisplayData#render} and holds the newest values of props and state.
      * If the project has been changed then initialize all the values (overwrite) in the state.
-     * @param {Object} prevProps Props object containing all the props e.g. props.project.id or props.project.name
-     * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
+     * 
+     * @function
+     * @memberOf Data
+     * @param {Object} prevProps - Old props object containing all the props e.g. props.project.id or props.project.name
+     * @param {Object} prevState - Old state object containing all the properties from state e.g. state.columns or state.rows
      */
     componentDidUpdate(prevProps, prevState) {
         if(prevProps.project.result.id !== this.props.project.result.id) {
@@ -292,6 +296,13 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method responsible for adding elements (e.g. numeric filter), which have been removed due to parsing and stringifying history.
+     * 
+     * @function
+     * @memberOf Data
+     * @param {Array} history - It is the array containing objects. Each object consists of rows, columns, and what has been changed (column, row, both)
+     */
     prepareHistory = (history) => {
         const historyTmp = JSON.parse(JSON.stringify(history));
         for(let i in historyTmp) {
@@ -310,8 +321,10 @@ class DisplayData extends React.Component {
 
     /** 
      * Method responsible for preparing data i.e. objects to display them in rows. This is the place where No. property is added to each object.
-     * @method
-     * @param {Array} data Data i.e. objects received from the import. Each object consists of pairs key-value with name of the property as the key and value as the value. 
+     * 
+     * @function
+     * @memberOf Data
+     * @param {Array} data - Data i.e. objects received from the props. Each object consists of pairs key-value with name of the property as the key and value as the value. 
      * @returns {Array}
      */
     prepareDataFromImport = (data) => {
@@ -324,8 +337,10 @@ class DisplayData extends React.Component {
     /** 
      * Method responsible for preparing metadata i.e. attributes to display them in columns. This is the place where certain properties are added to each attribute
      * e.g. sorting, filtering, resizing etc.
-     * @method
-     * @param {Array} metadata I.e. attributes received from the import. Each attribute consists of pairs key-value with name of the property as the key and value as the value. 
+     * 
+     * @function
+     * @memberOf Data
+     * @param {Array} metadata - I.e. attributes received from the props. Each attribute consists of pairs key-value with name of the property as the key and value as the value. 
      * @returns {Array}
      */
     prepareMetaDataFromImport = (metadata) => {
@@ -365,6 +380,14 @@ class DisplayData extends React.Component {
         return tmp; 
     }
 
+    /** 
+     * Method responsible for inserting into cells missing value signs (?) if the key of an object doesn't match the attribute.
+     * 
+     * @function
+     * @memberOf Data
+     * @param {Array} metadata - I.e. attributes received from the props. Each attribute consists of pairs key-value with name of the property as the key and value as the value. 
+     * @returns {Array}
+     */
     replaceMissingDataWithQuestionMarks = () => {
         if(this.isDataFromServer) {
             this.setState(prevState => {
@@ -392,9 +415,13 @@ class DisplayData extends React.Component {
         }
     }
 
-    /** 
+    /**
+     * A component's lifecycle method. Fired once when component was mounted. 
      * Method responsible for setting the color of column headers accordingly to the attribute preference type during initialization of the component.
      * Runs only once, after component is mounted (after first [render]{@link DisplayData#render} and before methods shouldComponentUpdate() and [componentDidUpdate]{@link DisplayData#componentDidUpdate}).
+     * 
+     * @function
+     * @memberOf Data
      */
     componentDidMount() {
         const headers = document.getElementsByClassName("react-grid-HeaderCell-sortable");
@@ -412,6 +439,12 @@ class DisplayData extends React.Component {
         this.replaceMissingDataWithQuestionMarks();
     }
 
+    /** 
+     * Method responsible for preparing whole project to update it (in the parent).
+     * 
+     * @function
+     * @memberOf Data
+     */
     updateProject = () => {
         const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
         const tmpData = this.prepareDataFileBeforeSendingToServer();
@@ -420,14 +453,29 @@ class DisplayData extends React.Component {
         tmpProject.result.informationTable.objects = tmpData;
         tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history};
         tmpProject.isDataFromServer = false;
-        this.props.onDataChange(tmpProject);
+        this.props.onDataChange(tmpProject); //run parent method
     }
 
+    /**
+     * Method responsible for updating project attributes, makes them visible to choose in the "project settings" (object's visible description).
+     * 
+     * @function
+     * @memberOf Data
+     */
     updateChangedIdentifOrDescriptAttribute = () => {
         const attributes = this.prepareMetadataFileBeforeSendingToServer();
-        this.props.onAttributesChange(attributes);
+        this.props.onAttributesChange(attributes); //run parent method
     }
 
+    /**
+     * Method checks if the [updateChangedIdentifOrDescriptAttribute]{@link DisplayData#updateChangedIdentifOrDescriptAttribute} needs to be fired.
+     * 
+     * @function
+     * @memberOf Data
+     * @param {Object} oldCol - object representing old (previous) version of the column.
+     * @param {Object} newCol - if it is false it means column has been removed, if it true column activeness has been changed, if it isn't boolean type
+     * then it is the object representing new version of (changes made to) the column.
+     */
     checkIfUpdateOfAttributesNeeded = (oldCol, newCol) => {
         //right click on header menu
         if(typeof newCol === "boolean") {
@@ -452,10 +500,25 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * A component's lifecycle method. Fired when component was requested to be unmounted.
+     *
+     * @function
+     * @memberOf Data
+     */
     componentWillUnmount() {
         this._isMounted = false;
     }
 
+    /**
+     * Method returns the object containing of number part and rest of the string.
+     * It is used e.g. when holding CTRL and double clicking on the square placed in the bottom right corner of the cell (in the identification attribute).
+     * 
+     * @function
+     * @memberOf Data
+     * @param {string} text - Text to be divided into number part and constant part.
+     * @returns {Object}
+     */
     getNumberPartAndConstantPart(text) {
         let main = "";
         let num = "";
@@ -474,16 +537,27 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method returns absolute value of an integer / real number.
+     * 
+     * @function
+     * @memberOf Data
+     * @param {Number} x - It is the number from which absolute value will be taken. 
+     */
     absoluteValue(x) {
         return x < 0 ? -x : x; 
     }
 
-    /** 
+    /**
      * Method responsible for updating displayed data when the value in the cell changes (or multiple values when dragging). First row has index 0.
-     * @method
-     * @param {Number} fromRow Indicates which row have been changed (or when dragging - from which row dragging has began).
-     * @param {Number} toRow Indicates on which row dragging has ended (or if the number is the same as fromRow, then which row has been changed) inclusive.
-     * @param {Object} updated Indicates on which column and to which value changes happend. 
+     * 
+     * @function
+     * @memberOf Data
+     * @param {string} action - Indicates which action triggered the update. Can be one of [CELL_UPDATE, COLUMN_FILL, COPY_PASTE, CELL_DRAG]
+     * @param {string} cellKey - Indicates on which column updated has been done
+     * @param {Number} fromRow - Indicates which row have been changed (or when dragging - from which row dragging has began).
+     * @param {Number} toRow - Indicates on which row dragging has ended (or if the number is the same as fromRow, then which row has been changed) inclusive.
+     * @param {Object} updated - Indicates on which column and to which value changes happend. 
      * It is a pair key - value, where the key is the column key and the value is the value of the cell to which the cell has been changed.
      */
     onGridRowsUpdated = ({ action, cellKey, fromRow, toRow, updated }) => {
@@ -761,11 +835,13 @@ class DisplayData extends React.Component {
         this.ctrlKeyDown = -1;
     };
 
-    /** 
+    /**
      * Method responsible for sorting data. Runs when the header of the column is clicked.
-     * @method
-     * @param {String} sortColumn Indicates which column header has been clicked i.e. which column should be sorted. This is the column key.
-     * @param {Number} sortDirection Indicates which way sorting should take place. This is one of the values "ASC", "DESC", "NONE", which stand for ascending, descending and none.
+     * 
+     * @function
+     * @memberOf Data
+     * @param {string} sortColumn - Indicates which column header has been clicked i.e. which column should be sorted. This is the column key.
+     * @param {Number} sortDirection - Indicates which way sorting should take place. This is one of the values "ASC", "DESC", "NONE", which stand for ascending, descending and none.
      */
     onGridSort = (sortColumn, sortDirection) => {
         let tmpEnableRowInsert = -1;
@@ -811,9 +887,11 @@ class DisplayData extends React.Component {
     };
 
     /** 
-     * Method responsible for adding selected, i.e. the checkbox on the left of the row is marked, rows to the selectedRows array which is in the state.
-     * @method
-     * @param {Array} rows Indicates which row has been selected. It consists of two objects. The first one is rowIdx, which is the number of row from the top (indexing from 0).
+     * Method responsible for adding selected rows to the selectedRows array which is in the state (selected row is the row in which the checkbox on the left of the row is marked).
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Array} rows - Indicates which row has been selected. It consists of two objects. The first one is rowIdx, which is the number of row from the top (indexing from 0).
      * The second object is row object containg all the pairs key-value for the row.
      */
     onRowsSelected = (rows) => {
@@ -824,8 +902,10 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for removing deselected, i.e. the checkbox on the left of the row is unmarked, rows from the selectedRows array which is in the state.
-     * @method
-     * @param {Array} rows Indicates which row has been deselected. It consists of two objects. The first one is rowIdx, which is the number of row from the top (indexing from 0).
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Array} rows - Indicates which row has been deselected. It consists of two objects. The first one is rowIdx, which is the number of row from the top (indexing from 0).
      * The second object is row object containg all the pairs key-value for the row.
      */
     onRowsDeselected = (rows) => {
@@ -840,9 +920,13 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for adding filter to filters array which is in the state.
-     * @method
-     * @param {Object} filter Consists of two key-value pairs. The first one is the column object containg all the pairs key-value for the column.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Object} filter - Consists of two key-value pairs. The first one is the column object containg all the pairs key-value for the column.
      * The second is flterTerm which has been written in the filter field.
+     * If there is more than one filter term (e.g. in numeric filter let's choose numbers 1,2,3 and greater than 10. Then we have: 1,2,3,>10) the filter term
+     * becomes the array. The class NumericFilter is responsible for handling numeric filters.
      */
     handleFilterChange = (filter) => {
         this.setState(prevState => {
@@ -861,9 +945,11 @@ class DisplayData extends React.Component {
 
     /**
      * Helper method to get all the filtered rows. This method uses [selectors]{@link https://adazzle.github.io/react-data-grid/docs/examples/column-filtering#using-rdg-dataselectors-to-filter-rows}
-     * @method
-     * @param {Array} rows All the rows i.e. this is the array containing all the rows where each row (object of the array) consists of key-value pairs
-     * @param {Array} filters All the filters i.e. this is the array containing [filter objects]{@link DisplayData#handleFilterChange}
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Array} rows - All the rows i.e. this is the array containing all the rows where each row (object of the array) consists of key-value pairs
+     * @param {Array} filters - All the filters i.e. this is the array containing [filter objects]{@link DisplayData#handleFilterChange}
      */
     getRows(rows, filters) {
         return selectors.getRows({ rows, filters });
@@ -871,7 +957,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for getting all the filtered rows. Uses method [getRows]{@link DisplayData#getRows}.
-     * @method
+     * 
+     * @function
+	 * @memberOf Data
      */
     filteredRows = () => {
         if(this.state.history[this.state.historySnapshot] !== undefined) {
@@ -882,7 +970,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for clearing filters.
-     * @method
+     * 
+     * @function
+	 * @memberOf Data
      */
     onClearFilters = () => {
         this.setState({
@@ -893,8 +983,10 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for removing certain row after choosing option "Delete object" from right click menu.
-     * @method
-     * @param {Number} rowIdx Indicates the row number from the top, to be removed.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Number} rowIdx - Indicates the row number from the top, to be removed.
      */
     deleteRowByRowIdx = (rowIdx) => {
         this.setState(prevState => {
@@ -919,8 +1011,10 @@ class DisplayData extends React.Component {
     };
 
     /**
-     * Method responsible for removing selected rows (i.e. the checkbox on the left of the row is marked).
-     * @method
+     * Method responsible for removing selected rows (the selected row means that the checkbox on the left of the row is marked).
+     * 
+     * @function
+	 * @memberOf Data
      */
     deleteSelectedRows = () => {
         this.setState(prevState => {
@@ -986,9 +1080,11 @@ class DisplayData extends React.Component {
     /**
      * Method responsible for adding row. After right click menu one can add row above ("Add new object above") or below ("Add new object below") the clicked row.
      * After "ADD NEW OBJECT" button click one can add row at the end of the rows array.
-     * @method
-     * @param {Number} rowIdx Indicates the row number from the top.
-     * @param {String} where Indicates where to add the row. The existing options are "above" or "below" (the clicked row) or any other name which means at the end of the rows array.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Number} rowIdx - Indicates the row number from the top.
+     * @param {string} where - Indicates where to add the row. The existing options are "above" or "below" (the clicked row) or any other name which means at the end of the rows array.
      */
     insertRow = (rowIdx, where) => {       
         this.setState(prevState => {
@@ -1074,7 +1170,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for opening the "Add attribute" dialog. The dialog is accessible through the "ADD ATTRIBUTE" button.
-     * @method
+     * 
+     * @function
+	 * @memberOf Data
      */
     onAddAttribute = () => {
         this.setState({isOpenedAddAttribute: true});
@@ -1082,7 +1180,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for opening the "Edit attributes" dialog. The dialog is accessible through the "EDIT ATTRIBUTES" button.
-     * @method
+     * 
+     * @function
+	 * @memberOf Data
      */
     onEditAttributes = () => {
         this.setState({isOpenedEditAttributes: true});
@@ -1090,7 +1190,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for closing the "Add attribute" dialog. The dialog is accessible through the "ADD ATTRIBUTE" button.
-     * @method
+     * 
+     * @function
+	 * @memberOf Data
      */
     closeOnAddAttribute = () => {
         this.setState({
@@ -1106,7 +1208,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for closing the "Edit attributes" dialog. The dialog is accessible through the "EDIT ATTRIBUTES" button.
-     * @method
+     * 
+     * @function
+	 * @memberOf Data
      */
     closeOnEditAttributes = () => {
         this.setState({
@@ -1122,8 +1226,10 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for closing the warning dialog. The method is executed when the chosen option is "No" in the [warning dialog]{@link DisplayData#openOnTransformWarning}.
-     * @method
+     * Method responsible for closing the transform dialog. The method is executed when the chosen option is "No" in the [transform dialog]{@link DisplayData#openOnTransform}.
+     * 
+     * @function
+	 * @memberOf Data
      */
     closeOnTransform = () => {
         this.setState({
@@ -1132,8 +1238,10 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for opening the warning dialog. The dialog is accessible through the "TRANSFORM" button, but only when modifications have not been saved.
-     * @method
+     * Method responsible for opening the transform dialog. The dialog is accessible through the "TRANSFORM" button, but only when modifications have not been saved.
+     * 
+     * @function
+	 * @memberOf Data
      */
     openOnTransform = () => {
         this.setState({
@@ -1143,9 +1251,10 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for imposing preference order when evaluation attribute doesn't have preference order.
-     * The method is executed when the chosen option is "Yes" in the [warning dialog]{@link DisplayData#openOnTransformWarning}.
      * For more information [click here]{@link https://github.com/ruleLearn/rulelearn/blob/develop/src/main/java/org/rulelearn/data/InformationTable.java#L922}.
-     * @method
+     * 
+     * @function
+	 * @memberOf Data
      */
     onTransformAttributes = () => {
         const base = this.props.serverBase;
@@ -1308,8 +1417,10 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for preparing metadata before sending it to the server. E.g. removing certain properties from all the columns like sorting, filtering, resizing etc.
-     * @method
+     * Method responsible for preparing metadata before sending it to the server. E.g. removing certain properties from all the columns like sorting, filtering, resizing, width etc.
+     * 
+     * @function
+	 * @memberOf Data
      * @returns {Array}
      */
     prepareMetadataFileBeforeSendingToServer() {
@@ -1328,7 +1439,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for preparing data before sending it to the server. I.e. removing "No." property from all the rows.
-     * @method
+     * 
+     * @function
+	 * @memberOf Data
      * @returns {Array}
      */
     prepareDataFileBeforeSendingToServer() {
@@ -1337,24 +1450,52 @@ class DisplayData extends React.Component {
         return newData;
     }
 
+    /**
+     * In the "Save to file" dialog this method is responsible for remembering if the user wants to download the metadata in JSON format
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Object} e - Represents an event that takes place in DOM tree.
+     */
     handleChangeSaveToFileMetaData = (e) => {
         this.setState({
           saveToFileMetaData: e.target.checked
         })
     }
 
+    /**
+     * In the "Save to file" dialog this method is responsible for remembering if the user wants to download the data in JSON or CSV format
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Object} e - Represents an event that takes place in DOM tree.
+     */
     handleChangeSaveToFileData = (e) => {
         this.setState({
             saveToFileData: e.target.value
         })
     }
 
+    /**
+     * In the "Save to file" dialog this method is responsible for remembering if the user wants to have the header in CSV format
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Object} e - Represents an event that takes place in DOM tree.
+     */
     handleChangeSaveToFileCsvHeader = (e) => {
         this.setState({
             saveToFileCsvHeader: e.target.checked
         })
     }
 
+    /**
+     * In the "Save to file" dialog this method is responsible for remembering the separator in CSV format
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {string} selected - Selected option from the separator list. One of [comma, semicolon, space, tab].
+     */
     getSelectedSaveToFileCsvSeparator = (selected) => {
         this.setState({
             saveToFileCsvSeparator: selected
@@ -1363,7 +1504,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for closing the "Save to file" dialog. The dialog is accessible through the "SAVE TO FILE" button.
-     * @method
+     * 
+     * @function
+	 * @memberOf Data
      */
     closeOnSaveToFile = () => {
         this.setState({
@@ -1377,8 +1520,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for opening the "Save to file" dialog. The dialog is accessible through the "SAVE TO FILE" button.
-     * @method
-     * @returns {Array}
+     * 
+     * @function
+	 * @memberOf Data
      */
     openOnSaveToFile = () => {
         this.setState({
@@ -1387,12 +1531,10 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for saving metadata and data to files displayed data when project is changed. Runs after every [twojaNazwa]{@link DisplayData#render} and holds the latest values of props and state.
-     * If the project has been changed then initialize all the values (overwrite) in the state.
-     * @method
-     * @param {Object} prevProps Props object containing all the props e.g. props.project.result.id or props.project.result.name
-     * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
-     * @returns {Array}
+     * Method resonsible for passing (to [this method]{@link DisplayData#saveDataToCsvOrJson}) appropriate parameters for saving (downloading) files.
+     * 
+     * @function
+	 * @memberOf Data
      */
     saveToFile = () => {
         if(this.state.saveToFileMetaData) {
@@ -1418,6 +1560,15 @@ class DisplayData extends React.Component {
         })
     } 
 
+    /**
+     * Method responsible for saving (downloading) data file.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {string} name - Stands for the name of the file, usually server replace this name
+     * @param {Object} header - True if CSV file needs to be saved with header row, -1 if it is JSON file (no header)
+     * @param {Object} separator - Separator in the CSV file, -1 if it JSON file (no separator)
+     */
     saveDataToCsvOrJson = (name, header, separator) => {
         const base = this.props.serverBase;
         if(this.state.dataModified) {
@@ -1559,6 +1710,13 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method responsible for saving (downloading) metadata file.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {string} name - Stands for the name of the file, usually server replace this name
+     */
     saveMetaDataToJson = (name) => {
         const base = this.props.serverBase;
         if(this.state.dataModified) {
@@ -1676,6 +1834,12 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method returns columns for the current history step
+     * 
+     * @function
+	 * @memberOf Data
+     */
     getColumns() {
         if(this.state.history[this.state.historySnapshot] !== undefined) {
             const newColumns = this.state.history[this.state.historySnapshot].columns.filter(x => x.visible !== false);
@@ -1685,34 +1849,68 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for opening the "Save to file" dialog. The dialog is accessible through the "SAVE TO FILE" button.
-     * Method responsible for changing displayed data when project is changed. Runs after every [twojaNazwa]{@link DisplayData#render} and holds the latest values of props and state.
-     * If the project has been changed then initialize all the values (overwrite) in the state.
-     * @method
-     * @param {Object} prevProps Props object containing all the props e.g. props.project.result.id or props.project.result.name
-     * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
-     * @returns {Array}
+     * Method responsible for remembering selected attribute type.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Object} selected - It is one of [identification, description, condition, decision]
      */
     getSelectedAttributeType = (selected) => {
         this.setState({attributeTypeSelected: selected});
     }
 
+    /**
+     * Method responsible for remembering selected attribute preference type.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Object} selected - It is one of [gain, cost, none]
+     */
     getSelectedAttributePreferenceType = (selected) => {
         this.setState({attributePreferenceTypeSelected: selected});
     }
 
+    /**
+     * Method responsible for remembering selected attribute value type.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Object} selected - It is one of [integer, real, enumeration]
+     */
     getSelectedValueType = (selected) => {
         this.setState({valueTypeSelected: selected});
     }
 
+    /**
+     * Method responsible for remembering selected identifier type.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Object} selected - It is one of [uuid, text]
+     */
     getSelectedIdentifierType = (selected) => {
         this.setState({identifierTypeSelected: selected});
     }
 
+    /**
+     * Method responsible for remembering selected missing value type.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Object} selected - It is one of [mv1.5, mv2]
+     */
     getSelectedMissingValueType = (selected) => {
         this.setState({missingValueTypeSelected: selected});
     }
 
+    /**
+     * Method responsible for closing notification.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Object} reason - Reason of closing notification
+     * @param {Object} event - Represents an event that takes place in DOM
+     */
     closeOpenedNotification = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -1722,6 +1920,13 @@ class DisplayData extends React.Component {
         })
     }
 
+    /**
+     * Method responsible for closing right click header menu.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {string} selected - It is one of [Delete attribute, Edit attribute, Mark attribute as: active, Mark attribute as: inactive]
+     */
     closeOpenedColumnHeaderMenu = (selected) => {
         if(selected !== undefined) {            
             let history = [...this.state.history];
@@ -1800,6 +2005,14 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method responsible for checking if any attribute with the same name already exists.
+     * It is used in the Add attribute dialog
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {string} name - It is the name of the new attribute
+     */
     attributeAlreadyExists = (name) => {
         for(let i in this.state.history[this.state.historySnapshot].columns) {
             if(this.state.history[this.state.historySnapshot].columns[i].name === name) {
@@ -1809,6 +2022,15 @@ class DisplayData extends React.Component {
         return false;
     }
 
+    /**
+     * Method responsible for checking if any attribute with the same name already exists.
+     * It is used in the Edit attributes dialog
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {string} name - It is the name of the new attribute
+     * @param {integer} coldIdx - It is the index of the edited column
+     */
     attributeAlreadyExistAndIsDifferentThanSelected(name, colIdx) {
         for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
             if(this.state.history[this.state.historySnapshot].columns[i].name === name && i !== colIdx) {
@@ -1818,6 +2040,13 @@ class DisplayData extends React.Component {
         return false;
     }
 
+    /**
+     * Method responsible for checking if any identification attribute exists and is active.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {string} isAddMethodElseIndex - If it is -1 it means adding new column, else it is index of the old column which has been edited.
+     */
     activeIdentificationAttributeAlreadyExists(isAddMethodElseIndex) {
         if(isAddMethodElseIndex === -1) {
             for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
@@ -1838,6 +2067,13 @@ class DisplayData extends React.Component {
         return false;
     }
 
+    /**
+     * Method responsible for checking if any decision attribute exists and is active.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {string} isAddMethodElseIndex - If it is -1 it means adding new column, else it is index of the old column which has been edited.
+     */
     activeDecisionAttributeAlreadyExists(isAddMethodElseIndex) {
         if(isAddMethodElseIndex === -1) {
             for(let i=this.state.history[this.state.historySnapshot].columns.length-1; i>=0; i--) {
@@ -1858,12 +2094,35 @@ class DisplayData extends React.Component {
         return false;
     }
 
+    /**
+     * Method responsible for remembering domain elements of the enumeration attribute.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Array} array - It is the array containing domain elements
+     */
     setDomainElements = (array) => {
         this.setState({
             attributesDomainElements: array,
         })
     }
 
+    /**
+     * Method responsible for validating new attribute or validating edited attribute.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {integer} isAddMethodElseIndex - If it is -1 it means adding new column, else it is index of the old column which has been edited.
+     * @param {boolean} active - It is true if the attribute is active, else false
+     * @param {string} name - It is the name of the new / edited attribute
+     * @param {string} type - It is one of [identification, decision, condition, description]
+     * @param {string} mvType - It is one of [mv1.5, mv2]
+     * @param {string} identifierType - It is one of [uuid, text]
+     * @param {string} preferenceType - It is one of [gain, cost, none]
+     * @param {string} valueType - It is one of [integer, real, enumeration]
+     * @param {Array} domain - It is the array containing domain elements for the enumeration value type
+     * @returns {Boolean}
+     */
     validateOnAddAndEditAttribute = (isAddMethodElseIndex, active, name, type, mvType, identifierType, preferenceType, valueType, domain) => {
 
         let error = ''
@@ -1955,6 +2214,22 @@ class DisplayData extends React.Component {
     
     }
 
+     /**
+     * Method responsible for creating new column (new attribute).
+     * It runs only when [validation]{@link DisplayData#validateOnAddAndEditAttribute} gives positive result.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {string} name - It is the name of the new attribute
+     * @param {boolean} active - It is true if the attribute is active, else false
+     * @param {string} type - It is one of [identification, decision, condition, description]
+     * @param {string} mvType - It is one of [mv1.5, mv2]
+     * @param {string} identifierType - It is one of [uuid, text]
+     * @param {string} preferenceType - It is one of [gain, cost, none]
+     * @param {string} valueType - It is one of [integer, real, enumeration]
+     * @param {Array} domain - It is the array containing domain elements for the enumeration value type
+     * @returns {Object}
+     */
     createColumn = (name, active, type, mvType, identifierType, preferenceType, valueType, domain) => {
         const attribute = {editable:true, sortable:true, resizable:true, filterable:true, draggable: true, visible: true}
         attribute.key = name;
@@ -1981,6 +2256,15 @@ class DisplayData extends React.Component {
         return attribute;
     }
 
+    /**
+     * Method responsible for setting column header color and its bottom text (e.g. condition, active).
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Object} column - It is the column object (attribute) on which changes will be made
+     * @param {Integer} idx - It is the index of the column in DOM tree
+     * @param {boolean} changeWidth - If it is true the width of the column will be set
+     */
     setHeaderColorAndStyle = (column, idx, changeWidth) => {
         if(document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes !== undefined) {
             const tmp = document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes;
@@ -2051,6 +2335,14 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method responsible for setting right click column header menu.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Object} column - It is the column object (attribute) on which changes will be made
+     * @param {Integer} idx - It is the index of the column in DOM tree
+     */
     setHeaderRightClick = (column, idx) => {
         //right-click
         document.getElementsByClassName("react-grid-HeaderCell")[idx].oncontextmenu = (e) => {
@@ -2058,9 +2350,9 @@ class DisplayData extends React.Component {
             var isRightMB;
             e = e || window.event;
             if ("which" in e)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-                isRightMB = e.which == 3; 
+                isRightMB = e.which === 3; 
             else if ("button" in e)  // IE, Opera 
-                isRightMB = e.button == 2; 
+                isRightMB = e.button === 2; 
             
             if(isRightMB) {
                 this.setState({
@@ -2072,16 +2364,44 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Auxiliary method responsible for preparing columns headers.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {Object} column - It is the column object (attribute) on which changes will be made
+     * @param {Integer} idx - It is the index of the column in DOM tree
+     * @param {boolean} changeWidth - If it is true the width of the column will be set
+     */
     setHeaderColorAndStyleAndRightClick = (column, idx, changeWidth) => {
         this.setHeaderColorAndStyle(column, idx, changeWidth);
         this.setHeaderRightClick(column, idx);
     }
 
+    /**
+     * Method responsible for renaming key in an object.
+     * 
+     * @function
+	 * @memberOf Data
+     * @param {string} oldName - It is the old key name (the key which will be renamed)
+     * @param {string} newName - It is the new key name
+     * @param {Object} object - It is the object in which one key is replaced
+     */
     renameKeyInObject = (oldName, newName, {[oldName]: old, ...others}) => ({
         [newName]: old,
         ...others
     })
     
+    /**
+	 * Additionally to the [method]{@link DisplayData#setHeaderColorAndStyleAndRightClick} it also changes rows 
+     * (e.g. during the change of attribute value type, or fills all rows with missing value sign "?" if it is new attribute)
+	 * 
+	 * @function
+	 * @memberOf Data
+     * @param {Object} column - It is the old column (before any changes)
+     * @param {Integer} idx - It is the index of the column in DOM tree
+     * @param {Object} ifIsNewColumnElseOldColumn - It is the column object having changes after its edition, it is boolean if new attribute was added.
+	 */
     setRowsAndHeaderColorAndStyleAndRightClick = (column, idx, ifIsNewColumnElseOldColumn) => {
         let nextRows = JSON.parse(JSON.stringify(this.state.history[this.state.historySnapshot].rows));
         if(typeof ifIsNewColumnElseOldColumn === "boolean") { //new column fill with "?"
@@ -2166,6 +2486,12 @@ class DisplayData extends React.Component {
         
     }
 
+    /**
+	 * Method runs after clicking Apply in the Add Attribute dialog
+	 * 
+	 * @function
+	 * @memberOf Data
+	 */
     applyOnAddAttribute = (e) => {
         e.preventDefault();
         const validationOk = this.validateOnAddAndEditAttribute(-1, e.target.attributeIsActive.checked, e.target.attributeName.value.trim(), this.state.attributeTypeSelected, this.state.missingValueTypeSelected,
@@ -2205,6 +2531,14 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+	 * Method prepares array of html elements which will be displayed through the [render]{@link DisplayData#render} method.
+	 * These are fields of the Add attribute dialog.
+     *  
+	 * @function
+	 * @memberOf Data
+     * @returns {Array}
+	 */
     displayAddAttributeFields = () => {
         const tmpWrapper = [];
         const tmp = [];
@@ -2236,6 +2570,14 @@ class DisplayData extends React.Component {
         return ;
     }
 
+    /**
+	 * Method prepares array of html elements which will be displayed through the [render]{@link DisplayData#render} method.
+	 * These are fields of the Edit attribute dialog
+     *  
+	 * @function
+	 * @memberOf Data
+     * @returns {Array}
+	 */
     displayEditAttributeFields = () => {
         let attribute = {};
         for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
@@ -2270,7 +2612,7 @@ class DisplayData extends React.Component {
                 tmp.push(<DropDownForAttributes key={"identifierType"+attribute.name} name={"identifierType"} getSelected={this.getSelectedIdentifierType} displayName={"Identifier type"} items={["uuid","text"]}/>)
             }
 
-        } else if(this.state.attributeTypeSelected == attribute.type || (this.state.attributeTypeSelected == '' && attribute.type !== undefined)) { //display attribute type - other than identification and the same as before editing 
+        } else if(this.state.attributeTypeSelected === attribute.type || (this.state.attributeTypeSelected === '' && attribute.type !== undefined)) { //display attribute type - other than identification and the same as before editing 
             tmp.push(<DropDownForAttributes key={"attributeType"+attribute.name} name={"attributeType"} getSelected={this.getSelectedAttributeType} displayName={"Type"} defaultValue={attribute.type} items={["identification","description","condition","decision"]}/>)
         } else { //display attribute type - other than identification and other than before editing
             tmp.push(<DropDownForAttributes key={"attributeType"+attribute.name} name={"attributeType"} getSelected={this.getSelectedAttributeType} displayName={"Type"} items={["identification","description","condition","decision"]}/>)
@@ -2318,6 +2660,13 @@ class DisplayData extends React.Component {
         return tmpWrapper;
     }
 
+    /**
+	 * Method responsible for remembering selected attribute from the list in the Edit attributes dialog.
+     *  
+	 * @function
+	 * @memberOf Data
+     * @param {Object} col - It is the column (attribute) selected from the list
+	 */
     handleListItemClick = (col) => {
         const selectedItem = col.name; //e.currentTarget.dataset.value;
         this.setState( (prevState) => {
@@ -2335,6 +2684,12 @@ class DisplayData extends React.Component {
         })
     }
 
+    /**
+	 * Method runs after clicking Apply in the Edit attributes dialog
+     *  
+	 * @function
+	 * @memberOf Data
+	 */
     applyOnEditAttributes = (e) => {
         e.preventDefault();
         let history = [...this.state.history];
@@ -2400,6 +2755,13 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+	 * Method returns columns which can be selected and then modified in the Edit attributes dialog.
+     *  
+	 * @function
+	 * @memberOf Data
+     * @returns {Array}
+	 */
     displayListOfAttributesForModification = () => {
        const tmp = [];
        if(this.state.history[this.state.historySnapshot] !== undefined) {
@@ -2413,6 +2775,14 @@ class DisplayData extends React.Component {
         return tmp;
     }
 
+    /**
+     * Method prepares array of html elements which will be displayed through the [render]{@link DisplayData#render} method.
+     * These are options available through right click on the column header.
+     *  
+	 * @function
+	 * @memberOf Data
+     * @param {Object} col - It is the column (attribute) selected from the list
+	 */
     displayColumnHeaderMenu = () => {
         if(this.state.isColumnHeaderMenuOpened && this.state.columnKeyOfHeaderMenuOpened !== "uniqueLP") { //don't touch No. column
             const tmp = [];
@@ -2435,12 +2805,14 @@ class DisplayData extends React.Component {
         return null;
     }
 
-    onCellSelected = (coord) => {
-        const {rowIdx, Idx} = coord;
-        /*   this.grid.openCellEditor(rowIdx, idx); */
-        
-    }
-
+    /**
+     * Method responsible for remembering if binarize nominal attributes with 3+ values is selected.
+     * This option is available in the impose preference order dialog through the Transform button.
+     *  
+	 * @function
+	 * @memberOf Data
+     * @param {Object} e - Represents an event that takes place in DOM tree.
+	 */
     handleChangeBinarize = (e) => {
         this.setState({
             binarizeNominalAttributesWith3PlusValues: e.target.checked,
@@ -2453,6 +2825,14 @@ class DisplayData extends React.Component {
         });
     }
 
+    /**
+     * Method responsible for changing order of columns via drag and drop. 
+     *  
+	 * @function
+	 * @memberOf Data
+     * @param {Object} source - It is the key of the source column (dragged-from column)
+     * @param {Object} target - It is the key of the target column (dropped-on column)
+	 */
     onColumnHeaderDragDrop = (source, target) => {
         const history = [...this.state.history];
         const newColumns = [...history[this.state.historySnapshot].columns];
@@ -2479,6 +2859,14 @@ class DisplayData extends React.Component {
         })        
     };
 
+    /**
+     * Method responsible for catching key up keyboard event,
+     * more specifically to catch if the CTRL or Escape was released 
+     *  
+	 * @function
+	 * @memberOf Data
+     * @param {Object} e - Represents an event that takes place in DOM tree.
+	 */
     onGridKeyUp = (e) => {
         if(e.keyCode === 27) {
             this.ctrlPlusC = false;
@@ -2488,6 +2876,14 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method responsible for catching key down keyboard event,
+     * more specifically to catch if the CTRL or CTRL + C was pressed 
+     *  
+	 * @function
+	 * @memberOf Data
+     * @param {Object} e - Represents an event that takes place in DOM tree.
+	 */
     onGridKeyDown = (e) => {
         if(e.keyCode === 67 && (e.ctrlKey === true || e.metaKey === true)) {
             this.ctrlPlusC = true;
@@ -2497,11 +2893,23 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method responsible for turning off the copy paste mode (same behaviour as pressing Escape)
+     *  
+	 * @function
+	 * @memberOf Data
+	 */
     turnOffCellCopyPaste = () => {
         this.ctrlPlusC = false;
         if(this.grid) this.grid.base.viewport.canvas.interactionMasks.onPressEscape();
     }
 
+    /**
+     * Method responsible for displaying previous history step
+     *  
+	 * @function
+	 * @memberOf Data
+	 */
     onBack = () => {
         this.setState( prevState => {
             if(prevState.historySnapshot > 0) {
@@ -2517,6 +2925,12 @@ class DisplayData extends React.Component {
         })
     }
 
+    /**
+     * Method responsible for displaying next history step
+     *  
+	 * @function
+	 * @memberOf Data
+	 */
     onRedo = () => {
         this.setState( prevState => {
             if(prevState.historySnapshot < prevState.history.length-1) {
@@ -2532,6 +2946,14 @@ class DisplayData extends React.Component {
         })
     }
 
+    /**
+     * Method responsible for adjusting width to the resized column
+     *  
+	 * @function
+	 * @memberOf Data
+     * @param {Integer} columnIdx - Index of the column
+     * @param {Number} newWidth - New width of the column
+	 */
     onColumnResize = (columnIdx, newWidth) => {
         //In this method columnIdx = 0 means column with checkboxes,
         //so to get first column from history one have to subtract 1
@@ -2570,7 +2992,6 @@ class DisplayData extends React.Component {
                     onGridKeyDown={this.onGridKeyDown}
                     enableCellSelect={true}
                     enableRowSelect={null}
-                    onCellSelected={this.onCellSelected}
                     getValidFilterValues={columnKey => this.getValidFilterValues(this.state.history[this.state.historySnapshot].rows, columnKey)}
                     toolbar={<EditDataFilterButton enableFilter={true} > 
                             < EditDataButtons deleteRow={this.deleteSelectedRows} insertRow={this.insertRow} 
