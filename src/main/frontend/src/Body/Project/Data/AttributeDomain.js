@@ -16,6 +16,15 @@ const styles = ({
   }
 });
 
+/**
+ * @name AttributeDomain
+ * @class
+ * @category Tabs
+ * @subcategory Domain
+ * @param {Object} props
+ * @param {Array} props.defaultValue - Array containing domain elements
+ * @param {function} props.setDomainElements - Method fired when adding, removing, editing the domain element or changing the order of domain elements.
+ */
 class AttributeDomain extends React.Component {
   constructor(props) {
     super(props);
@@ -35,6 +44,13 @@ class AttributeDomain extends React.Component {
     this.timer = null;
   }
 
+  /**
+   * Method responsible for starting event (after inserting character in the text field) after 300ms.
+   * This way it won't be lagging if many characters are quickly entered into the textfield.
+   * 
+   * @function
+   * @param {Object} e - Represents an event that takes place in DOM tree.
+   */
   startTime = (e) => {
     e.persist();
 
@@ -42,6 +58,12 @@ class AttributeDomain extends React.Component {
     this.timer = setTimeout(() => this.textFieldOnChange(e),300);
   }
 
+  /**
+   * Method runs on change in the domain element.
+   * 
+   * @function
+   * @param {Object} e - Represents an event that takes place in DOM tree.
+   */
   textFieldOnChange = (e) => {
     for (let i in this.state.domainElements) {
       if (this.state.domainElements[i].id == e.target.id) {
@@ -59,6 +81,12 @@ class AttributeDomain extends React.Component {
     }
   };
 
+  /**
+   * Method runs if the domain element is removed.
+   * 
+   * @function
+   * @param {Object} e - Represents an event that takes place in DOM tree.
+   */
   onClickRemoveElement = (e) => {
     const id = e.currentTarget.value;
     this.setState(
@@ -76,6 +104,12 @@ class AttributeDomain extends React.Component {
     );
   };
 
+  /**
+   * Method runs if the domain element is added.
+   * 
+   * @function
+   * @param {Object} e - Represents an event that takes place in DOM tree.
+   */
   onClickAddElement = (e) => {
     const newElement = { id: this.state.id, text: "" };
     this.setState(
@@ -89,6 +123,17 @@ class AttributeDomain extends React.Component {
     );
   };
 
+  /**
+   * Method runs if the order of domain elements changes (in this case arrow up has been clicked).
+   * Example: Let's say we have 4 elements: a,b,c,d
+   * If the up arrow is clicked on the "b" element order will look as follows: b,a,c,d.
+   * So the element below goes upper, and upper element goes below. (like in the switch)
+   * If the first element is clicked, i.e. "a" then the order will look as follows: b,c,d,a
+   * so the first element goes at the bottom (like in the queue) and rest of elements goes up.
+   * 
+   * @function
+   * @param {Object} e - Represents an event that takes place in DOM tree.
+   */
   switchUpward = (e) => {
     if (this.state.domainElements.length > 1) {
       const id = e.currentTarget.value;
@@ -118,6 +163,17 @@ class AttributeDomain extends React.Component {
     }
   };
 
+   /**
+   * Method runs if the order of domain elements changes (in this case arrow down has been clicked).
+   * Example: Let's say we have 4 elements: a,b,c,d
+   * If the down arrow is clicked on the "b" element order will look as follows: a,c,b,d.
+   * So the element below goes upper, and upper element goes below. (like in the switch)
+   * If the last element is clicked, i.e. "d" then the order will look as follows: d,a,b,c
+   * so the last element goes at the top (like in the queue) and rest of elements goes down.
+   * 
+   * @function
+   * @param {Object} e - Represents an event that takes place in DOM tree.
+   */
   switchDownward = (e) => {
     if (this.state.domainElements.length > 1) {
       const id = e.currentTarget.value;
@@ -148,6 +204,12 @@ class AttributeDomain extends React.Component {
     }
   };
 
+  /**
+   * Method prepares array of html elements which will be displayed through the render method.
+   * It is responsible for displaying all the domain elements (whole rows)
+   * 
+   * @function
+   */
   renderElements = classes => {
     const elements = [];
     this.state.domainElements.forEach((x, num) => {
@@ -205,6 +267,11 @@ class AttributeDomain extends React.Component {
     return <List dense={false} style={{overflow: "auto"}} > {elements} </List>;
   };
 
+  /**
+   * Method which renders everything.
+   * 
+   * @function
+   */
   render() {
     const { classes } = this.props;
     return (

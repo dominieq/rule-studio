@@ -63,6 +63,20 @@ const menuStyles = makeStyles(theme => ({
   }
 }), {name: "CustomMenu"});
 
+/**
+ * It is the drop down list used in adding or editing attribute.
+ * 
+ * @function
+ * @param {Object} props
+ * @param {string} props.defaultValue - This is the default value (already chosen option) from the list. It's used to display mv2 option.
+ * @param {string} props.defaultWidth - This is the width of the field. Usually set to default value (which is 100%).
+ * @param {string} props.displayName - The name displayed on the list before clicking on it (e.g. "Preference type").
+ * @param {function} props.getSelected - Method responsible for remembering selected option from the list.
+ * @param {Array} props.items - These are the available options to choose from the drop down list (e.g. "none", "cost", "gain").
+ * @param {boolean} props.missingVal - True if it's missing value field, else false.
+ * @param {string} props.name - The id of the html element, used for identification purposes only.
+ * @returns {React.ReactElement}
+ */
 export default function DropDownForAttributes(props) { 
   const { defaultValue, defaultWidth, displayName, getSelected, items, missingVal, name } = props;
 

@@ -43,6 +43,17 @@ const listStyles = makeStyles(theme => ({
     },
 }), {name: "virtualized-list"});
 
+/**
+ * Displays list of attributes (enable to select) in the Edit attributes dialog.
+ * 
+ * @function
+ * @param {Object} props
+ * @param {string} props.headerText - This is the text displayed above the table.
+ * @param {function} props.onItemInTableSelected - Method runs when the table item is selected.
+ * @param {Number} props.rowHeight - This is the size of the row. Usually set to default.
+ * @param {Array} props.table - List of columns (attributes) enabled for modification.
+ * @param {string} props.clicked - The name of the selected item (attribute).
+ */
 function AttributesVirtualizedTable(props) {
     const { headerText, onItemInTableSelected, rowHeight, table, clicked } = props;
     const listClasses = listStyles();
@@ -99,16 +110,10 @@ function AttributesVirtualizedTable(props) {
     );
 }
 
-// Expected props:
-// headerText (optional) <-- string displayed above virtualized list
-// onTableItemSelected (required) <-- function responsible for selecting item from table
-// rowHeight (optional)
-// table (required) <-- array of integers (object indices) from chosen data table
-
 AttributesVirtualizedTable.propTypes = {
-    headerText: PropTypes.string,
+    headerText: PropTypes.string, //optional
     onItemInTableSelected: PropTypes.func,
-    rowHeight: PropTypes.number,
+    rowHeight: PropTypes.number, //optional
     table: PropTypes.array.isRequired,
 };
 
