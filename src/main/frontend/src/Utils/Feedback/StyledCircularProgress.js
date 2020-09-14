@@ -17,6 +17,22 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "MuiCircularProgress"});
 
+/**
+ * The Circular Progress component from Material-UI with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/circular-progress/" target="_blank">Circular Progress</a>.
+ * <br>
+ * When <code>useWrapper</code> is <code>true</code> a <code>wrapper</code> class is added to container
+ * that centers circular progress inside of it.
+ *
+ * @name Styled Circular Progress
+ * @constructor
+ * @category Utils
+ * @subcategory Feedback
+ * @param props {Object} - Any other props will be forwarded to the Circular Progress component.
+ * @param [props.useWrapper=true] {boolean} - If <code>true</code> add <code>wrapper</code> class to container.
+ * @returns {React.ReactElement} - The Circular Progress component from Material-UI library inside container.
+ */
 function StyledCircularProgress(props) {
     const { classes: propsClasses, className, useWrapper, ...other } = props;
     let classes = useStyles();

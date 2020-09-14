@@ -1,3 +1,11 @@
+/**
+ * Retrieves parameters used to perform cross-validation from server response.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object} result - Server response.
+ * @returns {Object} - Retrieved parameters.
+ */
 function parseCrossValidationParams(result) {
     return Object.keys(result).map(key => {
         if (typeof result[key] !== 'object') {

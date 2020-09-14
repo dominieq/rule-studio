@@ -15,6 +15,20 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "DownloadMatrix"})
 
+/**
+ * The {@link StyledIconButton} with get-app icon wrapped around in {@link CustomTooltip}.
+ *
+ * @name Matrix Download Button
+ * @constructor
+ * @category Utils
+ * @subcategory Inputs
+ * @param {Object} props
+ * @param {Object} props.ButtonProps - Props applied to the {@link StyledIconButton} element.
+ * @param {function} props.onSave - Callback fired when the button was clicked on.
+ * @param {string} props.title - The title of the {@link CustomTooltip} element.
+ * @param {Object} props.TooltipProps - Props applied to the {@link CustomTooltip} element.
+ * @returns {React.ReactElement}
+ */
 function MatrixDownloadButton(props) {
     const { ButtonProps, tooltip, TooltipProps } = props;
     const classes = useStyles();

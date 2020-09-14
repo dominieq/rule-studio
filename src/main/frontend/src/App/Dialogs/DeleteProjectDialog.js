@@ -15,6 +15,17 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "Delete"});
 
+/**
+ * Provides special styling for the project's name.
+ *
+ * @class
+ * @inner
+ * @memberOf DeleteProjectDialog
+ * @category Utils
+ * @subcategory Feedback
+ * @param {Object} props - Any other props will be forwarded to the span element.
+ * @returns {React.ReactElement}
+ */
 function ProjectName(props) {
     const classes = useStyles();
 
@@ -23,6 +34,20 @@ function ProjectName(props) {
     )
 }
 
+/**
+ * Allows the user to delete current project. The user has to type the project's name
+ * to prevent themselves from making hasty decisions.
+ *
+ * @class
+ * @category Utils
+ * @subcategory Feedback
+ * @param {Object} props
+ * @param {React.ReactNode} [props.children] - The optional content of the dialog.
+ * @param {string} props.currentName - The name of the current project.
+ * @param {boolean} props.open - If <code>true</code> the dialog is open.
+ * @param {function} props.onClose - Callback fired when the dialog requests to be closed.
+ * @returns {React.PureComponent}
+ */
 class DeleteProjectDialog extends PureComponent {
     constructor(props) {
         super(props);

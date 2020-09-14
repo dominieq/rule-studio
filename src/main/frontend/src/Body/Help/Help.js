@@ -33,6 +33,18 @@ const CHAPTERS = [
     "Cross-validation"
 ];
 
+/**
+ * The Help section of RuLeStudio. Contains a formatted copy of manual.
+ * The navigation drawer listens to scroll changes and highlights corresponding chapter titles.
+ * Chapter titles in scrollable container are used as a reference to their positions.
+ *
+ * @constructor
+ * @category Help
+ * @param {Object} props
+ * @param {string} props.selected - The id of selected chapter.
+ * @param {number|string} props.upperMargin - The top-margin of the navigation drawer.
+ * @returns{React.PureComponent}
+ */
 class Help extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -62,6 +74,13 @@ class Help extends React.PureComponent {
         window.removeEventListener("resize", this.updatePositions);
     }
 
+    /**
+     * Updates the <code>margin-right</code> of the scrollable container.
+     * Then, sets timeout for 1 second with a callback to update the positions of chapter titles.
+     *
+     * @function
+     * @memberOf Help
+     */
     updatePositions = () => {
         this.setState({
             marginRight: this.drawerRef.current.offsetWidth
@@ -83,6 +102,13 @@ class Help extends React.PureComponent {
         });
     }
 
+    /**
+     * Callback fired when user scrolls to certain position.
+     * Function counts and updates the position of the scroll using chapter positions.
+     *
+     * @function
+     * @memberOf Help
+     */
     onScroll = () => {
         const { chapterPositions } = this.state;
         const scrollable = document.getElementById("scrollable");
@@ -100,6 +126,15 @@ class Help extends React.PureComponent {
         }, 100);
     };
 
+    /**
+     * Callback fired when user clicked on an element from navigation drawer.
+     * Function updates scroll position using the <code>offsetTop</code>
+     * and <code>offsetHeight</code> attributes of a chapter.
+     *
+     * @function
+     * @memberOf Help
+     * @param {number} id - The numerical part of the chapter id.
+     */
     scrollTo = (id) => {
         const chapter = document.getElementById(`chapter-${id}`);
         const scrollable = document.getElementById("scrollable");

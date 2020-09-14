@@ -2,6 +2,16 @@ import { getRelationSign } from "../../../../Utils/utilFunctions/parseItems/pars
 
 const relationSigns = ["<=", ">="];
 
+/**
+ * Looks for at least one match in filter features.
+ * When filterText contains more than one word, all of them have to be found in at least one filter feature.
+ *
+ * @function
+ * @category Filtering
+ * @param {string} filterText - Input from {@link FilterTextField}.
+ * @param {Object[]} items - The list of items from {@link ResultList}.
+ * @returns {Object[]} - Filtered list of items.
+ */
 const filterFunction = (filterText, items) => {
     if (filterText === "") {
         return items;

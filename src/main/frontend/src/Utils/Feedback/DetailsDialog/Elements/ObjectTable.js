@@ -3,6 +3,19 @@ import PropTypes from "prop-types";
 import getAppropriateColor from "../Utils/getAppropriateColor";
 import VirtualizedTable from "../../../DataDisplay/VirtualizedTable";
 
+/**
+ * The {@link VirtualizedTable} element that presents attributes of an object.
+ *
+ * @name ObjectTable
+ * @constructor
+ * @category Details Dialog
+ * @subcategory Utilities
+ * @param {Object} props
+ * @param {Object} props.informationTable  - The information table from current project.
+ * @param {string} [props.objectHeader]  - The name of a selected object.
+ * @param {number} props.objectIndex  - The index of a selected object.
+ * @returns {React.ReactElement}
+ */
 function ObjectTable(props) {
     const {
         informationTable: { attributes, objects },

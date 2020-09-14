@@ -8,6 +8,19 @@ import CustomTextField from "../../Utils/Inputs/CustomTextField";
 import DialogActions from  "@material-ui/core/DialogActions"
 import DialogTitle from "@material-ui/core/DialogTitle";
 
+/**
+ * Allows the user to change the name of the current project.
+ *
+ * @class
+ * @category Utils
+ * @subcategory Feedback
+ * @param {Object} props
+ * @param {React.ReactNode} [props.children] - The optional content of the dialog.
+ * @param {string} props.currentName - The name of the current project.
+ * @param {boolean} props.open - If <code>true</code> the dialog is open.
+ * @param {function} props.onClose - Callback fired when the dialog requests to be closed.
+ * @returns {React.PureComponent}
+ */
 class RenameProjectDialog extends PureComponent {
     constructor(props) {
         super(props);

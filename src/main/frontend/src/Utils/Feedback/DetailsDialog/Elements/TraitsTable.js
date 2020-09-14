@@ -2,6 +2,20 @@ import React from "react";
 import PropTypes from "prop-types";
 import VirtualizedTable from "../../../DataDisplay/VirtualizedTable";
 
+/**
+ *  The {@link VirtualizedTable} element that presents traits of a selected item.
+ *
+ * @name TraitsTable
+ * @constructor
+ * @category Details Dialog
+ * @subcategory Utilities
+ * @param {Object} props  - Any other props will be forwarded to the {@link VirtualizedTable} element.
+ * @param {Object} [props.columnsLabels ={key: "Characteristics", value: "Value"}] - Text displayed in header.
+ * @param {number} [props.ratio = 0.5]  - The ratio of key column width to width offset.
+ * @param {Object} props.traits  - The traits property from a selected item.
+ * @param {number} [props.widthOffset = 200]  - The width of the {@link TraitsTable}.
+ * @returns {React.ReactElement}
+ */
 function TraitsTable(props) {
     const { columnsLabels, ratio, traits, widthOffset, ...other } = props;
 

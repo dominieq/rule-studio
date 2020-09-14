@@ -3,6 +3,20 @@ import PropTypes from "prop-types";
 import Typography from "@material-ui/core/Typography";
 import styles from "../styles/Image.module.css";
 
+/**
+ * Represents a composition of three HTML tags: <code>figure</code>, <code>img</code> and <code>figcaption</code>.
+ *
+ * @constructor
+ * @category Help
+ * @subcategory Elements
+ * @param {Object} props
+ * @param {string} props.aria-label - The aria-label attribute of the figcaption element.
+ * @param {React.ReactNode} props.caption - The content of the figcaption element.
+ * @param {number|string} props.height - The height of the figure element.
+ * @param {string} props.src - The src attribute of the img element.
+ * @param {number|string} props.width - The width of the figure element.
+ * @returns {React.ReactElement}
+ */
 function Image(props) {
     const { "aria-label": ariaLabel, caption, height, src, width } = props;
 

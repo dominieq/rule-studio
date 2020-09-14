@@ -37,6 +37,21 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
 import Sigma from "mdi-material-ui/Sigma";
 
+/**
+ * The cross-validation tab in RuLeStudio.
+ * Presents the outcome of cross-validation for information table from current project.
+ *
+ * @class
+ * @category Tabs
+ * @subcategory Tabs
+ * @param {Object} props
+ * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
+ * @param {Object} props.project - Current project.
+ * @param {string} props.serverBase - The name of the host.
+ * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
+ * @param {number} props.value - The id of a tab.
+ * @returns {React.Component}
+ */
 class CrossValidation extends Component {
     constructor(props) {
         super(props);
@@ -76,6 +91,13 @@ class CrossValidation extends Component {
         this.upperBar = React.createRef();
     }
 
+    /**
+     * Makes an API call on cross-validation to receive current copy of cross-validation from server.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
     getCrossValidation = () => {
         const { project, serverBase } = this.props;
 
@@ -145,12 +167,44 @@ class CrossValidation extends Component {
         });
     }
 
+    /**
+     * A component's lifecycle method. Fired once when component was mounted.
+     * <br>
+     * <br>
+     * Method calls {@link getCrossValidation}.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
     componentDidMount() {
         this._isMounted = true;
 
         this.setState({ loading: true }, this.getCrossValidation);
     }
 
+    /**
+     * A component's lifecycle method. Fired after a component was updated.
+     * <br>
+     * <br>
+     * If index option was changed, method sets object's names according to new value.
+     * <br>
+     * <br>
+     * If type of unions was changed to <code>monotonic</code> and consistency threshold is equal to 1,
+     * method changes value of threshold to 0.
+     * <br>
+     * <br>
+     * If type of rules was changed to <code>possible</code>, method changes consistency threshold to 0.
+     * <br>
+     * <br>
+     * If project was changed, method saves changes from previous project
+     * and calls {@link getCrossValidation} to receive the latest copy of cross-validation.
+     *
+     * @function
+     * @memberOf CrossValidation
+     * @param {Object} prevProps - Old props that were already replaced.
+     * @param {Object} prevState - Old state that was already replaced.
+     * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
+     */
     componentDidUpdate(prevProps, prevState, snapshot) {
         /* Check if default objects name has changed */
         if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
@@ -207,6 +261,15 @@ class CrossValidation extends Component {
         }
     }
 
+    /**
+     * A component's lifecycle method. Fired when component was requested to be unmounted.
+     * <br>
+     * <br>
+     * Method saves changes from current project.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
     componentWillUnmount() {
         this._isMounted = false;
         const { parametersSaved } = this.state;
@@ -226,6 +289,14 @@ class CrossValidation extends Component {
         }
     }
 
+    /**
+     * Makes an API call on cross-validation to cross-validate objects from current information table
+     * with selected parameters.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
     onCalculateClick = () => {
         const { project, serverBase } = this.props;
         const { parameters } = this.state;
@@ -303,6 +374,13 @@ class CrossValidation extends Component {
         });
     };
 
+    /**
+     * Makes an API call to download specified misclassification matrix.
+     *
+     * @function
+     * @memberOf CrossValidation
+     * @param {Object} data - Specifies type of downloaded matrix.
+     */
     onSaveToFile = (data) => {
         const { project, serverBase } = this.props;
 
@@ -491,6 +569,14 @@ class CrossValidation extends Component {
         }
     };
 
+    /**
+     * Filters items from {@link CrossValidation}'s state.
+     * Method uses {@link filterFunction} to filter items.
+     *
+     * @function
+     * @memberOf CrossValidation
+     * @param {Object} event - Represents an event that takes place in DOM.
+     */
     onFilterChange = (event) => {
         const { loading, items } = this.state;
 

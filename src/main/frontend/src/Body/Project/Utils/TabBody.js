@@ -5,6 +5,25 @@ import CustomBox from "../../../Utils/Containers/CustomBox";
 import { ResultList, ResultListSubheader } from "../../../Utils/DataDisplay/ResultList";
 import StyledCircularProgress from "../../../Utils/Feedback/StyledCircularProgress";
 
+/**
+ * Utility that presents results from calculations in tabs.
+ * Takes care of displaying progress circle when results are being generated.
+ * Displays a message when user tried to filter result list but no matches were found.
+ *
+ * @class
+ * @category Tabs
+ * @subcategory Utilities
+ * @param {Object} props
+ * @param {Object[]} props.content - The content of the {@link ResultList} element. Should be a list of list-items.
+ * @param {string} props.id - The id of the {@link CustomBox} element that wraps around the {@link ResultList}.
+ * @param {boolean} [props.isArray = false] - If <code>true</code> the {@link ResultList} element is displayed.
+ * @param {boolean} [props.isLoading = false] - If <code>true</code> the {@link StyledCircularProgress} element is displayed.
+ * @param {Object} props.ListProps - Props applied to the {@link ResultList} element.
+ * @param {Object} props.ListSubheaderProps - Props applied to the {@link ResultListSubheader} element.
+ * @param {boolean} [props.noFilterResults = false] - If <code>true</code> the {@link FilterNoResults} element is displayed.
+ * @param {Object[]} props.subheaderContent - The content of the {@link ResultListSubheader} element.
+ * @returns {React.ReactElement}
+ */
 function TabBody(props) {
     return (
         <React.Fragment>

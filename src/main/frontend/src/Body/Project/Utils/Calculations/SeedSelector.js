@@ -12,6 +12,19 @@ const tooltip = {
         "Using the same seed guarantees the repeatability of cross-validation for given data set."
 };
 
+/**
+ * Presents seed and allows user to type or randomize new value.
+ *
+ * @name Seed
+ * @class
+ * @category Tabs
+ * @subcategory Calculations
+ * @param {Object} props
+ * @param {Object} props.CircleHelperProps - Props applied to the {@link CircleHelper} element.
+ * @param {Object} props.randomizeSeed - Callback fired when user requests to randomize seed.
+ * @param {Object} props.TextFieldProps - Props applied to the {@link CustomTextField} element.
+ * @returns {React.ReactElement}
+ */
 function SeedSelector(props) {
     const { CircleHelperProps, TextFieldProps: { value, ...other } } = props;
 
