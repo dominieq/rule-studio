@@ -23,7 +23,18 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "MuiFileChip"});
 
-
+/**
+ * The Chip component from Material-UI library with overridden classes.
+ * For full documentation <a href="https://material-ui.com/api/chip/">check out Material-UI docs</a>.
+ *
+ * @name Styled File Chip
+ * @constructor
+ * @category Utils
+ * @subcategory Data Display
+ * @param props {Object} - Any other props will be forwarded to the Chip component.
+ * @param [props.className] {string} - The class name of the component.
+ * @returns {React.Component} The Chip component from Material-UI library.
+ */
 function StyledFileChip(props) {
     const {classes: propsClasses, ...other} = props;
     const classes = useStyles();

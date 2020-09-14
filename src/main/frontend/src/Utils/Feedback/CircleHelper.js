@@ -64,6 +64,24 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "CircleHelper"});
 
+/**
+ *  The component with a question mark inside.
+ *  Tooltip with useful information shows up after clicking on it.
+ *
+ * @name Circle Helper
+ * @constructor
+ * @category Utils
+ * @subcategory Feedback
+ * @param props {Object}
+ * @param [props.AvatarProps] {Object} - Props applied to the Avatar element.
+ * @param [props.multiRow=true] {boolean} - If <code>true</code> tooltip content will be displayed in a column.
+ * @param [props.size="small"] {"smaller"|"small"|"medium"|"big"} - The size of the component.
+ * @param props.title {React.ReactNode} - The content of the tooltip.
+ * @param [props.TooltipProps] {Object} - Props applied to the Tooltip element.
+ * @param [props.WrapperProps] {Object} - Props applied to the Wrapper element.
+ * @returns {React.ReactElement}
+ *
+ */
 function CircleHelper(props) {
     const [open, setOpen] = useState(false);
 

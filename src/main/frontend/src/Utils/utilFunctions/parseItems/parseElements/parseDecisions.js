@@ -1,5 +1,13 @@
 import { getRelationSign } from "../parseDetails";
 
+/**
+ * Converts decisions from server response to decisions used in a rule name.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object[][]} decisions - Decision from a single rule received from server.
+ * @returns {Object[][]} - An array of decisions.
+ */
 function parseDecisions(decisions) {
     let parsedAll = [];
 

@@ -23,6 +23,22 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "AlertBadge"});
 
+/**
+ * The Badge component from Material-UI library with {@link CustomTooltip} and an icon as it's content.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/badge/" target="_blank">Badge</a>.
+ *
+ * @name Alert Badge
+ * @constructor
+ * @category Utils
+ * @subcategory Feedback
+ * @param props {Object} - Any other props will be forwarded to the Badge component.
+ * @param props.icon {React.ReactNode} - The actual content of the badge.
+ * @param [props.severity] {"error"|"info"|"success"|"warning"} - Determines the color of the badge.
+ * @param props.title {React.ReactNode} - The message in the tooltip.
+ * @param [props.TooltipProps] {Object} - Props applied to the {@link CustomTooltip} element.
+ * @returns {React.ReactElement} - The Badge component from Material-UI library.
+ */
 function AlertBadge(props) {
     const { classes: propsClasses, icon, severity, title, TooltipProps, ...other } = props;
 

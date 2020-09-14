@@ -1,3 +1,11 @@
+/**
+ * Converts server response to an array of items. Single item can be displayed in {@link UnionsDialog}.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object} data - Server response.
+ * @returns {Object[]} - An array of items.
+ */
 function parseUnionsItems(data) {
     let items = [];
 

@@ -1,3 +1,12 @@
+/**
+ * Wraps decisions in round brackets then adds brackets when necessary.
+ * Joins decisions with logic AND then with logic OR.
+ *
+ * @category Details Dialog
+ * @subcategory Functions
+ * @param {Object[][]} decisions - The decision's part of a rule.
+ * @returns {Object[][]} - The decision's part of a rule prepared to be displayed in a title.
+ */
 function getTitleDecisions(decisions) {
     let titleDecisions = [];
 

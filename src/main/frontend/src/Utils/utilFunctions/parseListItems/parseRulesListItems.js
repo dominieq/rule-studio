@@ -1,3 +1,20 @@
+/**
+ * Formats number using either a fixed-point notation or an exponential notation.
+ * The exponential notation is used if there are three or more zero digits after decimal point
+ * and before a non-zero digit.
+ * Otherwise, a fixed-point notation is used.
+ * <br>
+ * <br>
+ * If a provided value is an integer, formatting is omitted.
+ * <br>
+ * <br>
+ * Used in {@link parseRulesListItems} to prepare rule characteristic to be displayed in {@link ResultList}.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {string|number} value - A number that will be formatted accordingly.
+ * @returns {string|number} - A formatted number.
+ */
 const getFixed = (value) => {
     if (Number(value)) {
         if (Number.isInteger(Number(value))) {
@@ -16,6 +33,14 @@ const getFixed = (value) => {
     }
 };
 
+/**
+ * Converts items to list items that will be displayed in {@link ResultList}.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object[]} items - An array of items prepared by {@link parseRulesItems}.
+ * @returns {Object[]} - An array of list items displayed in {@link ResultList}.
+ */
 function parseRulesListItems(items) {
     let listItems = [];
 

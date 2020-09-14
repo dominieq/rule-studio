@@ -8,6 +8,13 @@ const useStyles = makeStyles(theme=> ({
     }
 }), {name: "filter"});
 
+/**
+ * Displays information that provided phrase gave no results.
+ *
+ * @constructor
+ * @category Filtering
+ * @returns {React.ReactElement}
+ */
 function FilterNoResults() {
     const classes = useStyles();
 

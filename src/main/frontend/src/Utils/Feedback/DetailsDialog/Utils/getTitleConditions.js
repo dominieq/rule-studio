@@ -1,3 +1,12 @@
+/**
+ * Wraps conditions in round brackets when necessary.
+ * Joins conditions with logic AND.
+ *
+ * @category Details Dialog
+ * @subcategory Functions
+ * @param {Object[]} conditions - The condition's part of a rule.
+ * @returns {Object[]} - The condition's part of a rule prepared to be displayed in a title.
+ */
 function getTitleConditions(conditions) {
     let titleConditions = [];
 

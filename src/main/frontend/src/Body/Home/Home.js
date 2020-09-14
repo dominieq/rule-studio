@@ -7,18 +7,19 @@ import logoLight from "./resources/logo_transparent_light.png";
 import styles from "./styles/Home.module.css";
 
 /**
- * The Home page in RuLeStudio application. It consists of a main box and a footer.
- * There are two navigate buttons on both of sides of a logo. The one on the left is navigating to the New Project page.
- * On the other hand, the right one navigates to the Help page. There is a list of authors in the footer as well as
- * a button linking to GitHub repository.
- * @param {object} props
- * @param {function} props.goToHome A function that is going to be forwarded to onClick event in the right NavigateButton.
- * It should open the Help page.
- * @param {function} props.goToNewProject A function that is going to be forwarded to onClick event in the left NavigateButton.
- * It should open the New Project page.
- * @param {boolean} props.isDarkTheme A value that determines whether a blue or green logo should be displayed.
- * @returns {React.Fragment}
- * @constructor
+ * The Home section in RuLeStudio. It consists of a main box and a footer.
+ * There are two navigate buttons on both of sides of a logo.
+ * The one on the left is navigating to the {@link Import} section.
+ * On the other hand, the right one navigates to the {@link Help} section.
+ * There is a list of authors in the footer as well as a button linking to GitHub repository.
+ *
+ * @class
+ * @category Home
+ * @param {Object} props
+ * @param {function} props.goToHelp - Callback fired when user requests to go to the {@link Help} section.
+ * @param {function} props.goToNewProject - Callback fired when user requests to go to the {@link Import} section.
+ * @param {boolean} [props.isDarkTheme = true] - If <code>true</code> the green logo will be used. Otherwise blue logo is used.
+ * @returns {React.ReactElement}
  */
 function Home(props) {
     const { isDarkTheme } = props;
@@ -52,19 +53,8 @@ function Home(props) {
 }
 
 Home.propTypes = {
-    /**
-     * A function that is going to be forwarded to onClick event in the right NavigateButton.
-     * It should open the Help page.
-     */
     goToHelp: PropTypes.func,
-    /**
-     * A function that is going to be forwarded to onClick event in the left NavigateButton.
-     * It should open the New Project page.
-     */
     goToNewProject: PropTypes.func,
-    /**
-     * A value that determines whether a blue or green logo should be displayed.
-     */
     isDarkTheme: PropTypes.bool
 };
 

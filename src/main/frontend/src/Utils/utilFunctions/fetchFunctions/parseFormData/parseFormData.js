@@ -1,3 +1,12 @@
+/**
+ * Prepares FormData that will be included in the body of an API call.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object} parameters - The map of parameters to be appended to FormData.
+ * @param {Object} files - The map of files to be appended to FormData.
+ * @returns {FormData} - FormData with appended parameters and files.
+ */
 function parseFormData(parameters, files) {
     let data = new FormData();
 

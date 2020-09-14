@@ -27,6 +27,22 @@ import CustomButtonGroup from "../../../Utils/Inputs/CustomButtonGroup";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
+/**
+ * The classification tab in RuLeStudio.
+ * Presents the list of all object from information table with suggested classification based on generated rules.
+ *
+ * @class
+ * @category Tabs
+ * @subcategory Tabs
+ * @param {Object} props
+ * @param {function} props.onDateUploaded - Callback fired when tab receives information that new data was uploaded.
+ * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
+ * @param {Object} props.project - Current project.
+ * @param {string} props.serverBase - The name of the host.
+ * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
+ * @param {number} props.value - The id of a tab.
+ * @returns {React.Component}
+ */
 class Classification extends Component {
     constructor(props) {
         super(props);
@@ -58,6 +74,13 @@ class Classification extends Component {
         this.upperBar = React.createRef();
     }
 
+    /**
+     * Makes an API call on classification to receive current copy of classification from server.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Classification
+     */
     getClassification = () => {
         const { project, serverBase } = this.props;
 
@@ -117,12 +140,37 @@ class Classification extends Component {
         });
     }
 
+    /**
+     * A component's lifecycle method. Fired once when component was mounted.
+     * <br>
+     * <br>
+     * Method calls {@link getClassification}.
+     *
+     * @function
+     * @memberOf Classification
+     */
     componentDidMount() {
         this._isMounted = true;
 
         this.setState({ loading: true }, this.getClassification);
     }
 
+    /**
+     * A component's lifecycle method. Fired after a component was updated.
+     * <br>
+     * <br>
+     * If index option was changed, method sets object's names according to new value.
+     * <br>
+     * <br>
+     * If project was changed, method saves changes from previous project
+     * and calls {@link getClassification} to receive the latest copy of classification.
+     *
+     * @function
+     * @memberOf Classification
+     * @param {Object} prevProps - Old props that were already replaced.
+     * @param {Object} prevState - Old state that was already replaced.
+     * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
+     */
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
             const { data } = this.state;
@@ -153,6 +201,15 @@ class Classification extends Component {
         }
     }
 
+    /**
+     * A component's lifecycle method. Fired when component was requested to be unmounted.
+     * <br>
+     * <br>
+     * Method saves changes from current project.
+     *
+     * @function
+     * @memberOf Classification
+     */
     componentWillUnmount() {
         this._isMounted = false;
         const { parametersSaved, selected: { action } } = this.state;
@@ -169,6 +226,16 @@ class Classification extends Component {
         this.props.onTabChange(project);
     }
 
+    /**
+     * Makes an API call on classification to classify objects from current project or uploaded objects
+     * with selected parameters.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Classification
+     * @param {string} method - A HTTP method such as GET, POST or PUT.
+     * @param {Object} data - The body of the message.
+     */
     calculateClassification = (method, data) => {
         const { project, serverBase } = this.props;
 
@@ -233,6 +300,12 @@ class Classification extends Component {
         });
     }
 
+    /**
+     * Calls {@link calculateClassification} to classify objects from current project.
+     *
+     * @function
+     * @memberOf Classification
+     */
     onClassifyData = () => {
         const { parameters } = this.state;
 
@@ -242,6 +315,14 @@ class Classification extends Component {
         this.calculateClassification(method, data);
     };
 
+    /**
+     * Calls {@link calculateClassification} to classify objects from uploaded file.
+     * If uploaded file is in CSV format, method opens {@link CSVDialog} to specify CSV attributes.
+     *
+     * @function
+     * @memberOf Classification
+     * @param {Object} event - Represents an event that takes place in DOM.
+     */
     onUploadData = (event) => {
         event.persist();
 
@@ -264,6 +345,15 @@ class Classification extends Component {
         }
     };
 
+    /**
+     * Callback fired when {@link CSVDialog} requests to be closed.
+     * If the user specified CSV attributes, method calls {@link calculateClassification} to
+     * classify objects from uploaded file.
+     *
+     * @function
+     * @memberOf Classification
+     * @param {Object} csvSpecs - An object representing CSV attributes.
+     */
     onCSVDialogClose = (csvSpecs) => {
         this.setState(({open}) => ({
             open: { ...open, csv: false }
@@ -280,6 +370,13 @@ class Classification extends Component {
         });
     }
 
+    /**
+     * Callback fired when the user requests to download misclassification matrix.
+     * Method makes an API call to download the resource.
+     *
+     * @function
+     * @memberOf Classification
+     */
     onSaveToFile = () => {
         const { project, serverBase } = this.props;
         let data = {typeOfMatrix: "classification"};
@@ -322,6 +419,14 @@ class Classification extends Component {
         }));
     };
 
+    /**
+     * Filters items from {@link Classification}'s state.
+     * Method uses {@link filterFunction} to filter items.
+     *
+     * @function
+     * @memberOf Classification
+     * @param {Object} event - Represents an event that takes place in DOM.
+     */
     onFilterChange = (event) => {
         const { loading, items } = this.state;
 

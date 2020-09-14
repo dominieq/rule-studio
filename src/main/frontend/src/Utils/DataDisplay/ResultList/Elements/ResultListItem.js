@@ -44,6 +44,30 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "ResultListItem"});
 
+/**
+ * The ListItem component from Material-UI library with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/list-item/" target="_blank">ListItem</a>.
+ * The composition of ListItem in RuLeStudio is as follows. There is a header verse as well as caption verse.
+ * Between them there is a place for multiple verses that consists of a title and subtitle.
+ * Header is made of header itself and a subheader. Caption is made of caption itself and a subcaption.
+ *
+ * @name Result List Item
+ * @constructor
+ * @category Utils
+ * @subcategory Result List
+ * @param props {Object} - Any other props will be forwarded to the ListItem component.
+ * @param props.object {Object} - An entity to be displayed inside the ListItem.
+ * @param props.object.id {number} - The id of an entity.
+ * @param [props.object.header] {number|string} - The content of the header inside ListItem.
+ * @param [props.object.subheader] {number|string} - The content of the subheader inside ListItem.
+ * @param [props.object.multiContent] {Object[]} - An array of simple title-subtitle verses inside ListItem.
+ * @param [props.object.multiContent.title] {number|string} - The title of a verse inside ListItem.
+ * @param [props.object.multiContent.subtitle] {number|string} - The subtitle of a verse inside ListItem.
+ * @param [props.object.caption] {number|string} - The content of the caption inside ListItem.
+ * @param [props.object.subcaption] {number|string} - The content of the subcaption inside ListItem.
+ * @returns {React.ReactElement} The ListItem component from Material-UI library.
+ */
 function ResultListItem(props) {
     const { classes: propsClasses, object, ...other } = props;
     let classes = useStyles();

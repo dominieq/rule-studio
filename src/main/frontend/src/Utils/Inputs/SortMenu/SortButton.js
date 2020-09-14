@@ -12,6 +12,18 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "SortDot"});
 
+/**
+ * The Badge component from Material-UI library with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/badge/" target="_blank">Badge</a>.
+ *
+ * @name Dot Badge
+ * @constructor
+ * @category Utils
+ * @subcategory Sort Menu
+ * @param props {Object} - Any other props will be forwarded to the Badge component.
+ * @returns {React.ReactElement} - The Badge component from Material-UI library.
+ */
 function DotBadge(props) {
     const classes = useStyles();
 
@@ -28,6 +40,22 @@ function DotBadge(props) {
     );
 }
 
+/**
+ * The {@link StyledIconButton} wrapped around in {@link DotBadge} and {@link CustomTooltip}.
+ * Use badge to signal that sorting parameters has changed.
+ *
+ * @name Sort Button
+ * @constructor
+ * @category Utils
+ * @subcategory Sort Menu
+ * @param props {Object}
+ * @param [props.ButtonProps] {Object} - Props applied to the {@link StyledIconButton} element.
+ * @param [props.icon] {React.ReactNode} - The content of the {@link StyledIconButton} element.
+ * @param [props.invisible] {boolean} - If <code>true</code> the {@link DotBadge} element will be hidden.
+ * @param props.tooltip {React.ReactNode} - The content of the {@link CustomTooltip} element.
+ * @param [props.TooltipProps] {Object} - Props applied to the {@link CustomTooltip} element.
+ * @returns {React.ReactElement}
+ */
 function SortButton(props) {
     const { ButtonProps, icon, invisible, tooltip, TooltipProps } = props;
 

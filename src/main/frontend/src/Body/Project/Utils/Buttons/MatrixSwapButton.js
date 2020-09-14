@@ -15,6 +15,20 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "SwapMatrix"});
 
+/**
+ * The {@link StyledIconButton} with swap-vert icon wrapped around in {@link CustomTooltip}.
+ *
+ * @name Matrix Swap Button
+ * @constructor
+ * @category Utils
+ * @subcategory Inputs
+ * @param {Object} props
+ * @param {Object} props.ButtonProps - Props applied to the {@link StyledIconButton} element.
+ * @param {function} props.onSwap - Callback fired when the button was clicked on.
+ * @param {string} props.title - The title of the {@link CustomTooltip} element.
+ * @param {Object} props.TooltipProps - Props applied to the {@link CustomTooltip} element.
+ * @returns {React.ReactElement}
+ */
 function MatrixSwapButton(props) {
     const { ButtonProps, tooltip, TooltipProps } = props;
     const classes = useStyles()

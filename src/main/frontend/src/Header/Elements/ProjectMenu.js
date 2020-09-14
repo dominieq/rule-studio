@@ -24,6 +24,28 @@ const menuStyles = makeStyles(theme => ({
     }
 }), {name: "ProjectMenu"});
 
+/**
+ * The middle part of the {@link Header} that allows user to perform actions on selected project such as:
+ * <br>
+ *  - changing settings,
+ * <br>
+ *  - renaming,
+ *  <br>
+ *  - downloading,
+ *  <br>
+ *  - deleting.
+ *
+ * @name Project Menu
+ * @constructor
+ * @category Header
+ * @subcategory Elements
+ * @param {Object} props
+ * @param {number} props.currentProject - The id of current project.
+ * @param {function} props.onProjectClick - Callback fired when one of the projects from the list was clicked on.
+ * @param {function} props.onDialogOpen - Callback fired when one of the dialogs requests to be opened.
+ * @param {Object[]} props.projects - The list of all projects.
+ * @returns {React.ReactElement}
+ */
 function ProjectMenu(props) {
     const [anchorE1, setAnchorE1] = useState(null);
     const list = useRef(null);

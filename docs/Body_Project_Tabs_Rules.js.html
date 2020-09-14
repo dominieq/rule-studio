@@ -1,0 +1,962 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Body/Project/Tabs/Rules.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="App.html">App</a></li></ul></div><div class="category"><h2>Details Dialog</h2><h3>Classes</h3><ul><li><a href="Classified%2520Object%2520Details%2520Dialog.html">Classified Object Details Dialog</a></li><li><a href="Cones%2520Details%2520Dialog.html">Cones Details Dialog</a></li><li><a href="Rule%2520Details%2520Dialog.html">Rule Details Dialog</a></li><li><a href="Union%2520Details%2520Dialog.html">Union Details Dialog</a></li></ul><h3>Classes / Utilities</h3><ul><li><a href="ObjectsComparisonTable.html">ObjectsComparisonTable</a></li><li><a href="ObjectTable.html">ObjectTable</a></li><li><a href="RuleTable.html">RuleTable</a></li><li><a href="TableItemsList.html">TableItemsList</a></li><li><a href="TablesList.html">TablesList</a></li><li><a href="TraitsTable.html">TraitsTable</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getAppropriateColor">getAppropriateColor</a></li><li><a href="global.html#getAppropriateSign">getAppropriateSign</a></li><li><a href="global.html#getTitleConditions">getTitleConditions</a></li><li><a href="global.html#getTitleDecisions">getTitleDecisions</a></li></ul></div><div class="category"><h2>Filtering</h2><h3>Classes</h3><ul><li><a href="Filter%2520TextField.html">Filter TextField</a></li><li><a href="FilterNoResults.html">FilterNoResults</a></li></ul><h3>Global</h3><ul><li><a href="global.html#filterFunction">filterFunction</a></li></ul></div><div class="category"><h2>Header</h2><h3>Classes / Elements</h3><ul><li><a href="Files%2520Details.html">Files Details</a></li><li><a href="Project%2520Menu.html">Project Menu</a></li></ul><h3>Classes</h3><ul><li><a href="Header.html">Header</a></li></ul></div><div class="category"><h2>Help</h2><h3>Classes / Elements</h3><ul><li><a href="Chapter.html">Chapter</a></li><li><a href="Image.html">Image</a></li></ul><h3>Classes</h3><ul><li><a href="Help.html">Help</a></li></ul><h3>Classes / Utilities</h3><ul><li><a href="Styled%2520Drawer.html">Styled Drawer</a></li><li><a href="Styled%2520ListItem.html">Styled ListItem</a></li><li><a href="Styled%2520Scrollable.html">Styled Scrollable</a></li></ul></div><div class="category"><h2>Home</h2><h3>Classes / Elements</h3><ul><li><a href="Footer.html">Footer</a></li><li><a href="NavigateButton.html">NavigateButton</a></li></ul><h3>Classes</h3><ul><li><a href="Home.html">Home</a></li></ul></div><div class="category"><h2>Import</h2><h3>Classes / Elements</h3><ul><li><a href="File%2520Select%2520Zone.html">File Select Zone</a></li></ul><h3>Classes</h3><ul><li><a href="Import.html">Import</a></li></ul></div><div class="category"><h2>Tabs</h2><h3>Classes / Tabs</h3><ul><li><a href="Classification.html">Classification</a></li><li><a href="Cones.html">Cones</a></li><li><a href="CrossValidation.html">CrossValidation</a></li><li><a href="Data.html">Data</a></li><li><a href="Rules.html">Rules</a></li><li><a href="Unions.html">Unions</a></li></ul><h3>Classes / Calculations</h3><ul><li><a href="DefaultClassificationResult.html">DefaultClassificationResult</a></li><li><a href="NumberOfFolds.html">NumberOfFolds</a></li><li><a href="Seed.html">Seed</a></li><li><a href="Threshold.html">Threshold</a></li><li><a href="TypeOfClassifier.html">TypeOfClassifier</a></li><li><a href="TypeOfRules.html">TypeOfRules</a></li><li><a href="TypeOfUnions.html">TypeOfUnions</a></li></ul><h3>Classes</h3><ul><li><a href="ProjectTabs.html">ProjectTabs</a></li></ul><h3>Classes / Utilities</h3><ul><li><a href="TabBody.html">TabBody</a></li></ul></div><div class="category"><h2>Utils</h2><h3>Classes / Inputs</h3><ul><li><a href="AcceptButton.html">AcceptButton</a></li><li><a href="Calculate%2520Button.html">Calculate Button</a></li><li><a href="CancelButton.html">CancelButton</a></li><li><a href="Custom%2520Button%2520Group.html">Custom Button Group</a></li><li><a href="Custom%2520Switch.html">Custom Switch</a></li><li><a href="Custom%2520Text%2520Field.html">Custom Text Field</a></li><li><a href="Custom%2520Upload.html">Custom Upload</a></li><li><a href="Matrix%2520Button.html">Matrix Button</a></li><li><a href="Matrix%2520Download%2520Button.html">Matrix Download Button</a></li><li><a href="Matrix%2520Swap%2520Button.html">Matrix Swap Button</a></li><li><a href="Settings%2520Button.html">Settings Button</a></li><li><a href="Styled%2520Button.html">Styled Button</a></li><li><a href="Styled%2520Checkbox.html">Styled Checkbox</a></li><li><a href="Styled%2520Icon%2520Button.html">Styled Icon Button</a></li><li><a href="Styled%2520Radio%2520Button.html">Styled Radio Button</a></li><li><a href="Styled%2520Slider.html">Styled Slider</a></li><li><a href="Styled%2520Switch.html">Styled Switch</a></li></ul><h3>Classes / Feedback</h3><ul><li><a href="Alert%2520Badge.html">Alert Badge</a></li><li><a href="Circle%2520Helper.html">Circle Helper</a></li><li><a href="CSV%2520Dialog.html">CSV Dialog</a></li><li><a href="DeleteProjectDialog.html">DeleteProjectDialog</a></li><li><a href="DeleteProjectDialog-ProjectName.html">ProjectName</a></li><li><a href="External%2520File.html">External File</a></li><li><a href="Loading%2520Delay.html">Loading Delay</a></li><li><a href="Loading%2520Snackbar.html">Loading Snackbar</a></li><li><a href="Outdated%2520Data.html">Outdated Data</a></li><li><a href="RenameProjectDialog.html">RenameProjectDialog</a></li><li><a href="SettingsProjectDialog.html">SettingsProjectDialog</a></li><li><a href="SettingsProjectDialog-SettingsIcons.html">SettingsIcons</a></li><li><a href="SimpleContent.html">SimpleContent</a></li><li><a href="SimpleDialog.html">SimpleDialog</a></li><li><a href="Styled%2520Alert.html">Styled Alert</a></li><li><a href="Styled%2520Circular%2520Progress.html">Styled Circular Progress</a></li></ul><h3>Classes / Classes</h3><ul><li><a href="Alert%2520Error.html">Alert Error</a></li><li><a href="Project.html">Project</a></li></ul><h3>Classes / Matrix Dialog</h3><ul><li><a href="Centered%2520Column.html">Centered Column</a></li><li><a href="Matrix%2520Dialog.html">Matrix Dialog</a></li></ul><h3>Classes / Data Display</h3><ul><li><a href="Collapsible%2520Divider.html">Collapsible Divider</a></li><li><a href="Coloured%2520Title.html">Coloured Title</a></li><li><a href="Custom%2520Tooltip.html">Custom Tooltip</a></li><li><a href="Styled%2520Divider.html">Styled Divider</a></li><li><a href="Styled%2520File%2520Chip.html">Styled File Chip</a></li><li><a href="Text%2520with%2520Hover%2520Tooltip.html">Text with Hover Tooltip</a></li><li><a href="Virtualized%2520Matrix.html">Virtualized Matrix</a></li><li><a href="Virtualized%2520Table.html">Virtualized Table</a></li></ul><h3>Classes / Containers</h3><ul><li><a href="Custom%2520Box.html">Custom Box</a></li><li><a href="Custom%2520Drawer.html">Custom Drawer</a></li></ul><h3>Classes / Sort Menu</h3><ul><li><a href="Custom%2520Control%2520Label.html">Custom Control Label</a></li><li><a href="Dot%2520Badge.html">Dot Badge</a></li><li><a href="Sort%2520Button.html">Sort Button</a></li><li><a href="Sort%2520Menu.html">Sort Menu</a></li></ul><h3>Classes / Surfaces</h3><ul><li><a href="Custom%2520Header.html">Custom Header</a></li><li><a href="Custom%2520Popper.html">Custom Popper</a></li><li><a href="Custom%2520Section.html">Custom Section</a></li><li><a href="Styled%2520Paper.html">Styled Paper</a></li></ul><h3>Classes / Fullscreen Dialog</h3><ul><li><a href="Fullscreen%2520Dialog.html">Fullscreen Dialog</a></li><li><a href="Fullscreen%2520Header.html">Fullscreen Header</a></li><li><a href="Multi%2520Columns.html">Multi Columns</a></li></ul><h3>Classes / Result List</h3><ul><li><a href="Result%2520List.html">Result List</a></li><li><a href="Result%2520List%2520Item.html">Result List Item</a></li><li><a href="Result%2520List%2520Subheader.html">Result List Subheader</a></li></ul><h3>Classes / Navigation</h3><ul><li><a href="Slides.html">Slides</a></li><li><a href="Styled%2520Pagination.html">Styled Pagination</a></li><li><a href="Styled%2520Tab.html">Styled Tab</a></li><li><a href="Styled%2520Tabs.html">Styled Tabs</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addSubheaders">addSubheaders</a></li><li><a href="global.html#conjugateContent">conjugateContent</a></li><li><a href="global.html#downloadFunction">downloadFunction</a></li><li><a href="global.html#downloadMatrix">downloadMatrix</a></li><li><a href="global.html#downloadRules">downloadRules</a></li><li><a href="global.html#estimateMatrixHeight">estimateMatrixHeight</a></li><li><a href="global.html#estimateMatrixWidth">estimateMatrixWidth</a></li><li><a href="global.html#estimateTableHeight">estimateTableHeight</a></li><li><a href="global.html#fetchClassification">fetchClassification</a></li><li><a href="global.html#fetchCones">fetchCones</a></li><li><a href="global.html#fetchCrossValidation">fetchCrossValidation</a></li><li><a href="global.html#fetchData">fetchData</a></li><li><a href="global.html#fetchProject">fetchProject</a></li><li><a href="global.html#fetchProjects">fetchProjects</a></li><li><a href="global.html#fetchRules">fetchRules</a></li><li><a href="global.html#fetchUnions">fetchUnions</a></li><li><a href="global.html#getFixed">getFixed</a></li><li><a href="global.html#getItemName">getItemName</a></li><li><a href="global.html#getRelationSign">getRelationSign</a></li><li><a href="global.html#getRuleName">getRuleName</a></li><li><a href="global.html#handleNotOk">handleNotOk</a></li><li><a href="global.html#handleResponse">handleResponse</a></li><li><a href="global.html#hexToRgb">hexToRgb</a></li><li><a href="global.html#mergerClasses">mergerClasses</a></li><li><a href="global.html#parseClassificationItems">parseClassificationItems</a></li><li><a href="global.html#parseClassificationParams">parseClassificationParams</a></li><li><a href="global.html#parseClassifiedListItems">parseClassifiedListItems</a></li><li><a href="global.html#parseConditions">parseConditions</a></li><li><a href="global.html#parseConesItems">parseConesItems</a></li><li><a href="global.html#parseConesListItems">parseConesListItems</a></li><li><a href="global.html#parseCrossValidationItems">parseCrossValidationItems</a></li><li><a href="global.html#parseCrossValidationParams">parseCrossValidationParams</a></li><li><a href="global.html#parseDecisions">parseDecisions</a></li><li><a href="global.html#parseFolds">parseFolds</a></li><li><a href="global.html#parseFormData">parseFormData</a></li><li><a href="global.html#parseMatrix">parseMatrix</a></li><li><a href="global.html#parseRulesItems">parseRulesItems</a></li><li><a href="global.html#parseRulesListItems">parseRulesListItems</a></li><li><a href="global.html#parseRulesParams">parseRulesParams</a></li><li><a href="global.html#parseUnionsItems">parseUnionsItems</a></li><li><a href="global.html#parseUnionsListItems">parseUnionsListItems</a></li><li><a href="global.html#responseBlob">responseBlob</a></li><li><a href="global.html#responseJson">responseJson</a></li><li><a href="global.html#uploadRules">uploadRules</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>Body/Project/Tabs/Rules.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, {Component} from 'react';
+import PropTypes from "prop-types";
+import { downloadRules, fetchRules, uploadRules } from "../../../Utils/utilFunctions/fetchFunctions";
+import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
+import { parseRulesItems } from  "../../../Utils/utilFunctions/parseItems";
+import { parseRulesListItems } from "../../../Utils/utilFunctions/parseListItems";
+import { parseRulesParams } from "../../../Utils/utilFunctions/parseParams";
+import TabBody from "../Utils/TabBody";
+import filterFunction from "../Utils/Filtering/FilterFunction";
+import FilterTextField from "../Utils/Filtering/FilterTextField";
+import CalculateButton from "../Utils/Buttons/CalculateButton";
+import SettingsButton from "../Utils/Buttons/SettingsButton";
+import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
+import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
+import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
+import CustomBox from "../../../Utils/Containers/CustomBox";
+import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
+import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
+import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
+import CircleHelper from "../../../Utils/Feedback/CircleHelper";
+import { RulesDialog } from "../../../Utils/Feedback/DetailsDialog";
+import StyledAlert from "../../../Utils/Feedback/StyledAlert";
+import { createCategories, simpleSort, SortButton, SortMenu } from "../../../Utils/Inputs/SortMenu";
+import CustomUpload from "../../../Utils/Inputs/CustomUpload";
+import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
+import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
+import SvgIcon from "@material-ui/core/SvgIcon";
+import FileUpload from "mdi-material-ui/FileUpload";
+import SaveIcon from "@material-ui/icons/Save";
+import { mdiTextBox } from '@mdi/js';
+
+/**
+ * The rules tab in RuLeStudio.
+ * Presents the list of all rules generated for information table from current project.
+ *
+ * @class
+ * @category Tabs
+ * @subcategory Tabs
+ * @param {Object} props
+ * @param {function} props.onDataUploaded - Callback fired when tab receives information that new data was uploaded.
+ * @param {function} props.onRulesUploaded - Callback fired when tab receives information that rule set was uploaded.
+ * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
+ * @param {Object} props.project - Current project.
+ * @param {string} props.serverBase - The name of the host.
+ * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
+ * @param {number} props.value - The id of a tab.
+ * @returns {React.Component}
+ */
+class Rules extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            loading: false,
+            data: null,
+            items: null,
+            displayedItems: [],
+            parameters: {
+                consistencyThreshold: 0,
+                typeOfRules: "certain",
+                typeOfUnions: "monotonic"
+            },
+            selectedItem: null,
+            open: {
+                details: false,
+                settings: false,
+            },
+            sort: {
+                anchorE1: null,
+                order: "asc",
+                value: "id"
+            },
+            alertProps: undefined,
+        };
+
+        this.upperBar = React.createRef();
+    }
+
+    /**
+     * Makes an API call on rules to receive current copy of rule set from server.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Rules
+     */
+    getRules = () => {
+        const { project, serverBase } = this.props;
+
+        fetchRules(
+            serverBase, project.result.id, "GET", null
+        ).then(result => {
+            if (result &amp;&amp; this._isMounted) {
+                const items = parseRulesItems(result);
+                const resultParameters = parseRulesParams(result);
+
+                let alertProps = undefined;
+                if (result.hasOwnProperty("errorMessage")) {
+                    alertProps = { message: result.errorMessage, open: true, severity: "error" };
+                }
+
+                this.setState(({parameters}) => ({
+                    data: result,
+                    items: items,
+                    displayedItems: items,
+                    parameters: { ...parameters, ...resultParameters},
+                    alertProps: alertProps
+                }));
+
+                if (result.hasOwnProperty("isCurrentData")) {
+                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                }
+
+                if (result.hasOwnProperty("externalRules")) {
+                    this.props.onRulesUploaded(result.externalRules);
+                }
+
+                if (result.hasOwnProperty("validateCurrentData")) {
+                    this.updateAlerts(result.validateCurrentData, null);
+                }
+            }
+        }).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
+            if (this._isMounted) {
+                this.setState({
+                    data: null,
+                    items: null,
+                    displayedItems: [],
+                    alertProps: error
+                });
+            }
+        }).finally(() => {
+            if (this._isMounted) {
+                const { displayedItems } = this.state;
+                const { project: { parameters, parametersSaved, sortParams }} = this.props;
+                const { consistencyThreshold, typeOfRules, typeOfUnions } = parameters;
+
+                this.setState(({parameters, sort}) => ({
+                    loading: false,
+                    parameters: parametersSaved ?
+                        parameters : { ...parameters, ...{ consistencyThreshold, typeOfRules, typeOfUnions } },
+                    parametersSaved: parametersSaved,
+                    sort: { ...sort, ...sortParams.rules },
+                    selectedItem: null
+                }), () => this.onSortChange(displayedItems));
+            }
+        });
+    };
+
+    /**
+     * A component's lifecycle method. Fired once when component was mounted.
+     * &lt;br>
+     * &lt;br>
+     * Method calls {@link getRules}.
+     *
+     * @function
+     * @memberOf Rules
+     */
+    componentDidMount() {
+        this._isMounted = true;
+
+        this.setState({ loading: true }, this.getRules);
+    }
+
+    /**
+     * A component's lifecycle method. Fired after a component was updated.
+     * &lt;br>
+     * &lt;br>
+     * If type of unions was changed to &lt;code>monotonic&lt;/code> and consistency threshold is equal to 1,
+     * method changes value of threshold to 0.
+     * &lt;br>
+     * &lt;br>
+     * If type of rules was changed to &lt;code>possible&lt;/code>, method changes consistency threshold to 0.
+     * &lt;br>
+     * &lt;br>
+     * If project was changed, method saves changes from previous project
+     * and calls {@link getRules} to receive the latest copy of rule set.
+     *
+     * @function
+     * @memberOf Rules
+     * @param {Object} prevProps - Old props that were already replaced.
+     * @param {Object} prevState - Old state that was already replaced.
+     * @param {Object} snapshot - Returned from another lifecycle method &lt;code>getSnapshotBeforeUpdate&lt;/code>. Usually undefined.
+     */
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { parameters: prevParameters } = prevState;
+        const { parameters } = this.state;
+
+        if (parameters.typeOfUnions !== 'monotonic') {
+            if (parameters.consistencyThreshold === 1) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 0, typeOfUnions: "monotonic" }
+                }));
+            } else {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, typeOfUnions: "monotonic" }
+                }));
+            }
+        }
+
+        if  (parameters.typeOfRules !== prevParameters.typeOfRules &amp;&amp; parameters.typeOfRules === "possible") {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, consistencyThreshold: 0 }
+            }));
+        }
+
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            const { parametersSaved, sort: { order, value } } = prevState;
+            let project = { ...prevProps.project };
+
+            project.sortParams.rules = { ...project.sortParams.rules, ...{ order, value } };
+
+            if (!parametersSaved) {
+                const { parameters } = prevState;
+
+                project.parameters = {
+                    ...project.parameters,
+                    consistencyThreshold: parameters.consistencyThreshold,
+                    typeOfRules: parameters.typeOfRules
+                };
+                project.parametersSaved = parametersSaved;
+            }
+
+            this.props.onTabChange(project);
+
+            this.setState({ loading: true }, this.getRules);
+        }
+    }
+
+    /**
+     * A component's lifecycle method. Fired when component was requested to be unmounted.
+     * &lt;br>
+     * &lt;br>
+     * Method saves changes from current project.
+     *
+     * @function
+     * @memberOf Rules
+     */
+    componentWillUnmount() {
+        this._isMounted = false;
+        const { parametersSaved , sort: { order, value } } = this.state;
+        let project = JSON.parse(JSON.stringify(this.props.project));
+
+        project.sortParams.rules = { ...project.sortParams.rules, ...{ order, value } };
+
+        if ( !parametersSaved ) {
+            const { parameters } = this.state;
+
+            project.parameters = {
+                ...project.parameters,
+                consistencyThreshold: parameters.consistencyThreshold,
+                typeOfRules: parameters.typeOfRules
+            };
+            project.parametersSaved = parametersSaved;
+        }
+
+        this.props.onTabChange(project);
+    }
+
+    /**
+     * Makes an API call on rules to generate new rule set from current information table and parameters.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Rules
+     */
+    onCalculateClick = () => {
+        const { project, serverBase } = this.props;
+        const { parameters } = this.state;
+
+        this.setState({
+            loading: true,
+        }, () => {
+            let method = "PUT";
+            let data = parseFormData(parameters, null);
+
+            fetchRules(
+                serverBase, project.result.id, method, data
+            ).then(result => {
+                if (result) {
+                    if (this._isMounted) {
+                        const items = parseRulesItems(result);
+
+                        let alertProps = undefined;
+                        if (result.hasOwnProperty("errorMessage")) {
+                            alertProps = { message: result.errorMessage, open: true, severity: "error" };
+                        }
+
+                        this.setState({
+                            data: result,
+                            items: items,
+                            displayedItems: items,
+                            parametersSaved: true,
+                            alertProps: alertProps
+                        });
+                    }
+
+                    let projectCopy = JSON.parse(JSON.stringify(project));
+                    projectCopy.result.rules = result;
+
+                    const newParameters = parseRulesParams(result);
+                    projectCopy.parameters = {
+                        ...projectCopy.parameters,
+                        consistencyThreshold: newParameters.consistencyThreshold,
+                        typeOfRules: newParameters.typeOfRules
+                    };
+                    projectCopy.parametersSaved = true;
+
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                    }
+
+                    if (result.hasOwnProperty("externalRules")) {
+                        this.props.onRulesUploaded(result.externalRules);
+                    }
+
+                    if (result.hasOwnProperty("validateCurrentData")) {
+                        this.updateAlerts(result.validateCurrentData, projectCopy);
+                    }
+
+                    this.props.onTabChange(projectCopy);
+                }
+            }).catch(error => {
+                if (!error.hasOwnProperty("open")) {
+                    console.log(error);
+                }
+                if (this._isMounted) {
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: [],
+                        alertProps: error
+                    });
+                }
+            }).finally(() => {
+                const { displayedItems } = this.state;
+
+                if (this._isMounted) {
+                    this.setState({
+                        loading: false,
+                        selectedItem: null
+                    }, () => this.onSortChange(displayedItems));
+                }
+            });
+        });
+    };
+
+    /**
+     * Makes an API call on rules to upload user's rule set.
+     * Then, updates states and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Rules
+     * @param {Object} event - Represents an event that takes place in DOM.
+     */
+    onUploadFileChanged = (event) => {
+        if (event.target.files[0]) {
+            const { project, serverBase } = this.props;
+
+            let method = "PUT";
+            let files = { rules: event.target.files[0] }
+
+            let data = parseFormData(null, files);
+
+            this.setState({
+                loading: true,
+            }, () => {
+                uploadRules(
+                    serverBase, project.result.id, method, data
+                ).then(result => {
+                    if (result) {
+                        if (this._isMounted) {
+                            const items = parseRulesItems(result);
+
+                            let alertProps = undefined;
+                            if (result.hasOwnProperty("errorMessage")) {
+                                alertProps = { message: result.errorMessage, open: true, severity: "error" };
+                            }
+
+                            this.setState({
+                                data: result,
+                                items: items,
+                                displayedItems: items,
+                                alertProps: alertProps
+                            });
+                        }
+                        let projectCopy = JSON.parse(JSON.stringify(project));
+                        projectCopy.result.rules = result;
+
+                        if (result.hasOwnProperty("isCurrentData")) {
+                            this.props.showAlert(this.props.value, !result.isCurrentData);
+                        }
+
+                        if (result.hasOwnProperty("externalRules")) {
+                            this.props.onRulesUploaded(result.externalRules);
+                        }
+
+                        if (result.hasOwnProperty("validateCurrentData")) {
+                            this.updateAlerts(result.validateCurrentData, projectCopy);
+                        }
+
+                        this.props.onTabChange(projectCopy);
+                    }
+                }).catch(error => {
+                    if (!error.hasOwnProperty("open")) {
+                        console.log(error);
+                    }
+                    if (this._isMounted) {
+                        this.setState({
+                            data: null,
+                            items: null,
+                            displayedItems: [],
+                            alertProps: error
+                        });
+                    }
+                }).finally(() => {
+                    const { displayedItems } = this.state;
+
+                    if (this._isMounted) {
+                        this.setState({
+                            loading: false,
+                            selectedItem: null
+                        }, () =>  this.onSortChange(displayedItems));
+                    }
+                });
+            });
+        }
+    };
+
+    /**
+     * Used when changes in {@link Rules} had an impact on results in {@link Unions} or {@link Classification}.
+     * Updates classification and unions in current project, makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Rules
+     * @param {Object} validateCurrentData - The part of response from server
+     * @param {Object} project - Project that will be updated.
+     */
+    updateAlerts = (validateCurrentData, project) => {
+        if (validateCurrentData.classification !== null) {
+            if (validateCurrentData.classification.hasOwnProperty("isCurrentLearningData")) {
+                const isCurrentLearningData = validateCurrentData.classification.isCurrentLearningData;
+
+                if (project !== null &amp;&amp; project.result.classification !== null) {
+                    project.result.classification.isCurrentLearningData = isCurrentLearningData;
+                }
+
+                if (validateCurrentData.classification.hasOwnProperty("isCurrentRuleSet")) {
+                    const isCurrentRuleSet = validateCurrentData.classification.isCurrentRuleSet;
+
+                    if (project !== null &amp;&amp; project.result.classification !== null) {
+                        project.result.classification.isCurrentRuleSet = isCurrentRuleSet;
+                    }
+
+                    this.props.showAlert(this.props.value + 1, !(isCurrentLearningData &amp;&amp; isCurrentRuleSet));
+                } else {
+                    this.props.showAlert(this.props.value + 1, !isCurrentLearningData);
+                }
+            }
+
+            if (validateCurrentData.classification.hasOwnProperty("externalData")) {
+                if (project !== null &amp;&amp; project.result.classification !== null) {
+                    project.result.classification.externalData = validateCurrentData.classification.externalData;
+                }
+
+                this.props.onDataUploaded(validateCurrentData.classification.externalData);
+            }
+        }
+
+        if (validateCurrentData.unions !== null) {
+            if (validateCurrentData.unions.hasOwnProperty("isCurrentData")) {
+                if (project !== null &amp;&amp; project.result.unions !== null) {
+                    project.result.unions.isCurrentData = validateCurrentData.unions.isCurrentData;
+                }
+
+                this.props.showAlert(this.props.value - 1, !validateCurrentData.unions.isCurrentData);
+            }
+        }
+    };
+
+    /**
+     * Makes an API call to download current rules set in XML format.
+     *
+     * @function
+     * @memberOf Rules
+     */
+    onSaveRulesToXMLClick = () => {
+        const { project, serverBase } = this.props;
+        let data = { format: "xml" };
+
+        downloadRules(serverBase, project.result.id, data).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
+            if (this._isMounted) {
+                this.setState({alertProps: error});
+            }
+        });
+    };
+
+    /**
+     * Makes an API call to download current rule set in TXT format.
+     *
+     * @function
+     * @memberOf Rules
+     */
+    onSaveRulesToTXTClick = () => {
+        const { project, serverBase } = this.props;
+        let data = { format: "txt" };
+
+        downloadRules(serverBase, project.result.id, data).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
+            if (this._isMounted) {
+                this.setState({ alertProps: error });
+            }
+        });
+    };
+
+    toggleOpen = (name) => {
+        this.setState(({open}) => ({
+            open: {...open, [name]: !open[name]}
+        }));
+    };
+
+    onDetailsOpen = (index) => {
+        const { items } = this.state;
+
+        this.setState(({open}) => ({
+            open: {...open, details: true, settings: false},
+            selectedItem: items[index]
+        }));
+    };
+
+    onConsistencyThresholdChange = (threshold) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, consistencyThreshold: threshold},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onTypeOfRulesChange = (event) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfRules: event.target.value},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onTypeOfUnionsChange = (event) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfUnions: event.target.value},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    /**
+     * Filters items from {@link Rules}' state and then sorts them if any order was declared.
+     * Method uses {@link filterFunction} to filter items.
+     *
+     * @function
+     * @memberOf Rules
+     * @param {Object} event - Represents an event that takes place in DOM.
+     */
+    onFilterChange = (event) => {
+        const { loading, items } = this.state;
+
+        if (!loading &amp;&amp; Array.isArray(items) &amp;&amp; items.length) {
+            this.onSortChange(filterFunction(event.target.value.toString(), items.slice()));
+        }
+    };
+
+    onSortMenuOpen = (event) => {
+        const target = event.currentTarget;
+
+        this.setState(({sort}) => ({
+            sort: { ...sort, anchorE1: target }
+        }));
+    };
+
+    onSortMenuClose = () => {
+        this.setState(({sort}) => ({
+            sort: { ...sort, anchorE1: null }
+        }));
+    };
+
+    onSortValueChange = (event) => {
+        const value = event.target.value;
+
+        this.setState(({sort}) => ({
+            sort: { ...sort, value: value }
+        }), () => {
+            const { displayedItems } = this.state;
+
+            this.onSortChange(displayedItems);
+        });
+    };
+
+    onSortOrderChange = (event) => {
+        const order = event.target.value;
+
+        this.setState(({sort}) => ({
+            sort: { ...sort, order: order }
+        }), () => {
+            const { displayedItems } = this.state;
+
+            this.onSortChange(displayedItems);
+        });
+    };
+
+    /**
+     * Sorts provided items and saves results in {@link Rules}' state.
+     * Method uses {@link simpleSort} function to sort items.
+     *
+     * @function
+     * @memberOf Rules
+     * @param {Object[]} items - A list of objects that will be sorted.
+     */
+    onSortChange = (items) => {
+        if (items) {
+            const { items: originalItems, sort: { order, value } } = this.state;
+
+            let newItems = items.map(item => item.toSort(value));
+            newItems = simpleSort(newItems, value, order);
+            newItems = newItems.map(item => originalItems[item.id]);
+
+            this.setState({
+                displayedItems: newItems
+            });
+        } else {
+            this.setState({
+                displayedItems: null
+            });
+        }
+    };
+
+    onSnackbarClose = (event, reason) => {
+        if (reason !== 'clickaway') {
+            this.setState(({alertProps}) => ({
+                alertProps: {...alertProps, open: false}
+            }));
+        }
+    };
+
+    render() {
+        const { loading, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
+        const { project: { result, settings } } = this.props;
+
+        const resultsExists = Array.isArray(items) &amp;&amp; Boolean(items.length);
+
+        return (
+            &lt;CustomBox id={"rules"} variant={"Tab"}>
+                &lt;CustomDrawer
+                    id={"rules-settings"}
+                    open={open.settings}
+                    onClose={() => this.toggleOpen("settings")}
+                    placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
+                >
+                    &lt;TypeOfRulesSelector
+                        TextFieldProps={{
+                            onChange: this.onTypeOfRulesChange,
+                            value: parameters.typeOfRules
+                        }}
+                    />
+                    &lt;TypeOfUnionsSelector
+                        TextFieldProps={{
+                            disabledChildren: ["standard"],
+                            onChange: this.onTypeOfUnionsChange,
+                            value: parameters.typeOfUnions
+                        }}
+                        variant={"extended"}
+                    />
+                    &lt;ThresholdSelector
+                        keepChanges={parameters.typeOfRules !== 'possible'}
+                        onChange={this.onConsistencyThresholdChange}
+                        value={parameters.consistencyThreshold}
+                        variant={"extended"}
+                    />
+                &lt;/CustomDrawer>
+                &lt;CustomBox customScrollbar={true} id={"rules-content"} variant={"TabBody"}>
+                    &lt;CustomHeader id={"rules-header"} paperRef={this.upperBar}>
+                        &lt;SettingsButton onClick={() => this.toggleOpen("settings")} />
+                        &lt;StyledDivider margin={16} />
+                        &lt;CustomTooltip
+                            disableMaxWidth={true}
+                            title={"Click on settings button on the left to customize parameters"}
+                        >
+                            &lt;CalculateButton
+                                aria-label={"rules-calculate-button"}
+                                disabled={loading}
+                                onClick={this.onCalculateClick}
+                            />
+                        &lt;/CustomTooltip>
+                        &lt;StyledDivider margin={16} />
+                        &lt;CustomTooltip title={"Upload file"}>
+                            &lt;CustomUpload
+                                accept={".xml"}
+                                disabled={loading}
+                                id={"rules-upload-button"}
+                                onChange={this.onUploadFileChanged}
+                            >
+                                &lt;StyledIconButton
+                                    aria-label={"rules-upload-button"}
+                                    color={"primary"}
+                                    component={"span"}
+                                    disabled={loading}
+                                >
+                                    &lt;FileUpload />
+                                &lt;/StyledIconButton>
+                            &lt;/CustomUpload>
+                        &lt;/CustomTooltip>
+                        &lt;CircleHelper
+                            size={"smaller"}
+                            title={"Attributes are taken from DATA."}
+                            TooltipProps={{ placement: "bottom" }}
+                            WrapperProps={{ style: { marginLeft: 16 }}}
+                        />
+                        &lt;StyledDivider margin={16} />
+                        &lt;CustomTooltip title={"Save rules to RuleML"}>
+                            &lt;StyledIconButton
+                                aria-label={"rules-save-to-xml-button"}
+                                color={"primary"}
+                                disabled={!resultsExists || loading}
+                                onClick={this.onSaveRulesToXMLClick}
+                            >
+                                &lt;SaveIcon />
+                            &lt;/StyledIconButton>
+                        &lt;/CustomTooltip>
+                        &lt;StyledDivider margin={16} />
+                        &lt;CustomTooltip title={"Save rules to TXT"}>
+                            &lt;StyledIconButton
+                                aria-label={"rules-save-to-txt-button"}
+                                color={"primary"}
+                                disabled={!resultsExists || loading}
+                                onClick={this.onSaveRulesToTXTClick}
+                            >
+                                &lt;SvgIcon>&lt;path d={mdiTextBox} />&lt;/SvgIcon>
+                            &lt;/StyledIconButton>
+                        &lt;/CustomTooltip>
+                        &lt;span style={{flexGrow: 1}} />
+                        &lt;SortButton
+                            ButtonProps={{
+                                "aria-controls": "rules-sort-menu",
+                                "aria-haspopup": true,
+                                "aria-label": "sort rules",
+                                disabled: !resultsExists || loading,
+                                onClick: this.onSortMenuOpen
+                            }}
+                            invisible={sort.value === "id" &amp;&amp; sort.order === "asc"}
+                            tooltip={resultsExists ? "Sort rules" : "No content to sort"}
+                            TooltipProps={{
+                                WrapperProps: { style: { marginRight: "0.5rem" } }
+                            }}
+                        />
+                        &lt;FilterTextField onChange={this.onFilterChange} />
+                    &lt;/CustomHeader>
+                    {resultsExists &amp;&amp;
+                        &lt;SortMenu
+                            anchorE1={sort.anchorE1}
+                            ContentProps={{
+                                categories: createCategories(
+                                    Object.keys(items[0].traits).filter(value => value !== "Type"),
+                                    "none (default index)",
+                                    "id"
+                                ),
+                                chooseOrder: true,
+                                onCategoryChange: this.onSortValueChange,
+                                onOrderChange: this.onSortOrderChange,
+                                order: sort.order,
+                                rowHeight: 28,
+                                value: sort.value
+                            }}
+                            id={"rules-sort-menu"}
+                            onClose={this.onSortMenuClose}
+                        />
+                    }
+                    &lt;TabBody
+                        content={parseRulesListItems(displayedItems)}
+                        id={"rules-list"}
+                        isArray={Array.isArray(displayedItems) &amp;&amp; Boolean(displayedItems.length)}
+                        isLoading={loading}
+                        ListProps={{
+                            onItemSelected: this.onDetailsOpen
+                        }}
+                        ListSubheaderProps={{
+                            disableHelper: false,
+                            helper: (
+                                &lt;p aria-label={"helper-text"} style={{margin: 0, textAlign: "justify"}}>
+                                    {
+                                        "First row of each rule presents decision condition. " +
+                                        "Next rows present subsequent elementary conditions. " +
+                                        "These elementary conditions are connected by AND. " +
+                                        "Last row shows chosen rule’s characteristics."
+                                    }
+                                &lt;/p>
+                            ),
+                            style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
+                        }}
+                        noFilterResults={!displayedItems}
+                        subheaderContent={[
+                            {
+                                label: "Number of rules:",
+                                value: displayedItems &amp;&amp; displayedItems.length
+                            }
+                        ]}
+                    />
+                    {selectedItem !== null &amp;&amp;
+                        &lt;RulesDialog
+                            item={selectedItem}
+                            onClose={() => this.toggleOpen("details")}
+                            open={open.details}
+                            projectResult={result}
+                            settings={settings}
+                        />
+                    }
+                &lt;/CustomBox>
+                &lt;StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
+            &lt;/CustomBox>
+
+        )
+    }
+}
+
+Rules.propTypes = {
+    onDataUploaded: PropTypes.func,
+    onRulesUploaded: PropTypes.func,
+    onTabChange: PropTypes.func,
+    project: PropTypes.object,
+    serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
+    value: PropTypes.number
+};
+
+export default Rules;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

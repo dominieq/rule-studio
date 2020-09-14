@@ -38,6 +38,30 @@ const listStyles = makeStyles(theme => ({
     },
 }), {name: "TableItemsList"});
 
+/**
+ *  An AutoSizer and List components from react-virtualized library with custom styling.
+ *  Used to display items from an array from an item's tables property.
+ *  <br>
+ *  For full documentation check out react-virtualized docs on
+ *  <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/AutoSizer.md" target="_blank">AutoSizer</a>
+ *  and
+ *  <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/List.md" target="_blank">List</a>.
+ *
+ * @name TableItemsList
+ * @constructor
+ * @category Details Dialog
+ * @subcategory Utilities
+ * @param {Object} props
+ * @param {function} [props.getItemStyle] - Should return a style object for an item with specified index.
+ * @param {function} [props.getName] - Should return a name for an item with specified index.
+ * @param {string} [props.headerText] - The header of the {@link TableItemsList}.
+ * @param {number} props.itemIndex - The index of currently selected item.
+ * @param {string} [props.itemText = "Object"] - The prefix used to name items from table.
+ * @param {function} props.onItemInTableSelected - Callback fired when an item in table is selected.
+ * @param {number} [props.rowHeight = 53] - The height of a row in a list.
+ * @param {Object[]} props.table - The one of arrays from item's tables property.
+ * @returns {React.ReactElement}
+ */
 function TableItemsList(props) {
     const { headerText, itemIndex, itemText, onItemInTableSelected, rowHeight, table } = props;
     const listClasses = listStyles();
@@ -106,13 +130,6 @@ function TableItemsList(props) {
         </Fragment>
     );
 }
-
-// Expected props:
-// headerText (optional) <-- string displayed above virtualized list
-// itemInTableIndex (optional) <-- index of currently displayed item from table
-// onTableItemSelected (required) <-- function responsible for selecting item from table
-// rowHeight (optional)
-// table (required) <-- array of integers (object indices) from chosen data table
 
 TableItemsList.propTypes = {
     getItemsStyle: PropTypes.func,

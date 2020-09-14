@@ -1,3 +1,13 @@
+/**
+ * The Project is a main entity in RuLeStudio application. It contains uploaded data (attributes and objects)
+ * as well as results from calculations. Apart from that it also stores parameters that are used in calculations.
+ * User settings are also stored inside project.
+ *
+ * @constructor
+ * @category Utils
+ * @subcategory Classes
+ * @param {Object} result An object received from server with data and calculation results.
+ */
 class Project {
     constructor(result) {
         this.result = result;

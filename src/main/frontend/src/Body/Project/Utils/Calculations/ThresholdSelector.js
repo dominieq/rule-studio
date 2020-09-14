@@ -23,6 +23,23 @@ const tooltip = {
         "However, for a cost-type consistency measure, like epsilon, one checks if measure’s value is \u2264 t.",
 };
 
+/**
+ * Presents threshold and allows user to choose on the slider or type new value.
+ *
+ * @name Threshold
+ * @class
+ * @category Tabs
+ * @subcategory Calculations
+ * @param {Object} props
+ * @param {Object} props.CircleHelperProps - Props applied to the {@link CircleHelper} element.
+ * @param {boolean} [props.keepChanges=true] - If <code>false</code> changes aren't stored in the state.
+ * @param {function} props.onChange - Callback fired when value changed.
+ * @param {Object} props.SliderProps - Props applied to the {@link StyledSlider} element.
+ * @param {Object} props.TextFieldProps - Props applied to the {@link CustomTextField} element.
+ * @param {*} props.value - The current threshold value.
+ * @param {"simple"|"extended"} [props.variant="simple"] - Determines what text should be displayed in the tooltip.
+ * @returns {React.ReactElement}
+ */
 class ThresholdSelector extends Component {
     constructor(props) {
         super(props);
