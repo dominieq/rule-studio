@@ -1,38 +1,44 @@
 package pl.put.poznan.rulestudio.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.rulelearn.data.InformationTable;
-import org.rulelearn.rules.RuleSetWithCharacteristics;
 
 public class CrossValidationSingleFold {
-    private InformationTable validationTable;
-    private RuleSetWithCharacteristics ruleSetWithCharacteristics;
+    private int[] indicesOfTrainingObjects;
+    private int[] indicesOfValidationObjects;
+    private RuLeStudioRuleSet ruLeStudioRuleSet;
     private Classification classificationValidationTable;
-    private Integer numberOfLearningObjects;
 
-    public CrossValidationSingleFold(InformationTable validationTable, RuleSetWithCharacteristics ruleSetWithCharacteristics, Classification classificationValidationTable, Integer numberOfLearningObjects) {
-        this.validationTable = validationTable;
-        this.ruleSetWithCharacteristics = ruleSetWithCharacteristics;
+    public CrossValidationSingleFold(int[] indicesOfTrainingObjects, int[] indicesOfValidationObjects, RuLeStudioRuleSet ruLeStudioRuleSet, Classification classificationValidationTable) {
+        this.indicesOfTrainingObjects = indicesOfTrainingObjects;
+        this.indicesOfValidationObjects = indicesOfValidationObjects;
+        this.ruLeStudioRuleSet = ruLeStudioRuleSet;
         this.classificationValidationTable = classificationValidationTable;
-        this.numberOfLearningObjects = numberOfLearningObjects;
     }
 
-    public InformationTable getValidationTable() {
-        return validationTable;
+    public int[] getIndicesOfTrainingObjects() {
+        return indicesOfTrainingObjects;
     }
 
-    public void setValidationTable(InformationTable validationTable) {
-        this.validationTable = validationTable;
+    public void setIndicesOfTrainingObjects(int[] indicesOfTrainingObjects) {
+        this.indicesOfTrainingObjects = indicesOfTrainingObjects;
+    }
+
+    public int[] getIndicesOfValidationObjects() {
+        return indicesOfValidationObjects;
+    }
+
+    public void setIndicesOfValidationObjects(int[] indicesOfValidationObjects) {
+        this.indicesOfValidationObjects = indicesOfValidationObjects;
     }
 
     @JsonProperty("ruleSet")
-    public RuleSetWithCharacteristics getRuleSetWithCharacteristics() {
-        return ruleSetWithCharacteristics;
+    public RuLeStudioRuleSet getRuLeStudioRuleSet() {
+        return ruLeStudioRuleSet;
     }
 
     @JsonProperty("ruleSet")
-    public void setRuleSetWithCharacteristics(RuleSetWithCharacteristics ruleSetWithCharacteristics) {
-        this.ruleSetWithCharacteristics = ruleSetWithCharacteristics;
+    public void setRuLeStudioRuleSet(RuLeStudioRuleSet ruLeStudioRuleSet) {
+        this.ruLeStudioRuleSet = ruLeStudioRuleSet;
     }
 
     public Classification getClassificationValidationTable() {
@@ -41,13 +47,5 @@ public class CrossValidationSingleFold {
 
     public void setClassificationValidationTable(Classification classificationValidationTable) {
         this.classificationValidationTable = classificationValidationTable;
-    }
-
-    public Integer getNumberOfLearningObjects() {
-        return numberOfLearningObjects;
-    }
-
-    public void setNumberOfLearningObjects(Integer numberOfLearningObjects) {
-        this.numberOfLearningObjects = numberOfLearningObjects;
     }
 }

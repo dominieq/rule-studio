@@ -3,6 +3,8 @@ package pl.put.poznan.rulestudio.model;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import pl.put.poznan.rulestudio.enums.UnionType;
 
+import java.io.Serializable;
+
 public class UnionsWithHttpParameters {
     private UnionsWithSingleLimitingDecision unions;
     private UnionType typeOfUnions;

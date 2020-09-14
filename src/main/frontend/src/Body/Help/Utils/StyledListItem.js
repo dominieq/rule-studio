@@ -26,6 +26,18 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "ChapterNav"});
 
+/**
+ * The ListItem component from Material-UI library with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/list-item/" target="_blank">ListItem</a>.
+ *
+ * @name Styled ListItem
+ * @constructor
+ * @category Help
+ * @subcategory Utilities
+ * @param {Object} props - Any other props will be forwarded to the ListItem component.
+ * @returns {React.ReactElement}
+ */
 function StyledListItem(props) {
     const { classes: propsClasses, ...other } = props;
 

@@ -13,7 +13,7 @@ export const StyledCheckbox = withStyles(theme => ({
       },
     },
     checked: {},
-  }))((props) => <Checkbox color="default" {...props} />);
+}))((props) => <Checkbox color="default" {...props} />);
 
 
 export const StyledRadio = withStyles(theme => ({
@@ -24,7 +24,7 @@ export const StyledRadio = withStyles(theme => ({
       },
     },
     checked: {},
-  }))((props) => <Radio color="default" {...props} />);
+}))((props) => <Radio color="default" {...props} />);
 
 
 export const StyledCustomTextField = withStyles(theme => ({
@@ -66,4 +66,4 @@ export const StyledDefaultTextField = withStyles(theme => ({
             color: theme.palette.background.subDark
         },
     },
-  }))(TextField);
+}))(TextField);

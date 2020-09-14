@@ -14,6 +14,19 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import EyeSettings from  "mdi-material-ui/EyeSettings";
 
+/**
+ * The ListItemIcon from Material-UI library with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href=https://material-ui.com/api/list-item-icon/ target="_blank">ListItemIcon</a>.
+ *
+ * @class
+ * @inner
+ * @memberOf SettingsProjectDialog
+ * @category Utils
+ * @subcategory Feedback
+ * @param {Object} props - Any other props will be forwarded to the ListItemIcon component.
+ * @returns {React.ReactElement}
+ */
 const SettingsIcons = withStyles({
     root: {
         color: "inherit",
@@ -23,7 +36,24 @@ const SettingsIcons = withStyles({
 
 }, {name: "MuiListItemIcon"})(props => <ListItemIcon {...props}>{props.children}</ListItemIcon>);
 
-
+/**
+ * Allows the user to choose index option in current project.
+ * Index option determines what should be displayed as an object's name.
+ * If there are no description or identification attributes in current information table,
+ * only default option is available.
+ *
+ * @class
+ * @category Utils
+ * @subcategory Feedback
+ * @param {Object} props
+ * @param {React.ReactNode} [props.children] - The optional content of the dialog.
+ * @param {Array.<string|number>} props.indexOptions - The list of all possible options.
+ * @param {function} props.onClose - Callback fired when the dialog requests to be closed.
+ * @parma {boolean} props.open - If <code>true</code> the dialog is open.
+ * @param {Object} props.settings - The settings from current project.
+ * @param {string} props.setting.indexOption - Determines what should be displayed as an object's name.
+ * @returns {React.PureComponent}
+ */
 class SettingsProjectDialog extends PureComponent {
     constructor(props) {
         super(props);
@@ -103,7 +133,7 @@ class SettingsProjectDialog extends PureComponent {
                 </SimpleContent>
                 <DialogActions>
                     <Cancel onClick={this.onCancelClick} />
-                    <Accept disabled={false} onClick={this.onAcceptClick} />
+                    <Accept onClick={this.onAcceptClick} />
                 </DialogActions>
                 {children}
             </SimpleDialog>

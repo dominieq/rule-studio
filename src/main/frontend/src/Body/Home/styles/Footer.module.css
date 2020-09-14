@@ -1,0 +1,10 @@
+.Root {
+    align-items: center;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    min-height: 64px;
+    padding: 16px 24px;
+    position: absolute;
+    width: 100%;
+}

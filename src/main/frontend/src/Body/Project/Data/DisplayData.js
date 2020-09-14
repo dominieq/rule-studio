@@ -20,7 +20,7 @@ import { withStyles, createStyles } from '@material-ui/core/styles';
 import { DraggableHeader } from 'react-data-grid-addons';
 import PropTypes from 'prop-types';
 import CustomLoadingIcon from './CustomLoadingIcon';
-import StyledButton from '../../../Utils/Inputs/StyledButton';
+import { StyledButton } from '../../../Utils/Inputs/StyledButton';
 import NumericFilter from './NumericFilter';
 import AttributesVirtualizedTable from './AttributesVirtualizedTable';
 import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
@@ -36,12 +36,13 @@ const { DraggableContainer } = DraggableHeader;
 const heightOfRow = 40; //50
 const heightOfHeaderRow = 50; //60
 const maxNoOfHistorySteps = 30;
+const MAX_INT = 2147483647;
 
 const SimpleDialog = withStyles( theme => ({
     paper: {
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.main1,
-    },    
+    },
     paperWidthSm: {
         maxWidth: "700px"
     }
@@ -51,128 +52,134 @@ const SimpleDialog = withStyles( theme => ({
 
 const StyledReactDataGrid = (theme) => createStyles({
     root: {
-    "& div.react-grid-Container": {
-        
-      "& .react-grid-Canvas": {
-        backgroundColor: theme.palette.reactDataGrid.cell.backgroundColor
-      },
-      "& .react-grid-HeaderRow": {
-        backgroundColor: theme.palette.reactDataGrid.cell.backgroundColor
-      },
-      "& .react-grid-Row:hover .react-grid-Cell, .react-grid-Row.row-context-menu .react-grid-Cell": {
-        backgroundColor: theme.palette.reactDataGrid.rowHover.backgroundColor
-      },
-      "& .react-grid-Row .row-selected": {
-        backgroundColor: theme.palette.reactDataGrid.rowMarked.backgroundColor
-      },
-      "& .react-grid-Cell": {
-        backgroundColor: theme.palette.reactDataGrid.cell.backgroundColor,
-        color: theme.palette.reactDataGrid.cell.color,
-        borderRight: theme.palette.reactDataGrid.cell.borderRight,
-        borderBottom: theme.palette.reactDataGrid.cell.borderBottom,
-      },
-      "& .react-grid-HeaderCell": {
-        backgroundColor: theme.palette.reactDataGrid.headerCell.backgroundColor,
-        color: theme.palette.reactDataGrid.headerCell.color,
-        borderRight: theme.palette.reactDataGrid.headerCell.borderRight,
-        borderBottom: theme.palette.reactDataGrid.headerCell.borderBottom,
-      },
-      "& .react-grid-cell-dragged-over-up, .react-grid-cell-dragged-over-down": {
-        background: theme.palette.reactDataGrid.cellDragging.background
-      },
-      "& .rdg-selected": {
-        border: theme.palette.reactDataGrid.cellSelected.border
-      },
-      "& .rdg-selected .drag-handle": {
-        background: theme.palette.reactDataGrid.cellSelected.squareDragHandle.background
-      },
-      "& .rdg-selected:hover .drag-handle": {
-        border: theme.palette.reactDataGrid.cellSelected.squareDragHandle.onHover.border,
-        background: theme.palette.reactDataGrid.cellSelected.squareDragHandle.background
-      },
-      "& .rdg-editor-container .form-control.editor-main": {
-        backgroundColor: theme.palette.reactDataGrid.cellEditor.simple.backgroundColor,
-        color: theme.palette.reactDataGrid.cellEditor.simple.color
-      },
-      "& .rdg-editor-container .editor-main": {
-        backgroundColor: theme.palette.reactDataGrid.cellEditor.dropDown.backgroundColor,
-        color: theme.palette.reactDataGrid.cellEditor.dropDown.color
-      },
-      "& input.editor-main:focus, select.editor-main:focus": {
-        border: theme.palette.reactDataGrid.cellEditor.outline.border,
-      },
-      "& .react-grid-checkbox:checked + .react-grid-checkbox-label:before": {
-        background: theme.palette.reactDataGrid.checkbox.selected.background,
-        boxShadow: theme.palette.reactDataGrid.checkbox.selected.boxShadow,
-      },
-      "& .react-grid-checkbox + .react-grid-checkbox-label:before, .radio-custom + .radio-custom-label:before": {
-        background: theme.palette.reactDataGrid.checkbox.deselected.background,
-        border: theme.palette.reactDataGrid.checkbox.deselected.border,
-      },
-      "& .react-grid-HeaderCell .input-sm": {
-        backgroundColor: theme.palette.reactDataGrid.search.backgroundColor,
-        color: theme.palette.reactDataGrid.search.color,
-      },
-      "& .react-grid-Main .form-control:focus": {
-        backgroundColor: theme.palette.reactDataGrid.search.focused.backgroundColor,
-        color: theme.palette.reactDataGrid.search.focused.color,
-        borderColor: theme.palette.reactDataGrid.search.focused.borderColor
-      },
-      "& .form-control.input-sm::placeholder": {
-        color: theme.palette.reactDataGrid.search.placeholder.color,
-        opacity: theme.palette.reactDataGrid.search.placeholder.opacity,
-      },
-      "& .react-contextmenu": {
-        backgroundColor: theme.palette.reactDataGrid.contextMenu.backgroundColor,
-        border: theme.palette.reactDataGrid.contextMenu.border,
-      },
-      "& .react-contextmenu-item.react-contextmenu-item--active, .react-contextmenu-item.react-contextmenu-item--selected": {
-        backgroundColor: theme.palette.reactDataGrid.contextMenu.hover.backgroundColor,
-        color: theme.palette.reactDataGrid.contextMenu.hover.color,
-      },
-            
+        "& div.react-grid-Container": {
+
+            "& .react-grid-Canvas": {
+                backgroundColor: theme.palette.reactDataGrid.cell.backgroundColor
+            },
+            "& .react-grid-HeaderRow": {
+                backgroundColor: theme.palette.reactDataGrid.cell.backgroundColor
+            },
+            "& .react-grid-Row:hover .react-grid-Cell, .react-grid-Row.row-context-menu .react-grid-Cell": {
+                backgroundColor: theme.palette.reactDataGrid.rowHover.backgroundColor
+            },
+            "& .react-grid-Row .row-selected": {
+                backgroundColor: theme.palette.reactDataGrid.rowMarked.backgroundColor
+            },
+            "& .react-grid-Cell": {
+                backgroundColor: theme.palette.reactDataGrid.cell.backgroundColor,
+                color: theme.palette.reactDataGrid.cell.color,
+                borderRight: theme.palette.reactDataGrid.cell.borderRight,
+                borderBottom: theme.palette.reactDataGrid.cell.borderBottom,
+            },
+            "& .react-grid-HeaderCell": {
+                backgroundColor: theme.palette.reactDataGrid.headerCell.backgroundColor,
+                color: theme.palette.reactDataGrid.headerCell.color,
+                borderRight: theme.palette.reactDataGrid.headerCell.borderRight,
+                borderBottom: theme.palette.reactDataGrid.headerCell.borderBottom,
+            },
+            "& .react-grid-cell-dragged-over-up, .react-grid-cell-dragged-over-down": {
+                background: theme.palette.reactDataGrid.cellDragging.background
+            },
+            "& .rdg-selected": {
+                border: theme.palette.reactDataGrid.cellSelected.border
+            },
+            "& .rdg-selected .drag-handle": {
+                background: theme.palette.reactDataGrid.cellSelected.squareDragHandle.background
+            },
+            "& .rdg-selected:hover .drag-handle": {
+                border: theme.palette.reactDataGrid.cellSelected.squareDragHandle.onHover.border,
+                background: theme.palette.reactDataGrid.cellSelected.squareDragHandle.background
+            },
+            "& .rdg-editor-container .form-control.editor-main": {
+                backgroundColor: theme.palette.reactDataGrid.cellEditor.simple.backgroundColor,
+                color: theme.palette.reactDataGrid.cellEditor.simple.color
+            },
+            "& .rdg-editor-container .editor-main": {
+                backgroundColor: theme.palette.reactDataGrid.cellEditor.dropDown.backgroundColor,
+                color: theme.palette.reactDataGrid.cellEditor.dropDown.color
+            },
+            "& input.editor-main:focus, select.editor-main:focus": {
+                border: theme.palette.reactDataGrid.cellEditor.outline.border,
+            },
+            "& .react-grid-checkbox:checked + .react-grid-checkbox-label:before": {
+                background: theme.palette.reactDataGrid.checkbox.selected.background,
+                boxShadow: theme.palette.reactDataGrid.checkbox.selected.boxShadow,
+            },
+            "& .react-grid-checkbox + .react-grid-checkbox-label:before, .radio-custom + .radio-custom-label:before": {
+                background: theme.palette.reactDataGrid.checkbox.deselected.background,
+                border: theme.palette.reactDataGrid.checkbox.deselected.border,
+            },
+            "& .react-grid-HeaderCell .input-sm": {
+                backgroundColor: theme.palette.reactDataGrid.search.backgroundColor,
+                color: theme.palette.reactDataGrid.search.color,
+            },
+            "& .react-grid-Main .form-control:focus": {
+                backgroundColor: theme.palette.reactDataGrid.search.focused.backgroundColor,
+                color: theme.palette.reactDataGrid.search.focused.color,
+                borderColor: theme.palette.reactDataGrid.search.focused.borderColor
+            },
+            "& .form-control.input-sm::placeholder": {
+                color: theme.palette.reactDataGrid.search.placeholder.color,
+                opacity: theme.palette.reactDataGrid.search.placeholder.opacity,
+            },
+            "& .react-contextmenu": {
+                backgroundColor: theme.palette.reactDataGrid.contextMenu.backgroundColor,
+                border: theme.palette.reactDataGrid.contextMenu.border,
+            },
+            "& .react-contextmenu-item.react-contextmenu-item--active, .react-contextmenu-item.react-contextmenu-item--selected": {
+                backgroundColor: theme.palette.reactDataGrid.contextMenu.hover.backgroundColor,
+                color: theme.palette.reactDataGrid.contextMenu.hover.color,
+            },
+
+        }
     }
-  }   
 });
 
 function RightClickContextMenu({
-    idx,
-    uniqueLP,
-    rowIdx,
-    onRowDelete,
-    onRowInsertAbove,
-    onRowInsertBelow
-  }) {
+                                   idx,
+                                   uniqueLP,
+                                   rowIdx,
+                                   onRowDelete,
+                                   onRowInsertAbove,
+                                   onRowInsertBelow
+                               }) {
     return (
-      <ContextMenu uniqueLP={uniqueLP}>
-        <MenuItem data={{ rowIdx, idx }} onClick={onRowDelete}>
-          Delete object
-        </MenuItem>
-        <MenuItem data={{ rowIdx, idx }} onClick={onRowInsertAbove}>
-          Add new object above
-        </MenuItem>
-        <MenuItem data={{ rowIdx, idx }} onClick={onRowInsertBelow}>
-         Add new object below
-        </MenuItem>
-      </ContextMenu>
+        <ContextMenu uniqueLP={uniqueLP}>
+            <MenuItem data={{ rowIdx, idx }} onClick={onRowDelete}>
+                Delete object
+            </MenuItem>
+            <MenuItem data={{ rowIdx, idx }} onClick={onRowInsertAbove}>
+                Add new object above
+            </MenuItem>
+            <MenuItem data={{ rowIdx, idx }} onClick={onRowInsertBelow}>
+                Add new object below
+            </MenuItem>
+        </ContextMenu>
     );
 }
 
 /**
- * Component responsible for displaying data i.e. attributes and objects, which are received from
- * the import tab via props (more specifically props.project.informationTable)
+ * The data tab in RuleStudio.
+ * Presents the list of all objects (and attributes) from information table, allows to add, remove and edit them.
+ *
+ * @name Data
  * @class
- * @param {Object} props Arguments received from the parent component
- * @param {Object} props.project Holds data about the current project like id, name and everything associated with the project e.g. information table, unions, cones etc.
- * @param {Object} props.project.result.informationTable InformationTable received from the server, holds attributes and objects
- * @param {Array} props.project.result.informationTable.attributes Attributes (metadata, might be empty)
- * @param {Array} props.project.result.informationTable.objects Objects (data, might be empty)
- * @param {Function} props.updateProject Method for updating project in the parent component (which is ProjectTabs.js)
+ * @category Tabs
+ * @subcategory Tabs
+ * @param {Object} props - Arguments received from the parent component
+ * @param {Object} props.project - Holds data about the current project like id, name and everything associated with the project e.g. information table, unions, cones etc.
+ * @param {Object} props.project.result.informationTable - InformationTable received from the server, holds attributes and objects
+ * @param {Array} props.project.result.informationTable.attributes - Attributes (metadata, might be empty)
+ * @param {Array} props.project.result.informationTable.objects - Objects (data, might be empty)
+ * @param {function} props.onAttributesChange - Method responsible for updating project attributes, makes them visible to choose in the "project settings" (object's visible description).
+ * @param {function} props.onDataChange - Method responsible for updating the whole project in the parent component (which is ProjectTabs.js)
+ * @returns {React.Component}
  */
 class DisplayData extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             enableRowInsert: 0, //-1 no sort, 0-sort asc, 1-sort desc
             selectedRows: [],
@@ -186,7 +193,7 @@ class DisplayData extends React.Component {
             saveToFileData: '',
             saveToFileCsvHeader: false,
             saveToFileCsvSeparator: '',
-            
+
             editAttributeSelected: '', //name of selected attribute
             errorMessage: '',
             errorMessageSeverity: 'error',
@@ -206,7 +213,7 @@ class DisplayData extends React.Component {
             binarizeNominalAttributesWith3PlusValues: false,
 
             historySnapshot: this.props.project.dataHistory.historySnapshot,
-            history: this.props.project.dataHistory.history.length ? 
+            history: this.props.project.dataHistory.history.length ?
                 this.prepareHistory(this.props.project.dataHistory.history)
                 :
                 [
@@ -216,26 +223,28 @@ class DisplayData extends React.Component {
                         historyActionSubject: ''
                     }
                 ],
-            wholeAppError: false,
-        };    
-        
+        };
+
         this.isDataFromServer = this.props.project.isDataFromServer;
         this._isMounted = false;
-    }
-
-    static getDerivedStateFromError(error) {
-        // Update state so the next render will show the fallback UI.
-        return { wholeAppError: true };
+        this.ctrlKeyDown = -1;
+        this.ctrlPlusC = false;
     }
 
     /**
+     * A component's lifecycle method. Fired after a component was updated.
      * Method responsible for changing displayed data when project is changed. Runs after every [render()]{@link DisplayData#render} and holds the newest values of props and state.
      * If the project has been changed then initialize all the values (overwrite) in the state.
-     * @param {Object} prevProps Props object containing all the props e.g. props.project.id or props.project.name
-     * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} prevProps - Old props object containing all the props e.g. props.project.id or props.project.name
+     * @param {Object} prevState - Old state object containing all the properties from state e.g. state.columns or state.rows
      */
     componentDidUpdate(prevProps, prevState) {
         if(prevProps.project.result.id !== this.props.project.result.id) {
+            this.ctrlKeyDown = -1;
+            this.ctrlPlusC = false;
             this.isDataFromServer = this.props.project.isDataFromServer;
             this.setState({
                 enableRowInsert: 0, //-1 no sort, 0-sort asc, 1-sort desc
@@ -250,7 +259,7 @@ class DisplayData extends React.Component {
                 saveToFileData: '',
                 saveToFileCsvHeader: false,
                 saveToFileCsvSeparator: '',
-                
+
                 editAttributeSelected: '', //name of selected attribute
                 errorMessage: '',
                 errorMessageSeverity: 'error',
@@ -270,16 +279,16 @@ class DisplayData extends React.Component {
                 binarizeNominalAttributesWith3PlusValues: false,
 
                 historySnapshot: this.props.project.dataHistory.historySnapshot,
-                history: this.props.project.dataHistory.history.length ? 
-                this.prepareHistory(this.props.project.dataHistory.history)
-                :
-                [
-                    {
-                        rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
-                        columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
-                        historyActionSubject: ''
-                    }
-                ],
+                history: this.props.project.dataHistory.history.length ?
+                    this.prepareHistory(this.props.project.dataHistory.history)
+                    :
+                    [
+                        {
+                            rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
+                            columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
+                            historyActionSubject: ''
+                        }
+                    ],
             }, () => {
                 this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
                 this.replaceMissingDataWithQuestionMarks();
@@ -287,6 +296,13 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method responsible for adding elements (e.g. numeric filter), which have been removed due to parsing and stringifying history.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Array} history - It is the array containing objects. Each object consists of rows, columns, and what has been changed (column, row, both)
+     */
     prepareHistory = (history) => {
         const historyTmp = JSON.parse(JSON.stringify(history));
         for(let i in historyTmp) {
@@ -303,10 +319,12 @@ class DisplayData extends React.Component {
         return historyTmp;
     }
 
-    /** 
+    /**
      * Method responsible for preparing data i.e. objects to display them in rows. This is the place where No. property is added to each object.
-     * @method
-     * @param {Array} data Data i.e. objects received from the import. Each object consists of pairs key-value with name of the property as the key and value as the value. 
+     *
+     * @function
+     * @memberOf Data
+     * @param {Array} data - Data i.e. objects received from the props. Each object consists of pairs key-value with name of the property as the key and value as the value.
      * @returns {Array}
      */
     prepareDataFromImport = (data) => {
@@ -316,27 +334,29 @@ class DisplayData extends React.Component {
         return tmp;
     }
 
-    /** 
+    /**
      * Method responsible for preparing metadata i.e. attributes to display them in columns. This is the place where certain properties are added to each attribute
      * e.g. sorting, filtering, resizing etc.
-     * @method
-     * @param {Array} metadata I.e. attributes received from the import. Each attribute consists of pairs key-value with name of the property as the key and value as the value. 
+     *
+     * @function
+     * @memberOf Data
+     * @param {Array} metadata - I.e. attributes received from the props. Each attribute consists of pairs key-value with name of the property as the key and value as the value.
      * @returns {Array}
      */
     prepareMetaDataFromImport = (metadata) => {
         const tmp = [{key: "uniqueLP", name: "No.", sortable: true, resizable: true, filterable: true, draggable: true, sortDescendingFirst: true, width: 160, filterRenderer: NumericFilter, visible: true, temp: false}];
-        
+
         for(let el in metadata) {
             if(metadata[el].name === "uniqueLP") { //restricted name (brute force change the first letter to uppercase)
                 metadata[el].name = "UniqueLP";
-            }            
+            }
             const attribute = {editable:true, sortable:true, resizable:true, filterable:true, draggable: true, visible: true};
             attribute.key = metadata[el].name;
             attribute.name = metadata[el].name;
             attribute.active = metadata[el].active;
             if(metadata[el].missingValueType !== undefined) attribute.missingValueType = metadata[el].missingValueType;
             else if(metadata[el].identifierType === undefined) attribute.missingValueType = "mv2";
-            
+
             if(metadata[el].identifierType !== undefined) { //identification attribute
                 attribute.identifierType = metadata[el].identifierType;
             } else {
@@ -357,9 +377,17 @@ class DisplayData extends React.Component {
             else attribute.width = 120;
             tmp.push(attribute)
         }
-        return tmp; 
+        return tmp;
     }
 
+    /**
+     * Method responsible for inserting into cells missing value signs (?) if the key of an object doesn't match the attribute.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Array} metadata - I.e. attributes received from the props. Each attribute consists of pairs key-value with name of the property as the key and value as the value.
+     * @returns {Array}
+     */
     replaceMissingDataWithQuestionMarks = () => {
         if(this.isDataFromServer) {
             this.setState(prevState => {
@@ -387,9 +415,13 @@ class DisplayData extends React.Component {
         }
     }
 
-    /** 
+    /**
+     * A component's lifecycle method. Fired once when component was mounted.
      * Method responsible for setting the color of column headers accordingly to the attribute preference type during initialization of the component.
      * Runs only once, after component is mounted (after first [render]{@link DisplayData#render} and before methods shouldComponentUpdate() and [componentDidUpdate]{@link DisplayData#componentDidUpdate}).
+     *
+     * @function
+     * @memberOf Data
      */
     componentDidMount() {
         const headers = document.getElementsByClassName("react-grid-HeaderCell-sortable");
@@ -400,13 +432,19 @@ class DisplayData extends React.Component {
                     this.setHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[j], i, true);
                     break;
                 }
-            }                        
+            }
         }
 
         this._isMounted = true;
         this.replaceMissingDataWithQuestionMarks();
     }
 
+    /**
+     * Method responsible for preparing whole project to update it (in the parent).
+     *
+     * @function
+     * @memberOf Data
+     */
     updateProject = () => {
         const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
         const tmpData = this.prepareDataFileBeforeSendingToServer();
@@ -415,14 +453,29 @@ class DisplayData extends React.Component {
         tmpProject.result.informationTable.objects = tmpData;
         tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history};
         tmpProject.isDataFromServer = false;
-        this.props.onDataChange(tmpProject);
+        this.props.onDataChange(tmpProject); //run parent method
     }
 
+    /**
+     * Method responsible for updating project attributes, makes them visible to choose in the "project settings" (object's visible description).
+     *
+     * @function
+     * @memberOf Data
+     */
     updateChangedIdentifOrDescriptAttribute = () => {
         const attributes = this.prepareMetadataFileBeforeSendingToServer();
-        this.props.onAttributesChange(attributes);
+        this.props.onAttributesChange(attributes); //run parent method
     }
 
+    /**
+     * Method checks if the [updateChangedIdentifOrDescriptAttribute]{@link DisplayData#updateChangedIdentifOrDescriptAttribute} needs to be fired.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} oldCol - object representing old (previous) version of the column.
+     * @param {Object} newCol - if it is false it means column has been removed, if it true column activeness has been changed, if it isn't boolean type
+     * then it is the object representing new version of (changes made to) the column.
+     */
     checkIfUpdateOfAttributesNeeded = (oldCol, newCol) => {
         //right click on header menu
         if(typeof newCol === "boolean") {
@@ -432,35 +485,84 @@ class DisplayData extends React.Component {
                 if(oldCol.identifierType !== undefined) this.updateChangedIdentifOrDescriptAttribute();
             }
         } else { //column has been edited
-            if((oldCol.type === "description" && newCol.type !== "description") 
+            if((oldCol.type === "description" && newCol.type !== "description")
                 ||  (oldCol.type !== "description" && newCol.type === "description")
-                ||  (oldCol.identifierType !== undefined && newCol.identifierType === undefined) 
+                ||  (oldCol.identifierType !== undefined && newCol.identifierType === undefined)
                 ||  (oldCol.identifierType === undefined && newCol.identifierType !== undefined)
                 ||  (oldCol.identifierType !== undefined && newCol.identifierType !== undefined && oldCol.identifierType !== newCol.identifierType)
                 ||  (
-                        oldCol.name !== newCol.name &&
-                        ((oldCol.type === newCol.type && oldCol.type === "description") || ((oldCol.identifierType === newCol.identifierType && oldCol.identifierType !== undefined)))
-                    )
+                    oldCol.name !== newCol.name &&
+                    ((oldCol.type === newCol.type && oldCol.type === "description") || ((oldCol.identifierType === newCol.identifierType && oldCol.identifierType !== undefined)))
+                )
             ) {
                 this.updateChangedIdentifOrDescriptAttribute();
             }
         }
     }
 
+    /**
+     * A component's lifecycle method. Fired when component was requested to be unmounted.
+     *
+     * @function
+     * @memberOf Data
+     */
     componentWillUnmount() {
         this._isMounted = false;
     }
 
-    /** 
+    /**
+     * Method returns the object containing of number part and rest of the string.
+     * It is used e.g. when holding CTRL and double clicking on the square placed in the bottom right corner of the cell (in the identification attribute).
+     *
+     * @function
+     * @memberOf Data
+     * @param {string} text - Text to be divided into number part and constant part.
+     * @returns {Object}
+     */
+    getNumberPartAndConstantPart(text) {
+        let main = "";
+        let num = "";
+        let numberPartEnd = false
+        for(let i=text.length-1; i>=0; i--) {
+            if(text[i] >= '0' && text[i] <= '9' && !numberPartEnd) {
+                num = text[i] + num;
+            } else {
+                numberPartEnd = true;
+                main = text[i] + main;
+            }
+        }
+        return {
+            constantPart: main,
+            numberPart: num
+        }
+    }
+
+    /**
+     * Method returns absolute value of an integer / real number.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Number} x - It is the number from which absolute value will be taken.
+     */
+    absoluteValue(x) {
+        return x < 0 ? -x : x;
+    }
+
+    /**
      * Method responsible for updating displayed data when the value in the cell changes (or multiple values when dragging). First row has index 0.
-     * @method
-     * @param {Number} fromRow Indicates which row have been changed (or when dragging - from which row dragging has began).
-     * @param {Number} toRow Indicates on which row dragging has ended (or if the number is the same as fromRow, then which row has been changed) inclusive.
-     * @param {Object} updated Indicates on which column and to which value changes happend. 
+     *
+     * @function
+     * @memberOf Data
+     * @param {string} action - Indicates which action triggered the update. Can be one of [CELL_UPDATE, COLUMN_FILL, COPY_PASTE, CELL_DRAG]
+     * @param {string} cellKey - Indicates on which column updated has been done
+     * @param {Number} fromRow - Indicates which row have been changed (or when dragging - from which row dragging has began).
+     * @param {Number} toRow - Indicates on which row dragging has ended (or if the number is the same as fromRow, then which row has been changed) inclusive.
+     * @param {Object} updated - Indicates on which column and to which value changes happend.
      * It is a pair key - value, where the key is the column key and the value is the value of the cell to which the cell has been changed.
      */
-    onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-        if(toRow - fromRow > 15) {
+    onGridRowsUpdated = ({ action, cellKey, fromRow, toRow, updated }) => {
+        const ctrlKeyPressed = this.ctrlKeyDown !== -1;
+        if(action === "COLUMN_FILL") {
             this.setState({
                 isLoading: true
             }, () => {
@@ -468,26 +570,199 @@ class DisplayData extends React.Component {
                     this.setState(prevState => {
                         const rows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
                         const filtered = this.filteredRows();
-                        for (let i = fromRow; i <= toRow; i++) {
-                            const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
-                            rows[rows_index] = { ...filtered[i], ...updated };
+                        const editedCol = prevState.history[prevState.historySnapshot].columns.find(x => x.key === cellKey)
+
+                        if(ctrlKeyPressed && updated[cellKey] !== "?") {
+                            let NumOfValsToReplaceThatExceededMax = 0;
+                            let updatedTmp = {...updated};
+
+                            if(editedCol.valueType === "integer") {
+                                const tmp = parseInt(updated[cellKey],10);
+                                if(toRow - fromRow + tmp - MAX_INT > 0) {
+                                    NumOfValsToReplaceThatExceededMax = toRow - fromRow + tmp - MAX_INT;
+                                }
+
+                                for (let i = fromRow; i <= toRow; i++) {
+                                    const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                    if(NumOfValsToReplaceThatExceededMax > 0 && i > toRow - NumOfValsToReplaceThatExceededMax) {
+                                        updatedTmp[cellKey] = "?";
+                                        rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                    }
+                                    else {
+                                        updatedTmp[cellKey] = i-fromRow+tmp;
+                                        rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                    }
+                                }
+                            } else if(editedCol.valueType === "real") {
+                                const tmp = Number(updated[cellKey]);
+                                for (let i = fromRow; i <= toRow; i++) {
+                                    const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                    updatedTmp[cellKey] = i-fromRow+tmp;
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                            } else if(editedCol.identifierType === "text") {
+                                const {constantPart, numberPart } = this.getNumberPartAndConstantPart(updated[cellKey]);
+                                if(numberPart !== "") {
+                                    const tmpNumberPart = Number(numberPart);
+                                    for (let i = fromRow; i <= toRow; i++) {
+                                        const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                        updatedTmp[cellKey] = constantPart + (i-fromRow+tmpNumberPart).toString();
+                                        rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                    }
+                                } else {
+                                    for (let i = fromRow; i <= toRow; i++) {
+                                        const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                        rows[rows_index] = { ...filtered[i], ...updated };
+                                    }
+                                }
+
+                            } else {
+                                for (let i = fromRow; i <= toRow; i++) {
+                                    const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                    rows[rows_index] = { ...filtered[i], ...updated };
+                                }
+                            }
+                        } else {
+                            for (let i = fromRow; i <= toRow; i++) {
+                                const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                rows[rows_index] = { ...filtered[i], ...updated };
+                            }
                         }
 
                         const tmpHistory = prevState.history.slice(0,prevState.historySnapshot+1);
                         tmpHistory.push({rows: rows, columns: prevState.history[prevState.historySnapshot].columns});
                         if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
-
                         if(this._isMounted) {
                             return {
                                 dataModified: true,
                                 isLoading: false,
                                 history: tmpHistory,
-                                historySnapshot: tmpHistory.length-1, 
+                                historySnapshot: tmpHistory.length-1,
                             }
                         }
                     }, () => this.updateProject())
                 },500)
             });
+        } else if(action === "CELL_DRAG") {
+            const { rowIdx, overRowIdx } = this.grid.base.viewport.canvas.interactionMasks.state.draggedPosition || {};
+            this.setState(prevState => {
+                const rows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
+                const filtered = this.filteredRows();
+                const editedCol = prevState.history[prevState.historySnapshot].columns.find(x => x.key === cellKey)
+
+                //the Ctrl key has been pressed and hold
+                if(ctrlKeyPressed && updated[cellKey] !== "?") {
+                    let NumOfValsToReplaceThatExceededMax = 0;
+                    let updatedTmp = {...updated};
+                    //a column type is integer
+                    if(editedCol.valueType === "integer") {
+                        const tmp = parseInt(updated[cellKey],10);
+                        //dragging downwards
+                        if(rowIdx < overRowIdx) {
+                            //check if rows that exceeded max integer value exists
+                            if(toRow - fromRow + tmp - MAX_INT > 0) {
+                                NumOfValsToReplaceThatExceededMax = toRow - fromRow + tmp - MAX_INT;
+                            }
+                            for (let i = fromRow; i <= toRow; i++) {
+                                const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                //if the value exceeded max integer place missing value sign "?"
+                                if(NumOfValsToReplaceThatExceededMax > 0 && i > toRow - NumOfValsToReplaceThatExceededMax) {
+                                    updatedTmp[cellKey] = "?";
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                                //update with consecutive number
+                                else {
+                                    updatedTmp[cellKey] = i-fromRow+tmp;
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                            }
+                            //dragging upwards
+                        } else {
+                            if(tmp - toRow + fromRow + MAX_INT + 1 < 0) {
+                                NumOfValsToReplaceThatExceededMax = - tmp + toRow - fromRow - MAX_INT - 1;
+                            }
+                            for (let i = toRow - 1; i >= fromRow; i--) {
+                                const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                if(NumOfValsToReplaceThatExceededMax > 0 && i < fromRow + NumOfValsToReplaceThatExceededMax) {
+                                    updatedTmp[cellKey] = "?";
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                                else {
+                                    updatedTmp[cellKey] = i-toRow+tmp;
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                            }
+                        }
+                        //a column type is real
+                    } else if(editedCol.valueType === "real") {
+                        const tmp = Number(updated[cellKey]);
+                        //dragging downwards
+                        if(rowIdx < overRowIdx) {
+                            for (let i = fromRow; i <= toRow; i++) {
+                                const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                updatedTmp[cellKey] = i-fromRow+tmp;
+                                rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                            }
+                            //dragging upwards
+                        } else {
+                            for (let i = toRow - 1; i >= fromRow; i--) {
+                                const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                updatedTmp[cellKey] = i-toRow+tmp;
+                                rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                            }
+                        }
+                        //a column type is identification, identifierType is text
+                    } else if(editedCol.identifierType === "text") {
+                        const {constantPart, numberPart } = this.getNumberPartAndConstantPart(updated[cellKey]);
+                        if(numberPart !== "") {
+                            const tmpNumberPart = Number(numberPart);
+                            //dragging downwards
+                            if(rowIdx < overRowIdx) {
+                                for (let i = fromRow; i <= toRow; i++) {
+                                    const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                    updatedTmp[cellKey] = constantPart + (i-fromRow+tmpNumberPart).toString();
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                                //dragging upwards
+                            } else {
+                                for (let i = toRow - 1; i >= fromRow; i--) {
+                                    const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                    updatedTmp[cellKey] = constantPart + (this.absoluteValue(i-toRow+tmpNumberPart)).toString();
+                                    rows[rows_index] = { ...filtered[i], ...updatedTmp };
+                                }
+                            }
+                        } else {
+                            for (let i = fromRow; i <= toRow; i++) {
+                                const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                                rows[rows_index] = { ...filtered[i], ...updated };
+                            }
+                        }
+                    } else {
+                        for (let i = fromRow; i <= toRow; i++) {
+                            const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                            rows[rows_index] = { ...filtered[i], ...updated };
+                        }
+                    }
+                } else {
+                    for (let i = fromRow; i <= toRow; i++) {
+                        const rows_index = rows.map( x => x.uniqueLP ).indexOf(filtered[i].uniqueLP);
+                        rows[rows_index] = { ...filtered[i], ...updated };
+                    }
+                }
+
+                const tmpHistory = prevState.history.slice(0,prevState.historySnapshot+1);
+                tmpHistory.push({rows: rows, columns: prevState.history[prevState.historySnapshot].columns});
+                if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
+
+                if(this._isMounted) {
+                    return {
+                        dataModified: true,
+                        isLoading: false,
+                        history: tmpHistory,
+                        historySnapshot: tmpHistory.length-1,
+                    }
+                }
+            }, () => this.updateProject())
         } else {
             let isTheSame = false;
             this.setState(prevState => {
@@ -498,11 +773,11 @@ class DisplayData extends React.Component {
 
                 if(tmp[1]==="") {
                     const message = <span> Cell hasn't been updated. <br/> Empty value isn't valid input. Use question mark (?) instead. </span>
-                        return {
-                            isOpenedNotification: true,
-                            errorMessage: message,
-                            errorMessageSeverity: 'error'
-                        }
+                    return {
+                        isOpenedNotification: true,
+                        errorMessage: message,
+                        errorMessageSeverity: 'error'
+                    }
                 }
                 if(editedCol.valueType === "real") { //enable only reals and "?"
                     if(tmp[1] !== "?" && isNaN(Number(tmp[1]))) {
@@ -542,35 +817,38 @@ class DisplayData extends React.Component {
                             return ;
                         }
                     }
-                    
+
                     rows[rows_index] = { ...filtered[i], ...updated };
                 }
                 const tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
                 tmpHistory.push({rows: rows, columns: prevState.history[prevState.historySnapshot].columns});
                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
-                return { 
+                return {
                     dataModified: true,
                     history: tmpHistory,
-                    historySnapshot: tmpHistory.length-1, 
+                    historySnapshot: tmpHistory.length-1,
                 };
             }, () => {
                 if(!isTheSame) this.updateProject();
             })
         }
+        this.ctrlKeyDown = -1;
     };
 
-    /** 
+    /**
      * Method responsible for sorting data. Runs when the header of the column is clicked.
-     * @method
-     * @param {String} sortColumn Indicates which column header has been clicked i.e. which column should be sorted. This is the column key.
-     * @param {Number} sortDirection Indicates which way sorting should take place. This is one of the values "ASC", "DESC", "NONE", which stand for ascending, descending and none.
+     *
+     * @function
+     * @memberOf Data
+     * @param {string} sortColumn - Indicates which column header has been clicked i.e. which column should be sorted. This is the column key.
+     * @param {Number} sortDirection - Indicates which way sorting should take place. This is one of the values "ASC", "DESC", "NONE", which stand for ascending, descending and none.
      */
     onGridSort = (sortColumn, sortDirection) => {
         let tmpEnableRowInsert = -1;
         const tmpCol = this.state.history[this.state.historySnapshot].columns.find(col => col.key === sortColumn);
         let numberSorting = false;
         if(tmpCol.valueType !== undefined && (tmpCol.valueType === "integer" || tmpCol.valueType === "real")) numberSorting = true;
-        
+        if(this.ctrlPlusC) this.turnOffCellCopyPaste();
         const comparer = (a, b) => {
             if (sortDirection === "ASC") {
                 ((sortColumn === "uniqueLP") ? tmpEnableRowInsert = 0 : tmpEnableRowInsert = -1)
@@ -593,7 +871,7 @@ class DisplayData extends React.Component {
                 return a["uniqueLP"] > b["uniqueLP"] ? 1 : -1;
             }
         };
-        
+
         this.setState(prevState => {
             const rows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows)).sort(comparer);
             const tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
@@ -608,27 +886,31 @@ class DisplayData extends React.Component {
         }, () => this.updateProject());
     };
 
-    /** 
-     * Method responsible for adding selected, i.e. the checkbox on the left of the row is marked, rows to the selectedRows array which is in the state.
-     * @method
-     * @param {Array} rows Indicates which row has been selected. It consists of two objects. The first one is rowIdx, which is the number of row from the top (indexing from 0).
+    /**
+     * Method responsible for adding selected rows to the selectedRows array which is in the state (selected row is the row in which the checkbox on the left of the row is marked).
+     *
+     * @function
+     * @memberOf Data
+     * @param {Array} rows - Indicates which row has been selected. It consists of two objects. The first one is rowIdx, which is the number of row from the top (indexing from 0).
      * The second object is row object containg all the pairs key-value for the row.
      */
     onRowsSelected = (rows) => {
-        this.setState( (prevState) => ({ 
+        this.setState( (prevState) => ({
             selectedRows: prevState.selectedRows.concat(rows.map(r => r.row.uniqueLP))
         }));
     };
 
     /**
      * Method responsible for removing deselected, i.e. the checkbox on the left of the row is unmarked, rows from the selectedRows array which is in the state.
-     * @method
-     * @param {Array} rows Indicates which row has been deselected. It consists of two objects. The first one is rowIdx, which is the number of row from the top (indexing from 0).
+     *
+     * @function
+     * @memberOf Data
+     * @param {Array} rows - Indicates which row has been deselected. It consists of two objects. The first one is rowIdx, which is the number of row from the top (indexing from 0).
      * The second object is row object containg all the pairs key-value for the row.
      */
     onRowsDeselected = (rows) => {
         let rowIndexes = rows.map(r => r.row.uniqueLP);
-        
+
         this.setState( prevState => ({
             selectedRows: prevState.selectedRows.filter(
                 i => rowIndexes.indexOf(i) === -1
@@ -638,9 +920,13 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for adding filter to filters array which is in the state.
-     * @method
-     * @param {Object} filter Consists of two key-value pairs. The first one is the column object containg all the pairs key-value for the column.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} filter - Consists of two key-value pairs. The first one is the column object containg all the pairs key-value for the column.
      * The second is flterTerm which has been written in the filter field.
+     * If there is more than one filter term (e.g. in numeric filter let's choose numbers 1,2,3 and greater than 10. Then we have: 1,2,3,>10) the filter term
+     * becomes the array. The class NumericFilter is responsible for handling numeric filters.
      */
     handleFilterChange = (filter) => {
         this.setState(prevState => {
@@ -650,7 +936,7 @@ class DisplayData extends React.Component {
             } else {
                 delete newFilters[filter.column.key];
             }
-            return { 
+            return {
                 filters: newFilters,
                 selectedRows : []
             };
@@ -659,9 +945,11 @@ class DisplayData extends React.Component {
 
     /**
      * Helper method to get all the filtered rows. This method uses [selectors]{@link https://adazzle.github.io/react-data-grid/docs/examples/column-filtering#using-rdg-dataselectors-to-filter-rows}
-     * @method
-     * @param {Array} rows All the rows i.e. this is the array containing all the rows where each row (object of the array) consists of key-value pairs
-     * @param {Array} filters All the filters i.e. this is the array containing [filter objects]{@link DisplayData#handleFilterChange}
+     *
+     * @function
+     * @memberOf Data
+     * @param {Array} rows - All the rows i.e. this is the array containing all the rows where each row (object of the array) consists of key-value pairs
+     * @param {Array} filters - All the filters i.e. this is the array containing [filter objects]{@link DisplayData#handleFilterChange}
      */
     getRows(rows, filters) {
         return selectors.getRows({ rows, filters });
@@ -669,7 +957,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for getting all the filtered rows. Uses method [getRows]{@link DisplayData#getRows}.
-     * @method
+     *
+     * @function
+     * @memberOf Data
      */
     filteredRows = () => {
         if(this.state.history[this.state.historySnapshot] !== undefined) {
@@ -680,7 +970,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for clearing filters.
-     * @method
+     *
+     * @function
+     * @memberOf Data
      */
     onClearFilters = () => {
         this.setState({
@@ -691,13 +983,16 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for removing certain row after choosing option "Delete object" from right click menu.
-     * @method
-     * @param {Number} rowIdx Indicates the row number from the top, to be removed.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Number} rowIdx - Indicates the row number from the top, to be removed.
      */
     deleteRowByRowIdx = (rowIdx) => {
         this.setState(prevState => {
             const nextRows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
             if( nextRows[rowIdx] !== undefined) {
+                if(this.ctrlPlusC) this.turnOffCellCopyPaste();
                 const removedRowUniqueLP = nextRows[rowIdx].uniqueLP;
                 nextRows.splice(rowIdx, 1);
                 nextRows.forEach(r => {
@@ -707,8 +1002,8 @@ class DisplayData extends React.Component {
                 tmpHistory.push({rows: nextRows, columns: prevState.history[prevState.historySnapshot].columns});
                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                 return {
-                    dataModified: true, 
-                    history: tmpHistory, 
+                    dataModified: true,
+                    history: tmpHistory,
                     historySnapshot: tmpHistory.length-1
                 };
             }
@@ -716,8 +1011,10 @@ class DisplayData extends React.Component {
     };
 
     /**
-     * Method responsible for removing selected rows (i.e. the checkbox on the left of the row is marked).
-     * @method
+     * Method responsible for removing selected rows (the selected row means that the checkbox on the left of the row is marked).
+     *
+     * @function
+     * @memberOf Data
      */
     deleteSelectedRows = () => {
         this.setState(prevState => {
@@ -734,9 +1031,9 @@ class DisplayData extends React.Component {
                 tmpHistory.push({rows: [], columns: prevState.history[prevState.historySnapshot].columns});
                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                 return {
-                    selectedRows: [], 
-                    dataModified: true, 
-                    history: tmpHistory, 
+                    selectedRows: [],
+                    dataModified: true,
+                    history: tmpHistory,
                     historySnapshot: tmpHistory.length-1
                 };
             }
@@ -767,35 +1064,38 @@ class DisplayData extends React.Component {
             if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
 
             return {
-                selectedRows: [], 
+                selectedRows: [],
                 dataModified: true,
-                history: tmpHistory, 
+                history: tmpHistory,
                 historySnapshot: tmpHistory.length-1
             };
-        }, () => { 
+        }, () => {
             if(this.state.history[this.state.historySnapshot].rows.length > 0 && this.state.history[this.state.historySnapshot].rows.length * heightOfRow < document.getElementsByClassName("react-grid-Canvas")[0].scrollTop) {
                 document.getElementsByClassName("react-grid-Canvas")[0].scrollTop = this.state.history[this.state.historySnapshot].rows.length * heightOfRow;
             };
             this.updateProject();
-        })        
+        })
     };
-    
+
     /**
      * Method responsible for adding row. After right click menu one can add row above ("Add new object above") or below ("Add new object below") the clicked row.
      * After "ADD NEW OBJECT" button click one can add row at the end of the rows array.
-     * @method
-     * @param {Number} rowIdx Indicates the row number from the top.
-     * @param {String} where Indicates where to add the row. The existing options are "above" or "below" (the clicked row) or any other name which means at the end of the rows array.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Number} rowIdx - Indicates the row number from the top.
+     * @param {string} where - Indicates where to add the row. The existing options are "above" or "below" (the clicked row) or any other name which means at the end of the rows array.
      */
-    insertRow = (rowIdx, where) => {       
+    insertRow = (rowIdx, where) => {
         this.setState(prevState => {
             const nextRows = JSON.parse(JSON.stringify(prevState.history[prevState.historySnapshot].rows));
             const newRow = {};
             prevState.history[prevState.historySnapshot].columns.forEach( col => {
                 if(col.key !== "uniqueLP") newRow[col.key] = "?";
             });
-            
+
             if( nextRows[rowIdx] !== undefined) { //if the cell is selected (and exists)
+                if(this.ctrlPlusC) this.turnOffCellCopyPaste();
                 switch(where) {
                     case "above": //above the chosen row
                         if(this.state.enableRowInsert === 0) { //sort-asc
@@ -817,7 +1117,7 @@ class DisplayData extends React.Component {
                             });
                             nextRows.splice(rowIdx, 0, newRow);
                         }
-                    break;
+                        break;
                     case "below": //below the chosen row
                         if(this.state.enableRowInsert === 0) { //sort-asc
                             newRow.uniqueLP = nextRows[rowIdx].uniqueLP+1;
@@ -838,18 +1138,18 @@ class DisplayData extends React.Component {
                             });
                             nextRows.splice(rowIdx+1, 0, newRow);
                         }
-                    break;
+                        break;
                     default: //at the end of rows array
                         newRow.uniqueLP = Math.max(...nextRows.map(o => o.uniqueLP), 0) + 1;
                         nextRows.push(newRow);
-                    break;
+                        break;
                 };
                 const tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
                 tmpHistory.push({rows: nextRows, columns: prevState.history[prevState.historySnapshot].columns});
                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
-                return { 
+                return {
                     dataModified: true,
-                    history: tmpHistory, 
+                    history: tmpHistory,
                     historySnapshot: tmpHistory.length-1
                 };
             } else if(nextRows.length === 0) { //when array is empty
@@ -858,19 +1158,21 @@ class DisplayData extends React.Component {
                 const tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
                 tmpHistory.push({rows: nextRows, columns: prevState.history[prevState.historySnapshot].columns});
                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
-                return { 
+                return {
                     dataModified: true,
                     history: tmpHistory,
                     historySnapshot: tmpHistory.length-1
                 };
             }
         }, () => this.updateProject());
-    
+
     };
 
     /**
      * Method responsible for opening the "Add attribute" dialog. The dialog is accessible through the "ADD ATTRIBUTE" button.
-     * @method
+     *
+     * @function
+     * @memberOf Data
      */
     onAddAttribute = () => {
         this.setState({isOpenedAddAttribute: true});
@@ -878,7 +1180,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for opening the "Edit attributes" dialog. The dialog is accessible through the "EDIT ATTRIBUTES" button.
-     * @method
+     *
+     * @function
+     * @memberOf Data
      */
     onEditAttributes = () => {
         this.setState({isOpenedEditAttributes: true});
@@ -886,7 +1190,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for closing the "Add attribute" dialog. The dialog is accessible through the "ADD ATTRIBUTE" button.
-     * @method
+     *
+     * @function
+     * @memberOf Data
      */
     closeOnAddAttribute = () => {
         this.setState({
@@ -902,7 +1208,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for closing the "Edit attributes" dialog. The dialog is accessible through the "EDIT ATTRIBUTES" button.
-     * @method
+     *
+     * @function
+     * @memberOf Data
      */
     closeOnEditAttributes = () => {
         this.setState({
@@ -918,8 +1226,10 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for closing the warning dialog. The method is executed when the chosen option is "No" in the [warning dialog]{@link DisplayData#openOnTransformWarning}.
-     * @method
+     * Method responsible for closing the transform dialog. The method is executed when the chosen option is "No" in the [transform dialog]{@link DisplayData#openOnTransform}.
+     *
+     * @function
+     * @memberOf Data
      */
     closeOnTransform = () => {
         this.setState({
@@ -928,8 +1238,10 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for opening the warning dialog. The dialog is accessible through the "TRANSFORM" button, but only when modifications have not been saved.
-     * @method
+     * Method responsible for opening the transform dialog. The dialog is accessible through the "TRANSFORM" button, but only when modifications have not been saved.
+     *
+     * @function
+     * @memberOf Data
      */
     openOnTransform = () => {
         this.setState({
@@ -939,22 +1251,23 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for imposing preference order when evaluation attribute doesn't have preference order.
-     * The method is executed when the chosen option is "Yes" in the [warning dialog]{@link DisplayData#openOnTransformWarning}.
      * For more information [click here]{@link https://github.com/ruleLearn/rulelearn/blob/develop/src/main/java/org/rulelearn/data/InformationTable.java#L922}.
-     * @method
+     *
+     * @function
+     * @memberOf Data
      */
     onTransformAttributes = () => {
         const base = this.props.serverBase;
         if(this.state.dataModified) {
             this.setState({
-                    isLoading: true,
-                    isOpenedTransform: false,
-                }, () => {
-                    let formData = new FormData();
-                    formData.append('binarizeNominalAttributesWith3PlusValues', this.state.binarizeNominalAttributesWith3PlusValues);
-                    formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
-                    formData.append('data', JSON.stringify(this.prepareDataFileBeforeSendingToServer()));
-        
+                isLoading: true,
+                isOpenedTransform: false,
+            }, () => {
+                let formData = new FormData();
+                formData.append('binarizeNominalAttributesWith3PlusValues', this.state.binarizeNominalAttributesWith3PlusValues);
+                formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
+                formData.append('data', JSON.stringify(this.prepareDataFileBeforeSendingToServer()));
+
                 fetch(`${base}/projects/${this.props.project.result.id}/imposePreferenceOrder`, {
                     method: 'POST',
                     body: formData
@@ -964,12 +1277,12 @@ class DisplayData extends React.Component {
                             if(this._isMounted) {
                                 this.isDataFromServer = true;
                                 const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
-				                tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes), historyActionSubject: 'both'});
+                                tmpHistory.push({rows: this.prepareDataFromImport(result.objects), columns: this.prepareMetaDataFromImport(result.attributes), historyActionSubject: 'both'});
                                 if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
                                 this.setState({
                                     isLoading: false,
                                     dataModified: true,
-                                    history: tmpHistory, 
+                                    history: tmpHistory,
                                     historySnapshot: tmpHistory.length-1,
                                 }, () => {
                                     this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
@@ -1031,12 +1344,12 @@ class DisplayData extends React.Component {
                 isOpenedTransform: false,
             }, () => {
                 let link = `${base}/projects/${this.props.project.result.id}/imposePreferenceOrder?binarizeNominalAttributesWith3PlusValues=${this.state.binarizeNominalAttributesWith3PlusValues}`;
-                
+
                 fetch(link, {
                     method: 'GET'
                 }).then(response => {
                     if(response.status === 200) {
-                        response.json().then(result => {                            
+                        response.json().then(result => {
                             if(this._isMounted) {
                                 this.isDataFromServer = true;
                                 const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
@@ -1045,9 +1358,9 @@ class DisplayData extends React.Component {
                                 this.setState({
                                     isLoading: false,
                                     dataModified: true,
-                                    history: tmpHistory, 
+                                    history: tmpHistory,
                                     historySnapshot: tmpHistory.length-1
-                                }, () => { 
+                                }, () => {
                                     this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
                                     this.replaceMissingDataWithQuestionMarks();
                                     this.updateProject();
@@ -1104,17 +1417,19 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for preparing metadata before sending it to the server. E.g. removing certain properties from all the columns like sorting, filtering, resizing etc.
-     * @method
+     * Method responsible for preparing metadata before sending it to the server. E.g. removing certain properties from all the columns like sorting, filtering, resizing, width etc.
+     *
+     * @function
+     * @memberOf Data
      * @returns {Array}
      */
     prepareMetadataFileBeforeSendingToServer() {
         if(this.state.history[this.state.historySnapshot] === undefined) return ;
         const newMetadata = JSON.parse(JSON.stringify(this.state.history[this.state.historySnapshot].columns)).map(({editable,sortable,resizable,filterable,visible,draggable,editor,filterRenderer,sortDescendingFirst,key,width,...others}) => others);
-        
+
         //remove No. column
         if(newMetadata.length > 0) newMetadata.shift();
-        
+
         //remove missing value sign ("?")
         newMetadata.forEach(col => {
             if(col.domain !== undefined && col.domain[col.domain.length-1] === "?") col.domain.pop();
@@ -1124,7 +1439,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for preparing data before sending it to the server. I.e. removing "No." property from all the rows.
-     * @method
+     *
+     * @function
+     * @memberOf Data
      * @returns {Array}
      */
     prepareDataFileBeforeSendingToServer() {
@@ -1133,24 +1450,52 @@ class DisplayData extends React.Component {
         return newData;
     }
 
+    /**
+     * In the "Save to file" dialog this method is responsible for remembering if the user wants to download the metadata in JSON format
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} e - Represents an event that takes place in DOM tree.
+     */
     handleChangeSaveToFileMetaData = (e) => {
         this.setState({
-          saveToFileMetaData: e.target.checked
+            saveToFileMetaData: e.target.checked
         })
     }
 
+    /**
+     * In the "Save to file" dialog this method is responsible for remembering if the user wants to download the data in JSON or CSV format
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} e - Represents an event that takes place in DOM tree.
+     */
     handleChangeSaveToFileData = (e) => {
         this.setState({
             saveToFileData: e.target.value
         })
     }
 
+    /**
+     * In the "Save to file" dialog this method is responsible for remembering if the user wants to have the header in CSV format
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} e - Represents an event that takes place in DOM tree.
+     */
     handleChangeSaveToFileCsvHeader = (e) => {
         this.setState({
             saveToFileCsvHeader: e.target.checked
         })
     }
 
+    /**
+     * In the "Save to file" dialog this method is responsible for remembering the separator in CSV format
+     *
+     * @function
+     * @memberOf Data
+     * @param {string} selected - Selected option from the separator list. One of [comma, semicolon, space, tab].
+     */
     getSelectedSaveToFileCsvSeparator = (selected) => {
         this.setState({
             saveToFileCsvSeparator: selected
@@ -1159,7 +1504,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for closing the "Save to file" dialog. The dialog is accessible through the "SAVE TO FILE" button.
-     * @method
+     *
+     * @function
+     * @memberOf Data
      */
     closeOnSaveToFile = () => {
         this.setState({
@@ -1173,8 +1520,9 @@ class DisplayData extends React.Component {
 
     /**
      * Method responsible for opening the "Save to file" dialog. The dialog is accessible through the "SAVE TO FILE" button.
-     * @method
-     * @returns {Array}
+     *
+     * @function
+     * @memberOf Data
      */
     openOnSaveToFile = () => {
         this.setState({
@@ -1183,12 +1531,10 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for saving metadata and data to files displayed data when project is changed. Runs after every [twojaNazwa]{@link DisplayData#render} and holds the latest values of props and state.
-     * If the project has been changed then initialize all the values (overwrite) in the state.
-     * @method
-     * @param {Object} prevProps Props object containing all the props e.g. props.project.result.id or props.project.result.name
-     * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
-     * @returns {Array}
+     * Method resonsible for passing (to [this method]{@link DisplayData#saveDataToCsvOrJson}) appropriate parameters for saving (downloading) files.
+     *
+     * @function
+     * @memberOf Data
      */
     saveToFile = () => {
         if(this.state.saveToFileMetaData) {
@@ -1212,8 +1558,17 @@ class DisplayData extends React.Component {
             saveToFileCsvHeader: false,
             saveToFileCsvSeparator: '',
         })
-    } 
+    }
 
+    /**
+     * Method responsible for saving (downloading) data file.
+     *
+     * @function
+     * @memberOf Data
+     * @param {string} name - Stands for the name of the file, usually server replace this name
+     * @param {Object} header - True if CSV file needs to be saved with header row, -1 if it is JSON file (no header)
+     * @param {Object} separator - Separator in the CSV file, -1 if it JSON file (no separator)
+     */
     saveDataToCsvOrJson = (name, header, separator) => {
         const base = this.props.serverBase;
         if(this.state.dataModified) {
@@ -1235,7 +1590,7 @@ class DisplayData extends React.Component {
                 method: 'PUT',
                 body: formData
             }).then(response => {
-                if(response.status === 200) { 
+                if(response.status === 200) {
                     filename =  response.headers.get('Content-Disposition').split('filename=')[1];
                     response.blob().then(result => {
                         const url = window.URL.createObjectURL(result);
@@ -1244,7 +1599,7 @@ class DisplayData extends React.Component {
                         b.download = filename;
                         b.click();
                     }).catch(err => {
-                    }) 
+                    })
                 } else if(response.status === 406) {
                     response.json().then(result => {
                         const message = <span> {result.message} </span>
@@ -1284,7 +1639,7 @@ class DisplayData extends React.Component {
                 }
             }).catch(err => {
             })
-            
+
         } else {
             let filename = name;
 
@@ -1295,8 +1650,8 @@ class DisplayData extends React.Component {
                 link += `?format=csv`;
                 link += `&separator=${separator}`;
                 link += `&header=${header}`;
-            }    
-    
+            }
+
             fetch(link, {
                 method: 'GET'
             }).then(response => {
@@ -1355,13 +1710,20 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method responsible for saving (downloading) metadata file.
+     *
+     * @function
+     * @memberOf Data
+     * @param {string} name - Stands for the name of the file, usually server replace this name
+     */
     saveMetaDataToJson = (name) => {
         const base = this.props.serverBase;
         if(this.state.dataModified) {
             let filename = name;
             let formData = new FormData();
             formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
-    
+
             fetch(`${base}/projects/${this.props.project.result.id}/metadata/download`, {
                 method: 'PUT',
                 body: formData
@@ -1472,6 +1834,12 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method returns columns for the current history step
+     *
+     * @function
+     * @memberOf Data
+     */
     getColumns() {
         if(this.state.history[this.state.historySnapshot] !== undefined) {
             const newColumns = this.state.history[this.state.historySnapshot].columns.filter(x => x.visible !== false);
@@ -1481,34 +1849,68 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for opening the "Save to file" dialog. The dialog is accessible through the "SAVE TO FILE" button.
-     * Method responsible for changing displayed data when project is changed. Runs after every [twojaNazwa]{@link DisplayData#render} and holds the latest values of props and state.
-     * If the project has been changed then initialize all the values (overwrite) in the state.
-     * @method
-     * @param {Object} prevProps Props object containing all the props e.g. props.project.result.id or props.project.result.name
-     * @param {Object} prevState State object containing all the properties from state e.g. state.columns or state.rows
-     * @returns {Array}
+     * Method responsible for remembering selected attribute type.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} selected - It is one of [identification, description, condition, decision]
      */
     getSelectedAttributeType = (selected) => {
         this.setState({attributeTypeSelected: selected});
     }
 
+    /**
+     * Method responsible for remembering selected attribute preference type.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} selected - It is one of [gain, cost, none]
+     */
     getSelectedAttributePreferenceType = (selected) => {
         this.setState({attributePreferenceTypeSelected: selected});
     }
 
+    /**
+     * Method responsible for remembering selected attribute value type.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} selected - It is one of [integer, real, enumeration]
+     */
     getSelectedValueType = (selected) => {
         this.setState({valueTypeSelected: selected});
     }
 
+    /**
+     * Method responsible for remembering selected identifier type.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} selected - It is one of [uuid, text]
+     */
     getSelectedIdentifierType = (selected) => {
         this.setState({identifierTypeSelected: selected});
     }
 
+    /**
+     * Method responsible for remembering selected missing value type.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} selected - It is one of [mv1.5, mv2]
+     */
     getSelectedMissingValueType = (selected) => {
         this.setState({missingValueTypeSelected: selected});
     }
 
+    /**
+     * Method responsible for closing notification.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} reason - Reason of closing notification
+     * @param {Object} event - Represents an event that takes place in DOM
+     */
     closeOpenedNotification = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -1518,8 +1920,15 @@ class DisplayData extends React.Component {
         })
     }
 
+    /**
+     * Method responsible for closing right click header menu.
+     *
+     * @function
+     * @memberOf Data
+     * @param {string} selected - It is one of [Delete attribute, Edit attribute, Mark attribute as: active, Mark attribute as: inactive]
+     */
     closeOpenedColumnHeaderMenu = (selected) => {
-        if(selected !== undefined) {            
+        if(selected !== undefined) {
             let history = [...this.state.history];
             let cols = [...history[this.state.historySnapshot].columns];
             for(let i=0; i<cols.length; i++) {
@@ -1562,6 +1971,7 @@ class DisplayData extends React.Component {
                             col.active = !col.active;
                             cols[i] = col;
                         } else if(selected === "Delete attribute") {
+                            if(this.ctrlPlusC) this.turnOffCellCopyPaste();
                             removedColumn = cols.splice(i,1);
                         }
 
@@ -1582,7 +1992,7 @@ class DisplayData extends React.Component {
                             else this.checkIfUpdateOfAttributesNeeded({...removedColumn[0]}, false);
                             this.updateProject();
                         });
-                        
+
                         break;
                     }
                 }
@@ -1595,6 +2005,14 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method responsible for checking if any attribute with the same name already exists.
+     * It is used in the Add attribute dialog
+     *
+     * @function
+     * @memberOf Data
+     * @param {string} name - It is the name of the new attribute
+     */
     attributeAlreadyExists = (name) => {
         for(let i in this.state.history[this.state.historySnapshot].columns) {
             if(this.state.history[this.state.historySnapshot].columns[i].name === name) {
@@ -1604,6 +2022,15 @@ class DisplayData extends React.Component {
         return false;
     }
 
+    /**
+     * Method responsible for checking if any attribute with the same name already exists.
+     * It is used in the Edit attributes dialog
+     *
+     * @function
+     * @memberOf Data
+     * @param {string} name - It is the name of the new attribute
+     * @param {integer} coldIdx - It is the index of the edited column
+     */
     attributeAlreadyExistAndIsDifferentThanSelected(name, colIdx) {
         for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
             if(this.state.history[this.state.historySnapshot].columns[i].name === name && i !== colIdx) {
@@ -1613,52 +2040,89 @@ class DisplayData extends React.Component {
         return false;
     }
 
+    /**
+     * Method responsible for checking if any identification attribute exists and is active.
+     *
+     * @function
+     * @memberOf Data
+     * @param {string} isAddMethodElseIndex - If it is -1 it means adding new column, else it is index of the old column which has been edited.
+     */
     activeIdentificationAttributeAlreadyExists(isAddMethodElseIndex) {
         if(isAddMethodElseIndex === -1) {
             for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
                 if(this.state.history[this.state.historySnapshot].columns[i].identifierType !== undefined
                     && this.state.history[this.state.historySnapshot].columns[i].active === true) {
-                        return true;
-                    }
+                    return true;
+                }
             }
         } else {
             for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
                 if(this.state.history[this.state.historySnapshot].columns[i].identifierType !== undefined
                     && this.state.history[this.state.historySnapshot].columns[i].active === true
                     && i !== isAddMethodElseIndex) {
-                        return true;
-                    }
+                    return true;
+                }
             }
         }
         return false;
     }
 
+    /**
+     * Method responsible for checking if any decision attribute exists and is active.
+     *
+     * @function
+     * @memberOf Data
+     * @param {string} isAddMethodElseIndex - If it is -1 it means adding new column, else it is index of the old column which has been edited.
+     */
     activeDecisionAttributeAlreadyExists(isAddMethodElseIndex) {
         if(isAddMethodElseIndex === -1) {
             for(let i=this.state.history[this.state.historySnapshot].columns.length-1; i>=0; i--) {
-                if(this.state.history[this.state.historySnapshot].columns[i].type === "decision" 
+                if(this.state.history[this.state.historySnapshot].columns[i].type === "decision"
                     && this.state.history[this.state.historySnapshot].columns[i].active === true) {
-                        return true;
-                    }
+                    return true;
+                }
             }
         } else {
             for(let i=this.state.history[this.state.historySnapshot].columns.length-1; i>=0; i--) {
-                if(this.state.history[this.state.historySnapshot].columns[i].type === "decision" 
+                if(this.state.history[this.state.historySnapshot].columns[i].type === "decision"
                     && this.state.history[this.state.historySnapshot].columns[i].active === true
                     && i !== isAddMethodElseIndex) {
-                        return true;
-                    }
+                    return true;
+                }
             }
         }
         return false;
     }
 
+    /**
+     * Method responsible for remembering domain elements of the enumeration attribute.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Array} array - It is the array containing domain elements
+     */
     setDomainElements = (array) => {
         this.setState({
             attributesDomainElements: array,
         })
     }
 
+    /**
+     * Method responsible for validating new attribute or validating edited attribute.
+     *
+     * @function
+     * @memberOf Data
+     * @param {integer} isAddMethodElseIndex - If it is -1 it means adding new column, else it is index of the old column which has been edited.
+     * @param {boolean} active - It is true if the attribute is active, else false
+     * @param {string} name - It is the name of the new / edited attribute
+     * @param {string} type - It is one of [identification, decision, condition, description]
+     * @param {string} mvType - It is one of [mv1.5, mv2]
+     * @param {string} identifierType - It is one of [uuid, text]
+     * @param {string} preferenceType - It is one of [gain, cost, none]
+     * @param {string} valueType - It is one of [integer, real, enumeration]
+     * @param {Array} domain - It is the array containing domain elements for the enumeration value type
+     * @returns {Boolean}
+     */
     validateOnAddAndEditAttribute = (isAddMethodElseIndex, active, name, type, mvType, identifierType, preferenceType, valueType, domain) => {
 
         let error = ''
@@ -1671,10 +2135,10 @@ class DisplayData extends React.Component {
         } else { //change existing column
             if(this.attributeAlreadyExistAndIsDifferentThanSelected(name, isAddMethodElseIndex)) error = <span> The attribute with the same name ({name}) already exists! Please choose other name.</span>;
         }
-        
+
         //type validation
         if(type === '') error = <span> You didn't select any attribute type! Please select any.</span>;
-        
+
         else if(type !== "identification") {
             //only one active decision attribute
             if(type === "decision") {
@@ -1736,20 +2200,36 @@ class DisplayData extends React.Component {
                 if(identifierType === '') error = "You didn't select any identifier type! Please select any.";
             }
         }
-        
+
         this.setState({
             errorMessage: error,
             errorMessageSeverity: 'warning'
-        });  
+        });
 
         //everything was fine
         if(error === '') return true;
 
         //there are some errors
         return false;
-    
+
     }
 
+    /**
+     * Method responsible for creating new column (new attribute).
+     * It runs only when [validation]{@link DisplayData#validateOnAddAndEditAttribute} gives positive result.
+     *
+     * @function
+     * @memberOf Data
+     * @param {string} name - It is the name of the new attribute
+     * @param {boolean} active - It is true if the attribute is active, else false
+     * @param {string} type - It is one of [identification, decision, condition, description]
+     * @param {string} mvType - It is one of [mv1.5, mv2]
+     * @param {string} identifierType - It is one of [uuid, text]
+     * @param {string} preferenceType - It is one of [gain, cost, none]
+     * @param {string} valueType - It is one of [integer, real, enumeration]
+     * @param {Array} domain - It is the array containing domain elements for the enumeration value type
+     * @returns {Object}
+     */
     createColumn = (name, active, type, mvType, identifierType, preferenceType, valueType, domain) => {
         const attribute = {editable:true, sortable:true, resizable:true, filterable:true, draggable: true, visible: true}
         attribute.key = name;
@@ -1764,7 +2244,7 @@ class DisplayData extends React.Component {
             attribute.valueType = valueType.toLowerCase();
             if(mvType === "mv2") attribute.missingValueType = "mv2";
             else attribute.missingValueType = "mv1.5";
-            
+
             if(attribute.valueType === "enumeration") {
                 attribute.domain = domain.map(x => x.text.trim());
                 if(!attribute.domain.includes("?")) attribute.domain.push("?");
@@ -1776,13 +2256,22 @@ class DisplayData extends React.Component {
         return attribute;
     }
 
+    /**
+     * Method responsible for setting column header color and its bottom text (e.g. condition, active).
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} column - It is the column object (attribute) on which changes will be made
+     * @param {Integer} idx - It is the index of the column in DOM tree
+     * @param {boolean} changeWidth - If it is true the width of the column will be set
+     */
     setHeaderColorAndStyle = (column, idx, changeWidth) => {
         if(document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes !== undefined) {
             const tmp = document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes;
             if((column.type !== undefined || column.identifierType !== undefined) && !(/<\/?[a-z][\s\S]*>/i.test(column.type))) { //make sure attribute type doesn't contain html tags
                 if(tmp.length === 2) {
                     if(column.identifierType !== undefined) {
-                        if(column.active) { 
+                        if(column.active) {
                             document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(identification,active)");
                         } else {
                             document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].insertAdjacentHTML("beforeend", "<br/>(identification,inactive)");
@@ -1794,7 +2283,7 @@ class DisplayData extends React.Component {
                     }
                 } else if(tmp.length > 2) {
                     if(column.identifierType !== undefined) {
-                        if(column.active) { 
+                        if(column.active) {
                             document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(identification,active)";
                         } else {
                             document.getElementsByClassName("react-grid-HeaderCell-sortable")[idx].childNodes[3].textContent = "(identification,inactive)";
@@ -1846,6 +2335,14 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Method responsible for setting right click column header menu.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} column - It is the column object (attribute) on which changes will be made
+     * @param {Integer} idx - It is the index of the column in DOM tree
+     */
     setHeaderRightClick = (column, idx) => {
         //right-click
         document.getElementsByClassName("react-grid-HeaderCell")[idx].oncontextmenu = (e) => {
@@ -1853,10 +2350,10 @@ class DisplayData extends React.Component {
             var isRightMB;
             e = e || window.event;
             if ("which" in e)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-                isRightMB = e.which == 3; 
+                isRightMB = e.which === 3;
             else if ("button" in e)  // IE, Opera 
-                isRightMB = e.button == 2; 
-            
+                isRightMB = e.button === 2;
+
             if(isRightMB) {
                 this.setState({
                     isColumnHeaderMenuOpened: e,
@@ -1867,16 +2364,44 @@ class DisplayData extends React.Component {
         }
     }
 
+    /**
+     * Auxiliary method responsible for preparing columns headers.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} column - It is the column object (attribute) on which changes will be made
+     * @param {Integer} idx - It is the index of the column in DOM tree
+     * @param {boolean} changeWidth - If it is true the width of the column will be set
+     */
     setHeaderColorAndStyleAndRightClick = (column, idx, changeWidth) => {
         this.setHeaderColorAndStyle(column, idx, changeWidth);
         this.setHeaderRightClick(column, idx);
     }
 
+    /**
+     * Method responsible for renaming key in an object.
+     *
+     * @function
+     * @memberOf Data
+     * @param {string} oldName - It is the old key name (the key which will be renamed)
+     * @param {string} newName - It is the new key name
+     * @param {Object} object - It is the object in which one key is replaced
+     */
     renameKeyInObject = (oldName, newName, {[oldName]: old, ...others}) => ({
         [newName]: old,
         ...others
     })
-    
+
+    /**
+     * Additionally to the [method]{@link DisplayData#setHeaderColorAndStyleAndRightClick} it also changes rows
+     * (e.g. during the change of attribute value type, or fills all rows with missing value sign "?" if it is new attribute)
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} column - It is the old column (before any changes)
+     * @param {Integer} idx - It is the index of the column in DOM tree
+     * @param {Object} ifIsNewColumnElseOldColumn - It is the column object having changes after its edition, it is boolean if new attribute was added.
+     */
     setRowsAndHeaderColorAndStyleAndRightClick = (column, idx, ifIsNewColumnElseOldColumn) => {
         let nextRows = JSON.parse(JSON.stringify(this.state.history[this.state.historySnapshot].rows));
         if(typeof ifIsNewColumnElseOldColumn === "boolean") { //new column fill with "?"
@@ -1884,7 +2409,7 @@ class DisplayData extends React.Component {
                 nextRows[i][column.key] = "?";
             }
         } else { //editing column
-            
+
             //name changed
             if(ifIsNewColumnElseOldColumn.name !== column.name) {
                 for(let i in nextRows) {
@@ -1899,43 +2424,43 @@ class DisplayData extends React.Component {
                     for(let i in nextRows) {
                         nextRows[i][column.key] = "?";
                     }
-                //change from integer to real
+                    //change from integer to real
                 } else if(ifIsNewColumnElseOldColumn.valueType === "integer" && column.valueType === "real") {
                     //do nothing
-                //change from integer to enumeration
+                    //change from integer to enumeration
                 } else if(ifIsNewColumnElseOldColumn.valueType === "integer" && column.valueType === "enumeration") {
                     for(let i in nextRows) {
                         if(!column.domain.includes(nextRows[i][column.key].toString())) nextRows[i][column.key] = "?";
                     }
-                //change from real to integer
+                    //change from real to integer
                 } else if(ifIsNewColumnElseOldColumn.valueType === "real" && column.valueType === "integer") {
                     for(let i in nextRows) {
                         if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = Math.round(nextRows[i][column.key]).toString();
                     }
-                //change from real to enumeration
+                    //change from real to enumeration
                 } else if(ifIsNewColumnElseOldColumn.valueType === "real" && column.valueType === "enumeration") {
                     for(let i in nextRows) {
                         if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
                     }
-                //change from enumeration to integer
+                    //change from enumeration to integer
                 } else if(ifIsNewColumnElseOldColumn.valueType === "enumeration" && column.valueType === "integer") {
                     for(let i in nextRows) {
                         if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = (ifIsNewColumnElseOldColumn.domain.indexOf(nextRows[i][column.key]) + 1).toString();
                     }
-                //change from enumeration to real
+                    //change from enumeration to real
                 } else if(ifIsNewColumnElseOldColumn.valueType === "enumeration" && column.valueType === "real") {
                     for(let i in nextRows) {
                         if(nextRows[i][column.key] !== "?") nextRows[i][column.key] = (ifIsNewColumnElseOldColumn.domain.indexOf(nextRows[i][column.key]) + 1.0).toString();
                     }
                 }
-            //just domain changed
+                //just domain changed
             } else if(ifIsNewColumnElseOldColumn.valueType === "enumeration") {
                 for(let i in nextRows) {
                     if(!column.domain.includes(nextRows[i][column.key])) nextRows[i][column.key] = "?";
                 }
-            }   
+            }
         }
-        
+
         let history = [...this.state.history];
         let newHistory = {...history[this.state.historySnapshot]};
         newHistory.rows = nextRows;
@@ -1957,18 +2482,24 @@ class DisplayData extends React.Component {
             this.updateProject();
             if(typeof ifIsNewColumnElseOldColumn !== "boolean") this.checkIfUpdateOfAttributesNeeded({...ifIsNewColumnElseOldColumn}, {...column});
             else if(column.type === "description" || column.identifierType !== undefined) this.updateChangedIdentifOrDescriptAttribute();
-        }) 
-        
+        })
+
     }
 
+    /**
+     * Method runs after clicking Apply in the Add Attribute dialog
+     *
+     * @function
+     * @memberOf Data
+     */
     applyOnAddAttribute = (e) => {
         e.preventDefault();
         const validationOk = this.validateOnAddAndEditAttribute(-1, e.target.attributeIsActive.checked, e.target.attributeName.value.trim(), this.state.attributeTypeSelected, this.state.missingValueTypeSelected,
-                    this.state.identifierTypeSelected, this.state.attributePreferenceTypeSelected, this.state.valueTypeSelected, this.state.attributesDomainElements)
+            this.state.identifierTypeSelected, this.state.attributePreferenceTypeSelected, this.state.valueTypeSelected, this.state.attributesDomainElements)
         if(validationOk) {
-            const newColumn = this.createColumn(e.target.attributeName.value.trim(), e.target.attributeIsActive.checked, this.state.attributeTypeSelected, 
+            const newColumn = this.createColumn(e.target.attributeName.value.trim(), e.target.attributeIsActive.checked, this.state.attributeTypeSelected,
                 this.state.missingValueTypeSelected, this.state.identifierTypeSelected, this.state.attributePreferenceTypeSelected, this.state.valueTypeSelected, this.state.attributesDomainElements);
-            
+
             this.setState( (prevState) => {
                 let tmpHistory = prevState.history.slice(0, prevState.historySnapshot+1);
                 let cols = [...tmpHistory[prevState.historySnapshot].columns];
@@ -1987,19 +2518,27 @@ class DisplayData extends React.Component {
                     attributesDomainElements: [],
                     history: tmpHistory,
                     historySnapshot: tmpHistory.length-1,
-                    }
-                },() => {
-                    this.setRowsAndHeaderColorAndStyleAndRightClick(
-                        this.state.history[this.state.historySnapshot].columns[this.state.history[this.state.historySnapshot].columns.length-1], 
-                        this.state.history[this.state.historySnapshot].columns.length-1, true);
-                });   
+                }
+            },() => {
+                this.setRowsAndHeaderColorAndStyleAndRightClick(
+                    this.state.history[this.state.historySnapshot].columns[this.state.history[this.state.historySnapshot].columns.length-1],
+                    this.state.history[this.state.historySnapshot].columns.length-1, true);
+            });
         } else {
             this.setState({
                 isOpenedNotification: true,
-            });  
+            });
         }
     }
 
+    /**
+     * Method prepares array of html elements which will be displayed through the [render]{@link DisplayData#render} method.
+     * These are fields of the Add attribute dialog.
+     *
+     * @function
+     * @memberOf Data
+     * @returns {Array}
+     */
     displayAddAttributeFields = () => {
         const tmpWrapper = [];
         const tmp = [];
@@ -2021,28 +2560,36 @@ class DisplayData extends React.Component {
             {
                 tmpWrapper.push(<div className="addAttributeDomain" key="addAttributeDomain"> <AttributeDomain setDomainElements={this.setDomainElements}/> </div>)
             }
-        } else if(this.state.attributeTypeSelected === "identification") { 
+        } else if(this.state.attributeTypeSelected === "identification") {
             tmp.push(<DropDownForAttributes getSelected={this.getSelectedIdentifierType} name={"identifierType"} displayName={"Identifier type"} key="identifierType" items={["uuid","text"]}/>)
         }
 
         tmpWrapper.unshift(<div key="addAttributeFields" className="addAttributeFields"> {tmp} </div>)
-      
+
         if(tmpWrapper.length !== 0) return tmpWrapper;
         return ;
     }
 
+    /**
+     * Method prepares array of html elements which will be displayed through the [render]{@link DisplayData#render} method.
+     * These are fields of the Edit attribute dialog
+     *
+     * @function
+     * @memberOf Data
+     * @returns {Array}
+     */
     displayEditAttributeFields = () => {
         let attribute = {};
         for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
-            if(this.state.editAttributeSelected === this.state.history[this.state.historySnapshot].columns[i].name) { 
+            if(this.state.editAttributeSelected === this.state.history[this.state.historySnapshot].columns[i].name) {
                 attribute = {...this.state.history[this.state.historySnapshot].columns[i]};
                 break;
             }
         }
-        
+
         const tmpWrapper = [];
         const tmp = [];
-        
+
         tmp.push(<FormControlLabel
             control={<StyledCheckbox defaultChecked={attribute.active} name="attributeIsActive"/>}
             label="Active"
@@ -2053,11 +2600,11 @@ class DisplayData extends React.Component {
 
         //display attribute name
         tmp.push(<StyledCustomTextField autoComplete={"off"} label="Name" fullWidth required variant="outlined" id="attributeName" key={"attributeName"+attribute.name} defaultValue={attribute.name} />)
-        
+
         //display attribute type - identification
         if(this.state.attributeTypeSelected === "identification" || (this.state.attributeTypeSelected === '' && attribute.valueType === undefined)) {
             tmp.push(<DropDownForAttributes key={"attributeType"+attribute.name} name={"attributeType"} getSelected={this.getSelectedAttributeType} displayName={"Type"} defaultValue={"identification"} items={["identification","description","condition","decision"]}/>)
-            
+
             //display identifier type
             if(attribute.identifierType === 'uuid' || attribute.identifierType === 'text') {
                 tmp.push(<DropDownForAttributes key={"identifierType"+attribute.name} name={"identifierType"} getSelected={this.getSelectedIdentifierType} displayName={"Identifier type"} defaultValue={attribute.identifierType} items={["uuid","text"]}/>)
@@ -2065,23 +2612,23 @@ class DisplayData extends React.Component {
                 tmp.push(<DropDownForAttributes key={"identifierType"+attribute.name} name={"identifierType"} getSelected={this.getSelectedIdentifierType} displayName={"Identifier type"} items={["uuid","text"]}/>)
             }
 
-        } else if(this.state.attributeTypeSelected == attribute.type || (this.state.attributeTypeSelected == '' && attribute.type !== undefined)) { //display attribute type - other than identification and the same as before editing 
+        } else if(this.state.attributeTypeSelected === attribute.type || (this.state.attributeTypeSelected === '' && attribute.type !== undefined)) { //display attribute type - other than identification and the same as before editing 
             tmp.push(<DropDownForAttributes key={"attributeType"+attribute.name} name={"attributeType"} getSelected={this.getSelectedAttributeType} displayName={"Type"} defaultValue={attribute.type} items={["identification","description","condition","decision"]}/>)
         } else { //display attribute type - other than identification and other than before editing
             tmp.push(<DropDownForAttributes key={"attributeType"+attribute.name} name={"attributeType"} getSelected={this.getSelectedAttributeType} displayName={"Type"} items={["identification","description","condition","decision"]}/>)
         }
-        
+
         //it's not identification attribute
         if((attribute.valueType !== undefined && this.state.attributeTypeSelected === '') || (this.state.attributeTypeSelected !== "identification")) {
-            
+
             //display missing value type
-            if(attribute.missingValueType !== undefined) 
+            if(attribute.missingValueType !== undefined)
                 tmp.push(<DropDownForAttributes key={"missingValueType"+attribute.name} name={"missingValueType"} getSelected={this.getSelectedMissingValueType} displayName={"Missing value type"} missingVal={true} defaultValue={attribute.missingValueType} items={["1.5","2"]}/>)
-            else 
+            else
                 tmp.push(<DropDownForAttributes key={"missingValueType"+attribute.name} name={"missingValueType"} getSelected={this.getSelectedMissingValueType} displayName={"Missing value type"} missingVal={true} defaultValue="mv2" items={["1.5","2"]}/>)
 
             //display preference type
-            if(attribute.preferenceType !== undefined) 
+            if(attribute.preferenceType !== undefined)
                 tmp.push(<DropDownForAttributes key={"attributePreferenceType"+attribute.name} name={"attributePreferenceType"} getSelected={this.getSelectedAttributePreferenceType} displayName={"Preference type"} defaultValue={attribute.preferenceType} items={["none","cost","gain"]}/>)
             else
                 tmp.push(<DropDownForAttributes key={"attributePreferenceType"+attribute.name} name={"attributePreferenceType"} getSelected={this.getSelectedAttributePreferenceType} displayName={"Preference type"} items={["none","cost","gain"]}/>)
@@ -2097,7 +2644,7 @@ class DisplayData extends React.Component {
             if(attribute.valueType === "enumeration" && (this.state.valueTypeSelected === '' || this.state.valueTypeSelected === "enumeration"))
             {
                 const domain = [];
-                attribute.domain.forEach( (x, index) => { 
+                attribute.domain.forEach( (x, index) => {
                     if(x !== "?") domain.push({id: index, text: x});
                 })
                 tmpWrapper.push(<div className="editAttributeDomain" key={"editAttributeDomain"+attribute.name}> <AttributeDomain setDomainElements={this.setDomainElements} defaultValue={domain}/> </div>)
@@ -2109,15 +2656,22 @@ class DisplayData extends React.Component {
 
         if(tmpWrapper.length === 0)
             tmpWrapper.push(<div key="editAttributeFields" className="editAttributeFields"> {tmp} </div>)
-        
+
         return tmpWrapper;
     }
 
+    /**
+     * Method responsible for remembering selected attribute from the list in the Edit attributes dialog.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} col - It is the column (attribute) selected from the list
+     */
     handleListItemClick = (col) => {
         const selectedItem = col.name; //e.currentTarget.dataset.value;
         this.setState( (prevState) => {
             if(prevState.editAttributeSelected !== selectedItem) {
-                return { 
+                return {
                     editAttributeSelected: selectedItem,
                     attributeTypeSelected: '',
                     attributePreferenceTypeSelected: '',
@@ -2126,10 +2680,16 @@ class DisplayData extends React.Component {
                     missingValueTypeSelected: '',
                     attributesDomainElements: [],
                 };
-            }          
+            }
         })
     }
 
+    /**
+     * Method runs after clicking Apply in the Edit attributes dialog
+     *
+     * @function
+     * @memberOf Data
+     */
     applyOnEditAttributes = (e) => {
         e.preventDefault();
         let history = [...this.state.history];
@@ -2142,7 +2702,7 @@ class DisplayData extends React.Component {
 
         const validationOk = this.validateOnAddAndEditAttribute(i, e.target.attributeIsActive.checked, e.target.attributeName.value.trim(), this.state.attributeTypeSelected, this.state.missingValueTypeSelected,
             this.state.identifierTypeSelected, this.state.attributePreferenceTypeSelected, this.state.valueTypeSelected, this.state.attributesDomainElements)
-        
+
         if(validationOk) {
             col.key = e.target.attributeName.value.trim();
             col.name = e.target.attributeName.value.trim();
@@ -2172,7 +2732,7 @@ class DisplayData extends React.Component {
             const tmpHistory = this.state.history.slice(0, this.state.historySnapshot+1);
             tmpHistory.push({rows: this.state.history[this.state.historySnapshot].rows, columns: cols, historyActionSubject: 'column'});
             if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
-            
+
             this.setState({
                 dataModified: true,
                 editAttributeSelected: '',
@@ -2187,27 +2747,42 @@ class DisplayData extends React.Component {
                 historySnapshot: tmpHistory.length-1
             },() => {
                 this.setRowsAndHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[i], i, oldColumn);
-            });   
+            });
         } else {
             this.setState({
                 isOpenedNotification: true,
-            });  
+            });
         }
     }
 
+    /**
+     * Method returns columns which can be selected and then modified in the Edit attributes dialog.
+     *
+     * @function
+     * @memberOf Data
+     * @returns {Array}
+     */
     displayListOfAttributesForModification = () => {
-       const tmp = [];
-       if(this.state.history[this.state.historySnapshot] !== undefined) {
+        const tmp = [];
+        if(this.state.history[this.state.historySnapshot] !== undefined) {
             for(let i=0; i<this.state.history[this.state.historySnapshot].columns.length; i++) {
                 if(this.state.history[this.state.historySnapshot].columns[i].key !== "uniqueLP") {
                     tmp.push(this.state.history[this.state.historySnapshot].columns[i]);
                 }
             }
         }
-        
+
         return tmp;
     }
 
+    /**
+     * Method prepares array of html elements which will be displayed through the [render]{@link DisplayData#render} method.
+     * These are options available through right click on the column header.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} col - It is the column (attribute) selected from the list
+     */
     displayColumnHeaderMenu = () => {
         if(this.state.isColumnHeaderMenuOpened && this.state.columnKeyOfHeaderMenuOpened !== "uniqueLP") { //don't touch No. column
             const tmp = [];
@@ -2230,12 +2805,14 @@ class DisplayData extends React.Component {
         return null;
     }
 
-    onCellSelected = (coord) => {
-        const {rowIdx, Idx} = coord;
-        /*   this.grid.openCellEditor(rowIdx, idx); */
-        
-    }
-
+    /**
+     * Method responsible for remembering if binarize nominal attributes with 3+ values is selected.
+     * This option is available in the impose preference order dialog through the Transform button.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} e - Represents an event that takes place in DOM tree.
+     */
     handleChangeBinarize = (e) => {
         this.setState({
             binarizeNominalAttributesWith3PlusValues: e.target.checked,
@@ -2248,6 +2825,14 @@ class DisplayData extends React.Component {
         });
     }
 
+    /**
+     * Method responsible for changing order of columns via drag and drop.
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} source - It is the key of the source column (dragged-from column)
+     * @param {Object} target - It is the key of the target column (dropped-on column)
+     */
     onColumnHeaderDragDrop = (source, target) => {
         const history = [...this.state.history];
         const newColumns = [...history[this.state.historySnapshot].columns];
@@ -2255,25 +2840,76 @@ class DisplayData extends React.Component {
         const columnTargetIndex = history[this.state.historySnapshot].columns.findIndex((i) => i.key === target);
         const uniqueLPIdx = history[this.state.historySnapshot].columns.findIndex((i) => i.key === "uniqueLP");
         newColumns.splice(columnTargetIndex,0,newColumns.splice(columnSourceIndex, 1)[0]);
-        
+
         let col = {...newColumns[uniqueLPIdx]};
         col.temp = !col.temp;
         newColumns[uniqueLPIdx] = col;
-    
+
         const tmpHistory = history.slice(0, this.state.historySnapshot+1);
         tmpHistory.push({rows: this.state.history[this.state.historySnapshot].rows, columns: newColumns});
         if(tmpHistory.length - 1 > maxNoOfHistorySteps) tmpHistory.shift();
-    
-        this.setState({ 
+
+        this.setState({
             dataModified: true,
             history: tmpHistory,
             historySnapshot: tmpHistory.length-1
         }, () => {
             this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,false));
             this.updateProject();
-        })        
+        })
     };
 
+    /**
+     * Method responsible for catching key up keyboard event,
+     * more specifically to catch if the CTRL or Escape was released
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} e - Represents an event that takes place in DOM tree.
+     */
+    onGridKeyUp = (e) => {
+        if(e.keyCode === 27) {
+            this.ctrlPlusC = false;
+        }
+        else if(e.keyCode === this.ctrlKeyDown) {
+            this.ctrlKeyDown = -1;
+        }
+    }
+
+    /**
+     * Method responsible for catching key down keyboard event,
+     * more specifically to catch if the CTRL or CTRL + C was pressed
+     *
+     * @function
+     * @memberOf Data
+     * @param {Object} e - Represents an event that takes place in DOM tree.
+     */
+    onGridKeyDown = (e) => {
+        if(e.keyCode === 67 && (e.ctrlKey === true || e.metaKey === true)) {
+            this.ctrlPlusC = true;
+        }
+        else if(e.ctrlKey === true || e.metaKey === true) {
+            this.ctrlKeyDown = e.keyCode;
+        }
+    }
+
+    /**
+     * Method responsible for turning off the copy paste mode (same behaviour as pressing Escape)
+     *
+     * @function
+     * @memberOf Data
+     */
+    turnOffCellCopyPaste = () => {
+        this.ctrlPlusC = false;
+        if(this.grid) this.grid.base.viewport.canvas.interactionMasks.onPressEscape();
+    }
+
+    /**
+     * Method responsible for displaying previous history step
+     *
+     * @function
+     * @memberOf Data
+     */
     onBack = () => {
         this.setState( prevState => {
             if(prevState.historySnapshot > 0) {
@@ -2289,6 +2925,12 @@ class DisplayData extends React.Component {
         })
     }
 
+    /**
+     * Method responsible for displaying next history step
+     *
+     * @function
+     * @memberOf Data
+     */
     onRedo = () => {
         this.setState( prevState => {
             if(prevState.historySnapshot < prevState.history.length-1) {
@@ -2304,6 +2946,14 @@ class DisplayData extends React.Component {
         })
     }
 
+    /**
+     * Method responsible for adjusting width to the resized column
+     *
+     * @function
+     * @memberOf Data
+     * @param {Integer} columnIdx - Index of the column
+     * @param {Number} newWidth - New width of the column
+     */
     onColumnResize = (columnIdx, newWidth) => {
         //In this method columnIdx = 0 means column with checkboxes,
         //so to get first column from history one have to subtract 1
@@ -2313,7 +2963,7 @@ class DisplayData extends React.Component {
         let column = {...cols[columnIdx-1]};
         if(newWidth > 80) column.width = newWidth;
         else column.width = 80;
-        
+
         cols[columnIdx-1] = column;
         history[this.state.historySnapshot].columns = cols;
 
@@ -2322,114 +2972,113 @@ class DisplayData extends React.Component {
         })
     }
 
-    /**
-     * Method responsible for rendering everything
-     */
-    render() {   
+    render() {
         const classes = this.props.classes;
         return (
             <div style={{flexGrow: 1}} className={classes.root}>
-                <DraggableContainer onHeaderDrop={this.onColumnHeaderDragDrop}>   
-                <ReactDataGrid
-                    ref={(node) => this.grid = node}
-                    columns={this.getColumns()}
-                    rowGetter={i => this.filteredRows()[i]}
-                    rowsCount={this.filteredRows().length}
-                    onGridRowsUpdated={this.onGridRowsUpdated}
-                    onGridSort = {this.onGridSort}
-                    enableCellSelect={true}
-                    enableRowSelect={null}
-                    onCellSelected={this.onCellSelected}
-                    getValidFilterValues={columnKey => this.getValidFilterValues(this.state.history[this.state.historySnapshot].rows, columnKey)}
-                    toolbar={<EditDataFilterButton enableFilter={true} > 
-                            < EditDataButtons deleteRow={this.deleteSelectedRows} insertRow={this.insertRow} 
-                                    saveToFileDialog={this.openOnSaveToFile} onAddAttribute={this.onAddAttribute} 
-                                    onBack={this.onBack} onRedo={this.onRedo} historySnapshot={this.state.historySnapshot} historyLength={this.state.history.length}
-                                    onEditAttributes={this.onEditAttributes} openOnTransform={this.openOnTransform} setProjectSettings={this.setProjectSettings}/> 
-                            </EditDataFilterButton> }
-                    onAddFilter={this.handleFilterChange}
-                    onClearFilters={this.onClearFilters}
-                    
-                    rowSelection={{
-                        showCheckbox: true,
-                        enableShiftSelect: true,
-                        onRowsSelected: this.onRowsSelected,
-                        onRowsDeselected: this.onRowsDeselected,
-                        selectBy: {
-                            keys: {
-                                rowKey: "uniqueLP",
-                                values: this.state.selectedRows
+                <DraggableContainer onHeaderDrop={this.onColumnHeaderDragDrop}>
+                    <ReactDataGrid
+                        ref={(node) => this.grid = node}
+                        columns={this.getColumns()}
+                        rowGetter={i => this.filteredRows()[i]}
+                        rowsCount={this.filteredRows().length}
+                        rowKey={"uniqueLP"}
+                        onGridRowsUpdated={this.onGridRowsUpdated}
+                        onGridSort = {this.onGridSort}
+                        onGridKeyUp={this.onGridKeyUp}
+                        onGridKeyDown={this.onGridKeyDown}
+                        enableCellSelect={true}
+                        enableRowSelect={null}
+                        getValidFilterValues={columnKey => this.getValidFilterValues(this.state.history[this.state.historySnapshot].rows, columnKey)}
+                        toolbar={<EditDataFilterButton enableFilter={true} >
+                            < EditDataButtons deleteRow={this.deleteSelectedRows} insertRow={this.insertRow}
+                                              saveToFileDialog={this.openOnSaveToFile} onAddAttribute={this.onAddAttribute}
+                                              onBack={this.onBack} onRedo={this.onRedo} historySnapshot={this.state.historySnapshot} historyLength={this.state.history.length}
+                                              onEditAttributes={this.onEditAttributes} openOnTransform={this.openOnTransform} setProjectSettings={this.setProjectSettings}/>
+                        </EditDataFilterButton> }
+                        onAddFilter={this.handleFilterChange}
+                        onClearFilters={this.onClearFilters}
+
+                        rowSelection={{
+                            showCheckbox: true,
+                            enableShiftSelect: true,
+                            onRowsSelected: this.onRowsSelected,
+                            onRowsDeselected: this.onRowsDeselected,
+                            selectBy: {
+                                keys: {
+                                    rowKey: "uniqueLP",
+                                    values: this.state.selectedRows
+                                }
                             }
+                        }}
+                        onColumnResize={this.onColumnResize}
+                        minHeight={1400}
+                        rowHeight={heightOfRow}
+                        rowScrollTimeout={null}
+                        headerRowHeight={heightOfHeaderRow}
+                        editorPortalTarget={document.getElementsByClassName("react-grid-Canvas")[0]}
+                        contextMenu={
+                            <RightClickContextMenu
+                                onRowDelete={(e, { rowIdx }) => this.deleteRowByRowIdx(rowIdx)}
+                                onRowInsertAbove={(e, { rowIdx }) => this.insertRow(rowIdx, "above")}
+                                onRowInsertBelow={(e, { rowIdx }) => this.insertRow(rowIdx, "below")}
+                            />
                         }
-                    }}
-                    onColumnResize={this.onColumnResize}
-                    minHeight={1400}
-                    rowHeight={heightOfRow}
-                    rowScrollTimeout={null}
-                    headerRowHeight={heightOfHeaderRow}
-                    editorPortalTarget={document.getElementsByClassName("react-grid-Canvas")[0]}
-                    contextMenu={
-                        <RightClickContextMenu
-                          onRowDelete={(e, { rowIdx }) => this.deleteRowByRowIdx(rowIdx)}
-                          onRowInsertAbove={(e, { rowIdx }) => this.insertRow(rowIdx, "above")}
-                          onRowInsertBelow={(e, { rowIdx }) => this.insertRow(rowIdx, "below")}
-                        />
-                      }
-                      RowsContainer={ContextMenuTrigger}
-                />
-                </DraggableContainer>     
-                
+                        RowsContainer={ContextMenuTrigger}
+                    />
+                </DraggableContainer>
+
                 <SimpleDialog open={this.state.isOpenedAddAttribute} fullWidth={true} maxWidth={"sm"} onClose={this.closeOnAddAttribute} aria-labelledby="add-attribute-dialog">
                     <DialogTitle id="add-attribute-dialog">{"Add new attribute"}</DialogTitle>
                     <form onSubmit={this.applyOnAddAttribute}>
-                    <DialogContent>
-                        <div className={"editAndAddAttributesWrapper"}>
-                            {this.displayAddAttributeFields()}
-                        </div>        
-                        {
-                            this.state.errorMessage !== '' ? <Notification open={this.state.isOpenedNotification} 
-                            closeOpenedNotification={this.closeOpenedNotification} message={this.state.errorMessage} variant={this.state.errorMessageSeverity} /> : null
-                        }  
-                    </DialogContent>
-                    <DialogActions>
-                        <StyledButton onClick={this.closeOnAddAttribute} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
-                        <StyledButton type="submit" themeVariant={"primary"} variant={"outlined"} disabled={false}> Apply </StyledButton>
-                    </DialogActions>
+                        <DialogContent>
+                            <div className={"editAndAddAttributesWrapper"}>
+                                {this.displayAddAttributeFields()}
+                            </div>
+                            {
+                                this.state.errorMessage !== '' ? <Notification open={this.state.isOpenedNotification}
+                                                                               closeOpenedNotification={this.closeOpenedNotification} message={this.state.errorMessage} variant={this.state.errorMessageSeverity} /> : null
+                            }
+                        </DialogContent>
+                        <DialogActions>
+                            <StyledButton color={"secondary"} onClick={this.closeOnAddAttribute} variant={"outlined"}> Cancel </StyledButton>
+                            <StyledButton color={"primary"} disabled={false} type="submit" variant={"outlined"}> Apply </StyledButton>
+                        </DialogActions>
                     </form>
                 </SimpleDialog>
 
                 <SimpleDialog open={this.state.isOpenedEditAttributes} fullWidth={true} maxWidth={"md"} onClose={this.closeOnEditAttributes} aria-labelledby="edit-attributes-dialog">
                     <DialogTitle id="edit-attributes-dialog">{"Edit attributes"}</DialogTitle>
                     <form onSubmit={this.applyOnEditAttributes}>
-                    <DialogContent>
-                        {
-                        this.state.history[this.state.historySnapshot].columns !== undefined && this.state.history[this.state.historySnapshot].columns.length === 1 ? 
-                            <span> There are no attributes to edit! </span> 
-                            :
-                            <Fragment>
-                                <span> Choose attribute to edit. <br/> Please note that you can apply changes only to the selected attribute. </span>
-                                <div className="editAndAddAttributesWrapper">
-                                    <div className="editAttributesVirtualizedList">
-                                        <AttributesVirtualizedTable
-                                            headerText={"Attributes"}
-                                            onItemInTableSelected={this.handleListItemClick}
-                                            table={this.displayListOfAttributesForModification()}
-                                            clicked={this.state.editAttributeSelected}
-                                        />
-                                    </div>                       
-                                    {this.state.editAttributeSelected !== '' ? this.displayEditAttributeFields() : null}                            
-                                </div> 
-                            </Fragment>
-                        }
-                        {
-                            this.state.errorMessage !== '' ? <Notification open={this.state.isOpenedNotification} 
-                            closeOpenedNotification={this.closeOpenedNotification} message={this.state.errorMessage} variant={this.state.errorMessageSeverity} /> : null
-                        }    
-                    </DialogContent>
-                    <DialogActions>
-                        <StyledButton onClick={this.closeOnEditAttributes} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
-                        <StyledButton type="submit" themeVariant={"primary"} variant={"outlined"} disabled={this.state.editAttributeSelected === ''}> Apply </StyledButton>
-                    </DialogActions>
+                        <DialogContent>
+                            {
+                                this.state.history[this.state.historySnapshot].columns !== undefined && this.state.history[this.state.historySnapshot].columns.length === 1 ?
+                                    <span> There are no attributes to edit! </span>
+                                    :
+                                    <Fragment>
+                                        <span> Choose attribute to edit. <br/> Please note that you can apply changes only to the selected attribute. </span>
+                                        <div className="editAndAddAttributesWrapper">
+                                            <div className="editAttributesVirtualizedList">
+                                                <AttributesVirtualizedTable
+                                                    headerText={"Attributes"}
+                                                    onItemInTableSelected={this.handleListItemClick}
+                                                    table={this.displayListOfAttributesForModification()}
+                                                    clicked={this.state.editAttributeSelected}
+                                                />
+                                            </div>
+                                            {this.state.editAttributeSelected !== '' ? this.displayEditAttributeFields() : null}
+                                        </div>
+                                    </Fragment>
+                            }
+                            {
+                                this.state.errorMessage !== '' ? <Notification open={this.state.isOpenedNotification}
+                                                                               closeOpenedNotification={this.closeOpenedNotification} message={this.state.errorMessage} variant={this.state.errorMessageSeverity} /> : null
+                            }
+                        </DialogContent>
+                        <DialogActions>
+                            <StyledButton color={"secondary"} onClick={this.closeOnEditAttributes} variant={"outlined"}> Cancel </StyledButton>
+                            <StyledButton color={"primary"}  disabled={this.state.editAttributeSelected === ''} type="submit" variant={"outlined"}> Apply </StyledButton>
+                        </DialogActions>
                     </form>
                 </SimpleDialog>
 
@@ -2441,83 +3090,83 @@ class DisplayData extends React.Component {
                             <div style={{flex: "1"}}>
                                 <span style={{display: "flex", justifyContent: "center"}}>Metadata</span>
                                 <FormControlLabel style={{display: "flex", justifyContent: "center"}}
-                                    control={<StyledCheckbox name="metadata" 
-                                    onChange={this.handleChangeSaveToFileMetaData}/>}
-                                    label="JSON"
-                                    labelPlacement="end"
+                                                  control={<StyledCheckbox name="metadata"
+                                                                           onChange={this.handleChangeSaveToFileMetaData}/>}
+                                                  label="JSON"
+                                                  labelPlacement="end"
                                 />
                             </div>
-                            
+
                             <StyledDivider orientation="vertical" color="secondary" />
-                            
+
                             <div style={{flex: "1"}}>
                                 <span style={{display: "flex", justifyContent: "center"}}>Data</span>
                                 <div style={{display: "flex", justifyContent: "center" }}>
-                                    <RadioGroup row={true} aria-label="file" name="file" value={this.state.saveToFileData} 
-                                    onChange={this.handleChangeSaveToFileData}>
+                                    <RadioGroup row={true} aria-label="file" name="file" value={this.state.saveToFileData}
+                                                onChange={this.handleChangeSaveToFileData}>
                                         <FormControlLabel value="json" control={<StyledRadio />} label="JSON" />
                                         <FormControlLabel value="csv" control={<StyledRadio />} label="CSV" />
                                     </RadioGroup>
                                 </div>
                                 {
                                     this.state.saveToFileData === "csv" && <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                                    <CustomTooltip disableGpu={true} title="Save data with header row">
-                                    <FormControlLabel 
-                                        control={<StyledCheckbox name="csvHeader" 
-                                        onChange={this.handleChangeSaveToFileCsvHeader}/>}
-                                        label="Header"
-                                        labelPlacement="end"
-                                    />
-                                    </CustomTooltip>
-                                    <DropDownForAttributes getSelected={this.getSelectedSaveToFileCsvSeparator} 
-                                        name={"saveToFileSeparator"} key="saveToFileSeparator" displayName={"Separator"} 
-                                        items={["comma","semicolon","space","tab"]} defaultValue="comma" defaultWidth="80%"
-                                    />
+                                        <CustomTooltip disableGpu={true} title="Save data with header row">
+                                            <FormControlLabel
+                                                control={<StyledCheckbox name="csvHeader"
+                                                                         onChange={this.handleChangeSaveToFileCsvHeader}/>}
+                                                label="Header"
+                                                labelPlacement="end"
+                                            />
+                                        </CustomTooltip>
+                                        <DropDownForAttributes getSelected={this.getSelectedSaveToFileCsvSeparator}
+                                                               name={"saveToFileSeparator"} key="saveToFileSeparator" displayName={"Separator"}
+                                                               items={["comma","semicolon","space","tab"]} defaultValue="comma" defaultWidth="80%"
+                                        />
                                     </div>
                                 }
                             </div>
                         </div>
                     </DialogContent>
                     <DialogActions>
-                        <StyledButton onClick={this.closeOnSaveToFile} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
-                        <StyledButton onClick={this.saveToFile} themeVariant={"primary"} variant={"outlined"} autoFocus
-                            disabled={!((this.state.saveToFileMetaData && this.state.saveToFileData==='') || (this.state.saveToFileData==='json') ||
-                                        (this.state.saveToFileData!=='' && this.state.saveToFileCsvSeparator!==''))}> 
-                            Ok 
+                        <StyledButton color={"secondary"} onClick={this.closeOnSaveToFile} variant={"outlined"}> Cancel </StyledButton>
+                        <StyledButton color={"primary"} onClick={this.saveToFile} variant={"outlined"} autoFocus
+                                      disabled={!((this.state.saveToFileMetaData && this.state.saveToFileData==='') || (this.state.saveToFileData==='json') ||
+                                          (this.state.saveToFileData!=='' && this.state.saveToFileCsvSeparator!==''))}>
+                            Ok
                         </StyledButton>
                     </DialogActions>
                 </SimpleDialog>
-                
+
                 {this.displayColumnHeaderMenu()}
 
                 <SimpleDialog open={this.state.isOpenedTransform} onClose={this.closeOnTransform} aria-labelledby="transform-warning-dialog">
                     <DialogTitle id="transform-warning-title">{"Do you want to impose preference orders?"}</DialogTitle>
                     <DialogContent>
-                    <CustomTooltip disableGpu={true} title="Binarize nominal attributes with 3+ values?">
-                    <FormControlLabel
-                        control={<StyledCheckbox defaultChecked={false} name="binarize" onChange={this.handleChangeBinarize}/>}
-                        label="Binarize"
-                        labelPlacement="start"
-                        key="Binarize"
-                    />
-                    </CustomTooltip>
-                    
+                        <CustomTooltip disableGpu={true} title="Binarize nominal attributes with 3+ values?">
+                            <FormControlLabel
+                                control={<StyledCheckbox defaultChecked={false} name="binarize" onChange={this.handleChangeBinarize}/>}
+                                label="Binarize"
+                                labelPlacement="start"
+                                key="Binarize"
+                            />
+                        </CustomTooltip>
+
                     </DialogContent>
                     <DialogActions>
 
-                    <StyledButton onClick={this.closeOnTransform} themeVariant={"secondary"} variant={"outlined"}> Cancel </StyledButton>
-                    <StyledButton onClick={this.onTransformAttributes} themeVariant={"primary"} variant={"outlined"} > Submit </StyledButton>
+                        <StyledButton color={"secondary"} onClick={this.closeOnTransform} variant={"outlined"}> Cancel </StyledButton>
+                        <StyledButton color={"primary"} onClick={this.onTransformAttributes} variant={"outlined"} > Submit </StyledButton>
 
                     </DialogActions>
                 </SimpleDialog>
 
                 {
-                    this.state.errorMessage !== '' ? <Notification open={this.state.isOpenedNotification} 
-                    closeOpenedNotification={this.closeOpenedNotification} message={this.state.errorMessage} variant={this.state.errorMessageSeverity} /> : null
+                    this.state.errorMessage !== '' ? <Notification open={this.state.isOpenedNotification}
+                                                                   closeOpenedNotification={this.closeOpenedNotification} message={this.state.errorMessage} variant={this.state.errorMessageSeverity} /> : null
                 }
-              
+
                 {(this.state.isLoading || this.props.loading) ? <CustomLoadingIcon color="primary" /> : null }
-                
+
             </div>
         )
     }
@@ -2528,5 +3177,5 @@ DisplayData.propTypes = {
     onDataChange: PropTypes.func.isRequired,
     onAttributesChange: PropTypes.func.isRequired
 };
-  
+
 export default withStyles(StyledReactDataGrid)(DisplayData);

@@ -14,6 +14,18 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "CustomRadioButton"});
 
+/**
+ * The Radio component from Material-UI library with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/radio/" target="_blank">Radio</a>.
+ *
+ * @name Styled Radio Button
+ * @constructor
+ * @category Utils
+ * @subcategory Inputs
+ * @param props {Object} - Any other props will be forwarded to the Radio component.
+ * @returns {React.ReactElement} - The Radio component from Material-UI library.
+ */
 function StyledRadioButton(props) {
     const { classes: propsClasses, ...other } = props;
     let classes = useStyles();

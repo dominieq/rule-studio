@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
 import CustomTextField from "../../../../Utils/Inputs/CustomTextField";
 import CustomTooltip from "../../../../Utils/DataDisplay/CustomTooltip";
-import StyledButton from "../../../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../../../Utils/Inputs/StyledButton";
 import styles from "./styles/Calculations.module.css";
 import Shuffle from "@material-ui/icons/Shuffle";
 
@@ -12,6 +12,19 @@ const tooltip = {
         "Using the same seed guarantees the repeatability of cross-validation for given data set."
 };
 
+/**
+ * Presents seed and allows user to type or randomize new value.
+ *
+ * @name Seed
+ * @class
+ * @category Tabs
+ * @subcategory Calculations
+ * @param {Object} props
+ * @param {Object} props.CircleHelperProps - Props applied to the {@link CircleHelper} element.
+ * @param {Object} props.randomizeSeed - Callback fired when user requests to randomize seed.
+ * @param {Object} props.TextFieldProps - Props applied to the {@link CustomTextField} element.
+ * @returns {React.ReactElement}
+ */
 function SeedSelector(props) {
     const { CircleHelperProps, TextFieldProps: { value, ...other } } = props;
 
@@ -41,14 +54,13 @@ function SeedSelector(props) {
                     style: { marginLeft: 8 }
                 }}
             >
-                <StyledButton
+                <StyledIconButton
                     aria-label={"randomize seed"}
-                    isIcon={true}
+                    color={"secondary"}
                     onClick={props.randomizeSeed}
-                    themeVariant={"secondary"}
                 >
                     <Shuffle />
-                </StyledButton>
+                </StyledIconButton>
             </CustomTooltip>
 
         </div>

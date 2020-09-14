@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core";
 import CustomTextField from "../../Inputs/CustomTextField";
 import CustomTooltip from "../../DataDisplay/CustomTooltip";
-import StyledButton from "../../Inputs/StyledButton";
+import { StyledButton } from "../../Inputs/StyledButton";
 import StyledCheckbox from "../../Inputs/StyledCheckbox";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -41,6 +41,19 @@ const StyledDialog = withStyles(theme => ({
     }
 }), {name: "CSVDialog"})(props => <Dialog {...props} />);
 
+/**
+ * Allows user to choose properties for uploaded CSV file.
+ * User can choose delimiter and check header.
+ *
+ * @name CSV Dialog
+ * @constructor
+ * @category Utils
+ * @subcategory Feedback
+ * @param props {Object}
+ * @param [props.onConfirm] {function} - Callback fired when the dialog requests to be closed.
+ * @param props.open {boolean} - If <code>true</code> the dialog will show up.
+ * @returns {React.ReactElement}
+ */
 class CSVDialog extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -134,16 +147,16 @@ class CSVDialog extends React.PureComponent {
                 <DialogActions>
                     <StyledButton
                         aria-label={"cancel upload"}
+                        color={"secondary"}
                         onClick={this.onCancel}
-                        themeVariant={"secondary"}
                         variant={"outlined"}
                     >
                         Cancel
                     </StyledButton>
                     <StyledButton
                         aria-label={"confirm upload"}
+                        color={"primary"}
                         onClick={this.onConfirm}
-                        themeVariant={"primary"}
                         variant={"outlined"}
                     >
                         Confirm

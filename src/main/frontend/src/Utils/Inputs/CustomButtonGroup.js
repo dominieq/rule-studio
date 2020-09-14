@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import CustomPopper from "../Surfaces/CustomPopper";
 import CustomTooltip from "../DataDisplay/CustomTooltip";
-import StyledButton from "./StyledButton";
+import { StyledButton } from "./StyledButton";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Grow from "@material-ui/core/Grow";
@@ -56,6 +56,31 @@ ButtonWrapper.propTypes = {
     placement: PropTypes.oneOf(["left", "right"]).isRequired,
 };
 
+/**
+ * Split button with a dropdown that can change the button action.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/button/" target="_blank">Button</a>
+ * and
+ * <a href="https://material-ui.com/api/button-group/" target="_blank">ButtonGroup</a>.
+ * <br>
+ * The idea was taken from this
+ * <a href="https://material-ui.com/components/button-group/#split-button" target="_blank">tutorial</a>
+ * with some changes.
+ *
+ * @name Custom Button Group
+ * @constructor
+ * @category Utils
+ * @subcategory Inputs
+ * @param props {Object}
+ * @param props.children {React.ReactNode[]} - The content of the component, especially the array of buttons.
+ * @param [props.disableGpu=true] {boolean} - Set to <code>true</code> to get unblurred tooltip text in Google Chrome.
+ * @param props.options {string[]} - The array of actions to choose from.
+ * @param props.selected {number} - The index of a selected action from the options array.
+ * @param [props.onActionSelected] {function} - The callback fired when an action is selected.
+ * @param props.tooltips {string[]|string} - The array of tooltips for buttons or one tooltip for all of them.
+ * @param [props.WrapperProps] {Object} - Props applied to the Wrapper element.
+ * @returns {React.ReactElement} - The CustomButtonGroup with passed buttons.
+ */
 class CustomButtonGroup extends React.Component {
     constructor(props) {
         super(props);
@@ -114,9 +139,9 @@ class CustomButtonGroup extends React.Component {
                                 aria-expanded={open ? true : undefined}
                                 aria-label={"select classification method"}
                                 aria-haspopup={"menu"}
+                                color={"primary"}
                                 disableElevation={true}
                                 onClick={this.onToggleButtonClick}
-                                themeVariant={"primary"}
                                 variant={"contained"}
                             >
                                 <ArrowDropDownIcon />

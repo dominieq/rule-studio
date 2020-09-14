@@ -14,6 +14,27 @@ const StyledList = withStyles(theme=> ({
     }
 }), {name: "ResultList"})(props => <List {...props} />);
 
+/**
+ * The component consists of three elements: upper and bottom Pagination and a List between them.
+ * List and Pagination are components from Material-UI library with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/list/" target="_blank">List</a> and
+ * <a href="https://material-ui.com/api/pagination/" target="_blank">Pagination</a>.
+ * There are max 50 items per page. When there are less then 5 elements on a page, upper pagination is hidden.
+ *
+ * @name Result List
+ * @constructor
+ * @category Utils
+ * @subcategory Result List
+ * @param props {Object} - Any other props will be forwarded to the List component.
+ * @param [props.children] {Object[]} - The content of the component.
+ * @param [props.children[].id] {number} - The id an entity.
+ * @param [props.children[].header] {string} - The content of the header inside ListItem.
+ * @param [props.children[].subheader] {string} - The content of the subheader inside ListItem.
+ * @param [props.children[].multiContent] {Object[]} - An array of simple title-subtitle verses inside ListItem.
+ * @param [props.onItemSelected] {function} - Callback fired when item from the list was selected.
+ * @returns {React.ReactElement} The List component with upper and bottom Pagination from Material-UI library.
+ */
 class ResultList extends Component {
     constructor(props) {
         super(props);

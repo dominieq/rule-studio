@@ -3,40 +3,49 @@ import SearchIcon from '@material-ui/icons/Search';
 import './EditDataButtons.css';
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
-import StyledButton from "../../../Utils/Inputs/StyledButton";
+import { StyledButton, StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 
+/**
+ * This class generates Filter button and passes all the other buttons as children.
+ *
+ * @name Data Filter Button
+ * @class
+ * @category Utils
+ * @subcategory Inputs
+ * @category Tabs
+ * @subcategory DataFilter
+ * @param {Object} props
+ * @param {boolean} props.enableFilter - True if the filter is enabled, else false (here always true).
+ * @param {function} props.onToggleFilter - Method used from the external library (react-data-grid).
+ * @returns {React.Component}
+ */
 class EditDataFilterButton extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount() {
         this.props.onToggleFilter();
     }
 
     renderToggleFilterButton = (name) => {
         if (this.props.enableFilter) {
-          return (
-            <CustomTooltip disableGpu={true} title={`Show filter`}>
-                {name === "desktop" ?
-                    <StyledButton
-                        disableElevation
-                        onClick={this.props.onToggleFilter}
-                        startIcon={<SearchIcon />}
-                        themeVariant={"primary"}
-                        variant={"contained"}
-                    >
-                        Filter
-                    </StyledButton>
-                :   <StyledButton
-                        isIcon={true}
-                        onClick={this.props.onToggleFilter}
-                    >
-                        <SearchIcon />
-                    </StyledButton>
-                }
-            </CustomTooltip>
-          );
+            return (
+                <CustomTooltip disableGpu={true} title={`Show filter`}>
+                    {name === "desktop" ?
+                        <StyledButton
+                            color={"primary"}
+                            disableElevation={true}
+                            onClick={this.props.onToggleFilter}
+                            startIcon={<SearchIcon />}
+                            variant={"contained"}
+                        >
+                            Filter
+                        </StyledButton>
+                        :   <StyledIconButton
+                            onClick={this.props.onToggleFilter}
+                        >
+                            <SearchIcon />
+                        </StyledIconButton>
+                    }
+                </CustomTooltip>
+            );
         }
     };
 

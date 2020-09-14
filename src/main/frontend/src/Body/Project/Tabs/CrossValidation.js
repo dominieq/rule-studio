@@ -1,18 +1,13 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import BigNumber from "bignumber.js";
-import {
-    createFormData,
-    downloadMatrix,
-    fetchCrossValidation,
-    parseCrossValidationParams
-} from "../Utils/fetchFunctions";
-import {
-    parseMatrix,
-    parseCrossValidationFolds,
-    parseCrossValidationItems,
-    parseCrossValidationListItems
-} from "../Utils/parseData";
+import { downloadMatrix, fetchCrossValidation } from "../../../Utils/utilFunctions/fetchFunctions";
+import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
+import { parseCrossValidationItems } from "../../../Utils/utilFunctions/parseItems";
+import { parseClassifiedListItems } from "../../../Utils/utilFunctions/parseListItems";
+import { parseCrossValidationParams } from "../../../Utils/utilFunctions/parseParams";
+import { parseFolds } from "../../../Utils/utilFunctions/parseFolds";
+import { parseMatrix } from "../../../Utils/utilFunctions/parseMatrix";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -36,19 +31,36 @@ import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
 import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomTextField from "../../../Utils/Inputs/CustomTextField";
-import StyledButton from "../../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
 import Sigma from "mdi-material-ui/Sigma";
 
+/**
+ * The cross-validation tab in RuLeStudio.
+ * Presents the outcome of cross-validation for information table from current project.
+ *
+ * @class
+ * @category Tabs
+ * @subcategory Tabs
+ * @param {Object} props
+ * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
+ * @param {Object} props.project - Current project.
+ * @param {string} props.serverBase - The name of the host.
+ * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
+ * @param {number} props.value - The id of a tab.
+ * @returns {React.Component}
+ */
 class CrossValidation extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             loading: false,
-            data: null,
+            dataInformationTable: null,
+            dataMeanMatrix: null,
+            dataSumMatrix: null,
             folds: null,
             items: null,
             displayedItems: [],
@@ -79,6 +91,13 @@ class CrossValidation extends Component {
         this.upperBar = React.createRef();
     }
 
+    /**
+     * Makes an API call on cross-validation to receive current copy of cross-validation from server.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
     getCrossValidation = () => {
         const { project, serverBase } = this.props;
 
@@ -88,21 +107,23 @@ class CrossValidation extends Component {
             if (this._isMounted && result) {
                 const { project: { foldIndex, settings } } = this.props
 
-                let folds = parseCrossValidationFolds(result);
+                let folds = parseFolds(result);
                 let resultParams = parseCrossValidationParams(result);
 
                 this.setState(({parameters, selected}) => ({
-                    data: result,
+                    dataInformationTable: result.informationTable,
+                    dataMeanMatrix: result.meanOrdinalMisclassificationMatrix,
+                    dataSumMatrix: result.sumOrdinalMisclassificationMatrix,
                     folds: folds,
                     parameters: {...parameters, ...resultParams},
                     selected: { ...selected, foldIndex: foldIndex }
                 }), () => {
-                    const { folds, selected: { foldIndex } } = this.state;
-                    let items = parseCrossValidationItems(folds[foldIndex], settings);
+                    const { dataInformationTable, folds, selected: { foldIndex } } = this.state;
+                    let items = parseCrossValidationItems(dataInformationTable, folds[foldIndex], settings);
 
                     this.setState({
                         items: items,
-                        displayedItems: items,
+                        displayedItems: items
                     });
                 });
 
@@ -116,7 +137,9 @@ class CrossValidation extends Component {
             }
             if ( this._isMounted ) {
                 this.setState({
-                    data: null,
+                    dataInformationTable: null,
+                    dataMeanMatrix: null,
+                    dataSumMatrix: null,
                     folds: null,
                     items: null,
                     displayedItems: [],
@@ -144,12 +167,44 @@ class CrossValidation extends Component {
         });
     }
 
+    /**
+     * A component's lifecycle method. Fired once when component was mounted.
+     * <br>
+     * <br>
+     * Method calls {@link getCrossValidation}.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
     componentDidMount() {
         this._isMounted = true;
 
         this.setState({ loading: true }, this.getCrossValidation);
     }
 
+    /**
+     * A component's lifecycle method. Fired after a component was updated.
+     * <br>
+     * <br>
+     * If index option was changed, method sets object's names according to new value.
+     * <br>
+     * <br>
+     * If type of unions was changed to <code>monotonic</code> and consistency threshold is equal to 1,
+     * method changes value of threshold to 0.
+     * <br>
+     * <br>
+     * If type of rules was changed to <code>possible</code>, method changes consistency threshold to 0.
+     * <br>
+     * <br>
+     * If project was changed, method saves changes from previous project
+     * and calls {@link getCrossValidation} to receive the latest copy of cross-validation.
+     *
+     * @function
+     * @memberOf CrossValidation
+     * @param {Object} prevProps - Old props that were already replaced.
+     * @param {Object} prevState - Old state that was already replaced.
+     * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
+     */
     componentDidUpdate(prevProps, prevState, snapshot) {
         /* Check if default objects name has changed */
         if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
@@ -206,6 +261,15 @@ class CrossValidation extends Component {
         }
     }
 
+    /**
+     * A component's lifecycle method. Fired when component was requested to be unmounted.
+     * <br>
+     * <br>
+     * Method saves changes from current project.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
     componentWillUnmount() {
         this._isMounted = false;
         const { parametersSaved } = this.state;
@@ -225,6 +289,14 @@ class CrossValidation extends Component {
         }
     }
 
+    /**
+     * Makes an API call on cross-validation to cross-validate objects from current information table
+     * with selected parameters.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
     onCalculateClick = () => {
         const { project, serverBase } = this.props;
         const { parameters } = this.state;
@@ -233,23 +305,25 @@ class CrossValidation extends Component {
             loading: true,
         }, () => {
             let method = "PUT";
-            let data = createFormData(parameters, null);
+            let data = parseFormData(parameters, null);
 
             fetchCrossValidation(
                 serverBase, project.result.id, method, data
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
-                        let folds = parseCrossValidationFolds(result);
+                        let folds = parseFolds(result);
 
                         this.setState(({selected}) => ({
-                            data: result,
+                            dataInformationTable: result.informationTable,
+                            dataMeanMatrix: result.meanOrdinalMisclassificationMatrix,
+                            dataSumMatrix: result.sumOrdinalMisclassificationMatrix,
                             folds: folds,
                             parametersSaved: true,
                             selected: { ...selected, foldIndex: 0 }
                         }), () => {
-                            const { folds, selected: { foldIndex } } = this.state;
-                            let items = parseCrossValidationItems(folds[foldIndex], project.settings);
+                            const { dataInformationTable, folds, selected: { foldIndex } } = this.state;
+                            let items = parseCrossValidationItems(dataInformationTable, folds[foldIndex], project.settings);
 
                             this.setState({
                                 items: items,
@@ -280,7 +354,9 @@ class CrossValidation extends Component {
                 }
                 if ( this._isMounted ) {
                     this.setState({
-                        data: null,
+                        dataInformationTable: null,
+                        dataMeanMatrix: null,
+                        dataSumMatrix: null,
                         folds: null,
                         items: null,
                         displayedItems: [],
@@ -298,6 +374,13 @@ class CrossValidation extends Component {
         });
     };
 
+    /**
+     * Makes an API call to download specified misclassification matrix.
+     *
+     * @function
+     * @memberOf CrossValidation
+     * @param {Object} data - Specifies type of downloaded matrix.
+     */
     onSaveToFile = (data) => {
         const { project, serverBase } = this.props;
 
@@ -475,8 +558,8 @@ class CrossValidation extends Component {
                 selected: {...selected, foldIndex: Number(event.target.value)},
                 parametersSaved: false
             }), () => {
-                const { folds, selected: { foldIndex }} = this.state;
-                let items = parseCrossValidationItems(folds[foldIndex], project.settings);
+                const { dataInformationTable, folds, selected: { foldIndex }} = this.state;
+                let items = parseCrossValidationItems(dataInformationTable, folds[foldIndex], project.settings);
 
                 this.setState({
                     items: items,
@@ -486,6 +569,14 @@ class CrossValidation extends Component {
         }
     };
 
+    /**
+     * Filters items from {@link CrossValidation}'s state.
+     * Method uses {@link filterFunction} to filter items.
+     *
+     * @function
+     * @memberOf CrossValidation
+     * @param {Object} event - Represents an event that takes place in DOM.
+     */
     onFilterChange = (event) => {
         const { loading, items } = this.state;
 
@@ -508,7 +599,18 @@ class CrossValidation extends Component {
     };
 
     render() {
-        const { alertProps, data, folds, displayedItems, loading, open, parameters, selected } = this.state;
+        const {
+            alertProps,
+            dataInformationTable,
+            dataMeanMatrix,
+            dataSumMatrix,
+            folds,
+            displayedItems,
+            loading,
+            open,
+            parameters,
+            selected
+        } = this.state;
         const { project } = this.props;
 
         return (
@@ -609,14 +711,13 @@ class CrossValidation extends Component {
                                     title={"Show mean ordinal misclassification matrix"}
                                 />
                                 <CustomTooltip title={"Show accumulated ordinal misclassification matrix"}>
-                                    <StyledButton
+                                    <StyledIconButton
                                         aria-label={"sum-matrix-button"}
-                                        isIcon={true}
+                                        color={"secondary"}
                                         onClick={() => this.toggleOpen("matrixSum")}
-                                        themeVariant={"secondary"}
                                     >
                                         <Sigma />
-                                    </StyledButton>
+                                    </StyledIconButton>
                                 </CustomTooltip>
                                 <StyledDivider margin={16} />
                                 {/* Part regarding specific fold */}
@@ -649,7 +750,7 @@ class CrossValidation extends Component {
                         <FilterTextField onChange={this.onFilterChange} />
                     </CustomHeader>
                     <TabBody
-                        content={parseCrossValidationListItems(displayedItems)}
+                        content={parseClassifiedListItems(displayedItems)}
                         id={"cross-validation-list"}
                         isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
                         isLoading={loading}
@@ -679,9 +780,9 @@ class CrossValidation extends Component {
                             }
                         ]}
                     />
-                    {Array.isArray(folds) && Boolean(folds.length) && selected.item !== null &&
+                    {selected.item != null && folds != null &&
                         <ClassifiedObjectDialog
-                            informationTable={folds[selected.foldIndex].validationTable}
+                            informationTable={dataInformationTable}
                             item={selected.item}
                             onClose={() => this.toggleOpen("details")}
                             open={open.details}
@@ -689,10 +790,10 @@ class CrossValidation extends Component {
                             settings={project.settings}
                         />
                     }
-                    {data !== null &&
+                    {dataMeanMatrix != null && folds != null &&
                         <MatrixDialog
                             disableDeviation={false}
-                            matrix={parseMatrix(data.meanOrdinalMisclassificationMatrix)}
+                            matrix={parseMatrix(dataMeanMatrix)}
                             onClose={() => this.toggleOpen("matrixMean")}
                             open={open.matrixMean}
                             saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
@@ -716,9 +817,9 @@ class CrossValidation extends Component {
                             }
                         />
                     }
-                    {data !== null &&
+                    {dataSumMatrix != null && folds != null &&
                         <MatrixDialog
-                            matrix={parseMatrix(data.sumOrdinalMisclassificationMatrix)}
+                            matrix={parseMatrix(dataSumMatrix)}
                             onClose={() => this.toggleOpen("matrixSum")}
                             open={open.matrixSum}
                             saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
@@ -742,7 +843,7 @@ class CrossValidation extends Component {
                             }
                         />
                     }
-                    {Array.isArray(folds) && Boolean(folds.length) &&
+                    {folds != null &&
                         <MatrixDialog
                             matrix={
                                 parseMatrix(

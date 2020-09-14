@@ -2,6 +2,15 @@ import React from "react";
 import PropTypes from "prop-types";
 import styles from "./styles/Slides.module.css";
 
+/**
+ * Creates a horizontal sliding animation.
+ *
+ * @memberOf Slides
+ * @param sliding {boolean} - If <code>true</code> the component will slide in given direction.
+ * @param direction {('backward'|'forward')} - The direction of current slide.
+ * @param duration {number} - The duration of a slide in milliseconds.
+ * @returns {Object} - The style object with horizontal transformation.
+ */
 const getHorizontalTransition = (sliding, direction, duration) => {
     return {
         transition: sliding ? `transform ${duration}ms ease` : "none",
@@ -10,6 +19,15 @@ const getHorizontalTransition = (sliding, direction, duration) => {
     };
 };
 
+/**
+ * Creates a vertical sliding animation.
+ *
+ * @memberOf Slides
+ * @param sliding {boolean} - If <code>true</code> the component will slide in given direction.
+ * @param direction {('backward'|'forward')} - The direction of current slide.
+ * @param duration {number} - The duration of a slide in milliseconds.
+ * @returns {Object} - The style object with vertical transformation.
+ */
 const getVerticalTransition = (sliding, direction, duration) => {
     return {
         transition: sliding ? `transform ${duration}ms ease` : "none",
@@ -18,11 +36,40 @@ const getVerticalTransition = (sliding, direction, duration) => {
     };
 };
 
+/**
+ * Counts the flex order of currently processed slot.
+ *
+ * @memberOf Slides
+ * @param index {number} - The id of currently processed slot.
+ * @param value {number} - The id of currently selected slot.
+ * @param count {number} - Number of slots.
+ * @param reverse {boolean} - If <code>true</code> it means the component is sliding backwards.
+ * @returns {number} - The flex order of currently processed slot.
+ */
 const getOrder = (index, value, count, reverse) => {
     let base = index - value < 0 ? count - Math.abs(index - value) : index - value
     return reverse && base ? count - base : base;
 };
 
+/**
+ * A component that takes an array of containers and enables user to move between. The component provides a slide
+ * animation when a change of view is requested. A programmer should provide the direction of a slide as well as an orientation.
+ * It is possible to have different orientations between two distinct slots.
+ *
+ * @constructor
+ * @category Utils
+ * @subcategory Navigation
+ * @param props {Object}
+ * @param [props.children] {React.ReactNode} - The content of the component.
+ * @param props.direction {('backward'|'forward')} - The direction of current slide.
+ * @param [props.duration=1000] {number} - The duration of a slide in milliseconds.
+ * @param [props.getSlotStyle] {function} - Callback fired when component requests style for current slot.
+ * @param [props.mountNeighboursOnly=true] {boolean} - If <code>true</code> only neighbouring slots will be rendered.
+ * @param [props.orientation='horizontal'] {('horizontal'|'vertical')} - The orientation of current slide.
+ * @param props.sliding {boolean} - If <code>true</code> the component will slide in given direction.
+ * @param [props.value] {number} - The id of current slot.
+ * @returns {React.ReactElement}
+ */
 function Slides(props) {
     const {
         children,
@@ -52,7 +99,6 @@ function Slides(props) {
         >
             <div
                 aria-label={"slide-view"}
-                aria-orientation={orientation}
                 className={styles.Slidable}
                 style={{ flexDirection: flexDirection, ...transition }}
                 role={"list"}

@@ -6,6 +6,31 @@ import TablesList from "../Elements/TablesList";
 import ObjectsComparisonTable from "../Elements/ObjectsComparisonTable";
 import TableItemsList from "../Elements/TableItemsList";
 
+/**
+ * The fullscreen dialog with details of dominance cones of a selected object.
+ *
+ * @name Cones Details Dialog
+ * @constructor
+ * @category Details Dialog
+ * @param props {Object} - Any other props will be forwarded to the {@link FullscreenDialog} element.
+ * @param props.item {Object} - The selected object with it's dominance cones.
+ * @param props.item.id {number} - The id of a selected object.
+ * @param props.item.name {Object} - The name of a selected object.
+ * @param props.item.name.primary {number|string} - The part of a name coloured with a primary colour.
+ * @param props.item.name.secondary {number|string} - The part of a name coloured with a secondary colour.
+ * @param props.item.name.toString {function} - Returns name as a single string.
+ * @param props.item.tables {Object} - Contains the dominance cones of an item.
+ * @param props.item.tables.Positive_dominance_cone {number[]} - The array of objects indices.
+ * @param props.item.tables.Negative_dominance_cone {number[]} - The array of objects indices.
+ * @param props.item.tables.Positive_inverse_dominance_cone {number[]} - The array of objects indices.
+ * @param props.item.tables.Negative_inverse_dominance_cone {number[]} - The array of objects indices.
+ * @param props.item.toFilter {function} - Returns item in an easy to filter form.
+ * @param props.items {Object[]} - Should be an array of all objects.
+ * @param props.open {boolean} - If <code>true</code> the Dialog is open.
+ * @param props.onClose {function} - Callback fired when the component requests to be closed.
+ * @param props.projectResult {Object} - Part of a project received from server.
+ * @returns {React.PureComponent}
+ */
 class ConesDialog extends React.PureComponent {
     constructor(props) {
         super(props);

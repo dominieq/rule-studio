@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core";
-import { getItemName, getRuleName } from "../../../../Body/Project/Utils/parseData";
+import { getItemName, getRuleName } from "../../../utilFunctions/parseItems";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 import CustomTooltip from "../../../DataDisplay/CustomTooltip";
 import { FullscreenDialog, MultiColumns, FullscreenHeader } from "../../../DataDisplay/FullscreenDialog";
@@ -24,6 +24,38 @@ const StyledMenu = withStyles(theme => ({
     }
 }), {name: "ContextMenu"})(props => <Menu {...props} />);
 
+/**
+ * The fullscreen dialog with details of a selected classified object.
+ *
+ * @name Classified Object Details Dialog
+ * @constructor
+ * @category Details Dialog
+ * @param props {Object} - Any other props will be forwarded to the {@link FullscreenDialog} element.
+ * @param props.informationTable {Object} - The information table from current project.
+ * @param props.informationTable.attributes {Object[]} - Attributes from information table.
+ * @param props.informationTable.objects {Object[]} - Objects from information table.
+ * @param props.item {Object} - The selected object with it's characteristics.
+ * @param props.item.id {number} - The id of a selected object.
+ * @param props.item.name {Object} - The name of a selected object.
+ * @param props.item.name.primary {number|string} - The part of a name coloured with a primary colour.
+ * @param props.item.name.secondary {number|string} - The part of a name coloured with a secondary colour.
+ * @param props.item.name.toString {function} - Returns name as a single string.
+ * @param props.item.traits {Object} - The characteristics of a selected object in a key-value form.
+ * @param props.item.traits.attributes {Object[]} - Attributes from classified information table.
+ * @param props.item.traits.objects {Object[]} - Objects from classified information table.
+ * @param props.item.traits.originalDecision {string|number} - The original classification.
+ * @param props.item.traits.suggestedDecision {string|number} - The suggested classification.
+ * @param props.item.traits.certainty {number} - The certainty of suggested classification.
+ * @param props.item.tables {Object} - The characteristics of a selected object in key-array form.
+ * @param props.item.tables.indicesOfCoveringRules {number[]} - Rules that cover a selected object.
+ * @param props.item.toFilter {function} - Returns item in an easy to filter form.
+ * @param props.onClose {function} - Callback fired when the component requests to be closed.
+ * @param props.open {boolean} - If <code>true</code> the Dialog is open.
+ * @param props.ruleSet {Object[]} - The rule set from current project.
+ * @param props.settings {Object} - Project settings.
+ * @param props.settings.indexOption {string} - Determines what should be displayed as an object's name.
+ * @returns{React.PureComponent}
+ */
 class ClassifiedObjectDialog extends React.PureComponent {
     constructor(props) {
         super(props);

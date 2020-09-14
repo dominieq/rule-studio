@@ -4,6 +4,22 @@ import getAppropriateColor from "../Utils/getAppropriateColor";
 import getAppropriateSign from "../Utils/getAppropriateSign";
 import VirtualizedTable from "../../../DataDisplay/VirtualizedTable";
 
+/**
+ *  The {@link VirtualizedTable} element that presents a comparison of two objects.
+ *
+ * @name ObjectsComparisonTable
+ * @constructor
+ * @category Details Dialog
+ * @subcategory Utilities
+ * @param {Object} props
+ * @param {Object} props.informationTable - The information table from current project.
+ * @param {string} [props.objectHeader] - The name of an object that has it's details displayed in a dialog.
+ * @param {number} props.objectIndex - The index of an object that has it's details displayed in a dialog.
+ * @param {string} [props.objectInTableHeader] - The name of an object from a dominance cone.
+ * @param {number} props.objectInTableIndex - The index of an object from a dominance cone.
+ * @param {number} props.tableIndex - The index of a dominance cone.
+ * @returns {React.ReactElement}
+ */
 function ObjectsComparisonTable(props) {
     const {
         informationTable: { attributes, objects },

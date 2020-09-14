@@ -16,6 +16,20 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "LoadingSnackbar"});
 
+/**
+ * The Snackbar component from Material-UI library with {@link StyledCircularProgress} as it's <code>action</code>.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/snackbar/" target="_blank">Snackbar</a>.
+ *
+ * @name Loading Snackbar
+ * @constructor
+ * @category Utils
+ * @subcategory Feedback
+ * @param props {Object}
+ * @param [props.message] {string} - The message to display.
+ * @param props.open {boolean} - If <code>true</code> the component is open.
+ * @returns {React.ReactElement} - The Snackbar component from Material-UI library.
+ */
 function LoadingSnackbar(props) {
     const classes = useStyles();
 

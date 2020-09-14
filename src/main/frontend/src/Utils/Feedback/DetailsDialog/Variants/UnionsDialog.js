@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { getItemName } from "../../../../Body/Project/Utils/parseData";
+import { getItemName } from "../../../utilFunctions/parseItems";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 import { FullscreenDialog, FullscreenHeader, MultiColumns} from "../../../DataDisplay/FullscreenDialog";
 import ObjectTable from "../Elements/ObjectTable";
@@ -8,6 +8,37 @@ import TableItemsList from "../Elements/TableItemsList";
 import TablesList from "../Elements/TablesList";
 import TraitsTable from "../Elements/TraitsTable";
 
+/**
+ * The fullscreen dialog with details of a selected union.
+ *
+ * @name Union Details Dialog
+ * @constructor
+ * @category Details Dialog
+ * @param props {Object} - Any other props will be forwarded to the {@link FullscreenDialog} element.
+ * @param props.item {Object} - The selected union with it's characteristics.
+ * @param props.item.id {number} - The id of a selected union.
+ * @param props.item.name {Object} - The name of a selected union.
+ * @param props.item.name.primary {number|string} - The part of a name coloured with a primary colour.
+ * @param props.item.name.secondary {number|string} - The part of a name coloured with a secondary colour.
+ * @param props.item.name.toString {function} - Returns name as a single string.
+ * @param props.item.traits {Object} - The characteristics of a selected union in a key-value form.
+ * @param props.item.traits.Accuracy_of_approximation {number}
+ * @param props.item.traits.Quality_of_approximation {number}
+ * @param props.item.tables {Object} - The characteristics of a selected union in a key-array form.
+ * @param props.item.tables.Lower_approximation {number[]}
+ * @param props.item.tables.Upper_approximation {number[]}
+ * @param props.item.tables.Boundary {number[]}
+ * @param props.item.tables.Positive_region {number[]}
+ * @param props.item.tables.Negative_region {number[]}
+ * @param props.item.tables.Objects {number[]}
+ * @param props.item.toFilter {function} - Returns item in an easy to filter form.
+ * @param props.open {boolean} - If <code>true</code> the Dialog is open.
+ * @param props.onClose {function} - Callback fired when the component requests to be closed.
+ * @param props.projectResult {Object} - Part of a project received from server.
+ * @param props.settings {Object} - Project settings
+ * @param props.settings.indexOption {string} - Determines what should be displayed as an object's name.
+ * @returns {React.PureComponent}
+ */
 class UnionsDialog extends React.PureComponent {
     constructor(props) {
         super(props);

@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
-import { createFormData, downloadRules, fetchRules, parseRulesParams, uploadRules } from "../Utils/fetchFunctions";
-import { parseRulesItems, parseRulesListItems } from "../Utils/parseData";
+import { downloadRules, fetchRules, uploadRules } from "../../../Utils/utilFunctions/fetchFunctions";
+import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
+import { parseRulesItems } from  "../../../Utils/utilFunctions/parseItems";
+import { parseRulesListItems } from "../../../Utils/utilFunctions/parseListItems";
+import { parseRulesParams } from "../../../Utils/utilFunctions/parseParams";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -19,14 +22,30 @@ import { RulesDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import { createCategories, simpleSort, SortButton, SortMenu } from "../../../Utils/Inputs/SortMenu";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
-import StyledButton from "../../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import FileUpload from "mdi-material-ui/FileUpload";
 import SaveIcon from "@material-ui/icons/Save";
 import { mdiTextBox } from '@mdi/js';
 
-
+/**
+ * The rules tab in RuLeStudio.
+ * Presents the list of all rules generated for information table from current project.
+ *
+ * @class
+ * @category Tabs
+ * @subcategory Tabs
+ * @param {Object} props
+ * @param {function} props.onDataUploaded - Callback fired when tab receives information that new data was uploaded.
+ * @param {function} props.onRulesUploaded - Callback fired when tab receives information that rule set was uploaded.
+ * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
+ * @param {Object} props.project - Current project.
+ * @param {string} props.serverBase - The name of the host.
+ * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
+ * @param {number} props.value - The id of a tab.
+ * @returns {React.Component}
+ */
 class Rules extends Component {
     constructor(props) {
         super(props);
@@ -49,7 +68,7 @@ class Rules extends Component {
             sort: {
                 anchorE1: null,
                 order: "asc",
-                value: ""
+                value: "id"
             },
             alertProps: undefined,
         };
@@ -57,6 +76,13 @@ class Rules extends Component {
         this.upperBar = React.createRef();
     }
 
+    /**
+     * Makes an API call on rules to receive current copy of rule set from server.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Rules
+     */
     getRules = () => {
         const { project, serverBase } = this.props;
 
@@ -122,12 +148,41 @@ class Rules extends Component {
         });
     };
 
+    /**
+     * A component's lifecycle method. Fired once when component was mounted.
+     * <br>
+     * <br>
+     * Method calls {@link getRules}.
+     *
+     * @function
+     * @memberOf Rules
+     */
     componentDidMount() {
         this._isMounted = true;
 
         this.setState({ loading: true }, this.getRules);
     }
 
+    /**
+     * A component's lifecycle method. Fired after a component was updated.
+     * <br>
+     * <br>
+     * If type of unions was changed to <code>monotonic</code> and consistency threshold is equal to 1,
+     * method changes value of threshold to 0.
+     * <br>
+     * <br>
+     * If type of rules was changed to <code>possible</code>, method changes consistency threshold to 0.
+     * <br>
+     * <br>
+     * If project was changed, method saves changes from previous project
+     * and calls {@link getRules} to receive the latest copy of rule set.
+     *
+     * @function
+     * @memberOf Rules
+     * @param {Object} prevProps - Old props that were already replaced.
+     * @param {Object} prevState - Old state that was already replaced.
+     * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
+     */
     componentDidUpdate(prevProps, prevState, snapshot) {
         const { parameters: prevParameters } = prevState;
         const { parameters } = this.state;
@@ -173,6 +228,15 @@ class Rules extends Component {
         }
     }
 
+    /**
+     * A component's lifecycle method. Fired when component was requested to be unmounted.
+     * <br>
+     * <br>
+     * Method saves changes from current project.
+     *
+     * @function
+     * @memberOf Rules
+     */
     componentWillUnmount() {
         this._isMounted = false;
         const { parametersSaved , sort: { order, value } } = this.state;
@@ -194,6 +258,13 @@ class Rules extends Component {
         this.props.onTabChange(project);
     }
 
+    /**
+     * Makes an API call on rules to generate new rule set from current information table and parameters.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Rules
+     */
     onCalculateClick = () => {
         const { project, serverBase } = this.props;
         const { parameters } = this.state;
@@ -202,7 +273,7 @@ class Rules extends Component {
             loading: true,
         }, () => {
             let method = "PUT";
-            let data = createFormData(parameters, null);
+            let data = parseFormData(parameters, null);
 
             fetchRules(
                 serverBase, project.result.id, method, data
@@ -275,6 +346,14 @@ class Rules extends Component {
         });
     };
 
+    /**
+     * Makes an API call on rules to upload user's rule set.
+     * Then, updates states and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Rules
+     * @param {Object} event - Represents an event that takes place in DOM.
+     */
     onUploadFileChanged = (event) => {
         if (event.target.files[0]) {
             const { project, serverBase } = this.props;
@@ -282,7 +361,7 @@ class Rules extends Component {
             let method = "PUT";
             let files = { rules: event.target.files[0] }
 
-            let data = createFormData(null, files);
+            let data = parseFormData(null, files);
 
             this.setState({
                 loading: true,
@@ -349,6 +428,15 @@ class Rules extends Component {
         }
     };
 
+    /**
+     * Used when changes in {@link Rules} had an impact on results in {@link Unions} or {@link Classification}.
+     * Updates classification and unions in current project, makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Rules
+     * @param {Object} validateCurrentData - The part of response from server
+     * @param {Object} project - Project that will be updated.
+     */
     updateAlerts = (validateCurrentData, project) => {
         if (validateCurrentData.classification !== null) {
             if (validateCurrentData.classification.hasOwnProperty("isCurrentLearningData")) {
@@ -391,6 +479,12 @@ class Rules extends Component {
         }
     };
 
+    /**
+     * Makes an API call to download current rules set in XML format.
+     *
+     * @function
+     * @memberOf Rules
+     */
     onSaveRulesToXMLClick = () => {
         const { project, serverBase } = this.props;
         let data = { format: "xml" };
@@ -405,6 +499,12 @@ class Rules extends Component {
         });
     };
 
+    /**
+     * Makes an API call to download current rule set in TXT format.
+     *
+     * @function
+     * @memberOf Rules
+     */
     onSaveRulesToTXTClick = () => {
         const { project, serverBase } = this.props;
         let data = { format: "txt" };
@@ -467,6 +567,14 @@ class Rules extends Component {
         }
     };
 
+    /**
+     * Filters items from {@link Rules}' state and then sorts them if any order was declared.
+     * Method uses {@link filterFunction} to filter items.
+     *
+     * @function
+     * @memberOf Rules
+     * @param {Object} event - Represents an event that takes place in DOM.
+     */
     onFilterChange = (event) => {
         const { loading, items } = this.state;
 
@@ -513,31 +621,25 @@ class Rules extends Component {
         });
     };
 
+    /**
+     * Sorts provided items and saves results in {@link Rules}' state.
+     * Method uses {@link simpleSort} function to sort items.
+     *
+     * @function
+     * @memberOf Rules
+     * @param {Object[]} items - A list of objects that will be sorted.
+     */
     onSortChange = (items) => {
         if (items) {
             const { items: originalItems, sort: { order, value } } = this.state;
 
-            if (order && value) {
-                let newItems = items.map(item => item.toSort(value));
-                newItems = simpleSort(newItems, value, order);
-                newItems = newItems.map(item => originalItems[item.id]);
+            let newItems = items.map(item => item.toSort(value));
+            newItems = simpleSort(newItems, value, order);
+            newItems = newItems.map(item => originalItems[item.id]);
 
-                this.setState({
-                    displayedItems: newItems
-                });
-            } else {
-                let newItems = [];
-
-                if (originalItems != null) {
-                    newItems = originalItems.map(item => (
-                        items[item.id] != null ? items[item.id] : null
-                    )).filter(element => element != null);
-                }
-
-                this.setState({
-                    displayedItems: newItems
-                });
-            }
+            this.setState({
+                displayedItems: newItems
+            });
         } else {
             this.setState({
                 displayedItems: null
@@ -610,15 +712,14 @@ class Rules extends Component {
                                 id={"rules-upload-button"}
                                 onChange={this.onUploadFileChanged}
                             >
-                                <StyledButton
+                                <StyledIconButton
                                     aria-label={"rules-upload-button"}
-                                    disabled={loading}
-                                    isIcon={true}
+                                    color={"primary"}
                                     component={"span"}
-                                    themeVariant={"primary"}
+                                    disabled={loading}
                                 >
                                     <FileUpload />
-                                </StyledButton>
+                                </StyledIconButton>
                             </CustomUpload>
                         </CustomTooltip>
                         <CircleHelper
@@ -629,27 +730,25 @@ class Rules extends Component {
                         />
                         <StyledDivider margin={16} />
                         <CustomTooltip title={"Save rules to RuleML"}>
-                            <StyledButton
+                            <StyledIconButton
                                 aria-label={"rules-save-to-xml-button"}
+                                color={"primary"}
                                 disabled={!resultsExists || loading}
-                                isIcon={true}
                                 onClick={this.onSaveRulesToXMLClick}
-                                themeVariant={"primary"}
                             >
                                 <SaveIcon />
-                            </StyledButton>
+                            </StyledIconButton>
                         </CustomTooltip>
                         <StyledDivider margin={16} />
                         <CustomTooltip title={"Save rules to TXT"}>
-                            <StyledButton
+                            <StyledIconButton
                                 aria-label={"rules-save-to-txt-button"}
+                                color={"primary"}
                                 disabled={!resultsExists || loading}
-                                isIcon={true}
                                 onClick={this.onSaveRulesToTXTClick}
-                                themeVariant={"primary"}
                             >
                                 <SvgIcon><path d={mdiTextBox} /></SvgIcon>
-                            </StyledButton>
+                            </StyledIconButton>
                         </CustomTooltip>
                         <span style={{flexGrow: 1}} />
                         <SortButton
@@ -660,7 +759,7 @@ class Rules extends Component {
                                 disabled: !resultsExists || loading,
                                 onClick: this.onSortMenuOpen
                             }}
-                            invisible={sort.value === "" && sort.order === "asc"}
+                            invisible={sort.value === "id" && sort.order === "asc"}
                             tooltip={resultsExists ? "Sort rules" : "No content to sort"}
                             TooltipProps={{
                                 WrapperProps: { style: { marginRight: "0.5rem" } }
@@ -673,7 +772,9 @@ class Rules extends Component {
                             anchorE1={sort.anchorE1}
                             ContentProps={{
                                 categories: createCategories(
-                                    Object.keys(items[0].traits).filter(value => value !== "Type")
+                                    Object.keys(items[0].traits).filter(value => value !== "Type"),
+                                    "none (default index)",
+                                    "id"
                                 ),
                                 chooseOrder: true,
                                 onCategoryChange: this.onSortValueChange,

@@ -26,6 +26,9 @@ public class CrossValidationSerializer extends JsonSerializer<CrossValidation> {
         jsonGenerator.writeFieldName("numberOfFolds");
         jsonGenerator.writeNumber(crossValidation.getNumberOfFolds());
 
+        jsonGenerator.writeFieldName("informationTable");
+        jsonGenerator.writeRawValue(mapper.writeValueAsString(crossValidation.getInformationTable()));
+
         jsonGenerator.writeFieldName("crossValidationSingleFolds");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(crossValidation.getCrossValidationSingleFolds()));
 

@@ -3,6 +3,7 @@ package pl.put.poznan.rulestudio.model;
 import org.rulelearn.data.InformationTable;
 import pl.put.poznan.rulestudio.service.RulesService;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 public class Project {

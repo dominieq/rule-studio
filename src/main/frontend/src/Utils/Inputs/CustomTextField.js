@@ -41,6 +41,28 @@ const menuStyles = makeStyles(theme => ({
     }
 }), {name: "CustomMenu"});
 
+/**
+ * The TextField component from Material-UI library with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/text-field/" target="_blank">TextField</a>.
+ * <br>
+ * Style was take from this
+ * <a href="https://material-ui.com/components/text-fields/#customized-inputs" target="_blank">tutorial</a>
+ * with some changes.
+ * <br>
+ * Apart from normal behavior, you are able to customize label outside of the TextField.
+ * There is also an option to disable some menu items in the Select component.
+ *
+ * @name Custom Text Field
+ * @constructor
+ * @category Utils
+ * @subcategory Inputs
+ * @param props {Object} - Any other props will be forwarded to TextField component.
+ * @param [props.disabledChildren] {Array} - Disabled elements from the Select component.
+ * @param [props.outsideLabel] {React.ReactNode} - Label placed outside of the TextField.
+ * @param [props.OutsideLabelProps] {Object} - Props applied to the OutsideLabel element.
+ * @returns {React.ReactElement} - The TextField component from Material-UI.
+ */
 function CustomTextField(props) {
     const { disabledChildren, outsideLabel, OutsideLabelProps, ...TextFieldProps } = props;
     const { children, InputProps, select, SelectProps, ...other } = TextFieldProps;

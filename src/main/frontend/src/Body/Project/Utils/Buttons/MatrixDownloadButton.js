@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import CustomTooltip from "../../../../Utils/DataDisplay/CustomTooltip";
-import StyledButton from "../../../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../../../Utils/Inputs/StyledButton";
 import GetApp from "@material-ui/icons/GetApp";
 
 const useStyles = makeStyles(theme => ({
@@ -15,22 +15,35 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "DownloadMatrix"})
 
+/**
+ * The {@link StyledIconButton} with get-app icon wrapped around in {@link CustomTooltip}.
+ *
+ * @name Matrix Download Button
+ * @constructor
+ * @category Utils
+ * @subcategory Inputs
+ * @param {Object} props
+ * @param {Object} props.ButtonProps - Props applied to the {@link StyledIconButton} element.
+ * @param {function} props.onSave - Callback fired when the button was clicked on.
+ * @param {string} props.title - The title of the {@link CustomTooltip} element.
+ * @param {Object} props.TooltipProps - Props applied to the {@link CustomTooltip} element.
+ * @returns {React.ReactElement}
+ */
 function MatrixDownloadButton(props) {
     const { ButtonProps, tooltip, TooltipProps } = props;
     const classes = useStyles();
 
     return (
         <CustomTooltip title={tooltip} {...TooltipProps}>
-            <StyledButton
+            <StyledIconButton
                 aria-label={"download matrix"}
                 className={classes.root}
-                isIcon={true}
+                color={"primary"}
                 onClick={props.onSave}
-                themeVariant={"primary"}
                 {...ButtonProps}
             >
                 <GetApp />
-            </StyledButton>
+            </StyledIconButton>
         </CustomTooltip>
     )
 }

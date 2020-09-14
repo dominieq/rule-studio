@@ -1,3 +1,14 @@
+/**
+ * Returns appropriate relation symbol to compare values of attributes from two objects.
+ *
+ * @category Details Dialog
+ * @subcategory Functions
+ * @param {Object} object1 - The selected object with it's details displayed in {@link FullscreenDialog}.
+ * @param {Object} object2 - An object from information table.
+ * @param {Object} attribute - An attribute from information table.
+ * @param {number} tableIndex - The index of dominance cone.
+ * @returns {string} - Relation symbol.
+ */
 const getAppropriateSign = (object1, object2, attribute, tableIndex) => {
     if (attribute.type === "description" || Object.keys(attribute).includes("identifierType") || !attribute.active) {
         return "--";
@@ -35,6 +46,8 @@ const getAppropriateSign = (object1, object2, attribute, tableIndex) => {
                     }
                 case "none":
                     return "--";
+                default:
+                    return "";
             }
         }
     }    

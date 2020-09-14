@@ -6,12 +6,25 @@ import Cones from "./Tabs/Cones";
 import Data from "./Data/DisplayData";
 import Rules from "./Tabs/Rules";
 import Unions from "./Tabs/Unions";
-import { fetchData } from "./Utils/fetchFunctions";
+import { fetchData } from "../../Utils/utilFunctions/fetchFunctions";
 import StyledTab from "../../Utils/Navigation/StyledTab";
 import StyledTabs from "../../Utils/Navigation/StyledTabs";
 import ExternalFile from "../../Utils/Feedback/CustomIcons/ExternalFile";
 import OutdatedData from "../../Utils/Feedback/AlertBadge/Alerts/OutdatedData";
 
+/**
+ * The Project section in RuLeStudio. Allows user to choose between tabs.
+ * If necessary, displays information about outdated results shown in currently selected tab.
+ *
+ * @class
+ * @category Tabs
+ * @param {Object} props
+ * @param {Object} props.project - Current project.
+ * @param {string} props.serverBase - The name of the host.
+ * @param {function} props.showAlert - Callback fired when an alert is opened.
+ * @param {function} props.updateIndexOptions - Callback fired when an attribute was changed.
+ * @param {function} props.updateProject - Callback fired when a part of current project was changed.
+ */
 class ProjectTabs extends React.Component {
     constructor(props) {
         super(props);
@@ -26,6 +39,13 @@ class ProjectTabs extends React.Component {
         };
     }
 
+    /**
+     * Updates alerts based on the response from server.
+     *
+     * @function
+     * @memberOf ProjectTabs
+     * @param {Object} result - The response from the server.
+     */
     updateAlerts = (result) => {
         /* Update alert in Dominance cones */
         if (result.dominanceCones !== null && result.dominanceCones.hasOwnProperty("isCurrentData")) {
@@ -121,6 +141,16 @@ class ProjectTabs extends React.Component {
         }
     };
 
+    /**
+     * Makes an API call on data to save changes (PUT) in current project.
+     * Then, updates fields from current project with values from response
+     * and saves changes in the {@link App}'s state.
+     *
+     * @function
+     * @memberOf ProjectTabs
+     * @param {Object} currentProject - The project that will be send to server.
+     * @param {number} newValue - The id of currently selected tab.
+     */
     updateProjectOnServer = (currentProject, newValue) => {
         const { serverBase } = this.props;
         let project = JSON.parse(JSON.stringify(currentProject));
@@ -169,6 +199,13 @@ class ProjectTabs extends React.Component {
         });
     };
 
+    /**
+     * A component's lifecycle method. Fired once when component was mounted.
+     * Method calls {@link updateAlerts}.
+     *
+     * @function
+     * @memberOf ProjectTabs
+     */
     componentDidMount() {
         this._isMounted = true;
 
@@ -176,6 +213,21 @@ class ProjectTabs extends React.Component {
         this.updateAlerts(result);
     };
 
+    /**
+     * A component's lifecycle method. Fired before rendering to determine whether a component should update.
+     * <br>
+     * <br>
+     * Apart from making a shallow comparison between props and state,
+     * method compares the id of current project to the updated project.
+     * Component will update if the identities are different.
+     *
+     * @function
+     * @memberOf ProjectTabs
+     * @param {Object} nextProps - New props that will replace old props.
+     * @param {Object} nextState - New state that will replace old state
+     * @param {Object} nextContext - New context that will replace old context.
+     * @returns {boolean} - If <code>true</code> the component will update.
+     */
     shouldComponentUpdate(nextProps, nextState, nextContext) {
         const shallowComparison = this.props !== nextProps || this.state !== nextState;
         const deepComparison = this.props.project.result.id !== nextProps.project.result.id;
@@ -183,6 +235,22 @@ class ProjectTabs extends React.Component {
         return shallowComparison || deepComparison;
     };
 
+    /**
+     * A component's lifecycle method. Fired after a component was updated.
+     * <br>
+     * <br>
+     * Method updates state's project settings if props settings have changed and the {@link Data} tab is selected.
+     * <br>
+     * <br>
+     * Apart from that, method checks if project was changed. If a new project was forwarded, method updates alerts
+     * and saves changes from old project if necessary.
+     *
+     * @function
+     * @memberOf ProjectTabs
+     * @param {Object} prevProps - Old props that were already replaced.
+     * @param {Object} prevState - Old state that was already replaced.
+     * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
+     */
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.project.settings.indexOption !== this.props.project.settings.indexOption && this.state.selected === 0) {
             this.setState(({currentProject}) => {
@@ -211,6 +279,13 @@ class ProjectTabs extends React.Component {
         }
     };
 
+    /**
+     * A component's lifecycle method. Fired when component was requested to be unmounted.
+     * If there were any unsaved changes, method calls {@link updateProjectOnServer}.
+     *
+     * @function
+     * @memberOf ProjectTabs
+     */
     componentWillUnmount() {
         this._isMounted = false;
 
@@ -220,6 +295,15 @@ class ProjectTabs extends React.Component {
         }
     };
 
+    /**
+     * Fired when a tab is changed. If user had unsaved changes in {@link Data} tab,
+     * method calls {@link updateProjectOnServer} to save them on server.
+     *
+     * @function
+     * @memberOf ProjectTabs
+     * @param {Object} event - Represents an event that takes place in DOM.
+     * @param {number} newValue - The id of tab that was selected.
+     */
     onTabChange = (event, newValue) => {
         const { currentProject, selected } = this.state;
 
@@ -234,12 +318,28 @@ class ProjectTabs extends React.Component {
         }
     };
 
+    /**
+     * Forwarded to the {@link Data} tab. Fired when an user makes changes in the information table.
+     * Saves modified project in the component's state.
+     *
+     * @function
+     * @memberOf ProjectTabs
+     * @param {Object} project - Modified project from the {@link Data} tab.
+     */
     onDataChange = (project) => {
         this.setState({
             currentProject: project
         });
     };
 
+    /**
+     * Forwarded to all tabs. Fired when a tab receives information from the server that current results are outdated.
+     *
+     * @function
+     * @memberOf ProjectTabs
+     * @param {number} index - The id of a tab.
+     * @param {boolean} show - If <code>true</code> an alert about outdated results in tab will be displayed.
+     */
     showAlert = (index, show) => {
         this.setState(({showAlert}) => {
             showAlert[index] = show;
@@ -250,12 +350,28 @@ class ProjectTabs extends React.Component {
         });
     };
 
+    /**
+     * Forwarded to the {@link Rules} tab. Fired when an user uploads rule set.
+     * Saves this information in the component's state.
+     *
+     * @function
+     * @memberOf ProjectTabs
+     * @param {boolean} isExternal - If <code>true</code> alert will be displayed that rule set was uploaded.
+     */
     onRulesUploaded = (isExternal) => {
         this.setState({
             showExternalRules: isExternal
         });
     };
 
+    /**
+     * Forwarded to the {@link Rules} and {@link Classification} tabs. Fired when an  user uploads information table.
+     * Saves this information in the component's state.
+     *
+     * @function
+     * @memberOf ProjectTabs
+     * @param {boolean} isExternal - If <code>true</code> alert will be displayed that external data was classified.
+     */
     onDataUploaded = (isExternal) => {
         this.setState({
             showExternalData: isExternal

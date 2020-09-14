@@ -41,6 +41,19 @@ const tooltipStyles = makeStyles({
     }
 }, {name: "MultiRow"})
 
+/**
+ * Presents type of unions and allows user to choose between values.
+ *
+ * @name TypeOfUnions
+ * @class
+ * @category Tabs
+ * @subcategory Calculations
+ * @param {Object} props
+ * @param {Object} props.CircleHelperProps - Props applied to the {@link CircleHelper} element.
+ * @param {Object} props.TextFieldProps - Props applied to the {@link CustomTextField} element.
+ * @param {"simple"|"extended"} [props.variant="simple"] - Determines what text should be displayed in the tooltip.
+ * @returns {React.ReactElement}
+ */
 function TypeOfUnionsSelector(props) {
     const { CircleHelperProps, TextFieldProps: { disabledChildren, ...other }, variant } = props;
     const tooltipClasses = tooltipStyles();
