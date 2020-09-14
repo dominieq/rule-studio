@@ -7,6 +7,17 @@ const RuleType = {
   LessThan: 4
 };
 
+/**
+ * This is the numeric filter, which appears for the Integer and Real value type attributes.
+ * 
+ * @class
+ * @category Tabs
+ * @subcategory Data Utils
+ * @param {Object} props - Object passed from the external library (react-data-grid).
+ * @param {Object} props.column - The column on which filter was used.
+ * @param {function} props.onChange - Method runs when there is some change in the filter field.
+ * @returns {React.Component}
+ */
 class NumericFilter extends React.Component {
   constructor(props) {
     super(props);
@@ -99,7 +110,7 @@ class NumericFilter extends React.Component {
   }
 
   handleKeyPress(e) { // Validate the input
-    const regex = '>|<|:|,|([0-9?.\-])';
+    const regex = '>|<|:|,|([0-9?.-])';
     const result = RegExp(regex).test(e.key);
     if (result === false) {
       e.preventDefault();

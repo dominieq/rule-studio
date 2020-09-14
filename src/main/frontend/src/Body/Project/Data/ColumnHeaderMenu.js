@@ -10,7 +10,20 @@ const menuStyles = makeStyles(theme => ({
   }  
 }));
 
-export default function SimpleMenu(props) {
+/**
+ * Displays right click column header menu with available options
+ * 
+ * @class
+ * @category Utils
+ * @subcategory Inputs
+ * @param {Object} props
+ * @param {Array} props.items - These are options that are available to choose in the menu.
+ * @param {function} props.handleClose - Method runs after selecting the option from the menu. 
+ * @param {Object} props.event - Represents an event that takes place in DOM tree.
+ * @returns {React.ReactElement}
+ * It is used to set the top left corner of the menu in the right place.
+ */
+export default function ColumnHeaderMenu(props) {
   const menuClasses = menuStyles();
 
   const handleClose = (e) => {
@@ -20,7 +33,7 @@ export default function SimpleMenu(props) {
   return (
     <div>
       <Menu
-        id="simple-menu"
+        id="column-header-menu"
         keepMounted
         open={Boolean(props.event.currentTarget)}
         onClose={handleClose}

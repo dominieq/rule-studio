@@ -63,36 +63,57 @@ const menuStyles = makeStyles(theme => ({
   }
 }), {name: "CustomMenu"});
 
+/**
+ * It is the drop down list used in adding or editing attribute.
+ * 
+ * @class
+ * @category Utils
+ * @subcategory Inputs
+ * @param {Object} props
+ * @param {string} props.defaultValue - This is the default value (already chosen option) from the list. It's used to display mv2 option.
+ * @param {string} props.defaultWidth - This is the width of the field. Usually set to default value (which is 100%).
+ * @param {string} props.displayName - The name displayed on the list before clicking on it (e.g. "Preference type").
+ * @param {function} props.getSelected - Method responsible for remembering selected option from the list.
+ * @param {Array} props.items - These are the available options to choose from the drop down list (e.g. "none", "cost", "gain").
+ * @param {boolean} props.missingVal - True if it's missing value field, else false.
+ * @param {string} props.name - The id of the html element, used for identification purposes only.
+ * @returns {React.ReactElement}
+ */
 export default function DropDownForAttributes(props) { 
-  const [selectedOption, setSelectedOption] = React.useState(props.defaultValue);
+  const { defaultValue, defaultWidth, displayName, getSelected, items, missingVal, name } = props;
+
+  const [selectedOption, setSelectedOption] = React.useState(defaultValue);
   const classes = useStyles();
   const menuClasses = menuStyles();
 
-  const inputLabel = React.useRef(null);
-  const [labelWidth, setLabelWidth] = React.useState(0);
-  React.useEffect(() => { setLabelWidth(inputLabel.current.offsetWidth); props.getSelected(props.defaultValue); }, []);
+  React.useEffect(() => { 
+      if(defaultValue === selectedOption) {
+        getSelected(defaultValue); 
+      }
+  }, [defaultValue, getSelected, selectedOption]);
 
-  const handleChange = event => {
-    setSelectedOption(event.target.value);
-    props.getSelected(event.target.value);
+  const handleChange = (event) => {
+    if(selectedOption !== event.target.value) {
+      setSelectedOption(event.target.value);
+      getSelected(event.target.value);
+    }
   };
 
   return (
     <Fragment key="dropDownForAttributes">
-      <FormControl margin={"dense"} required variant="outlined" style={{minWidth: props.defaultWidth}} className={clsx(classes.formControl, classes.root)}>
-        <InputLabel ref={inputLabel} id="dialog-dropdown">
-          {props.displayName}
+      <FormControl margin={"dense"} required variant="outlined" style={{minWidth: defaultWidth}} className={clsx(classes.formControl, classes.root)}>
+        <InputLabel id="dialog-dropdown">
+          {displayName}
         </InputLabel>
         <Select
           labelId="dialog-dropdown"
-          id={props.name}  
+          id={name}  
           value={selectedOption}
           onChange={handleChange}
-          labelWidth={labelWidth}
           MenuProps={{classes: {list: menuClasses.list}}}
         >
-        {props.items.map((x,index) => { 
-          if(props.missingVal) {
+        {items.map((x,index) => { 
+          if(missingVal) {
             if(x === "1.5") return <MenuItem style={{display: "inherit"}} key={index} value={`mv${x}`}> <CustomTooltip arrow={true} disableGpu={true} placement={'right-end'} title={tooltip.mv15}>mv<sub>{x}</sub></CustomTooltip></MenuItem>
             else return <MenuItem style={{display: "inherit"}} key={index} value={`mv${x}`}> <CustomTooltip arrow={true} disableGpu={true} placement={'right-end'} title={tooltip.mv2}>mv<sub>{x}</sub></CustomTooltip></MenuItem>
           }

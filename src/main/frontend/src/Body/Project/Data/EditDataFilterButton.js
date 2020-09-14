@@ -5,11 +5,21 @@ import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 import { StyledButton, StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 
+/**
+ * This class generates Filter button and passes all the other buttons as children.
+ * 
+ * @name Data Filter Button
+ * @class
+ * @category Utils
+ * @subcategory Inputs
+ * @category Tabs
+ * @subcategory DataFilter
+ * @param {Object} props
+ * @param {boolean} props.enableFilter - True if the filter is enabled, else false (here always true).
+ * @param {function} props.onToggleFilter - Method used from the external library (react-data-grid).
+ * @returns {React.ReactElement}
+ */
 class EditDataFilterButton extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount() {
         this.props.onToggleFilter();
     }

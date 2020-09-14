@@ -9,6 +9,24 @@ import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';
 
+/**
+ * These are buttons displayed above the grid (e.g. Add object, Delete selected etc.) except the filter button.
+ * 
+ * @class
+ * @category Utils
+ * @subcategory Inputs
+ * @param {Object} props
+ * @param {string} props.whichDevice - One of [desktop, mobile]. If the device width is too small (look into css) then smaller buttons are displayed.
+ * @param {function} props.insertRow - Method used to inserting the row after clicking the button.
+ * @param {function} props.deleteRow - Method used to deleting selected rows after clicking the button.
+ * @param {function} props.onAddAttribute - Method used to open the Add attribute dialog after clicking the button.
+ * @param {function} props.onEditAttributes - Method used to open the Edit attributes dialog after clicking the button.
+ * @param {function} props.saveToFileDialog - Method used to open the Save to file dialog after clicking the button.
+ * @param {function} props.openOnTransform - Method used to open the Impose preference orders dialog after clicking the button.
+ * @param {function} props.onBack - Method used to go to the previous step in the history of changes.
+ * @param {function} props.onRedo - Method used to go to the next step in the history of changes.
+ * @returns {React.ReactElement}
+ */
 export default function IconLabelButtons(props) {
     const style = {
       margin: "0px 0px 0px 16px",
