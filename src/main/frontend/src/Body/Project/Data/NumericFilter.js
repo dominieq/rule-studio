@@ -12,7 +12,7 @@ const RuleType = {
  * 
  * @class
  * @category Tabs
- * @subcategory NumericFilters
+ * @subcategory Data Utils
  * @param {Object} props - Object passed from the external library (react-data-grid).
  * @param {Object} props.column - The column on which filter was used.
  * @param {function} props.onChange - Method runs when there is some change in the filter field.

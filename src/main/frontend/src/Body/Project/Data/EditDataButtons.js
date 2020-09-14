@@ -12,7 +12,9 @@ import RedoIcon from '@material-ui/icons/Redo';
 /**
  * These are buttons displayed above the grid (e.g. Add object, Delete selected etc.) except the filter button.
  * 
- * @function
+ * @class
+ * @category Utils
+ * @subcategory Inputs
  * @param {Object} props
  * @param {string} props.whichDevice - One of [desktop, mobile]. If the device width is too small (look into css) then smaller buttons are displayed.
  * @param {function} props.insertRow - Method used to inserting the row after clicking the button.

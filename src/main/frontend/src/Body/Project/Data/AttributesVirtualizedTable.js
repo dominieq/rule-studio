@@ -46,13 +46,16 @@ const listStyles = makeStyles(theme => ({
 /**
  * Displays list of attributes (enable to select) in the Edit attributes dialog.
  * 
- * @function
+ * @class
+ * @category Utils
+ * @subcategory Data Display
  * @param {Object} props
- * @param {string} props.headerText - This is the text displayed above the table.
+ * @param {string} [props.headerText] - This is the text displayed above the table.
  * @param {function} props.onItemInTableSelected - Method runs when the table item is selected.
- * @param {Number} props.rowHeight - This is the size of the row. Usually set to default.
+ * @param {Number} [props.rowHeight] - This is the size of the row. Usually set to default.
  * @param {Array} props.table - List of columns (attributes) enabled for modification.
  * @param {string} props.clicked - The name of the selected item (attribute).
+ * @returns {React.ReactElement}
  */
 function AttributesVirtualizedTable(props) {
     const { headerText, onItemInTableSelected, rowHeight, table, clicked } = props;
@@ -111,9 +114,9 @@ function AttributesVirtualizedTable(props) {
 }
 
 AttributesVirtualizedTable.propTypes = {
-    headerText: PropTypes.string, //optional
+    headerText: PropTypes.string,
     onItemInTableSelected: PropTypes.func,
-    rowHeight: PropTypes.number, //optional
+    rowHeight: PropTypes.number,
     table: PropTypes.array.isRequired,
 };
 

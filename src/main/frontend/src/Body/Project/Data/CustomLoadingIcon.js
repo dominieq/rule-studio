@@ -12,10 +12,13 @@ const useStyles = makeStyles(theme => ({
 /**
  * It is responsible for the loading circle icon
  * 
- * @function
+ * @class
+ * @category Utils
+ * @subcategory Feedback
  * @param {Object} props
  * @param {Number} props.size - The size of the circle (usually stays default)
  * @param {Number} props.thickness - The thickness of the circle (usually stays default)
+ * @returns {React.ReactElement}
  */
 export default function CustomLoadingIcon(props) {
   const classes = useStyles();

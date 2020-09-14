@@ -17,13 +17,14 @@ const styles = ({
 });
 
 /**
- * @name AttributeDomain
+ * @name Attribute Domain
  * @class
- * @category Tabs
- * @subcategory Domain
+ * @category Utils
+ * @subcategory Inputs
  * @param {Object} props
  * @param {Array} props.defaultValue - Array containing domain elements
  * @param {function} props.setDomainElements - Method fired when adding, removing, editing the domain element or changing the order of domain elements.
+ * @returns {React.Component}
  */
 class AttributeDomain extends React.Component {
   constructor(props) {
@@ -49,6 +50,7 @@ class AttributeDomain extends React.Component {
    * This way it won't be lagging if many characters are quickly entered into the textfield.
    * 
    * @function
+   * @memberOf AttributeDomain
    * @param {Object} e - Represents an event that takes place in DOM tree.
    */
   startTime = (e) => {
@@ -62,6 +64,7 @@ class AttributeDomain extends React.Component {
    * Method runs on change in the domain element.
    * 
    * @function
+   * @memberOf AttributeDomain
    * @param {Object} e - Represents an event that takes place in DOM tree.
    */
   textFieldOnChange = (e) => {
@@ -85,6 +88,7 @@ class AttributeDomain extends React.Component {
    * Method runs if the domain element is removed.
    * 
    * @function
+   * @memberOf AttributeDomain
    * @param {Object} e - Represents an event that takes place in DOM tree.
    */
   onClickRemoveElement = (e) => {
@@ -108,6 +112,7 @@ class AttributeDomain extends React.Component {
    * Method runs if the domain element is added.
    * 
    * @function
+   * @memberOf AttributeDomain
    * @param {Object} e - Represents an event that takes place in DOM tree.
    */
   onClickAddElement = (e) => {
@@ -132,6 +137,7 @@ class AttributeDomain extends React.Component {
    * so the first element goes at the bottom (like in the queue) and rest of elements goes up.
    * 
    * @function
+   * @memberOf AttributeDomain
    * @param {Object} e - Represents an event that takes place in DOM tree.
    */
   switchUpward = (e) => {
@@ -172,6 +178,7 @@ class AttributeDomain extends React.Component {
    * so the last element goes at the top (like in the queue) and rest of elements goes down.
    * 
    * @function
+   * @memberOf AttributeDomain
    * @param {Object} e - Represents an event that takes place in DOM tree.
    */
   switchDownward = (e) => {
@@ -209,6 +216,7 @@ class AttributeDomain extends React.Component {
    * It is responsible for displaying all the domain elements (whole rows)
    * 
    * @function
+   * @memberOf AttributeDomain
    */
   renderElements = classes => {
     const elements = [];
@@ -271,6 +279,7 @@ class AttributeDomain extends React.Component {
    * Method which renders everything.
    * 
    * @function
+   * @memberOf AttributeDomain
    */
   render() {
     const { classes } = this.props;

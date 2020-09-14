@@ -66,7 +66,9 @@ const menuStyles = makeStyles(theme => ({
 /**
  * It is the drop down list used in adding or editing attribute.
  * 
- * @function
+ * @class
+ * @category Utils
+ * @subcategory Inputs
  * @param {Object} props
  * @param {string} props.defaultValue - This is the default value (already chosen option) from the list. It's used to display mv2 option.
  * @param {string} props.defaultWidth - This is the width of the field. Usually set to default value (which is 100%).

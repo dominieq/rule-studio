@@ -19,12 +19,15 @@ const useStyles = makeStyles(theme => ({
 /**
  * It is the notification (rectangle) that appears at the bottom center of the screen.
  * 
- * @function
+ * @class
+ * @category Utils
+ * @subcategory Feedback
  * @param {Object} props
  * @param {boolean} props.open - If true the notification will appear on the screen.
  * @param {function} props.closeOpenedNotification - This is the method used to close the notification.
  * @param {string} props.message - This is the html element (mainly text) displayed in the notification.
  * @param {string} props.variant - One of [error, warning, info, success]. This is the variant of the notification, usually recognizable by color (red, orange, blue, green).
+ * @returns {React.ReactElement}
  */
 export default function CustomizedSnackbars(props) {
   const classes = useStyles();

@@ -8,8 +8,10 @@ import { StyledButton, StyledIconButton } from "../../../Utils/Inputs/StyledButt
 /**
  * This class generates Filter button and passes all the other buttons as children.
  * 
- * @name DataFilterButton
+ * @name Data Filter Button
  * @class
+ * @category Utils
+ * @subcategory Inputs
  * @category Tabs
  * @subcategory DataFilter
  * @param {Object} props
