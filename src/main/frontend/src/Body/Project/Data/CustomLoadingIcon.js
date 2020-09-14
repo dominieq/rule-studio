@@ -4,14 +4,14 @@ import "./CustomLoadingIcon.css";
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
-  colorPrimary: {
-    color: theme.palette.text.default,
-  }  
+    colorPrimary: {
+        color: theme.palette.text.default,
+    }
 }));
 
 /**
  * It is responsible for the loading circle icon
- * 
+ *
  * @class
  * @category Utils
  * @subcategory Feedback
@@ -21,12 +21,12 @@ const useStyles = makeStyles(theme => ({
  * @returns {React.ReactElement}
  */
 function CustomLoadingIcon(props) {
-  const classes = useStyles();
+    const classes = useStyles();
     return (
-    <div className="CustomLoadingIcon">      
-      <CircularProgress classes={{...classes}} size={props.size} thickness={props.thickness}/>
-    </div>
-  );
+        <div className="CustomLoadingIcon">
+            <CircularProgress classes={{...classes}} size={props.size} thickness={props.thickness}/>
+        </div>
+    );
 }
 
 CustomLoadingIcon.defaultProps = {

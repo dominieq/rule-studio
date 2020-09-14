@@ -7,7 +7,7 @@ import { StyledButton, StyledIconButton } from "../../../Utils/Inputs/StyledButt
 
 /**
  * This class generates Filter button and passes all the other buttons as children.
- * 
+ *
  * @name Data Filter Button
  * @class
  * @category Utils
@@ -26,26 +26,26 @@ class EditDataFilterButton extends React.Component {
 
     renderToggleFilterButton = (name) => {
         if (this.props.enableFilter) {
-          return (
-            <CustomTooltip disableGpu={true} title={`Show filter`}>
-                {name === "desktop" ?
-                    <StyledButton
-                        color={"primary"}
-                        disableElevation={true}
-                        onClick={this.props.onToggleFilter}
-                        startIcon={<SearchIcon />}
-                        variant={"contained"}
-                    >
-                        Filter
-                    </StyledButton>
-                :   <StyledIconButton
-                        onClick={this.props.onToggleFilter}
-                    >
-                        <SearchIcon />
-                    </StyledIconButton>
-                }
-            </CustomTooltip>
-          );
+            return (
+                <CustomTooltip disableGpu={true} title={`Show filter`}>
+                    {name === "desktop" ?
+                        <StyledButton
+                            color={"primary"}
+                            disableElevation={true}
+                            onClick={this.props.onToggleFilter}
+                            startIcon={<SearchIcon />}
+                            variant={"contained"}
+                        >
+                            Filter
+                        </StyledButton>
+                        :   <StyledIconButton
+                            onClick={this.props.onToggleFilter}
+                        >
+                            <SearchIcon />
+                        </StyledIconButton>
+                    }
+                </CustomTooltip>
+            );
         }
     };
 

@@ -45,7 +45,7 @@ const listStyles = makeStyles(theme => ({
 
 /**
  * Displays list of attributes (enable to select) in the Edit attributes dialog.
- * 
+ *
  * @class
  * @category Utils
  * @subcategory Data Display
@@ -89,11 +89,11 @@ function AttributesVirtualizedTable(props) {
     return (
         <Fragment>
             {headerText &&
-                <ListSubheader disableSticky={true} className={listClasses.header} component={"div"}>
-                    <Typography className={clsx(listClasses.textItem, listClasses.headerText)}>
-                        {headerText}
-                    </Typography>
-                </ListSubheader>
+            <ListSubheader disableSticky={true} className={listClasses.header} component={"div"}>
+                <Typography className={clsx(listClasses.textItem, listClasses.headerText)}>
+                    {headerText}
+                </Typography>
+            </ListSubheader>
             }
             <div className={listClasses.listWrapper}>
                 <AutoSizer>
