@@ -50,7 +50,7 @@ class AttributeDomain extends React.Component {
      * This way it won't be lagging if many characters are quickly entered into the textfield.
      *
      * @function
-     * @memberOf AttributeDomain
+     * @memberOf Attribute Domain
      * @param {Object} e - Represents an event that takes place in DOM tree.
      */
     startTime = (e) => {
@@ -64,7 +64,7 @@ class AttributeDomain extends React.Component {
      * Method runs on change in the domain element.
      *
      * @function
-     * @memberOf AttributeDomain
+     * @memberOf Attribute Domain
      * @param {Object} e - Represents an event that takes place in DOM tree.
      */
     textFieldOnChange = (e) => {
@@ -88,7 +88,7 @@ class AttributeDomain extends React.Component {
      * Method runs if the domain element is removed.
      *
      * @function
-     * @memberOf AttributeDomain
+     * @memberOf Attribute Domain
      * @param {Object} e - Represents an event that takes place in DOM tree.
      */
     onClickRemoveElement = (e) => {
@@ -112,7 +112,7 @@ class AttributeDomain extends React.Component {
      * Method runs if the domain element is added.
      *
      * @function
-     * @memberOf AttributeDomain
+     * @memberOf Attribute Domain
      * @param {Object} e - Represents an event that takes place in DOM tree.
      */
     onClickAddElement = (e) => {
@@ -137,7 +137,7 @@ class AttributeDomain extends React.Component {
      * so the first element goes at the bottom (like in the queue) and rest of elements goes up.
      *
      * @function
-     * @memberOf AttributeDomain
+     * @memberOf Attribute Domain
      * @param {Object} e - Represents an event that takes place in DOM tree.
      */
     switchUpward = (e) => {
@@ -178,7 +178,7 @@ class AttributeDomain extends React.Component {
      * so the last element goes at the top (like in the queue) and rest of elements goes down.
      *
      * @function
-     * @memberOf AttributeDomain
+     * @memberOf Attribute Domain
      * @param {Object} e - Represents an event that takes place in DOM tree.
      */
     switchDownward = (e) => {
@@ -216,7 +216,7 @@ class AttributeDomain extends React.Component {
      * It is responsible for displaying all the domain elements (whole rows)
      *
      * @function
-     * @memberOf AttributeDomain
+     * @memberOf Attribute Domain
      */
     renderElements = classes => {
         const elements = [];
@@ -275,12 +275,6 @@ class AttributeDomain extends React.Component {
         return <List dense={false} style={{overflow: "auto"}} > {elements} </List>;
     };
 
-    /**
-     * Method which renders everything.
-     *
-     * @function
-     * @memberOf AttributeDomain
-     */
     render() {
         const { classes } = this.props;
         return (

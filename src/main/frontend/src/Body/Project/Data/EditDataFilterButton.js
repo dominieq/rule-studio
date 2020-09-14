@@ -17,7 +17,7 @@ import { StyledButton, StyledIconButton } from "../../../Utils/Inputs/StyledButt
  * @param {Object} props
  * @param {boolean} props.enableFilter - True if the filter is enabled, else false (here always true).
  * @param {function} props.onToggleFilter - Method used from the external library (react-data-grid).
- * @returns {React.ReactElement}
+ * @returns {React.Component}
  */
 class EditDataFilterButton extends React.Component {
     componentDidMount() {

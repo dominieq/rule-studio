@@ -2972,9 +2972,6 @@ class DisplayData extends React.Component {
         })
     }
 
-    /**
-     * Method responsible for rendering everything
-     */
     render() {
         const classes = this.props.classes;
         return (
