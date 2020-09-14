@@ -27,7 +27,7 @@ import RedoIcon from '@material-ui/icons/Redo';
  * @param {function} props.onRedo - Method used to go to the next step in the history of changes.
  * @returns {React.ReactElement}
  */
-export default function IconLabelButtons(props) {
+function IconLabelButtons(props) {
     const style = {
       margin: "0px 0px 0px 16px",
     }
@@ -224,3 +224,5 @@ export default function IconLabelButtons(props) {
     </Fragment>
     );
 }
+
+export default IconLabelButtons;

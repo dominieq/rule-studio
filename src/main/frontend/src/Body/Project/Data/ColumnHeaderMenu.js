@@ -23,7 +23,7 @@ const menuStyles = makeStyles(theme => ({
  * @returns {React.ReactElement}
  * It is used to set the top left corner of the menu in the right place.
  */
-export default function ColumnHeaderMenu(props) {
+function ColumnHeaderMenu(props) {
   const menuClasses = menuStyles();
 
   const handleClose = (e) => {
@@ -48,3 +48,5 @@ export default function ColumnHeaderMenu(props) {
     </div>
   );
 }
+
+export default ColumnHeaderMenu;

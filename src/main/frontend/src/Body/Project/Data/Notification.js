@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
  * @param {string} props.variant - One of [error, warning, info, success]. This is the variant of the notification, usually recognizable by color (red, orange, blue, green).
  * @returns {React.ReactElement}
  */
-export default function CustomizedSnackbars(props) {
+function CustomizedSnackbars(props) {
   const classes = useStyles();
   const [open] = React.useState(true);
 
@@ -47,3 +47,5 @@ export default function CustomizedSnackbars(props) {
     </div>
   ) : null ;
 }
+
+export default CustomizedSnackbars;

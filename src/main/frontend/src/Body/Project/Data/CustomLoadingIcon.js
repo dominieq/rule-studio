@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
  * @param {Number} props.thickness - The thickness of the circle (usually stays default)
  * @returns {React.ReactElement}
  */
-export default function CustomLoadingIcon(props) {
+function CustomLoadingIcon(props) {
   const classes = useStyles();
     return (
     <div className="CustomLoadingIcon">      
@@ -34,3 +34,5 @@ CustomLoadingIcon.defaultProps = {
     size: 40,
     thickness: 3.6
 }
+
+export default CustomLoadingIcon;

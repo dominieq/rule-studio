@@ -79,7 +79,7 @@ const menuStyles = makeStyles(theme => ({
  * @param {string} props.name - The id of the html element, used for identification purposes only.
  * @returns {React.ReactElement}
  */
-export default function DropDownForAttributes(props) { 
+function DropDownForAttributes(props) {
   const { defaultValue, defaultWidth, displayName, getSelected, items, missingVal, name } = props;
 
   const [selectedOption, setSelectedOption] = React.useState(defaultValue);
@@ -130,3 +130,5 @@ DropDownForAttributes.defaultProps = {
   defaultValue: '', 
   defaultWidth: "100%"
 }
+
+export default DropDownForAttributes;
