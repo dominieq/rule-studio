@@ -19,6 +19,32 @@ const StyledMenu = withStyles(theme => ({
     }
 }), {name: "ContextMenu"})(props => <Menu {...props} />);
 
+/**
+ * Uses the {@link VirtualizedMatrix} and {@link VirtualizedTable} to display misclassification matrix.
+ * It's possible to hide deviations as sometimes they don't provide useful information.
+ * All tables are going to be vertically centered. A context menu is going to pop up after right clicking on a matrix.
+ *
+ * @name Matrix Dialog
+ * @constructor
+ * @category Utils
+ * @subcategory Matrix Dialog
+ * @param props {Object}
+ * @param [props.cellDimensions] {number|Object} - Dimensions of a cell from the {@link VirtualizedMatrix}.
+ * @param props.cellDimensions.x {number} - The width of a matrix cell.
+ * @param props.cellDimensions.y {number} - The height of a matrix cell.
+ * @param [props.disableDeviation=true] {boolean} - If <code>true</code> deviations won't be visible.
+ * @param props.matrix {Object} - An entity that consists of a matrix, it's possible deviations and traits.
+ * @param props.matrix.value {Array[]} - The matrix itself. Displayed on the left side of the dialog.
+ * @param [props.matrix.deviation] {Array[]} - The deviations of a matrix. Displayed in the middle of the dialog.
+ * @param props.matrix.traits {Object} - The traits of a matrix. Displayed on the right side of the dialog.
+ * @param [props.matrix.tables] {Object} - Other traits in the form of an array. Aren't displayed in this version.
+ * @param [props.onClose] {function} - Callback fired when dialog requests to be closed.
+ * @param props.open {boolean} - If <code>true</code> the dialog will show up.
+ * @param [props.subheaders] {string[]} - Simple description of every row and column in a matrix.
+ * @param [props.saveMatrix] {function} - Callback fired when user requests to save matrix.
+ * @param props.title {React.ReactNode} - The content of the {@link FullscreenHeader}.
+ * @returns {React.ReactElement}
+ */
 class MatrixDialog extends React.PureComponent {
     constructor(props) {
         super(props);

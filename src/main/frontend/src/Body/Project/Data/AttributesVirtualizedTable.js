@@ -43,6 +43,20 @@ const listStyles = makeStyles(theme => ({
     },
 }), {name: "virtualized-list"});
 
+/**
+ * Displays list of attributes (enable to select) in the Edit attributes dialog.
+ *
+ * @class
+ * @category Utils
+ * @subcategory Data Display
+ * @param {Object} props
+ * @param {string} [props.headerText] - This is the text displayed above the table.
+ * @param {function} props.onItemInTableSelected - Method runs when the table item is selected.
+ * @param {Number} [props.rowHeight] - This is the size of the row. Usually set to default.
+ * @param {Array} props.table - List of columns (attributes) enabled for modification.
+ * @param {string} props.clicked - The name of the selected item (attribute).
+ * @returns {React.ReactElement}
+ */
 function AttributesVirtualizedTable(props) {
     const { headerText, onItemInTableSelected, rowHeight, table, clicked } = props;
     const listClasses = listStyles();
@@ -75,11 +89,11 @@ function AttributesVirtualizedTable(props) {
     return (
         <Fragment>
             {headerText &&
-                <ListSubheader disableSticky={true} className={listClasses.header} component={"div"}>
-                    <Typography className={clsx(listClasses.textItem, listClasses.headerText)}>
-                        {headerText}
-                    </Typography>
-                </ListSubheader>
+            <ListSubheader disableSticky={true} className={listClasses.header} component={"div"}>
+                <Typography className={clsx(listClasses.textItem, listClasses.headerText)}>
+                    {headerText}
+                </Typography>
+            </ListSubheader>
             }
             <div className={listClasses.listWrapper}>
                 <AutoSizer>
@@ -98,12 +112,6 @@ function AttributesVirtualizedTable(props) {
         </Fragment>
     );
 }
-
-// Expected props:
-// headerText (optional) <-- string displayed above virtualized list
-// onTableItemSelected (required) <-- function responsible for selecting item from table
-// rowHeight (optional)
-// table (required) <-- array of integers (object indices) from chosen data table
 
 AttributesVirtualizedTable.propTypes = {
     headerText: PropTypes.string,

@@ -18,6 +18,21 @@ import { UnionsDialog } from "../../../Utils/Feedback/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
+/**
+ * The class unions tab in RuLeStudio.
+ * Presents the list of all unions generated for the information table in current project
+ *
+ * @class
+ * @category Tabs
+ * @subcategory Tabs
+ * @param {Object} props
+ * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
+ * @param {Object} props.project - Current project.
+ * @param {string} props.serverBase - The name of the host.
+ * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
+ * @param {number} props.value - The id of a tab.
+ * @returns {React.Component}
+ */
 class Unions extends Component {
     constructor(props) {
         super(props);
@@ -43,6 +58,13 @@ class Unions extends Component {
         this.upperBar = React.createRef();
     }
 
+    /**
+     * Makes an API call on unions to receive current copy of unions from server.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Unions
+     */
     getUnions = () => {
         const { project, serverBase } = this.props;
 
@@ -94,12 +116,38 @@ class Unions extends Component {
         });
     };
 
+    /**
+     * A component's lifecycle method. Fired once when component was mounted.
+     * <br>
+     * <br>
+     * Method calls {@link getUnions}.
+     *
+     * @function
+     * @memberOf Unions
+     */
     componentDidMount() {
         this._isMounted = true;
 
         this.setState({ loading: true }, this.getUnions);
     }
 
+    /**
+     * A component's lifecycle method. Fired after a component was updated.
+     * <br>
+     * <br>
+     * If type of unions was changed to <code>monotonic</code> and consistency threshold is equal to 1,
+     * method changes value of threshold to 0.
+     * <br>
+     * <br>
+     * If project was changed, method saves changes from previous project
+     * and calls {@link getUnions} to receive the latest copy of unions.
+     *
+     * @function
+     * @memberOf Unions
+     * @param {Object} prevProps - Old props that were already replaced.
+     * @param {Object} prevState - Old state that was already replaced.
+     * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
+     */
     componentDidUpdate(prevProps, prevState, snapshot) {
         const { parameters: prevParameters } = prevState;
         const { parameters } = this.state;
@@ -132,6 +180,15 @@ class Unions extends Component {
         }
     }
 
+    /**
+     * A component's lifecycle method. Fired when component was requested to be unmounted.
+     * <br>
+     * <br>
+     * Method saves changes from current project.
+     *
+     * @function
+     * @memberOf Unions
+     */
     componentWillUnmount() {
         this._isMounted = false;
         const { parametersSaved } = this.state;
@@ -146,6 +203,13 @@ class Unions extends Component {
         }
     }
 
+    /**
+     * Makes an API call on unions to generate new unions from current information table with specified parameters.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf Unions
+     */
     onCountUnionsClick = () => {
         const { project, serverBase }= this.props;
         const { parameters } = this.state;
@@ -245,6 +309,14 @@ class Unions extends Component {
         }
     };
 
+    /**
+     * Filters items from {@link Unions}' state.
+     * Method uses {@link filterFunction} to filter items.
+     *
+     * @function
+     * @memberOf Unions
+     * @param {Object} event - Represents an event that takes place in DOM.
+     */
     onFilterChange = (event) => {
         const { loading, items } = this.state;
 

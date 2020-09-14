@@ -1,5 +1,13 @@
 import { conjugateContent } from "../parseItems/parseDetails";
 
+/**
+ * Converts items to list items that will be displayed in {@link ResultList}.
+ *
+ * @category Utils
+ * @subcategory Functions
+ * @param {Object[]} items - An array of items prepared by {@link parseClassificationItems} or {@link parseCrossValidationItems}.
+ * @returns {Object[]} - An array of list items displayed in {@link ResultList}.
+ */
 function parseClassifiedListItems(items) {
     let listItems = [];
 

@@ -32,6 +32,22 @@ const paperStyles = makeStyles(theme => ({
     }
 }), {name: "CustomDrawerPaper"});
 
+/**
+ * A styled Drawer component from Material-UI library.
+ * A footer and dividers as well as a placeholder were added in RuLeStudio.
+ * For full documentation <a href="https://material-ui.com/api/drawer/">check out Material-UI docs</a>.
+ *
+ * @name Custom Drawer
+ * @constructor
+ * @category Utils
+ * @subcategory Containers
+ * @param props Any other props are going to be forwarded to the Drawer component.
+ * @param props.closeFooter {boolean} If <code>true</code> a footer with closing button is going to be added at the bottom.
+ * @param props.dividers {boolean} If <code>true</code> horizontal dividers are going to be added between content.
+ * @param props.id {string} The id of an element. Should be unique within a page.
+ * @param props.placeholder {number} A top margin that is going to be applied to Paper component.
+ * @returns {React.Component} The Drawer component from Material-UI library.
+ */
 function CustomDrawer(props) {
     const { children, classes,  onClose, PaperProps,
             closeFooter, dividers, placeholder, ...other } = props;

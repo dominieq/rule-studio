@@ -45,6 +45,24 @@ const listStyles = makeStyles(theme => ({
     }
 }), {name: "tables-list"});
 
+/**
+ * The List component and it's subcomponents from Material-UI library with custom styling.
+ * Used to display tables from a selected item.
+ * <br>
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/list/" target="_blank">List</a>.
+ *
+ * @name TablesList
+ * @constructor
+ * @category Details Dialog
+ * @subcategory Utilities
+ * @param props {Object}
+ * @param props.headerText {string} - The header of the {@link TablesList}
+ * @param props.onTableSelected {function} - Callback fired when a table is selected.
+ * @param props.tableIndex {number} - The index of currently selected table.
+ * @param props.tables {Object} - The tables property from a selected item.
+ * @returns {React.ReactElement}
+ */
 function TablesList(props) {
     const { headerText, onTableSelected, tableIndex, tables } = props;
     const listClasses = listStyles();
@@ -95,15 +113,6 @@ function TablesList(props) {
     );
 }
 
-// Expected props:
-// tables (required) <-- this is the object of arrays of integers (object indexes)
-// setChosenTable (required) <-- method responsible for setting chosen table (selected from the tables).
-
-//Example of props:
-/*
-    tables = { objects: [0,1,3,4,8], lowerApproximation:[1,2,5,6,9,11], upperApproximation:[1,4,5,6,7,8]}
-    setChosenTable = {this.setChosenTable};
-*/
 TablesList.propTypes = {
     headerText: PropTypes.string,
     onTableSelected: PropTypes.func.isRequired,

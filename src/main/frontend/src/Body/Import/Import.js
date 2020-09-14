@@ -12,7 +12,16 @@ import CustomSection from "../../Utils/Surfaces/CustomSection";
 import Collapse from "@material-ui/core/Collapse";
 import styles from "./styles/Import.module.css";
 
-class Import extends Component{
+/**
+ * The Import section of RuLeStudio. Allows user to customise and create their project.
+ *
+ * @constructor
+ * @category Import
+ * @param {Object} props
+ * @param {function} props.onFilesAccepted - Callback fired when user accepts selection and requests to create project.
+ * @return{React.Component}
+ */
+class Import extends Component {
     constructor(props) {
         super(props);
 
@@ -54,6 +63,17 @@ class Import extends Component{
         }));
     };
 
+    /**
+     * If a file of the same type was already stored in the state, it is deleted.
+     * Then, method checks if the uploaded file is a CSV file and changes state accordingly.
+     * Eventually the file is stored in the state.
+     *
+     * @function
+     * @memberOf Import
+     * @param {Object} file - A file that was chosen by a user.
+     * @param {string} file.type - The type of data.
+     * @param {Object} file.file - An actual file uploaded by a user.
+     */
     onInputChange = (file) => {
         let { files } = this.state;
 
@@ -82,6 +102,16 @@ class Import extends Component{
         });
     };
 
+    /**
+     * Method removes file from the state.
+     * Then, checks whether the deleted file was a CSV file and changes state accordingly.
+     *
+     * @function
+     * @memberOf Import
+     * @param {Object} file - A file that is going to be deleted.
+     * @param {string} file.type - The type of data.
+     * @param {Object} file.file - An actual file uploaded by a user.
+     */
     onInputDelete = (file) => {
         let { files } = this.state;
 

@@ -13,6 +13,18 @@ const tooltip = {
         "(employing rules induced using the training set)."
 };
 
+/**
+ * Presents number of folds and allows user to type new value.
+ *
+ * @name NumberOfFolds
+ * @class
+ * @category Tabs
+ * @subcategory Calculations
+ * @param {Object} props
+ * @param {Object} props.CircleHelperProps - Props applied to the {@link CircleHelper} element.
+ * @param {Object} props.TextFieldProps - Props applied to the {@link CustomTextField} element.
+ * @returns {React.ReactElement}
+ */
 function NumberOfFoldsSelector(props) {
     const { CircleHelperProps, TextFieldProps } = props;
 

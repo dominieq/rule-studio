@@ -23,6 +23,19 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "CustomIconButton"})
 
+/**
+ * The IconButton component from Material-UI library with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/icon-button/" target="_blank">IconButton</a>.
+ *
+ * @name Styled Icon Button
+ * @constructor
+ * @category Utils
+ * @subcategory Inputs
+ * @param props {Object} - Any other props will be forwarded to the IconButton component.
+ * @param [props.ButtonRef] {Object} - The reference forwarded to the IconButton component.
+ * @returns {React.ReactElement}
+ */
 function StyledIconButton(props) {
     const { ButtonRef, classes: propsClasses, ...other } = props;
 

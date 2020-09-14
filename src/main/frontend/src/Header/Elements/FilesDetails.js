@@ -31,6 +31,22 @@ const disableGPUOptions = {
     }
 };
 
+/**
+ * Presents files that are used in current project.
+ *  Idea for a composition was taken from this
+ *  <a href="https://material-ui.com/components/button-group/#split-button" target="_blank">tutorial</a>.
+ *
+ * @name Files Details
+ * @constructor
+ * @category Header
+ * @subcategory Elements
+ * @param {Object} props
+ * @param {boolean} props.disableGpu - If <code>true</code> tooltip text will be unblurred in Google Chrome.
+ * @param {Object[]} props.files - List of files details to be displayed.
+ * @param {string} props.files[].label - The type of a file.
+ * @param {string} props.files[].value - The name of the file in current project.
+ * @returns{React.PureComponent}
+ */
 class FilesDetails extends React.PureComponent {
     constructor(props) {
         super(props);

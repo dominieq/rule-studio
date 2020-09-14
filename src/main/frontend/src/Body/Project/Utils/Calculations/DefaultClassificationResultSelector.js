@@ -34,6 +34,18 @@ const useStyles = makeStyles({
     }
 }, {name: "MultiRow"});
 
+/**
+ * Presents default classification results and allows user to choose between values.
+ *
+ * @name DefaultClassificationResult
+ * @class
+ * @category Tabs
+ * @subcategory Calculations
+ * @param {Object} props
+ * @param {Object} props.CircleHelperProps - Props applied to the {@link CircleHelper} element.
+ * @param {Object} props.TextFieldProps - Props applied to the {@link CustomTextField} element.
+ * @returns {React.ReactElement}
+ */
 function DefaultClassificationResultSelector(props) {
     const { CircleHelperProps, TextFieldProps: { disabledChildren, ...other } } = props;
     const classes = useStyles();

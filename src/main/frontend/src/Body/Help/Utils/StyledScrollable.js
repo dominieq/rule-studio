@@ -23,6 +23,20 @@ const useStyles = makeStyles(theme => ({
     }
 }), {name: "Text"});
 
+/**
+ *  The scrollable container used in {@link Help}.
+ *
+ * @name Styled Scrollable
+ * @constructor
+ * @category Help
+ * @subcategory Utilities
+ * @param {Object} props - Any other props will be forwarded to the <code>div</code> element.
+ * @param {object} props.classes - Override or extend the styles applied to the component.
+ * @param {string} props.className - Add custom <code>className</code> to the <code>div</code> element.
+ * @param {function} props.onScroll - Callback fired when scroll was used.
+ * @returns {React.ReactElement}
+ *
+ */
 function StyledScrollable(props) {
     const { classes: propsClasses, className, ...other } = props;
 

@@ -4,13 +4,20 @@
       "includePattern": ".js$",
       "excludePattern": "(node_modules/|docs)"
     },
-    "plugins": ["plugins/markdown"],
+    "plugins": [
+      "plugins/markdown",
+      "node_modules/better-docs/category"
+    ],
     "templates": {
       "cleverLinks": true,
       "monospaceLinks": true
     },
     "opts": {
       "recurse": true,
-      "destination": "./docs/"
+      "destination": "../../../docs/",
+      "template": "node_modules/better-docs"
+    },
+    "tags": {
+      "allowUnknownTags": true
     }
 }

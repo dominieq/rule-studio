@@ -1,0 +1,1012 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Body/Project/Tabs/CrossValidation.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="App.html">App</a></li></ul></div><div class="category"><h2>Details Dialog</h2><h3>Classes</h3><ul><li><a href="Classified%2520Object%2520Details%2520Dialog.html">Classified Object Details Dialog</a></li><li><a href="Cones%2520Details%2520Dialog.html">Cones Details Dialog</a></li><li><a href="Rule%2520Details%2520Dialog.html">Rule Details Dialog</a></li><li><a href="Union%2520Details%2520Dialog.html">Union Details Dialog</a></li></ul><h3>Classes / Utilities</h3><ul><li><a href="ObjectsComparisonTable.html">ObjectsComparisonTable</a></li><li><a href="ObjectTable.html">ObjectTable</a></li><li><a href="RuleTable.html">RuleTable</a></li><li><a href="TableItemsList.html">TableItemsList</a></li><li><a href="TablesList.html">TablesList</a></li><li><a href="TraitsTable.html">TraitsTable</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getAppropriateColor">getAppropriateColor</a></li><li><a href="global.html#getAppropriateSign">getAppropriateSign</a></li><li><a href="global.html#getTitleConditions">getTitleConditions</a></li><li><a href="global.html#getTitleDecisions">getTitleDecisions</a></li></ul></div><div class="category"><h2>Filtering</h2><h3>Classes</h3><ul><li><a href="Filter%2520TextField.html">Filter TextField</a></li><li><a href="FilterNoResults.html">FilterNoResults</a></li></ul><h3>Global</h3><ul><li><a href="global.html#filterFunction">filterFunction</a></li></ul></div><div class="category"><h2>Header</h2><h3>Classes / Elements</h3><ul><li><a href="Files%2520Details.html">Files Details</a></li><li><a href="Project%2520Menu.html">Project Menu</a></li></ul><h3>Classes</h3><ul><li><a href="Header.html">Header</a></li></ul></div><div class="category"><h2>Help</h2><h3>Classes / Elements</h3><ul><li><a href="Chapter.html">Chapter</a></li><li><a href="Image.html">Image</a></li></ul><h3>Classes</h3><ul><li><a href="Help.html">Help</a></li></ul><h3>Classes / Utilities</h3><ul><li><a href="Styled%2520Drawer.html">Styled Drawer</a></li><li><a href="Styled%2520ListItem.html">Styled ListItem</a></li><li><a href="Styled%2520Scrollable.html">Styled Scrollable</a></li></ul></div><div class="category"><h2>Home</h2><h3>Classes / Elements</h3><ul><li><a href="Footer.html">Footer</a></li><li><a href="NavigateButton.html">NavigateButton</a></li></ul><h3>Classes</h3><ul><li><a href="Home.html">Home</a></li></ul></div><div class="category"><h2>Import</h2><h3>Classes / Elements</h3><ul><li><a href="File%2520Select%2520Zone.html">File Select Zone</a></li></ul><h3>Classes</h3><ul><li><a href="Import.html">Import</a></li></ul></div><div class="category"><h2>Tabs</h2><h3>Classes / Tabs</h3><ul><li><a href="Classification.html">Classification</a></li><li><a href="Cones.html">Cones</a></li><li><a href="CrossValidation.html">CrossValidation</a></li><li><a href="Data.html">Data</a></li><li><a href="Rules.html">Rules</a></li><li><a href="Unions.html">Unions</a></li></ul><h3>Classes / Calculations</h3><ul><li><a href="DefaultClassificationResult.html">DefaultClassificationResult</a></li><li><a href="NumberOfFolds.html">NumberOfFolds</a></li><li><a href="Seed.html">Seed</a></li><li><a href="Threshold.html">Threshold</a></li><li><a href="TypeOfClassifier.html">TypeOfClassifier</a></li><li><a href="TypeOfRules.html">TypeOfRules</a></li><li><a href="TypeOfUnions.html">TypeOfUnions</a></li></ul><h3>Classes / Data Utils</h3><ul><li><a href="NumericFilter.html">NumericFilter</a></li></ul><h3>Classes</h3><ul><li><a href="ProjectTabs.html">ProjectTabs</a></li></ul><h3>Classes / Utilities</h3><ul><li><a href="TabBody.html">TabBody</a></li></ul></div><div class="category"><h2>Utils</h2><h3>Classes / Inputs</h3><ul><li><a href="AcceptButton.html">AcceptButton</a></li><li><a href="Attribute%2520Domain.html">Attribute Domain</a></li><li><a href="Calculate%2520Button.html">Calculate Button</a></li><li><a href="CancelButton.html">CancelButton</a></li><li><a href="ColumnHeaderMenu.html">ColumnHeaderMenu</a></li><li><a href="Custom%2520Button%2520Group.html">Custom Button Group</a></li><li><a href="Custom%2520Switch.html">Custom Switch</a></li><li><a href="Custom%2520Text%2520Field.html">Custom Text Field</a></li><li><a href="Custom%2520Upload.html">Custom Upload</a></li><li><a href="Data%2520Filter%2520Button.html">Data Filter Button</a></li><li><a href="DropDownForAttributes.html">DropDownForAttributes</a></li><li><a href="IconLabelButtons.html">IconLabelButtons</a></li><li><a href="Matrix%2520Button.html">Matrix Button</a></li><li><a href="Matrix%2520Download%2520Button.html">Matrix Download Button</a></li><li><a href="Matrix%2520Swap%2520Button.html">Matrix Swap Button</a></li><li><a href="Settings%2520Button.html">Settings Button</a></li><li><a href="Styled%2520Button.html">Styled Button</a></li><li><a href="Styled%2520Checkbox.html">Styled Checkbox</a></li><li><a href="Styled%2520Icon%2520Button.html">Styled Icon Button</a></li><li><a href="Styled%2520Radio%2520Button.html">Styled Radio Button</a></li><li><a href="Styled%2520Slider.html">Styled Slider</a></li><li><a href="Styled%2520Switch.html">Styled Switch</a></li></ul><h3>Classes / Feedback</h3><ul><li><a href="Alert%2520Badge.html">Alert Badge</a></li><li><a href="Circle%2520Helper.html">Circle Helper</a></li><li><a href="CSV%2520Dialog.html">CSV Dialog</a></li><li><a href="CustomizedSnackbars.html">CustomizedSnackbars</a></li><li><a href="CustomLoadingIcon.html">CustomLoadingIcon</a></li><li><a href="DeleteProjectDialog.html">DeleteProjectDialog</a></li><li><a href="DeleteProjectDialog-ProjectName.html">ProjectName</a></li><li><a href="External%2520File.html">External File</a></li><li><a href="Loading%2520Delay.html">Loading Delay</a></li><li><a href="Loading%2520Snackbar.html">Loading Snackbar</a></li><li><a href="Outdated%2520Data.html">Outdated Data</a></li><li><a href="RenameProjectDialog.html">RenameProjectDialog</a></li><li><a href="SettingsProjectDialog.html">SettingsProjectDialog</a></li><li><a href="SettingsProjectDialog-SettingsIcons.html">SettingsIcons</a></li><li><a href="SimpleContent.html">SimpleContent</a></li><li><a href="SimpleDialog.html">SimpleDialog</a></li><li><a href="Styled%2520Alert.html">Styled Alert</a></li><li><a href="Styled%2520Circular%2520Progress.html">Styled Circular Progress</a></li></ul><h3>Classes / Classes</h3><ul><li><a href="Alert%2520Error.html">Alert Error</a></li><li><a href="Project.html">Project</a></li></ul><h3>Classes / Data Display</h3><ul><li><a href="AttributesVirtualizedTable.html">AttributesVirtualizedTable</a></li><li><a href="Collapsible%2520Divider.html">Collapsible Divider</a></li><li><a href="Coloured%2520Title.html">Coloured Title</a></li><li><a href="Custom%2520Tooltip.html">Custom Tooltip</a></li><li><a href="Styled%2520Divider.html">Styled Divider</a></li><li><a href="Styled%2520File%2520Chip.html">Styled File Chip</a></li><li><a href="Text%2520with%2520Hover%2520Tooltip.html">Text with Hover Tooltip</a></li><li><a href="Virtualized%2520Matrix.html">Virtualized Matrix</a></li><li><a href="Virtualized%2520Table.html">Virtualized Table</a></li></ul><h3>Classes / Matrix Dialog</h3><ul><li><a href="Centered%2520Column.html">Centered Column</a></li><li><a href="Matrix%2520Dialog.html">Matrix Dialog</a></li></ul><h3>Classes / Containers</h3><ul><li><a href="Custom%2520Box.html">Custom Box</a></li><li><a href="Custom%2520Drawer.html">Custom Drawer</a></li></ul><h3>Classes / Sort Menu</h3><ul><li><a href="Custom%2520Control%2520Label.html">Custom Control Label</a></li><li><a href="Dot%2520Badge.html">Dot Badge</a></li><li><a href="Sort%2520Button.html">Sort Button</a></li><li><a href="Sort%2520Menu.html">Sort Menu</a></li></ul><h3>Classes / Surfaces</h3><ul><li><a href="Custom%2520Header.html">Custom Header</a></li><li><a href="Custom%2520Popper.html">Custom Popper</a></li><li><a href="Custom%2520Section.html">Custom Section</a></li><li><a href="Styled%2520Paper.html">Styled Paper</a></li></ul><h3>Classes / Fullscreen Dialog</h3><ul><li><a href="Fullscreen%2520Dialog.html">Fullscreen Dialog</a></li><li><a href="Fullscreen%2520Header.html">Fullscreen Header</a></li><li><a href="Multi%2520Columns.html">Multi Columns</a></li></ul><h3>Classes / Result List</h3><ul><li><a href="Result%2520List.html">Result List</a></li><li><a href="Result%2520List%2520Item.html">Result List Item</a></li><li><a href="Result%2520List%2520Subheader.html">Result List Subheader</a></li></ul><h3>Classes / Navigation</h3><ul><li><a href="Slides.html">Slides</a></li><li><a href="Styled%2520Pagination.html">Styled Pagination</a></li><li><a href="Styled%2520Tab.html">Styled Tab</a></li><li><a href="Styled%2520Tabs.html">Styled Tabs</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addSubheaders">addSubheaders</a></li><li><a href="global.html#conjugateContent">conjugateContent</a></li><li><a href="global.html#downloadFunction">downloadFunction</a></li><li><a href="global.html#downloadMatrix">downloadMatrix</a></li><li><a href="global.html#downloadRules">downloadRules</a></li><li><a href="global.html#estimateMatrixHeight">estimateMatrixHeight</a></li><li><a href="global.html#estimateMatrixWidth">estimateMatrixWidth</a></li><li><a href="global.html#estimateTableHeight">estimateTableHeight</a></li><li><a href="global.html#fetchClassification">fetchClassification</a></li><li><a href="global.html#fetchCones">fetchCones</a></li><li><a href="global.html#fetchCrossValidation">fetchCrossValidation</a></li><li><a href="global.html#fetchData">fetchData</a></li><li><a href="global.html#fetchProject">fetchProject</a></li><li><a href="global.html#fetchProjects">fetchProjects</a></li><li><a href="global.html#fetchRules">fetchRules</a></li><li><a href="global.html#fetchUnions">fetchUnions</a></li><li><a href="global.html#getFixed">getFixed</a></li><li><a href="global.html#getItemName">getItemName</a></li><li><a href="global.html#getRelationSign">getRelationSign</a></li><li><a href="global.html#getRuleName">getRuleName</a></li><li><a href="global.html#handleNotOk">handleNotOk</a></li><li><a href="global.html#handleResponse">handleResponse</a></li><li><a href="global.html#hexToRgb">hexToRgb</a></li><li><a href="global.html#mergerClasses">mergerClasses</a></li><li><a href="global.html#parseClassificationItems">parseClassificationItems</a></li><li><a href="global.html#parseClassificationParams">parseClassificationParams</a></li><li><a href="global.html#parseClassifiedListItems">parseClassifiedListItems</a></li><li><a href="global.html#parseConditions">parseConditions</a></li><li><a href="global.html#parseConesItems">parseConesItems</a></li><li><a href="global.html#parseConesListItems">parseConesListItems</a></li><li><a href="global.html#parseCrossValidationItems">parseCrossValidationItems</a></li><li><a href="global.html#parseCrossValidationParams">parseCrossValidationParams</a></li><li><a href="global.html#parseDecisions">parseDecisions</a></li><li><a href="global.html#parseFolds">parseFolds</a></li><li><a href="global.html#parseFormData">parseFormData</a></li><li><a href="global.html#parseMatrix">parseMatrix</a></li><li><a href="global.html#parseRulesItems">parseRulesItems</a></li><li><a href="global.html#parseRulesListItems">parseRulesListItems</a></li><li><a href="global.html#parseRulesParams">parseRulesParams</a></li><li><a href="global.html#parseUnionsItems">parseUnionsItems</a></li><li><a href="global.html#parseUnionsListItems">parseUnionsListItems</a></li><li><a href="global.html#responseBlob">responseBlob</a></li><li><a href="global.html#responseJson">responseJson</a></li><li><a href="global.html#uploadRules">uploadRules</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>Body/Project/Tabs/CrossValidation.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component, Fragment } from "react";
+import PropTypes from "prop-types";
+import BigNumber from "bignumber.js";
+import { downloadMatrix, fetchCrossValidation } from "../../../Utils/utilFunctions/fetchFunctions";
+import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
+import { parseCrossValidationItems } from "../../../Utils/utilFunctions/parseItems";
+import { parseClassifiedListItems } from "../../../Utils/utilFunctions/parseListItems";
+import { parseCrossValidationParams } from "../../../Utils/utilFunctions/parseParams";
+import { parseFolds } from "../../../Utils/utilFunctions/parseFolds";
+import { parseMatrix } from "../../../Utils/utilFunctions/parseMatrix";
+import TabBody from "../Utils/TabBody";
+import filterFunction from "../Utils/Filtering/FilterFunction";
+import FilterTextField from "../Utils/Filtering/FilterTextField";
+import CalculateButton from "../Utils/Buttons/CalculateButton";
+import MatrixButton from "../Utils/Buttons/MatrixButton";
+import MatrixDownloadButton from "../Utils/Buttons/MatrixDownloadButton";
+import MatrixSwapButton from "../Utils/Buttons/MatrixSwapButton";
+import SettingsButton from "../Utils/Buttons/SettingsButton";
+import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
+import NumberOfFoldsSelector from "../Utils/Calculations/NumberOfFoldsSelector";
+import SeedSelector from "../Utils/Calculations/SeedSelector";
+import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
+import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
+import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
+import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
+import CustomBox from "../../../Utils/Containers/CustomBox";
+import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
+import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
+import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
+import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
+import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog";
+import StyledAlert from "../../../Utils/Feedback/StyledAlert";
+import CustomTextField from "../../../Utils/Inputs/CustomTextField";
+import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
+import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import MenuItem from "@material-ui/core/MenuItem";
+import Sigma from "mdi-material-ui/Sigma";
+
+/**
+ * The cross-validation tab in RuLeStudio.
+ * Presents the outcome of cross-validation for information table from current project.
+ *
+ * @class
+ * @category Tabs
+ * @subcategory Tabs
+ * @param {Object} props
+ * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
+ * @param {Object} props.project - Current project.
+ * @param {string} props.serverBase - The name of the host.
+ * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
+ * @param {number} props.value - The id of a tab.
+ * @returns {React.Component}
+ */
+class CrossValidation extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            loading: false,
+            dataInformationTable: null,
+            dataMeanMatrix: null,
+            dataSumMatrix: null,
+            folds: null,
+            items: null,
+            displayedItems: [],
+            parameters: {
+                consistencyThreshold: 0,
+                defaultClassificationResult: "majorityDecisionClass",
+                numberOfFolds: 10,
+                seed: 0,
+                typeOfClassifier: "SimpleRuleClassifier",
+                typeOfRules: "certain",
+                typeOfUnions: "monotonic",
+            },
+            parametersSaved: true,
+            selected: {
+                foldIndex: 0,
+                item: null,
+            },
+            open: {
+                details: false,
+                matrixMean: false,
+                matrixSum: false,
+                matrixFold: false,
+                settings: false,
+            },
+            alertProps: undefined,
+        };
+
+        this.upperBar = React.createRef();
+    }
+
+    /**
+     * Makes an API call on cross-validation to receive current copy of cross-validation from server.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
+    getCrossValidation = () => {
+        const { project, serverBase } = this.props;
+
+        fetchCrossValidation(
+            serverBase, project.result.id, 'GET', null
+        ).then(result => {
+            if (this._isMounted &amp;&amp; result) {
+                const { project: { foldIndex, settings } } = this.props
+
+                let folds = parseFolds(result);
+                let resultParams = parseCrossValidationParams(result);
+
+                this.setState(({parameters, selected}) => ({
+                    dataInformationTable: result.informationTable,
+                    dataMeanMatrix: result.meanOrdinalMisclassificationMatrix,
+                    dataSumMatrix: result.sumOrdinalMisclassificationMatrix,
+                    folds: folds,
+                    parameters: {...parameters, ...resultParams},
+                    selected: { ...selected, foldIndex: foldIndex }
+                }), () => {
+                    const { dataInformationTable, folds, selected: { foldIndex } } = this.state;
+                    let items = parseCrossValidationItems(dataInformationTable, folds[foldIndex], settings);
+
+                    this.setState({
+                        items: items,
+                        displayedItems: items
+                    });
+                });
+
+                if (result.hasOwnProperty("isCurrentData")) {
+                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                }
+            }
+        }).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
+            if ( this._isMounted ) {
+                this.setState({
+                    dataInformationTable: null,
+                    dataMeanMatrix: null,
+                    dataSumMatrix: null,
+                    folds: null,
+                    items: null,
+                    displayedItems: [],
+                    alertProps: error
+                });
+            }
+        }).finally(() => {
+            if ( this._isMounted ) {
+                const { project: { parameters, parametersSaved, result: { informationTable: { objects }}}} = this.props;
+                let { numberOfFolds, ...otherParams } = parameters;
+
+                if (objects.length &lt; numberOfFolds) {
+                    otherParams = { ...otherParams, numberOfFolds: objects.length };
+                } else {
+                    otherParams = { ...otherParams, numberOfFolds: numberOfFolds };
+                }
+
+                this.setState(({parameters, selected}) => ({
+                    loading: false,
+                    parameters: parametersSaved ? parameters : { ...parameters, ...otherParams },
+                    parametersSaved: parametersSaved,
+                    selected: { ...selected, item: null }
+                }));
+            }
+        });
+    }
+
+    /**
+     * A component's lifecycle method. Fired once when component was mounted.
+     * &lt;br>
+     * &lt;br>
+     * Method calls {@link getCrossValidation}.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
+    componentDidMount() {
+        this._isMounted = true;
+
+        this.setState({ loading: true }, this.getCrossValidation);
+    }
+
+    /**
+     * A component's lifecycle method. Fired after a component was updated.
+     * &lt;br>
+     * &lt;br>
+     * If index option was changed, method sets object's names according to new value.
+     * &lt;br>
+     * &lt;br>
+     * If type of unions was changed to &lt;code>monotonic&lt;/code> and consistency threshold is equal to 1,
+     * method changes value of threshold to 0.
+     * &lt;br>
+     * &lt;br>
+     * If type of rules was changed to &lt;code>possible&lt;/code>, method changes consistency threshold to 0.
+     * &lt;br>
+     * &lt;br>
+     * If project was changed, method saves changes from previous project
+     * and calls {@link getCrossValidation} to receive the latest copy of cross-validation.
+     *
+     * @function
+     * @memberOf CrossValidation
+     * @param {Object} prevProps - Old props that were already replaced.
+     * @param {Object} prevState - Old state that was already replaced.
+     * @param {Object} snapshot - Returned from another lifecycle method &lt;code>getSnapshotBeforeUpdate&lt;/code>. Usually undefined.
+     */
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        /* Check if default objects name has changed */
+        if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
+            const { folds, selected: { foldIndex } } = this.state;
+            const { project } = this.props;
+
+            this.setState({
+                displayedItems: [...parseCrossValidationItems(folds[foldIndex], project.settings)]
+            });
+        }
+
+        const { parameters: prevParameters } = prevState;
+        const { parameters } = this.state;
+
+        /* Check if consistency measure has changed and whether consistency threshold had boundary value */
+        if (parameters.typeOfUnions !== "monotonic") {
+            if (parameters.consistencyThreshold === 1) {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, consistencyThreshold: 0, typeOfUnions: "monotonic" }
+                }))
+            } else {
+                this.setState(({parameters}) => ({
+                    parameters: { ...parameters, typeOfUnions: "monotonic" }
+                }));
+            }
+        }
+
+        /* Check if type of rules changed to possible */
+        if (prevParameters.typeOfRules !== parameters.typeOfRules &amp;&amp; parameters.typeOfRules === "possible") {
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, consistencyThreshold: 0}
+            }));
+        }
+
+        /* Check if project has been changed by user and save changes from previous project */
+        if (prevProps.project.result.id !== this.props.project.result.id) {
+            const { parametersSaved } = prevState;
+
+            if (!parametersSaved) {
+                let project = { ...prevProps.project };
+                const { parameters, selected: { foldIndex } } = this.state;
+
+                project.parameters = {
+                    ...project.parameters,
+                    ...parameters,
+                    typeOfUnions: project.parameters.typeOfUnions
+                };
+                project.parametersSaved = parametersSaved;
+                project.foldIndex = foldIndex;
+                this.props.onTabChange(project);
+            }
+
+            this.setState({ loading: true }, this.getCrossValidation);
+        }
+    }
+
+    /**
+     * A component's lifecycle method. Fired when component was requested to be unmounted.
+     * &lt;br>
+     * &lt;br>
+     * Method saves changes from current project.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
+    componentWillUnmount() {
+        this._isMounted = false;
+        const { parametersSaved } = this.state;
+
+        if (!parametersSaved) {
+            let project = JSON.parse(JSON.stringify(this.props.project));
+            const { parameters, selected: { foldIndex } } = this.state;
+
+            project.parameters = {
+                ...project.parameters,
+                ...parameters,
+                typeOfUnions: project.parameters.typeOfUnions
+            };
+            project.parametersSaved = parametersSaved;
+            project.foldIndex = foldIndex;
+            this.props.onTabChange(project);
+        }
+    }
+
+    /**
+     * Makes an API call on cross-validation to cross-validate objects from current information table
+     * with selected parameters.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
+    onCalculateClick = () => {
+        const { project, serverBase } = this.props;
+        const { parameters } = this.state;
+
+        this.setState({
+            loading: true,
+        }, () => {
+            let method = "PUT";
+            let data = parseFormData(parameters, null);
+
+            fetchCrossValidation(
+                serverBase, project.result.id, method, data
+            ).then(result => {
+                if (result) {
+                    if (this._isMounted) {
+                        let folds = parseFolds(result);
+
+                        this.setState(({selected}) => ({
+                            dataInformationTable: result.informationTable,
+                            dataMeanMatrix: result.meanOrdinalMisclassificationMatrix,
+                            dataSumMatrix: result.sumOrdinalMisclassificationMatrix,
+                            folds: folds,
+                            parametersSaved: true,
+                            selected: { ...selected, foldIndex: 0 }
+                        }), () => {
+                            const { dataInformationTable, folds, selected: { foldIndex } } = this.state;
+                            let items = parseCrossValidationItems(dataInformationTable, folds[foldIndex], project.settings);
+
+                            this.setState({
+                                items: items,
+                                displayedItems: items,
+                            });
+                        });
+                    }
+                    let projectCopy = JSON.parse(JSON.stringify(project));
+                    projectCopy.result.crossValidation = result;
+
+                    let resultParameters = parseCrossValidationParams(result);
+
+                    projectCopy.parameters = {
+                        ...projectCopy.parameters,
+                        ...resultParameters,
+                        typeOfUnions: projectCopy.parameters.typeOfUnions
+                    };
+                    projectCopy.parametersSaved = true;
+                    this.props.onTabChange(projectCopy);
+
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                    }
+                }
+            }).catch(error => {
+                if (!error.hasOwnProperty("open")) {
+                    console.log(error);
+                }
+                if ( this._isMounted ) {
+                    this.setState({
+                        dataInformationTable: null,
+                        dataMeanMatrix: null,
+                        dataSumMatrix: null,
+                        folds: null,
+                        items: null,
+                        displayedItems: [],
+                        alertProps: error
+                    });
+                }
+            }).finally(() => {
+                if ( this._isMounted ) {
+                    this.setState(({selected}) => ({
+                        loading: false,
+                        selected: { ...selected, item: null }
+                    }));
+                }
+            });
+        });
+    };
+
+    /**
+     * Makes an API call to download specified misclassification matrix.
+     *
+     * @function
+     * @memberOf CrossValidation
+     * @param {Object} data - Specifies type of downloaded matrix.
+     */
+    onSaveToFile = (data) => {
+        const { project, serverBase } = this.props;
+
+        downloadMatrix(serverBase, project.result.id, data).catch(error => {
+            if (!error.hasOwnProperty("open")) {
+                console.log(error);
+            }
+            if (this._isMounted) {
+                this.setState({ alertProps: error });
+            }
+        });
+    };
+
+    toggleOpen = (name) => {
+        this.setState(({open}) => ({
+            open: {...open, [name]: !open[name]}
+        }));
+    };
+
+    swapMatrix = (from, to) => {
+       this.setState(({open}) => ({
+           open: { ...open, [from]: false }
+       }), () => {
+           this.setState(({open}) => ({
+               open: { ...open, [to]: true }
+           }));
+       });
+    };
+
+    onItemSelected = (index) => {
+        this.setState(({items, open, selected}) => ({
+            open: {...open, details: true, settings: false},
+            selected: {...selected, item: items[index]}
+        }));
+    };
+
+    onDefaultClassificationResultChange = (event) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, defaultClassificationResult: event.target.value},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onSeedChange = (number) => {
+        const javaLong = new BigNumber("9223372036854775807");
+
+        const { loading } = this.state;
+        const bigNumber = new BigNumber(number);
+
+        if (!loading &amp;&amp; !bigNumber.isNaN()) {
+            if (bigNumber.isGreaterThan(javaLong)) {
+                this.setState({
+                    alertProps: {
+                        message: "Seed shouldn't be greater than 9223372036854775807.",
+                        open: true,
+                        severity: "warning"
+                    }
+                })
+                return;
+            }
+
+            this.setState(({parameters}) => ({
+                parameters: { ...parameters, seed: bigNumber },
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onSeedRandomize = () => {
+        const { loading } = this.state;
+        const newSeed = Math.round(Math.random() * Math.pow(10, 16));
+
+        if (!loading) {
+            this.onSeedChange(newSeed);
+        }
+    }
+
+    onTypeOfRulesChange = (event) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfRules: event.target.value},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onConsistencyThresholdChange = (threshold) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, consistencyThreshold: threshold},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onTypeOfClassifierChange = (event) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfClassifier: event.target.value},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onTypeOfUnionsChange = (event) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, typeOfUnions: event.target.value},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onNumberOfFoldsChange = (event) => {
+        const { loading } = this.state;
+        let input = event.target.value;
+
+        if (!loading &amp;&amp; !isNaN(input)) {
+            this.setState(({parameters}) => ({
+                parameters: {...parameters, numberOfFolds: Number(input)},
+                parametersSaved: false
+            }));
+        }
+    };
+
+    onNumberOfFoldsBlur = () => {
+        this.setState(({parameters}) => {
+            const { numberOfFolds } = parameters;
+            const { project: { result: { informationTable: { objects }}}} = this.props;
+
+            if (numberOfFolds > objects.length) {
+                return {
+                    parameters: { ...parameters, numberOfFolds: objects.length },
+                    alertProps: {
+                        message: "Number of folds should be less than or equal to number of objects.",
+                        open: true,
+                        severity: "warning"
+                    }
+                };
+            } else if (numberOfFolds &lt; 2 &amp;&amp; objects.length >= 2) {
+                return {
+                    parameters: { ...parameters, numberOfFolds: 2 },
+                    alertProps: {
+                        message: "Number of folds should be greater than or equal to 2.",
+                        open: true,
+                        severity: "warning"
+                    }
+                };
+            } else {
+                return {
+                    parameters: { ...parameters }
+                };
+            }
+        })
+    }
+
+    onFoldIndexChange = (event) => {
+        const { loading } = this.state;
+
+        if (!loading) {
+            const { project } = this.props;
+            this.setState(({ selected }) => ({
+                selected: {...selected, foldIndex: Number(event.target.value)},
+                parametersSaved: false
+            }), () => {
+                const { dataInformationTable, folds, selected: { foldIndex }} = this.state;
+                let items = parseCrossValidationItems(dataInformationTable, folds[foldIndex], project.settings);
+
+                this.setState({
+                    items: items,
+                    displayedItems: items,
+                });
+            });
+        }
+    };
+
+    /**
+     * Filters items from {@link CrossValidation}'s state.
+     * Method uses {@link filterFunction} to filter items.
+     *
+     * @function
+     * @memberOf CrossValidation
+     * @param {Object} event - Represents an event that takes place in DOM.
+     */
+    onFilterChange = (event) => {
+        const { loading, items } = this.state;
+
+        if (!loading &amp;&amp; Array.isArray(items) &amp;&amp; items.length) {
+            const filteredItems = filterFunction(event.target.value.toString(), items.slice());
+
+            this.setState(({selected}) => ({
+                displayedItems: filteredItems,
+                selected: { ...selected, item: null }
+            }));
+        }
+    };
+
+    onSnackbarClose = (event, reason) => {
+        if (reason !== 'clickaway') {
+            this.setState(({alertProps}) => ({
+                alertProps: {...alertProps, open: false}
+            }));
+        }
+    };
+
+    render() {
+        const {
+            alertProps,
+            dataInformationTable,
+            dataMeanMatrix,
+            dataSumMatrix,
+            folds,
+            displayedItems,
+            loading,
+            open,
+            parameters,
+            selected
+        } = this.state;
+        const { project } = this.props;
+
+        return (
+            &lt;CustomBox id={"cross-validation"} variant={"Tab"}>
+                &lt;CustomDrawer
+                    dividers={false}
+                    id={"cross-validation-settings"}
+                    open={open.settings}
+                    onClose={() => this.toggleOpen("settings")}
+                    placeholder={this.upperBar.current ? this.upperBar.current.offsetHeight : undefined}
+                >
+                    &lt;TypeOfRulesSelector
+                        style={{marginBottom: 16}}
+                        TextFieldProps={{
+                            onChange: this.onTypeOfRulesChange,
+                            value: parameters.typeOfRules
+                        }}
+                    />
+                    &lt;TypeOfUnionsSelector
+                        style={{marginBottom: 16}}
+                        TextFieldProps={{
+                            disabledChildren: ["standard"],
+                            onChange: this.onTypeOfUnionsChange,
+                            value: parameters.typeOfUnions
+                        }}
+                        variant={"extended"}
+                    />
+                    &lt;ThresholdSelector
+                        keepChanges={parameters.typeOfRules !== "possible"}
+                        onChange={this.onConsistencyThresholdChange}
+                        value={parameters.consistencyThreshold}
+                        variant={"extended"}
+                    />
+                    &lt;StyledDivider
+                        color={"secondary"}
+                        flexItem={true}
+                        margin={16}
+                        orientation={"horizontal"}
+                        style={{height: 1}}
+                    />
+                    &lt;TypeOfClassifierSelector
+                        style={{marginBottom: 16}}
+                        TextFieldProps={{
+                            onChange: this.onTypeOfClassifierChange,
+                            value: parameters.typeOfClassifier
+                        }}
+                    />
+                    &lt;DefaultClassificationResultSelector
+                        TextFieldProps={{
+                            onChange: this.onDefaultClassificationResultChange,
+                            value: parameters.defaultClassificationResult
+                        }}
+                    />
+                    &lt;StyledDivider
+                        color={"secondary"}
+                        flexItem={true}
+                        margin={16}
+                        orientation={"horizontal"}
+                        style={{height: 1}}
+                    />
+                    &lt;SeedSelector
+                        randomizeSeed={this.onSeedRandomize}
+                        style={{marginBottom: 16}}
+                        TextFieldProps={{
+                            onChange: event => this.onSeedChange(event.target.value),
+                            value: parameters.seed
+                        }}
+                    />
+                    &lt;NumberOfFoldsSelector
+                        TextFieldProps={{
+                            onChange: this.onNumberOfFoldsChange,
+                            onBlur: this.onNumberOfFoldsBlur,
+                            value: parameters.numberOfFolds
+                        }}
+                    />
+                &lt;/CustomDrawer>
+                &lt;CustomBox customScrollbar={true} id={"cross-validation-content"} variant={"TabBody"}>
+                    &lt;CustomHeader id={"cross-validation-header"} paperRef={this.upperBar}>
+                        &lt;SettingsButton onClick={() => this.toggleOpen("settings")} />
+                        &lt;StyledDivider margin={16} />
+                        &lt;CustomTooltip
+                            disableMaxWidth={true}
+                            title={"Click on settings button on the left to customize parameters"}
+                        >
+                            &lt;CalculateButton
+                                aria-label={"cross-validation-calculate-button"}
+                                disabled={loading}
+                                onClick={this.onCalculateClick}
+                            />
+                        &lt;/CustomTooltip>
+                        &lt;StyledDivider margin={16} />
+                        {Array.isArray(folds) &amp;&amp; Boolean(folds.length) &amp;&amp;
+                            &lt;Fragment>
+                                {/* Part regarding all folds */}
+                                &lt;p id={"all-folds"} style={{margin: "0 16px 0 0", fontSize: "1.15rem"}}>All folds:&lt;/p>
+                                &lt;MatrixButton
+                                    onClick={() => this.toggleOpen("matrixMean")}
+                                    title={"Show mean ordinal misclassification matrix"}
+                                />
+                                &lt;CustomTooltip title={"Show accumulated ordinal misclassification matrix"}>
+                                    &lt;StyledIconButton
+                                        aria-label={"sum-matrix-button"}
+                                        color={"secondary"}
+                                        onClick={() => this.toggleOpen("matrixSum")}
+                                    >
+                                        &lt;Sigma />
+                                    &lt;/StyledIconButton>
+                                &lt;/CustomTooltip>
+                                &lt;StyledDivider margin={16} />
+                                {/* Part regarding specific fold */}
+                                &lt;CustomTextField
+                                    onChange={this.onFoldIndexChange}
+                                    InputProps={{
+                                        startAdornment: (
+                                            &lt;InputAdornment>
+                                                Fold:
+                                            &lt;/InputAdornment>
+                                        )
+                                    }}
+                                    select={true}
+                                    value={selected.foldIndex}
+                                >
+                                    {folds.map((fold, index) => (
+                                        &lt;MenuItem key={index} value={fold.index}>
+                                            {fold.index + 1}
+                                        &lt;/MenuItem>
+                                    ))}
+                                &lt;/CustomTextField>
+                                &lt;p id={"fold-colon"} style={{margin: "0 16px 0 4px", fontSize: "1.15rem"}}>:&lt;/p>
+                                &lt;MatrixButton
+                                    onClick={() => this.toggleOpen("matrixFold")}
+                                    title={`Open ordinal misclassification matrix for fold ${selected.foldIndex + 1}`}
+                                />
+                            &lt;/Fragment>
+                        }
+                        &lt;span style={{flexGrow: 1}} />
+                        &lt;FilterTextField onChange={this.onFilterChange} />
+                    &lt;/CustomHeader>
+                    &lt;TabBody
+                        content={parseClassifiedListItems(displayedItems)}
+                        id={"cross-validation-list"}
+                        isArray={Array.isArray(displayedItems) &amp;&amp; Boolean(displayedItems.length)}
+                        isLoading={loading}
+                        ListProps={{
+                            onItemSelected: this.onItemSelected
+                        }}
+                        ListSubheaderProps={{
+                            style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
+                        }}
+                        noFilterResults={!displayedItems}
+                        subheaderContent={[
+                            {
+                                label: "Fold:",
+                                value: selected.foldIndex + 1
+                            },
+                            {
+                                label: "Training objects:",
+                                value: folds &amp;&amp; folds[selected.foldIndex].numberOfLearningObjects
+                            },
+                            {
+                                label: "Rules:",
+                                value: folds &amp;&amp; folds[selected.foldIndex].ruleSet.length
+                            },
+                            {
+                                label: "Test objects:",
+                                value: folds &amp;&amp; folds[selected.foldIndex].numberOfTestObjects,
+                            }
+                        ]}
+                    />
+                    {selected.item != null &amp;&amp; folds != null &amp;&amp;
+                        &lt;ClassifiedObjectDialog
+                            informationTable={dataInformationTable}
+                            item={selected.item}
+                            onClose={() => this.toggleOpen("details")}
+                            open={open.details}
+                            ruleSet={folds[selected.foldIndex].ruleSet}
+                            settings={project.settings}
+                        />
+                    }
+                    {dataMeanMatrix != null &amp;&amp; folds != null &amp;&amp;
+                        &lt;MatrixDialog
+                            disableDeviation={false}
+                            matrix={parseMatrix(dataMeanMatrix)}
+                            onClose={() => this.toggleOpen("matrixMean")}
+                            open={open.matrixMean}
+                            saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
+                            subheaders={
+                                folds[selected.foldIndex].classificationValidationTable.decisionsDomain
+                            }
+                            title={
+                                &lt;React.Fragment>
+                                    &lt;MatrixSwapButton
+                                        onSwap={() => this.swapMatrix("matrixMean", "matrixSum")}
+                                        tooltip={"Go to accumulated ordinal misclassification matrix"}
+                                    />
+                                    &lt;MatrixDownloadButton
+                                        onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
+                                        tooltip={"Download mean matrix (txt)"}
+                                    />
+                                    &lt;span aria-label={"mean matrix title"} style={{paddingLeft: 8}}>
+                                        Mean ordinal misclassification matrix, deviations and details
+                                    &lt;/span>
+                                &lt;/React.Fragment>
+                            }
+                        />
+                    }
+                    {dataSumMatrix != null &amp;&amp; folds != null &amp;&amp;
+                        &lt;MatrixDialog
+                            matrix={parseMatrix(dataSumMatrix)}
+                            onClose={() => this.toggleOpen("matrixSum")}
+                            open={open.matrixSum}
+                            saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
+                            subheaders={
+                                folds[selected.foldIndex].classificationValidationTable.decisionsDomain
+                            }
+                            title={
+                                &lt;React.Fragment>
+                                    &lt;MatrixSwapButton
+                                        onSwap={() => this.swapMatrix("matrixSum", "matrixMean")}
+                                        tooltip={"Go to mean ordinal misclassification matrix"}
+                                    />
+                                    &lt;MatrixDownloadButton
+                                        onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
+                                        tooltip={"Download accumulated matrix (txt)"}
+                                    />
+                                    &lt;span aria-label={"sum matrix title"} style={{paddingLeft: 8}}>
+                                        Accumulated ordinal misclassification matrix and details
+                                    &lt;/span>
+                                &lt;/React.Fragment>
+                            }
+                        />
+                    }
+                    {folds != null &amp;&amp;
+                        &lt;MatrixDialog
+                            matrix={
+                                parseMatrix(
+                                    folds[selected.foldIndex].classificationValidationTable.ordinalMisclassificationMatrix
+                                )
+                            }
+                            onClose={() => this.toggleOpen("matrixFold")}
+                            open={open.matrixFold}
+                            saveMatrix={() => {
+                                this.onSaveToFile({
+                                    typeOfMatrix: "crossValidationFold",
+                                    numberOfFold: selected.foldIndex
+                                });
+                            }}
+                            subheaders={
+                                folds[selected.foldIndex].classificationValidationTable.decisionsDomain
+                            }
+                            title={
+                                &lt;React.Fragment>
+                                    &lt;MatrixDownloadButton
+                                        onSave={() => {
+                                            this.onSaveToFile({
+                                                typeOfMatrix: "crossValidationFold",
+                                                numberOfFold: selected.foldIndex
+                                            });
+                                        }}
+                                        tooltip={`Download fold ${selected.foldIndex + 1} matrix (txt)`}
+                                    />
+                                    &lt;span aria-label={"fold matrix title"} style={{paddingLeft: 8}}>
+                                        {`Fold ${selected.foldIndex + 1}: Ordinal misclassification matrix  and details`}
+                                    &lt;/span>
+                                &lt;/React.Fragment>
+                            }
+                        />
+                    }
+                &lt;/CustomBox>
+                &lt;StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
+            &lt;/CustomBox>
+        )
+    }
+}
+
+CrossValidation.propTypes = {
+    onTabChange: PropTypes.func,
+    project: PropTypes.object,
+    serverBase: PropTypes.string,
+    showAlert: PropTypes.func,
+    value: PropTypes.number
+};
+
+export default CrossValidation;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

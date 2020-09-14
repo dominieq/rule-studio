@@ -21,6 +21,21 @@ const useStyles = makeStyles({
     }
 }, {name: "FileSelectZone"});
 
+/**
+ * A section used to upload a file.
+ *
+ * @name File Select Zone
+ * @constructor
+ * @category Import
+ * @subcategory Elements
+ * @param {Object} props
+ * @param {string} props.accept - Specifies what file types the user can pick from the file input dialog box.
+ * @param {function} props.onInputChange - Callback fired when an input was changed.
+ * @param {function} props.onInputDelete - Callback fired when an input requests to be deleted.
+ * @param {React.ReactNode} props.title - The content of the tooltip.
+ * @param {"metadata"|"data"|"rules"} props.variant - The type of data.
+ * @returns {React.ReactElement}
+ */
 function FileSelectZone(props)  {
     const [file, setFile] = useState(null);
     const {
