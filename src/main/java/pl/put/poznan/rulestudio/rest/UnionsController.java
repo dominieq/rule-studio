@@ -7,7 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.enums.UnionType;
-import pl.put.poznan.rulestudio.model.UnionsWithHttpParameters;
+import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.service.UnionsService;
 
@@ -29,29 +29,29 @@ public class UnionsController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UnionsWithHttpParameters> getUnions(
+    public ResponseEntity<MainClassUnionsResponse> getUnions(
             @PathVariable("id") UUID id) {
         logger.info("Getting unions with single limiting decision...");
 
-        UnionsWithHttpParameters result = unionsService.getUnions(id);
+        final MainClassUnionsResponse result = unionsService.getUnions(id);
 
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UnionsWithHttpParameters> putUnions(
+    public ResponseEntity<MainClassUnionsResponse> putUnions(
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold) {
         logger.info("Putting unions with single limiting decision...");
 
-        UnionsWithHttpParameters result = unionsService.putUnions(id, typeOfUnions, consistencyThreshold);
+        final MainClassUnionsResponse result = unionsService.putUnions(id, typeOfUnions, consistencyThreshold);
 
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UnionsWithHttpParameters> postUnions(
+    public ResponseEntity<MainClassUnionsResponse> postUnions(
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
@@ -59,7 +59,7 @@ public class UnionsController {
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting unions with single limiting decision...");
 
-        UnionsWithHttpParameters result = unionsService.postUnions(id, typeOfUnions, consistencyThreshold, metadata, data);
+        final MainClassUnionsResponse result = unionsService.postUnions(id, typeOfUnions, consistencyThreshold, metadata, data);
 
         return ResponseEntity.ok(result);
     }

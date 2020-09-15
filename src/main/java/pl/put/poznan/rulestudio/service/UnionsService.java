@@ -21,6 +21,8 @@ import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.UnionsWithHttpParameters;
+import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse;
+import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse.MainClassUnionsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
 
@@ -94,35 +96,39 @@ public class UnionsService {
         }
     }
 
-    public UnionsWithHttpParameters getUnions(UUID id) {
+    public MainClassUnionsResponse getUnions(UUID id) {
         logger.info("Id:\t{}", id);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
+        final UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
         if(unionsWithHttpParameters == null) {
             EmptyResponseException ex = new EmptyResponseException("Unions haven't been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        logger.debug("unionsWithHttpParameters:\t{}", unionsWithHttpParameters.toString());
-        return unionsWithHttpParameters;
+        final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(unionsWithHttpParameters);
+        logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
+        return mainClassUnionsResponse;
     }
 
-    public UnionsWithHttpParameters putUnions(UUID id, UnionType typeOfUnions, Double consistencyThreshold) {
+    public MainClassUnionsResponse putUnions(UUID id, UnionType typeOfUnions, Double consistencyThreshold) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
 
-        return project.getUnions();
+        final UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
+        final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(unionsWithHttpParameters);
+        logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
+        return mainClassUnionsResponse;
     }
 
-    public UnionsWithHttpParameters postUnions(UUID id, UnionType typeOfUnions, Double consistencyThreshold, String metadata, String data) throws IOException {
+    public MainClassUnionsResponse postUnions(UUID id, UnionType typeOfUnions, Double consistencyThreshold, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
@@ -130,14 +136,17 @@ public class UnionsService {
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
         calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
 
-        return project.getUnions();
+        final UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
+        final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(unionsWithHttpParameters);
+        logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
+        return mainClassUnionsResponse;
     }
 
     public ObjectResponse getObject(UUID id, Integer objectIndex) {
