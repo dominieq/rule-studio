@@ -66,12 +66,12 @@ public class UnionsController {
     }
 
     @RequestMapping(value = "/{classUnionIndex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ChosenClassUnionResponse> getChosenUnions(
+    public ResponseEntity<ChosenClassUnionResponse> getChosenClassUnion(
             @PathVariable("id") UUID id,
             @PathVariable("classUnionIndex") Integer classUnionIndex) {
         logger.info("Getting chosen unions with single limiting decision...");
 
-        final ChosenClassUnionResponse result = unionsService.getChosenUnions(id, classUnionIndex);
+        final ChosenClassUnionResponse result = unionsService.getChosenClassUnion(id, classUnionIndex);
 
         return ResponseEntity.ok(result);
     }

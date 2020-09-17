@@ -55,7 +55,7 @@ public class UnionsService {
                 throw ex;
         }
 
-        InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = DataService.createInformationTableWithDecisionDistributions(informationTable);
+        final InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = DataService.createInformationTableWithDecisionDistributions(informationTable);
 
         UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = null;
         try {
@@ -87,7 +87,7 @@ public class UnionsService {
                 throw ex;
             }
 
-            UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(informationTable, typeOfUnions, consistencyThreshold);
+            final UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(informationTable, typeOfUnions, consistencyThreshold);
 
             unionsWithHttpParameters = new UnionsWithHttpParameters(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold, informationTable.getHash());
 
@@ -98,17 +98,23 @@ public class UnionsService {
         }
     }
 
-    public MainClassUnionsResponse getUnions(UUID id) {
-        logger.info("Id:\t{}", id);
-
-        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
-
+    private UnionsWithHttpParameters getUnionsWithHttpParametersFromProject(Project project) {
         final UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
         if(unionsWithHttpParameters == null) {
             EmptyResponseException ex = new EmptyResponseException("Unions haven't been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }
+
+        return unionsWithHttpParameters;
+    }
+
+    public MainClassUnionsResponse getUnions(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
 
         final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(unionsWithHttpParameters);
         logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
@@ -151,18 +157,13 @@ public class UnionsService {
         return mainClassUnionsResponse;
     }
 
-    public ChosenClassUnionResponse getChosenUnions(UUID id, Integer classUnionIndex) {
+    public ChosenClassUnionResponse getChosenClassUnion(UUID id, Integer classUnionIndex) {
         logger.info("Id:\t{}", id);
         logger.info("ClassUnionIndex:\t{}", classUnionIndex);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
-        if(unionsWithHttpParameters == null) {
-            EmptyResponseException ex = new EmptyResponseException("Unions haven't been calculated.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
 
         final Union[] upwardUnions, downwardUnions;
         upwardUnions = unionsWithHttpParameters.getUnions().getUpwardUnions();
@@ -193,12 +194,7 @@ public class UnionsService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
-        if(unionsWithHttpParameters == null) {
-            EmptyResponseException ex = new EmptyResponseException("Unions haven't been calculated.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        getUnionsWithHttpParametersFromProject(project);
 
         final ObjectResponse objectResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
         logger.debug("objectResponse:\t{}", objectResponse.toString());

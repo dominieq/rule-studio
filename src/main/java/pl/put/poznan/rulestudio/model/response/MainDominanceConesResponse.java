@@ -11,8 +11,6 @@ import java.util.Arrays;
 
 public class MainDominanceConesResponse {
 
-    private static final Logger logger = LoggerFactory.getLogger(MainDominanceConesResponse.class);
-
     private int numberOfObjects;
 
     @JsonProperty("isCurrentData")
@@ -29,7 +27,7 @@ public class MainDominanceConesResponse {
     private int[] negativeInverseDominanceConeCounts;
 
     private MainDominanceConesResponse() {
-        //empty constructor
+        //private constructor
     }
 
     public int getNumberOfObjects() {
@@ -69,6 +67,8 @@ public class MainDominanceConesResponse {
     }
 
     public static class MainDominanceConesResponseBuilder {
+        private static final Logger logger = LoggerFactory.getLogger(MainDominanceConesResponseBuilder.class);
+
         private int numberOfObjects;
         private Boolean isCurrentData;
         private int[] positiveDominanceConeCounts;

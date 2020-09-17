@@ -11,13 +11,11 @@ import java.util.LinkedHashMap;
 
 public class ObjectResponse {
 
-    private static final Logger logger = LoggerFactory.getLogger(ObjectResponse.class);
-
     @JsonValue
     private LinkedHashMap<String, String> value;
 
     private ObjectResponse() {
-        //empty constructor
+        //private constructor
     }
 
     public LinkedHashMap<String, String> getValue() {
@@ -32,6 +30,8 @@ public class ObjectResponse {
     }
 
     public static class ObjectResponseBuilder {
+        private static final Logger logger = LoggerFactory.getLogger(ObjectResponseBuilder.class);
+
         private LinkedHashMap<String, String> value;
 
         public static ObjectResponseBuilder newInstance() {

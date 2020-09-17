@@ -7,8 +7,6 @@ import pl.put.poznan.rulestudio.model.UnionsWithHttpParameters;
 
 public class ClassUnionsParameters {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClassUnionsParameters.class);
-
     private UnionType typeOfUnions;
 
     private Double consistencyThreshold;
@@ -34,6 +32,8 @@ public class ClassUnionsParameters {
     }
 
     public static class ClassUnionsParametersBuilder {
+        private static final Logger logger = LoggerFactory.getLogger(ClassUnionsParametersBuilder.class);
+
         private UnionType typeOfUnions;
         private Double consistencyThreshold;
 

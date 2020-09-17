@@ -12,14 +12,12 @@ import java.util.LinkedHashMap;
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 public class ObjectsComparisonResponse {
 
-    private static final Logger logger = LoggerFactory.getLogger(ObjectsComparisonResponse.class);
-
     private LinkedHashMap<String, String> firstValue;
 
     private LinkedHashMap<String, String> secondValue;
 
     private ObjectsComparisonResponse() {
-        //empty constructor
+        //private constructor
     }
 
     public LinkedHashMap<String, String> getFirstValue() {
@@ -39,9 +37,9 @@ public class ObjectsComparisonResponse {
     }
 
     public static class ObjectsComparisonResponseBuilder {
+        private static final Logger logger = LoggerFactory.getLogger(ObjectsComparisonResponseBuilder.class);
 
         private LinkedHashMap<String, String> firstValue;
-
         private LinkedHashMap<String, String> secondValue;
 
         public static ObjectsComparisonResponseBuilder newInstance() {

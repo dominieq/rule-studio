@@ -7,8 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.enums.ConeType;
-import pl.put.poznan.rulestudio.model.DominanceCones;
-import pl.put.poznan.rulestudio.model.response.ChosenConeResponse;
+import pl.put.poznan.rulestudio.model.response.ChosenDominanceConeResponse;
 import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.service.DominanceConesService;
@@ -63,13 +62,13 @@ public class DominanceConesController {
     }
 
     @RequestMapping(value = "/{objectIndex}/{coneType}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ChosenConeResponse> getChosenCone(
+    public ResponseEntity<ChosenDominanceConeResponse> getChosenDominanceCone(
             @PathVariable("id") UUID id,
             @PathVariable("objectIndex") Integer objectIndex,
             @PathVariable("coneType") ConeType coneType) {
         logger.info("Getting chosen cone...");
 
-        ChosenConeResponse result = dominanceConesService.getChosenCone(id, objectIndex, coneType);
+        ChosenDominanceConeResponse result = dominanceConesService.getChosenDominanceCone(id, objectIndex, coneType);
 
         return ResponseEntity.ok(result);
     }

@@ -14,8 +14,6 @@ import pl.put.poznan.rulestudio.model.response.ClassUnionMainProperties.ClassUni
 
 public class MainClassUnionsResponse {
 
-    private static final Logger logger = LoggerFactory.getLogger(MainClassUnionsResponse.class);
-
     private ClassUnionMainProperties[] classUnionMainPropertiesArray;
 
     private Double qualityOfApproximation;
@@ -57,6 +55,8 @@ public class MainClassUnionsResponse {
     }
 
     public static class MainClassUnionsResponseBuilder {
+        private static final Logger logger = LoggerFactory.getLogger(MainClassUnionsResponseBuilder.class);
+
         private ClassUnionMainProperties[] classUnionMainPropertiesArray;
         private Double qualityOfApproximation;
         private Boolean isCurrentData;
@@ -101,18 +101,18 @@ public class MainClassUnionsResponse {
             final UnionsWithSingleLimitingDecision unions = unionsWithHttpParameters.getUnions();
             MainClassUnionsResponse mainClassUnionsResponse = new MainClassUnionsResponse();
 
-            final Union[] downwardUnions, upwardUnions;
-            downwardUnions = unions.getDownwardUnions();
+            final Union[] upwardUnions, downwardUnions;
             upwardUnions = unions.getUpwardUnions();
-            final int arrayLength = downwardUnions.length + upwardUnions.length;
-            mainClassUnionsResponse.classUnionMainPropertiesArray = new ClassUnionMainProperties[arrayLength];
+            downwardUnions = unions.getDownwardUnions();
+            final int numberOfUnions = upwardUnions.length + downwardUnions.length;
+            mainClassUnionsResponse.classUnionMainPropertiesArray = new ClassUnionMainProperties[numberOfUnions];
             int i, index = 0;
-            for(i = 0; i < downwardUnions.length; i++) {
-                mainClassUnionsResponse.classUnionMainPropertiesArray[index] = ClassUnionMainPropertiesBuilder.newInstance().build((UnionWithSingleLimitingDecision) downwardUnions[i]);
-                index++;
-            }
             for(i = 0; i < upwardUnions.length; i++) {
                 mainClassUnionsResponse.classUnionMainPropertiesArray[index] = ClassUnionMainPropertiesBuilder.newInstance().build((UnionWithSingleLimitingDecision) upwardUnions[i]);
+                index++;
+            }
+            for(i = 0; i < downwardUnions.length; i++) {
+                mainClassUnionsResponse.classUnionMainPropertiesArray[index] = ClassUnionMainPropertiesBuilder.newInstance().build((UnionWithSingleLimitingDecision) downwardUnions[i]);
                 index++;
             }
 

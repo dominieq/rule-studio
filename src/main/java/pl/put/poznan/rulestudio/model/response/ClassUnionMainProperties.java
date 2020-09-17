@@ -3,6 +3,8 @@ package pl.put.poznan.rulestudio.model.response;
 import org.rulelearn.approximations.Union.UnionType;
 import org.rulelearn.approximations.UnionWithSingleLimitingDecision;
 import org.rulelearn.types.EvaluationField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClassUnionMainProperties {
 
@@ -35,6 +37,8 @@ public class ClassUnionMainProperties {
     }
 
     public static class ClassUnionMainPropertiesBuilder {
+        private static final Logger logger = LoggerFactory.getLogger(ClassUnionMainPropertiesBuilder.class);
+
         private UnionType unionType;
         private String limitingDecision;
         private Double accuracyOfApproximation;
