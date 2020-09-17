@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.enums.UnionType;
+import pl.put.poznan.rulestudio.model.response.ChosenClassUnionResponse;
 import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.service.UnionsService;
@@ -64,11 +65,22 @@ public class UnionsController {
         return ResponseEntity.ok(result);
     }
 
+    @RequestMapping(value = "/{classUnionIndex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChosenClassUnionResponse> getChosenUnions(
+            @PathVariable("id") UUID id,
+            @PathVariable("classUnionIndex") Integer classUnionIndex) {
+        logger.info("Getting chosen unions with single limiting decision...");
+
+        final ChosenClassUnionResponse result = unionsService.getChosenUnions(id, classUnionIndex);
+
+        return ResponseEntity.ok(result);
+    }
+
     @RequestMapping(value = "/object", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ObjectResponse> getObject(
             @PathVariable("id") UUID id,
             @RequestParam("objectIndex") Integer objectIndex) {
-        logger.info("Getting object from class unions cones...");
+        logger.info("Getting object from class unions...");
 
         final ObjectResponse result = unionsService.getObject(id, objectIndex);
 

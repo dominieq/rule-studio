@@ -21,6 +21,8 @@ import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.UnionsWithHttpParameters;
+import pl.put.poznan.rulestudio.model.response.ChosenClassUnionResponse;
+import pl.put.poznan.rulestudio.model.response.ChosenClassUnionResponse.ChosenClassUnionResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse;
 import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse.MainClassUnionsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse;
@@ -147,6 +149,42 @@ public class UnionsService {
         final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(unionsWithHttpParameters);
         logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
         return mainClassUnionsResponse;
+    }
+
+    public ChosenClassUnionResponse getChosenUnions(UUID id, Integer classUnionIndex) {
+        logger.info("Id:\t{}", id);
+        logger.info("ClassUnionIndex:\t{}", classUnionIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
+        if(unionsWithHttpParameters == null) {
+            EmptyResponseException ex = new EmptyResponseException("Unions haven't been calculated.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        final Union[] upwardUnions, downwardUnions;
+        upwardUnions = unionsWithHttpParameters.getUnions().getUpwardUnions();
+        downwardUnions = unionsWithHttpParameters.getUnions().getDownwardUnions();
+        final int numberOfUnions = upwardUnions.length + downwardUnions.length;
+        if((classUnionIndex < 0) || (classUnionIndex >= numberOfUnions)) {
+            WrongParameterException ex = new WrongParameterException(String.format("Given class union's index \"%d\" is incorrect. You can choose unions from %d to %d", classUnionIndex, 0, numberOfUnions - 1));
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        final Union chosenClassUnion;
+        if(classUnionIndex < upwardUnions.length) {
+            chosenClassUnion = upwardUnions[classUnionIndex];
+        } else {
+            chosenClassUnion = downwardUnions[classUnionIndex - upwardUnions.length];
+        }
+
+
+        final ChosenClassUnionResponse chosenClassUnionResponse = ChosenClassUnionResponseBuilder.newInstance().build(chosenClassUnion);
+        logger.debug("chosenClassUnionResponse:\t{}", chosenClassUnionResponse.toString());
+        return chosenClassUnionResponse;
     }
 
     public ObjectResponse getObject(UUID id, Integer objectIndex) {
