@@ -19,5 +19,6 @@ public class RuLeStudioWebConfig implements WebMvcConfigurer {
         registry.addConverter(new StringToMisclassificationMatrixType());
         registry.addConverter(new StringToOrderByRuleCharacteristicConverter());
         registry.addConverter(new StringToConeTypeConverter());
+        registry.addConverter(new StringToClassUnionArrayPropertyTypeConverter());
     }
 }

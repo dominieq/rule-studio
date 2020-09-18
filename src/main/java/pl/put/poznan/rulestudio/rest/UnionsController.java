@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.put.poznan.rulestudio.enums.ClassUnionArrayPropertyType;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.model.response.ChosenClassUnionResponse;
+import pl.put.poznan.rulestudio.model.response.ClassUnionArrayPropertyResponse;
 import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.service.UnionsService;
@@ -72,6 +74,18 @@ public class UnionsController {
         logger.info("Getting chosen unions with single limiting decision...");
 
         final ChosenClassUnionResponse result = unionsService.getChosenClassUnion(id, classUnionIndex);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/{classUnionIndex}/{classUnionArrayPropertyType}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ClassUnionArrayPropertyResponse> getClassUnionArrayProperty(
+            @PathVariable("id") UUID id,
+            @PathVariable("classUnionIndex") Integer classUnionIndex,
+            @PathVariable("classUnionArrayPropertyType") ClassUnionArrayPropertyType classUnionArrayPropertyType) {
+        logger.info("Getting class union's array property...");
+
+        final ClassUnionArrayPropertyResponse result = unionsService.getClassUnionArrayProperty(id, classUnionIndex, classUnionArrayPropertyType);
 
         return ResponseEntity.ok(result);
     }

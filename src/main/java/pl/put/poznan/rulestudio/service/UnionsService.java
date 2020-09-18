@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.put.poznan.rulestudio.enums.ClassUnionArrayPropertyType;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.CalculationException;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
@@ -23,6 +24,8 @@ import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.UnionsWithHttpParameters;
 import pl.put.poznan.rulestudio.model.response.ChosenClassUnionResponse;
 import pl.put.poznan.rulestudio.model.response.ChosenClassUnionResponse.ChosenClassUnionResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.ClassUnionArrayPropertyResponse;
+import pl.put.poznan.rulestudio.model.response.ClassUnionArrayPropertyResponse.ClassUnionArrayPropertyResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse;
 import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse.MainClassUnionsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse;
@@ -157,14 +160,7 @@ public class UnionsService {
         return mainClassUnionsResponse;
     }
 
-    public ChosenClassUnionResponse getChosenClassUnion(UUID id, Integer classUnionIndex) {
-        logger.info("Id:\t{}", id);
-        logger.info("ClassUnionIndex:\t{}", classUnionIndex);
-
-        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
-
-        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
-
+    private Union getClassUnionByIndex(UnionsWithHttpParameters unionsWithHttpParameters, Integer classUnionIndex) {
         final Union[] upwardUnions, downwardUnions;
         upwardUnions = unionsWithHttpParameters.getUnions().getUpwardUnions();
         downwardUnions = unionsWithHttpParameters.getUnions().getDownwardUnions();
@@ -182,10 +178,38 @@ public class UnionsService {
             chosenClassUnion = downwardUnions[classUnionIndex - upwardUnions.length];
         }
 
+        return chosenClassUnion;
+    }
+
+    public ChosenClassUnionResponse getChosenClassUnion(UUID id, Integer classUnionIndex) {
+        logger.info("Id:\t{}", id);
+        logger.info("ClassUnionIndex:\t{}", classUnionIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
+
+        final Union chosenClassUnion = getClassUnionByIndex(unionsWithHttpParameters, classUnionIndex);
 
         final ChosenClassUnionResponse chosenClassUnionResponse = ChosenClassUnionResponseBuilder.newInstance().build(chosenClassUnion);
         logger.debug("chosenClassUnionResponse:\t{}", chosenClassUnionResponse.toString());
         return chosenClassUnionResponse;
+    }
+
+    public ClassUnionArrayPropertyResponse getClassUnionArrayProperty(UUID id, Integer classUnionIndex, ClassUnionArrayPropertyType classUnionArrayPropertyType) {
+        logger.info("Id:\t{}", id);
+        logger.info("ClassUnionIndex:\t{}", classUnionIndex);
+        logger.info("ClassUnionArrayPropertyType:\t{}", classUnionArrayPropertyType);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
+
+        final Union chosenClassUnion = getClassUnionByIndex(unionsWithHttpParameters, classUnionIndex);
+
+        final ClassUnionArrayPropertyResponse classUnionArrayPropertyResponse = ClassUnionArrayPropertyResponseBuilder.newInstance().build(chosenClassUnion, classUnionArrayPropertyType);
+        logger.debug("classUnionArrayPropertyResponse:\t{}", classUnionArrayPropertyResponse.toString());
+        return classUnionArrayPropertyResponse;
     }
 
     public ObjectResponse getObject(UUID id, Integer objectIndex) {
