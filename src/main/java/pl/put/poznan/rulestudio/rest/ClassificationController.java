@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.enums.ClassifierType;
 import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
-import pl.put.poznan.rulestudio.model.Classification;
+import pl.put.poznan.rulestudio.model.response.MainClassificationResponse;
 import pl.put.poznan.rulestudio.service.ClassificationService;
 
 import java.io.IOException;
@@ -30,16 +30,17 @@ public class ClassificationController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Classification> getClassification(
+    public ResponseEntity<MainClassificationResponse> getClassification(
             @PathVariable("id") UUID id) throws IOException {
         logger.info("Getting classification...");
-        Classification result = classificationService.getClassification(id);
+
+        MainClassificationResponse result = classificationService.getClassification(id);
 
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Classification> putClassification(
+    public ResponseEntity<MainClassificationResponse> putClassification(
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
             @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
@@ -48,7 +49,7 @@ public class ClassificationController {
             @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
         logger.info("Putting classification...");
 
-        Classification result = null;
+        MainClassificationResponse result = null;
         if(externalDataFile != null) {
             result = classificationService.putClassificationNewData(id, typeOfClassifier, defaultClassificationResult, externalDataFile, separator, header);
         } else {
@@ -59,7 +60,7 @@ public class ClassificationController {
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Classification> postClassification(
+    public ResponseEntity<MainClassificationResponse> postClassification(
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
             @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
@@ -70,7 +71,7 @@ public class ClassificationController {
             @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
         logger.info("Posting classification...");
 
-        Classification result = null;
+        MainClassificationResponse result = null;
         if(externalDataFile != null) {
             result = classificationService.postClassificationNewData(id, typeOfClassifier, defaultClassificationResult, metadata, data, externalDataFile, separator, header);
         } else {

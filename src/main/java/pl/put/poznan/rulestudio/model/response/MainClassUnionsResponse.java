@@ -12,6 +12,8 @@ import pl.put.poznan.rulestudio.model.parameters.ClassUnionsParameters;
 import pl.put.poznan.rulestudio.model.parameters.ClassUnionsParameters.ClassUnionsParametersBuilder;
 import pl.put.poznan.rulestudio.model.response.ClassUnionMainProperties.ClassUnionMainPropertiesBuilder;
 
+import java.util.Arrays;
+
 public class MainClassUnionsResponse {
 
     private ClassUnionMainProperties[] classUnionMainPropertiesArray;
@@ -48,7 +50,8 @@ public class MainClassUnionsResponse {
     @Override
     public String toString() {
         return "MainClassUnionsResponse{" +
-                "qualityOfApproximation=" + qualityOfApproximation +
+                "classUnionMainPropertiesArray=" + Arrays.toString(classUnionMainPropertiesArray) +
+                ", qualityOfApproximation=" + qualityOfApproximation +
                 ", isCurrentData=" + isCurrentData +
                 ", classUnionsParameters=" + classUnionsParameters +
                 '}';

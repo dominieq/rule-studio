@@ -21,6 +21,8 @@ import pl.put.poznan.rulestudio.exception.*;
 import pl.put.poznan.rulestudio.model.Classification;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.response.MainClassificationResponse;
+import pl.put.poznan.rulestudio.model.response.MainClassificationResponse.MainClassificationResponseBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -332,39 +334,42 @@ public class ClassificationService {
         return project.getRules().getRuleSet();
     }
 
-    public Classification getClassification(UUID id) {
+    public MainClassificationResponse getClassification(UUID id) {
         logger.info("Id;\t{}", id);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        Classification classification = getClassificationFromProject(project);
+        final Classification classification = getClassificationFromProject(project);
 
-        logger.debug("classification:\t{}", classification);
-        return classification;
+        final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(classification);
+        logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
+        return mainClassificationResponse;
     }
 
-    public Classification putClassification(UUID id, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult) {
+    public MainClassificationResponse putClassification(UUID id, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
         logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = project.getInformationTable();
+        final InformationTable informationTable = project.getInformationTable();
         checkInformationTable(informationTable, "There is no data in project. Couldn't reclassify.");
 
         checkNumberOfClassifiedObjects(informationTable.getNumberOfObjects(), "There are no objects in project. Couldn't reclassify.");
 
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
+        final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
-        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, informationTable);
-        Classification classification = calculateClassification(informationTable, informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
+        final Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, informationTable);
+        final Classification classification = calculateClassification(informationTable, informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
         project.setClassification(classification);
 
-        return classification;
+        final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(classification);
+        logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
+        return mainClassificationResponse;
     }
 
-    public Classification putClassificationNewData(
+    public MainClassificationResponse putClassificationNewData(
             UUID id,
             ClassifierType typeOfClassifier,
             DefaultClassificationResultType defaultClassificationResult,
@@ -378,34 +383,36 @@ public class ClassificationService {
         logger.info("Separator:\t{}", separator);
         logger.info("Header:\t{}", header);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable projectInformationTable = project.getInformationTable();
+        final InformationTable projectInformationTable = project.getInformationTable();
         checkInformationTable(projectInformationTable, "There is no data in project. Couldn't classify data from file.");
 
-        Attribute[] attributes = projectInformationTable.getAttributes();
+        final Attribute[] attributes = projectInformationTable.getAttributes();
         if(attributes == null) {
             NoDataException ex = new NoDataException("There is no metadata in project. Couldn't read classified data from file.");
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
+        final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
-        InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, attributes, separator, header);
+        final InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, attributes, separator, header);
         checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
         checkNumberOfClassifiedObjects(newInformationTable.getNumberOfObjects(), "There are no objects in external data. Couldn't classify.");
 
-        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);
-        Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
+        final Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);
+        final Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
         classification.setExternalData(true);
         classification.setExternalDataFileName(externalDataFile.getOriginalFilename());
         project.setClassification(classification);
 
-        return classification;
+        final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(classification);
+        logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
+        return mainClassificationResponse;
     }
 
-    public Classification postClassification(UUID id, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult, String metadata, String data) throws IOException {
+    public MainClassificationResponse postClassification(UUID id, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
         logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
@@ -413,23 +420,25 @@ public class ClassificationService {
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
         checkNumberOfClassifiedObjects(informationTable.getNumberOfObjects(), "There are no objects in project. Couldn't reclassify.");
 
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
+        final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
-        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, informationTable);
-        Classification classification = calculateClassification(informationTable, informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
+        final Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, informationTable);
+        final Classification classification = calculateClassification(informationTable, informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
         project.setClassification(classification);
 
-        return classification;
+        final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(classification);
+        logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
+        return mainClassificationResponse;
     }
 
-    public Classification postClassificationNewData(
+    public MainClassificationResponse postClassificationNewData(
             UUID id,
             ClassifierType typeOfClassifier,
             DefaultClassificationResultType defaultClassificationResult,
@@ -448,23 +457,25 @@ public class ClassificationService {
         logger.info("Separator:\t{}", separator);
         logger.info("Header:\t{}", header);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable projectInformationTable = ProjectService.createInformationTableFromString(metadata, data);
+        final InformationTable projectInformationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(projectInformationTable);
 
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
+        final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
-        InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, projectInformationTable.getAttributes(), separator, header);
+        final InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, projectInformationTable.getAttributes(), separator, header);
         checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
         checkNumberOfClassifiedObjects(newInformationTable.getNumberOfObjects(), "There are no objects in external data. Couldn't classify.");
 
-        Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);
-        Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
+        final Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, newInformationTable);
+        final Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
         classification.setExternalData(true);
         classification.setExternalDataFileName(externalDataFile.getOriginalFilename());
         project.setClassification(classification);
 
-        return classification;
+        final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(classification);
+        logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
+        return mainClassificationResponse;
     }
 }
