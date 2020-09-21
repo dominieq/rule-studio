@@ -21,6 +21,8 @@ import pl.put.poznan.rulestudio.exception.*;
 import pl.put.poznan.rulestudio.model.Classification;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectResponse;
+import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectResponse.ChosenClassifiedObjectResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainClassificationResponse;
 import pl.put.poznan.rulestudio.model.response.MainClassificationResponse.MainClassificationResponseBuilder;
 
@@ -477,5 +479,18 @@ public class ClassificationService {
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(classification);
         logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
         return mainClassificationResponse;
+    }
+
+    public ChosenClassifiedObjectResponse getChosenClassifiedObject(UUID id, Integer classifiedObjectIndex) {
+        logger.info("Id;\t{}", id);
+        logger.info("ClassifiedObjectIndex:\t{}", classifiedObjectIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final Classification classification = getClassificationFromProject(project);
+
+        final ChosenClassifiedObjectResponse chosenClassifiedObjectResponse = ChosenClassifiedObjectResponseBuilder.newInstance().build(classification, classifiedObjectIndex);
+        logger.debug("chosenClassifiedObjectResponse:\t{}", chosenClassifiedObjectResponse);
+        return chosenClassifiedObjectResponse;
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.enums.ClassifierType;
 import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
+import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectResponse;
 import pl.put.poznan.rulestudio.model.response.MainClassificationResponse;
 import pl.put.poznan.rulestudio.service.ClassificationService;
 
@@ -34,7 +35,7 @@ public class ClassificationController {
             @PathVariable("id") UUID id) throws IOException {
         logger.info("Getting classification...");
 
-        MainClassificationResponse result = classificationService.getClassification(id);
+        final MainClassificationResponse result = classificationService.getClassification(id);
 
         return ResponseEntity.ok(result);
     }
@@ -77,6 +78,17 @@ public class ClassificationController {
         } else {
             result = classificationService.postClassification(id, typeOfClassifier, defaultClassificationResult, metadata, data);
         }
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/{classifiedObjectIndex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChosenClassifiedObjectResponse> getChosenClassifiedObject(
+            @PathVariable("id") UUID id,
+            @PathVariable("classifiedObjectIndex") Integer classifiedObjectIndex) throws IOException {
+        logger.info("Getting chosen classified object...");
+
+        final ChosenClassifiedObjectResponse result = classificationService.getChosenClassifiedObject(id, classifiedObjectIndex);
 
         return ResponseEntity.ok(result);
     }
