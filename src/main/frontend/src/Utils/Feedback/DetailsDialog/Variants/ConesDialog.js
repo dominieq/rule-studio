@@ -1,10 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
-import { FullscreenDialog, MultiColumns, FullscreenHeader} from "../../../DataDisplay/FullscreenDialog";
+import { FullscreenDialog, MultiColumns, FullscreenHeader } from "../../../DataDisplay/FullscreenDialog";
 import TablesList from "../Elements/TablesList";
 import ObjectsComparisonTable from "../Elements/ObjectsComparisonTable";
 import TableItemsList from "../Elements/TableItemsList";
+import {fetchConeObjects} from "../../../utilFunctions/fetchFunctions";
 
 /**
  * The fullscreen dialog with details of dominance cones of a selected object.
@@ -36,28 +37,95 @@ class ConesDialog extends React.PureComponent {
         super(props);
 
         this.state = {
-            tableIndex: undefined,
-            itemInTableIndex: undefined,
+            loading: {
+                coneObjects: false,
+                objectsComparison: false,
+            },
+            callIndex: 0,
+            coneIndex: undefined,
+            coneContent: [],
+            objectInConeIndex: undefined
         };
+
+        this._cones = [
+            "positive",
+            "negative",
+            "positive_inverted",
+            "negative_inverted"
+        ];
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    getConeObject = () => {
+        let localCallIndex = 0;
+
+        this.setState(({loading, callIndex}) => {
+            localCallIndex = callIndex++;
+
+            return {
+                loading: { ...loading, coneObjects: true },
+                callIndex: callIndex
+            }
+        }, () => {
+            const { item: { id }, projectId } = this.props;
+            const { coneIndex } = this.state;
+
+            console.log(id);
+            console.log(this._cones[coneIndex]);
+
+            fetchConeObjects(
+                { projectId, objectIndex: id, coneType: this._cones[coneIndex] }
+            ).then(result => {
+                if (this._isMounted && Array.isArray(result)) {
+                    this.setState(({callIndex}) => {
+                        if (callIndex === localCallIndex + 1) {
+                            return {
+                                coneContent: result.slice()
+                            };
+                        } else {
+                            return { };
+                        }
+                    });
+                }
+            }).catch((exception) => {
+                if (!exception.hasOwnProperty("open")) {
+                    console.error(exception);
+                }
+
+            }).finally(() => {
+                if (this._isMounted) {
+                    this.setState(({loading}) => ({
+                        loading: { ...loading, coneObjects: false }
+                    }));
+                }
+            })
+        })
     }
 
     onExited = () => {
         this.setState({
-            tableIndex: undefined,
-            itemInTableIndex: undefined
+            coneIndex: undefined,
+            objectInConeIndex: undefined
         });
     };
 
     onTableSelected = (index) => {
         this.setState({
-            tableIndex: index,
-            itemInTableIndex: undefined
-        });
+            coneIndex: index,
+            objectInConeIndex: undefined
+        }, () => this.getConeObject());
     };
 
     onItemInTableSelected = (index) => {
         this.setState({
-            itemInTableIndex: index
+            objectInConeIndex: index
         });
     };
 
@@ -80,8 +148,8 @@ class ConesDialog extends React.PureComponent {
     };
 
     render() {
-        const { tableIndex, itemInTableIndex } = this.state;
-        const { item, items, projectResult, ...other } = this.props;
+        const { loading, coneIndex, coneContent, objectInConeIndex } = this.state;
+        const { item, items, projectId, projectResult, ...other } = this.props;
 
         return (
             <FullscreenDialog onExited={this.onExited} {...other}>
@@ -95,30 +163,30 @@ class ConesDialog extends React.PureComponent {
                         <TablesList
                             headerText={"Dominance cones"}
                             onTableSelected={this.onTableSelected}
-                            tableIndex={tableIndex}
+                            tableIndex={coneIndex}
                             tables={item.tables}
                         />
                     </div>
                     <div id={"cones-table-content"} style={{display: "flex", flexDirection: "column", width: "22.5%"}}>
-                        {!Number.isNaN(Number(tableIndex)) &&
+                        {!Number.isNaN(Number(coneIndex)) &&
                             <TableItemsList
                                 getName={this.getName}
-                                headerText={Object.keys(item.tables)[tableIndex]}
-                                itemIndex={itemInTableIndex}
+                                headerText={Object.keys(item.tables)[coneIndex]}
+                                itemIndex={objectInConeIndex}
                                 onItemInTableSelected={this.onItemInTableSelected}
-                                table={Object.values(item.tables)[tableIndex]}
+                                table={coneContent}
                             />
                         }
                     </div>
                     <div id={"cones-comparison"} style={{width: "50%"}}>
-                        {!Number.isNaN(Number(itemInTableIndex)) &&
+                        {!Number.isNaN(Number(objectInConeIndex)) &&
                             <ObjectsComparisonTable
                                 informationTable={projectResult.informationTable}
                                 objectIndex={item.id}
                                 objectHeader={item.name.toString()}
-                                objectInTableIndex={itemInTableIndex}
-                                objectInTableHeader={items ? items[itemInTableIndex].name.toString() : undefined}
-                                tableIndex={tableIndex}
+                                objectInTableIndex={objectInConeIndex}
+                                objectInTableHeader={items ? items[objectInConeIndex].name.toString() : undefined}
+                                tableIndex={coneIndex}
                             />
                         }
                     </div>
@@ -147,6 +215,7 @@ ConesDialog.propTypes = {
     items: PropTypes.arrayOf(PropTypes.object),
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func,
+    projectId: PropTypes.string.isRequired,
     projectResult: PropTypes.object,
 };
 

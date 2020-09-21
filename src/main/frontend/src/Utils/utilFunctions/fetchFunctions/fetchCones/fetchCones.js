@@ -1,5 +1,5 @@
-import { responseJson } from "./parseResponse";
-import { AlertError } from "../../Classes";
+import { responseJson } from "../parseResponse";
+import { AlertError } from "../../../Classes";
 
 /**
  * Performs an API call with body and a specified method on cones.

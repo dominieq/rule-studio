@@ -19,7 +19,7 @@ function parseConesListItems(items) {
                 multiContent: Object.keys(items[i].tables).map(key => {
                     return {
                         title: `Number of objects in ${key.toLowerCase()}:`,
-                        subtitle: items[i].tables[key].length
+                        subtitle: items[i].tables[key]
                     }
                 })
             });

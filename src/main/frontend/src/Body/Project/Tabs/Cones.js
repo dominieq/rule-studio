@@ -330,6 +330,7 @@ class Cones extends Component {
                         items={items}
                         onClose={this.onDetailsClose}
                         open={openDetails}
+                        projectId={result.id}
                         projectResult={result}
                     />
                 }

@@ -22,10 +22,10 @@ function parseConesItems(data, objects, settings) {
                 tables: Object.keys(data).map(key => {
                     if (Array.isArray(data[key])) {
                         return {
-                            [key]: data[key][i].slice()
+                            [key]: data[key][i]
                         }
                     } else {
-                        return {};
+                        return { };
                     }
                 }).reduce((previous, current) => {
                     return {...previous, ...current}
@@ -34,7 +34,7 @@ function parseConesItems(data, objects, settings) {
                     return [
                         this.name.toString().toLowerCase(),
                         ...Object.keys(this.tables).map(key => {
-                            return key.toLowerCase() + " " + this.tables[key].length
+                            return key.toLowerCase() + " " + this.tables[key]
                         }),
                     ]
                 }
