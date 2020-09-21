@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.enums.ClassifierType;
 import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectResponse;
+import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse;
 import pl.put.poznan.rulestudio.model.response.MainClassificationResponse;
 import pl.put.poznan.rulestudio.service.ClassificationService;
 
@@ -89,6 +90,17 @@ public class ClassificationController {
         logger.info("Getting chosen classified object...");
 
         final ChosenClassifiedObjectResponse result = classificationService.getChosenClassifiedObject(id, classifiedObjectIndex);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/rule/{ruleIndex}/coveringObjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChosenRuleResponse> getRuleCoveringObjects(
+            @PathVariable("id") UUID id,
+            @PathVariable("ruleIndex") Integer ruleIndex) throws IOException {
+        logger.info("Getting rule covering objects...");
+
+        final ChosenRuleResponse result = classificationService.getRuleCoveringObjects(id, ruleIndex);
 
         return ResponseEntity.ok(result);
     }
