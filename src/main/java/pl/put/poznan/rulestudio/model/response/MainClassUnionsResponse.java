@@ -16,6 +16,7 @@ import java.util.Arrays;
 
 public class MainClassUnionsResponse {
 
+    @JsonProperty("Unions")
     private ClassUnionMainProperties[] classUnionMainPropertiesArray;
 
     private Double qualityOfApproximation;

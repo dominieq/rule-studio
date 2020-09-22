@@ -14,6 +14,7 @@ import java.util.Arrays;
 
 public class MainClassificationResponse {
 
+    @JsonProperty("Objects")
     private ClassifiedObjectMainProperties[] classifiedObjectMainPropertiesArray;
 
     private Boolean isExternalData;

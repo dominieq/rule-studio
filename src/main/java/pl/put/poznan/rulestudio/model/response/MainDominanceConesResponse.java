@@ -16,13 +16,17 @@ public class MainDominanceConesResponse {
     @JsonProperty("isCurrentData")
     private Boolean isCurrentData;
 
+    @JsonProperty("positiveDominanceCones")
     private int[] positiveDominanceConeCounts;
 
+    @JsonProperty("negativeDominanceCones")
     private int[] negativeDominanceConeCounts;
 
+    @JsonProperty("positiveInverseDominanceCones")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private int[] positiveInverseDominanceConeCounts;
 
+    @JsonProperty("negativeInverseDominanceCones")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private int[] negativeInverseDominanceConeCounts;
 

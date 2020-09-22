@@ -1,23 +1,31 @@
 package pl.put.poznan.rulestudio.model.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.rulelearn.approximations.Union;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ChosenClassUnionResponse {
 
+    @JsonProperty("Objects")
     private Integer objectsCount;
 
+    @JsonProperty("Lower approximation")
     private Integer lowerApproximationCount;
 
+    @JsonProperty("Upper approximation")
     private Integer upperApproximationCount;
 
+    @JsonProperty("Boundary")
     private Integer boundaryCount;
 
+    @JsonProperty("Positive region")
     private Integer positiveRegionCount;
 
+    @JsonProperty("Negative region")
     private Integer negativeRegionCount;
 
+    @JsonProperty("Boundary region")
     private Integer boundaryRegionCount;
 
     private ChosenClassUnionResponse() {
