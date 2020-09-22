@@ -19,6 +19,8 @@ import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse;
 import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse.MainDominanceConesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse;
+import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse.ObjectsComparisonResponseBuilder;
 
 import java.io.*;
 import java.util.UUID;
@@ -141,5 +143,19 @@ public class DominanceConesService {
         final ObjectResponse objectResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
         logger.debug("objectResponse:\t{}", objectResponse.toString());
         return objectResponse;
+    }
+
+    public ObjectsComparisonResponse getObjectsComparison(UUID id, Integer firstObjectIndex, Integer secondObjectIndex) {
+        logger.info("Id:\t" + id);
+        logger.info("firstObjectIndex:\t{}", firstObjectIndex);
+        logger.info("secondObjectIndex:\t{}", secondObjectIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        getDominanceConesFromProject(project);
+
+        final ObjectsComparisonResponse objectsComparisonResponse = ObjectsComparisonResponseBuilder.newInstance().build(project.getInformationTable(), firstObjectIndex, secondObjectIndex);
+        logger.debug("objectsComparisonResponse:\t{}", objectsComparisonResponse.toString());
+        return objectsComparisonResponse;
     }
 }

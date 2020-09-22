@@ -10,6 +10,7 @@ import pl.put.poznan.rulestudio.enums.ConeType;
 import pl.put.poznan.rulestudio.model.response.ChosenDominanceConeResponse;
 import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse;
+import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse;
 import pl.put.poznan.rulestudio.service.DominanceConesService;
 
 import java.io.IOException;
@@ -80,6 +81,17 @@ public class DominanceConesController {
         logger.info("Getting object from dominance cones...");
 
         ObjectResponse result = dominanceConesService.getObject(id, objectIndex);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/objectsComparison", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ObjectsComparisonResponse> getObjectsComparison(
+            @PathVariable("id") UUID id,
+            @RequestParam("firstObjectIndex") Integer firstObjectIndex,
+            @RequestParam("secondObjectIndex") Integer secondObjectIndex) {
+        logger.info("Getting objects' comparison from dominance cones...");
+        final ObjectsComparisonResponse result = dominanceConesService.getObjectsComparison(id, firstObjectIndex, secondObjectIndex);
 
         return ResponseEntity.ok(result);
     }
