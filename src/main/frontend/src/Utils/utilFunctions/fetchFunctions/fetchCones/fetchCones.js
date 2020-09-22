@@ -6,15 +6,15 @@ import { AlertError } from "../../../Classes";
  *
  * @category Utils
  * @subcategory Functions
- * @param {string} base - The name of the host.
- * @param {string} projectId - The id of current project.
- * @param {string} method - A HTTP method such as GET, PUT or POST.
- * @param {Object} data - The body of a message.
+ * @param {string} projectId - The id of the selected project project.
+ * @param {"GET"|"PUT"} method - The HTTP method of an API call.
+ * @param {FormData} data - The body of an API call.
+ * @param {string} [host = http://localhost:8080] - The host in the URL of an API call.
  * @throws AlertError
  * @returns {Promise<Object>}
  */
-async function fetchCones(base, projectId, method, data) {
-    const response = await fetch(`${base}/projects/${projectId}/cones`, {
+async function fetchCones(projectId, method, data, host = "http://localhost:8080") {
+    const response = await fetch(`${host}/projects/${projectId}/cones`, {
         method: method,
         body: data,
     }).catch(() => {

@@ -55,7 +55,7 @@ class Cones extends Component {
         const { project, serverBase } = this.props;
 
         fetchCones(
-            serverBase, project.result.id, "GET", null
+            project.result.id, "GET", null, serverBase
         ).then(result => {
             if (result && this._isMounted) {
                 const { project: { result: { informationTable: { objects }}, settings }} = this.props;
@@ -166,7 +166,7 @@ class Cones extends Component {
             loading: true,
         }, () => {
             fetchCones(
-                serverBase, project.result.id, "PUT", null
+                project.result.id, "PUT", null, serverBase
             ).then(result => {
                 if (result) {
                     let projectCopy = JSON.parse(JSON.stringify(project));

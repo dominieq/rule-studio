@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 import { FullscreenDialog, MultiColumns, FullscreenHeader } from "../../../DataDisplay/FullscreenDialog";
+import StyledCircularProgress from "../../StyledCircularProgress";
 import TablesList from "../Elements/TablesList";
 import ObjectsComparisonTable from "../Elements/ObjectsComparisonTable";
 import TableItemsList from "../Elements/TableItemsList";
@@ -59,6 +60,15 @@ class ConesDialog extends React.PureComponent {
         this._isMounted = true;
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.item.id !== this.props.item.id) {
+            this.setState({
+                coneIndex: undefined,
+                objectInConeIndex: undefined
+            });
+        }
+    }
+
     componentWillUnmount() {
         this._isMounted = false;
     }
@@ -109,13 +119,6 @@ class ConesDialog extends React.PureComponent {
         })
     }
 
-    onExited = () => {
-        this.setState({
-            coneIndex: undefined,
-            objectInConeIndex: undefined
-        });
-    };
-
     onTableSelected = (index) => {
         this.setState({
             coneIndex: index,
@@ -152,7 +155,7 @@ class ConesDialog extends React.PureComponent {
         const { item, items, projectId, projectResult, ...other } = this.props;
 
         return (
-            <FullscreenDialog onExited={this.onExited} {...other}>
+            <FullscreenDialog {...other}>
                 <FullscreenHeader
                     id={"cones-details-header"}
                     onClose={this.props.onClose}
@@ -168,7 +171,10 @@ class ConesDialog extends React.PureComponent {
                         />
                     </div>
                     <div id={"cones-table-content"} style={{display: "flex", flexDirection: "column", width: "22.5%"}}>
-                        {!Number.isNaN(Number(coneIndex)) &&
+                        {loading.coneObjects &&
+                            <StyledCircularProgress />
+                        }
+                        {!loading.coneObjects && !Number.isNaN(Number(coneIndex)) &&
                             <TableItemsList
                                 getName={this.getName}
                                 headerText={Object.keys(item.tables)[coneIndex]}

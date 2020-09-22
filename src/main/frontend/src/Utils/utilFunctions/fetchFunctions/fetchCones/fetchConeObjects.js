@@ -4,16 +4,18 @@ import { responseJson } from "../parseResponse";
 /**
  * Performs an API call with GET method on cones to retrieve elements of a selected dominance cone.
  *
+ * @category Utils
+ * @subcategory Functions
  * @param {Object} pathParams - Path parameters in the URL of an API call.
  * @param {string} pathParams.projectId - The id of the selected project.
  * @param {number} pathParams.objectIndex - The index of the selected object from information table.
  * @param {"positive"|"negative"|"positive_inverted"|"negative_inverted"} pathParams.coneType - The type of a selected object.
- * @param {string} [host = https://localhost:8080] - The host in in the URL of an API call.
+ * @param {string} [host = http://localhost:8080] - The host in in the URL of an API call.
  * @throws AlertError
  * @throws InvalidPathParamsException
  * @returns {Promise<Object>}
  */
-async function fetchConeObjects(pathParams, host = "https://localhost:8080" ) {
+async function fetchConeObjects(pathParams, host = "http://localhost:8080" ) {
     if (!(pathParams != null && pathParams.hasOwnProperty("projectId")
         && pathParams.hasOwnProperty("objectIndex") && pathParams.hasOwnProperty("coneType"))) {
 
