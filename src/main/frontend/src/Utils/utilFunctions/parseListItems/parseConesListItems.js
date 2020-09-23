@@ -16,10 +16,10 @@ function parseConesListItems(items) {
                 header: items[i].name.toString(),
                 subheader: undefined,
                 content: undefined,
-                multiContent: Object.keys(items[i].tables).map(key => {
+                multiContent: Object.keys(items[i].traits).map(key => {
                     return {
                         title: `Number of objects in ${key.toLowerCase()}:`,
-                        subtitle: items[i].tables[key]
+                        subtitle: items[i].traits[key]
                     }
                 })
             });

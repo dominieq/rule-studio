@@ -14,27 +14,26 @@ import { getItemName } from "./parseElements";
 function parseConesItems(data, objects, settings) {
     let items = [];
 
-    if (data && Object.keys(data).length) {
+    if (data != null && data.hasOwnProperty("numberOfObjects")) {
         for (let i = 0; i < data.numberOfObjects; i++) {
             items.push({
                 id: i,
                 name: getItemName(i, objects, settings),
-                tables: Object.keys(data).map(key => {
-                    if (Array.isArray(data[key])) {
-                        return {
-                            [key]: data[key][i]
-                        }
-                    } else {
-                        return { };
-                    }
-                }).reduce((previous, current) => {
-                    return {...previous, ...current}
-                }),
+                traits: {
+                    'Positive dominance cone': data.hasOwnProperty("positiveDominanceCones") ?
+                        data.positiveDominanceCones[i] : 0,
+                    'Negative dominance cone': data.hasOwnProperty("negativeDominanceCones") ?
+                        data.negativeDominanceCones[i] : 0,
+                    'Positive inverse dominance cone': data.hasOwnProperty("positiveInverseDominanceCones") ?
+                        data.positiveInverseDominanceCones[i] : 0,
+                    'Negative inverse dominance cone': data.hasOwnProperty("negativeInverseDominanceCones") ?
+                        data.negativeInverseDominanceCones[i] : 0
+                },
                 toFilter() {
                     return [
                         this.name.toString().toLowerCase(),
-                        ...Object.keys(this.tables).map(key => {
-                            return key.toLowerCase() + " " + this.tables[key]
+                        ...Object.keys(this.traits).map(key => {
+                            return key.toLowerCase() + " " + this.traits[key]
                         }),
                     ]
                 }

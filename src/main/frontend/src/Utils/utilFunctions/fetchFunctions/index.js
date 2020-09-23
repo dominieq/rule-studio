@@ -9,6 +9,7 @@ export {default as fetchData} from "./fetchData";
 export {default as fetchObject} from "./fetchObjects/fetchObject";
 export {default as fetchObjectsComparison} from "./fetchObjects/fetchObjectsComparison";
 export {default as fetchRules} from "./fetchRules";
-export {default as fetchUnions} from "./fetchUnions";
+export {default as fetchUnion} from "./fetchUnions/fetchUnion";
+export {default as fetchUnions} from "./fetchUnions/fetchUnions";
 export {default as importProject} from "./project/importProject";
 export {default as uploadRules} from "./uploadRules";

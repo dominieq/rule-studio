@@ -67,9 +67,14 @@ class Unions extends Component {
      */
     getUnions = () => {
         const { project, serverBase } = this.props;
+        const pathParams = {
+            projectId: project.result.id,
+            typeOfUnions: undefined,
+            consistencyThreshold: undefined
+        }
 
         fetchUnions(
-            serverBase, project.result.id, "GET", null
+            pathParams,"GET", serverBase
         ).then(result => {
             if (result && this._isMounted) {
                 const items = parseUnionsItems(result);
@@ -79,8 +84,8 @@ class Unions extends Component {
                     items: items,
                     displayedItems: items,
                     parameters: {
-                        consistencyThreshold: result.consistencyThreshold,
-                        typeOfUnions: result.typeOfUnions.toLowerCase()
+                        consistencyThreshold: result.parameters.consistencyThreshold,
+                        typeOfUnions: result.parameters.typeOfUnions.toLowerCase()
                     }
                 });
 
@@ -217,11 +222,10 @@ class Unions extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let method = "PUT";
-            let data = { ...parameters };
+            const pathParams = { projectId: project.result.id, ...parameters };
 
             fetchUnions(
-                serverBase, project.result.id, method, data
+                pathParams, "PUT", serverBase
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -232,16 +236,16 @@ class Unions extends Component {
                             items: items,
                             displayedItems: items,
                             parameters: {
-                                consistencyThreshold: result.consistencyThreshold,
-                                typeOfUnions: result.typeOfUnions.toLowerCase()
+                                consistencyThreshold: result.parameters.consistencyThreshold,
+                                typeOfUnions: result.parameters.typeOfUnions.toLowerCase()
                             },
                             parametersSaved: true,
                         });
                     }
                     let projectCopy = JSON.parse(JSON.stringify(project));
                     projectCopy.result.unions = result;
-                    projectCopy.parameters.consistencyThreshold = result.consistencyThreshold;
-                    projectCopy.parameters.typeOfUnions = result.typeOfUnions.toLowerCase();
+                    projectCopy.parameters.consistencyThreshold = result.parameters.consistencyThreshold;
+                    projectCopy.parameters.typeOfUnions = result.parameters.typeOfUnions.toLowerCase();
                     projectCopy.parametersSaved = true;
                     this.props.onTabChange(projectCopy);
 
@@ -406,6 +410,7 @@ class Unions extends Component {
                         item={selectedItem}
                         onClose={() => this.toggleOpen("details")}
                         open={open.details}
+                        projectId={result.id}
                         projectResult={result}
                         settings={settings}
                     />
