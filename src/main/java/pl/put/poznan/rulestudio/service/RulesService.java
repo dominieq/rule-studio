@@ -268,6 +268,17 @@ public class RulesService {
         }
     }
 
+    public static RulesWithHttpParameters getRulesFromProject(Project project) {
+        RulesWithHttpParameters rules = project.getRules();
+        if(rules == null) {
+            EmptyResponseException ex = new EmptyResponseException("There are no rules in project to show.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        return rules;
+    }
+
     public RulesWithHttpParameters getRules(UUID id, OrderByRuleCharacteristic orderBy, Boolean desc) {
         logger.info("Id:\t{}", id);
         logger.info("OrderBy:\t{}", orderBy);
@@ -276,13 +287,9 @@ public class RulesService {
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         project.checkValidityOfRules();
-        RulesWithHttpParameters rules = project.getRules();
-        if(rules == null) {
-            EmptyResponseException ex = new EmptyResponseException("There are no rules in project to show.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        getRulesFromProject(project);
 
+        RulesWithHttpParameters rules;
         try {
             rules = (RulesWithHttpParameters) project.getRules().clone();
         } catch (CloneNotSupportedException e) {

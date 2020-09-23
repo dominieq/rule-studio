@@ -12,6 +12,7 @@ import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectResponse;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse;
 import pl.put.poznan.rulestudio.model.response.MainClassificationResponse;
+import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.service.ClassificationService;
 
 import java.io.IOException;
@@ -94,13 +95,24 @@ public class ClassificationController {
         return ResponseEntity.ok(result);
     }
 
-    @RequestMapping(value = "/rule/{ruleIndex}/coveringObjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/rules/{ruleIndex}/coveringObjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChosenRuleResponse> getRuleCoveringObjects(
             @PathVariable("id") UUID id,
             @PathVariable("ruleIndex") Integer ruleIndex) throws IOException {
         logger.info("Getting rule covering objects...");
 
         final ChosenRuleResponse result = classificationService.getRuleCoveringObjects(id, ruleIndex);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/rules/object", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ObjectResponse> getRulesObject(
+            @PathVariable("id") UUID id,
+            @RequestParam("objectIndex") Integer objectIndex) {
+        logger.info("Getting object from rules from classification...");
+
+        ObjectResponse result = classificationService.getRulesObject(id, objectIndex);
 
         return ResponseEntity.ok(result);
     }
