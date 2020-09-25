@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.enums.ClassifierType;
 import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
-import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectResponse;
-import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse;
-import pl.put.poznan.rulestudio.model.response.MainClassificationResponse;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse;
+import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.service.ClassificationService;
 
 import java.io.IOException;
@@ -113,6 +110,16 @@ public class ClassificationController {
         logger.info("Getting object from rules from classification...");
 
         ObjectResponse result = classificationService.getRulesObject(id, objectIndex);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/misclassificationMatrix", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<OrdinalMisclassificationMatrixWithoutDeviationResponse> getMisclassificationMatrix(
+            @PathVariable("id") UUID id) {
+        logger.info("Getting misclassification matrix from classification...");
+
+        OrdinalMisclassificationMatrixWithoutDeviationResponse result = classificationService.getMisclassificationMatrix(id);
 
         return ResponseEntity.ok(result);
     }

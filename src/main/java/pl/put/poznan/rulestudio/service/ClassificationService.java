@@ -21,14 +21,12 @@ import pl.put.poznan.rulestudio.exception.*;
 import pl.put.poznan.rulestudio.model.Classification;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
-import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectResponse;
+import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectResponse.ChosenClassifiedObjectResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.MainClassificationResponse;
 import pl.put.poznan.rulestudio.model.response.MainClassificationResponse.MainClassificationResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.OrdinalMisclassificationMatrixWithoutDeviationResponse.OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -524,5 +522,17 @@ public class ClassificationService {
         final ObjectResponse objectResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
         logger.debug("objectResponse:\t{}", objectResponse.toString());
         return objectResponse;
+    }
+
+    public OrdinalMisclassificationMatrixWithoutDeviationResponse getMisclassificationMatrix(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final Classification classification = getClassificationFromProject(project);
+
+        final OrdinalMisclassificationMatrixWithoutDeviationResponse ordinalMisclassificationMatrixWithoutDeviationResponse = OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder.newInstance().build(classification.getOrdinalMisclassificationMatrix(), classification.getOrderOfDecisions());
+        logger.debug("ordinalMisclassificationMatrixWithoutDeviationResponse:\t{}", ordinalMisclassificationMatrixWithoutDeviationResponse.toString());
+        return ordinalMisclassificationMatrixWithoutDeviationResponse;
     }
 }
