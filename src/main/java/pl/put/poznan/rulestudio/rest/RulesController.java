@@ -15,7 +15,7 @@ import pl.put.poznan.rulestudio.enums.RulesFormat;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
-import pl.put.poznan.rulestudio.model.RulesWithHttpParameters;
+import pl.put.poznan.rulestudio.model.response.MainRulesResponse;
 import pl.put.poznan.rulestudio.service.RulesService;
 
 import java.io.IOException;
@@ -38,28 +38,32 @@ public class RulesController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RulesWithHttpParameters> getRules (
+    public ResponseEntity<MainRulesResponse> getRules (
             @PathVariable("id") UUID id,
             @RequestParam(name = "orderBy", defaultValue = "none") OrderByRuleCharacteristic orderBy,
             @RequestParam(name = "desc", defaultValue = "true") Boolean desc) {
         logger.info("Getting rules...");
-        RulesWithHttpParameters result = rulesService.getRules(id, orderBy, desc);
+
+        final MainRulesResponse result = rulesService.getRules(id, orderBy, desc);
+
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RulesWithHttpParameters> putRules (
+    public ResponseEntity<MainRulesResponse> putRules (
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
             @RequestParam(name = "typeOfRules") RuleType typeOfRules) {
         logger.info("Putting rules...");
-        RulesWithHttpParameters result = rulesService.putRules(id, typeOfUnions, consistencyThreshold, typeOfRules);
+
+        final MainRulesResponse result = rulesService.putRules(id, typeOfUnions, consistencyThreshold, typeOfRules);
+
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RulesWithHttpParameters> postRules (
+    public ResponseEntity<MainRulesResponse> postRules (
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
@@ -67,7 +71,9 @@ public class RulesController {
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting rules...");
-        RulesWithHttpParameters result = rulesService.postRules(id, typeOfUnions, consistencyThreshold, typeOfRules, metadata, data);
+
+        final MainRulesResponse result = rulesService.postRules(id, typeOfUnions, consistencyThreshold, typeOfRules, metadata, data);
+
         return ResponseEntity.ok(result);
     }
 
@@ -99,22 +105,26 @@ public class RulesController {
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RulesWithHttpParameters> putUploadRules (
+    public ResponseEntity<MainRulesResponse> putUploadRules (
             @PathVariable("id") UUID id,
             @RequestParam(name = "rules") MultipartFile rulesFile) throws IOException {
         logger.info("Uploading rules (PUT)...");
-        RulesWithHttpParameters result = rulesService.putUploadRules(id, rulesFile);
+
+        final MainRulesResponse result = rulesService.putUploadRules(id, rulesFile);
+
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RulesWithHttpParameters> postUploadRules (
+    public ResponseEntity<MainRulesResponse> postUploadRules (
             @PathVariable("id") UUID id,
             @RequestParam(name = "rules") MultipartFile rulesFile,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Uploading rules (POST)...");
-        RulesWithHttpParameters result = rulesService.postUploadRules(id, rulesFile, metadata, data);
+
+        final MainRulesResponse result = rulesService.postUploadRules(id, rulesFile, metadata, data);
+
         return ResponseEntity.ok(result);
     }
 

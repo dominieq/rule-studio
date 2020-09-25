@@ -24,6 +24,8 @@ import pl.put.poznan.rulestudio.enums.RulesFormat;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.*;
 import pl.put.poznan.rulestudio.model.*;
+import pl.put.poznan.rulestudio.model.response.MainRulesResponse;
+import pl.put.poznan.rulestudio.model.response.MainRulesResponse.MainRulesResponseBuilder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -279,12 +281,12 @@ public class RulesService {
         return rules;
     }
 
-    public RulesWithHttpParameters getRules(UUID id, OrderByRuleCharacteristic orderBy, Boolean desc) {
+    public MainRulesResponse getRules(UUID id, OrderByRuleCharacteristic orderBy, Boolean desc) {
         logger.info("Id:\t{}", id);
         logger.info("OrderBy:\t{}", orderBy);
         logger.info("Desc:\t{}", desc);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         project.checkValidityOfRules();
         getRulesFromProject(project);
@@ -297,7 +299,7 @@ public class RulesService {
             rules = project.getRules();
         }
 
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = rules.getRuleSet();
+        final RuleSetWithCharacteristics ruleSetWithCharacteristics = rules.getRuleSet();
         if (!orderBy.equals(OrderByRuleCharacteristic.NONE)) {
 
             int i, rulesNumber = ruleSetWithCharacteristics.size();
@@ -359,8 +361,8 @@ public class RulesService {
                     throw ex;
             }
 
-            ArrayIndexComparator comparator = new ArrayIndexComparator(characteristicValues);
-            Integer[] indices = comparator.createIndexArray();
+            final ArrayIndexComparator comparator = new ArrayIndexComparator(characteristicValues);
+            final Integer[] indices = comparator.createIndexArray();
             Arrays.sort(indices, comparator);
 
             int x, step;
@@ -383,24 +385,28 @@ public class RulesService {
             rules.setRuleSet(sortedRuleSet);
         }
 
-        logger.debug("rulesWithHttpParameters:\t{}", rules.toString());
-        return rules;
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        return mainRulesResponse;
     }
 
-    public RulesWithHttpParameters putRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
+    public MainRulesResponse putRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
         logger.info("TypeOfRules:\t{}", typeOfRules);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         calculateRulesWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
 
-        return project.getRules();
+        final RulesWithHttpParameters rules = project.getRules();
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        return mainRulesResponse;
     }
 
-    public RulesWithHttpParameters postRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, String metadata, String data) throws IOException {
+    public MainRulesResponse postRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
@@ -409,14 +415,17 @@ public class RulesService {
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
         calculateRulesWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
 
-        return project.getRules();
+        final RulesWithHttpParameters rules = project.getRules();
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        return mainRulesResponse;
     }
 
     public NamedResource download(UUID id, RulesFormat rulesFormat) throws IOException {
@@ -504,32 +513,38 @@ public class RulesService {
         project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, rulesFile.getOriginalFilename()));
     }
 
-    public RulesWithHttpParameters putUploadRules(UUID id, MultipartFile rulesFile) throws IOException {
+    public MainRulesResponse putUploadRules(UUID id, MultipartFile rulesFile) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         uploadRulesToProject(project, rulesFile);
 
-        return project.getRules();
+        final RulesWithHttpParameters rules = project.getRules();
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        return mainRulesResponse;
     }
 
-    public RulesWithHttpParameters postUploadRules(UUID id, MultipartFile rulesFile, String metadata, String data) throws IOException {
+    public MainRulesResponse postUploadRules(UUID id, MultipartFile rulesFile, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
         uploadRulesToProject(project, rulesFile);
 
-        return project.getRules();
+        final RulesWithHttpParameters rules = project.getRules();
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        return mainRulesResponse;
     }
 
     public Boolean arePossibleRulesAllowed(UUID id)  {

@@ -1,5 +1,6 @@
 package pl.put.poznan.rulestudio.model.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
@@ -38,6 +39,7 @@ public class MainDominanceConesResponse {
         return numberOfObjects;
     }
 
+    @JsonIgnore
     public Boolean getCurrentData() {
         return isCurrentData;
     }
