@@ -27,6 +27,7 @@ import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResp
 import pl.put.poznan.rulestudio.model.response.MainClassificationResponse.MainClassificationResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.OrdinalMisclassificationMatrixWithoutDeviationResponse.OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.RuleMainPropertiesResponse.RuleMainPropertiesResponseBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -494,6 +495,19 @@ public class ClassificationService {
         final ChosenClassifiedObjectResponse chosenClassifiedObjectResponse = ChosenClassifiedObjectResponseBuilder.newInstance().build(classification, classifiedObjectIndex);
         logger.debug("chosenClassifiedObjectResponse:\t{}", chosenClassifiedObjectResponse);
         return chosenClassifiedObjectResponse;
+    }
+
+    public RuleMainPropertiesResponse getRule(UUID id, Integer ruleIndex) {
+        logger.info("Id;\t{}", id);
+        logger.info("RuleIndex:\t{}", ruleIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        getClassificationFromProject(project);
+
+        final RuleMainPropertiesResponse ruleMainPropertiesResponse = RuleMainPropertiesResponseBuilder.newInstance().build(project.getRules().getRuleSet(), ruleIndex);
+        logger.debug("ruleMainPropertiesResponse:\t{}", ruleMainPropertiesResponse);
+        return ruleMainPropertiesResponse;
     }
 
     public ChosenRuleResponse getRuleCoveringObjects(UUID id, Integer ruleIndex) {

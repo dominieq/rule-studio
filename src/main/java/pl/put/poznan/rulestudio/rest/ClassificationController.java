@@ -92,6 +92,17 @@ public class ClassificationController {
         return ResponseEntity.ok(result);
     }
 
+    @RequestMapping(value = "/rules/{ruleIndex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RuleMainPropertiesResponse> getRule(
+            @PathVariable("id") UUID id,
+            @PathVariable("ruleIndex") Integer ruleIndex) throws IOException {
+        logger.info("Getting rule from classification...");
+
+        final RuleMainPropertiesResponse result = classificationService.getRule(id, ruleIndex);
+
+        return ResponseEntity.ok(result);
+    }
+
     @RequestMapping(value = "/rules/{ruleIndex}/coveringObjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChosenRuleResponse> getRuleCoveringObjects(
             @PathVariable("id") UUID id,
