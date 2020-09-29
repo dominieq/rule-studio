@@ -28,6 +28,8 @@ import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainRulesResponse;
 import pl.put.poznan.rulestudio.model.response.MainRulesResponse.MainRulesResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.ObjectResponse;
+import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -560,6 +562,19 @@ public class RulesService {
         final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(rules.getRuleSet(), ruleIndex);
         logger.debug("chosenRuleResponse:\t{}", chosenRuleResponse.toString());
         return chosenRuleResponse;
+    }
+
+    public ObjectResponse getObject(UUID id, Integer objectIndex) {
+        logger.info("Id:\t{}", id);
+        logger.info("RuleIndex:\t{}", objectIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        getRulesFromProject(project);
+
+        final ObjectResponse objectResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+        logger.debug("objectResponse:\t{}", objectResponse.toString());
+        return objectResponse;
     }
 
     public Boolean arePossibleRulesAllowed(UUID id)  {
