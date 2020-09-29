@@ -17,7 +17,7 @@ import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse;
 import pl.put.poznan.rulestudio.model.response.MainRulesResponse;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse;
+import pl.put.poznan.rulestudio.model.response.ObjectAbstractResponse;
 import pl.put.poznan.rulestudio.service.RulesService;
 
 import java.io.IOException;
@@ -142,12 +142,13 @@ public class RulesController {
     }
 
     @RequestMapping(value = "/object", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ObjectResponse> getObject (
+    public ResponseEntity<ObjectAbstractResponse> getObject (
             @PathVariable("id") UUID id,
-            @RequestParam("objectIndex") Integer objectIndex) {
+            @RequestParam("objectIndex") Integer objectIndex,
+            @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
         logger.info("Getting object from rules...");
 
-        final ObjectResponse result = rulesService.getObject(id, objectIndex);
+        final ObjectAbstractResponse result = rulesService.getObject(id, objectIndex, isAttributes);
 
         return ResponseEntity.ok(result);
     }

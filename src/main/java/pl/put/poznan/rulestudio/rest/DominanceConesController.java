@@ -7,10 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.enums.ConeType;
-import pl.put.poznan.rulestudio.model.response.ChosenDominanceConeResponse;
-import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse;
-import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse;
+import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.service.DominanceConesService;
 
 import java.io.IOException;
@@ -35,7 +32,7 @@ public class DominanceConesController {
             @PathVariable("id") UUID id) {
         logger.info("Getting dominance cones...");
 
-        MainDominanceConesResponse result = dominanceConesService.getDominanceCones(id);
+        final MainDominanceConesResponse result = dominanceConesService.getDominanceCones(id);
 
         return ResponseEntity.ok(result);
     }
@@ -45,7 +42,7 @@ public class DominanceConesController {
             @PathVariable("id") UUID id) {
         logger.info("Putting dominance cones...");
 
-        MainDominanceConesResponse result = dominanceConesService.putDominanceCones(id);
+        final MainDominanceConesResponse result = dominanceConesService.putDominanceCones(id);
 
         return ResponseEntity.ok(result);
     }
@@ -57,7 +54,7 @@ public class DominanceConesController {
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting dominance cones...");
 
-        MainDominanceConesResponse result = dominanceConesService.postDominanceCones(id, metadata, data);
+        final MainDominanceConesResponse result = dominanceConesService.postDominanceCones(id, metadata, data);
 
         return ResponseEntity.ok(result);
     }
@@ -69,18 +66,19 @@ public class DominanceConesController {
             @PathVariable("coneType") ConeType coneType) {
         logger.info("Getting chosen cone...");
 
-        ChosenDominanceConeResponse result = dominanceConesService.getChosenDominanceCone(id, objectIndex, coneType);
+        final ChosenDominanceConeResponse result = dominanceConesService.getChosenDominanceCone(id, objectIndex, coneType);
 
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/object", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ObjectResponse> getObject(
+    public ResponseEntity<ObjectAbstractResponse> getObject(
             @PathVariable("id") UUID id,
-            @RequestParam("objectIndex") Integer objectIndex) {
+            @RequestParam("objectIndex") Integer objectIndex,
+            @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
         logger.info("Getting object from dominance cones...");
 
-        ObjectResponse result = dominanceConesService.getObject(id, objectIndex);
+        final ObjectAbstractResponse result = dominanceConesService.getObject(id, objectIndex, isAttributes);
 
         return ResponseEntity.ok(result);
     }
@@ -91,6 +89,7 @@ public class DominanceConesController {
             @RequestParam("firstObjectIndex") Integer firstObjectIndex,
             @RequestParam("secondObjectIndex") Integer secondObjectIndex) {
         logger.info("Getting objects' comparison from dominance cones...");
+
         final ObjectsComparisonResponse result = dominanceConesService.getObjectsComparison(id, firstObjectIndex, secondObjectIndex);
 
         return ResponseEntity.ok(result);

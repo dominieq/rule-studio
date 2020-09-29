@@ -9,7 +9,7 @@ import pl.put.poznan.rulestudio.exception.WrongParameterException;
 
 import java.util.LinkedHashMap;
 
-public class ObjectResponse {
+public class ObjectResponse extends ObjectAbstractResponse {
 
     @JsonValue
     private LinkedHashMap<String, String> value;

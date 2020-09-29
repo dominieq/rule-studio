@@ -10,7 +10,7 @@ import pl.put.poznan.rulestudio.model.Classification;
 
 import java.util.LinkedHashMap;
 
-public class ChosenClassifiedObjectResponse {
+public class ChosenClassifiedObjectResponse extends ChosenClassifiedObjectAbstractResponse {
 
     private LinkedHashMap<String, String> object;
 

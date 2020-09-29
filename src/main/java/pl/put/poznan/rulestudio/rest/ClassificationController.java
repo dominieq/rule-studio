@@ -81,13 +81,14 @@ public class ClassificationController {
         return ResponseEntity.ok(result);
     }
 
-    @RequestMapping(value = "/{classifiedObjectIndex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ChosenClassifiedObjectResponse> getChosenClassifiedObject(
+    @RequestMapping(value = "/object", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChosenClassifiedObjectAbstractResponse> getChosenClassifiedObject(
             @PathVariable("id") UUID id,
-            @PathVariable("classifiedObjectIndex") Integer classifiedObjectIndex) throws IOException {
+            @RequestParam("objectIndex") Integer objectIndex,
+            @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
         logger.info("Getting chosen classified object...");
 
-        final ChosenClassifiedObjectResponse result = classificationService.getChosenClassifiedObject(id, classifiedObjectIndex);
+        final ChosenClassifiedObjectAbstractResponse result = classificationService.getChosenClassifiedObject(id, objectIndex, isAttributes);
 
         return ResponseEntity.ok(result);
     }
@@ -115,12 +116,13 @@ public class ClassificationController {
     }
 
     @RequestMapping(value = "/rules/object", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ObjectResponse> getRulesObject(
+    public ResponseEntity<ObjectAbstractResponse> getRulesObject(
             @PathVariable("id") UUID id,
-            @RequestParam("objectIndex") Integer objectIndex) {
+            @RequestParam("objectIndex") Integer objectIndex,
+            @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
         logger.info("Getting object from rules from classification...");
 
-        ObjectResponse result = classificationService.getRulesObject(id, objectIndex);
+        ObjectAbstractResponse result = classificationService.getRulesObject(id, objectIndex, isAttributes);
 
         return ResponseEntity.ok(result);
     }

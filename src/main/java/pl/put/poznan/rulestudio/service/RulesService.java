@@ -24,12 +24,11 @@ import pl.put.poznan.rulestudio.enums.RulesFormat;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.*;
 import pl.put.poznan.rulestudio.model.*;
-import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse;
+import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.MainRulesResponse;
 import pl.put.poznan.rulestudio.model.response.MainRulesResponse.MainRulesResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.ObjectWithAttributesResponse.ObjectWithAttributesResponseBuilder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -564,17 +563,23 @@ public class RulesService {
         return chosenRuleResponse;
     }
 
-    public ObjectResponse getObject(UUID id, Integer objectIndex) {
+    public ObjectAbstractResponse getObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("RuleIndex:\t{}", objectIndex);
+        logger.info("IsAttributes:\t{}", isAttributes);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         getRulesFromProject(project);
 
-        final ObjectResponse objectResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
-        logger.debug("objectResponse:\t{}", objectResponse.toString());
-        return objectResponse;
+        ObjectAbstractResponse objectAbstractResponse;
+        if(isAttributes) {
+            objectAbstractResponse = ObjectWithAttributesResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+        } else {
+            objectAbstractResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+        }
+        logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
+        return objectAbstractResponse;
     }
 
     public Boolean arePossibleRulesAllowed(UUID id)  {

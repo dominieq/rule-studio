@@ -13,13 +13,11 @@ import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.model.DominanceCones;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
-import pl.put.poznan.rulestudio.model.response.ChosenDominanceConeResponse;
+import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.ChosenDominanceConeResponse.ChosenDominanceConeResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse;
 import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse.MainDominanceConesResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse;
+import pl.put.poznan.rulestudio.model.response.ObjectWithAttributesResponse.ObjectWithAttributesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse.ObjectsComparisonResponseBuilder;
 
 import java.io.*;
@@ -132,17 +130,23 @@ public class DominanceConesService {
         return chosenDominanceConeResponse;
     }
 
-    public ObjectResponse getObject(UUID id, Integer objectIndex) {
+    public ObjectAbstractResponse getObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("ObjectIndex:\t{}", objectIndex);
+        logger.info("IsAttributes:\t{}", isAttributes);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         getDominanceConesFromProject(project);
 
-        final ObjectResponse objectResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
-        logger.debug("objectResponse:\t{}", objectResponse.toString());
-        return objectResponse;
+        ObjectAbstractResponse objectAbstractResponse;
+        if(isAttributes) {
+            objectAbstractResponse = ObjectWithAttributesResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+        } else {
+            objectAbstractResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+        }
+        logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
+        return objectAbstractResponse;
     }
 
     public ObjectsComparisonResponse getObjectsComparison(UUID id, Integer firstObjectIndex, Integer secondObjectIndex) {

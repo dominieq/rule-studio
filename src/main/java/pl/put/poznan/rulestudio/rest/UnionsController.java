@@ -8,10 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.enums.ClassUnionArrayPropertyType;
 import pl.put.poznan.rulestudio.enums.UnionType;
-import pl.put.poznan.rulestudio.model.response.ChosenClassUnionResponse;
-import pl.put.poznan.rulestudio.model.response.ClassUnionArrayPropertyResponse;
-import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse;
+import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.service.UnionsService;
 
 import java.io.IOException;
@@ -91,12 +88,13 @@ public class UnionsController {
     }
 
     @RequestMapping(value = "/object", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ObjectResponse> getObject(
+    public ResponseEntity<ObjectAbstractResponse> getObject(
             @PathVariable("id") UUID id,
-            @RequestParam("objectIndex") Integer objectIndex) {
+            @RequestParam("objectIndex") Integer objectIndex,
+            @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
         logger.info("Getting object from class unions...");
 
-        final ObjectResponse result = unionsService.getObject(id, objectIndex);
+        final ObjectAbstractResponse result = unionsService.getObject(id, objectIndex, isAttributes);
 
         return ResponseEntity.ok(result);
     }

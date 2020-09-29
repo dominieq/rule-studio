@@ -22,14 +22,12 @@ import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.UnionsWithHttpParameters;
-import pl.put.poznan.rulestudio.model.response.ChosenClassUnionResponse;
+import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.ChosenClassUnionResponse.ChosenClassUnionResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ClassUnionArrayPropertyResponse;
 import pl.put.poznan.rulestudio.model.response.ClassUnionArrayPropertyResponse.ClassUnionArrayPropertyResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse;
 import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse.MainClassUnionsResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.ObjectWithAttributesResponse.ObjectWithAttributesResponseBuilder;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -212,16 +210,22 @@ public class UnionsService {
         return classUnionArrayPropertyResponse;
     }
 
-    public ObjectResponse getObject(UUID id, Integer objectIndex) {
+    public ObjectAbstractResponse getObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("ObjectIndex:\t{}", objectIndex);
+        logger.info("IsAttributes:\t{}", isAttributes);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         getUnionsWithHttpParametersFromProject(project);
 
-        final ObjectResponse objectResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
-        logger.debug("objectResponse:\t{}", objectResponse.toString());
-        return objectResponse;
+        ObjectAbstractResponse objectAbstractResponse;
+        if(isAttributes) {
+            objectAbstractResponse = ObjectWithAttributesResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+        } else {
+            objectAbstractResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+        }
+        logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
+        return objectAbstractResponse;
     }
 }
