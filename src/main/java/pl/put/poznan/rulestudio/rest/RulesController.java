@@ -15,6 +15,7 @@ import pl.put.poznan.rulestudio.enums.RulesFormat;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
+import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse;
 import pl.put.poznan.rulestudio.model.response.MainRulesResponse;
 import pl.put.poznan.rulestudio.service.RulesService;
 
@@ -124,6 +125,17 @@ public class RulesController {
         logger.info("Uploading rules (POST)...");
 
         final MainRulesResponse result = rulesService.postUploadRules(id, rulesFile, metadata, data);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/{ruleIndex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChosenRuleResponse> getChosenRule (
+            @PathVariable("id") UUID id,
+            @PathVariable("ruleIndex") Integer ruleIndex) {
+        logger.info("Getting rules...");
+
+        final ChosenRuleResponse result = rulesService.getChosenRule(id, ruleIndex);
 
         return ResponseEntity.ok(result);
     }

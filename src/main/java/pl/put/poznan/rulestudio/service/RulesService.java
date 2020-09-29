@@ -24,6 +24,8 @@ import pl.put.poznan.rulestudio.enums.RulesFormat;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.*;
 import pl.put.poznan.rulestudio.model.*;
+import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse;
+import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainRulesResponse;
 import pl.put.poznan.rulestudio.model.response.MainRulesResponse.MainRulesResponseBuilder;
 
@@ -545,6 +547,19 @@ public class RulesService {
         final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
         logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
         return mainRulesResponse;
+    }
+
+    public ChosenRuleResponse getChosenRule(UUID id, Integer ruleIndex) {
+        logger.info("Id:\t{}", id);
+        logger.info("RuleIndex:\t{}", ruleIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final RulesWithHttpParameters rules = getRulesFromProject(project);
+
+        final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(rules.getRuleSet(), ruleIndex);
+        logger.debug("chosenRuleResponse:\t{}", chosenRuleResponse.toString());
+        return chosenRuleResponse;
     }
 
     public Boolean arePossibleRulesAllowed(UUID id)  {
