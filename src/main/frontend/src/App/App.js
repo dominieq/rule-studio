@@ -18,6 +18,7 @@ import SettingsProjectDialog from "./Dialogs/SettingsProjectDialog";
 import {DarkTheme, LightTheme} from "./Themes/Themes";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import {MuiThemeProvider} from "@material-ui/core/styles";
+import { Switch, Route } from 'react-router-dom';
 
 /**
  * The main component that contains all other elements.
@@ -48,6 +49,7 @@ class App extends Component {
         };
 
         this.appBarRef = React.createRef();
+        this.existsPath = "";
     }
 
     /**
@@ -61,7 +63,7 @@ class App extends Component {
      * @memberOf App
      */
     componentDidMount() {
-        const base = window.location.origin.toString();
+        const base = this.state.serverBase; //window.location.origin.toString();
 
         this.setState({
             loading: true,
@@ -76,7 +78,7 @@ class App extends Component {
                             ...projects,
                             ...result.map(item => new Project(item))
                         ]
-                    }));
+                    }), () => {this.existsPath = this.checkIfProjectInURLExists()});
                 } else {
                     this.setState({
                         alertProps: {
@@ -525,6 +527,22 @@ class App extends Component {
         return true;
     };
 
+    checkIfProjectInURLExists = () => {
+        const { projects } = this.state;
+        const url = window.location.href.toString();
+        const urlSplitted = url.split('/');
+        if(urlSplitted.length >= 4) {
+            const projectId = url.split('/')[3];
+            for (let i = 0; i < projects.length; i++) {
+                if (projects[i].result.id === projectId) {
+                    this.onCurrentProjectChange(i);
+                    return projectId;
+                }
+            }
+        }
+        return "";
+    };
+
     render() {
         const { currentProject, projects, indexOptions, open, serverBase, alertProps } = this.state;
         const { deleteDialog, importDialog, renameDialog, settingsDialog } = open;
@@ -546,6 +564,7 @@ class App extends Component {
                         projects={["Select your project", ...projects]}
                     />
                 </Header>
+                <Switch>
                 {
                     {
                         "Help":
@@ -560,15 +579,22 @@ class App extends Component {
                             />,
                         "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
-                            <ProjectTabs
-                                project={projects[currentProject]}
-                                serverBase={serverBase}
-                                showAlert={this.onSnackbarOpen}
-                                updateIndexOptions={this.updateIndexOptions}
-                                updateProject={this.updateProject}
-                            />,
+                            <Route
+                                path={`/${this.existsPath}`}
+                                render={(routerProps) =>
+                                    <ProjectTabs
+                                        project={projects[currentProject]}
+                                        serverBase={serverBase}
+                                        showAlert={this.onSnackbarOpen}
+                                        updateIndexOptions={this.updateIndexOptions}
+                                        updateProject={this.updateProject}
+                                        {...routerProps}
+                                    />
+                                }
+                            />
                     }[this.state.body]
                 }
+                </Switch>
                 {currentProject >= 0 &&
                     <React.Fragment>
                         <RenameProjectDialog

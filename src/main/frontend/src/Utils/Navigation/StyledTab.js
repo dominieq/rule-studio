@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import { mergeClasses } from "../utilFunctions";
 import Tab from "@material-ui/core/Tab";
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -42,13 +43,13 @@ const useStyles = makeStyles(theme => ({
  * @returns {React.ReactElement} - The Tab component from Material-UI.
  */
 function StyledTab(props) {
-    const { classes: propsClasses, ...other } = props;
+    const { classes: propsClasses, link, ...other } = props;
 
     let classes = useStyles();
     if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
-        <Tab classes={{...classes}} {...other} />
+        <Tab classes={{...classes}} component={Link} to={link} {...other} />
     );
 }
 
