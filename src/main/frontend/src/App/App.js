@@ -19,6 +19,7 @@ import {DarkTheme, LightTheme} from "./Themes/Themes";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import {MuiThemeProvider} from "@material-ui/core/styles";
 import { Switch, Route } from 'react-router-dom';
+import { tabNames } from "../Utils/Constants/TabsNamesInPath";
 
 /**
  * The main component that contains all other elements.
@@ -63,7 +64,7 @@ class App extends Component {
      * @memberOf App
      */
     componentDidMount() {
-        const base = this.state.serverBase; //window.location.origin.toString();
+        const base = window.location.origin.toString();
 
         this.setState({
             loading: true,
@@ -78,7 +79,7 @@ class App extends Component {
                             ...projects,
                             ...result.map(item => new Project(item))
                         ]
-                    }), () => {this.existsPath = this.checkIfProjectInURLExists()});
+                    }), () => {this.checkIfProjectInURLExists()});
                 } else {
                     this.setState({
                         alertProps: {
@@ -208,11 +209,15 @@ class App extends Component {
         }));
     };
 
-    onCurrentProjectChange = (index) => {
+    onCurrentProjectChange = (index, tabName) => {
         const { projects } = this.state;
         const { result: {informationTable: { attributes }}} = projects[index];
         let indexOptions = this.createNewIndexOptions(attributes);
 
+        if(tabName !== "" && tabNames.includes(tabName)) this.props.history.replace(`/${projects[index].result.id}/${tabName}`);
+        else this.props.history.replace(`/${projects[index].result.id}/${tabNames[0]}`);
+        this.existsPath = `${projects[index].result.id}`;
+        
         this.setState({
             body: "Project",
             currentProject: index,
@@ -292,6 +297,8 @@ class App extends Component {
                     if (result) {
                         const indexOptions = this.createNewIndexOptions(result.informationTable.attributes);
 
+                        this.props.history.replace(`/${result.id}`);
+                        this.existsPath = `${result.id}`;
                         this.setState(({projects}) => ({
                             body: "Project",
                             currentProject: projects.length,
@@ -343,7 +350,8 @@ class App extends Component {
                 ).then(result => {
                     if (result) {
                         const indexOptions = this.createNewIndexOptions(result.informationTable.attributes);
-
+                        this.props.history.replace(`/${result.id}`);
+                        this.existsPath = `${result.id}`;
                         this.setState(({projects}) => ({
                             body: "Project",
                             currentProject: projects.length,
@@ -535,12 +543,13 @@ class App extends Component {
             const projectId = url.split('/')[3];
             for (let i = 0; i < projects.length; i++) {
                 if (projects[i].result.id === projectId) {
-                    this.onCurrentProjectChange(i);
-                    return projectId;
+                    if(urlSplitted.length >= 5) {
+                        this.onCurrentProjectChange(i, url.split('/')[4]);
+                    }
+                    else this.onCurrentProjectChange(i, "");
                 }
             }
         }
-        return "";
     };
 
     render() {

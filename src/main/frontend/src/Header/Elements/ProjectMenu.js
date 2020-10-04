@@ -83,7 +83,10 @@ function ProjectMenu(props) {
 
     const onMenuItemClick = (event, index) => {
         setAnchorE1(null);
-        props.onProjectClick(index);
+        const url = window.location.href.toString();
+        const urlSplitted = url.split('/');
+        if(urlSplitted.length >= 5) props.onProjectClick(index, url.split('/')[4]);
+        else props.onProjectClick(index, "");
     };
 
     const onMenuClose = () => {

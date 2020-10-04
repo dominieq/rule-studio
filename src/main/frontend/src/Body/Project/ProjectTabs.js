@@ -12,6 +12,7 @@ import StyledTabs from "../../Utils/Navigation/StyledTabs";
 import ExternalFile from "../../Utils/Feedback/CustomIcons/ExternalFile";
 import OutdatedData from "../../Utils/Feedback/AlertBadge/Alerts/OutdatedData";
 import { Route, Switch } from 'react-router-dom';
+import { tabNames } from "../../Utils/Constants/TabsNamesInPath";
 
 /**
  * The Project section in RuLeStudio. Allows user to choose between tabs.
@@ -269,6 +270,7 @@ class ProjectTabs extends React.Component {
         if (prevProps.project.result.id !== this.props.project.result.id) {
             const { project: { result } } = this.props;
             this.updateAlerts(result);
+            this.activateTabUpToURL();
 
             const { currentProject, selected } = this.state;
             if (currentProject !== null && selected === 0) {
@@ -405,22 +407,22 @@ class ProjectTabs extends React.Component {
         if(urlSplitted.length < 5) this.props.history.replace(`/${this.props.project.result.id}/data`);
         else {
             switch(urlSplitted[4]) {
-                case "data":
+                case tabNames[0]:
                     this.onTabChange(null,0);
                     break;
-                case "cones":
+                case tabNames[1]:
                     this.onTabChange(null,1);
                     break;
-                case "unions":
+                case tabNames[2]:
                     this.onTabChange(null,2);
                     break;
-                case "rules":
+                case tabNames[3]:
                     this.onTabChange(null,3);
                     break;
-                case "classification":
+                case tabNames[4]:
                     this.onTabChange(null,4);
                     break;
-                case "crossvalidation":
+                case tabNames[5]:
                     this.onTabChange(null,5);
                     break;
                 default:
@@ -436,7 +438,7 @@ class ProjectTabs extends React.Component {
         return (
             <React.Fragment>
                 <StyledTabs aria-label={"project tabs"} onChange={this.onTabChange} value={selected}>
-                    <StyledTab label={"Data"} {...this.getTabProps(0)} link={`/${project.result.id}/data`}/>
+                    <StyledTab label={"Data"} {...this.getTabProps(0)} link={`/${project.result.id}/${tabNames[0]}`}/>
                     <StyledTab
                         label={
                             <OutdatedData invisible={!showAlert[0]}>
@@ -444,7 +446,7 @@ class ProjectTabs extends React.Component {
                             </OutdatedData>
                         }
                         {...this.getTabProps(1)}
-                        link={`/${project.result.id}/cones`}
+                        link={`/${project.result.id}/${tabNames[1]}`}
                     />
                     <StyledTab
                         label={
@@ -453,7 +455,7 @@ class ProjectTabs extends React.Component {
                             </OutdatedData>
                         }
                         {...this.getTabProps(2)}
-                        link={`/${project.result.id}/unions`}
+                        link={`/${project.result.id}/${tabNames[2]}`}
                     />
                     <StyledTab
                         icon={showExternalRules ?
@@ -465,7 +467,7 @@ class ProjectTabs extends React.Component {
                             </OutdatedData>
                         }
                         {...this.getTabProps(3)}
-                        link={`/${project.result.id}/rules`}
+                        link={`/${project.result.id}/${tabNames[3]}`}
                     />
                     <StyledTab
                         icon={showExternalData ?
@@ -477,7 +479,7 @@ class ProjectTabs extends React.Component {
                             </OutdatedData>
                         }
                         {...this.getTabProps(4)}
-                        link={`/${project.result.id}/classification`}
+                        link={`/${project.result.id}/${tabNames[4]}`}
                     />
                     <StyledTab
                         label={
@@ -486,14 +488,14 @@ class ProjectTabs extends React.Component {
                             </OutdatedData>
                         }
                         {...this.getTabProps(5)}
-                        link={`/${project.result.id}/crossvalidation`}
+                        link={`/${project.result.id}/${tabNames[5]}`}
                     />
                 </StyledTabs>
                 <Switch>
                 {
                     {
                         0: (
-                            <Route path={`/${project.result.id}/data`} render={() =>
+                            <Route path={`/${project.result.id}/${tabNames[0]}`} render={() =>
                                 <Data
                                     project={project}
                                     onDataChange={this.onDataChange}
@@ -503,10 +505,10 @@ class ProjectTabs extends React.Component {
                                 />}
                             />
                             ),
-                        1: <Route path={`/${project.result.id}/cones`} render={() => <Cones {...this.getTabBodyProps(0)} />}/>,
-                        2: <Route path={`/${project.result.id}/unions`} render={() => <Unions {...this.getTabBodyProps(1)} />}/>,
+                        1: <Route path={`/${project.result.id}/${tabNames[1]}`} render={() => <Cones {...this.getTabBodyProps(0)} />}/>,
+                        2: <Route path={`/${project.result.id}/${tabNames[2]}`} render={() => <Unions {...this.getTabBodyProps(1)} />}/>,
                         3: (
-                            <Route path={`/${project.result.id}/rules`} render={() =>
+                            <Route path={`/${project.result.id}/${tabNames[3]}`} render={() =>
                             <Rules
                                     onDataUploaded={this.onDataUploaded}
                                     onRulesUploaded={this.onRulesUploaded}
@@ -514,8 +516,8 @@ class ProjectTabs extends React.Component {
                                 />}
                             />
                             ),
-                        4: <Classification onDataUploaded={this.onDataUploaded} {...this.getTabBodyProps(3)} />,
-                        5: <CrossValidation {...this.getTabBodyProps(4)} />
+                        4: <Route path={`/${project.result.id}/${tabNames[4]}`} render={() => <Classification onDataUploaded={this.onDataUploaded} {...this.getTabBodyProps(3)} />}/>,
+                        5: <Route path={`/${project.result.id}/${tabNames[5]}`} render={() => <CrossValidation {...this.getTabBodyProps(4)} />}/>
                     }[selected]
                 }
                 </Switch>
