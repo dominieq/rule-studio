@@ -59,6 +59,27 @@ public class DominanceConesController {
         return ResponseEntity.ok(result);
     }
 
+    @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DescriptiveAttributesResponse> getDescriptiveAttributes(
+            @PathVariable("id") UUID id) {
+        logger.info("Getting descriptive attributes in dominance cones...");
+
+        final DescriptiveAttributesResponse result = dominanceConesService.getDescriptiveAttributes(id);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DescriptiveAttributesResponse> postDescriptiveAttributes(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "objectVisibleName", required = false) String objectVisibleName) {
+        logger.info("Posting descriptive attributes in dominance cones...");
+
+        final DescriptiveAttributesResponse result = dominanceConesService.postDescriptiveAttributes(id, objectVisibleName);
+
+        return ResponseEntity.ok(result);
+    }
+
     @RequestMapping(value = "/{objectIndex}/{coneType}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChosenDominanceConeResponse> getChosenDominanceCone(
             @PathVariable("id") UUID id,

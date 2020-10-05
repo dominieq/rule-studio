@@ -32,6 +32,9 @@ public class DominanceCones {
     @JsonProperty("isCurrentData")
     private Boolean isCurrentData;
 
+    @JsonIgnore
+    private DescriptiveAttributes descriptiveAttributes;
+
     public DominanceCones() {
         numberOfObjects = 0;
 
@@ -96,6 +99,14 @@ public class DominanceCones {
         this.dataHash = dataHash;
     }
 
+    public DescriptiveAttributes getDescriptiveAttributes() {
+        return descriptiveAttributes;
+    }
+
+    public void setDescriptiveAttributes(DescriptiveAttributes descriptiveAttributes) {
+        this.descriptiveAttributes = descriptiveAttributes;
+    }
+
     @JsonIgnore
     public boolean isCurrentData() {
         return isCurrentData;
@@ -142,6 +153,7 @@ public class DominanceCones {
 
         this.dataHash = informationTable.getHash();
         this.isCurrentData = true;
+        this.descriptiveAttributes = new DescriptiveAttributes(informationTable);
     }
 
     private void calculatePositiveDCones(InformationTable informationTable) {

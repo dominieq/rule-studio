@@ -10,11 +10,13 @@ import pl.put.poznan.rulestudio.enums.ConeType;
 import pl.put.poznan.rulestudio.exception.CalculationException;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
 import pl.put.poznan.rulestudio.exception.NoDataException;
+import pl.put.poznan.rulestudio.model.DescriptiveAttributes;
 import pl.put.poznan.rulestudio.model.DominanceCones;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.ChosenDominanceConeResponse.ChosenDominanceConeResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse.MainDominanceConesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ObjectWithAttributesResponse.ObjectWithAttributesResponseBuilder;
@@ -114,6 +116,34 @@ public class DominanceConesService {
         final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
         logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
         return mainDominanceConesResponse;
+    }
+
+    public DescriptiveAttributesResponse getDescriptiveAttributes(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final DominanceCones dominanceCones = getDominanceConesFromProject(project);
+
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(dominanceCones.getDescriptiveAttributes());
+        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        return descriptiveAttributesResponse;
+    }
+
+    public DescriptiveAttributesResponse postDescriptiveAttributes(UUID id, String objectVisibleName) {
+        logger.info("Id:\t{}", id);
+        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final DominanceCones dominanceCones = getDominanceConesFromProject(project);
+
+        DescriptiveAttributes descriptiveAttributes = dominanceCones.getDescriptiveAttributes();
+        descriptiveAttributes.setCurrentAttribute(objectVisibleName);
+
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(dominanceCones.getDescriptiveAttributes());
+        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        return descriptiveAttributesResponse;
     }
 
     public ChosenDominanceConeResponse getChosenDominanceCone(UUID id, Integer objectIndex, ConeType coneType) {
