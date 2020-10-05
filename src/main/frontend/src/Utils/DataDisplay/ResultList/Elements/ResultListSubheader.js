@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import CircleHelper from "../../../Feedback/CircleHelper";
+import { MoreSettingsIconButton } from "../../../Inputs/StyledButton";
 import ListSubheader from "@material-ui/core/ListSubheader";
 
 const useStyles = makeStyles(theme => ({
@@ -11,13 +12,14 @@ const useStyles = makeStyles(theme => ({
         borderBottom: `2px solid ${theme.palette.text.main1}`,
         display: "flex",
         fontSize: theme.typography.subheader.fontSize,
-        lineHeight: "unset",
+        lineHeight: 1,
         padding: "8px 16px"
     },
     parameters: {
         display: "flex",
         flexGrow: 1,
         flexWrap: "wrap",
+        paddingLeft: 16,
         paddingRight: 16
     },
     parameterCell: {
@@ -45,7 +47,7 @@ const useStyles = makeStyles(theme => ({
         margin: "0 8px",
         width: 1
     },
-    helper: {
+    gutter: {
         display: "flex",
         flexDirection: "column"
     }
@@ -68,14 +70,26 @@ const useStyles = makeStyles(theme => ({
  * @param props.children[].value {number|string} - The content of the value inside a pair.
  * @param props.disableHelper {boolean} - If <code>true</code> helper will be visible.
  * @param props.helper {React.ReactNode} - The content of the helper.
+ * @param props.onSettingsClick {function} - Callback fired when settings button was clicked on.
  * @returns {React.ReactElement} The ListSubheader component from Material-UI library.
  */
 function ResultListSubheader(props) {
-    const { children, disableHelper, helper, ...other } = props;
+    const { children, disableHelper, helper, onSettingsClick, ...other } = props;
     const classes = useStyles();
 
     return (
         <ListSubheader classes={{root: classes.root}} {...other}>
+            <div
+                aria-label={"result-list-subheader-left-gutter"}
+                className={classes.gutter}
+            >
+                <MoreSettingsIconButton
+                    color={"secondary"}
+                    IconProps={{ style: { height: "1rem", width: "1rem" }}}
+                    onClick={onSettingsClick}
+                    TooltipProps={{ WrapperProps: { 'aria-label': "more-settings-icon-button-wrapper" }}}
+                />
+            </div>
             <div aria-label={"parameters"} className={classes.parameters}>
                 {children.map((child, index) => (
                     <React.Fragment  key={index}>
@@ -94,8 +108,8 @@ function ResultListSubheader(props) {
                 ))}
             </div>
             <div
-                aria-label={"helper"}
-                className={classes.helper}
+                aria-label={"result-list-subheader-right-gutter"}
+                className={classes.gutter}
                 style={disableHelper ? {display: "none"} : undefined}
             >
                 <CircleHelper
@@ -120,7 +134,8 @@ ResultListSubheader.propTypes = {
     disableSticky: PropTypes.bool,
     disableHelper: PropTypes.bool,
     helper: PropTypes.node,
-    inset: PropTypes.bool
+    inset: PropTypes.bool,
+    onSettingsClick: PropTypes.func
 };
 
 ResultListSubheader.defaultProps = {
