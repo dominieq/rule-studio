@@ -47,6 +47,18 @@ public class DescriptiveAttributes {
         return currentAttribute;
     }
 
+    public Integer getCurrentAttributeInformationTableIndex() {
+        if(currentAttribute == null) {
+            return null;
+        }
+
+        if(availableAttributesIndices == null) {
+            return null;
+        }
+
+        return availableAttributesIndices[currentAttribute];
+    }
+
     public void setCurrentAttribute(Integer currentAttribute) {
         if(availableAttributesNames == null) {
             currentAttribute = null;

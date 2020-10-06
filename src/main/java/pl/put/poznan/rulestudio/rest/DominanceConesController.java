@@ -80,6 +80,16 @@ public class DominanceConesController {
         return ResponseEntity.ok(result);
     }
 
+    @RequestMapping(value = "/objectNames", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AttributeFieldsResponse> getObjectNames(
+            @PathVariable("id") UUID id) {
+        logger.info("Getting object names in dominance cones...");
+
+        final AttributeFieldsResponse result = dominanceConesService.getObjectNames(id);
+
+        return ResponseEntity.ok(result);
+    }
+
     @RequestMapping(value = "/{objectIndex}/{coneType}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChosenDominanceConeResponse> getChosenDominanceCone(
             @PathVariable("id") UUID id,
