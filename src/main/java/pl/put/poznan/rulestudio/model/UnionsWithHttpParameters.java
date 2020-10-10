@@ -11,14 +11,16 @@ public class UnionsWithHttpParameters {
     private Double consistencyThreshold;
     private String dataHash;
     private Boolean isCurrentData;
+    private DescriptiveAttributes descriptiveAttributes;
 
-    public UnionsWithHttpParameters(UnionsWithSingleLimitingDecision unions, UnionType typeOfUnions, Double consistencyThreshold, String dataHash) {
+    public UnionsWithHttpParameters(UnionsWithSingleLimitingDecision unions, UnionType typeOfUnions, Double consistencyThreshold, String dataHash, DescriptiveAttributes descriptiveAttributes) {
         this.unions = unions;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
         this.dataHash = dataHash;
 
         this.isCurrentData = true;
+        this.descriptiveAttributes = descriptiveAttributes;
     }
 
     public UnionsWithSingleLimitingDecision getUnions() {
@@ -61,6 +63,14 @@ public class UnionsWithHttpParameters {
         isCurrentData = currentData;
     }
 
+    public DescriptiveAttributes getDescriptiveAttributes() {
+        return descriptiveAttributes;
+    }
+
+    public void setDescriptiveAttributes(DescriptiveAttributes descriptiveAttributes) {
+        this.descriptiveAttributes = descriptiveAttributes;
+    }
+
     @Override
     public String toString() {
         return "UnionsWithHttpParameters{" +
@@ -69,6 +79,7 @@ public class UnionsWithHttpParameters {
                 ", consistencyThreshold=" + consistencyThreshold +
                 ", dataHash='" + dataHash + '\'' +
                 ", isCurrentData=" + isCurrentData +
+                ", descriptiveAttributes=" + descriptiveAttributes +
                 '}';
     }
 }

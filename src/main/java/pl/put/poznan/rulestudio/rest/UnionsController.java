@@ -64,6 +64,37 @@ public class UnionsController {
         return ResponseEntity.ok(result);
     }
 
+    @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DescriptiveAttributesResponse> getDescriptiveAttributes(
+            @PathVariable("id") UUID id) {
+        logger.info("Getting descriptive attributes in class unions...");
+
+        final DescriptiveAttributesResponse result = unionsService.getDescriptiveAttributes(id);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DescriptiveAttributesResponse> postDescriptiveAttributes(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "objectVisibleName", required = false) String objectVisibleName) {
+        logger.info("Posting descriptive attributes in class unions...");
+
+        final DescriptiveAttributesResponse result = unionsService.postDescriptiveAttributes(id, objectVisibleName);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/objectNames", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AttributeFieldsResponse> getObjectNames(
+            @PathVariable("id") UUID id) {
+        logger.info("Getting object names in class unions...");
+
+        final AttributeFieldsResponse result = unionsService.getObjectNames(id);
+
+        return ResponseEntity.ok(result);
+    }
+
     @RequestMapping(value = "/{classUnionIndex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChosenClassUnionResponse> getChosenClassUnion(
             @PathVariable("id") UUID id,
