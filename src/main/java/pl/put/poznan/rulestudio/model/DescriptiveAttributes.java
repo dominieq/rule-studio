@@ -13,6 +13,12 @@ public class DescriptiveAttributes {
     private int[] availableAttributesIndices;
     private Integer currentAttribute;
 
+    public DescriptiveAttributes() {
+        availableAttributesNames = new String[0];
+        availableAttributesIndices = new int[0];
+        currentAttribute = null;
+    }
+
     public DescriptiveAttributes(InformationTable informationTable) {
         IntArrayList indices = new IntArrayList();
         for(int i = 0; i < informationTable.getNumberOfAttributes(); i++) {

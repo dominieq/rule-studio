@@ -15,9 +15,7 @@ import pl.put.poznan.rulestudio.enums.RulesFormat;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
-import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse;
-import pl.put.poznan.rulestudio.model.response.MainRulesResponse;
-import pl.put.poznan.rulestudio.model.response.ObjectAbstractResponse;
+import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.service.RulesService;
 
 import java.io.IOException;
@@ -75,6 +73,37 @@ public class RulesController {
         logger.info("Posting rules...");
 
         final MainRulesResponse result = rulesService.postRules(id, typeOfUnions, consistencyThreshold, typeOfRules, metadata, data);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DescriptiveAttributesResponse> getDescriptiveAttributes (
+            @PathVariable("id") UUID id) {
+        logger.info("Getting descriptive attributes in rules...");
+
+        final DescriptiveAttributesResponse result = rulesService.getDescriptiveAttributes(id);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DescriptiveAttributesResponse> postDescriptiveAttributes(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "objectVisibleName", required = false) String objectVisibleName) {
+        logger.info("Posting descriptive attributes in rules...");
+
+        final DescriptiveAttributesResponse result = rulesService.postDescriptiveAttributes(id, objectVisibleName);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/objectNames", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AttributeFieldsResponse> getObjectNames(
+            @PathVariable("id") UUID id) {
+        logger.info("Getting object names in rules...");
+
+        final AttributeFieldsResponse result = rulesService.getObjectNames(id);
 
         return ResponseEntity.ok(result);
     }

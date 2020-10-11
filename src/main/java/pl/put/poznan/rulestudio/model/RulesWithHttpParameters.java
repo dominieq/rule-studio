@@ -15,6 +15,7 @@ public class RulesWithHttpParameters implements Cloneable {
     private Boolean isCurrentData;
     private ValidityRulesContainer validityRulesContainer;
     private Boolean isCoveragePresent;
+    private DescriptiveAttributes descriptiveAttributes;
   
     public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String rulesFileName) {
         this.externalRules = true;
@@ -22,12 +23,13 @@ public class RulesWithHttpParameters implements Cloneable {
         this.rulesFileName = rulesFileName;
     }
 
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, DescriptiveAttributes descriptiveAttributes) {
         this.externalRules = false;
         this.ruleSet = rules;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
         this.typeOfRules = ruleType;
+        this.descriptiveAttributes = descriptiveAttributes;
 
         this.isCurrentData = true;
     }
@@ -112,6 +114,14 @@ public class RulesWithHttpParameters implements Cloneable {
         isCoveragePresent = coveragePresent;
     }
 
+    public DescriptiveAttributes getDescriptiveAttributes() {
+        return descriptiveAttributes;
+    }
+
+    public void setDescriptiveAttributes(DescriptiveAttributes descriptiveAttributes) {
+        this.descriptiveAttributes = descriptiveAttributes;
+    }
+
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
@@ -125,6 +135,7 @@ public class RulesWithHttpParameters implements Cloneable {
                 ", isCurrentData=" + isCurrentData +
                 ", validityRulesContainer=" + validityRulesContainer +
                 ", isCoveragePresent=" + isCoveragePresent +
+                ", descriptiveAttributes=" + descriptiveAttributes +
                 '}';
     }
 

@@ -176,6 +176,7 @@ public class UnionsService {
 
     public DescriptiveAttributesResponse postDescriptiveAttributes(UUID id, String objectVisibleName) {
         logger.info("Id:\t{}", id);
+        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 

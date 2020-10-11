@@ -52,6 +52,12 @@ public class AttributeFieldsResponse {
         public AttributeFieldsResponse build(InformationTable informationTable, Integer attributeIndex) {
             AttributeFieldsResponse attributeFieldsResponse = new AttributeFieldsResponse();
 
+            if(informationTable == null) {
+                attributeFieldsResponse.fields = new String[0];
+
+                return attributeFieldsResponse;
+            }
+
             attributeFieldsResponse.fields = new String[informationTable.getNumberOfObjects()];
             if(attributeIndex == null) {
                 String base = "Object ";

@@ -25,7 +25,9 @@ import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.*;
 import pl.put.poznan.rulestudio.model.*;
 import pl.put.poznan.rulestudio.model.response.*;
+import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainRulesResponse.MainRulesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ObjectWithAttributesResponse.ObjectWithAttributesResponseBuilder;
@@ -264,7 +266,8 @@ public class RulesService {
         RulesWithHttpParameters rules = project.getRules();
         if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (!rules.getConsistencyThreshold().equals(consistencyThreshold)) || (rules.getTypeOfRules() != typeOfRules)) {
             RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
-            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules);
+            DescriptiveAttributes descriptiveAttributes = new DescriptiveAttributes(project.getInformationTable());
+            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, descriptiveAttributes);
 
             project.setRules(rules);
             project.setCurrentRules(true);
@@ -431,6 +434,47 @@ public class RulesService {
         return mainRulesResponse;
     }
 
+    public DescriptiveAttributesResponse getDescriptiveAttributes(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final RulesWithHttpParameters rules = getRulesFromProject(project);
+
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(rules.getDescriptiveAttributes());
+        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        return descriptiveAttributesResponse;
+    }
+
+    public DescriptiveAttributesResponse postDescriptiveAttributes(UUID id, String objectVisibleName) {
+        logger.info("Id:\t{}", id);
+        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final RulesWithHttpParameters rules = getRulesFromProject(project);
+
+        DescriptiveAttributes descriptiveAttributes = rules.getDescriptiveAttributes();
+        descriptiveAttributes.setCurrentAttribute(objectVisibleName);
+
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(rules.getDescriptiveAttributes());
+        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        return descriptiveAttributesResponse;
+    }
+
+    public AttributeFieldsResponse getObjectNames(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final RulesWithHttpParameters rules = getRulesFromProject(project);
+
+        final Integer descriptiveAttributeIndex = rules.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        return attributeFieldsResponse;
+    }
+
     public NamedResource download(UUID id, RulesFormat rulesFormat) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("RulesFormat:\t{}", rulesFormat);
@@ -477,6 +521,7 @@ public class RulesService {
 
                 rules.setCurrentData(null);
                 rules.setCoveragePresent(false);
+                rules.setDescriptiveAttributes(new DescriptiveAttributes());
             } else if(ruleSetHash.equals(informationTable.getHash())) {
                 logger.info("Current metadata and objects in the project are correct training set of uploaded rules. Calculating rule coverage information.");
                 rules.getRuleSet().calculateBasicRuleCoverageInformation(informationTable);
@@ -484,12 +529,14 @@ public class RulesService {
                 errorMessage = null;
                 rules.setCurrentData(true);
                 rules.setCoveragePresent(true);
+                rules.setDescriptiveAttributes(new DescriptiveAttributes(informationTable));
             } else {
                 errorMessage = String.format("Uploaded rules are not induced from the data in the current project. Access to a valid training set is required to calculate rule coverage information. Please upload new rules based on the current data or create a new project with a valid training set. Current data hash: \"%s\", rules hash: \"%s\".", informationTable.getHash(), ruleSetHash);
                 logger.info(errorMessage);
 
                 rules.setCurrentData(false);
                 rules.setCoveragePresent(false);
+                rules.setDescriptiveAttributes(new DescriptiveAttributes());
             }
         }
 
