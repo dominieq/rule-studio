@@ -20,14 +20,14 @@ function parseConesItems(data, objects, settings) {
                 id: i,
                 name: getItemName(i, objects, settings),
                 traits: {
-                    'Positive dominance cone': data.hasOwnProperty("positiveDominanceCones") ?
-                        data.positiveDominanceCones[i] : 0,
-                    'Negative dominance cone': data.hasOwnProperty("negativeDominanceCones") ?
-                        data.negativeDominanceCones[i] : 0,
-                    'Positive inverse dominance cone': data.hasOwnProperty("positiveInverseDominanceCones") ?
-                        data.positiveInverseDominanceCones[i] : 0,
-                    'Negative inverse dominance cone': data.hasOwnProperty("negativeInverseDominanceCones") ?
-                        data.negativeInverseDominanceCones[i] : 0
+                    ...(data.hasOwnProperty("positiveDominanceCones")
+                        && { 'Positive dominance cone': data.positiveDominanceCones[i] }),
+                    ...(data.hasOwnProperty("negativeDominanceCones")
+                        && { 'Negative dominance cone': data.negativeDominanceCones[i] }),
+                    ...(data.hasOwnProperty("positiveInverseDominanceCones")
+                        && { 'Positive inverse dominance cone': data.positiveInverseDominanceCones[i] }),
+                    ...(data.hasOwnProperty("negativeInverseDominanceCones")
+                        && { 'Negative inverse dominance cone': data.negativeInverseDominanceCones[i]})
                 },
                 toFilter() {
                     return [
