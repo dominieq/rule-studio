@@ -19,12 +19,15 @@ import pl.put.poznan.rulestudio.enums.ClassifierType;
 import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulestudio.exception.*;
 import pl.put.poznan.rulestudio.model.Classification;
+import pl.put.poznan.rulestudio.model.DescriptiveAttributes;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.response.*;
+import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectResponse.ChosenClassifiedObjectResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectWithAttributesResponse.ChosenClassifiedObjectWithAttributesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainClassificationResponse.MainClassificationResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ObjectWithAttributesResponse.ObjectWithAttributesResponseBuilder;
@@ -342,7 +345,7 @@ public class ClassificationService {
     }
 
     public MainClassificationResponse getClassification(UUID id) {
-        logger.info("Id;\t{}", id);
+        logger.info("Id:\t{}", id);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -369,6 +372,8 @@ public class ClassificationService {
 
         final Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, informationTable);
         final Classification classification = calculateClassification(informationTable, informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
+        classification.setDescriptiveAttributes(new DescriptiveAttributes(informationTable));
+        classification.setRulesDescriptiveAttributes(new DescriptiveAttributes(informationTable));  //@todo: change 'informationTable' to original learning data of rules
         project.setClassification(classification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(classification);
@@ -412,6 +417,8 @@ public class ClassificationService {
         final Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
         classification.setExternalData(true);
         classification.setExternalDataFileName(externalDataFile.getOriginalFilename());
+        classification.setDescriptiveAttributes(new DescriptiveAttributes(newInformationTable));
+        classification.setRulesDescriptiveAttributes(new DescriptiveAttributes(projectInformationTable));  //@todo: change 'informationTable' to original learning data of rules
         project.setClassification(classification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(classification);
@@ -438,6 +445,8 @@ public class ClassificationService {
 
         final Decision[] orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, informationTable);
         final Classification classification = calculateClassification(informationTable, informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
+        classification.setDescriptiveAttributes(new DescriptiveAttributes(informationTable));
+        classification.setRulesDescriptiveAttributes(new DescriptiveAttributes(informationTable));  //@todo: change 'informationTable' to original learning data of rules
         project.setClassification(classification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(classification);
@@ -479,6 +488,8 @@ public class ClassificationService {
         final Classification classification = calculateClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
         classification.setExternalData(true);
         classification.setExternalDataFileName(externalDataFile.getOriginalFilename());
+        classification.setDescriptiveAttributes(new DescriptiveAttributes(newInformationTable));
+        classification.setRulesDescriptiveAttributes(new DescriptiveAttributes(projectInformationTable));  //@todo: change 'informationTable' to original learning data of rules
         project.setClassification(classification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(classification);
@@ -486,8 +497,49 @@ public class ClassificationService {
         return mainClassificationResponse;
     }
 
+    public DescriptiveAttributesResponse getDescriptiveAttributes(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final Classification classification = getClassificationFromProject(project);
+
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(classification.getDescriptiveAttributes());
+        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        return descriptiveAttributesResponse;
+    }
+
+    public DescriptiveAttributesResponse postDescriptiveAttributes(UUID id, String objectVisibleName) {
+        logger.info("Id:\t{}", id);
+        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final Classification classification = getClassificationFromProject(project);
+
+        DescriptiveAttributes descriptiveAttributes = classification.getDescriptiveAttributes();
+        descriptiveAttributes.setCurrentAttribute(objectVisibleName);
+
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(classification.getDescriptiveAttributes());
+        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        return descriptiveAttributesResponse;
+    }
+
+    public AttributeFieldsResponse getObjectNames(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final Classification classification = getClassificationFromProject(project);
+
+        final Integer descriptiveAttributeIndex = classification.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        return attributeFieldsResponse;
+    }
+
     public ChosenClassifiedObjectAbstractResponse getChosenClassifiedObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
-        logger.info("Id;\t{}", id);
+        logger.info("Id:\t{}", id);
         logger.info("ClassifiedObjectIndex:\t{}", objectIndex);
         logger.info("IsAttributes:\t{}", isAttributes);
 
@@ -506,7 +558,7 @@ public class ClassificationService {
     }
 
     public RuleMainPropertiesResponse getRule(UUID id, Integer ruleIndex) {
-        logger.info("Id;\t{}", id);
+        logger.info("Id:\t{}", id);
         logger.info("RuleIndex:\t{}", ruleIndex);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
@@ -518,8 +570,49 @@ public class ClassificationService {
         return ruleMainPropertiesResponse;
     }
 
+    public DescriptiveAttributesResponse getRulesDescriptiveAttributes(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final Classification classification = getClassificationFromProject(project);
+
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(classification.getRulesDescriptiveAttributes());
+        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        return descriptiveAttributesResponse;
+    }
+
+    public DescriptiveAttributesResponse postRulesDescriptiveAttributes(UUID id, String objectVisibleName) {
+        logger.info("Id:\t{}", id);
+        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final Classification classification = getClassificationFromProject(project);
+
+        DescriptiveAttributes rulesDescriptiveAttributes = classification.getRulesDescriptiveAttributes();
+        rulesDescriptiveAttributes.setCurrentAttribute(objectVisibleName);
+
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(classification.getRulesDescriptiveAttributes());
+        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        return descriptiveAttributesResponse;
+    }
+
+    public AttributeFieldsResponse getRulesObjectNames(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final Classification classification = getClassificationFromProject(project);
+
+        final Integer descriptiveAttributeIndex = classification.getRulesDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        return attributeFieldsResponse;
+    }
+
     public ChosenRuleResponse getRuleCoveringObjects(UUID id, Integer ruleIndex) {
-        logger.info("Id;\t{}", id);
+        logger.info("Id:\t{}", id);
         logger.info("RuleIndex:\t{}", ruleIndex);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);

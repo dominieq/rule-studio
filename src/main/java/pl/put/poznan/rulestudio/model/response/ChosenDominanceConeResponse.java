@@ -66,10 +66,22 @@ public class ChosenDominanceConeResponse {
                     chosenDominanceConeResponse.dominanceCone = dominanceCones.getNegativeDCones()[objectIndex];
                     break;
                 case POSITIVE_INVERTED:
-                    chosenDominanceConeResponse.dominanceCone = dominanceCones.getPositiveInvDCones()[objectIndex];
+                    IntSortedSet[] positiveInvDCones = dominanceCones.getPositiveInvDCones();
+                    if(positiveInvDCones == null) {
+                        WrongParameterException ex = new WrongParameterException(String.format("Positive inverse dominance cones are not available - they are identical as positive dominance cones."));
+                        logger.error(ex.getMessage());
+                        throw ex;
+                    }
+                    chosenDominanceConeResponse.dominanceCone = positiveInvDCones[objectIndex];
                     break;
                 case NEGATIVE_INVERTED:
-                    chosenDominanceConeResponse.dominanceCone = dominanceCones.getNegativeInvDCones()[objectIndex];
+                    IntSortedSet[] negativeInvDCones = dominanceCones.getNegativeInvDCones();
+                    if(negativeInvDCones == null) {
+                        WrongParameterException ex = new WrongParameterException(String.format("Negative inverse dominance cones are not available - they are identical as negative dominance cones.", coneType));
+                        logger.error(ex.getMessage());
+                        throw ex;
+                    }
+                    chosenDominanceConeResponse.dominanceCone = negativeInvDCones[objectIndex];
                     break;
                 default:
                     WrongParameterException ex = new WrongParameterException(String.format("Given type of cone \"%s\" is unrecognized.", coneType));

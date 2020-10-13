@@ -16,6 +16,7 @@ import java.util.Arrays;
 
 public class MainRulesResponse {
 
+    @JsonProperty("Rules")
     private RuleMainProperties[] ruleMainPropertiesArray;
 
     @JsonProperty("parameters")

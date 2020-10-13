@@ -25,6 +25,8 @@ public class Classification {
     private Boolean isCurrentLearningData;
     private Boolean isCurrentRuleSet;
     private Boolean isCrossValidation;
+    private DescriptiveAttributes descriptiveAttributes;
+    private DescriptiveAttributes rulesDescriptiveAttributes;
 
     public Classification(ClassificationResult[] simpleClassificationResults, InformationTable informationTable) {
         this.classificationResults = simpleClassificationResults;
@@ -168,6 +170,22 @@ public class Classification {
         isCrossValidation = crossValidation;
     }
 
+    public DescriptiveAttributes getDescriptiveAttributes() {
+        return descriptiveAttributes;
+    }
+
+    public void setDescriptiveAttributes(DescriptiveAttributes descriptiveAttributes) {
+        this.descriptiveAttributes = descriptiveAttributes;
+    }
+
+    public DescriptiveAttributes getRulesDescriptiveAttributes() {
+        return rulesDescriptiveAttributes;
+    }
+
+    public void setRulesDescriptiveAttributes(DescriptiveAttributes rulesDescriptiveAttributes) {
+        this.rulesDescriptiveAttributes = rulesDescriptiveAttributes;
+    }
+
     @Override
     public String toString() {
         return "Classification{" +
@@ -185,6 +203,8 @@ public class Classification {
                 ", isCurrentLearningData=" + isCurrentLearningData +
                 ", isCurrentRuleSet=" + isCurrentRuleSet +
                 ", isCrossValidation=" + isCrossValidation +
+                ", descriptiveAttributes=" + descriptiveAttributes +
+                ", rulesDescriptiveAttributes=" + rulesDescriptiveAttributes +
                 '}';
     }
 }
