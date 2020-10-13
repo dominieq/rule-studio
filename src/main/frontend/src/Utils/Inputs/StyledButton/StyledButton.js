@@ -1,7 +1,7 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { mergeClasses } from "../../utilFunctions";
 import { hexToRgb } from "../../utilFunctions/colors";
+import { StyledButtonPropTypes } from "./propTypes";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 
@@ -86,24 +86,7 @@ function StyledButton(props) {
     );
 }
 
-StyledButton.propTypes = {
-    ButtonRef: PropTypes.object,
-    children: PropTypes.node,
-    classes: PropTypes.object,
-    className: PropTypes.string,
-    color: PropTypes.oneOf(["default", "inherit", "primary", "secondary"]),
-    component: PropTypes.elementType,
-    disabled: PropTypes.bool,
-    disableElevation: PropTypes.bool,
-    disableFocusRipple: PropTypes.bool,
-    disableRipple: PropTypes.bool,
-    endIcon: PropTypes.node,
-    fullWidth: PropTypes.bool,
-    href: PropTypes.string,
-    size: PropTypes.oneOf(["small", "medium", "large"]),
-    startIcon: PropTypes.node,
-    variant: PropTypes.oneOf(["text", "outlined", "contained"])
-};
+StyledButton.propTypes = { ...StyledButtonPropTypes };
 
 StyledButton.defaultProps = {
     color: "inherit"
