@@ -539,6 +539,7 @@ class App extends Component {
         const { projects } = this.state;
         const url = window.location.href.toString();
         const urlSplitted = url.split('/');
+        
         if(urlSplitted.length >= 4) {
             const projectId = url.split('/')[3];
             for (let i = 0; i < projects.length; i++) {
