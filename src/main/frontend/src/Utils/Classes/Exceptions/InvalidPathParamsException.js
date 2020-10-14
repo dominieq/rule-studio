@@ -13,6 +13,8 @@ class InvalidPathParamsException extends Error {
 
         this.message = message;
         this.pathParams = pathParams;
+
+        Object.setPrototypeOf(this, InvalidPathParamsException);
     }
 }
 

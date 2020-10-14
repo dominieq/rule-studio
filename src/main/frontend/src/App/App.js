@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import { fetchProject, fetchProjects, } from "./fetchFunctions";
-import { exportProject, importProject } from "../Utils/utilFunctions/fetchFunctions";
+import { exportProject, fetchProject, fetchProjects, importProject } from "../Utils/utilFunctions/fetchFunctions";
 import Header from "../Header/Header";
 import { ProjectMenu } from "../Header/Elements";
 import Help from '../Body/Help/Help';
@@ -68,7 +67,7 @@ class App extends Component {
             loadingTitle: "Loading projects",
         }, () => {
             fetchProjects(
-                base, "GET", null
+                "GET", null, base
             ).then(result => {
                 if (Array.isArray(result)) {
                     this.setState(({projects}) => ({
@@ -87,7 +86,11 @@ class App extends Component {
                     });
                 }
             }).catch(error => {
-                this.setState({ alertProps: error });
+                if (error.constructor.name !== "AlertError") {
+                    console.error(error);
+                } else {
+                    this.setState({ alertProps: error });
+                }
             }).finally(() => {
                 this.setState({
                     loading: false,
@@ -285,7 +288,7 @@ class App extends Component {
                 }
 
                 fetchProjects(
-                    serverBase,"POST", data
+                    "POST", data, serverBase
                 ).then(result => {
                     if (result) {
                         const indexOptions = this.createNewIndexOptions(result.informationTable.attributes);
@@ -303,7 +306,11 @@ class App extends Component {
                         }));
                     }
                 }).catch(error => {
-                    this.setState({ alertProps: error });
+                    if (error.constructor.name !== "AlertError") {
+                        console.error(error);
+                    } else {
+                        this.setState({ alertProps: error });
+                    }
                 }).finally(() => {
                     this.setState({ loading: false });
                 });
@@ -316,8 +323,8 @@ class App extends Component {
 
         if (currentProject >= 0) {
             exportProject(serverBase, projects[currentProject].result.id).catch(error => {
-                if (!error.hasOwnProperty("open")) {
-                    console.log(error);
+                if (error.constructor.name !== "AlertError") {
+                    console.error(error);
                 } else {
                     this.setState({ alertProps: error });
                 }
@@ -414,7 +421,7 @@ class App extends Component {
                 loadingTitle: "Deleting project"
             }, () => {
                 fetchProject(
-                    serverBase, projects[currentProject].result.id, "DELETE", null
+                    projects[currentProject].result.id, "DELETE", null, serverBase
                 ).then(() => {
                     const removedProject = projects[currentProject].result.name;
 
@@ -433,7 +440,11 @@ class App extends Component {
                         }
                     }));
                 }).catch(error => {
-                    this.setState({ alertProps: error });
+                    if (error.constructor.name !== "AlertError") {
+                        console.error(error);
+                    } else {
+                        this.setState({ alertProps: error });
+                    }
                 }).finally(() => {
                     this.setState({ loading: false });
                 });
@@ -467,7 +478,7 @@ class App extends Component {
                     data.append("name", name);
 
                     fetchProject(
-                        serverBase, projects[currentProject].result.id, "PATCH", data
+                        projects[currentProject].result.id, "PATCH", data, serverBase
                     ).then(result => {
                         if (result) {
                             this.setState(({currentProject, projects}) => ({
@@ -484,7 +495,11 @@ class App extends Component {
                             }));
                         }
                     }).catch(error => {
-                        this.setState({ alertProps: error });
+                        if (error.constructor.name !== "AlertError") {
+                            console.error(error);
+                        } else {
+                            this.setState({ alertProps: error });
+                        }
                     }).finally(() => {
                         this.setState({ loading: false });
                     });
