@@ -617,9 +617,9 @@ public class ClassificationService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        getClassificationFromProject(project);
+        final Classification classification = getClassificationFromProject(project);
 
-        final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(project.getRules().getRuleSet(), ruleIndex);
+        final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(project.getRules().getRuleSet(), ruleIndex, classification.getRulesDescriptiveAttributes(), project.getInformationTable());
         logger.debug("chosenRuleResponse:\t{}", chosenRuleResponse);
         return chosenRuleResponse;
     }

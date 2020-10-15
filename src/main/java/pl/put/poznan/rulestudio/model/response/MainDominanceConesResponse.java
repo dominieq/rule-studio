@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
+import org.rulelearn.data.InformationTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.model.DominanceCones;
@@ -30,6 +31,8 @@ public class MainDominanceConesResponse {
     @JsonProperty("negativeInverseDominanceCones")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private int[] negativeInverseDominanceConeCounts;
+
+    private String[] objectNames;
 
     private MainDominanceConesResponse() {
         //private constructor
@@ -60,6 +63,10 @@ public class MainDominanceConesResponse {
         return negativeInverseDominanceConeCounts;
     }
 
+    public String[] getObjectNames() {
+        return objectNames;
+    }
+
     @Override
     public String toString() {
         return "MainDominanceConesResponse{" +
@@ -69,6 +76,7 @@ public class MainDominanceConesResponse {
                 ", negativeDominanceConeCounts=" + Arrays.toString(negativeDominanceConeCounts) +
                 ", positiveInverseDominanceConeCounts=" + Arrays.toString(positiveInverseDominanceConeCounts) +
                 ", negativeInverseDominanceConeCounts=" + Arrays.toString(negativeInverseDominanceConeCounts) +
+                ", objectNames=" + Arrays.toString(objectNames) +
                 '}';
     }
 
@@ -81,6 +89,7 @@ public class MainDominanceConesResponse {
         private int[] negativeDominanceConeCounts;
         private int[] positiveInverseDominanceConeCounts;
         private int[] negativeInverseDominanceConeCounts;
+        private String[] objectNames;
 
         public static MainDominanceConesResponseBuilder newInstance() {
             return new MainDominanceConesResponseBuilder();
@@ -116,6 +125,11 @@ public class MainDominanceConesResponse {
             return this;
         }
 
+        public MainDominanceConesResponseBuilder setObjectNames(String[] objectNames) {
+            this.objectNames = objectNames;
+            return this;
+        }
+
         public MainDominanceConesResponse build() {
             MainDominanceConesResponse mainDominanceConesResponse = new MainDominanceConesResponse();
 
@@ -125,6 +139,7 @@ public class MainDominanceConesResponse {
             mainDominanceConesResponse.negativeDominanceConeCounts = this.negativeDominanceConeCounts;
             mainDominanceConesResponse.positiveInverseDominanceConeCounts = this.positiveInverseDominanceConeCounts;
             mainDominanceConesResponse.negativeInverseDominanceConeCounts = this.negativeInverseDominanceConeCounts;
+            mainDominanceConesResponse.objectNames = this.objectNames;
 
             return mainDominanceConesResponse;
         }
@@ -138,7 +153,7 @@ public class MainDominanceConesResponse {
             return dominanceConeCounts;
         }
 
-        public MainDominanceConesResponse build(DominanceCones dominanceCones) {
+        public MainDominanceConesResponse build(DominanceCones dominanceCones, InformationTable informationTable) {
             MainDominanceConesResponse mainDominanceConesResponse = new MainDominanceConesResponse();
 
             mainDominanceConesResponse.numberOfObjects = dominanceCones.getNumberOfObjects();
@@ -158,6 +173,8 @@ public class MainDominanceConesResponse {
             } else {
                 mainDominanceConesResponse.negativeInverseDominanceConeCounts = null;
             }
+
+            mainDominanceConesResponse.objectNames = dominanceCones.getDescriptiveAttributes().extractObjectNames(informationTable);
 
             return mainDominanceConesResponse;
         }

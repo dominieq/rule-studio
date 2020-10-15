@@ -250,7 +250,7 @@ public class UnionsService {
 
         final Union chosenClassUnion = getClassUnionByIndex(unionsWithHttpParameters, classUnionIndex);
 
-        final ClassUnionArrayPropertyResponse classUnionArrayPropertyResponse = ClassUnionArrayPropertyResponseBuilder.newInstance().build(chosenClassUnion, classUnionArrayPropertyType);
+        final ClassUnionArrayPropertyResponse classUnionArrayPropertyResponse = ClassUnionArrayPropertyResponseBuilder.newInstance().build(chosenClassUnion, classUnionArrayPropertyType, unionsWithHttpParameters.getDescriptiveAttributes(), project.getInformationTable());
         logger.debug("classUnionArrayPropertyResponse:\t{}", classUnionArrayPropertyResponse.toString());
         return classUnionArrayPropertyResponse;
     }

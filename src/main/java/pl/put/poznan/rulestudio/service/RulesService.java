@@ -605,7 +605,7 @@ public class RulesService {
 
         final RulesWithHttpParameters rules = getRulesFromProject(project);
 
-        final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(rules.getRuleSet(), ruleIndex);
+        final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(rules.getRuleSet(), ruleIndex, rules.getDescriptiveAttributes(), project.getInformationTable());
         logger.debug("chosenRuleResponse:\t{}", chosenRuleResponse.toString());
         return chosenRuleResponse;
     }

@@ -99,4 +99,60 @@ public class DescriptiveAttributes {
         logger.error(ex.getMessage());
         throw ex;
     }
+
+    public String[] extractObjectNames(InformationTable informationTable) {
+        String[] objectNames;
+        final Integer attributeIndex = this.getCurrentAttributeInformationTableIndex();
+
+        if(informationTable == null) {
+            objectNames = new String[0];
+
+            return objectNames;
+        }
+
+        objectNames = new String[informationTable.getNumberOfObjects()];
+        if(attributeIndex == null) {
+            String base = "Object ";
+            StringBuilder sb;
+            for(int objectIndex = 0; objectIndex < informationTable.getNumberOfObjects(); objectIndex++) {
+                sb = new StringBuilder(base);
+                sb.append(objectIndex + 1);
+                objectNames[objectIndex] = sb.toString();
+            }
+        } else {
+            for(int objectIndex = 0; objectIndex < informationTable.getNumberOfObjects(); objectIndex++) {
+                objectNames[objectIndex] = informationTable.getField(objectIndex, attributeIndex).toString();
+            }
+        }
+
+        return objectNames;
+    }
+
+    public String[] extractChosenObjectNames(InformationTable informationTable, int[] indices) {
+        String[] objectNames;
+        final Integer attributeIndex = this.getCurrentAttributeInformationTableIndex();
+
+        if(informationTable == null) {
+            objectNames = new String[0];
+
+            return objectNames;
+        }
+
+        objectNames = new String[indices.length];
+        if(attributeIndex == null) {
+            String base = "Object ";
+            StringBuilder sb;
+            for(int i = 0; i < indices.length; i++) {
+                sb = new StringBuilder(base);
+                sb.append(indices[i] + 1);
+                objectNames[i] = sb.toString();
+            }
+        } else {
+            for(int i = 0; i < indices.length; i++) {
+                objectNames[i] = informationTable.getField(indices[i], attributeIndex).toString();
+            }
+        }
+
+        return objectNames;
+    }
 }

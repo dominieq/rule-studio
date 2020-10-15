@@ -82,7 +82,7 @@ public class DominanceConesService {
 
         final DominanceCones dominanceCones = getDominanceConesFromProject(project);
 
-        final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
+        final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones, project.getInformationTable());
         logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
         return mainDominanceConesResponse;
     }
@@ -95,7 +95,7 @@ public class DominanceConesService {
         calculateDominanceCones(project);
 
         final DominanceCones dominanceCones = project.getDominanceCones();
-        final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
+        final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones, project.getInformationTable());
         logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
         return mainDominanceConesResponse;
     }
@@ -114,7 +114,7 @@ public class DominanceConesService {
         calculateDominanceCones(project);
 
         final DominanceCones dominanceCones = project.getDominanceCones();
-        final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
+        final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones, project.getInformationTable());
         logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
         return mainDominanceConesResponse;
     }

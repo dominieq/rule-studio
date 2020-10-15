@@ -14,6 +14,8 @@ import java.util.Arrays;
 
 public class MainClassificationResponse {
 
+    private String[] objectNames;
+
     @JsonProperty("Objects")
     private ClassifiedObjectMainProperties[] classifiedObjectMainPropertiesArray;
 
@@ -33,6 +35,10 @@ public class MainClassificationResponse {
 
     private MainClassificationResponse() {
         //private constructor
+    }
+
+    public String[] getObjectNames() {
+        return objectNames;
     }
 
     public ClassifiedObjectMainProperties[] getClassifiedObjectMainPropertiesArray() {
@@ -64,7 +70,8 @@ public class MainClassificationResponse {
     @Override
     public String toString() {
         return "MainClassificationResponse{" +
-                "classifiedObjectMainPropertiesArray=" + Arrays.toString(classifiedObjectMainPropertiesArray) +
+                "objectNames=" + Arrays.toString(objectNames) +
+                ", classifiedObjectMainPropertiesArray=" + Arrays.toString(classifiedObjectMainPropertiesArray) +
                 ", isExternalData=" + isExternalData +
                 ", externalDataFileName='" + externalDataFileName + '\'' +
                 ", isCurrentLearningData=" + isCurrentLearningData +
@@ -76,6 +83,7 @@ public class MainClassificationResponse {
     public static class MainClassificationResponseBuilder {
         private static final Logger logger = LoggerFactory.getLogger(MainClassificationResponseBuilder.class);
 
+        private String[] objectNames;
         private ClassifiedObjectMainProperties[] classifiedObjectMainPropertiesArray;
         private Boolean isExternalData;
         private String externalDataFileName;
@@ -85,6 +93,11 @@ public class MainClassificationResponse {
 
         public static MainClassificationResponseBuilder newInstance() {
             return new MainClassificationResponseBuilder();
+        }
+
+        public MainClassificationResponseBuilder setObjectNames(String[] objectNames) {
+            this.objectNames = objectNames;
+            return this;
         }
 
         public MainClassificationResponseBuilder setClassifiedObjectMainProperties(ClassifiedObjectMainProperties[] classifiedObjectMainPropertiesArray) {
@@ -120,6 +133,7 @@ public class MainClassificationResponse {
         public MainClassificationResponse build() {
             MainClassificationResponse mainClassificationResponse = new MainClassificationResponse();
 
+            mainClassificationResponse.objectNames = this.objectNames;
             mainClassificationResponse.classifiedObjectMainPropertiesArray = this.classifiedObjectMainPropertiesArray;
             mainClassificationResponse.isExternalData = this.isExternalData;
             mainClassificationResponse.externalDataFileName = this.externalDataFileName;
@@ -132,6 +146,8 @@ public class MainClassificationResponse {
 
         public MainClassificationResponse build(Classification classification) {
             MainClassificationResponse mainClassificationResponse = new MainClassificationResponse();
+
+            mainClassificationResponse.objectNames = classification.getDescriptiveAttributes().extractObjectNames(classification.getInformationTable());
 
             final int numberOfObjects = classification.getInformationTable().getNumberOfObjects();
             mainClassificationResponse.classifiedObjectMainPropertiesArray = new ClassifiedObjectMainProperties[numberOfObjects];
