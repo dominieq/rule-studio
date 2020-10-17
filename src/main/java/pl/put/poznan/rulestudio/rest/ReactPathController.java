@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class ReactPathController {
 
-    private static final Logger logger = LoggerFactory.getLogger(DominanceConesController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReactPathController.class);
 
     @RequestMapping(value = {"/data","/cones","/unions","/rules","/classification","/crossvalidation"})
     public String returnIndex(
