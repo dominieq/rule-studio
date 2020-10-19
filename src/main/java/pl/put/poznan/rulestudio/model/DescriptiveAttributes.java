@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 
+import java.util.Arrays;
+
 public class DescriptiveAttributes {
     private static final Logger logger = LoggerFactory.getLogger(DescriptiveAttributes.class);
 
@@ -154,5 +156,14 @@ public class DescriptiveAttributes {
         }
 
         return objectNames;
+    }
+
+    @Override
+    public String toString() {
+        return "DescriptiveAttributes{" +
+                "availableAttributesNames=" + Arrays.toString(availableAttributesNames) +
+                ", availableAttributesIndices=" + Arrays.toString(availableAttributesIndices) +
+                ", currentAttribute=" + currentAttribute +
+                '}';
     }
 }

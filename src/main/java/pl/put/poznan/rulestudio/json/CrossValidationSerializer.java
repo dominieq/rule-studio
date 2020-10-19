@@ -32,7 +32,7 @@ public class CrossValidationSerializer extends JsonSerializer<CrossValidation> {
         jsonGenerator.writeFieldName("crossValidationSingleFolds");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(crossValidation.getCrossValidationSingleFolds()));
 
-        Decision[] orderOfDecision = crossValidation.getCrossValidationSingleFolds()[0].getClassificationValidationTable().getOrderOfDecisions();
+        Decision[] orderOfDecision = crossValidation.getCrossValidationSingleFolds()[0].getClassificationOfValidationTable().getOrderOfDecisions();
 
         jsonGenerator.writeFieldName("meanOrdinalMisclassificationMatrix");
         OrdinalMisclassificationMatrixSerializer.serializeMatrix(crossValidation.getMeanOrdinalMisclassificationMatrix(), orderOfDecision, jsonGenerator);

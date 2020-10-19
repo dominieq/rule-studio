@@ -11,6 +11,7 @@ import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulestudio.enums.RuleType;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.model.CrossValidation;
+import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.service.CrossValidationService;
 
 import java.io.IOException;
@@ -31,16 +32,17 @@ public class CrossValidationController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CrossValidation> getCrossValidation(
+    public ResponseEntity<MainCrossValidationResponse> getCrossValidation(
             @PathVariable("id") UUID id) throws IOException {
         logger.info("Getting cross validation...");
-        CrossValidation result = crossValidationService.getCrossValidation(id);
+
+        final MainCrossValidationResponse result = crossValidationService.getCrossValidation(id);
 
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CrossValidation> putCrossValidation(
+    public ResponseEntity<MainCrossValidationResponse> putCrossValidation(
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
@@ -51,13 +53,13 @@ public class CrossValidationController {
             @RequestParam(name = "seed", defaultValue = "0") Long seed) {
         logger.info("Putting cross validation...");
 
-        CrossValidation result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, seed);
+        final MainCrossValidationResponse result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, seed);
 
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CrossValidation> postCrossValidation(
+    public ResponseEntity<MainCrossValidationResponse> postCrossValidation(
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
@@ -70,7 +72,62 @@ public class CrossValidationController {
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting cross validation...");
 
-        CrossValidation result = crossValidationService.postCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, seed, metadata, data);
+        final MainCrossValidationResponse result = crossValidationService.postCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, seed, metadata, data);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DescriptiveAttributesResponse> getDescriptiveAttributes (
+            @PathVariable("id") UUID id) {
+        logger.info("Getting descriptive attributes in cross validation...");
+
+        final DescriptiveAttributesResponse result = crossValidationService.getDescriptiveAttributes(id);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DescriptiveAttributesResponse> postDescriptiveAttributes(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "objectVisibleName", required = false) String objectVisibleName) {
+        logger.info("Posting descriptive attributes in cross validation...");
+
+        final DescriptiveAttributesResponse result = crossValidationService.postDescriptiveAttributes(id, objectVisibleName);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/objectNames", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AttributeFieldsResponse> getObjectNames(
+            @PathVariable("id") UUID id) {
+        logger.info("Getting object names in cross validation...");
+
+        final AttributeFieldsResponse result = crossValidationService.getObjectNames(id);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/{foldIndex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChosenCrossValidationFoldResponse> getChosenCrossValidationFold(
+            @PathVariable("id") UUID id,
+            @PathVariable("foldIndex") Integer foldIndex) throws IOException {
+        logger.info("Getting chosen cross validation fold...");
+
+        final ChosenCrossValidationFoldResponse result = crossValidationService.getChosenCrossValidationFold(id, foldIndex);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/{foldIndex}/object", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChosenClassifiedObjectAbstractResponse> getChosenClassifiedObject(
+            @PathVariable("id") UUID id,
+            @PathVariable("foldIndex") Integer foldIndex,
+            @RequestParam("objectIndex") Integer objectIndex,
+            @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
+        logger.info("Getting chosen classified object...");
+
+        final ChosenClassifiedObjectAbstractResponse result = crossValidationService.getChosenClassifiedObject(id, foldIndex, objectIndex, isAttributes);
 
         return ResponseEntity.ok(result);
     }

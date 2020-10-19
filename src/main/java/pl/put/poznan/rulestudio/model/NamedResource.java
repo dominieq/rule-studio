@@ -26,4 +26,12 @@ public class NamedResource {
     public void setResource(Resource resource) {
         this.resource = resource;
     }
+
+    @Override
+    public String toString() {
+        return "NamedResource{" +
+                "name='" + name + '\'' +
+                ", resource=" + resource +
+                '}';
+    }
 }

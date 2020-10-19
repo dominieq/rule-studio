@@ -23,6 +23,7 @@ public class CrossValidation {
     private Long seed;
     private String dataHash;
     private Boolean isCurrentData;
+    private DescriptiveAttributes descriptiveAttributes;
 
     public CrossValidation(Integer numberOfFolds, CrossValidationSingleFold[] crossValidationSingleFolds, OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix, OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix) {
         this.numberOfFolds = numberOfFolds;
@@ -42,7 +43,8 @@ public class CrossValidation {
             ClassifierType typeOfClassifier,
             DefaultClassificationResultType defaultClassificationResult,
             Long seed,
-            String dataHash) {
+            String dataHash,
+            DescriptiveAttributes descriptiveAttributes) {
 
         this.numberOfFolds = numberOfFolds;
         this.informationTable = informationTable;
@@ -56,6 +58,7 @@ public class CrossValidation {
         this.defaultClassificationResult = defaultClassificationResult;
         this.seed = seed;
         this.dataHash = dataHash;
+        this.descriptiveAttributes = descriptiveAttributes;
 
         this.isCurrentData = true;
     }
@@ -164,6 +167,14 @@ public class CrossValidation {
         isCurrentData = currentData;
     }
 
+    public DescriptiveAttributes getDescriptiveAttributes() {
+        return descriptiveAttributes;
+    }
+
+    public void setDescriptiveAttributes(DescriptiveAttributes descriptiveAttributes) {
+        this.descriptiveAttributes = descriptiveAttributes;
+    }
+
     @Override
     public String toString() {
         return "CrossValidation{" +
@@ -180,6 +191,7 @@ public class CrossValidation {
                 ", seed=" + seed +
                 ", dataHash='" + dataHash + '\'' +
                 ", isCurrentData=" + isCurrentData +
+                ", descriptiveAttributes=" + descriptiveAttributes +
                 '}';
     }
 }

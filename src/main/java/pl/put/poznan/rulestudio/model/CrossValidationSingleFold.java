@@ -2,17 +2,19 @@ package pl.put.poznan.rulestudio.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Arrays;
+
 public class CrossValidationSingleFold {
     private int[] indicesOfTrainingObjects;
     private int[] indicesOfValidationObjects;
     private RuLeStudioRuleSet ruLeStudioRuleSet;
-    private Classification classificationValidationTable;
+    private Classification classificationOfValidationTable;
 
-    public CrossValidationSingleFold(int[] indicesOfTrainingObjects, int[] indicesOfValidationObjects, RuLeStudioRuleSet ruLeStudioRuleSet, Classification classificationValidationTable) {
+    public CrossValidationSingleFold(int[] indicesOfTrainingObjects, int[] indicesOfValidationObjects, RuLeStudioRuleSet ruLeStudioRuleSet, Classification classificationOfValidationTable) {
         this.indicesOfTrainingObjects = indicesOfTrainingObjects;
         this.indicesOfValidationObjects = indicesOfValidationObjects;
         this.ruLeStudioRuleSet = ruLeStudioRuleSet;
-        this.classificationValidationTable = classificationValidationTable;
+        this.classificationOfValidationTable = classificationOfValidationTable;
     }
 
     public int[] getIndicesOfTrainingObjects() {
@@ -41,11 +43,21 @@ public class CrossValidationSingleFold {
         this.ruLeStudioRuleSet = ruLeStudioRuleSet;
     }
 
-    public Classification getClassificationValidationTable() {
-        return classificationValidationTable;
+    public Classification getClassificationOfValidationTable() {
+        return classificationOfValidationTable;
     }
 
-    public void setClassificationValidationTable(Classification classificationValidationTable) {
-        this.classificationValidationTable = classificationValidationTable;
+    public void setClassificationOfValidationTable(Classification classificationOfValidationTable) {
+        this.classificationOfValidationTable = classificationOfValidationTable;
+    }
+
+    @Override
+    public String toString() {
+        return "CrossValidationSingleFold{" +
+                "indicesOfTrainingObjects=" + Arrays.toString(indicesOfTrainingObjects) +
+                ", indicesOfValidationObjects=" + Arrays.toString(indicesOfValidationObjects) +
+                ", ruLeStudioRuleSet=" + ruLeStudioRuleSet +
+                ", classificationOfValidationTable=" + classificationOfValidationTable +
+                '}';
     }
 }

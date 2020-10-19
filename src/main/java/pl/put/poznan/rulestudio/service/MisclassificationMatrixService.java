@@ -52,7 +52,7 @@ public class MisclassificationMatrixService {
                     throw ex;
                 }
                 try {
-                    ordinalMisclassificationMatrix = crossValidationSingleFolds[numberOfFold].getClassificationValidationTable().getOrdinalMisclassificationMatrix();
+                    ordinalMisclassificationMatrix = crossValidationSingleFolds[numberOfFold].getClassificationOfValidationTable().getOrdinalMisclassificationMatrix();
                 } catch (ArrayIndexOutOfBoundsException e) {
                     WrongParameterException ex = new WrongParameterException(String.format("There is no fold with number {}.", numberOfFold));
                     logger.error(ex.getMessage());

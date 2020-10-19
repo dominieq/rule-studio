@@ -36,6 +36,16 @@ public class ClassUnionMainProperties {
         return qualityOfApproximation;
     }
 
+    @Override
+    public String toString() {
+        return "ClassUnionMainProperties{" +
+                "unionType=" + unionType +
+                ", limitingDecision='" + limitingDecision + '\'' +
+                ", accuracyOfApproximation=" + accuracyOfApproximation +
+                ", qualityOfApproximation=" + qualityOfApproximation +
+                '}';
+    }
+
     public static class ClassUnionMainPropertiesBuilder {
         private static final Logger logger = LoggerFactory.getLogger(ClassUnionMainPropertiesBuilder.class);
 
