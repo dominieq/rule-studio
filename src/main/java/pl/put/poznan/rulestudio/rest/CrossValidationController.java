@@ -131,4 +131,16 @@ public class CrossValidationController {
 
         return ResponseEntity.ok(result);
     }
+
+    @RequestMapping(value = "/{foldIndex}/rules/{ruleIndex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RuleMainPropertiesResponse> getRule(
+            @PathVariable("id") UUID id,
+            @PathVariable("foldIndex") Integer foldIndex,
+            @PathVariable("ruleIndex") Integer ruleIndex) throws IOException {
+        logger.info("Getting rule from cross validation...");
+
+        final RuleMainPropertiesResponse result = crossValidationService.getRule(id, foldIndex, ruleIndex);
+
+        return ResponseEntity.ok(result);
+    }
 }

@@ -5,6 +5,8 @@ import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
+import pl.put.poznan.rulestudio.model.RuLeStudioRule;
+import pl.put.poznan.rulestudio.model.RuLeStudioRuleSet;
 import pl.put.poznan.rulestudio.model.response.RuleMainProperties.RuleMainPropertiesBuilder;
 
 public class RuleMainPropertiesResponse {
@@ -59,6 +61,22 @@ public class RuleMainPropertiesResponse {
             RuleMainPropertiesResponse ruleMainPropertiesResponse = new RuleMainPropertiesResponse();
 
             ruleMainPropertiesResponse.ruleMainProperties = RuleMainPropertiesBuilder.newInstance().build(ruleSetWithCharacteristics.getRule(ruleIndex), ruleSetWithCharacteristics.getRuleCharacteristics(ruleIndex));
+
+            return ruleMainPropertiesResponse;
+        }
+
+        public RuleMainPropertiesResponse build(RuLeStudioRuleSet ruLeStudioRuleSet, Integer ruleIndex) {
+            final RuLeStudioRule[] rules = ruLeStudioRuleSet.getRuLeStudioRules();
+            if((ruleIndex < 0) || (ruleIndex >= rules.length)) {
+                WrongParameterException ex = new WrongParameterException(String.format("Given rule's index \"%d\" is incorrect. You can choose rule from %d to %d", ruleIndex, 0, rules.length - 1));
+                logger.error(ex.getMessage());
+                throw ex;
+            }
+
+            RuleMainPropertiesResponse ruleMainPropertiesResponse = new RuleMainPropertiesResponse();
+
+            final RuLeStudioRule rule = rules[ruleIndex];
+            ruleMainPropertiesResponse.ruleMainProperties = RuleMainPropertiesBuilder.newInstance().build(rule.getRule(), rule.getRuleCharacteristics());
 
             return ruleMainPropertiesResponse;
         }

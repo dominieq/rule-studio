@@ -11,7 +11,6 @@ import java.util.LinkedHashMap;
 
 public class ObjectResponse extends ObjectAbstractResponse {
 
-    @JsonValue
     private LinkedHashMap<String, String> value;
 
     private ObjectResponse() {

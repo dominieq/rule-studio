@@ -25,6 +25,7 @@ import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectWithAttribu
 import pl.put.poznan.rulestudio.model.response.ChosenCrossValidationFoldResponse.ChosenCrossValidationFoldResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainCrossValidationResponse.MainCrossValidationResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.RuleMainPropertiesResponse.RuleMainPropertiesResponseBuilder;
 
 import java.io.IOException;
 import java.util.List;
@@ -48,6 +49,16 @@ public class CrossValidationService {
         }
 
         return crossValidation;
+    }
+
+    private static CrossValidationSingleFold getChosenFoldFromCrossValidation(CrossValidation crossValidation, Integer foldIndex) {
+        if((foldIndex < 0) || (foldIndex >= crossValidation.getNumberOfFolds())) {
+            WrongParameterException ex = new WrongParameterException(String.format("Given fold's index \"%d\" is incorrect. You can choose fold from %d to %d", foldIndex, 0, crossValidation.getNumberOfFolds() - 1));
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        return crossValidation.getCrossValidationSingleFolds()[foldIndex];
     }
 
     private int[] extractIndices(InformationTable foldInformationTable, Index2IdMapper mainIndex2IdMapper) {
@@ -268,12 +279,7 @@ public class CrossValidationService {
 
         final CrossValidation crossValidation = getCrossValidationFromProject(project);
 
-        if((foldIndex < 0) || (foldIndex >= crossValidation.getNumberOfFolds())) {
-            WrongParameterException ex = new WrongParameterException(String.format("Given fold's index \"%d\" is incorrect. You can choose fold from %d to %d", foldIndex, 0, crossValidation.getNumberOfFolds() - 1));
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-        final CrossValidationSingleFold chosenFold = crossValidation.getCrossValidationSingleFolds()[foldIndex];
+        final CrossValidationSingleFold chosenFold = getChosenFoldFromCrossValidation(crossValidation, foldIndex);
 
         ChosenClassifiedObjectAbstractResponse chosenClassifiedObjectAbstractResponse;
         if(isAttributes) {
@@ -283,5 +289,21 @@ public class CrossValidationService {
         }
         logger.debug("chosenClassifiedObjectAbstractResponse:\t{}", chosenClassifiedObjectAbstractResponse);
         return chosenClassifiedObjectAbstractResponse;
+    }
+
+    public RuleMainPropertiesResponse getRule(UUID id, Integer foldIndex, Integer ruleIndex) {
+        logger.info("Id:\t{}", id);
+        logger.info("FoldIndex:\t{}", foldIndex);
+        logger.info("RuleIndex:\t{}", ruleIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final CrossValidation crossValidation = getCrossValidationFromProject(project);
+
+        final CrossValidationSingleFold chosenFold = getChosenFoldFromCrossValidation(crossValidation, foldIndex);
+
+        final RuleMainPropertiesResponse ruleMainPropertiesResponse = RuleMainPropertiesResponseBuilder.newInstance().build(chosenFold.getRuLeStudioRuleSet(), ruleIndex);
+        logger.debug("ruleMainPropertiesResponse:\t{}", ruleMainPropertiesResponse);
+        return ruleMainPropertiesResponse;
     }
 }
