@@ -143,4 +143,28 @@ public class CrossValidationController {
 
         return ResponseEntity.ok(result);
     }
+
+    @RequestMapping(value = "/{foldIndex}/rules/{ruleIndex}/coveringObjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChosenRuleResponse> getRuleCoveringObjects(
+            @PathVariable("id") UUID id,
+            @PathVariable("foldIndex") Integer foldIndex,
+            @PathVariable("ruleIndex") Integer ruleIndex) throws IOException {
+        logger.info("Getting rule covering objects from cross validation...");
+
+        final ChosenRuleResponse result = crossValidationService.getRuleCoveringObjects(id, foldIndex, ruleIndex);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/object", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ObjectAbstractResponse> getObject(
+            @PathVariable("id") UUID id,
+            @RequestParam("objectIndex") Integer objectIndex,
+            @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
+        logger.info("Getting object from cross validation...");
+
+        ObjectAbstractResponse result = crossValidationService.getObject(id, objectIndex, isAttributes);
+
+        return ResponseEntity.ok(result);
+    }
 }

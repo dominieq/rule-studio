@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.DescriptiveAttributes;
+import pl.put.poznan.rulestudio.model.RuLeStudioRule;
+import pl.put.poznan.rulestudio.model.RuLeStudioRuleSet;
 
 import java.util.Arrays;
 
@@ -92,6 +94,38 @@ public class ChosenRuleResponse {
             ChosenRuleResponse chosenRuleResponse = new ChosenRuleResponse();
 
             final RuleCharacteristics ruleCharacteristics = ruleSetWithCharacteristics.getRuleCharacteristics(ruleIndex);
+            final BasicRuleCoverageInformation basicRuleCoverageInformation = ruleCharacteristics.getRuleCoverageInformation();
+            if(basicRuleCoverageInformation != null) {
+                chosenRuleResponse.indicesOfCoveredObjects = basicRuleCoverageInformation.getIndicesOfCoveredObjects();
+                chosenRuleResponse.objectNames = descriptiveAttributes.extractChosenObjectNames(informationTable, chosenRuleResponse.indicesOfCoveredObjects.toIntArray());
+
+                final int numberOfCoveredObjects = chosenRuleResponse.indicesOfCoveredObjects.size();
+                chosenRuleResponse.isSupportingObject = new Boolean[numberOfCoveredObjects];
+                final IntSet indicesOfCoveredNotSupportingObjects = basicRuleCoverageInformation.getIndicesOfCoveredNotSupportingObjects();
+                for(int i = 0; i < numberOfCoveredObjects; i++) {
+                    if(indicesOfCoveredNotSupportingObjects.contains( chosenRuleResponse.indicesOfCoveredObjects.getInt(i) )) {
+                        chosenRuleResponse.isSupportingObject[i] = false;
+                    } else {
+                        chosenRuleResponse.isSupportingObject[i] = true;
+                    }
+                }
+            }
+
+            return chosenRuleResponse;
+        }
+
+        public ChosenRuleResponse build(RuLeStudioRuleSet ruLeStudioRuleSet, Integer ruleIndex, DescriptiveAttributes descriptiveAttributes, InformationTable informationTable) {
+            final RuLeStudioRule[] rules = ruLeStudioRuleSet.getRuLeStudioRules();
+            if((ruleIndex < 0) || (ruleIndex >= rules.length)) {
+                WrongParameterException ex = new WrongParameterException(String.format("Given rule's index \"%d\" is incorrect. You can choose rule from %d to %d", ruleIndex, 0, rules.length - 1));
+                logger.error(ex.getMessage());
+                throw ex;
+            }
+
+            ChosenRuleResponse chosenRuleResponse = new ChosenRuleResponse();
+
+            final RuLeStudioRule rule = rules[ruleIndex];
+            final RuleCharacteristics ruleCharacteristics = rule.getRuleCharacteristics();
             final BasicRuleCoverageInformation basicRuleCoverageInformation = ruleCharacteristics.getRuleCoverageInformation();
             if(basicRuleCoverageInformation != null) {
                 chosenRuleResponse.indicesOfCoveredObjects = basicRuleCoverageInformation.getIndicesOfCoveredObjects();

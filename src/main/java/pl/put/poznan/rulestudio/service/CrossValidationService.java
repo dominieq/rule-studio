@@ -21,6 +21,7 @@ import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.*;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectResponse.ChosenClassifiedObjectResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectWithAttributesResponse.ChosenClassifiedObjectWithAttributesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenCrossValidationFoldResponse.ChosenCrossValidationFoldResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
@@ -285,7 +286,7 @@ public class CrossValidationService {
         if(isAttributes) {
             chosenClassifiedObjectAbstractResponse = ChosenClassifiedObjectWithAttributesResponseBuilder.newInstance().build(chosenFold.getClassificationOfValidationTable(), objectIndex);
         } else {
-            chosenClassifiedObjectAbstractResponse = ChosenClassifiedObjectResponse.ChosenClassifiedObjectResponseBuilder.newInstance().build(chosenFold.getClassificationOfValidationTable(), objectIndex);
+            chosenClassifiedObjectAbstractResponse = ChosenClassifiedObjectResponseBuilder.newInstance().build(chosenFold.getClassificationOfValidationTable(), objectIndex);
         }
         logger.debug("chosenClassifiedObjectAbstractResponse:\t{}", chosenClassifiedObjectAbstractResponse);
         return chosenClassifiedObjectAbstractResponse;
@@ -305,5 +306,40 @@ public class CrossValidationService {
         final RuleMainPropertiesResponse ruleMainPropertiesResponse = RuleMainPropertiesResponseBuilder.newInstance().build(chosenFold.getRuLeStudioRuleSet(), ruleIndex);
         logger.debug("ruleMainPropertiesResponse:\t{}", ruleMainPropertiesResponse);
         return ruleMainPropertiesResponse;
+    }
+
+    public ChosenRuleResponse getRuleCoveringObjects(UUID id, Integer foldIndex, Integer ruleIndex) {
+        logger.info("Id:\t{}", id);
+        logger.info("FoldIndex:\t{}", foldIndex);
+        logger.info("RuleIndex:\t{}", ruleIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final CrossValidation crossValidation = getCrossValidationFromProject(project);
+
+        final CrossValidationSingleFold chosenFold = getChosenFoldFromCrossValidation(crossValidation, foldIndex);
+
+        final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponse.ChosenRuleResponseBuilder.newInstance().build(chosenFold.getRuLeStudioRuleSet(), ruleIndex, crossValidation.getDescriptiveAttributes(), crossValidation.getInformationTable());
+        logger.debug("chosenRuleResponse:\t{}", chosenRuleResponse);
+        return chosenRuleResponse;
+    }
+
+    public ObjectAbstractResponse getObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
+        logger.info("Id:\t{}", id);
+        logger.info("ObjectIndex:\t{}", objectIndex);
+        logger.info("IsAttributes:\t{}", isAttributes);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final CrossValidation crossValidation = getCrossValidationFromProject(project);
+
+        ObjectAbstractResponse objectAbstractResponse;
+        if(isAttributes) {
+            objectAbstractResponse = ObjectWithAttributesResponse.ObjectWithAttributesResponseBuilder.newInstance().build(crossValidation.getInformationTable(), objectIndex);
+        } else {
+            objectAbstractResponse = ObjectResponse.ObjectResponseBuilder.newInstance().build(crossValidation.getInformationTable(), objectIndex);
+        }
+        logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
+        return objectAbstractResponse;
     }
 }
