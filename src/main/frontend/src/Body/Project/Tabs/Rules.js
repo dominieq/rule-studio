@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
-import { downloadRules, fetchRules, uploadRules } from "../../../Utils/utilFunctions/fetchFunctions";
+import { downloadRules, fetchRules } from "../../../Utils/utilFunctions/fetchFunctions";
 import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
 import { parseRulesItems } from  "../../../Utils/utilFunctions/parseItems";
 import { parseRulesListItems } from "../../../Utils/utilFunctions/parseListItems";
@@ -85,9 +85,11 @@ class Rules extends Component {
      */
     getRules = () => {
         const { project, serverBase } = this.props;
+        const pathParams = { projectId: project.result.id };
+        const method = "GET";
 
         fetchRules(
-            serverBase, project.result.id, "GET", null
+            pathParams, method, null, serverBase
         ).then(result => {
             if (result && this._isMounted) {
                 const items = parseRulesItems(result);
@@ -272,11 +274,12 @@ class Rules extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let method = "PUT";
-            let data = parseFormData(parameters, null);
+            const pathParams = { projectId: project.result.id };
+            const method = "PUT";
+            const data = parseFormData(parameters, null);
 
             fetchRules(
-                serverBase, project.result.id, method, data
+                pathParams, method, data, serverBase
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -358,16 +361,15 @@ class Rules extends Component {
         if (event.target.files[0]) {
             const { project, serverBase } = this.props;
 
-            let method = "PUT";
-            let files = { rules: event.target.files[0] }
-
-            let data = parseFormData(null, files);
+            const pathParams = { projectId: project.result.id };
+            const method = "PUT";
+            const data = parseFormData(null, { rules: event.target.files[0] });
 
             this.setState({
                 loading: true,
             }, () => {
-                uploadRules(
-                    serverBase, project.result.id, method, data
+                fetchRules(
+                    pathParams, method, data, serverBase, true
                 ).then(result => {
                     if (result) {
                         if (this._isMounted) {
@@ -487,9 +489,10 @@ class Rules extends Component {
      */
     onSaveRulesToXMLClick = () => {
         const { project, serverBase } = this.props;
-        let data = { format: "xml" };
+        const pathParams = { projectId: project.result.id };
+        const queryParams = { format: "xml" };
 
-        downloadRules(serverBase, project.result.id, data).catch(error => {
+        downloadRules(pathParams, queryParams, serverBase).catch(error => {
             if (!error.hasOwnProperty("open")) {
                 console.log(error);
             }
@@ -507,9 +510,10 @@ class Rules extends Component {
      */
     onSaveRulesToTXTClick = () => {
         const { project, serverBase } = this.props;
-        let data = { format: "txt" };
+        const pathParams = { projectId: project.result.id };
+        const queryParams = { format: "txt" };
 
-        downloadRules(serverBase, project.result.id, data).catch(error => {
+        downloadRules(pathParams, queryParams, serverBase).catch(error => {
             if (!error.hasOwnProperty("open")) {
                 console.log(error);
             }
@@ -647,6 +651,16 @@ class Rules extends Component {
         }
     };
 
+    onSnackbarOpen = (exception) => {
+        if (exception.constructor.name !== "AlertError") {
+            console.error(exception);
+            return;
+        }
+        this.setState({
+            alertProps: exception
+        });
+    }
+
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
             this.setState(({alertProps}) => ({
@@ -657,7 +671,7 @@ class Rules extends Component {
 
     render() {
         const { loading, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
-        const { project: { result, settings } } = this.props;
+        const { project: { result: { id: projectId }}, serverBase } = this.props;
 
         const resultsExists = Array.isArray(items) && Boolean(items.length);
 
@@ -822,9 +836,10 @@ class Rules extends Component {
                         <RulesDialog
                             item={selectedItem}
                             onClose={() => this.toggleOpen("details")}
+                            onSnackbarOpen={this.onSnackbarOpen}
                             open={open.details}
-                            projectResult={result}
-                            settings={settings}
+                            projectId={projectId}
+                            serverBase={serverBase}
                         />
                     }
                 </CustomBox>
