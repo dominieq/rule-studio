@@ -67,14 +67,11 @@ class Unions extends Component {
      */
     getUnions = () => {
         const { project, serverBase } = this.props;
-        const pathParams = {
-            projectId: project.result.id,
-            typeOfUnions: undefined,
-            consistencyThreshold: undefined
-        }
+        const pathParams = { projectId: project.result.id }
+        const queryParams = { typeOfUnions: undefined, consistencyThreshold: undefined };
 
         fetchUnions(
-            pathParams,"GET", serverBase
+            pathParams, queryParams, "GET", serverBase
         ).then(result => {
             if (result && this._isMounted) {
                 const items = parseUnionsItems(result);
@@ -222,10 +219,11 @@ class Unions extends Component {
         this.setState({
             loading: true,
         }, () => {
-            const pathParams = { projectId: project.result.id, ...parameters };
+            const pathParams = { projectId: project.result.id };
+            const queryParams = { ...parameters };
 
             fetchUnions(
-                pathParams, "PUT", serverBase
+                pathParams, queryParams, "PUT", serverBase
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -334,6 +332,19 @@ class Unions extends Component {
         }
     };
 
+    onSnackbarOpen = (exception) => {
+        if (exception.constructor.name !== "AlertError") {
+            console.error(exception);
+            return;
+        }
+
+        if (this._isMounted) {
+            this.setState({
+                alertProps: exception
+            });
+        }
+    }
+
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
             this.setState(({alertProps}) => ({
@@ -344,7 +355,7 @@ class Unions extends Component {
 
     render() {
         const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
-        const { project: { result, settings } } = this.props;
+        const { project: { result: { id: projectId }}, serverBase } = this.props;
 
         return (
             <CustomBox id={"unions"} variant={"Tab"}>
@@ -406,15 +417,15 @@ class Unions extends Component {
                             }
                         ]}
                     />
-                    {selectedItem !== null &&
-                    <UnionsDialog
-                        item={selectedItem}
-                        onClose={() => this.toggleOpen("details")}
-                        open={open.details}
-                        projectId={result.id}
-                        projectResult={result}
-                        settings={settings}
-                    />
+                    {selectedItem != null &&
+                        <UnionsDialog
+                            item={selectedItem}
+                            onClose={() => this.toggleOpen("details")}
+                            onSnackbarOpen={this.onSnackbarOpen}
+                            open={open.details}
+                            projectId={projectId}
+                            serverBase={serverBase}
+                        />
                     }
                 </CustomBox>
                 <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
