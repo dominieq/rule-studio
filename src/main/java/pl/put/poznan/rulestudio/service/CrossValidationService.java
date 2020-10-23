@@ -11,10 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.put.poznan.rulestudio.enums.ClassifierType;
-import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
+import pl.put.poznan.rulestudio.enums.*;
 import pl.put.poznan.rulestudio.enums.RuleType;
-import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
 import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
@@ -26,6 +24,8 @@ import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectWithAttribu
 import pl.put.poznan.rulestudio.model.response.ChosenCrossValidationFoldResponse.ChosenCrossValidationFoldResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainCrossValidationResponse.MainCrossValidationResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.OrdinalMisclassificationMatrixResponse.OrdinalMisclassificationMatrixResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.OrdinalMisclassificationMatrixWithoutDeviationResponse.OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.RuleMainPropertiesResponse.RuleMainPropertiesResponseBuilder;
 
 import java.io.IOException;
@@ -341,5 +341,56 @@ public class CrossValidationService {
         }
         logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
         return objectAbstractResponse;
+    }
+
+    public OrdinalMisclassificationMatrixAbstractResponse getMisclassificationMatrix(UUID id, MisclassificationMatrixType typeOfMatrix, Integer numberOfFold) {
+        logger.info("Id:\t{}", id);
+        logger.info("TypeOfMatrix:\t{}", typeOfMatrix);
+        if(numberOfFold != null) logger.info("NumberOfFold:\t{}", numberOfFold);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final CrossValidation crossValidation = getCrossValidationFromProject(project);
+
+        Decision[] orderOfDecisions = crossValidation.getCrossValidationSingleFolds()[0].getClassificationOfValidationTable().getOrderOfDecisions();
+
+        OrdinalMisclassificationMatrixAbstractResponse ordinalMisclassificationMatrixAbstractResponse;
+        switch(typeOfMatrix) {
+            case CROSS_VALIDATION_SUM:
+                ordinalMisclassificationMatrixAbstractResponse = OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder.newInstance().build(crossValidation.getSumOrdinalMisclassificationMatrix(), orderOfDecisions);
+                break;
+
+            case CROSS_VALIDATION_MEAN:
+                ordinalMisclassificationMatrixAbstractResponse = OrdinalMisclassificationMatrixResponseBuilder.newInstance().build(crossValidation.getMeanOrdinalMisclassificationMatrix(), orderOfDecisions);
+                break;
+
+            case CROSS_VALIDATION_FOLD:
+                CrossValidationSingleFold[] crossValidationSingleFolds = crossValidation.getCrossValidationSingleFolds();
+                OrdinalMisclassificationMatrix foldMatrix;
+
+                if(numberOfFold == null) {
+                    WrongParameterException ex = new WrongParameterException(String.format("The number of fold is not given."));
+                    logger.error(ex.getMessage());
+                    throw ex;
+                }
+                try {
+                    foldMatrix = crossValidationSingleFolds[numberOfFold].getClassificationOfValidationTable().getOrdinalMisclassificationMatrix();
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    WrongParameterException ex = new WrongParameterException(String.format("There is no fold with number %d.", numberOfFold));
+                    logger.error(ex.getMessage());
+                    throw ex;
+                }
+
+                ordinalMisclassificationMatrixAbstractResponse = OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder.newInstance().build(foldMatrix, orderOfDecisions);
+                break;
+
+            default:
+                WrongParameterException ex = new WrongParameterException(String.format("Given type of misclassification matrix \"%s\" is unrecognized in cross-validation.", typeOfMatrix));
+                logger.error(ex.getMessage());
+                throw ex;
+        }
+
+        logger.debug("ordinalMisclassificationMatrixAbstractResponse:\t{}", ordinalMisclassificationMatrixAbstractResponse.toString());
+        return ordinalMisclassificationMatrixAbstractResponse;
     }
 }

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
-public class OrdinalMisclassificationMatrixWithoutDeviationResponse {
+public class OrdinalMisclassificationMatrixWithoutDeviationResponse extends OrdinalMisclassificationMatrixAbstractResponse{
 
     @JsonProperty("Accuracy")
     private Double accuracy;

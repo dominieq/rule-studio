@@ -54,7 +54,7 @@ public class MisclassificationMatrixService {
                 try {
                     ordinalMisclassificationMatrix = crossValidationSingleFolds[numberOfFold].getClassificationOfValidationTable().getOrdinalMisclassificationMatrix();
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    WrongParameterException ex = new WrongParameterException(String.format("There is no fold with number {}.", numberOfFold));
+                    WrongParameterException ex = new WrongParameterException(String.format("There is no fold with number \"%d\".", numberOfFold));
                     logger.error(ex.getMessage());
                     throw ex;
                 }

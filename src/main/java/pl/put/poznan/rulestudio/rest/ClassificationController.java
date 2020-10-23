@@ -184,7 +184,7 @@ public class ClassificationController {
             @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
         logger.info("Getting object from rules from classification...");
 
-        ObjectAbstractResponse result = classificationService.getRulesObject(id, objectIndex, isAttributes);
+        final ObjectAbstractResponse result = classificationService.getRulesObject(id, objectIndex, isAttributes);
 
         return ResponseEntity.ok(result);
     }
@@ -194,7 +194,7 @@ public class ClassificationController {
             @PathVariable("id") UUID id) {
         logger.info("Getting misclassification matrix from classification...");
 
-        OrdinalMisclassificationMatrixWithoutDeviationResponse result = classificationService.getMisclassificationMatrix(id);
+        final OrdinalMisclassificationMatrixWithoutDeviationResponse result = classificationService.getMisclassificationMatrix(id);
 
         return ResponseEntity.ok(result);
     }

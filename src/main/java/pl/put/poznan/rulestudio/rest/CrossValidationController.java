@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.put.poznan.rulestudio.enums.ClassifierType;
-import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
-import pl.put.poznan.rulestudio.enums.RuleType;
-import pl.put.poznan.rulestudio.enums.UnionType;
+import pl.put.poznan.rulestudio.enums.*;
 import pl.put.poznan.rulestudio.model.CrossValidation;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.service.CrossValidationService;
@@ -163,7 +160,19 @@ public class CrossValidationController {
             @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
         logger.info("Getting object from cross validation...");
 
-        ObjectAbstractResponse result = crossValidationService.getObject(id, objectIndex, isAttributes);
+        final ObjectAbstractResponse result = crossValidationService.getObject(id, objectIndex, isAttributes);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/misclassificationMatrix", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<OrdinalMisclassificationMatrixAbstractResponse> getMisclassificationMatrix(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "typeOfMatrix") MisclassificationMatrixType typeOfMatrix,
+            @RequestParam(name = "numberOfFold", required = false) Integer numberOfFold) {
+        logger.info("Getting misclassification matrix from cross validation...");
+
+        final OrdinalMisclassificationMatrixAbstractResponse result = crossValidationService.getMisclassificationMatrix(id, typeOfMatrix, numberOfFold);
 
         return ResponseEntity.ok(result);
     }
