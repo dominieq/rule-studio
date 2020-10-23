@@ -17,3 +17,5 @@ export {default as fetchProject} from "./fetchProject/fetchProject";
 export {default as fetchProjects} from "./fetchProject/fetchProjects";
 export {default as importProject} from "./fetchProject/importProject";
 
+export {default as fetchDescriptiveAttributes} from "./fetchDescriptiveAttributes";
+export {default as fetchObjectNames} from "./fetchObjectNames";
