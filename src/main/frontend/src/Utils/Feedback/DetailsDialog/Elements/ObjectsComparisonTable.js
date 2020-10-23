@@ -22,12 +22,12 @@ import VirtualizedTable from "../../../DataDisplay/VirtualizedTable";
  */
 function ObjectsComparisonTable(props) {
     const {
-        informationTable: { attributes, objects },
-        objectHeader,
-        objectIndex,
-        objectInTableHeader,
-        objectInTableIndex,
-        tableIndex
+        attributes,
+        firstObject,
+        firstObjectHeader,
+        secondObject,
+        secondObjectHeader,
+        coneIndex
     } = props;
 
     const rowCount = attributes.length;
@@ -40,7 +40,7 @@ function ObjectsComparisonTable(props) {
         },
         {
             dataKey: 'object-left',
-            label: objectHeader ? objectHeader : `Object ${objectIndex + 1}`,
+            label: firstObjectHeader,
             width: 50,
         },
         {
@@ -50,7 +50,7 @@ function ObjectsComparisonTable(props) {
         },
         {
             dataKey: 'object-right',
-            label: objectInTableHeader ? objectInTableHeader : `Object ${objectInTableIndex + 1}`,
+            label: secondObjectHeader,
             width: 50,
         }
     ];
@@ -59,9 +59,9 @@ function ObjectsComparisonTable(props) {
     for (let i = 0; i < attributes.length; i++) {
         rows.push({
             name: attributes[i].name,
-            'object-left': objects[objectIndex][attributes[i].name],
-            relation: getAppropriateSign(objects[objectIndex], objects[objectInTableIndex], attributes[i], tableIndex),
-            'object-right': objects[objectInTableIndex][attributes[i].name],
+            'object-left': firstObject[attributes[i].name],
+            relation: getAppropriateSign(firstObject, secondObject, attributes[i], coneIndex),
+            'object-right': secondObject[attributes[i].name],
         });
     }
 
@@ -76,12 +76,12 @@ function ObjectsComparisonTable(props) {
 }
 
 ObjectsComparisonTable.propTypes = {
-    informationTable: PropTypes.object.isRequired,
-    objectHeader: PropTypes.string,
-    objectIndex: PropTypes.number.isRequired,
-    objectInTableHeader: PropTypes.string,
-    objectInTableIndex: PropTypes.number.isRequired,
-    tableIndex: PropTypes.number,
+    attributes: PropTypes.arrayOf(PropTypes.object).isRequired,
+    firstObject: PropTypes.object.isRequired,
+    firstObjectHeader: PropTypes.string,
+    secondObject: PropTypes.object.isRequired,
+    secondObjectHeader: PropTypes.string,
+    coneIndex: PropTypes.number.isRequired,
 };
 
 export default ObjectsComparisonTable;

@@ -9,6 +9,7 @@ import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CustomBox from "../../../Utils/Containers/CustomBox"
 import { ConesDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { AttributesMenu } from "../../../Utils/Menus/AttributesMenu";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
@@ -38,6 +39,7 @@ class Cones extends Component {
             displayedItems: [],
             selectedItem: null,
             openDetails: false,
+            attributesMenuEl: null,
             alertProps: undefined,
         };
 
@@ -57,9 +59,8 @@ class Cones extends Component {
         fetchCones(
             project.result.id, "GET", null, serverBase
         ).then(result => {
-            if (result && this._isMounted) {
-                const { project: { result: { informationTable: { objects }}, settings }} = this.props;
-                const items = parseConesItems(result, objects, settings);
+            if (this._isMounted && result != null) {
+                const items = parseConesItems(result, result.objectNames);
 
                 this.setState({
                     data: result,
@@ -127,9 +128,7 @@ class Cones extends Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
             const { data } = this.state;
-            const { result: { informationTable: { objects } }, settings } = this.props.project;
-
-            let newItems = parseConesItems(data, objects, settings);
+            let newItems = parseConesItems(data, data.objectNames);
 
             this.setState({
                 items: newItems,
@@ -172,8 +171,7 @@ class Cones extends Component {
                     let projectCopy = JSON.parse(JSON.stringify(project));
 
                     if (this._isMounted) {
-                        const { result: { informationTable: { objects } }, settings } = projectCopy;
-                        const items = parseConesItems(result, objects, settings);
+                        const items = parseConesItems(result, result.objectNames);
 
                         this.setState({
                             data: result,
@@ -248,6 +246,43 @@ class Cones extends Component {
         });
     };
 
+    onAttributesMenuOpen = (event) => {
+        const currentTarget = event.currentTarget;
+
+        this.setState({
+            attributesMenuEl: currentTarget
+        });
+    }
+
+    onAttributesMenuClose = () => {
+        this.setState({
+            attributesMenuEl: null
+        });
+    }
+
+    onObjectNamesChange = (names) => {
+        const { data } = this.state;
+        const items = parseConesItems(data, names);
+
+        this.setState({
+            items: items,
+            displayedItems: items
+        })
+    }
+
+    onSnackbarOpen = (exception) => {
+        if (exception.constructor.name !== "AlertError") {
+            console.error(exception);
+            return;
+        }
+
+        if (this._isMounted) {
+            this.setState({
+                alertProps: exception
+            });
+        }
+    }
+
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
             this.setState(({alertProps}) => ({
@@ -257,8 +292,8 @@ class Cones extends Component {
     };
 
     render() {
-        const { loading, items, displayedItems, openDetails, selectedItem, alertProps } = this.state;
-        const { project: { result } } = this.props;
+        const { loading, items, displayedItems, openDetails, selectedItem, attributesMenuEl, alertProps } = this.state;
+        const { project: { result: { id: projectId }}, serverBase } = this.props;
 
         return (
             <CustomBox customScrollbar={true} id={"cones"} variant={"TabBody"}>
@@ -271,10 +306,26 @@ class Cones extends Component {
                     <span style={{flexGrow: 1}}/>
                     <FilterTextField onChange={this.onFilterChange} />
                 </CustomHeader>
+                {Array.isArray(items) && items.length > 0 && !loading &&
+                    <AttributesMenu
+                        onObjectNamesChange={this.onObjectNamesChange}
+                        onSnackbarOpen={this.onSnackbarOpen}
+                        ListProps={{
+                            id: "cones-main-desc-attribute-menu"
+                        }}
+                        MuiMenuProps={{
+                            anchorEl: attributesMenuEl,
+                            onClose: this.onAttributesMenuClose
+                        }}
+                        projectId={projectId}
+                        resource={"cones"}
+                        serverBase={serverBase}
+                    />
+                }
                 <TabBody
                     content={parseConesListItems(displayedItems)}
                     id={"cones-list"}
-                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
+                    isArray={Array.isArray(displayedItems) && displayedItems.length > 0}
                     isLoading={loading}
                     ListProps={{
                         onItemSelected: this.onDetailsOpen
@@ -314,24 +365,26 @@ class Cones extends Component {
                             </React.Fragment>
 
                         ),
+                        onSettingsClick: this.onAttributesMenuOpen,
                         style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
                     }}
                     noFilterResults={!displayedItems}
                     subheaderContent={[
                         {
                             label: "Number of objects:",
-                            value: displayedItems && displayedItems.length
+                            value: displayedItems != null && displayedItems.length
                         }
                     ]}
                 />
-                {selectedItem !== null &&
+                {selectedItem != null &&
                     <ConesDialog
                         item={selectedItem}
                         items={items}
                         onClose={this.onDetailsClose}
+                        onSnackbarOpen={this.onSnackbarOpen}
                         open={openDetails}
-                        projectId={result.id}
-                        projectResult={result}
+                        projectId={projectId}
+                        serverBase={serverBase}
                     />
                 }
                 <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />

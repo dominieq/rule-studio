@@ -8,37 +8,30 @@
  *
  * @category Utils
  * @subcategory Functions
- * @param index - The id of an object.
- * @param objects - The 'objects' array from information table.
- * @param settings - The project settings.
- * @param [defaultName = "Object"] - If 'indexOption' from settings is 'default', this value will be used as name's prefix.
- * @returns {Object} - An item's name.
+ * @param index - The index of an object in information table.
+ * @param names - The array of object names received from server.
+ * @param [defaultName = "Object"] - The default object name.
+ * @returns {Object} - An item's name as an object.
  */
-function getItemName(index, objects, settings, defaultName = "Object") {
-    let name = {
+function getItemName(index, names, defaultName = "Object") {
+    if (names != null && Array.isArray(names)) {
+        if (names[index] !== defaultName + " " + index) {
+            return {
+                secondary: names[index],
+                toString() {
+                    return this.secondary;
+                }
+            }
+        }
+    }
+
+    return {
         primary: defaultName,
         secondary: index + 1,
         toString() {
             return this.primary + " " + this.secondary;
         }
-    };
-
-    if (settings != null && objects != null && objects[index] != null) {
-        if (settings.hasOwnProperty("indexOption") && settings.indexOption !== "default"
-            && objects[index].hasOwnProperty(settings.indexOption)) {
-
-            name = {
-                secondary: objects[index][settings.indexOption],
-                toString() {
-                    return this.secondary;
-                }
-            };
-        }
-    } else {
-        // TODO throw error
     }
-
-    return name;
 }
 
 export default getItemName;

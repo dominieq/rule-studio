@@ -6,19 +6,18 @@ import { getItemName } from "./parseElements";
  *
  * @category Utils
  * @subcategory Functions
- * @param {Object} data - Server response.
- * @param {Object[]} objects - An 'objects' array from information table obtained from current project.
- * @param {Object} settings - Project settings.
- * @returns {Object[]} - An array of items.
+ * @param {Object} data - A response from server.
+ * @param {Array} names - The array of object names received from server.
+ * @returns {Object[]} - The array of items.
  */
-function parseConesItems(data, objects, settings) {
+function parseConesItems(data, names) {
     let items = [];
 
     if (data != null && data.hasOwnProperty("numberOfObjects")) {
         for (let i = 0; i < data.numberOfObjects; i++) {
             items.push({
                 id: i,
-                name: getItemName(i, objects, settings),
+                name: getItemName(i, names),
                 traits: {
                     ...(data.hasOwnProperty("positiveDominanceCones")
                         && { 'Positive dominance cone': data.positiveDominanceCones[i] }),
@@ -27,7 +26,7 @@ function parseConesItems(data, objects, settings) {
                     ...(data.hasOwnProperty("positiveInverseDominanceCones")
                         && { 'Positive inverse dominance cone': data.positiveInverseDominanceCones[i] }),
                     ...(data.hasOwnProperty("negativeInverseDominanceCones")
-                        && { 'Negative inverse dominance cone': data.negativeInverseDominanceCones[i]})
+                        && { 'Negative inverse dominance cone': data.negativeInverseDominanceCones[i] })
                 },
                 toFilter() {
                     return [

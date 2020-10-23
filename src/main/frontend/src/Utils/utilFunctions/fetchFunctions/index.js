@@ -5,8 +5,6 @@ export {default as fetchCones} from "./fetchCones/fetchCones";
 export {default as fetchConeObjects} from "./fetchCones/fetchConeObjects";
 export {default as fetchCrossValidation} from "./fetchCrossValidation";
 export {default as fetchData} from "./fetchData";
-export {default as fetchObject} from "./fetchObjects/fetchObject";
-export {default as fetchObjectsComparison} from "./fetchObjects/fetchObjectsComparison";
 export {default as fetchRules} from "./fetchRules";
 export {default as fetchUnion} from "./fetchUnions/fetchUnion";
 export {default as fetchUnions} from "./fetchUnions/fetchUnions";
@@ -18,4 +16,5 @@ export {default as fetchProjects} from "./fetchProject/fetchProjects";
 export {default as importProject} from "./fetchProject/importProject";
 
 export {default as fetchDescriptiveAttributes} from "./fetchDescriptiveAttributes";
+export {default as fetchObject} from "./fetchObject";
 export {default as fetchObjectNames} from "./fetchObjectNames";
