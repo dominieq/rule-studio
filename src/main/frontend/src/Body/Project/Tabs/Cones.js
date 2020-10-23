@@ -280,7 +280,7 @@ class Cones extends Component {
                         onItemSelected: this.onDetailsOpen
                     }}
                     ListSubheaderProps={{
-                        disableHelper: false,
+                        disableRightGutter: false,
                         helper: (
                             <React.Fragment>
                                 <header style={{textAlign: "left"}}>

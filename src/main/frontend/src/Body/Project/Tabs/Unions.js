@@ -391,6 +391,7 @@ class Unions extends Component {
                             onItemSelected: this.onDetailsOpen
                         }}
                         ListSubheaderProps={{
+                            disableLeftGutter: true,
                             style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
                         }}
                         noFilterResults={!displayedItems}

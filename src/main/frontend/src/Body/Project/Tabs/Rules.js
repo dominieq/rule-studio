@@ -796,7 +796,8 @@ class Rules extends Component {
                             onItemSelected: this.onDetailsOpen
                         }}
                         ListSubheaderProps={{
-                            disableHelper: false,
+                            disableLeftGutter: true,
+                            disableRightGutter: false,
                             helper: (
                                 <p aria-label={"helper-text"} style={{margin: 0, textAlign: "justify"}}>
                                     {

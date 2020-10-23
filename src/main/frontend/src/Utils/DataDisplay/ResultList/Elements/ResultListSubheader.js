@@ -18,9 +18,7 @@ const useStyles = makeStyles(theme => ({
     parameters: {
         display: "flex",
         flexGrow: 1,
-        flexWrap: "wrap",
-        paddingLeft: 16,
-        paddingRight: 16
+        flexWrap: "wrap"
     },
     parameterCell: {
         alignItems: "center",
@@ -68,29 +66,36 @@ const useStyles = makeStyles(theme => ({
  * @param [props.children] {Object[]} - The content of the component. An array of simple label-value pairs.
  * @param props.children[].label {string} - The content of the label inside a pair.
  * @param props.children[].value {number|string} - The content of the value inside a pair.
- * @param props.disableHelper {boolean} - If <code>true</code> helper will be visible.
+ * @param props.disableLeftGutter {boolean} - If <code>true</code> the content of left gutter will be visible.
+ * @param props.disableRightGutter {boolean} - If <code>true</code> the content of right gutter will be visible.
  * @param props.helper {React.ReactNode} - The content of the helper.
  * @param props.onSettingsClick {function} - Callback fired when settings button was clicked on.
  * @returns {React.ReactElement} The ListSubheader component from Material-UI library.
  */
 function ResultListSubheader(props) {
-    const { children, disableHelper, helper, onSettingsClick, ...other } = props;
+    const { children, disableLeftGutter, disableRightGutter, helper, onSettingsClick, ...other } = props;
     const classes = useStyles();
 
     return (
         <ListSubheader classes={{root: classes.root}} {...other}>
+            {!disableLeftGutter &&
+                <div aria-label={"result-list-subheader-left-gutter"} className={classes.gutter}>
+                    <MoreSettingsIconButton
+                        color={"secondary"}
+                        IconProps={{ style: { height: "1rem", width: "1rem" }}}
+                        onClick={onSettingsClick}
+                        TooltipProps={{ WrapperProps: { 'aria-label': "more-settings-icon-button-wrapper" }}}
+                    />
+                </div>
+            }
             <div
-                aria-label={"result-list-subheader-left-gutter"}
-                className={classes.gutter}
+                aria-label={"parameters"}
+                className={classes.parameters}
+                style={{
+                    paddingLeft: disableLeftGutter ? 0 : 16,
+                    paddingRight: disableRightGutter ? 0 : 16
+                }}
             >
-                <MoreSettingsIconButton
-                    color={"secondary"}
-                    IconProps={{ style: { height: "1rem", width: "1rem" }}}
-                    onClick={onSettingsClick}
-                    TooltipProps={{ WrapperProps: { 'aria-label': "more-settings-icon-button-wrapper" }}}
-                />
-            </div>
-            <div aria-label={"parameters"} className={classes.parameters}>
                 {children.map((child, index) => (
                     <React.Fragment  key={index}>
                         <div aria-label={"parameter"} className={classes.parameterCell}>
@@ -107,17 +112,15 @@ function ResultListSubheader(props) {
                     </React.Fragment>
                 ))}
             </div>
-            <div
-                aria-label={"result-list-subheader-right-gutter"}
-                className={classes.gutter}
-                style={disableHelper ? {display: "none"} : undefined}
-            >
-                <CircleHelper
-                    size={"smaller"}
-                    title={!disableHelper ? helper : <div aria-hidden={true} />}
-                    TooltipProps={{ placement: "left-end" }}
-                />
-            </div>
+            {!disableRightGutter &&
+                <div aria-label={"result-list-subheader-right-gutter"} className={classes.gutter}>
+                    <CircleHelper
+                        size={"smaller"}
+                        title={!disableRightGutter ? helper : <div aria-hidden={true} />}
+                        TooltipProps={{ placement: "left-end" }}
+                    />
+                </div>
+            }
         </ListSubheader>
     );
 }
@@ -130,9 +133,10 @@ ResultListSubheader.propTypes = {
     classes: PropTypes.object,
     color: PropTypes.oneOf(["default", "primary", "inherit"]),
     component: PropTypes.elementType,
+    disableLeftGutter: PropTypes.bool,
     disableGutters: PropTypes.bool,
+    disableRightGutter: PropTypes.bool,
     disableSticky: PropTypes.bool,
-    disableHelper: PropTypes.bool,
     helper: PropTypes.node,
     inset: PropTypes.bool,
     onSettingsClick: PropTypes.func
@@ -140,8 +144,9 @@ ResultListSubheader.propTypes = {
 
 ResultListSubheader.defaultProps = {
     component: "header",
-    disableGutters: true,
-    disableHelper: true
+    disableLeftGutter: false,
+    disableRightGutter: true,
+    disableGutters: true
 };
 
 export default ResultListSubheader;
