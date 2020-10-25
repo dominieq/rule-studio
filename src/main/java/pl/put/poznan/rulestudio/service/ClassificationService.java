@@ -24,13 +24,9 @@ import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectResponse.ChosenClassifiedObjectResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectWithAttributesResponse.ChosenClassifiedObjectWithAttributesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainClassificationResponse.MainClassificationResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ObjectWithAttributesResponse.ObjectWithAttributesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.OrdinalMisclassificationMatrixWithoutDeviationResponse.OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.RuleMainPropertiesResponse.RuleMainPropertiesResponseBuilder;
 
@@ -549,9 +545,9 @@ public class ClassificationService {
 
         ChosenClassifiedObjectAbstractResponse chosenClassifiedObjectAbstractResponse;
         if(isAttributes) {
-            chosenClassifiedObjectAbstractResponse = ChosenClassifiedObjectWithAttributesResponseBuilder.newInstance().build(classification, objectIndex);
+            chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectWithAttributesResponse(classification, objectIndex);
         } else {
-            chosenClassifiedObjectAbstractResponse = ChosenClassifiedObjectResponseBuilder.newInstance().build(classification, objectIndex);
+            chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectResponse(classification, objectIndex);
         }
         logger.debug("chosenClassifiedObjectAbstractResponse:\t{}", chosenClassifiedObjectAbstractResponse);
         return chosenClassifiedObjectAbstractResponse;
@@ -637,9 +633,9 @@ public class ClassificationService {
 
         ObjectAbstractResponse objectAbstractResponse;
         if(isAttributes) {
-            objectAbstractResponse = ObjectWithAttributesResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectWithAttributesResponse(project.getInformationTable(), objectIndex);
         } else {
-            objectAbstractResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectResponse(project.getInformationTable(), objectIndex);
         }
         logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
         return objectAbstractResponse;

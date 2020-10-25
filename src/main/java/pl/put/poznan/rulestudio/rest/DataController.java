@@ -13,6 +13,7 @@ import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ValidityProjectContainer;
+import pl.put.poznan.rulestudio.model.response.ObjectAbstractResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse;
 import pl.put.poznan.rulestudio.service.DataService;
@@ -142,11 +143,13 @@ public class DataController {
     }
 
     @RequestMapping(value = "/{objectIndex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ObjectResponse> getObject(
+    public ResponseEntity<ObjectAbstractResponse> getObject(
             @PathVariable("id") UUID id,
-            @PathVariable("objectIndex") Integer objectIndex) throws IOException {
+            @PathVariable("objectIndex") Integer objectIndex,
+            @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
         logger.info("Getting object from data");
-        final ObjectResponse result = dataService.getObject(id, objectIndex);
+
+        final ObjectAbstractResponse result = dataService.getObject(id, objectIndex, isAttributes);
 
         return ResponseEntity.ok(result);
     }
@@ -157,6 +160,7 @@ public class DataController {
             @PathVariable("firstObjectIndex") Integer firstObjectIndex,
             @PathVariable("secondObjectIndex") Integer secondObjectIndex) throws IOException {
         logger.info("Getting objects' comparison from data");
+
         final ObjectsComparisonResponse result = dataService.getObjectsComparison(id, firstObjectIndex, secondObjectIndex);
 
         return ResponseEntity.ok(result);

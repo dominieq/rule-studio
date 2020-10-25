@@ -19,8 +19,6 @@ import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.*;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectResponse.ChosenClassifiedObjectResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ChosenClassifiedObjectWithAttributesResponse.ChosenClassifiedObjectWithAttributesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenCrossValidationFoldResponse.ChosenCrossValidationFoldResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainCrossValidationResponse.MainCrossValidationResponseBuilder;
@@ -284,9 +282,9 @@ public class CrossValidationService {
 
         ChosenClassifiedObjectAbstractResponse chosenClassifiedObjectAbstractResponse;
         if(isAttributes) {
-            chosenClassifiedObjectAbstractResponse = ChosenClassifiedObjectWithAttributesResponseBuilder.newInstance().build(chosenFold.getClassificationOfValidationTable(), objectIndex);
+            chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectWithAttributesResponse(chosenFold.getClassificationOfValidationTable(), objectIndex);
         } else {
-            chosenClassifiedObjectAbstractResponse = ChosenClassifiedObjectResponseBuilder.newInstance().build(chosenFold.getClassificationOfValidationTable(), objectIndex);
+            chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectResponse(chosenFold.getClassificationOfValidationTable(), objectIndex);
         }
         logger.debug("chosenClassifiedObjectAbstractResponse:\t{}", chosenClassifiedObjectAbstractResponse);
         return chosenClassifiedObjectAbstractResponse;
@@ -335,9 +333,9 @@ public class CrossValidationService {
 
         ObjectAbstractResponse objectAbstractResponse;
         if(isAttributes) {
-            objectAbstractResponse = ObjectWithAttributesResponse.ObjectWithAttributesResponseBuilder.newInstance().build(crossValidation.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectWithAttributesResponse(crossValidation.getInformationTable(), objectIndex);
         } else {
-            objectAbstractResponse = ObjectResponse.ObjectResponseBuilder.newInstance().build(crossValidation.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectResponse(crossValidation.getInformationTable(), objectIndex);
         }
         logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
         return objectAbstractResponse;

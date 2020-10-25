@@ -29,8 +29,6 @@ import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.Attribute
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainRulesResponse.MainRulesResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ObjectWithAttributesResponse.ObjectWithAttributesResponseBuilder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -621,9 +619,9 @@ public class RulesService {
 
         ObjectAbstractResponse objectAbstractResponse;
         if(isAttributes) {
-            objectAbstractResponse = ObjectWithAttributesResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectWithAttributesResponse(project.getInformationTable(), objectIndex);
         } else {
-            objectAbstractResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectResponse(project.getInformationTable(), objectIndex);
         }
         logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
         return objectAbstractResponse;

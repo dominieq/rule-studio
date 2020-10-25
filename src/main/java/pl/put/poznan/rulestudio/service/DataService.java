@@ -19,8 +19,9 @@ import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.ValidityProjectContainer;
+import pl.put.poznan.rulestudio.model.response.ObjectAbstractResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectResponse;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.ObjectWithAttributesResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse.ObjectsComparisonResponseBuilder;
 
@@ -303,9 +304,10 @@ public class DataService {
         return new NamedResource(project.getName(), resource);
     }
 
-    public ObjectResponse getObject(UUID id, Integer objectIndex) throws IOException {
+    public ObjectAbstractResponse getObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
         logger.info("Id:\t" + id);
         logger.info("ObjectIndex:\t{}", objectIndex);
+        logger.info("IsAttributes:\t{}", isAttributes);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -316,9 +318,14 @@ public class DataService {
             throw ex;
         }
 
-        final ObjectResponse objectResponse = ObjectResponseBuilder.newInstance().build(informationTable, objectIndex);
-        logger.debug("objectResponse:\t{}", objectResponse.toString());
-        return objectResponse;
+        ObjectAbstractResponse objectAbstractResponse;
+        if(isAttributes) {
+            objectAbstractResponse = new ObjectWithAttributesResponse(informationTable, objectIndex);
+        } else {
+            objectAbstractResponse = new ObjectResponse(informationTable, objectIndex);
+        }
+        logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
+        return objectAbstractResponse;
     }
 
     public ObjectsComparisonResponse getObjectsComparison(UUID id, Integer firstObjectIndex, Integer secondObjectIndex) throws IOException {

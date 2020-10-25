@@ -11,13 +11,27 @@ import pl.put.poznan.rulestudio.model.Classification;
 import java.util.LinkedHashMap;
 
 public class ChosenClassifiedObjectResponse extends ChosenClassifiedObjectAbstractResponse {
+    private static final Logger logger = LoggerFactory.getLogger(ChosenClassifiedObjectResponse.class);
 
     private LinkedHashMap<String, String> object;
 
     private IntList indicesOfCoveringRules;
 
-    private ChosenClassifiedObjectResponse() {
-        //private constructor
+    public ChosenClassifiedObjectResponse(Classification classification, Integer classifiedObjectIndex) {
+        final InformationTable classifiedInformationTable = classification.getInformationTable();
+        if((classifiedObjectIndex < 0) || (classifiedObjectIndex >= classifiedInformationTable.getNumberOfObjects())) {
+            WrongParameterException ex = new WrongParameterException(String.format("Given object's index \"%d\" is incorrect. You can choose object from %d to %d", classifiedObjectIndex, 0, classifiedInformationTable.getNumberOfObjects() - 1));
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        Field[] fields = classifiedInformationTable.getFields(classifiedObjectIndex);
+        this.object = new LinkedHashMap<>();
+        for(int i = 0; i < classifiedInformationTable.getNumberOfAttributes(); i++) {
+            this.object.put(classifiedInformationTable.getAttribute(i).getName(), fields[i].toString());
+        }
+
+        this.indicesOfCoveringRules = classification.getIndicesOfCoveringRules()[classifiedObjectIndex];
     }
 
     public LinkedHashMap<String, String> getObject() {
@@ -34,56 +48,5 @@ public class ChosenClassifiedObjectResponse extends ChosenClassifiedObjectAbstra
                 "object=" + object +
                 ", indicesOfCoveringRules=" + indicesOfCoveringRules +
                 '}';
-    }
-
-    public static class ChosenClassifiedObjectResponseBuilder {
-        private static final Logger logger = LoggerFactory.getLogger(ChosenClassifiedObjectResponseBuilder.class);
-
-        private LinkedHashMap<String, String> object;
-        private IntList indicesOfCoveringRules;
-
-        public static ChosenClassifiedObjectResponseBuilder newInstance() {
-            return new ChosenClassifiedObjectResponseBuilder();
-        }
-
-        public ChosenClassifiedObjectResponseBuilder setObject(LinkedHashMap<String, String> object) {
-            this.object = object;
-            return this;
-        }
-
-        public ChosenClassifiedObjectResponseBuilder setIndicesOfCoveringRules(IntList indicesOfCoveringRules) {
-            this.indicesOfCoveringRules = indicesOfCoveringRules;
-            return this;
-        }
-
-        public ChosenClassifiedObjectResponse build() {
-            ChosenClassifiedObjectResponse chosenClassifiedObjectResponse = new ChosenClassifiedObjectResponse();
-
-            chosenClassifiedObjectResponse.object = this.object;
-            chosenClassifiedObjectResponse.indicesOfCoveringRules = this.indicesOfCoveringRules;
-
-            return chosenClassifiedObjectResponse;
-        }
-
-        public ChosenClassifiedObjectResponse build(Classification classification, Integer classifiedObjectIndex) {
-            ChosenClassifiedObjectResponse chosenClassifiedObjectResponse = new ChosenClassifiedObjectResponse();
-
-            final InformationTable classifiedInformationTable = classification.getInformationTable();
-            if((classifiedObjectIndex < 0) || (classifiedObjectIndex >= classifiedInformationTable.getNumberOfObjects())) {
-                WrongParameterException ex = new WrongParameterException(String.format("Given object's index \"%d\" is incorrect. You can choose object from %d to %d", classifiedObjectIndex, 0, classifiedInformationTable.getNumberOfObjects() - 1));
-                logger.error(ex.getMessage());
-                throw ex;
-            }
-
-            Field[] fields = classifiedInformationTable.getFields(classifiedObjectIndex);
-            chosenClassifiedObjectResponse.object = new LinkedHashMap<>();
-            for(int i = 0; i < classifiedInformationTable.getNumberOfAttributes(); i++) {
-                chosenClassifiedObjectResponse.object.put(classifiedInformationTable.getAttribute(i).getName(), fields[i].toString());
-            }
-
-            chosenClassifiedObjectResponse.indicesOfCoveringRules = classification.getIndicesOfCoveringRules()[classifiedObjectIndex];
-
-            return chosenClassifiedObjectResponse;
-        }
     }
 }

@@ -29,8 +29,6 @@ import pl.put.poznan.rulestudio.model.response.ChosenClassUnionResponse.ChosenCl
 import pl.put.poznan.rulestudio.model.response.ClassUnionArrayPropertyResponse.ClassUnionArrayPropertyResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse.MainClassUnionsResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse.ObjectResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.ObjectWithAttributesResponse.ObjectWithAttributesResponseBuilder;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -266,9 +264,9 @@ public class UnionsService {
 
         ObjectAbstractResponse objectAbstractResponse;
         if(isAttributes) {
-            objectAbstractResponse = ObjectWithAttributesResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectWithAttributesResponse(project.getInformationTable(), objectIndex);
         } else {
-            objectAbstractResponse = ObjectResponseBuilder.newInstance().build(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectResponse(project.getInformationTable(), objectIndex);
         }
         logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
         return objectAbstractResponse;

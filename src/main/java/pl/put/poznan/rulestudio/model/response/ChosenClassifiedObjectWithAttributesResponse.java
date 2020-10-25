@@ -14,25 +14,19 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.LinkedHashMap;
 
-public class ChosenClassifiedObjectWithAttributesResponse extends ChosenClassifiedObjectAbstractResponse {
-
-    private LinkedHashMap<String, String> object;
-
-    private IntList indicesOfCoveringRules;
+public class ChosenClassifiedObjectWithAttributesResponse extends ChosenClassifiedObjectResponse {
 
     @JsonRawValue
     private String attributes;
 
-    private ChosenClassifiedObjectWithAttributesResponse() {
-        //private constructor
-    }
+    public ChosenClassifiedObjectWithAttributesResponse(Classification classification, Integer classifiedObjectIndex) throws IOException {
+        super(classification, classifiedObjectIndex);
 
-    public LinkedHashMap<String, String> getObject() {
-        return object;
-    }
-
-    public IntList getIndicesOfCoveringRules() {
-        return indicesOfCoveringRules;
+        final InformationTable classifiedInformationTable = classification.getInformationTable();
+        StringWriter attributesWriter = new StringWriter();
+        InformationTableWriter itw = new InformationTableWriter(false);
+        itw.writeAttributes(classifiedInformationTable, attributesWriter);
+        this.attributes = attributesWriter.toString();
     }
 
     public String getAttributes() {
@@ -42,72 +36,7 @@ public class ChosenClassifiedObjectWithAttributesResponse extends ChosenClassifi
     @Override
     public String toString() {
         return "ChosenClassifiedObjectWithAttributesResponse{" +
-                "object=" + object +
-                ", indicesOfCoveringRules=" + indicesOfCoveringRules +
-                ", attributes='" + attributes + '\'' +
-                '}';
-    }
-
-    public static class ChosenClassifiedObjectWithAttributesResponseBuilder {
-        private static final Logger logger = LoggerFactory.getLogger(ChosenClassifiedObjectWithAttributesResponseBuilder.class);
-
-        private LinkedHashMap<String, String> object;
-        private IntList indicesOfCoveringRules;
-        private String attributes;
-
-        public static ChosenClassifiedObjectWithAttributesResponseBuilder newInstance() {
-            return new ChosenClassifiedObjectWithAttributesResponseBuilder();
-        }
-
-        public ChosenClassifiedObjectWithAttributesResponseBuilder setObject(LinkedHashMap<String, String> object) {
-            this.object = object;
-            return this;
-        }
-
-        public ChosenClassifiedObjectWithAttributesResponseBuilder setIndicesOfCoveringRules(IntList indicesOfCoveringRules) {
-            this.indicesOfCoveringRules = indicesOfCoveringRules;
-            return this;
-        }
-
-        public ChosenClassifiedObjectWithAttributesResponseBuilder setAttributes(String attributes) {
-            this.attributes = attributes;
-            return this;
-        }
-
-        public ChosenClassifiedObjectWithAttributesResponse build() {
-            ChosenClassifiedObjectWithAttributesResponse chosenClassifiedObjectWithAttributesResponse = new ChosenClassifiedObjectWithAttributesResponse();
-
-            chosenClassifiedObjectWithAttributesResponse.object = this.object;
-            chosenClassifiedObjectWithAttributesResponse.indicesOfCoveringRules = this.indicesOfCoveringRules;
-            chosenClassifiedObjectWithAttributesResponse.attributes = this.attributes;
-
-            return chosenClassifiedObjectWithAttributesResponse;
-        }
-
-        public ChosenClassifiedObjectWithAttributesResponse build(Classification classification, Integer classifiedObjectIndex) throws IOException {
-            ChosenClassifiedObjectWithAttributesResponse chosenClassifiedObjectWithAttributesResponse = new ChosenClassifiedObjectWithAttributesResponse();
-
-            final InformationTable classifiedInformationTable = classification.getInformationTable();
-            if((classifiedObjectIndex < 0) || (classifiedObjectIndex >= classifiedInformationTable.getNumberOfObjects())) {
-                WrongParameterException ex = new WrongParameterException(String.format("Given object's index \"%d\" is incorrect. You can choose object from %d to %d", classifiedObjectIndex, 0, classifiedInformationTable.getNumberOfObjects() - 1));
-                logger.error(ex.getMessage());
-                throw ex;
-            }
-
-            Field[] fields = classifiedInformationTable.getFields(classifiedObjectIndex);
-            chosenClassifiedObjectWithAttributesResponse.object = new LinkedHashMap<>();
-            for(int i = 0; i < classifiedInformationTable.getNumberOfAttributes(); i++) {
-                chosenClassifiedObjectWithAttributesResponse.object.put(classifiedInformationTable.getAttribute(i).getName(), fields[i].toString());
-            }
-
-            chosenClassifiedObjectWithAttributesResponse.indicesOfCoveringRules = classification.getIndicesOfCoveringRules()[classifiedObjectIndex];
-
-            StringWriter attributesWriter = new StringWriter();
-            InformationTableWriter itw = new InformationTableWriter(false);
-            itw.writeAttributes(classifiedInformationTable, attributesWriter);
-            chosenClassifiedObjectWithAttributesResponse.attributes = attributesWriter.toString();
-
-            return chosenClassifiedObjectWithAttributesResponse;
-        }
+                "attributes='" + attributes + '\'' +
+                "} " + super.toString();
     }
 }
