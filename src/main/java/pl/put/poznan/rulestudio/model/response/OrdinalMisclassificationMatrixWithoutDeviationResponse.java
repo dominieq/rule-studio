@@ -40,6 +40,8 @@ public class OrdinalMisclassificationMatrixWithoutDeviationResponse extends Ordi
     @JsonProperty("Number of unknown assigned decisions for unknown original decisions")
     private Double numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions;
 
+    private String[] decisionsDomain;
+
     @JsonProperty("value")
     private Double[][] value;
 
@@ -87,6 +89,10 @@ public class OrdinalMisclassificationMatrixWithoutDeviationResponse extends Ordi
         return numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions;
     }
 
+    public String[] getDecisionsDomain() {
+        return decisionsDomain;
+    }
+
     public Double[][] getValue() {
         return value;
     }
@@ -104,8 +110,9 @@ public class OrdinalMisclassificationMatrixWithoutDeviationResponse extends Ordi
                 ", numberOfUnknownOriginalDecisions=" + numberOfUnknownOriginalDecisions +
                 ", numberOfUnknownAssignments=" + numberOfUnknownAssignments +
                 ", numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions=" + numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions +
+                ", decisionsDomain=" + Arrays.toString(decisionsDomain) +
                 ", value=" + Arrays.toString(value) +
-                '}';
+                "} " + super.toString();
     }
 
     public static class OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder {
@@ -121,6 +128,7 @@ public class OrdinalMisclassificationMatrixWithoutDeviationResponse extends Ordi
         private Double numberOfUnknownOriginalDecisions;
         private Double numberOfUnknownAssignments;
         private Double numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions;
+        private String[] decisionDomain;
         private Double[][] value;
 
         public static OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder newInstance() {
@@ -177,6 +185,11 @@ public class OrdinalMisclassificationMatrixWithoutDeviationResponse extends Ordi
             return this;
         }
 
+        public OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder setDecisionDomain(String[] decisionDomain) {
+            this.decisionDomain = decisionDomain;
+            return this;
+        }
+
         public OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder setValue(Double[][] value) {
             this.value = value;
             return this;
@@ -195,6 +208,7 @@ public class OrdinalMisclassificationMatrixWithoutDeviationResponse extends Ordi
             ommwdr.numberOfUnknownOriginalDecisions = this.numberOfUnknownOriginalDecisions;
             ommwdr.numberOfUnknownAssignments = this.numberOfUnknownAssignments;
             ommwdr.numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions = this.numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions;
+            ommwdr.decisionsDomain = this.decisionDomain;
             ommwdr.value = this.value;
 
             return ommwdr;
@@ -215,8 +229,15 @@ public class OrdinalMisclassificationMatrixWithoutDeviationResponse extends Ordi
             ommwdr.numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions = matrix.getNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions();
 
             final int numberOfDecision = orderOfDecisions.length;
-            int row, col;
-            Decision originalDecision, assignedDecision;
+            int i, attributeIndex, row, col;
+            Decision decision, originalDecision, assignedDecision;
+
+            ommwdr.decisionsDomain = new String[numberOfDecision];
+            for(i = 0; i < numberOfDecision; i++) {
+                decision = orderOfDecisions[i];
+                attributeIndex = decision.getAttributeIndices().iterator().nextInt(); //assumption that there is only one decision attribute
+                ommwdr.decisionsDomain[i] = decision.getEvaluation(attributeIndex).toString();
+            }
 
             ommwdr.value = new Double[numberOfDecision][];
             for(row = 0; row < numberOfDecision; row++) {

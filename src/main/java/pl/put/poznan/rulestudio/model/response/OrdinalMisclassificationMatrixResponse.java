@@ -61,6 +61,8 @@ public class OrdinalMisclassificationMatrixResponse extends OrdinalMisclassifica
     @JsonProperty("Deviation of number of unknown assigned decisions for unknown original decisions")
     private Double deviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions;
 
+    private String[] decisionsDomain;
+
     @JsonProperty("value")
     private Double[][] value;
 
@@ -139,6 +141,10 @@ public class OrdinalMisclassificationMatrixResponse extends OrdinalMisclassifica
         return deviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions;
     }
 
+    public String[] getDecisionsDomain() {
+        return decisionsDomain;
+    }
+
     public Double[][] getValue() {
         return value;
     }
@@ -167,9 +173,10 @@ public class OrdinalMisclassificationMatrixResponse extends OrdinalMisclassifica
                 ", deviationOfNumberOfUnknownAssignments=" + deviationOfNumberOfUnknownAssignments +
                 ", numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions=" + numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions +
                 ", deviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions=" + deviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions +
+                ", decisionsDomain=" + Arrays.toString(decisionsDomain) +
                 ", value=" + Arrays.toString(value) +
                 ", deviationOfValue=" + Arrays.toString(deviationOfValue) +
-                '}';
+                "} " + super.toString();
     }
 
     public static class OrdinalMisclassificationMatrixResponseBuilder {
@@ -192,6 +199,7 @@ public class OrdinalMisclassificationMatrixResponse extends OrdinalMisclassifica
         private Double deviationOfNumberOfUnknownAssignments;
         private Double numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions;
         private Double deviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions;
+        private String[] decisionDomain;
         private Double[][] value;
         private Double[][] deviationOfValue;
 
@@ -284,6 +292,11 @@ public class OrdinalMisclassificationMatrixResponse extends OrdinalMisclassifica
             return this;
         }
 
+        public OrdinalMisclassificationMatrixResponseBuilder setDecisionDomain(String[] decisionDomain) {
+            this.decisionDomain = decisionDomain;
+            return this;
+        }
+
         public OrdinalMisclassificationMatrixResponseBuilder setValue(Double[][] value) {
             this.value = value;
             return this;
@@ -314,6 +327,7 @@ public class OrdinalMisclassificationMatrixResponse extends OrdinalMisclassifica
             ommr.deviationOfNumberOfUnknownAssignments = this.deviationOfNumberOfUnknownAssignments;
             ommr.numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions = this.numberOfUnknownAssignedDecisionsForUnknownOriginalDecisions;
             ommr.deviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions = this.deviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions;
+            ommr.decisionsDomain = this.decisionDomain;
             ommr.value = this.value;
             ommr.deviationOfValue = this.deviationOfValue;
 
@@ -342,8 +356,15 @@ public class OrdinalMisclassificationMatrixResponse extends OrdinalMisclassifica
             ommr.deviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions = matrix.getDeviationOfNumberOfUnknownAssignedDecisionsForUnknownOriginalDecisions();
 
             final int numberOfDecision = orderOfDecisions.length;
-            int row, col;
-            Decision originalDecision, assignedDecision;
+            int i, attributeIndex, row, col;
+            Decision decision, originalDecision, assignedDecision;
+
+            ommr.decisionsDomain = new String[numberOfDecision];
+            for(i = 0; i < numberOfDecision; i++) {
+                decision = orderOfDecisions[i];
+                attributeIndex = decision.getAttributeIndices().iterator().nextInt(); //assumption that there is only one decision attribute
+                ommr.decisionsDomain[i] = decision.getEvaluation(attributeIndex).toString();
+            }
 
             ommr.value = new Double[numberOfDecision][];
             for(row = 0; row < numberOfDecision; row++) {
