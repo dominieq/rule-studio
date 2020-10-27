@@ -31,6 +31,7 @@ import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.Des
 import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse.MainClassUnionsResponseBuilder;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Service
@@ -188,15 +189,21 @@ public class UnionsService {
         return descriptiveAttributesResponse;
     }
 
-    public AttributeFieldsResponse getObjectNames(UUID id) {
+    public AttributeFieldsResponse getObjectNames(UUID id, Integer[] set) {
         logger.info("Id:\t{}", id);
+        if(set != null) logger.info("Set:\t{}", Arrays.toString(set));
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
 
         final Integer descriptiveAttributeIndex = unionsWithHttpParameters.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
-        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        AttributeFieldsResponse attributeFieldsResponse;
+        if(set != null) {
+            attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex, set);
+        } else {
+            attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        }
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }

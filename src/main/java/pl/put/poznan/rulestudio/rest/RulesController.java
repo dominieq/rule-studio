@@ -100,10 +100,11 @@ public class RulesController {
 
     @RequestMapping(value = "/objectNames", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AttributeFieldsResponse> getObjectNames(
-            @PathVariable("id") UUID id) {
+            @PathVariable("id") UUID id,
+            @RequestBody(required = false) Integer[] set) {
         logger.info("Getting object names in rules...");
 
-        final AttributeFieldsResponse result = rulesService.getObjectNames(id);
+        final AttributeFieldsResponse result = rulesService.getObjectNames(id, set);
 
         return ResponseEntity.ok(result);
     }

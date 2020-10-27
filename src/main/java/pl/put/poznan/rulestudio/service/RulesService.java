@@ -460,15 +460,21 @@ public class RulesService {
         return descriptiveAttributesResponse;
     }
 
-    public AttributeFieldsResponse getObjectNames(UUID id) {
+    public AttributeFieldsResponse getObjectNames(UUID id, Integer[] set) {
         logger.info("Id:\t{}", id);
+        if(set != null) logger.info("Set:\t{}", Arrays.toString(set));
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         final RulesWithHttpParameters rules = getRulesFromProject(project);
 
         final Integer descriptiveAttributeIndex = rules.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
-        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        AttributeFieldsResponse attributeFieldsResponse;
+        if(set != null) {
+            attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex, set);
+        } else {
+            attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        }
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
