@@ -102,6 +102,43 @@ public class UnionsService {
         }
     }
 
+    public static int[] getClassUnionArrayPropertyValues(Union union, ClassUnionArrayPropertyType classUnionArrayPropertyType) {
+        int[] values;
+
+        switch (classUnionArrayPropertyType) {
+            case OBJECTS:
+                values = union.getObjects().toIntArray();
+                break;
+            case LOWER_APPROXIMATION:
+                values = union.getLowerApproximation().toIntArray();
+                break;
+            case UPPER_APPROXIMATION:
+                values = union.getUpperApproximation().toIntArray();
+                break;
+            case BOUNDARY:
+                values = union.getBoundary().toIntArray();
+                break;
+            case POSITIVE_REGION:
+                values = union.getPositiveRegion().toIntArray();
+                Arrays.sort(values);
+                break;
+            case NEGATIVE_REGION:
+                values = union.getNegativeRegion().toIntArray();
+                Arrays.sort(values);
+                break;
+            case BOUNDARY_REGION:
+                values = union.getBoundaryRegion().toIntArray();
+                Arrays.sort(values);
+                break;
+            default:
+                WrongParameterException ex = new WrongParameterException(String.format("Given type of class union array property \"%s\" is unrecognized.", classUnionArrayPropertyType));
+                logger.error(ex.getMessage());
+                throw ex;
+        }
+
+        return values;
+    }
+
     private UnionsWithHttpParameters getUnionsWithHttpParametersFromProject(Project project) {
         final UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
         if(unionsWithHttpParameters == null) {
@@ -189,21 +226,33 @@ public class UnionsService {
         return descriptiveAttributesResponse;
     }
 
-    public AttributeFieldsResponse getObjectNames(UUID id, Integer[] set) {
+    public AttributeFieldsResponse getObjectNames(UUID id) {
         logger.info("Id:\t{}", id);
-        if(set != null) logger.info("Set:\t{}", Arrays.toString(set));
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
 
         final Integer descriptiveAttributeIndex = unionsWithHttpParameters.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
-        AttributeFieldsResponse attributeFieldsResponse;
-        if(set != null) {
-            attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex, set);
-        } else {
-            attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
-        }
+        AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        return attributeFieldsResponse;
+    }
+
+    public AttributeFieldsResponse getObjectNamesOfSubject(UUID id, Integer classUnionIndex, ClassUnionArrayPropertyType classUnionArrayPropertyType) {
+        logger.info("Id:\t{}", id);
+        logger.info("ClassUnionIndex:\t{}", classUnionIndex);
+        logger.info("ClassUnionArrayPropertyType:\t{}", classUnionArrayPropertyType);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
+
+        final Union chosenClassUnion = getClassUnionByIndex(unionsWithHttpParameters, classUnionIndex);
+        final int[] indices =  getClassUnionArrayPropertyValues(chosenClassUnion, classUnionArrayPropertyType);
+        final String[] objectNames = unionsWithHttpParameters.getDescriptiveAttributes().extractChosenObjectNames(project.getInformationTable(), indices);
+
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }

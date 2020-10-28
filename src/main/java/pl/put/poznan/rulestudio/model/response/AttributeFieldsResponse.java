@@ -75,38 +75,5 @@ public class AttributeFieldsResponse {
 
             return attributeFieldsResponse;
         }
-
-        public AttributeFieldsResponse build(InformationTable informationTable, Integer attributeIndex, Integer[] set) {
-            AttributeFieldsResponse attributeFieldsResponse = new AttributeFieldsResponse();
-
-            if(informationTable == null) {
-                attributeFieldsResponse.fields = new String[0];
-
-                return attributeFieldsResponse;
-            }
-
-            attributeFieldsResponse.fields = new String[set.length];
-            if(attributeIndex == null) {
-                String base = "Object ";
-                StringBuilder sb;
-                for(int i = 0; i < set.length; i++) {
-                    sb = new StringBuilder(base);
-                    sb.append(set[i] + 1);
-                    attributeFieldsResponse.fields[i] = sb.toString();
-                }
-            } else {
-                int objectIndex;
-                for(int i = 0; i < set.length; i++) {
-                    objectIndex = set[i];
-                    if((objectIndex < 0) || (objectIndex >= informationTable.getNumberOfObjects())) {
-                        attributeFieldsResponse.fields[i] = null;
-                    } else {
-                        attributeFieldsResponse.fields[i] = informationTable.getField(objectIndex, attributeIndex).toString();
-                    }
-                }
-            }
-
-            return attributeFieldsResponse;
-        }
     }
 }

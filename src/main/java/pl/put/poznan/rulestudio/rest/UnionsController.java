@@ -88,10 +88,16 @@ public class UnionsController {
     @RequestMapping(value = "/objectNames", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AttributeFieldsResponse> getObjectNames(
             @PathVariable("id") UUID id,
-            @RequestParam(name = "set", required = false) Integer[] set) {
+            @RequestParam(name = "subject", required = false) Integer classUnionIndex,
+            @RequestParam(name = "set", required = false) ClassUnionArrayPropertyType classUnionArrayPropertyType) {
         logger.info("Getting object names in class unions...");
 
-        final AttributeFieldsResponse result = unionsService.getObjectNames(id, set);
+        AttributeFieldsResponse result;
+        if((classUnionIndex != null) && (classUnionArrayPropertyType != null)) {
+            result = unionsService.getObjectNamesOfSubject(id, classUnionIndex, classUnionArrayPropertyType);
+        } else {
+            result = unionsService.getObjectNames(id);
+        }
 
         return ResponseEntity.ok(result);
     }

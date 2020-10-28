@@ -285,6 +285,26 @@ public class RulesService {
         return rules;
     }
 
+    public static int[] getCoveringObjectsIndices(RuleSetWithCharacteristics ruleSetWithCharacteristics, Integer ruleIndex) {
+        int indices[];
+
+        if((ruleIndex < 0) || (ruleIndex >= ruleSetWithCharacteristics.size())) {
+            WrongParameterException ex = new WrongParameterException(String.format("Given rule's index \"%d\" is incorrect. You can choose rule from %d to %d", ruleIndex, 0, ruleSetWithCharacteristics.size() - 1));
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        final RuleCharacteristics ruleCharacteristics = ruleSetWithCharacteristics.getRuleCharacteristics(ruleIndex);
+        final BasicRuleCoverageInformation basicRuleCoverageInformation = ruleCharacteristics.getRuleCoverageInformation();
+        if(basicRuleCoverageInformation != null) {
+            indices = basicRuleCoverageInformation.getIndicesOfCoveredObjects().toIntArray();
+        } else {
+            indices = new int[0];
+        }
+
+        return indices;
+    }
+
     public MainRulesResponse getRules(UUID id, OrderByRuleCharacteristic orderBy, Boolean desc) {
         logger.info("Id:\t{}", id);
         logger.info("OrderBy:\t{}", orderBy);
@@ -460,21 +480,31 @@ public class RulesService {
         return descriptiveAttributesResponse;
     }
 
-    public AttributeFieldsResponse getObjectNames(UUID id, Integer[] set) {
+    public AttributeFieldsResponse getObjectNames(UUID id) {
         logger.info("Id:\t{}", id);
-        if(set != null) logger.info("Set:\t{}", Arrays.toString(set));
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         final RulesWithHttpParameters rules = getRulesFromProject(project);
 
         final Integer descriptiveAttributeIndex = rules.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
-        AttributeFieldsResponse attributeFieldsResponse;
-        if(set != null) {
-            attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex, set);
-        } else {
-            attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
-        }
+        AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        return attributeFieldsResponse;
+    }
+
+    public AttributeFieldsResponse getObjectNamesOfSubject(UUID id, Integer ruleIndex) {
+        logger.info("Id:\t{}", id);
+        logger.info("RuleIndex:\t{}", ruleIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final RulesWithHttpParameters rules = getRulesFromProject(project);
+
+        final int[] indices = getCoveringObjectsIndices(rules.getRuleSet(), ruleIndex);
+        String[] objectNames = rules.getDescriptiveAttributes().extractChosenObjectNames(project.getInformationTable(), indices);
+
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
