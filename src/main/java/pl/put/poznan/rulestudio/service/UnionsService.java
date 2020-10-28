@@ -239,7 +239,7 @@ public class UnionsService {
         return attributeFieldsResponse;
     }
 
-    public AttributeFieldsResponse getObjectNamesOfSubject(UUID id, Integer classUnionIndex, ClassUnionArrayPropertyType classUnionArrayPropertyType) {
+    public AttributeFieldsResponse getObjectNames(UUID id, Integer classUnionIndex, ClassUnionArrayPropertyType classUnionArrayPropertyType) {
         logger.info("Id:\t{}", id);
         logger.info("ClassUnionIndex:\t{}", classUnionIndex);
         logger.info("ClassUnionArrayPropertyType:\t{}", classUnionArrayPropertyType);

@@ -12,7 +12,7 @@ import java.util.Arrays;
 public class CrossValidation {
     private Integer numberOfFolds;
     private InformationTable informationTable;
-    private CrossValidationSingleFold crossValidationSingleFolds[];
+    private CrossValidationSingleFold[] crossValidationSingleFolds;
     private OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix;
     private OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix;
     private UnionType typeOfUnions;

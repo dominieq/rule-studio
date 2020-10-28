@@ -106,7 +106,7 @@ public class RulesController {
 
         AttributeFieldsResponse result;
         if(ruleIndex != null) {
-            result = rulesService.getObjectNamesOfSubject(id, ruleIndex);
+            result = rulesService.getObjectNames(id, ruleIndex);
         } else {
             result = rulesService.getObjectNames(id);
         }

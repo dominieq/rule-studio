@@ -158,10 +158,16 @@ public class ClassificationController {
 
     @RequestMapping(value = "/rules/objectNames", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AttributeFieldsResponse> getRulesObjectNames(
-            @PathVariable("id") UUID id) {
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "subject", required = false) Integer ruleIndex) {
         logger.info("Getting rules object names in classification...");
 
-        final AttributeFieldsResponse result = classificationService.getRulesObjectNames(id);
+        AttributeFieldsResponse result;
+        if(ruleIndex != null) {
+            result = classificationService.getRulesObjectNames(id, ruleIndex);
+        } else {
+            result = classificationService.getRulesObjectNames(id);
+        }
 
         return ResponseEntity.ok(result);
     }

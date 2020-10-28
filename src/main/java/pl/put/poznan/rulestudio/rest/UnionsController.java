@@ -94,7 +94,7 @@ public class UnionsController {
 
         AttributeFieldsResponse result;
         if((classUnionIndex != null) && (classUnionArrayPropertyType != null)) {
-            result = unionsService.getObjectNamesOfSubject(id, classUnionIndex, classUnionArrayPropertyType);
+            result = unionsService.getObjectNames(id, classUnionIndex, classUnionArrayPropertyType);
         } else {
             result = unionsService.getObjectNames(id);
         }

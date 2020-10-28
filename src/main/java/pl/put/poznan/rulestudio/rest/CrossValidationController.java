@@ -7,7 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.enums.*;
-import pl.put.poznan.rulestudio.model.CrossValidation;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.service.CrossValidationService;
 
@@ -97,10 +96,19 @@ public class CrossValidationController {
 
     @RequestMapping(value = "/objectNames", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AttributeFieldsResponse> getObjectNames(
-            @PathVariable("id") UUID id) {
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "subject", required = false) Integer foldIndex,
+            @RequestParam(name = "set", required = false) Integer rulesIndex) {
         logger.info("Getting object names in cross validation...");
 
-        final AttributeFieldsResponse result = crossValidationService.getObjectNames(id);
+        AttributeFieldsResponse result;
+        if((foldIndex != null) && (rulesIndex != null)) {
+            result = crossValidationService.getObjectNames(id, foldIndex, rulesIndex);
+        } else if(foldIndex != null) {
+            result = crossValidationService.getObjectNames(id, foldIndex);
+        } else {
+            result = crossValidationService.getObjectNames(id);
+        }
 
         return ResponseEntity.ok(result);
     }

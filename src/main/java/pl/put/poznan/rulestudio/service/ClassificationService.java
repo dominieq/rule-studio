@@ -18,10 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.enums.ClassifierType;
 import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulestudio.exception.*;
-import pl.put.poznan.rulestudio.model.Classification;
-import pl.put.poznan.rulestudio.model.DescriptiveAttributes;
-import pl.put.poznan.rulestudio.model.Project;
-import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.*;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
@@ -603,6 +600,23 @@ public class ClassificationService {
 
         final Integer descriptiveAttributeIndex = classification.getRulesDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        return attributeFieldsResponse;
+    }
+
+    public AttributeFieldsResponse getRulesObjectNames(UUID id, Integer ruleIndex) {
+        logger.info("Id:\t{}", id);
+        logger.info("RuleIndex:\t{}", ruleIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final Classification classification = getClassificationFromProject(project);
+
+        RulesWithHttpParameters rulesWithHttpParameters = RulesService.getRulesFromProject(project);
+        final int[] indices = RulesService.getCoveringObjectsIndices(rulesWithHttpParameters.getRuleSet(), ruleIndex);
+        String[] objectNames = classification.getRulesDescriptiveAttributes().extractChosenObjectNames(project.getInformationTable(), indices);
+
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }

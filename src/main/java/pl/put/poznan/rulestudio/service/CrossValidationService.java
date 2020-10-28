@@ -255,6 +255,41 @@ public class CrossValidationService {
         return attributeFieldsResponse;
     }
 
+    public AttributeFieldsResponse getObjectNames(UUID id, Integer foldIndex) {
+        logger.info("Id:\t{}", id);
+        logger.info("FoldIndex:\t{}", foldIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final CrossValidation crossValidation = getCrossValidationFromProject(project);
+
+        final CrossValidationSingleFold chosenFold = getChosenFoldFromCrossValidation(crossValidation, foldIndex);
+        final int[] indices = chosenFold.getIndicesOfValidationObjects();
+        String[] objectNames = crossValidation.getDescriptiveAttributes().extractChosenObjectNames(crossValidation.getInformationTable(), indices);
+
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
+        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        return attributeFieldsResponse;
+    }
+
+    public AttributeFieldsResponse getObjectNames(UUID id, Integer foldIndex, Integer ruleIndex) {
+        logger.info("Id:\t{}", id);
+        logger.info("FoldIndex:\t{}", foldIndex);
+        logger.info("RuleIndex:\t{}", ruleIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final CrossValidation crossValidation = getCrossValidationFromProject(project);
+
+        final CrossValidationSingleFold chosenFold = getChosenFoldFromCrossValidation(crossValidation, foldIndex);
+        final int[] indices = RulesService.getCoveringObjectsIndices(chosenFold.getRuLeStudioRuleSet(), ruleIndex);
+        String[] objectNames = crossValidation.getDescriptiveAttributes().extractChosenObjectNames(crossValidation.getInformationTable(), indices);
+
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
+        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        return attributeFieldsResponse;
+    }
+
     public ChosenCrossValidationFoldResponse getChosenCrossValidationFold(UUID id, Integer foldIndex) {
         logger.info("Id:\t{}", id);
         logger.info("FoldIndex:\t{}", foldIndex);
