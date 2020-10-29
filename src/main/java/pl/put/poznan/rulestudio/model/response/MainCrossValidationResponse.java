@@ -11,9 +11,6 @@ import pl.put.poznan.rulestudio.model.response.ChosenCrossValidationFoldResponse
 
 public class MainCrossValidationResponse {
 
-    @JsonProperty("fold0")
-    private ChosenCrossValidationFoldResponse chosenCrossValidationFoldResponse;
-
     @JsonProperty("isCurrentData")
     private Boolean isCurrentData;
 
@@ -22,10 +19,6 @@ public class MainCrossValidationResponse {
 
     private MainCrossValidationResponse() {
         //private constructor
-    }
-
-    public ChosenCrossValidationFoldResponse getChosenCrossValidationFoldResponse() {
-        return chosenCrossValidationFoldResponse;
     }
 
     @JsonIgnore
@@ -40,8 +33,7 @@ public class MainCrossValidationResponse {
     @Override
     public String toString() {
         return "MainCrossValidationResponse{" +
-                "chosenCrossValidationFoldResponse=" + chosenCrossValidationFoldResponse +
-                ", isCurrentData=" + isCurrentData +
+                "isCurrentData=" + isCurrentData +
                 ", crossValidationParameters=" + crossValidationParameters +
                 '}';
     }
@@ -49,17 +41,11 @@ public class MainCrossValidationResponse {
     public static class MainCrossValidationResponseBuilder {
         private static final Logger logger = LoggerFactory.getLogger(MainCrossValidationResponseBuilder.class);
 
-        private ChosenCrossValidationFoldResponse chosenCrossValidationFoldResponse;
         private Boolean isCurrentData;
         private CrossValidationParameters crossValidationParameters;
 
         public static MainCrossValidationResponseBuilder newInstance() {
             return new MainCrossValidationResponseBuilder();
-        }
-
-        public MainCrossValidationResponseBuilder setChosenCrossValidationFoldResponse(ChosenCrossValidationFoldResponse chosenCrossValidationFoldResponse) {
-            this.chosenCrossValidationFoldResponse = chosenCrossValidationFoldResponse;
-            return this;
         }
 
         public MainCrossValidationResponseBuilder setCurrentData(Boolean currentData) {
@@ -75,7 +61,6 @@ public class MainCrossValidationResponse {
         public MainCrossValidationResponse build() {
             MainCrossValidationResponse mainCrossValidationResponse = new MainCrossValidationResponse();
 
-            mainCrossValidationResponse.chosenCrossValidationFoldResponse = this.chosenCrossValidationFoldResponse;
             mainCrossValidationResponse.isCurrentData = this.isCurrentData;
             mainCrossValidationResponse.crossValidationParameters = this.crossValidationParameters;
 
@@ -85,7 +70,6 @@ public class MainCrossValidationResponse {
         public MainCrossValidationResponse build(CrossValidation crossValidation) {
             MainCrossValidationResponse mainCrossValidationResponse = new MainCrossValidationResponse();
 
-            mainCrossValidationResponse.chosenCrossValidationFoldResponse = ChosenCrossValidationFoldResponseBuilder.newInstance().build(crossValidation, 0);
             mainCrossValidationResponse.isCurrentData = crossValidation.isCurrentData();
             mainCrossValidationResponse.crossValidationParameters = CrossValidationParametersBuilder.newInstance().build(crossValidation);
 
