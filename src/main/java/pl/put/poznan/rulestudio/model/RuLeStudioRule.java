@@ -8,10 +8,10 @@ import java.util.Arrays;
 public class RuLeStudioRule {
     private Rule rule;
     private RuleCharacteristics ruleCharacteristics;
-    private Integer[] indicesOfCoveredObjects;
+    private int[] indicesOfCoveredObjects;
     private Boolean[] isSupportingObject;
 
-    public RuLeStudioRule(Rule rule, RuleCharacteristics ruleCharacteristics, Integer[] indicesOfCoveredObjects, Boolean[] isSupportingObject) {
+    public RuLeStudioRule(Rule rule, RuleCharacteristics ruleCharacteristics, int[] indicesOfCoveredObjects, Boolean[] isSupportingObject) {
         this.rule = rule;
         this.ruleCharacteristics = ruleCharacteristics;
         this.indicesOfCoveredObjects = indicesOfCoveredObjects;
@@ -34,11 +34,11 @@ public class RuLeStudioRule {
         this.ruleCharacteristics = ruleCharacteristics;
     }
 
-    public Integer[] getIndicesOfCoveredObjects() {
+    public int[] getIndicesOfCoveredObjects() {
         return indicesOfCoveredObjects;
     }
 
-    public void setIndicesOfCoveredObjects(Integer[] indicesOfCoveredObjects) {
+    public void setIndicesOfCoveredObjects(int[] indicesOfCoveredObjects) {
         this.indicesOfCoveredObjects = indicesOfCoveredObjects;
     }
 

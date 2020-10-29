@@ -74,7 +74,7 @@ public class CrossValidationService {
     private void rearrangeIndicesOfCoveredObject(RuLeStudioRuleSet ruLeStudioRuleSet, int[] indicesOfTrainingObjects) {
         RuLeStudioRule[] ruLeStudioRules = ruLeStudioRuleSet.getRuLeStudioRules();
         for(int ruleIndex = 0; ruleIndex < ruLeStudioRules.length; ruleIndex++) {
-            Integer[] indicesOfCoveredObjects = ruLeStudioRules[ruleIndex].getIndicesOfCoveredObjects();
+            int[] indicesOfCoveredObjects = ruLeStudioRules[ruleIndex].getIndicesOfCoveredObjects();
             for(int listIndex = 0; listIndex < indicesOfCoveredObjects.length; listIndex++) {
                 int oldIndex = indicesOfCoveredObjects[listIndex];
                 int newIndex = indicesOfTrainingObjects[oldIndex];
@@ -106,7 +106,7 @@ public class CrossValidationService {
             throw ex;
         }
 
-        CrossValidationSingleFold crossValidationSingleFolds[] = new CrossValidationSingleFold[numberOfFolds];
+        CrossValidationSingleFold[] crossValidationSingleFolds = new CrossValidationSingleFold[numberOfFolds];
         Decision[] orderOfDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
         OrdinalMisclassificationMatrix[] foldOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix[numberOfFolds];
 

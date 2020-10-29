@@ -306,25 +306,14 @@ public class RulesService {
     }
 
     public static int[] getCoveringObjectsIndices(RuLeStudioRuleSet ruLeStudioRuleSet, Integer ruleIndex) {
-        int[] indices;
         final RuLeStudioRule[] rules = ruLeStudioRuleSet.getRuLeStudioRules();
-
         if((ruleIndex < 0) || (ruleIndex >= rules.length)) {
             WrongParameterException ex = new WrongParameterException(String.format("Given rule's index \"%d\" is incorrect. You can choose rule from %d to %d", ruleIndex, 0, rules.length - 1));
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        final RuLeStudioRule rule = rules[ruleIndex];
-        final RuleCharacteristics ruleCharacteristics = rule.getRuleCharacteristics();
-        final BasicRuleCoverageInformation basicRuleCoverageInformation = ruleCharacteristics.getRuleCoverageInformation();
-        if(basicRuleCoverageInformation != null) {
-            indices = basicRuleCoverageInformation.getIndicesOfCoveredObjects().toIntArray();
-        } else {
-            indices = new int[0];
-        }
-
-        return indices;
+        return rules[ruleIndex].getIndicesOfCoveredObjects();
     }
 
     public MainRulesResponse getRules(UUID id, OrderByRuleCharacteristic orderBy, Boolean desc) {

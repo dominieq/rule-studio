@@ -17,18 +17,18 @@ public class RuLeStudioRuleSet {
         for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
             Rule rule = ruleSetWithCharacteristics.getRule(i);
             RuleCharacteristics ruleCharacteristics = ruleSetWithCharacteristics.getRuleCharacteristics(i);
-            Integer[] indicesOfCoveredObjects = null;
+            int[] indicesOfCoveredObjects = null;
             Boolean[] isSupportingObjectArray = null;
 
             BasicRuleCoverageInformation basicRuleCoverageInformation = ruleCharacteristics.getRuleCoverageInformation();
             if(basicRuleCoverageInformation != null) {
-                indicesOfCoveredObjects = basicRuleCoverageInformation.getIndicesOfCoveredObjects().toArray(new Integer[0]);
+                indicesOfCoveredObjects = basicRuleCoverageInformation.getIndicesOfCoveredObjects().toIntArray();
                 IntSet indicesOfCoveredNotSupportingObjects = basicRuleCoverageInformation.getIndicesOfCoveredNotSupportingObjects();
 
                 int numberOfCoveredObjects = indicesOfCoveredObjects.length;
                 isSupportingObjectArray = new Boolean[numberOfCoveredObjects];
                 for(int j = 0; j < numberOfCoveredObjects; j++) {
-                    if(indicesOfCoveredNotSupportingObjects.contains( indicesOfCoveredObjects[j].intValue() )) {
+                    if(indicesOfCoveredNotSupportingObjects.contains( indicesOfCoveredObjects[j] )) {
                         isSupportingObjectArray[j] = false;
                     } else {
                         isSupportingObjectArray[j] = true;

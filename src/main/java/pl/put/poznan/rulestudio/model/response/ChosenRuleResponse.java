@@ -1,6 +1,5 @@
 package pl.put.poznan.rulestudio.model.response;
 
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.BasicRuleCoverageInformation;
@@ -19,7 +18,7 @@ public class ChosenRuleResponse {
 
     private String[] objectNames;
 
-    private IntList indicesOfCoveredObjects;
+    private int[] indicesOfCoveredObjects;
 
     private Boolean[] isSupportingObject;
 
@@ -31,7 +30,7 @@ public class ChosenRuleResponse {
         return objectNames;
     }
 
-    public IntList getIndicesOfCoveredObjects() {
+    public int[] getIndicesOfCoveredObjects() {
         return indicesOfCoveredObjects;
     }
 
@@ -43,7 +42,7 @@ public class ChosenRuleResponse {
     public String toString() {
         return "ChosenRuleResponse{" +
                 "objectNames=" + Arrays.toString(objectNames) +
-                ", indicesOfCoveredObjects=" + indicesOfCoveredObjects +
+                ", indicesOfCoveredObjects=" + Arrays.toString(indicesOfCoveredObjects) +
                 ", isSupportingObject=" + Arrays.toString(isSupportingObject) +
                 '}';
     }
@@ -52,7 +51,7 @@ public class ChosenRuleResponse {
         private static final Logger logger = LoggerFactory.getLogger(ChosenRuleResponseBuilder.class);
 
         private String[] objectNames;
-        private IntList indicesOfCoveredObjects;
+        private int[] indicesOfCoveredObjects;
         private Boolean[] isSupportingObject;
 
         public static ChosenRuleResponseBuilder newInstance() {
@@ -64,7 +63,7 @@ public class ChosenRuleResponse {
             return this;
         }
 
-        public ChosenRuleResponseBuilder setIndicesOfCoveredObjects(IntList indicesOfCoveredObjects) {
+        public ChosenRuleResponseBuilder setIndicesOfCoveredObjects(int[] indicesOfCoveredObjects) {
             this.indicesOfCoveredObjects = indicesOfCoveredObjects;
             return this;
         }
@@ -96,14 +95,14 @@ public class ChosenRuleResponse {
             final RuleCharacteristics ruleCharacteristics = ruleSetWithCharacteristics.getRuleCharacteristics(ruleIndex);
             final BasicRuleCoverageInformation basicRuleCoverageInformation = ruleCharacteristics.getRuleCoverageInformation();
             if(basicRuleCoverageInformation != null) {
-                chosenRuleResponse.indicesOfCoveredObjects = basicRuleCoverageInformation.getIndicesOfCoveredObjects();
-                chosenRuleResponse.objectNames = descriptiveAttributes.extractChosenObjectNames(informationTable, chosenRuleResponse.indicesOfCoveredObjects.toIntArray());
+                chosenRuleResponse.indicesOfCoveredObjects = basicRuleCoverageInformation.getIndicesOfCoveredObjects().toIntArray();
+                chosenRuleResponse.objectNames = descriptiveAttributes.extractChosenObjectNames(informationTable, chosenRuleResponse.indicesOfCoveredObjects);
 
-                final int numberOfCoveredObjects = chosenRuleResponse.indicesOfCoveredObjects.size();
+                final int numberOfCoveredObjects = chosenRuleResponse.indicesOfCoveredObjects.length;
                 chosenRuleResponse.isSupportingObject = new Boolean[numberOfCoveredObjects];
                 final IntSet indicesOfCoveredNotSupportingObjects = basicRuleCoverageInformation.getIndicesOfCoveredNotSupportingObjects();
                 for(int i = 0; i < numberOfCoveredObjects; i++) {
-                    if(indicesOfCoveredNotSupportingObjects.contains( chosenRuleResponse.indicesOfCoveredObjects.getInt(i) )) {
+                    if(indicesOfCoveredNotSupportingObjects.contains( chosenRuleResponse.indicesOfCoveredObjects[i] )) {
                         chosenRuleResponse.isSupportingObject[i] = false;
                     } else {
                         chosenRuleResponse.isSupportingObject[i] = true;
@@ -125,23 +124,9 @@ public class ChosenRuleResponse {
             ChosenRuleResponse chosenRuleResponse = new ChosenRuleResponse();
 
             final RuLeStudioRule rule = rules[ruleIndex];
-            final RuleCharacteristics ruleCharacteristics = rule.getRuleCharacteristics();
-            final BasicRuleCoverageInformation basicRuleCoverageInformation = ruleCharacteristics.getRuleCoverageInformation();
-            if(basicRuleCoverageInformation != null) {
-                chosenRuleResponse.indicesOfCoveredObjects = basicRuleCoverageInformation.getIndicesOfCoveredObjects();
-                chosenRuleResponse.objectNames = descriptiveAttributes.extractChosenObjectNames(informationTable, chosenRuleResponse.indicesOfCoveredObjects.toIntArray());
-
-                final int numberOfCoveredObjects = chosenRuleResponse.indicesOfCoveredObjects.size();
-                chosenRuleResponse.isSupportingObject = new Boolean[numberOfCoveredObjects];
-                final IntSet indicesOfCoveredNotSupportingObjects = basicRuleCoverageInformation.getIndicesOfCoveredNotSupportingObjects();
-                for(int i = 0; i < numberOfCoveredObjects; i++) {
-                    if(indicesOfCoveredNotSupportingObjects.contains( chosenRuleResponse.indicesOfCoveredObjects.getInt(i) )) {
-                        chosenRuleResponse.isSupportingObject[i] = false;
-                    } else {
-                        chosenRuleResponse.isSupportingObject[i] = true;
-                    }
-                }
-            }
+            chosenRuleResponse.indicesOfCoveredObjects = rule.getIndicesOfCoveredObjects();
+            chosenRuleResponse.objectNames = descriptiveAttributes.extractChosenObjectNames(informationTable, chosenRuleResponse.indicesOfCoveredObjects);
+            chosenRuleResponse.isSupportingObject = rule.getIsSupportingObject();
 
             return chosenRuleResponse;
         }
