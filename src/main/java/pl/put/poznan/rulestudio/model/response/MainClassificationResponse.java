@@ -3,6 +3,7 @@ package pl.put.poznan.rulestudio.model.response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.rulelearn.data.Decision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.model.Classification;
@@ -149,10 +150,12 @@ public class MainClassificationResponse {
 
             mainClassificationResponse.objectNames = classification.getDescriptiveAttributes().extractObjectNames(classification.getInformationTable());
 
+            Decision originalDecision;
             final int numberOfObjects = classification.getInformationTable().getNumberOfObjects();
             mainClassificationResponse.classifiedObjectMainPropertiesArray = new ClassifiedObjectMainProperties[numberOfObjects];
             for(int i = 0; i < numberOfObjects; i++) {
-                mainClassificationResponse.classifiedObjectMainPropertiesArray[i] = ClassifiedObjectMainPropertiesBuilder.newInstance().build(classification, i);
+                originalDecision = classification.getInformationTable().getDecision(i);
+                mainClassificationResponse.classifiedObjectMainPropertiesArray[i] = ClassifiedObjectMainPropertiesBuilder.newInstance().build(classification, i, originalDecision);
             }
 
             mainClassificationResponse.isExternalData = classification.isExternalData();

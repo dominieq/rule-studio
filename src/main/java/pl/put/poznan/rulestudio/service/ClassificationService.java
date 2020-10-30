@@ -540,11 +540,19 @@ public class ClassificationService {
 
         final Classification classification = getClassificationFromProject(project);
 
+        final InformationTable informationTable = classification.getInformationTable();
+        if((objectIndex < 0) || (objectIndex >= informationTable.getNumberOfObjects())) {
+            WrongParameterException ex = new WrongParameterException(String.format("Given object's index \"%d\" is incorrect. You can choose object from %d to %d", objectIndex, 0, informationTable.getNumberOfObjects() - 1));
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+        final IntList indicesOfCoveringRules = classification.getIndicesOfCoveringRules()[objectIndex];
+
         ChosenClassifiedObjectAbstractResponse chosenClassifiedObjectAbstractResponse;
         if(isAttributes) {
-            chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectWithAttributesResponse(classification, objectIndex);
+            chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectWithAttributesResponse(informationTable, objectIndex, indicesOfCoveringRules);
         } else {
-            chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectResponse(classification, objectIndex);
+            chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectResponse(informationTable, objectIndex, indicesOfCoveringRules);
         }
         logger.debug("chosenClassifiedObjectAbstractResponse:\t{}", chosenClassifiedObjectAbstractResponse);
         return chosenClassifiedObjectAbstractResponse;

@@ -1,10 +1,18 @@
 package pl.put.poznan.rulestudio.model.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@JsonPropertyOrder({"Accuracy", "mae", "rmse", "gmean",
+        "Number of correct assignments",
+        "Number of incorrect assignments",
+        "Number of objects with assigned decision",
+        "Number of unknown original decisions",
+        "Number of unknown assignments",
+        "Number of unknown assigned decisions for unknown original decisions"})
 public class OrdinalMisclassificationMatrixTraitsWithoutDeviation {
 
     @JsonProperty("Accuracy")

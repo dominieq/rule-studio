@@ -91,10 +91,9 @@ public class ClassifiedObjectMainProperties {
             return classifiedObjectMainProperties;
         }
 
-        public ClassifiedObjectMainProperties build(Classification classification, Integer classifiedObjectIndex) {
+        public ClassifiedObjectMainProperties build(Classification classification, Integer classifiedObjectIndex, Decision originalDecision) {
             ClassifiedObjectMainProperties classifiedObjectMainProperties = new ClassifiedObjectMainProperties();
 
-            final Decision originalDecision = classification.getInformationTable().getDecision(classifiedObjectIndex);
             final int attributeIndex = originalDecision.getAttributeIndices().iterator().nextInt(); //assumption that there is only one decision attribute
             classifiedObjectMainProperties.originalDecision = originalDecision.getEvaluation(attributeIndex).toString();
 

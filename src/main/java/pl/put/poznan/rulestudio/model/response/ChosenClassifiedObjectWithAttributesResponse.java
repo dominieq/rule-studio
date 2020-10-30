@@ -19,13 +19,12 @@ public class ChosenClassifiedObjectWithAttributesResponse extends ChosenClassifi
     @JsonRawValue
     private String attributes;
 
-    public ChosenClassifiedObjectWithAttributesResponse(Classification classification, Integer classifiedObjectIndex) throws IOException {
-        super(classification, classifiedObjectIndex);
+    public ChosenClassifiedObjectWithAttributesResponse(InformationTable informationTable, Integer classifiedObjectIndex, IntList indicesOfCoveringRules) throws IOException {
+        super(informationTable, classifiedObjectIndex, indicesOfCoveringRules);
 
-        final InformationTable classifiedInformationTable = classification.getInformationTable();
         StringWriter attributesWriter = new StringWriter();
         InformationTableWriter itw = new InformationTableWriter(false);
-        itw.writeAttributes(classifiedInformationTable, attributesWriter);
+        itw.writeAttributes(informationTable, attributesWriter);
         this.attributes = attributesWriter.toString();
     }
 

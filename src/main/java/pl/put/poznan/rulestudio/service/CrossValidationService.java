@@ -1,5 +1,6 @@
 package pl.put.poznan.rulestudio.service;
 
+import it.unimi.dsi.fastutil.ints.IntList;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.Index2IdMapper;
@@ -126,10 +127,11 @@ public class CrossValidationService {
             UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsService.calculateUnionsWithSingleLimitingDecision(trainingTable, typeOfUnions, consistencyThreshold);
             RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.calculateRuleSetWithCharacteristics(unionsWithSingleLimitingDecision, typeOfRules);
 
-            Classification classificationValidationTable = ClassificationService.calculateClassification(trainingTable, validationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
-            classificationValidationTable.setCrossValidation(true);
+            Classification classificationOfValidationTable = ClassificationService.calculateClassification(trainingTable, validationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
+            classificationOfValidationTable.setInformationTable(null);
+            classificationOfValidationTable.setCrossValidation(true);
 
-            foldOrdinalMisclassificationMatrix[i] = classificationValidationTable.getOrdinalMisclassificationMatrix();
+            foldOrdinalMisclassificationMatrix[i] = classificationOfValidationTable.getOrdinalMisclassificationMatrix();
 
             indicesOfTrainingObjects = extractIndices(trainingTable, mainIndex2IdMapper);
             indicesOfValidationObjects = extractIndices(validationTable, mainIndex2IdMapper);
@@ -137,7 +139,7 @@ public class CrossValidationService {
             RuLeStudioRuleSet ruLeStudioRuleSet = new RuLeStudioRuleSet(ruleSetWithCharacteristics);
             rearrangeIndicesOfCoveredObject(ruLeStudioRuleSet, indicesOfTrainingObjects);
 
-            crossValidationSingleFolds[i] = new CrossValidationSingleFold(indicesOfTrainingObjects, indicesOfValidationObjects, ruLeStudioRuleSet, classificationValidationTable);
+            crossValidationSingleFolds[i] = new CrossValidationSingleFold(indicesOfTrainingObjects, indicesOfValidationObjects, ruLeStudioRuleSet, classificationOfValidationTable);
 
             //let garbage collector clean memory occupied by i-th fold
             folds.set(i, null);
@@ -315,11 +317,20 @@ public class CrossValidationService {
 
         final CrossValidationSingleFold chosenFold = getChosenFoldFromCrossValidation(crossValidation, foldIndex);
 
+        if((objectIndex < 0) || (objectIndex >= chosenFold.getIndicesOfValidationObjects().length)) {
+            WrongParameterException ex = new WrongParameterException(String.format("Given object's index \"%d\" is incorrect. You can choose object from %d to %d", objectIndex, 0, chosenFold.getIndicesOfValidationObjects().length - 1));
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+        final InformationTable informationTable = crossValidation.getInformationTable();
+        final int generalObjectIndex = chosenFold.getIndicesOfValidationObjects()[objectIndex];
+        final IntList indicesOfCoveringRules = chosenFold.getClassificationOfValidationTable().getIndicesOfCoveringRules()[objectIndex];
+
         ChosenClassifiedObjectAbstractResponse chosenClassifiedObjectAbstractResponse;
         if(isAttributes) {
-            chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectWithAttributesResponse(chosenFold.getClassificationOfValidationTable(), objectIndex);
+            chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectWithAttributesResponse(informationTable, generalObjectIndex, indicesOfCoveringRules);
         } else {
-            chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectResponse(chosenFold.getClassificationOfValidationTable(), objectIndex);
+            chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectResponse(informationTable, generalObjectIndex, indicesOfCoveringRules);
         }
         logger.debug("chosenClassifiedObjectAbstractResponse:\t{}", chosenClassifiedObjectAbstractResponse);
         return chosenClassifiedObjectAbstractResponse;

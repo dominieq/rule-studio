@@ -17,21 +17,20 @@ public class ChosenClassifiedObjectResponse extends ChosenClassifiedObjectAbstra
 
     private IntList indicesOfCoveringRules;
 
-    public ChosenClassifiedObjectResponse(Classification classification, Integer classifiedObjectIndex) {
-        final InformationTable classifiedInformationTable = classification.getInformationTable();
-        if((classifiedObjectIndex < 0) || (classifiedObjectIndex >= classifiedInformationTable.getNumberOfObjects())) {
-            WrongParameterException ex = new WrongParameterException(String.format("Given object's index \"%d\" is incorrect. You can choose object from %d to %d", classifiedObjectIndex, 0, classifiedInformationTable.getNumberOfObjects() - 1));
+    public ChosenClassifiedObjectResponse(InformationTable informationTable, Integer classifiedObjectIndex, IntList indicesOfCoveringRules) {
+        if((classifiedObjectIndex < 0) || (classifiedObjectIndex >= informationTable.getNumberOfObjects())) {
+            WrongParameterException ex = new WrongParameterException(String.format("Given object's index \"%d\" is incorrect. You can choose object from %d to %d", classifiedObjectIndex, 0, informationTable.getNumberOfObjects() - 1));
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        Field[] fields = classifiedInformationTable.getFields(classifiedObjectIndex);
+        Field[] fields = informationTable.getFields(classifiedObjectIndex);
         this.object = new LinkedHashMap<>();
-        for(int i = 0; i < classifiedInformationTable.getNumberOfAttributes(); i++) {
-            this.object.put(classifiedInformationTable.getAttribute(i).getName(), fields[i].toString());
+        for(int i = 0; i < informationTable.getNumberOfAttributes(); i++) {
+            this.object.put(informationTable.getAttribute(i).getName(), fields[i].toString());
         }
 
-        this.indicesOfCoveringRules = classification.getIndicesOfCoveringRules()[classifiedObjectIndex];
+        this.indicesOfCoveringRules = indicesOfCoveringRules;
     }
 
     public LinkedHashMap<String, String> getObject() {

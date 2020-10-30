@@ -1,6 +1,7 @@
 package pl.put.poznan.rulestudio.model.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.rulelearn.data.Decision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
@@ -107,11 +108,12 @@ public class ChosenCrossValidationFoldResponse {
 
             chosenCrossValidationFoldResponse.objectNames = crossValidation.getDescriptiveAttributes().extractChosenObjectNames(crossValidation.getInformationTable(), crossValidationSingleFold.getIndicesOfValidationObjects());
 
-            chosenCrossValidationFoldResponse.classifiedObjectMainPropertiesArray = this.classifiedObjectMainPropertiesArray;
+            Decision originalDecision;
             final int numberOfObjects = crossValidationSingleFold.getIndicesOfValidationObjects().length;
             chosenCrossValidationFoldResponse.classifiedObjectMainPropertiesArray = new ClassifiedObjectMainProperties[numberOfObjects];
             for(int i = 0; i < numberOfObjects; i++) {
-                chosenCrossValidationFoldResponse.classifiedObjectMainPropertiesArray[i] = ClassifiedObjectMainPropertiesBuilder.newInstance().build(crossValidationSingleFold.getClassificationOfValidationTable(), i);
+                originalDecision = crossValidation.getInformationTable().getDecision( crossValidationSingleFold.getIndicesOfValidationObjects()[i] );
+                chosenCrossValidationFoldResponse.classifiedObjectMainPropertiesArray[i] = ClassifiedObjectMainPropertiesBuilder.newInstance().build(crossValidationSingleFold.getClassificationOfValidationTable(), i, originalDecision);
             }
 
             chosenCrossValidationFoldResponse.numberOfTrainingObjects = crossValidationSingleFold.getIndicesOfTrainingObjects().length;
