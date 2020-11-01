@@ -4,7 +4,7 @@
  * description or identification attributes, a value associated with this attribute will be used as a name.
  * <br>
  * <br>
- * Used to generate name for {@link parseConesItems}, {@link parseClassificationItems} and {@link parseCrossValidationItems}.
+ * Used to generate name for {@link parseConesItems}, {@link parseClassifiedItems}.
  *
  * @category Utils
  * @subcategory Functions

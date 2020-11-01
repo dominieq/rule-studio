@@ -2,10 +2,9 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { downloadMatrix, fetchClassification } from "../../../Utils/utilFunctions/fetchFunctions";
 import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
-import { parseClassificationItems } from "../../../Utils/utilFunctions/parseItems";
+import { getItemName, parseClassifiedItems } from "../../../Utils/utilFunctions/parseItems";
 import { parseClassifiedListItems } from "../../../Utils/utilFunctions/parseListItems";
 import { parseClassificationParams } from "../../../Utils/utilFunctions/parseParams";
-import { parseMatrix } from "../../../Utils/utilFunctions/parseMatrix";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -26,6 +25,7 @@ import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomButtonGroup from "../../../Utils/Inputs/CustomButtonGroup";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
+import {AttributesMenu} from "../../../Utils/Menus/AttributesMenu";
 
 /**
  * The classification tab in RuLeStudio.
@@ -68,6 +68,7 @@ class Classification extends Component {
                 settings: false,
                 csv: false
             },
+            attributesMenuEl: null,
             alertProps: undefined,
         };
 
@@ -83,15 +84,18 @@ class Classification extends Component {
      */
     getClassification = () => {
         const { project, serverBase } = this.props;
+        const pathParams = { projectId: project.result.id };
+        const method = "GET";
 
         fetchClassification(
-            serverBase, project.result.id, "GET", null
+            pathParams, method, null, serverBase
         ).then(result => {
-            if (result && this._isMounted) {
-                const { project: { settings }} = this.props;
+            if (this._isMounted && result != null && result.hasOwnProperty("Objects")
+                && result.hasOwnProperty("objectNames")) {
 
-                const items = parseClassificationItems(result, settings);
-                const resultParameters = parseClassificationParams(result);
+                const items = parseClassifiedItems(result.Objects, result.objectNames);
+                const resultParameters = result.hasOwnProperty("parameters") ?
+                    parseClassificationParams(result.parameters) : { };
 
                 this.setState(({parameters}) => ({
                     data: result,
@@ -172,18 +176,6 @@ class Classification extends Component {
      * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
      */
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
-            const { data } = this.state;
-            const { project } = this.props;
-
-            let newItems = parseClassificationItems(data, project.settings);
-
-            this.setState({
-                items: newItems,
-                displayedItems: newItems
-            });
-        }
-
         if (prevProps.project.result.id !== this.props.project.result.id) {
             const { parametersSaved, selected: { action } } = prevState;
             let project = { ...prevProps.project };
@@ -242,12 +234,16 @@ class Classification extends Component {
         this.setState({
             loading: true,
         }, () => {
+            const pathParams = { projectId: project.result.id };
+
             fetchClassification(
-                serverBase, project.result.id, method, data
+                pathParams, method, data, serverBase
             ).then(result => {
                 if (result) {
-                    if (this._isMounted) {
-                        const items = parseClassificationItems(result, project.settings);
+                    if (this._isMounted && result.hasOwnProperty("Objects")
+                        && result.hasOwnProperty("objectNames")) {
+
+                        const items = parseClassifiedItems(result.Objects, result.objectNames);
 
                         this.setState({
                             data: result,
@@ -256,10 +252,10 @@ class Classification extends Component {
                             parametersSaved: true
                         });
                     }
-                    let projectCopy = JSON.parse(JSON.stringify(project));
-                    projectCopy.result.classification = result;
 
-                    const resultParameters = parseClassificationParams(result);
+                    let projectCopy = JSON.parse(JSON.stringify(project));
+                    const resultParameters = result.hasOwnProperty("parameters") ?
+                        parseClassificationParams(result.parameters) : { };
 
                     projectCopy.parameters = { ...project.parameters, ...resultParameters }
                     projectCopy.parametersSaved = true;
@@ -309,8 +305,8 @@ class Classification extends Component {
     onClassifyData = () => {
         const { parameters } = this.state;
 
-        let method = "PUT";
-        let data = parseFormData(parameters, null);
+        const method = "PUT";
+        const data = parseFormData(parameters, null);
 
         this.calculateClassification(method, data);
     };
@@ -379,16 +375,10 @@ class Classification extends Component {
      */
     onSaveToFile = () => {
         const { project, serverBase } = this.props;
-        let data = {typeOfMatrix: "classification"};
+        const pathParams = { projectId: project.result.id };
+        const queryParams = { typeOfMatrix: "classification" };
 
-        downloadMatrix(serverBase, project.result.id, data).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
-            }
-            if (this._isMounted) {
-                this.setState({ alertProps: error });
-            }
-        });
+        downloadMatrix(pathParams, queryParams, serverBase).catch(this.onSnackbarOpen);
     };
 
     onDefaultClassificationResultChange = (event) => {
@@ -455,6 +445,44 @@ class Classification extends Component {
         }));
     };
 
+    onObjectNamesChange = (names) => {
+        this.setState(({displayedItems}) => {
+            const newItems = displayedItems.map((item, index) => {
+                item.name = getItemName(index, names);
+                return item;
+            });
+
+            return { displayedItems: newItems };
+        });
+    };
+
+    onAttributesMenuOpen = (event) => {
+        const currentTarget = event.currentTarget;
+
+        this.setState({
+            attributesMenuEl: currentTarget
+        });
+    };
+
+    onAttributesMenuClose = () => {
+        this.setState({
+            attributesMenuEl: null
+        });
+    };
+
+    onSnackbarOpen = (exception) => {
+        if (exception.constructor.name !== "AlertError") {
+            console.error(exception);
+            return;
+        }
+
+        if (this._isMounted) {
+            this.setState({
+                alertProps: exception
+            });
+        }
+    };
+
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
             this.setState(({alertProps}) => ({
@@ -464,8 +492,8 @@ class Classification extends Component {
     };
 
     render() {
-        const { loading, data, displayedItems, parameters, selected, open, alertProps } = this.state;
-        const { project } = this.props;
+        const { loading, data, items, displayedItems, parameters, selected, open, attributesMenuEl, alertProps } = this.state;
+        const { project: { result: { id: projectId }}, serverBase } = this.props;
 
         return (
             <CustomBox id={"classification"} variant={"Tab"}>
@@ -549,6 +577,7 @@ class Classification extends Component {
                             onItemSelected: this.onDetailsOpen
                         }}
                         ListSubheaderProps={{
+                            onSettingsClick: this.onAttributesMenuOpen,
                             style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
                         }}
                         noFilterResults={!displayedItems}
@@ -559,23 +588,27 @@ class Classification extends Component {
                             }
                         ]}
                     />
-                    {project.result.rules != null && selected.item != null &&
+                    {selected.item != null &&
                         <ClassifiedObjectDialog
-                            informationTable={project.result.informationTable}
+                            disableAttributesMenu={false}
                             item={selected.item}
                             onClose={() => this.toggleOpen("details")}
+                            onSnackbarOpen={this.onSnackbarOpen}
                             open={open.details}
-                            ruleSet={project.result.rules.ruleSet}
-                            settings={project.settings}
+                            projectId={projectId}
+                            resource={"classification"}
+                            serverBase={serverBase}
                         />
                     }
-                    {data !== null &&
+                    {Array.isArray(items) && items.length > 0 &&
                         <MatrixDialog
-                            matrix={parseMatrix(data.ordinalMisclassificationMatrix)}
                             onClose={() => this.toggleOpen("matrix")}
+                            onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrix}
-                            subheaders={data.decisionsDomain}
+                            projectId={projectId}
+                            resource={"classification"}
                             saveMatrix={this.onSaveToFile}
+                            serverBase={serverBase}
                             title={
                                 <React.Fragment>
                                     <MatrixDownloadButton
@@ -589,6 +622,20 @@ class Classification extends Component {
                             }
                         />
                     }
+                    <AttributesMenu
+                        ListProps={{
+                            id: "classification-main-desc-attributes-menu"
+                        }}
+                        MuiMenuProps={{
+                            anchorEl: attributesMenuEl,
+                            onClose: this.onAttributesMenuClose
+                        }}
+                        onObjectNamesChange={this.onObjectNamesChange}
+                        onSnackbarOpen={this.onSnackbarOpen}
+                        projectId={projectId}
+                        resource={"classification"}
+                        serverBase={serverBase}
+                    />
                     <CSVDialog onConfirm={this.onCSVDialogClose} open={open.csv} />
                 </CustomBox>
                 <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />

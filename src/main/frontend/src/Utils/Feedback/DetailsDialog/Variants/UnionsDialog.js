@@ -360,8 +360,6 @@ class UnionsDialog extends React.PureComponent {
                     </div>
                 </MultiColumns>
                 <AttributesMenu
-                    onObjectNamesChange={this.onObjectNamesChange}
-                    onSnackbarOpen={this.props.onSnackbarOpen}
                     ListProps={{
                         id: 'unions-details-desc-attributes-menu'
                     }}
@@ -369,9 +367,12 @@ class UnionsDialog extends React.PureComponent {
                         anchorEl: attributesMenuEl,
                         onClose: this.onAttributesMenuClose
                     }}
+                    onObjectNamesChange={this.onObjectNamesChange}
+                    onSnackbarOpen={this.props.onSnackbarOpen}
                     projectId={projectId}
                     resource={"unions"}
                     serverBase={serverBase}
+                    queryParams={{subject: item.id, set: this._unionPropertyKeys[unionPropertyIndex]}}
                 />
             </FullscreenDialog>
         );

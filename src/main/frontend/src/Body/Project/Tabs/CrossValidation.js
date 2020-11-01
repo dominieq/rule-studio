@@ -1,13 +1,11 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import BigNumber from "bignumber.js";
-import { downloadMatrix, fetchCrossValidation } from "../../../Utils/utilFunctions/fetchFunctions";
+import { fetchCrossValidation, fetchFold, downloadMatrix } from "../../../Utils/utilFunctions/fetchFunctions";
 import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
-import { parseCrossValidationItems } from "../../../Utils/utilFunctions/parseItems";
+import { getItemName, parseClassifiedItems } from "../../../Utils/utilFunctions/parseItems";
 import { parseClassifiedListItems } from "../../../Utils/utilFunctions/parseListItems";
 import { parseCrossValidationParams } from "../../../Utils/utilFunctions/parseParams";
-import { parseFolds } from "../../../Utils/utilFunctions/parseFolds";
-import { parseMatrix } from "../../../Utils/utilFunctions/parseMatrix";
 import TabBody from "../Utils/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
@@ -36,6 +34,7 @@ import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
 import Sigma from "mdi-material-ui/Sigma";
+import {AttributesMenu} from "../../../Utils/Menus/AttributesMenu";
 
 /**
  * The cross-validation tab in RuLeStudio.
@@ -57,11 +56,12 @@ class CrossValidation extends Component {
         super(props);
 
         this.state = {
-            loading: false,
-            dataInformationTable: null,
-            dataMeanMatrix: null,
-            dataSumMatrix: null,
+            loading: {
+                crossValidation: false,
+                selectedFold: false,
+            },
             folds: null,
+            foldData: null,
             items: null,
             displayedItems: [],
             parameters: {
@@ -85,10 +85,61 @@ class CrossValidation extends Component {
                 matrixFold: false,
                 settings: false,
             },
+            attributesMenuEl: null,
             alertProps: undefined,
         };
 
         this.upperBar = React.createRef();
+    }
+
+    getFold = (foldIndex, finallyCallback) => {
+        this.setState(({loading}) => ({
+            loading: { ...loading, selectedFold: true }
+        }), () => {
+            const { project: { result: { id: projectId }}, serverBase } = this.props;
+            const pathParams = { projectId, foldIndex };
+
+            fetchFold(
+                pathParams, serverBase
+            ).then(result => {
+                if (this._isMounted && result != null && result.hasOwnProperty("Objects")
+                    && result.hasOwnProperty("objectNames")) {
+
+                    const items = parseClassifiedItems(result.Objects, result.objectNames)
+
+                    this.setState({
+                        foldData: result,
+                        items: items,
+                        displayedItems: items
+                    });
+                }
+            }).catch(exception => {
+                if (exception.constructor.name !== "AlertError") {
+                    console.error(exception);
+                }
+
+                if (this._isMounted) {
+                    this.setState({
+                        foldData: null,
+                        items: null,
+                        displayedItems: [],
+                        alertProps: exception
+                    });
+                }
+            }).finally(() => {
+                if (this._isMounted) {
+                    this.setState(({loading}) => ({
+                        loading: { ...loading, selectedFold: false }
+                    }), () => {
+                        if (typeof finallyCallback === "function") finallyCallback();
+                    });
+                }
+            });
+        });
+    }
+
+    generateFoldNames = (numberOfFolds) => {
+        return Array.from(Array(numberOfFolds).keys()).map(number => number + 1);
     }
 
     /**
@@ -100,66 +151,59 @@ class CrossValidation extends Component {
      */
     getCrossValidation = () => {
         const { project, serverBase } = this.props;
+        const pathParams = { projectId: project.result.id }
+        const method = "GET";
 
         fetchCrossValidation(
-            serverBase, project.result.id, 'GET', null
+            pathParams, method, null, serverBase
         ).then(result => {
-            if (this._isMounted && result) {
-                const { project: { foldIndex, settings } } = this.props
-
-                let folds = parseFolds(result);
-                let resultParams = parseCrossValidationParams(result);
+            if (this._isMounted && result != null) {
+                const { project: { foldIndex } } = this.props;
+                const resultParams = result.hasOwnProperty("parameters") ?
+                    parseCrossValidationParams(result.parameters) : { };
+                const folds = resultParams.hasOwnProperty("numberOfFolds") ?
+                    this.generateFoldNames(resultParams.numberOfFolds) : [];
 
                 this.setState(({parameters, selected}) => ({
-                    dataInformationTable: result.informationTable,
-                    dataMeanMatrix: result.meanOrdinalMisclassificationMatrix,
-                    dataSumMatrix: result.sumOrdinalMisclassificationMatrix,
                     folds: folds,
-                    parameters: {...parameters, ...resultParams},
+                    parameters: { ...parameters, ...resultParams },
                     selected: { ...selected, foldIndex: foldIndex }
                 }), () => {
-                    const { dataInformationTable, folds, selected: { foldIndex } } = this.state;
-                    let items = parseCrossValidationItems(dataInformationTable, folds[foldIndex], settings);
-
-                    this.setState({
-                        items: items,
-                        displayedItems: items
-                    });
+                    const { selected: { foldIndex }} = this.state;
+                    this.getFold(foldIndex);
                 });
 
                 if (result.hasOwnProperty("isCurrentData")) {
                     this.props.showAlert(this.props.value, !result.isCurrentData);
                 }
             }
-        }).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
+        }).catch(exception => {
+            if (exception.constructor.name !== "AlertError") {
+                console.error(exception);
             }
+
             if ( this._isMounted ) {
                 this.setState({
-                    dataInformationTable: null,
-                    dataMeanMatrix: null,
-                    dataSumMatrix: null,
-                    folds: null,
                     items: null,
                     displayedItems: [],
-                    alertProps: error
+                    alertProps: exception
                 });
             }
         }).finally(() => {
             if ( this._isMounted ) {
                 const { project: { parameters, parametersSaved, result: { informationTable: { objects }}}} = this.props;
-                let { numberOfFolds, ...otherParams } = parameters;
+                const { numberOfFolds, ...otherParams } = parameters;
+                let newParams = { };
 
                 if (objects.length < numberOfFolds) {
-                    otherParams = { ...otherParams, numberOfFolds: objects.length };
+                    newParams = { ...otherParams, numberOfFolds: objects.length };
                 } else {
-                    otherParams = { ...otherParams, numberOfFolds: numberOfFolds };
+                    newParams = { ...otherParams, numberOfFolds: numberOfFolds };
                 }
 
-                this.setState(({parameters, selected}) => ({
-                    loading: false,
-                    parameters: parametersSaved ? parameters : { ...parameters, ...otherParams },
+                this.setState(({loading, parameters, selected}) => ({
+                    loading: { ...loading, crossValidation: false },
+                    parameters: parametersSaved ? parameters : { ...parameters, ...newParams },
                     parametersSaved: parametersSaved,
                     selected: { ...selected, item: null }
                 }));
@@ -179,7 +223,9 @@ class CrossValidation extends Component {
     componentDidMount() {
         this._isMounted = true;
 
-        this.setState({ loading: true }, this.getCrossValidation);
+        this.setState(({loading}) => ({
+            loading: { ...loading, crossValidation: true }
+        }), this.getCrossValidation);
     }
 
     /**
@@ -206,16 +252,6 @@ class CrossValidation extends Component {
      * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
      */
     componentDidUpdate(prevProps, prevState, snapshot) {
-        /* Check if default objects name has changed */
-        if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
-            const { folds, selected: { foldIndex } } = this.state;
-            const { project } = this.props;
-
-            this.setState({
-                displayedItems: [...parseCrossValidationItems(folds[foldIndex], project.settings)]
-            });
-        }
-
         const { parameters: prevParameters } = prevState;
         const { parameters } = this.state;
 
@@ -257,7 +293,9 @@ class CrossValidation extends Component {
                 this.props.onTabChange(project);
             }
 
-            this.setState({ loading: true }, this.getCrossValidation);
+            this.setState(({loading}) => ({
+                loading: { ...loading, crossValidation: true }
+            }), this.getCrossValidation);
         }
     }
 
@@ -301,44 +339,37 @@ class CrossValidation extends Component {
         const { project, serverBase } = this.props;
         const { parameters } = this.state;
 
-        this.setState({
-            loading: true,
-        }, () => {
-            let method = "PUT";
-            let data = parseFormData(parameters, null);
+        this.setState(({loading}) => ({
+            loading: { ...loading, crossValidation: true },
+        }), () => {
+            const pathParams = { projectId: project.result.id };
+            const method = "PUT";
+            const data = parseFormData(parameters, null);
 
             fetchCrossValidation(
-                serverBase, project.result.id, method, data
+                pathParams, method, data, serverBase
             ).then(result => {
                 if (result) {
-                    if (this._isMounted) {
-                        let folds = parseFolds(result);
+                    const resultParams = result.hasOwnProperty("parameters") ?
+                        parseCrossValidationParams(result.parameters) : { };
+                    const folds = resultParams.hasOwnProperty("numberOfFolds") ?
+                        this.generateFoldNames(resultParams.numberOfFolds) : [];
 
+                    if (this._isMounted) {
                         this.setState(({selected}) => ({
-                            dataInformationTable: result.informationTable,
-                            dataMeanMatrix: result.meanOrdinalMisclassificationMatrix,
-                            dataSumMatrix: result.sumOrdinalMisclassificationMatrix,
                             folds: folds,
                             parametersSaved: true,
                             selected: { ...selected, foldIndex: 0 }
                         }), () => {
-                            const { dataInformationTable, folds, selected: { foldIndex } } = this.state;
-                            let items = parseCrossValidationItems(dataInformationTable, folds[foldIndex], project.settings);
-
-                            this.setState({
-                                items: items,
-                                displayedItems: items,
-                            });
+                            const { selected: { foldIndex }} = this.state;
+                            this.getFold(foldIndex);
                         });
                     }
-                    let projectCopy = JSON.parse(JSON.stringify(project));
-                    projectCopy.result.crossValidation = result;
 
-                    let resultParameters = parseCrossValidationParams(result);
-
+                    const projectCopy = JSON.parse(JSON.stringify(project));
                     projectCopy.parameters = {
                         ...projectCopy.parameters,
-                        ...resultParameters,
+                        ...resultParams,
                         typeOfUnions: projectCopy.parameters.typeOfUnions
                     };
                     projectCopy.parametersSaved = true;
@@ -348,25 +379,22 @@ class CrossValidation extends Component {
                         this.props.showAlert(this.props.value, !result.isCurrentData);
                     }
                 }
-            }).catch(error => {
-                if (!error.hasOwnProperty("open")) {
-                    console.log(error);
+            }).catch(exception => {
+                if (exception.constructor.name !== "AlertError") {
+                    console.error(exception);
                 }
-                if ( this._isMounted ) {
+
+                if (this._isMounted) {
                     this.setState({
-                        dataInformationTable: null,
-                        dataMeanMatrix: null,
-                        dataSumMatrix: null,
-                        folds: null,
                         items: null,
                         displayedItems: [],
-                        alertProps: error
+                        alertProps: exception
                     });
                 }
             }).finally(() => {
-                if ( this._isMounted ) {
-                    this.setState(({selected}) => ({
-                        loading: false,
+                if (this._isMounted) {
+                    this.setState(({loading, selected}) => ({
+                        loading: { ...loading, crossValidation: false },
                         selected: { ...selected, item: null }
                     }));
                 }
@@ -379,19 +407,13 @@ class CrossValidation extends Component {
      *
      * @function
      * @memberOf CrossValidation
-     * @param {Object} data - Specifies type of downloaded matrix.
+     * @param {Object} queryParams - Specifies the type of a matrix to downloaded.
      */
-    onSaveToFile = (data) => {
+    onSaveToFile = (queryParams) => {
         const { project, serverBase } = this.props;
+        const pathParams = { projectId: project.result.id };
 
-        downloadMatrix(serverBase, project.result.id, data).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
-            }
-            if (this._isMounted) {
-                this.setState({ alertProps: error });
-            }
-        });
+        downloadMatrix(pathParams, queryParams, serverBase).catch(this.onSnackbarOpen);
     };
 
     toggleOpen = (name) => {
@@ -419,22 +441,26 @@ class CrossValidation extends Component {
 
     onDefaultClassificationResultChange = (event) => {
         const { loading } = this.state;
-
-        if (!loading) {
-            this.setState(({parameters}) => ({
-                parameters: {...parameters, defaultClassificationResult: event.target.value},
-                parametersSaved: false
-            }));
+        if (loading.crossValidation || loading.selectedFold) {
+            return;
         }
+
+        this.setState(({parameters}) => ({
+            parameters: {...parameters, defaultClassificationResult: event.target.value},
+            parametersSaved: false
+        }));
     };
 
     onSeedChange = (number) => {
-        const javaLong = new BigNumber("9223372036854775807");
-
         const { loading } = this.state;
+        if (loading.crossValidation || loading.selectedFold) {
+            return;
+        }
+
+        const javaLong = new BigNumber("9223372036854775807");
         const bigNumber = new BigNumber(number);
 
-        if (!loading && !bigNumber.isNaN()) {
+        if (!bigNumber.isNaN()) {
             if (bigNumber.isGreaterThan(javaLong)) {
                 this.setState({
                     alertProps: {
@@ -455,62 +481,71 @@ class CrossValidation extends Component {
 
     onSeedRandomize = () => {
         const { loading } = this.state;
-        const newSeed = Math.round(Math.random() * Math.pow(10, 16));
-
-        if (!loading) {
-            this.onSeedChange(newSeed);
+        if (loading.crossValidation || loading.selectedFold) {
+            return;
         }
-    }
+
+        const newSeed = Math.round(Math.random() * Math.pow(10, 16));
+        this.onSeedChange(newSeed);
+    };
 
     onTypeOfRulesChange = (event) => {
         const { loading } = this.state;
-
-        if (!loading) {
-            this.setState(({parameters}) => ({
-                parameters: {...parameters, typeOfRules: event.target.value},
-                parametersSaved: false
-            }));
+        if (loading.crossValidation || loading.selectedFold) {
+            return;
         }
+
+        this.setState(({parameters}) => ({
+            parameters: {...parameters, typeOfRules: event.target.value},
+            parametersSaved: false
+        }));
     };
 
     onConsistencyThresholdChange = (threshold) => {
         const { loading } = this.state;
-
-        if (!loading) {
-            this.setState(({parameters}) => ({
-                parameters: {...parameters, consistencyThreshold: threshold},
-                parametersSaved: false
-            }));
+        if (loading.crossValidation || loading.selectedFold) {
+            return;
         }
+
+        this.setState(({parameters}) => ({
+            parameters: {...parameters, consistencyThreshold: threshold},
+            parametersSaved: false
+        }));
     };
 
     onTypeOfClassifierChange = (event) => {
         const { loading } = this.state;
-
-        if (!loading) {
-            this.setState(({parameters}) => ({
-                parameters: {...parameters, typeOfClassifier: event.target.value},
-                parametersSaved: false
-            }));
+        if (loading.crossValidation || loading.selectedFold) {
+            return;
         }
+
+        this.setState(({parameters}) => ({
+            parameters: {...parameters, typeOfClassifier: event.target.value},
+            parametersSaved: false
+        }));
     };
 
     onTypeOfUnionsChange = (event) => {
         const { loading } = this.state;
-
-        if (!loading) {
-            this.setState(({parameters}) => ({
-                parameters: {...parameters, typeOfUnions: event.target.value},
-                parametersSaved: false
-            }));
+        if (loading.crossValidation || loading.selectedFold) {
+            return;
         }
+
+        this.setState(({parameters}) => ({
+            parameters: {...parameters, typeOfUnions: event.target.value},
+            parametersSaved: false
+        }));
     };
 
     onNumberOfFoldsChange = (event) => {
         const { loading } = this.state;
-        let input = event.target.value;
+        if (loading.crossValidation || loading.selectedFold) {
+            return;
+        }
 
-        if (!loading && !isNaN(input)) {
+        const input = event.target.value;
+
+        if (!isNaN(input)) {
             this.setState(({parameters}) => ({
                 parameters: {...parameters, numberOfFolds: Number(input)},
                 parametersSaved: false
@@ -551,22 +586,17 @@ class CrossValidation extends Component {
 
     onFoldIndexChange = (event) => {
         const { loading } = this.state;
-
-        if (!loading) {
-            const { project } = this.props;
-            this.setState(({ selected }) => ({
-                selected: {...selected, foldIndex: Number(event.target.value)},
-                parametersSaved: false
-            }), () => {
-                const { dataInformationTable, folds, selected: { foldIndex }} = this.state;
-                let items = parseCrossValidationItems(dataInformationTable, folds[foldIndex], project.settings);
-
-                this.setState({
-                    items: items,
-                    displayedItems: items,
-                });
-            });
+        if (loading.crossValidation || loading.selectedFold) {
+            return;
         }
+
+        const { selected: { foldIndex }} = this.state;
+        const finallyCallback = () => this.setState(({ selected }) => ({
+            selected: {...selected, foldIndex: Number(event.target.value)},
+            parametersSaved: false
+        }));
+
+        this.getFold(foldIndex, finallyCallback);
     };
 
     /**
@@ -579,14 +609,55 @@ class CrossValidation extends Component {
      */
     onFilterChange = (event) => {
         const { loading, items } = this.state;
+        if (loading.crossValidation || loading.selectedFold) {
+            return;
+        }
 
-        if (!loading && Array.isArray(items) && items.length) {
+        if (Array.isArray(items) && items.length) {
             const filteredItems = filterFunction(event.target.value.toString(), items.slice());
 
             this.setState(({selected}) => ({
                 displayedItems: filteredItems,
                 selected: { ...selected, item: null }
             }));
+        }
+    };
+
+    onObjectNamesChange = (names) => {
+        this.setState(({displayedItems}) => {
+            const newItems = displayedItems.map((item, index) => {
+                item.name = getItemName(index, names);
+                return item;
+            });
+
+            return { displayedItems: newItems };
+        });
+    }
+
+    onAttributesMenuOpen = (event) => {
+        const currentTarget = event.currentTarget;
+
+        this.setState({
+            attributesMenuEl: currentTarget
+        });
+    };
+
+    onAttributesMenuClose = () => {
+        this.setState({
+            attributesMenuEl: null
+        });
+    };
+
+    onSnackbarOpen = (exception) => {
+        if (exception.constructor.name !== "AlertError") {
+            console.error(exception);
+            return;
+        }
+
+        if (this._isMounted) {
+            this.setState({
+                alertProps: exception
+            });
         }
     };
 
@@ -600,18 +671,19 @@ class CrossValidation extends Component {
 
     render() {
         const {
-            alertProps,
-            dataInformationTable,
-            dataMeanMatrix,
-            dataSumMatrix,
-            folds,
-            displayedItems,
             loading,
+            folds,
+            foldData,
+            items,
+            displayedItems,
             open,
             parameters,
-            selected
+            selected,
+            alertProps,
+            attributesMenuEl
         } = this.state;
-        const { project } = this.props;
+
+        const { project: { result: { id: projectId}}, serverBase } = this.props;
 
         return (
             <CustomBox id={"cross-validation"} variant={"Tab"}>
@@ -697,7 +769,7 @@ class CrossValidation extends Component {
                         >
                             <CalculateButton
                                 aria-label={"cross-validation-calculate-button"}
-                                disabled={loading}
+                                disabled={loading.crossValidation || loading.selectedFold}
                                 onClick={this.onCalculateClick}
                             />
                         </CustomTooltip>
@@ -734,8 +806,8 @@ class CrossValidation extends Component {
                                     value={selected.foldIndex}
                                 >
                                     {folds.map((fold, index) => (
-                                        <MenuItem key={index} value={fold.index}>
-                                            {fold.index + 1}
+                                        <MenuItem key={index} value={index}>
+                                            {fold}
                                         </MenuItem>
                                     ))}
                                 </CustomTextField>
@@ -753,11 +825,12 @@ class CrossValidation extends Component {
                         content={parseClassifiedListItems(displayedItems)}
                         id={"cross-validation-list"}
                         isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
-                        isLoading={loading}
+                        isLoading={loading.crossValidation || loading.selectedFold}
                         ListProps={{
                             onItemSelected: this.onItemSelected
                         }}
                         ListSubheaderProps={{
+                            onSettingsClick: this.onAttributesMenuOpen,
                             style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
                         }}
                         noFilterResults={!displayedItems}
@@ -768,38 +841,43 @@ class CrossValidation extends Component {
                             },
                             {
                                 label: "Training objects:",
-                                value: folds && folds[selected.foldIndex].numberOfLearningObjects
+                                value: foldData != null && foldData.hasOwnProperty("numberOfTrainingObjects") ?
+                                    foldData.numberOfTrainingObjects : "undefined"
                             },
                             {
                                 label: "Rules:",
-                                value: folds && folds[selected.foldIndex].ruleSet.length
+                                value: foldData != null && foldData.hasOwnProperty("numberOfRules") ?
+                                    foldData.numberOfRules : "undefined"
                             },
                             {
                                 label: "Test objects:",
-                                value: folds && folds[selected.foldIndex].numberOfTestObjects,
+                                value: foldData != null && foldData.hasOwnProperty("numberOfTestObjects") ?
+                                    foldData.numberOfTestObjects : "undefined",
                             }
                         ]}
                     />
                     {selected.item != null && folds != null &&
                         <ClassifiedObjectDialog
-                            informationTable={dataInformationTable}
+                            disableAttributesMenu={true}
+                            coveredObjectResource={"crossValidation"}
                             item={selected.item}
                             onClose={() => this.toggleOpen("details")}
+                            onSnackbarOpen={this.onSnackbarOpen}
                             open={open.details}
-                            ruleSet={folds[selected.foldIndex].ruleSet}
-                            settings={project.settings}
+                            projectId={projectId}
+                            resource={`crossValidation/${selected.foldIndex}`}
+                            serverBase={serverBase}
                         />
                     }
-                    {dataMeanMatrix != null && folds != null &&
+                    {folds != null &&
                         <MatrixDialog
-                            disableDeviation={false}
-                            matrix={parseMatrix(dataMeanMatrix)}
                             onClose={() => this.toggleOpen("matrixMean")}
+                            onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixMean}
+                            projectId={projectId}
+                            resource={"crossValidation"}
                             saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
-                            subheaders={
-                                folds[selected.foldIndex].classificationValidationTable.decisionsDomain
-                            }
+                            serverBase={serverBase}
                             title={
                                 <React.Fragment>
                                     <MatrixSwapButton
@@ -815,17 +893,18 @@ class CrossValidation extends Component {
                                     </span>
                                 </React.Fragment>
                             }
+                            queryParams={{ typeOfMatrix: "crossValidationMean" }}
                         />
                     }
-                    {dataSumMatrix != null && folds != null &&
+                    {folds != null &&
                         <MatrixDialog
-                            matrix={parseMatrix(dataSumMatrix)}
                             onClose={() => this.toggleOpen("matrixSum")}
+                            onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixSum}
+                            projectId={projectId}
+                            resource={"crossValidation"}
                             saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
-                            subheaders={
-                                folds[selected.foldIndex].classificationValidationTable.decisionsDomain
-                            }
+                            serverBase={serverBase}
                             title={
                                 <React.Fragment>
                                     <MatrixSwapButton
@@ -841,26 +920,23 @@ class CrossValidation extends Component {
                                     </span>
                                 </React.Fragment>
                             }
+                            queryParams={{ typeOfMatrix: "crossValidationSum" }}
                         />
                     }
-                    {folds != null &&
+                    {foldData != null &&
                         <MatrixDialog
-                            matrix={
-                                parseMatrix(
-                                    folds[selected.foldIndex].classificationValidationTable.ordinalMisclassificationMatrix
-                                )
-                            }
                             onClose={() => this.toggleOpen("matrixFold")}
+                            onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixFold}
+                            projectId={projectId}
                             saveMatrix={() => {
                                 this.onSaveToFile({
                                     typeOfMatrix: "crossValidationFold",
                                     numberOfFold: selected.foldIndex
                                 });
                             }}
-                            subheaders={
-                                folds[selected.foldIndex].classificationValidationTable.decisionsDomain
-                            }
+                            resource={"crossValidation"}
+                            serverBase={serverBase}
                             title={
                                 <React.Fragment>
                                     <MatrixDownloadButton
@@ -877,7 +953,29 @@ class CrossValidation extends Component {
                                     </span>
                                 </React.Fragment>
                             }
+                            queryParams={{
+                                typeOfMatrix: "crossValidationFold",
+                                numberOfFold: selected.foldIndex
+                            }}
                         />
+                    }
+                    {Array.isArray(items) && items.length > 0 &&
+                        <AttributesMenu
+                            ListProps={{
+                                id: "cross-validation-main-desc-attr-menu"
+                            }}
+                            MuiMenuProps={{
+                                anchorEl: attributesMenuEl,
+                                onClose: this.onAttributesMenuClose
+                            }}
+                            onObjectNamesChange={this.onObjectNamesChange}
+                            onSnackbarOpen={this.onSnackbarOpen}
+                            projectId={projectId}
+                            resource={"crossValidation"}
+                            serverBase={serverBase}
+                            queryParams={{ subject: selected.foldIndex }}
+                        />
+
                     }
                 </CustomBox>
                 <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />

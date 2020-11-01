@@ -33,7 +33,7 @@ async function fetchRule(resource, pathParams, base = "http://localhost:8080", i
         throw new InvalidPathParamsException("Path params should be defined when fetching rule.", pathParams);
     }
 
-    const url = new URL(`projects/${pathParams.projectId}/rules/${pathParams.ruleIndex}`, base);
+    const url = new URL(`projects/${pathParams.projectId}/${resource}/${pathParams.ruleIndex}`, base);
     if (isCoveringObjects) url.pathname += "/coveringObjects";
 
     const response = await fetch(url, {

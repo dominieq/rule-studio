@@ -92,7 +92,7 @@ function TableItemsList(props) {
 
         let border = undefined;
         if (typeof props.getItemsStyle === "function") {
-            border = props.getItemsStyle(index);
+            border = props.getItemsStyle(table[index]);
         }
 
         return (

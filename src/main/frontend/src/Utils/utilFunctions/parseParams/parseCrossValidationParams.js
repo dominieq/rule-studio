@@ -25,13 +25,13 @@ function parseCrossValidationParams(result) {
                     return { [key]: param };
                 }
             } else {
-                return {};
+                return { };
             }
         } else {
-            return {};
+            return { };
         }
     }).reduce((previousValue, currentValue) => {
-        return { ...previousValue, ...currentValue};
+        return { ...previousValue, ...currentValue };
     });
 }
 

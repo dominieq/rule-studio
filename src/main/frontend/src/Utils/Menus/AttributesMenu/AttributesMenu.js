@@ -30,8 +30,11 @@ const CustomMenu = withStyles( theme => ({
  * @param {function} props.onObjectNamesChange - Callback fired when object names have been changed.
  * @param {function} props.onSnackbarOpen - Callback fired when the component requests to display an error.
  * @param {string} props.projectId - The identifier of a selected project.
- * @param {"cones"|"unions"|"rules"|"classification"|"crossValidation"} props.resource - The name of a selected resource.
+ * @param {string} props.resource - The name of a selected resource.
  * @param {string} props.serverBase - The host in the URL of an API call.
+ * @param {Object} props.queryParams - The query parameters in the URL of an API call.
+ * @param {number} props.queryParams.subject - The index of a subject that contains object names.
+ * @param {string} props.queryParams.set - The name of the set that narrows down object names.
  * @returns {React.Component}
  */
 class AttributesMenu extends React.Component {
@@ -163,11 +166,11 @@ class AttributesMenu extends React.Component {
         this.setState(({loading}) => ({
             loading: { ...loading, objectNames: true}
         }), () => {
-            const { projectId, resource, serverBase } = this.props;
+            const { projectId, resource, serverBase, queryParams } = this.props;
             const pathParams = { projectId };
 
             fetchObjectNames(
-                resource, pathParams, serverBase
+                resource, pathParams, queryParams, serverBase
             ).then(result => {
                 if (this._isMounted && Array.isArray(result)) {
                     this.props.onObjectNamesChange(result);
@@ -264,8 +267,12 @@ AttributesMenu.propTypes = {
     onObjectNamesChange: PropTypes.func,
     onSnackbarOpen: PropTypes.func,
     projectId: PropTypes.string.isRequired,
-    resource: PropTypes.oneOf(["cones", "unions", "rules", "classification", "crossValidation"]).isRequired,
-    serverBase: PropTypes.string
+    resource: PropTypes.string.isRequired,
+    serverBase: PropTypes.string,
+    queryParams: PropTypes.shape({
+        subject: PropTypes.number,
+        set: PropTypes.string
+    })
 }
 
 export default AttributesMenu;

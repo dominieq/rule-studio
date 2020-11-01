@@ -312,6 +312,7 @@ class RulesDialog extends React.PureComponent {
                     projectId={projectId}
                     resource={"rules"}
                     serverBase={serverBase}
+                    queryParams={{subject: item.id}}
                 />
             </FullscreenDialog>
         );
