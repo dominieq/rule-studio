@@ -37,7 +37,7 @@ public class ImportService {
             logger.info("Decompressing...");
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ZipInputStream zipIs = new ZipInputStream(importFile.getInputStream());
+            final ZipInputStream zipIs = new ZipInputStream(importFile.getInputStream());
             zipIs.getNextEntry();
             byte[] bytes = new byte[1024];
             int length;
@@ -50,24 +50,24 @@ public class ImportService {
 
             logger.info("Size after decompressing:\t{} B", baos.size());
 
-            InputStream is = new ByteArrayInputStream(baos.toByteArray());
-            XStream xStream = new XStream();
+            final InputStream is = new ByteArrayInputStream(baos.toByteArray());
+            final XStream xStream = new XStream();
             project = (Project)xStream.fromXML(is);
 
             logger.info("Successfully imported from zip file.");
         } catch (RuntimeException eZip) {
-            String zipMessage = new StringBuilder("Failed to import from zip file:\t").append(eZip.getMessage()).toString();
+            final String zipMessage = new StringBuilder("Failed to import from zip file:\t").append(eZip.getMessage()).toString();
             logger.error(zipMessage);
 
             try {
                 logger.info("Trying import project from xml file...");
 
-                XStream xStream = new XStream();
+                final XStream xStream = new XStream();
                 project = (Project)xStream.fromXML(importFile.getInputStream());
 
                 logger.info("Successfully imported from xml file.");
             } catch (RuntimeException eXml) {
-                String xmlMessage = new StringBuilder("Failed to import form xml file:\t").append(eXml.getMessage()).toString();
+                final String xmlMessage = new StringBuilder("Failed to import form xml file:\t").append(eXml.getMessage()).toString();
                 logger.error(xmlMessage);
 
                 WrongParameterException ex;

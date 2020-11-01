@@ -31,7 +31,7 @@ public class ImportController {
             @RequestParam(name = "importFile") MultipartFile importFile) throws IOException {
         logger.info("Posting import...");
 
-        Project result = importService.postImport(importFile);
+        final Project result = importService.postImport(importFile);
 
         logger.debug(result.toString());
         return ResponseEntity.ok(result);

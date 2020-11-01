@@ -32,9 +32,11 @@ public class ExportController {
     public ResponseEntity<Resource> getExport(
             @PathVariable("id") UUID id) throws IOException {
         logger.info("Getting export...");
-        NamedResource namedResource = exportService.getExport(id);
-        String projectName = namedResource.getName();
-        Resource resource = namedResource.getResource();
+
+        final NamedResource namedResource = exportService.getExport(id);
+
+        final String projectName = namedResource.getName();
+        final Resource resource = namedResource.getResource();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + ".zip")

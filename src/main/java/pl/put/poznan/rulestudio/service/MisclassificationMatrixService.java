@@ -1,5 +1,6 @@
 package pl.put.poznan.rulestudio.service;
 
+import org.rulelearn.data.Decision;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,9 @@ import org.springframework.stereotype.Service;
 import pl.put.poznan.rulestudio.enums.MisclassificationMatrixType;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.*;
+import pl.put.poznan.rulestudio.model.response.OrdinalMisclassificationMatrixAbstractResponse;
+import pl.put.poznan.rulestudio.model.response.OrdinalMisclassificationMatrixResponse.OrdinalMisclassificationMatrixResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.OrdinalMisclassificationMatrixWithoutDeviationResponse.OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -69,17 +73,35 @@ public class MisclassificationMatrixService {
         return ordinalMisclassificationMatrix;
     }
 
-    public OrdinalMisclassificationMatrix getMisclassificationMatrix(UUID id, MisclassificationMatrixType typeOfMatrix, Integer numberOfFold) {
+    public OrdinalMisclassificationMatrixAbstractResponse getMisclassificationMatrix(UUID id, MisclassificationMatrixType typeOfMatrix, Integer numberOfFold) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfMatrix:\t{}", typeOfMatrix);
         if(numberOfFold != null) logger.info("NumberOfFold:\t{}", numberOfFold);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = extractOrdinalMisclassificationMatrixFromProject(project, typeOfMatrix, numberOfFold);
+        final OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = extractOrdinalMisclassificationMatrixFromProject(project, typeOfMatrix, numberOfFold);
 
-        logger.debug(ordinalMisclassificationMatrix.toString());
-        return ordinalMisclassificationMatrix;
+        Decision[] orderOfDecision;
+        OrdinalMisclassificationMatrixAbstractResponse ordinalMisclassificationMatrixAbstractResponse;
+        switch (typeOfMatrix) {
+            case CLASSIFICATION:
+                orderOfDecision = project.getClassification().getOrderOfDecisions();
+                ordinalMisclassificationMatrixAbstractResponse = OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder.newInstance().build(ordinalMisclassificationMatrix, orderOfDecision);
+                break;
+
+            case CROSS_VALIDATION_MEAN:
+                orderOfDecision = project.getCrossValidation().getCrossValidationSingleFolds()[0].getClassificationOfValidationTable().getOrderOfDecisions();
+                ordinalMisclassificationMatrixAbstractResponse = OrdinalMisclassificationMatrixResponseBuilder.newInstance().build(ordinalMisclassificationMatrix, orderOfDecision);
+                break;
+
+            default:
+                orderOfDecision = project.getCrossValidation().getCrossValidationSingleFolds()[0].getClassificationOfValidationTable().getOrderOfDecisions();
+                ordinalMisclassificationMatrixAbstractResponse = OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder.newInstance().build(ordinalMisclassificationMatrix, orderOfDecision);
+        }
+
+        logger.debug(ordinalMisclassificationMatrixAbstractResponse.toString());
+        return ordinalMisclassificationMatrixAbstractResponse;
     }
 
     public NamedResource download(UUID id, MisclassificationMatrixType typeOfMatrix, Integer numberOfFold) {
@@ -87,9 +109,9 @@ public class MisclassificationMatrixService {
         logger.info("TypeOfMatrix:\t{}", typeOfMatrix);
         if(numberOfFold != null) logger.info("NumberOfFold:\t{}", numberOfFold);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = extractOrdinalMisclassificationMatrixFromProject(project, typeOfMatrix, numberOfFold);
+        final OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = extractOrdinalMisclassificationMatrixFromProject(project, typeOfMatrix, numberOfFold);
 
         String filename;
         switch (typeOfMatrix) {
@@ -120,10 +142,10 @@ public class MisclassificationMatrixService {
                 throw ex;
         }
 
-        String matrixString = ordinalMisclassificationMatrix.serialize();
+        final String matrixString = ordinalMisclassificationMatrix.serialize();
 
-        InputStream is = new ByteArrayInputStream(matrixString.getBytes());
-        InputStreamResource resource = new InputStreamResource(is);
+        final InputStream is = new ByteArrayInputStream(matrixString.getBytes());
+        final InputStreamResource resource = new InputStreamResource(is);
 
         return new NamedResource(filename, resource);
     }

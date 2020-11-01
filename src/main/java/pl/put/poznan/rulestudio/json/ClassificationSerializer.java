@@ -46,10 +46,10 @@ public class ClassificationSerializer extends JsonSerializer<Classification> {
         if(!classification.isCrossValidation()) {
             jsonGenerator.writeFieldName("informationTable");
             jsonGenerator.writeRawValue(mapper.writeValueAsString(informationTable));
-        }
 
-        jsonGenerator.writeFieldName("originalDecisions");
-        serializeDecisionArray(informationTable.getDecisions(), jsonGenerator);
+            jsonGenerator.writeFieldName("originalDecisions");
+            serializeDecisionArray(informationTable.getDecisions(), jsonGenerator);
+        }
 
 
         jsonGenerator.writeFieldName("decisionsDomain");
