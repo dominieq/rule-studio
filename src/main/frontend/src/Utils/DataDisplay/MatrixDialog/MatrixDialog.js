@@ -88,7 +88,28 @@ class MatrixDialog extends React.PureComponent {
 
         if (!prevProps.open && this.props.open) {
             const { misclassification } = this.state;
-            if (misclassification.length === 0) this.getMatrix();
+            if (misclassification.length === 0) {
+                this.getMatrix();
+                return;
+            }
+        }
+
+        if (prevProps.queryParams != null && this.props.queryParams != null
+            && prevProps.queryParams.hasOwnProperty("numberOfFold")
+            && this.props.queryParams.hasOwnProperty("numberOfFold")
+            && prevProps.queryParams.numberOfFold !== this.props.queryParams.numberOfFold)  {
+
+            this.setState({
+                misclassification: [],
+                deviations: [],
+                traits: null,
+                domain: [],
+                heightDeviation: 0,
+                heightMatrix: 0,
+                heightTraits: 0,
+                widthDeviation: 0,
+                widthMatrix: 0
+            });
         }
     }
 

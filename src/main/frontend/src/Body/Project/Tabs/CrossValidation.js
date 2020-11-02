@@ -590,9 +590,9 @@ class CrossValidation extends Component {
             return;
         }
 
-        const { selected: { foldIndex }} = this.state;
+        const foldIndex = Number(event.target.value);
         const finallyCallback = () => this.setState(({ selected }) => ({
-            selected: {...selected, foldIndex: Number(event.target.value)},
+            selected: {...selected, foldIndex: foldIndex},
             parametersSaved: false
         }));
 
