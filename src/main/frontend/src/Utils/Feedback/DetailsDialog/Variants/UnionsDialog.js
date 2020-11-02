@@ -79,6 +79,20 @@ class UnionsDialog extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.projectId !== this.props.projectId) {
+            this.setState({
+                unionProperties: {},
+                unionPropertyIndex: -1,
+                unionPropertyContent: [],
+                objectNames: [],
+                object: null,
+                attributes: [],
+                objectIndex: -1
+            });
+
+            return;
+        }
+
         if (prevProps.item.id !== this.props.item.id) {
             this.setState({
                 unionProperties: {},

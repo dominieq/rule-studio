@@ -82,6 +82,8 @@ class MatrixDialog extends React.PureComponent {
                 traits: null,
                 domain: []
             });
+
+            return;
         }
 
         if (!prevProps.open && this.props.open) {

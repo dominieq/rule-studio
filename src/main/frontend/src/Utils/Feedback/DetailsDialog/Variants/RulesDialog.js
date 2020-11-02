@@ -84,6 +84,8 @@ class RulesDialog extends React.PureComponent {
                 objectIndex: -1,
                 attributes: []
             });
+
+            return;
         }
 
         if (prevProps.item.id !== this.props.item.id) {
