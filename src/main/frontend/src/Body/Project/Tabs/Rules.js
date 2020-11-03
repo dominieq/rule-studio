@@ -93,7 +93,8 @@ class Rules extends Component {
         ).then(result => {
             if (result && this._isMounted) {
                 const items = parseRulesItems(result);
-                const resultParameters = parseRulesParams(result);
+                const resultParameters = result.hasOwnProperty("parameters") ?
+                    parseRulesParams(result.parameters) : { };
 
                 let alertProps = undefined;
                 if (result.hasOwnProperty("errorMessage")) {
@@ -302,7 +303,8 @@ class Rules extends Component {
                     let projectCopy = JSON.parse(JSON.stringify(project));
                     projectCopy.result.rules = result;
 
-                    const newParameters = parseRulesParams(result);
+                    const newParameters = result.hasOwnProperty("parameters") ?
+                        parseRulesParams(result.parameters) : { };
                     projectCopy.parameters = {
                         ...projectCopy.parameters,
                         consistencyThreshold: newParameters.consistencyThreshold,
