@@ -8,13 +8,13 @@ public class CrossValidationSingleFold {
     private int[] indicesOfTrainingObjects;
     private int[] indicesOfValidationObjects;
     private RuLeStudioRuleSet ruLeStudioRuleSet;
-    private Classification classificationOfValidationTable;
+    private FoldClassification foldClassification;
 
-    public CrossValidationSingleFold(int[] indicesOfTrainingObjects, int[] indicesOfValidationObjects, RuLeStudioRuleSet ruLeStudioRuleSet, Classification classificationOfValidationTable) {
+    public CrossValidationSingleFold(int[] indicesOfTrainingObjects, int[] indicesOfValidationObjects, RuLeStudioRuleSet ruLeStudioRuleSet, FoldClassification foldClassification) {
         this.indicesOfTrainingObjects = indicesOfTrainingObjects;
         this.indicesOfValidationObjects = indicesOfValidationObjects;
         this.ruLeStudioRuleSet = ruLeStudioRuleSet;
-        this.classificationOfValidationTable = classificationOfValidationTable;
+        this.foldClassification = foldClassification;
     }
 
     public int[] getIndicesOfTrainingObjects() {
@@ -43,12 +43,12 @@ public class CrossValidationSingleFold {
         this.ruLeStudioRuleSet = ruLeStudioRuleSet;
     }
 
-    public Classification getClassificationOfValidationTable() {
-        return classificationOfValidationTable;
+    public FoldClassification getFoldClassification() {
+        return foldClassification;
     }
 
-    public void setClassificationOfValidationTable(Classification classificationOfValidationTable) {
-        this.classificationOfValidationTable = classificationOfValidationTable;
+    public void setFoldClassification(FoldClassification foldClassification) {
+        this.foldClassification = foldClassification;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class CrossValidationSingleFold {
                 "indicesOfTrainingObjects=" + Arrays.toString(indicesOfTrainingObjects) +
                 ", indicesOfValidationObjects=" + Arrays.toString(indicesOfValidationObjects) +
                 ", ruLeStudioRuleSet=" + ruLeStudioRuleSet +
-                ", classificationOfValidationTable=" + classificationOfValidationTable +
+                ", foldClassification=" + foldClassification +
                 '}';
     }
 }

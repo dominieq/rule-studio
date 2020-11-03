@@ -108,10 +108,10 @@ public class CrossValidationService {
         }
 
         CrossValidationSingleFold[] crossValidationSingleFolds = new CrossValidationSingleFold[numberOfFolds];
-        Decision[] orderOfDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
+        final Decision[] orderOfDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
         OrdinalMisclassificationMatrix[] foldOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix[numberOfFolds];
 
-        Index2IdMapper mainIndex2IdMapper = informationTable.getIndex2IdMapper();
+        final Index2IdMapper mainIndex2IdMapper = informationTable.getIndex2IdMapper();
         int i;
         int[] indicesOfTrainingObjects, indicesOfValidationObjects;
 
@@ -121,36 +121,34 @@ public class CrossValidationService {
         for(i = 0; i < folds.size(); i++) {
             logger.info("Creating fold: {}/{}", i+1, folds.size());
 
-            InformationTable trainingTable = folds.get(i).getTrainingTable();
-            InformationTable validationTable = folds.get(i).getValidationTable();
+            final InformationTable trainingTable = folds.get(i).getTrainingTable();
+            final InformationTable validationTable = folds.get(i).getValidationTable();
 
-            UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsService.calculateUnionsWithSingleLimitingDecision(trainingTable, typeOfUnions, consistencyThreshold);
-            RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.calculateRuleSetWithCharacteristics(unionsWithSingleLimitingDecision, typeOfRules);
+            final UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsService.calculateUnionsWithSingleLimitingDecision(trainingTable, typeOfUnions, consistencyThreshold);
+            final RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.calculateRuleSetWithCharacteristics(unionsWithSingleLimitingDecision, typeOfRules);
 
-            Classification classificationOfValidationTable = ClassificationService.calculateClassification(trainingTable, validationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
-            classificationOfValidationTable.setInformationTable(null);
-            classificationOfValidationTable.setCrossValidation(true);
+            final FoldClassification foldClassification = new FoldClassification(trainingTable, validationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
 
-            foldOrdinalMisclassificationMatrix[i] = classificationOfValidationTable.getOrdinalMisclassificationMatrix();
+            foldOrdinalMisclassificationMatrix[i] = foldClassification.getOrdinalMisclassificationMatrix();
 
             indicesOfTrainingObjects = extractIndices(trainingTable, mainIndex2IdMapper);
             indicesOfValidationObjects = extractIndices(validationTable, mainIndex2IdMapper);
 
-            RuLeStudioRuleSet ruLeStudioRuleSet = new RuLeStudioRuleSet(ruleSetWithCharacteristics);
+            final RuLeStudioRuleSet ruLeStudioRuleSet = new RuLeStudioRuleSet(ruleSetWithCharacteristics);
             rearrangeIndicesOfCoveredObject(ruLeStudioRuleSet, indicesOfTrainingObjects);
 
-            crossValidationSingleFolds[i] = new CrossValidationSingleFold(indicesOfTrainingObjects, indicesOfValidationObjects, ruLeStudioRuleSet, classificationOfValidationTable);
+            crossValidationSingleFolds[i] = new CrossValidationSingleFold(indicesOfTrainingObjects, indicesOfValidationObjects, ruLeStudioRuleSet, foldClassification);
 
             //let garbage collector clean memory occupied by i-th fold
             folds.set(i, null);
         }
 
-        OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, foldOrdinalMisclassificationMatrix);
-        OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(true, orderOfDecisions, foldOrdinalMisclassificationMatrix);
+        final OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, foldOrdinalMisclassificationMatrix);
+        final OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(true, orderOfDecisions, foldOrdinalMisclassificationMatrix);
 
-        DescriptiveAttributes descriptiveAttributes = new DescriptiveAttributes(informationTable);
+        final DescriptiveAttributes descriptiveAttributes = new DescriptiveAttributes(informationTable);
 
-        CrossValidation crossValidation = new CrossValidation(numberOfFolds, informationTable, crossValidationSingleFolds, meanOrdinalMisclassificationMatrix, sumOrdinalMisclassificationMatrix, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, seed, informationTable.getHash(), descriptiveAttributes);
+        CrossValidation crossValidation = new CrossValidation(numberOfFolds, informationTable, crossValidationSingleFolds, orderOfDecisions, meanOrdinalMisclassificationMatrix, sumOrdinalMisclassificationMatrix, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, seed, informationTable.getHash(), descriptiveAttributes);
         return crossValidation;
     }
 
@@ -324,7 +322,7 @@ public class CrossValidationService {
         }
         final InformationTable informationTable = crossValidation.getInformationTable();
         final int generalObjectIndex = chosenFold.getIndicesOfValidationObjects()[objectIndex];
-        final IntList indicesOfCoveringRules = chosenFold.getClassificationOfValidationTable().getIndicesOfCoveringRules()[objectIndex];
+        final IntList indicesOfCoveringRules = chosenFold.getFoldClassification().getIndicesOfCoveringRules()[objectIndex];
 
         ChosenClassifiedObjectAbstractResponse chosenClassifiedObjectAbstractResponse;
         if(isAttributes) {
@@ -396,7 +394,7 @@ public class CrossValidationService {
 
         final CrossValidation crossValidation = getCrossValidationFromProject(project);
 
-        Decision[] orderOfDecisions = crossValidation.getCrossValidationSingleFolds()[0].getClassificationOfValidationTable().getOrderOfDecisions();
+        final Decision[] orderOfDecisions = crossValidation.getOrderOfDecisions();
 
         OrdinalMisclassificationMatrixAbstractResponse ordinalMisclassificationMatrixAbstractResponse;
         switch(typeOfMatrix) {
@@ -418,7 +416,7 @@ public class CrossValidationService {
                     throw ex;
                 }
                 try {
-                    foldMatrix = crossValidationSingleFolds[numberOfFold].getClassificationOfValidationTable().getOrdinalMisclassificationMatrix();
+                    foldMatrix = crossValidationSingleFolds[numberOfFold].getFoldClassification().getOrdinalMisclassificationMatrix();
                 } catch (ArrayIndexOutOfBoundsException e) {
                     WrongParameterException ex = new WrongParameterException(String.format("There is no fold with number %d.", numberOfFold));
                     logger.error(ex.getMessage());

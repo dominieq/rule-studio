@@ -6,7 +6,6 @@ import org.rulelearn.types.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
-import pl.put.poznan.rulestudio.model.Classification;
 
 import java.util.LinkedHashMap;
 

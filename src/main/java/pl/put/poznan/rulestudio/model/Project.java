@@ -3,7 +3,6 @@ package pl.put.poznan.rulestudio.model;
 import org.rulelearn.data.InformationTable;
 import pl.put.poznan.rulestudio.service.RulesService;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 public class Project {
@@ -13,7 +12,7 @@ public class Project {
     private DominanceCones dominanceCones;
     private UnionsWithHttpParameters unions;
     private RulesWithHttpParameters rules;
-    private Classification classification;
+    private ProjectClassification projectClassification;
     private CrossValidation crossValidation;
     private String metadataFileName;
     private String dataFileName;
@@ -90,11 +89,11 @@ public class Project {
                 rules.setCurrentData(false);
             }
         }
-        if(this.classification != null) {
-            if (classification.getLearningDataHash().equals(dataHash)) {
-                classification.setCurrentLearningData(true);
+        if(this.projectClassification != null) {
+            if (projectClassification.getLearningDataHash().equals(dataHash)) {
+                projectClassification.setCurrentLearningData(true);
             } else {
-                classification.setCurrentLearningData(false);
+                projectClassification.setCurrentLearningData(false);
             }
         }
         if(this.crossValidation != null) {
@@ -164,25 +163,25 @@ public class Project {
     public void setRules(RulesWithHttpParameters rules) {
         this.rules = rules;
 
-        if(this.classification != null) {
+        if(this.projectClassification != null) {
             if (this.rules == null) {
-                classification.setCurrentRuleSet(null);
-            } else if (this.rules.getRuleSet().getHash().equals(classification.getRuleSetHash())) {
-                classification.setCurrentRuleSet(true);
+                projectClassification.setCurrentRuleSet(null);
+            } else if (this.rules.getRuleSet().getHash().equals(projectClassification.getRuleSetHash())) {
+                projectClassification.setCurrentRuleSet(true);
             } else {
-                classification.setCurrentRuleSet(false);
+                projectClassification.setCurrentRuleSet(false);
             }
         }
 
         checkValidityOfRules();
     }
 
-    public Classification getClassification() {
-        return classification;
+    public ProjectClassification getProjectClassification() {
+        return projectClassification;
     }
 
-    public void setClassification(Classification classification) {
-        this.classification = classification;
+    public void setProjectClassification(ProjectClassification projectClassification) {
+        this.projectClassification = projectClassification;
     }
 
     public CrossValidation getCrossValidation() {
@@ -218,7 +217,7 @@ public class Project {
                 ", dominanceCones=" + dominanceCones +
                 ", unions=" + unions +
                 ", rules=" + rules +
-                ", classification=" + classification +
+                ", projectClassification=" + projectClassification +
                 ", crossValidation=" + crossValidation +
                 ", metadataFileName='" + metadataFileName + '\'' +
                 ", dataFileName='" + dataFileName + '\'' +

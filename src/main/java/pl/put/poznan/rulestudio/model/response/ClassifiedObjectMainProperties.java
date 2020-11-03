@@ -6,7 +6,7 @@ import org.rulelearn.data.Decision;
 import org.rulelearn.data.SimpleDecision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.put.poznan.rulestudio.model.Classification;
+import pl.put.poznan.rulestudio.model.AbstractClassification;
 
 public class ClassifiedObjectMainProperties {
 
@@ -91,13 +91,13 @@ public class ClassifiedObjectMainProperties {
             return classifiedObjectMainProperties;
         }
 
-        public ClassifiedObjectMainProperties build(Classification classification, Integer classifiedObjectIndex, Decision originalDecision) {
+        public ClassifiedObjectMainProperties build(AbstractClassification abstractClassification, Integer classifiedObjectIndex, Decision originalDecision) {
             ClassifiedObjectMainProperties classifiedObjectMainProperties = new ClassifiedObjectMainProperties();
 
             final int attributeIndex = originalDecision.getAttributeIndices().iterator().nextInt(); //assumption that there is only one decision attribute
             classifiedObjectMainProperties.originalDecision = originalDecision.getEvaluation(attributeIndex).toString();
 
-            ClassificationResult classificationResult = classification.getClassificationResults()[classifiedObjectIndex];
+            ClassificationResult classificationResult = abstractClassification.getClassificationResults()[classifiedObjectIndex];
             final Decision suggestedDecision = classificationResult.getSuggestedDecision();
             classifiedObjectMainProperties.suggestedDecision = ((SimpleDecision)suggestedDecision).getEvaluation().toString();
 
@@ -107,7 +107,7 @@ public class ClassifiedObjectMainProperties {
                 classifiedObjectMainProperties.certainty = 1.0;
             }
 
-            classifiedObjectMainProperties.numberOfCoveringRules = classification.getIndicesOfCoveringRules()[classifiedObjectIndex].size();
+            classifiedObjectMainProperties.numberOfCoveringRules = abstractClassification.getIndicesOfCoveringRules()[classifiedObjectIndex].size();
 
             return classifiedObjectMainProperties;
         }

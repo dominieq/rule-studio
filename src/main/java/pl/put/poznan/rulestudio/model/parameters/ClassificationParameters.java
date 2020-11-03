@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.enums.ClassifierType;
 import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
-import pl.put.poznan.rulestudio.model.Classification;
+import pl.put.poznan.rulestudio.model.ProjectClassification;
 
 public class ClassificationParameters {
 
@@ -61,11 +61,11 @@ public class ClassificationParameters {
             return classificationParameters;
         }
 
-        public ClassificationParameters build(Classification classification) {
+        public ClassificationParameters build(ProjectClassification projectClassification) {
             ClassificationParameters classificationParameters = new ClassificationParameters();
 
-            classificationParameters.classifierType = classification.getTypeOfClassifier();
-            classificationParameters.defaultClassificationResultType = classification.getDefaultClassificationResult();
+            classificationParameters.classifierType = projectClassification.getClassifierType();
+            classificationParameters.defaultClassificationResultType = projectClassification.getDefaultClassificationResultType();
 
             return classificationParameters;
         }

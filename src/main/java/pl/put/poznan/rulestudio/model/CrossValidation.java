@@ -1,5 +1,6 @@
 package pl.put.poznan.rulestudio.model;
 
+import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
 import pl.put.poznan.rulestudio.enums.ClassifierType;
@@ -13,6 +14,7 @@ public class CrossValidation {
     private Integer numberOfFolds;
     private InformationTable informationTable;
     private CrossValidationSingleFold[] crossValidationSingleFolds;
+    private Decision[] orderOfDecisions;
     private OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix;
     private OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix;
     private UnionType typeOfUnions;
@@ -36,6 +38,7 @@ public class CrossValidation {
             Integer numberOfFolds,
             InformationTable informationTable,
             CrossValidationSingleFold[] crossValidationSingleFolds,
+            Decision[] orderOfDecisions,
             OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix,
             OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix,
             UnionType typeOfUnions,
@@ -49,6 +52,7 @@ public class CrossValidation {
         this.numberOfFolds = numberOfFolds;
         this.informationTable = informationTable;
         this.crossValidationSingleFolds = crossValidationSingleFolds;
+        this.orderOfDecisions = orderOfDecisions;
         this.meanOrdinalMisclassificationMatrix = meanOrdinalMisclassificationMatrix;
         this.sumOrdinalMisclassificationMatrix = sumOrdinalMisclassificationMatrix;
         this.typeOfUnions = typeOfUnions;
@@ -85,6 +89,14 @@ public class CrossValidation {
 
     public void setCrossValidationSingleFolds(CrossValidationSingleFold[] crossValidationSingleFolds) {
         this.crossValidationSingleFolds = crossValidationSingleFolds;
+    }
+
+    public Decision[] getOrderOfDecisions() {
+        return orderOfDecisions;
+    }
+
+    public void setOrderOfDecisions(Decision[] orderOfDecisions) {
+        this.orderOfDecisions = orderOfDecisions;
     }
 
     public OrdinalMisclassificationMatrix getMeanOrdinalMisclassificationMatrix() {
@@ -181,6 +193,7 @@ public class CrossValidation {
                 "numberOfFolds=" + numberOfFolds +
                 ", informationTable=" + informationTable +
                 ", crossValidationSingleFolds=" + Arrays.toString(crossValidationSingleFolds) +
+                ", orderOfDecisions=" + Arrays.toString(orderOfDecisions) +
                 ", meanOrdinalMisclassificationMatrix=" + meanOrdinalMisclassificationMatrix +
                 ", sumOrdinalMisclassificationMatrix=" + sumOrdinalMisclassificationMatrix +
                 ", typeOfUnions=" + typeOfUnions +

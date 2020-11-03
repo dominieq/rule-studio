@@ -28,13 +28,13 @@ public class MisclassificationMatrixService {
 
     private OrdinalMisclassificationMatrix extractOrdinalMisclassificationMatrixFromProject(Project project, MisclassificationMatrixType typeOfMatrix, Integer numberOfFold) {
         OrdinalMisclassificationMatrix ordinalMisclassificationMatrix = null;
-        Classification classification;
+        ProjectClassification projectClassification;
         CrossValidation crossValidation;
 
         switch (typeOfMatrix) {
             case CLASSIFICATION:
-                classification = ClassificationService.getClassificationFromProject(project);
-                ordinalMisclassificationMatrix = classification.getOrdinalMisclassificationMatrix();
+                projectClassification = ClassificationService.getClassificationFromProject(project);
+                ordinalMisclassificationMatrix = projectClassification.getOrdinalMisclassificationMatrix();
                 break;
 
             case CROSS_VALIDATION_SUM:
@@ -56,7 +56,7 @@ public class MisclassificationMatrixService {
                     throw ex;
                 }
                 try {
-                    ordinalMisclassificationMatrix = crossValidationSingleFolds[numberOfFold].getClassificationOfValidationTable().getOrdinalMisclassificationMatrix();
+                    ordinalMisclassificationMatrix = crossValidationSingleFolds[numberOfFold].getFoldClassification().getOrdinalMisclassificationMatrix();
                 } catch (ArrayIndexOutOfBoundsException e) {
                     WrongParameterException ex = new WrongParameterException(String.format("There is no fold with number \"%d\".", numberOfFold));
                     logger.error(ex.getMessage());
@@ -86,17 +86,17 @@ public class MisclassificationMatrixService {
         OrdinalMisclassificationMatrixAbstractResponse ordinalMisclassificationMatrixAbstractResponse;
         switch (typeOfMatrix) {
             case CLASSIFICATION:
-                orderOfDecision = project.getClassification().getOrderOfDecisions();
+                orderOfDecision = project.getProjectClassification().getOrderOfDecisions();
                 ordinalMisclassificationMatrixAbstractResponse = OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder.newInstance().build(ordinalMisclassificationMatrix, orderOfDecision);
                 break;
 
             case CROSS_VALIDATION_MEAN:
-                orderOfDecision = project.getCrossValidation().getCrossValidationSingleFolds()[0].getClassificationOfValidationTable().getOrderOfDecisions();
+                orderOfDecision = project.getCrossValidation().getOrderOfDecisions();
                 ordinalMisclassificationMatrixAbstractResponse = OrdinalMisclassificationMatrixResponseBuilder.newInstance().build(ordinalMisclassificationMatrix, orderOfDecision);
                 break;
 
             default:
-                orderOfDecision = project.getCrossValidation().getCrossValidationSingleFolds()[0].getClassificationOfValidationTable().getOrderOfDecisions();
+                orderOfDecision = project.getCrossValidation().getOrderOfDecisions();
                 ordinalMisclassificationMatrixAbstractResponse = OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder.newInstance().build(ordinalMisclassificationMatrix, orderOfDecision);
         }
 

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.rulelearn.data.Decision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.put.poznan.rulestudio.model.Classification;
+import pl.put.poznan.rulestudio.model.ProjectClassification;
 import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters;
 import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters.ClassificationParametersBuilder;
 import pl.put.poznan.rulestudio.model.response.ClassifiedObjectMainProperties.ClassifiedObjectMainPropertiesBuilder;
@@ -145,25 +145,25 @@ public class MainClassificationResponse {
             return mainClassificationResponse;
         }
 
-        public MainClassificationResponse build(Classification classification) {
+        public MainClassificationResponse build(ProjectClassification projectClassification) {
             MainClassificationResponse mainClassificationResponse = new MainClassificationResponse();
 
-            mainClassificationResponse.objectNames = classification.getDescriptiveAttributes().extractObjectNames(classification.getInformationTable());
+            mainClassificationResponse.objectNames = projectClassification.getDescriptiveAttributes().extractObjectNames(projectClassification.getClassifiedInformationTable());
 
             Decision originalDecision;
-            final int numberOfObjects = classification.getInformationTable().getNumberOfObjects();
+            final int numberOfObjects = projectClassification.getClassifiedInformationTable().getNumberOfObjects();
             mainClassificationResponse.classifiedObjectMainPropertiesArray = new ClassifiedObjectMainProperties[numberOfObjects];
             for(int i = 0; i < numberOfObjects; i++) {
-                originalDecision = classification.getInformationTable().getDecision(i);
-                mainClassificationResponse.classifiedObjectMainPropertiesArray[i] = ClassifiedObjectMainPropertiesBuilder.newInstance().build(classification, i, originalDecision);
+                originalDecision = projectClassification.getClassifiedInformationTable().getDecision(i);
+                mainClassificationResponse.classifiedObjectMainPropertiesArray[i] = ClassifiedObjectMainPropertiesBuilder.newInstance().build(projectClassification, i, originalDecision);
             }
 
-            mainClassificationResponse.isExternalData = classification.isExternalData();
-            mainClassificationResponse.externalDataFileName = classification.getExternalDataFileName();
-            mainClassificationResponse.isCurrentLearningData = classification.isCurrentLearningData();
-            mainClassificationResponse.isCurrentRuleSet = classification.isCurrentRuleSet();
+            mainClassificationResponse.isExternalData = projectClassification.isExternalData();
+            mainClassificationResponse.externalDataFileName = projectClassification.getExternalDataFileName();
+            mainClassificationResponse.isCurrentLearningData = projectClassification.isCurrentLearningData();
+            mainClassificationResponse.isCurrentRuleSet = projectClassification.isCurrentRuleSet();
 
-            mainClassificationResponse.classificationParameters = ClassificationParametersBuilder.newInstance().build(classification);
+            mainClassificationResponse.classificationParameters = ClassificationParametersBuilder.newInstance().build(projectClassification);
 
             return mainClassificationResponse;
         }

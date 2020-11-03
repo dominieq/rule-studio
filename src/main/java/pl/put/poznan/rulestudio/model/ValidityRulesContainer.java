@@ -9,14 +9,14 @@ public class ValidityRulesContainer {
     public ValidityRulesContainer(Project project) {
         UnionsWithHttpParameters unions = project.getUnions();
         if(unions != null) {
-            this.unions = project.getUnions().isCurrentData();
+            this.unions = unions.isCurrentData();
         }
 
-        Classification classification = project.getClassification();
-        if(classification != null) {
-            this.classificationExternal = project.getClassification().isExternalData();
-            this.classificationLearningData = project.getClassification().isCurrentLearningData();
-            this.classificationRules = project.getClassification().isCurrentRuleSet();
+        ProjectClassification projectClassification = project.getProjectClassification();
+        if(projectClassification != null) {
+            this.classificationExternal = projectClassification.isExternalData();
+            this.classificationLearningData = projectClassification.isCurrentLearningData();
+            this.classificationRules = projectClassification.isCurrentRuleSet();
         }
     }
 

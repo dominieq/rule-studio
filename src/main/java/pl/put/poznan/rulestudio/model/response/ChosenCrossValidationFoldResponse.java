@@ -113,7 +113,7 @@ public class ChosenCrossValidationFoldResponse {
             chosenCrossValidationFoldResponse.classifiedObjectMainPropertiesArray = new ClassifiedObjectMainProperties[numberOfObjects];
             for(int i = 0; i < numberOfObjects; i++) {
                 originalDecision = crossValidation.getInformationTable().getDecision( crossValidationSingleFold.getIndicesOfValidationObjects()[i] );
-                chosenCrossValidationFoldResponse.classifiedObjectMainPropertiesArray[i] = ClassifiedObjectMainPropertiesBuilder.newInstance().build(crossValidationSingleFold.getClassificationOfValidationTable(), i, originalDecision);
+                chosenCrossValidationFoldResponse.classifiedObjectMainPropertiesArray[i] = ClassifiedObjectMainPropertiesBuilder.newInstance().build(crossValidationSingleFold.getFoldClassification(), i, originalDecision);
             }
 
             chosenCrossValidationFoldResponse.numberOfTrainingObjects = crossValidationSingleFold.getIndicesOfTrainingObjects().length;

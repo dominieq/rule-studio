@@ -51,7 +51,7 @@ public class ProjectSerializer extends JsonSerializer<Project> {
         jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getRules()));
 
         jsonGenerator.writeFieldName("classification");
-        jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getClassification()));
+        jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getProjectClassification()));
 
         jsonGenerator.writeFieldName("crossValidation");
         jsonGenerator.writeRawValue(mapper.writeValueAsString(project.getCrossValidation()));
