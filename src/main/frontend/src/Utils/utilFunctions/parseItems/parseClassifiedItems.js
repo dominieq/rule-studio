@@ -25,7 +25,7 @@ function parseClassifiedItems(objects, names) {
                         "original decision " + this.traits.originalDecision,
                         "suggested decision " + this.traits.suggestedDecision,
                         "certainty " + this.traits.certainty,
-                        "covered by " + this.traits.indicesOfCoveringRules + " rules"
+                        "covered by " + this.traits.numberOfCoveringRules + " rules"
                     ]
                 }
             });

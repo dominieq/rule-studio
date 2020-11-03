@@ -16,7 +16,7 @@ function parseClassifiedListItems(items) {
             listItems.push({
                 id: items[i].id,
                 header: items[i].name.toString(),
-                subheader: "Covered by " + conjugateContent(items[i].traits.indicesOfCoveringRules, "rule"),
+                subheader: "Covered by " + conjugateContent(items[i].traits.numberOfCoveringRules, "rule"),
                 multiContent: [
                     {
                         title: "Original decision:",
