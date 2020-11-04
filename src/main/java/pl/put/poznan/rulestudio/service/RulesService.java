@@ -590,11 +590,7 @@ public class RulesService {
 
     private static void uploadRulesToProject(Project project, MultipartFile rulesFile) throws IOException {
         InformationTable informationTable = project.getInformationTable();
-        if(informationTable == null) {
-            NoDataException ex = new NoDataException("There is no data in project. Couldn't read rules file.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't read rules file.");
 
         Attribute[] attributes = informationTable.getAttributes();
         if((attributes == null) || (attributes.length == 0)) {

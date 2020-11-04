@@ -17,7 +17,6 @@ import pl.put.poznan.rulestudio.enums.ClassUnionArrayPropertyType;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.CalculationException;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
-import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.DescriptiveAttributes;
 import pl.put.poznan.rulestudio.model.Project;
@@ -79,16 +78,8 @@ public class UnionsService {
         UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
         if((!project.isCurrentUnionsWithSingleLimitingDecision()) || (unionsWithHttpParameters.getTypeOfUnions() != typeOfUnions) || (!unionsWithHttpParameters.getConsistencyThreshold().equals(consistencyThreshold))) {
             InformationTable informationTable = project.getInformationTable();
-            if(informationTable == null) {
-                NoDataException ex = new NoDataException("There is no data in project. Couldn't calculate unions.");
-                logger.error(ex.getMessage());
-                throw ex;
-            }
-            if(informationTable.getNumberOfObjects() == 0) {
-                NoDataException ex = new NoDataException("There are no objects in project. Couldn't calculate unions.");
-                logger.error(ex.getMessage());
-                throw ex;
-            }
+            DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate unions.");
+            DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate unions.");
 
             final UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(informationTable, typeOfUnions, consistencyThreshold);
             final DescriptiveAttributes descriptiveAttributes = new DescriptiveAttributes(informationTable);

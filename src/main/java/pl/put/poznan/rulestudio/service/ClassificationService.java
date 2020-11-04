@@ -42,22 +42,6 @@ public class ClassificationService {
         return projectClassification;
     }
 
-    private static void checkInformationTable(InformationTable informationTable, String message) {
-        if(informationTable == null) {
-            NoDataException ex = new NoDataException(message);
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-    }
-
-    private static void checkNumberOfClassifiedObjects(int numberOfObjects, String message) {
-        if(numberOfObjects == 0) {
-            NoDataException ex = new NoDataException(message);
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-    }
-
     private static RuleSetWithCharacteristics getRuleSetToClassify(Project project) {
         if(project.getRules() == null) {
             NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
@@ -88,9 +72,8 @@ public class ClassificationService {
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         final InformationTable informationTable = project.getInformationTable();
-        checkInformationTable(informationTable, "There is no data in project. Couldn't reclassify.");
-
-        checkNumberOfClassifiedObjects(informationTable.getNumberOfObjects(), "There are no objects in project. Couldn't reclassify.");
+        DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't reclassify.");
+        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't reclassify.");
 
         final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
@@ -119,20 +102,16 @@ public class ClassificationService {
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         final InformationTable projectInformationTable = project.getInformationTable();
-        checkInformationTable(projectInformationTable, "There is no data in project. Couldn't classify data from file.");
+        DataService.checkInformationTable(projectInformationTable, "There is no data in project. Couldn't classify data from file.");
 
         final Attribute[] attributes = projectInformationTable.getAttributes();
-        if(attributes == null) {
-            NoDataException ex = new NoDataException("There is no metadata in project. Couldn't read classified data from file.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        MetadataService.checkAttributes(attributes, "There is no metadata in project. Couldn't read classified data from file.");
 
         final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
         final InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, attributes, separator, header);
-        checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
-        checkNumberOfClassifiedObjects(newInformationTable.getNumberOfObjects(), "There are no objects in external data. Couldn't classify.");
+        DataService.checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
+        DataService.checkNumberOfObjects(newInformationTable, "There are no objects in external data. Couldn't classify.");
 
         final ProjectClassification projectClassification = new ProjectClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, externalDataFile.getOriginalFilename());
         project.setProjectClassification(projectClassification);
@@ -155,7 +134,7 @@ public class ClassificationService {
         final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        checkNumberOfClassifiedObjects(informationTable.getNumberOfObjects(), "There are no objects in project. Couldn't reclassify.");
+        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't reclassify.");
 
         final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
@@ -194,8 +173,8 @@ public class ClassificationService {
         final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
         final InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, projectInformationTable.getAttributes(), separator, header);
-        checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
-        checkNumberOfClassifiedObjects(newInformationTable.getNumberOfObjects(), "There are no objects in external data. Couldn't classify.");
+        DataService.checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
+        DataService.checkNumberOfObjects(newInformationTable, "There are no objects in external data. Couldn't classify.");
 
         final ProjectClassification projectClassification = new ProjectClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, externalDataFile.getOriginalFilename());
         project.setProjectClassification(projectClassification);

@@ -37,6 +37,22 @@ public class DataService {
     @Autowired
     ProjectsContainer projectsContainer;
 
+    public static void checkInformationTable(InformationTable informationTable, String message) {
+        if(informationTable == null) {
+            NoDataException ex = new NoDataException(message);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+    }
+
+    public static void checkNumberOfObjects(InformationTable informationTable, String message) {
+        if(informationTable.getNumberOfObjects() == 0) {
+            NoDataException ex = new NoDataException(message);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+    }
+
     public static InformationTable informationTableFromMultipartFileData(MultipartFile dataFile, Attribute[] attributes, Character separator, Boolean header) throws IOException {
         logger.info("Start of processing data file...");
         Reader reader;
@@ -154,11 +170,7 @@ public class DataService {
         InformationTableWriter itw = new InformationTableWriter(false);
 
         InformationTable informationTable = project.getInformationTable();
-        if(informationTable == null) {
-            NoDataException ex = new NoDataException("There are no objects in project. Couldn't get them.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        checkInformationTable(informationTable, "There are no objects in project. Couldn't get them.");
 
         itw.writeObjects(informationTable, objectsWriter);
 
@@ -173,11 +185,7 @@ public class DataService {
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InformationTable informationTable = project.getInformationTable();
-        if(informationTable == null) {
-            NoDataException ex = new NoDataException("There is no metadata in project. Couldn't pass new data.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        checkInformationTable(informationTable, "There is no metadata in project. Couldn't pass new data.");
 
         Attribute[] attributes = informationTable.getAttributes();
         InformationTable newInformationTable = informationTableFromStringData(data, attributes);
@@ -235,11 +243,7 @@ public class DataService {
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InformationTable informationTable = project.getInformationTable();
-        if(informationTable == null) {
-            NoDataException ex = new NoDataException("There is no data in project. Couldn't download objects.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        checkInformationTable(informationTable, "There is no data in project. Couldn't download objects.");
 
         InputStreamResource resource = produceJsonResource(informationTable);
 
@@ -255,11 +259,7 @@ public class DataService {
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InformationTable informationTable = project.getInformationTable();
-        if(informationTable == null) {
-            NoDataException ex = new NoDataException("There is no data in project. Couldn't download objects.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        checkInformationTable(informationTable, "There is no data in project. Couldn't download objects.");
 
         InputStreamResource resource = produceCsvResource(informationTable, separator, header);
 
@@ -312,11 +312,7 @@ public class DataService {
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         final InformationTable informationTable = project.getInformationTable();
-        if(informationTable == null) {
-            NoDataException ex = new NoDataException("There are no objects in project. Couldn't get any of them.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        checkInformationTable(informationTable, "There are no objects in project. Couldn't get any of them.");
 
         ObjectAbstractResponse objectAbstractResponse;
         if(isAttributes) {
@@ -336,11 +332,7 @@ public class DataService {
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         final InformationTable informationTable = project.getInformationTable();
-        if(informationTable == null) {
-            NoDataException ex = new NoDataException("There are no objects in project. Couldn't get any of them.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        checkInformationTable(informationTable, "There are no objects in project. Couldn't get any of them.");
 
         final ObjectsComparisonResponse objectsComparisonResponse = ObjectsComparisonResponseBuilder.newInstance().build(informationTable, firstObjectIndex, secondObjectIndex);
         logger.debug("objectsComparisonResponse:\t{}", objectsComparisonResponse.toString());

@@ -14,7 +14,6 @@ import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ValidityProjectContainer;
 import pl.put.poznan.rulestudio.model.response.ObjectAbstractResponse;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse;
 import pl.put.poznan.rulestudio.service.DataService;
 
@@ -44,10 +43,10 @@ public class DataController {
         return ResponseEntity.ok(result);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Project> putData(
             @PathVariable("id") UUID id,
-            @RequestBody String data) throws IOException {
+            @RequestParam(name = "data") String data) throws IOException {
         logger.info("Putting data");
         Project result = dataService.putData(id, data);
         return ResponseEntity.ok(result);

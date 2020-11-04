@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import pl.put.poznan.rulestudio.enums.*;
 import pl.put.poznan.rulestudio.enums.RuleType;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
-import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.*;
 import pl.put.poznan.rulestudio.model.response.*;
@@ -85,16 +84,8 @@ public class CrossValidationService {
     }
 
     private CrossValidation calculateCrossValidation(InformationTable informationTable, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult, Integer numberOfFolds, Long seed) {
-        if(informationTable == null) {
-            NoDataException ex = new NoDataException("There is no data in project. Couldn't calculate cross-validation.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
-        if(informationTable.getNumberOfObjects() == 0) {
-            NoDataException ex = new NoDataException("There are no objects in project. Couldn't calculate cross-validation.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate cross-validation.");
+        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate cross-validation.");
 
         if(numberOfFolds < 2) {
             WrongParameterException ex = new WrongParameterException(String.format("There must be at least 2 folds, %d is not enough. Couldn't calculate cross-validation.", numberOfFolds));

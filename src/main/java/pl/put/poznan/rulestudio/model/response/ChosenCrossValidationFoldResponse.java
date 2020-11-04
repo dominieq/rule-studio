@@ -22,6 +22,8 @@ public class ChosenCrossValidationFoldResponse {
 
     private Integer numberOfRules;
 
+    private Integer numberOfTestObjects;
+
     private ChosenCrossValidationFoldResponse() {
         //private constructor
     }
@@ -42,6 +44,10 @@ public class ChosenCrossValidationFoldResponse {
         return numberOfRules;
     }
 
+    public Integer getNumberOfTestObjects() {
+        return numberOfTestObjects;
+    }
+
     @Override
     public String toString() {
         return "ChosenCrossValidationFoldResponse{" +
@@ -49,6 +55,7 @@ public class ChosenCrossValidationFoldResponse {
                 ", classifiedObjectMainPropertiesArray=" + Arrays.toString(classifiedObjectMainPropertiesArray) +
                 ", numberOfTrainingObjects=" + numberOfTrainingObjects +
                 ", numberOfRules=" + numberOfRules +
+                ", numberOfTestObjects=" + numberOfTestObjects +
                 '}';
     }
 
@@ -59,6 +66,7 @@ public class ChosenCrossValidationFoldResponse {
         private ClassifiedObjectMainProperties[] classifiedObjectMainPropertiesArray;
         private Integer numberOfTrainingObjects;
         private Integer numberOfRules;
+        private Integer numberOfTestObjects;
 
         public static ChosenCrossValidationFoldResponseBuilder newInstance() {
             return new ChosenCrossValidationFoldResponseBuilder();
@@ -84,6 +92,11 @@ public class ChosenCrossValidationFoldResponse {
             return this;
         }
 
+        public ChosenCrossValidationFoldResponseBuilder setNumberOfTestObjects(Integer numberOfTestObjects) {
+            this.numberOfTestObjects = numberOfTestObjects;
+            return this;
+        }
+
         public ChosenCrossValidationFoldResponse build() {
             ChosenCrossValidationFoldResponse chosenCrossValidationFoldResponse = new ChosenCrossValidationFoldResponse();
 
@@ -91,6 +104,7 @@ public class ChosenCrossValidationFoldResponse {
             chosenCrossValidationFoldResponse.classifiedObjectMainPropertiesArray = this.classifiedObjectMainPropertiesArray;
             chosenCrossValidationFoldResponse.numberOfTrainingObjects = this.numberOfTrainingObjects;
             chosenCrossValidationFoldResponse.numberOfRules = this.numberOfRules;
+            chosenCrossValidationFoldResponse.numberOfTestObjects = this.numberOfTestObjects;
 
             return chosenCrossValidationFoldResponse;
         }
@@ -118,6 +132,7 @@ public class ChosenCrossValidationFoldResponse {
 
             chosenCrossValidationFoldResponse.numberOfTrainingObjects = crossValidationSingleFold.getIndicesOfTrainingObjects().length;
             chosenCrossValidationFoldResponse.numberOfRules = crossValidationSingleFold.getRuLeStudioRuleSet().getRuLeStudioRules().length;
+            chosenCrossValidationFoldResponse.numberOfTestObjects = crossValidationSingleFold.getIndicesOfValidationObjects().length;
 
             return chosenCrossValidationFoldResponse;
         }

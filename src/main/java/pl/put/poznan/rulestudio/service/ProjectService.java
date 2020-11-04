@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.exception.ProjectNotFoundException;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
@@ -81,11 +80,7 @@ public class ProjectService {
 
         if(dataFile != null) { //load new data from file
             attributes = informationTable.getAttributes();
-            if(attributes == null) {
-                NoDataException ex = new NoDataException("There is no metadata in project. Couldn't read data file.");
-                logger.error(ex.getMessage());
-                throw ex;
-            }
+            MetadataService.checkAttributes(attributes, "There is no metadata in project. Couldn't read data file.");
             informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
             project.setDataFileName(dataFile.getOriginalFilename());
         }
