@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.exception.ProjectNotFoundException;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.response.ProjectBasicInfoResponse;
+import pl.put.poznan.rulestudio.model.response.ProjectDetailsResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +45,10 @@ public class ProjectService {
     public Project getProject(UUID id) {
         logger.info("Id:\t" + id);
 
-        return getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = getProjectFromProjectsContainer(projectsContainer, id);
+
+        logger.debug(project.toString());
+        return project;
     }
 
     public Project setProject(
@@ -58,7 +63,7 @@ public class ProjectService {
         logger.info("Separator:\t{}", separator);
         logger.info("Header:\t{}", header);
 
-        Project project = getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = getProjectFromProjectsContainer(projectsContainer, id);
 
         if((metadataFile == null) && (dataFile == null)) {
             project.setInformationTable(new InformationTable(new Attribute[0], new ArrayList<>()));
@@ -90,7 +95,7 @@ public class ProjectService {
         return project;
     }
 
-    public Project renameProject(UUID id, String name) {
+    public ProjectBasicInfoResponse renameProject(UUID id, String name) {
         logger.info("Id:\t" + id);
         logger.info("Name:\t" + name);
 
@@ -98,18 +103,30 @@ public class ProjectService {
 
         project.setName(name);
 
-        return project;
+        ProjectBasicInfoResponse projectBasicInfoResponse = new ProjectBasicInfoResponse(project);
+        logger.debug(projectBasicInfoResponse.toString());
+        return projectBasicInfoResponse;
     }
 
     public void deleteProject(UUID id) {
         logger.info("Id:\t" + id);
 
-        Project project = projectsContainer.removeProject(id);
+        final Project project = projectsContainer.removeProject(id);
 
         if(project == null) {
             ProjectNotFoundException ex = new ProjectNotFoundException();
             logger.error(ex.getMessage());
             throw ex;
         }
+    }
+
+    public ProjectDetailsResponse getDetails(UUID id) {
+        logger.info("Id:\t" + id);
+
+        final Project project = getProjectFromProjectsContainer(projectsContainer, id);
+
+        ProjectDetailsResponse projectDetailsResponse = new ProjectDetailsResponse(project);
+        logger.debug(projectDetailsResponse.toString());
+        return projectDetailsResponse;
     }
 }

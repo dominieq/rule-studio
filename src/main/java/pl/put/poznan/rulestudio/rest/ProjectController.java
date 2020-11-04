@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.model.Project;
+import pl.put.poznan.rulestudio.model.response.ProjectBasicInfoResponse;
+import pl.put.poznan.rulestudio.model.response.ProjectDetailsResponse;
 import pl.put.poznan.rulestudio.service.ProjectService;
 
 import java.io.IOException;
@@ -31,11 +33,10 @@ public class ProjectController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Project> getProject(
             @PathVariable("id") UUID id) {
+        logger.info("Getting project...");
 
-        logger.info("Getting project");
-        Project result = projectService.getProject(id);
+        final Project result = projectService.getProject(id);
 
-        logger.debug(result.toString());
         return ResponseEntity.ok(result);
     }
 
@@ -46,19 +47,20 @@ public class ProjectController {
             @RequestParam(name = "data", required = false) MultipartFile dataFle,
             @RequestParam(name = "separator", defaultValue = ",") Character separator,
             @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
+        logger.info("Setting project...");
 
-        logger.info("Setting project");
-        Project result = projectService.setProject(id, metadataFile, dataFle, separator, header);
+        final Project result = projectService.setProject(id, metadataFile, dataFle, separator, header);
+
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Project> renameProject(
+    public ResponseEntity<ProjectBasicInfoResponse> renameProject(
             @PathVariable("id") UUID id,
             @RequestParam("name") String name) {
+        logger.info("Renaming project...");
 
-        logger.info("Renaming project");
-        Project result = projectService.renameProject(id, name);
+        final ProjectBasicInfoResponse result = projectService.renameProject(id, name);
 
         return ResponseEntity.ok(result);
     }
@@ -66,9 +68,20 @@ public class ProjectController {
     @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity deleteProject(
             @PathVariable("id") UUID id) {
+        logger.info("Deleting project...");
 
-        logger.info("Deleting project");
         projectService.deleteProject(id);
+
         return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @RequestMapping(value = "/details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProjectDetailsResponse> getDetails(
+            @PathVariable("id") UUID id) {
+        logger.info("Getting project details...");
+
+        final ProjectDetailsResponse projectDetailsResponse = projectService.getDetails(id);
+
+        return ResponseEntity.ok(projectDetailsResponse);
     }
 }
