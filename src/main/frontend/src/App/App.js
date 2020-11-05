@@ -567,6 +567,7 @@ class App extends Component {
                         onProjectClick={this.onCurrentProjectChange}
                         onDialogOpen={this.onDialogOpen}
                         onSaveProject={this.onSaveProject}
+                        onSnackbarOpen={this.onSnackbarOpen}
                         projects={["Select your project", ...projects]}
                     />
                 </Header>

@@ -26,16 +26,13 @@ const menuStyles = makeStyles(theme => ({
 
 /**
  * The middle part of the {@link Header} that allows user to perform actions on selected project such as:
- * <br>
- *  - changing settings,
- * <br>
- *  - renaming,
- *  <br>
- *  - downloading,
- *  <br>
- *  - deleting.
+ * <ul>
+ *     <li>changing settings</li>
+ *     <li>renaming</li>
+ *     <li>downloading</li>
+ *     <li>deleting</li>
+ * </ul>
  *
- * @name Project Menu
  * @constructor
  * @category Header
  * @subcategory Elements
@@ -43,7 +40,10 @@ const menuStyles = makeStyles(theme => ({
  * @param {number} props.currentProject - The id of current project.
  * @param {function} props.onProjectClick - Callback fired when one of the projects from the list was clicked on.
  * @param {function} props.onDialogOpen - Callback fired when one of the dialogs requests to be opened.
+ * @param {function} props.onSaveProject - Callback fired when user requests to save project.
+ * @param {function} props.onSnackbarOpen - Callback fired when the component requests to display an error.
  * @param {Object[]} props.projects - The list of all projects.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @returns {React.ReactElement}
  */
 function ProjectMenu(props) {
@@ -51,31 +51,10 @@ function ProjectMenu(props) {
     const list = useRef(null);
     const menuClasses = menuStyles();
 
-    const { currentProject, projects } = props;
+    const { currentProject, projects, serverBase } = props;
 
-    let primaryText = projects[0];
-    let files = []
-    if (currentProject > 0) {
-        primaryText = "Active project -";
-
-        const { result } = projects[currentProject];
-
-        if (result.hasOwnProperty("metadataFileName")) {
-            files = [ ...files, { label: "Metadata", value: result.metadataFileName }];
-        }
-        if (result.hasOwnProperty("dataFileName")) {
-            files = [ ...files, { label: "Data", value: result.dataFileName }];
-        }
-
-        if (result.rules && result.rules.hasOwnProperty("rulesFileName")) {
-            files = [ ...files, { label: "Rules", value: result.rules.rulesFileName}];
-        }
-        if (result.classification && result.classification.hasOwnProperty("externalDataFileName")) {
-            files = [ ...files, { label: "Classified data", value: result.classification.externalDataFileName }];
-        }
-    }
-
-    let displayedProjects = projects.slice(1);
+    const primaryText = currentProject > 0 ?  "Active project -" : projects[0];
+    const displayedProjects = projects.slice(1);
 
     const onListItemClick = (event) => {
         setAnchorE1(event.currentTarget);
@@ -117,7 +96,7 @@ function ProjectMenu(props) {
                     }
                 </ListItem>
             </List>
-            {Boolean(displayedProjects.length) &&
+            {displayedProjects.length > 0 &&
                 <Menu
                     anchorEl={anchorE1}
                     anchorOrigin={{
@@ -154,7 +133,9 @@ function ProjectMenu(props) {
             {currentProject > 0 ?
                 <section className={styles.Buttons}>
                     <FilesDetails
-                        files={files}
+                        onSnackbarOpen={props.onSnackbarOpen}
+                        projectId={projects[currentProject].result.id}
+                        serverBase={serverBase}
                         WrapperProps={{ id: "files-details-button" }}
                     />
                     <CustomTooltip
@@ -217,12 +198,14 @@ ProjectMenu.propTypes = {
     onProjectClick: PropTypes.func,
     onDialogOpen: PropTypes.func,
     onSaveProject: PropTypes.func,
+    onSnackbarOpen: PropTypes.func,
     projects: PropTypes.arrayOf(PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.shape({
             result: PropTypes.object,
         })
-    ]))
+    ])),
+    serverBase: PropTypes.string
 };
 
 export default ProjectMenu;

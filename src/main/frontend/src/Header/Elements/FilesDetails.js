@@ -10,6 +10,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import FileQuestion from "mdi-material-ui/FileQuestion";
+import {fetchProjectDetails} from "../../Utils/utilFunctions/fetchFunctions";
 
 function Wrapper(props) {
     const { component, ...other } = props;
@@ -33,18 +34,19 @@ const disableGPUOptions = {
 
 /**
  * Presents files that are used in current project.
- *  Idea for a composition was taken from this
- *  <a href="https://material-ui.com/components/button-group/#split-button" target="_blank">tutorial</a>.
+ * Idea for a composition was taken from this
+ * <a href="https://material-ui.com/components/button-group/#split-button" target="_blank">tutorial</a>.
  *
- * @name Files Details
  * @constructor
  * @category Header
  * @subcategory Elements
  * @param {Object} props
  * @param {boolean} props.disableGpu - If <code>true</code> tooltip text will be unblurred in Google Chrome.
- * @param {Object[]} props.files - List of files details to be displayed.
- * @param {string} props.files[].label - The type of a file.
- * @param {string} props.files[].value - The name of the file in current project.
+ * @param {function} props.onSnackbarOpen - Callback fired when the component requests to display an error.
+ * @param {string} props.projectId - The identifier of a selected project.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
+ * @param {React.ElementType} - props.WrapperComponent - The HTML element that will be used as a Wrapper.
+ * @param {Object} props.WrapperProps - The props applied to the Wrapper element.
  * @returns{React.PureComponent}
  */
 class FilesDetails extends React.PureComponent {
@@ -52,11 +54,78 @@ class FilesDetails extends React.PureComponent {
         super(props);
 
         this.state = {
-            open: false
+            loading: false,
+            open: false,
+            files: [],
         };
 
         this.anchorRef = React.createRef();
     }
+
+    componentDidMount() {
+        this._isMounted = true;
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.projectId !== this.props.projectId) {
+            const { files } = this.state;
+
+            if (Array.isArray(files) && files.length !== 0) {
+                this.getProjectDetails();
+            }
+            return;
+        }
+
+        if (!prevState.open && this.state.open) {
+            const { files } = this.state;
+
+            if (Array.isArray(files) && files.length === 0) {
+                this.getProjectDetails();
+            }
+        }
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    getProjectDetails = () => {
+        this.setState({
+            loading: true,
+            files: [{label: "Loading details"}]
+        }, () => {
+            const { projectId, serverBase } = this.props;
+            const pathParams = { projectId };
+
+            fetchProjectDetails(
+                pathParams, serverBase
+            ).then(result => {
+                if (this._isMounted && result != null) {
+                    let files = []
+
+                    if (result.hasOwnProperty("externalDataFileName"))
+                        files.push({ label: "External data", value: result.externalDataFileName });
+
+                    if (result.hasOwnProperty("rulesFileName"))
+                        files.push({ label: "Rules", value: result.rulesFileName });
+
+                    if (result.hasOwnProperty("dataFileName"))
+                        files.push({ label: "Data", value: result.dataFileName });
+
+                    if (result.hasOwnProperty("metadataFileName"))
+                        files.push({ label: "Metadata", value: result.metadataFileName });
+
+                    this.setState({ files: files });
+                }
+            }).catch(exception => {
+                this.props.onSnackbarOpen(exception);
+            }).finally(() => {
+                if (this._isMounted) {
+                    this.setState({ loading: false });
+                }
+            });
+        });
+    };
 
     onToggleButtonClick = () => {
         this.setState(({open}) => ({
@@ -75,8 +144,8 @@ class FilesDetails extends React.PureComponent {
     };
 
     render() {
-        const { open } = this.state;
-        const { disableGPU, files, WrapperComponent, WrapperProps } = this.props;
+        const { open, files } = this.state;
+        const { disableGPU, WrapperComponent, WrapperProps } = this.props;
 
         return (
             <Wrapper component={WrapperComponent} {...WrapperProps}>
@@ -130,10 +199,9 @@ class FilesDetails extends React.PureComponent {
 
 FilesDetails.propTypes = {
     disableGPU: PropTypes.bool,
-    files: PropTypes.arrayOf(PropTypes.shape({
-        label: PropTypes.string,
-        value: PropTypes.string
-    })),
+    onSnackbarOpen: PropTypes.func,
+    projectId: PropTypes.string,
+    serverBase: PropTypes.string,
     WrapperComponent: PropTypes.elementType,
     WrapperProps: PropTypes.object
 };
