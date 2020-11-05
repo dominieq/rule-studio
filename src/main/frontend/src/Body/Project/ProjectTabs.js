@@ -155,12 +155,14 @@ class ProjectTabs extends React.Component {
         const { serverBase } = this.props;
         let project = JSON.parse(JSON.stringify(currentProject));
 
-        let data = new FormData();
-        data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-        data.append("data", JSON.stringify(project.result.informationTable.objects));
+        const pathParams = { projectId: project.result.id };
+        const method = "PUT";
+        const body = new FormData();
+        body.append("metadata", JSON.stringify(project.result.informationTable.attributes));
+        body.append("data", JSON.stringify(project.result.informationTable.objects));
 
         fetchData(
-            serverBase, project.result.id, data
+            pathParams, method, body, serverBase
         ).then(result => {
             if (result) {
                 let objects = Object.keys(result);

@@ -2,7 +2,14 @@ import { InvalidPathParamsException } from "../../../Classes";
 import { downloadFunction } from "../downloadFunction";
 
 /**
- * Downloads misclassification matrix from given fold and of specified type.
+ * <h3>Overview</h3>
+ * Utilizes {@link downloadFunction} to download matrix from
+ * <code>/projects/{projectId}/misclassificationMatrix/download</code>
+ * where <code>projectId</code> is the identifier of a selected project.
+ *
+ * <h3>Usage</h3>
+ * In order to download matrix from second fold from cross-validation
+ * specify <code>queryParams</code> accordingly: <code>{ typeOfMatrix: crossValidationFold, foldIndex: 1 }</code>.
  *
  * @category Utils
  * @subcategory Functions

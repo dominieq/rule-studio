@@ -55,9 +55,11 @@ class Cones extends Component {
      */
     getData = () => {
         const { project, serverBase } = this.props;
+        const pathParams = { projectId: project.result.id };
+        const method = "GET";
 
         fetchCones(
-            project.result.id, "GET", null, serverBase
+            pathParams, method, serverBase
         ).then(result => {
             if (this._isMounted && result != null) {
                 const items = parseConesItems(result, result.objectNames);
@@ -160,12 +162,14 @@ class Cones extends Component {
      */
     onCalculateClick = () => {
         const { project, serverBase } = this.props;
+        const pathParams = { projectId: project.result.id };
+        const method = "PUT";
 
         this.setState({
             loading: true,
         }, () => {
             fetchCones(
-                project.result.id, "PUT", null, serverBase
+                pathParams, method, serverBase
             ).then(result => {
                 if (result) {
                     let projectCopy = JSON.parse(JSON.stringify(project));

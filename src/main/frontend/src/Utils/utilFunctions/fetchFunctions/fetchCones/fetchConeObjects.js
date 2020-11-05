@@ -2,14 +2,32 @@ import { AlertError, InvalidPathParamsException } from "../../../Classes";
 import { responseJson } from "../parseResponse";
 
 /**
- * Performs an API call with GET method on cones to retrieve elements of a selected dominance cone.
+ * <h3>Overview</h3>
+ * Performs an API call with GET method on <code>/projects/{projectId}/cones/{objectIndex}/{coneType}</code>
+ * where <code>projectId</code> is the identifier of a selected project,
+ * <code>objectIndex</code> is the index of an object from information table
+ * and <code>coneType</code> is the type of a selected cone such as: <i>positive</i>, <i>negative</i>,
+ * <i>positive_inverted</i> or <i>negative_inverted</i>.
+ *
+ * <h3>Goal</h3>
+ * The goal of this functions is to retrieve the indices of elements from a selected dominance cone.
+ *
+ * <h3>Example response</h3>
+ * <pre><code>
+ *     [
+ *          0,
+ *          2,
+ *          3,
+ *          5
+ *     ]
+ * </code></pre>
  *
  * @category Utils
  * @subcategory Functions
- * @param {Object} pathParams - Path parameters in the URL of an API call.
+ * @param {Object} pathParams - The path parameters in the URL of an API call.
  * @param {string} pathParams.projectId - The identifier of a selected project.
  * @param {number} pathParams.objectIndex - The index of a selected object from information table.
- * @param {"positive"|"negative"|"positive_inverted"|"negative_inverted"} pathParams.coneType - The type of a selected cone.
+ * @param {string} pathParams.coneType - The type of a selected cone.
  * @param {string} [base = http://localhost:8080] - The host in in the URL of an API call.
  * @throws AlertError
  * @throws InvalidPathParamsException

@@ -2,30 +2,55 @@ import { AlertError, InvalidPathParamsException } from "../../../Classes";
 import { responseJson } from "../parseResponse";
 
 /**
- * Performs an API call with body and a specified method on cones.
+ * <h3>Overview</h3>
+ * Performs an API call with GET or POST on <code>/project/{projectId}/cones</code>
+ * where <code>projectId</code> is the identifier of a selected project.
+ *
+ * <h3>Goal</h3>
+ * The goal of this function is to retrieve or calculate dominance cones for objects from specified project.
+ *
+ * <h3>Example response</h3>
+ * <pre><code>
+ *     {
+ *         "numberOfObjects": 2,
+ *         "objectNames": [
+ *             "Object 1",
+ *             "Object 2"
+ *         ],
+ *         "isCurrentData": true,
+ *         "positiveDominanceCones": [
+ *             "Object 1"
+ *         ],
+ *         "negativeDominanceCones": [
+ *             "Object 2"
+ *         ],
+ *         "positiveInvertedDominanceCones": [
+ *             "Object 2"
+ *         ],
+ *         "negativeInvertedDominanceCones": [
+ *             "Object 1"
+ *         ]
+ *     }
+ * </code></pre>
  *
  * @category Utils
  * @subcategory Functions
- * @param {string} projectId - The identifier of a selected project.
- * @param {"GET"|"PUT"} method - The HTTP method of an API call.
- * @param {FormData} body - The body of an API call.
- * @param {string} [base = http://localhost:8080] - The host in the URL of an API call.
+ * @param {Object} pathParams - The path parameters in the URL of an API call.
+ * @param {string} pathParams.projectId - The identifier of a selected project.
+ * @param {string} method - The HTTP method of an API call.
+ * @param {string} [base = http://localhost:8080] - The host and port in the URL of an API call.
  * @throws AlertError
  * @throws InvalidPathParamsException
  * @returns {Promise<Object>}
  */
-async function fetchCones(projectId, method, body, base = "http://localhost:8080") {
-    if (!(projectId != null && projectId !== "")) {
-        throw new InvalidPathParamsException("Path params should be defined when fetching cones.", { projectId });
+async function fetchCones(pathParams, method, base = "http://localhost:8080") {
+    if (!(pathParams != null && pathParams.hasOwnProperty("projectId"))) {
+        throw new InvalidPathParamsException("Path params should be defined when fetching cones.", pathParams);
     }
 
-    if (body != null && !body instanceof FormData) {
-        throw new InvalidPathParamsException("Body should be a valid FormData object.", body)
-    }
+    const url = new URL(`/projects/${pathParams.projectId}/cones`, base);
 
-    const url = new URL(`/projects/${projectId}/cones`, base);
-
-    const response = await fetch(url, { method, body }).catch(() => {
+    const response = await fetch(url, { method }).catch(() => {
         throw new AlertError("Server not responding", true, "error");
     });
 

@@ -2,12 +2,15 @@ import { AlertError, InvalidPathParamsException } from "../../../Classes";
 import { responseJson } from "../parseResponse";
 
 /**
+ * <h3>Overview</h3>
  * Performs an API call with GET method on <code>/projects/{projectId}/crossValidation/{foldIndex}</code>
  * where <code>projectId</code> is the identifier of a selected project
  * and <code>foldIndex</code> is the index of a selected fold from cross-validation.
- * <br>
- * <br>
- * Example response:
+ *
+ * <h3>Goal</h3>
+ * The goal of this function is to retrieve the content of a selected fold from cross-validation.
+ *
+ * <h3>Example response</h3>
  * <pre><code>
  *      {
  *          "objectNames": [
@@ -21,13 +24,13 @@ import { responseJson } from "../parseResponse";
  *                  "originalDecision": "bad",
  *                  "suggestedDecision": "bad",
  *                  "certainty": 1.0,
- *                  "numberOfCoveringRules": 11
+ *                  "numberOfCoveringRules": 1
  *              },
  *              {
  *                  "originalDecision": "bad",
  *                  "suggestedDecision": "bad",
  *                  "certainty": 1.0,
- *                  "numberOfCoveringRules": 7
+ *                  "numberOfCoveringRules": 1
  *              }
  *          ]
  *      }

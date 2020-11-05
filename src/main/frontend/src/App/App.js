@@ -320,14 +320,16 @@ class App extends Component {
 
     onSaveProject = () => {
         const { serverBase, currentProject, projects } = this.state;
+        const pathParams = { projectId: projects[currentProject].result.id };
 
         if (currentProject >= 0) {
-            exportProject(serverBase, projects[currentProject].result.id).catch(error => {
+            exportProject(pathParams, serverBase).catch(error => {
                 if (error.constructor.name !== "AlertError") {
                     console.error(error);
-                } else {
-                    this.setState({ alertProps: error });
+                    return;
                 }
+
+                this.setState({ alertProps: error });
             });
         }
     };
@@ -340,11 +342,11 @@ class App extends Component {
                 loading: true,
                 loadingTitle: "Importing project"
             }, () => {
-                let data = new FormData();
-                data.append("importFile", file);
+                const body = new FormData();
+                body.append("importFile", file);
 
                 importProject(
-                    serverBase, data
+                    body, serverBase
                 ).then(result => {
                     if (result) {
                         const indexOptions = this.createNewIndexOptions(result.informationTable.attributes);
@@ -420,8 +422,11 @@ class App extends Component {
                 loading: true,
                 loadingTitle: "Deleting project"
             }, () => {
+                const pathParams = { projectId: projects[currentProject].result.id };
+                const method = "DELETE";
+
                 fetchProject(
-                    projects[currentProject].result.id, "DELETE", null, serverBase
+                    pathParams, method, null, serverBase
                 ).then(() => {
                     const removedProject = projects[currentProject].result.name;
 
@@ -442,9 +447,10 @@ class App extends Component {
                 }).catch(error => {
                     if (error.constructor.name !== "AlertError") {
                         console.error(error);
-                    } else {
-                        this.setState({ alertProps: error });
+                        return;
                     }
+
+                    this.setState({ alertProps: error });
                 }).finally(() => {
                     this.setState({ loading: false });
                 });
@@ -474,11 +480,13 @@ class App extends Component {
                     loading: true,
                     loadingTitle: "Modifying project name"
                 }, () => {
-                    let data = new FormData();
-                    data.append("name", name);
+                    const pathParams = { projectId: projects[currentProject].result.id };
+                    const method = "PATCH"
+                    const body = new FormData();
+                    body.append("name", name);
 
                     fetchProject(
-                        projects[currentProject].result.id, "PATCH", data, serverBase
+                        pathParams, method, body, serverBase
                     ).then(result => {
                         if (result) {
                             this.setState(({currentProject, projects}) => ({
@@ -497,9 +505,10 @@ class App extends Component {
                     }).catch(error => {
                         if (error.constructor.name !== "AlertError") {
                             console.error(error);
-                        } else {
-                            this.setState({ alertProps: error });
+                            return;
                         }
+
+                        this.setState({ alertProps: error });
                     }).finally(() => {
                         this.setState({ loading: false });
                     });
