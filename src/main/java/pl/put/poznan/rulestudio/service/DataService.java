@@ -19,10 +19,7 @@ import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.ValidityProjectContainer;
-import pl.put.poznan.rulestudio.model.response.ObjectAbstractResponse;
-import pl.put.poznan.rulestudio.model.response.ObjectResponse;
-import pl.put.poznan.rulestudio.model.response.ObjectWithAttributesResponse;
-import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse;
+import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse.ObjectsComparisonResponseBuilder;
 
 import java.io.*;
@@ -161,54 +158,52 @@ public class DataService {
         return informationTableWithDecisionDistributions;
     }
 
-    public String getData(UUID id) throws IOException {
+    public InformationTableResponse getData(UUID id) throws IOException {
         logger.info("Id:\t" + id);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        StringWriter objectsWriter = new StringWriter();
-        InformationTableWriter itw = new InformationTableWriter(false);
-
-        InformationTable informationTable = project.getInformationTable();
+        final InformationTable informationTable = project.getInformationTable();
         checkInformationTable(informationTable, "There are no objects in project. Couldn't get them.");
 
-        itw.writeObjects(informationTable, objectsWriter);
-
-        return objectsWriter.toString();
+        final InformationTableResponse informationTableResponse = new InformationTableResponse(informationTable);
+        logger.debug(informationTableResponse.toString());
+        return informationTableResponse;
     }
 
-    public Project putData(UUID id, String data) throws IOException {
+    public InformationTableResponse putData(UUID id, String data) throws IOException {
         logger.info("Id:\t" + id);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t" + data);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = project.getInformationTable();
+        final InformationTable informationTable = project.getInformationTable();
         checkInformationTable(informationTable, "There is no metadata in project. Couldn't pass new data.");
 
-        Attribute[] attributes = informationTable.getAttributes();
-        InformationTable newInformationTable = informationTableFromStringData(data, attributes);
-
+        final Attribute[] attributes = informationTable.getAttributes();
+        final InformationTable newInformationTable = informationTableFromStringData(data, attributes);
         project.setInformationTable(newInformationTable);
-        logger.debug(project.toString());
 
-        return project;
+        final InformationTableResponse informationTableResponse = new InformationTableResponse(newInformationTable);
+        logger.debug(informationTableResponse.toString());
+        return informationTableResponse;
     }
 
     public ValidityProjectContainer postData(UUID id, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
-        logger.info("Metadata:\t{}", metadata);
+        logger.info("Metadata size:\t{} B", metadata.length());
+        logger.debug("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        ValidityProjectContainer validityProjectContainer = new ValidityProjectContainer(project);
-
+        final ValidityProjectContainer validityProjectContainer = new ValidityProjectContainer(project);
+        logger.debug(validityProjectContainer.toString());
         return validityProjectContainer;
     }
 
@@ -219,7 +214,7 @@ public class DataService {
         itw.writeObjects(informationTable, sw);
 
         byte[] barray = sw.toString().getBytes();
-        InputStream is = new ByteArrayInputStream(barray);
+        final InputStream is = new ByteArrayInputStream(barray);
 
         return new InputStreamResource(is);
     }
@@ -231,7 +226,7 @@ public class DataService {
         itw.writeObjects(informationTable, sw, separator, header);
 
         byte[] barray = sw.toString().getBytes();
-        InputStream is = new ByteArrayInputStream(barray);
+        final InputStream is = new ByteArrayInputStream(barray);
 
         return new InputStreamResource(is);
     }
@@ -240,12 +235,12 @@ public class DataService {
         logger.info("Downloading data in json format");
         logger.info("Id:\t{}", id);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = project.getInformationTable();
+        final InformationTable informationTable = project.getInformationTable();
         checkInformationTable(informationTable, "There is no data in project. Couldn't download objects.");
 
-        InputStreamResource resource = produceJsonResource(informationTable);
+        final InputStreamResource resource = produceJsonResource(informationTable);
 
         return new NamedResource(project.getName(), resource);
     }
@@ -256,12 +251,12 @@ public class DataService {
         logger.info("Separator:\t{}", separator);
         logger.info("Header:\t{}", header);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = project.getInformationTable();
+        final InformationTable informationTable = project.getInformationTable();
         checkInformationTable(informationTable, "There is no data in project. Couldn't download objects.");
 
-        InputStreamResource resource = produceCsvResource(informationTable, separator, header);
+        final InputStreamResource resource = produceCsvResource(informationTable, separator, header);
 
         return new NamedResource(project.getName(), resource);
     }
@@ -269,17 +264,18 @@ public class DataService {
     public NamedResource putDownloadJson(UUID id, String metadata, String data) throws IOException {
         logger.info("Downloading data in json format");
         logger.info("Id:\t{}", id);
-        logger.info("Metadata:\t{}", metadata);
+        logger.info("Metadata size:\t{} B", metadata.length());
+        logger.debug("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         // create InformationTable from json strings
-        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
 
         // serialize data from InformationTable
-        InputStreamResource resource = produceJsonResource(informationTable);
+        final InputStreamResource resource = produceJsonResource(informationTable);
 
         return new NamedResource(project.getName(), resource);
     }
@@ -287,19 +283,20 @@ public class DataService {
     public NamedResource putDownloadCsv(UUID id, String metadata, String data, String separator, Boolean header) throws IOException {
         logger.info("Downloading data in csv format");
         logger.info("Id:\t{}", id);
-        logger.info("Metadata:\t{}", metadata);
+        logger.info("Metadata size:\t{} B", metadata.length());
+        logger.debug("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
         logger.info("Separator:\t{}", separator);
         logger.info("Header:\t{}", header);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         // create InformationTable from json strings
-        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
 
         // serialize data from InformationTable object
-        InputStreamResource resource = produceCsvResource(informationTable, separator, header);
+        final InputStreamResource resource = produceCsvResource(informationTable, separator, header);
 
         return new NamedResource(project.getName(), resource);
     }

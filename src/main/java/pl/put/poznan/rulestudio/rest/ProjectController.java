@@ -8,9 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pl.put.poznan.rulestudio.model.Project;
-import pl.put.poznan.rulestudio.model.response.ProjectBasicInfoResponse;
+import pl.put.poznan.rulestudio.model.ValidityProjectContainer;
 import pl.put.poznan.rulestudio.model.response.ProjectDetailsResponse;
+import pl.put.poznan.rulestudio.model.response.ProjectResponse;
 import pl.put.poznan.rulestudio.service.ProjectService;
 
 import java.io.IOException;
@@ -31,17 +31,17 @@ public class ProjectController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Project> getProject(
+    public ResponseEntity<ValidityProjectContainer> getProject(
             @PathVariable("id") UUID id) {
         logger.info("Getting project...");
 
-        final Project result = projectService.getProject(id);
+        final ValidityProjectContainer result = projectService.getProject(id);
 
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Project> setProject(
+    public ResponseEntity<ValidityProjectContainer> setProject(
             @PathVariable(name = "id") UUID id,
             @RequestParam(name = "metadata", required = false) MultipartFile metadataFile,
             @RequestParam(name = "data", required = false) MultipartFile dataFle,
@@ -49,18 +49,18 @@ public class ProjectController {
             @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
         logger.info("Setting project...");
 
-        final Project result = projectService.setProject(id, metadataFile, dataFle, separator, header);
+        final ValidityProjectContainer result = projectService.setProject(id, metadataFile, dataFle, separator, header);
 
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectBasicInfoResponse> renameProject(
+    public ResponseEntity<ProjectResponse> renameProject(
             @PathVariable("id") UUID id,
             @RequestParam("name") String name) {
         logger.info("Renaming project...");
 
-        final ProjectBasicInfoResponse result = projectService.renameProject(id, name);
+        final ProjectResponse result = projectService.renameProject(id, name);
 
         return ResponseEntity.ok(result);
     }

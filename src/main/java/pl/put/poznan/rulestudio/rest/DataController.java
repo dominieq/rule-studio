@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.enums.DataFormat;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
-import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ValidityProjectContainer;
+import pl.put.poznan.rulestudio.model.response.InformationTableResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectAbstractResponse;
 import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse;
 import pl.put.poznan.rulestudio.service.DataService;
@@ -35,20 +35,23 @@ public class DataController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getData(
+    public ResponseEntity<InformationTableResponse> getData(
             @PathVariable("id") UUID id) throws IOException {
-        logger.info("Getting data");
-        String result = dataService.getData(id);
+        logger.info("Getting data...");
+
+        final InformationTableResponse result = dataService.getData(id);
 
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Project> putData(
+    public ResponseEntity<InformationTableResponse> putData(
             @PathVariable("id") UUID id,
             @RequestParam(name = "data") String data) throws IOException {
-        logger.info("Putting data");
-        Project result = dataService.putData(id, data);
+        logger.info("Putting data...");
+
+        final InformationTableResponse result = dataService.putData(id, data);
+
         return ResponseEntity.ok(result);
     }
 
@@ -57,8 +60,10 @@ public class DataController {
             @PathVariable("id") UUID id,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
-        logger.info("Posting data");
-        ValidityProjectContainer result = dataService.postData(id, metadata, data);
+        logger.info("Posting data...");
+
+        final ValidityProjectContainer result = dataService.postData(id, metadata, data);
+
         return ResponseEntity.ok(result);
     }
 
@@ -68,7 +73,7 @@ public class DataController {
             @RequestParam(name = "format") DataFormat format,
             @RequestParam(name = "separator", defaultValue = ",") String separator,
             @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
-        logger.info("Downloading server's data");
+        logger.info("Downloading server's data...");
         logger.info("Format:\t{}", format);
 
         NamedResource namedResource;
@@ -109,7 +114,7 @@ public class DataController {
             @RequestParam(name = "header", defaultValue = "false") Boolean header,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
-        logger.info("Downloading client's data");
+        logger.info("Downloading client's data...");
 
         NamedResource namedResource;
         String projectName;
@@ -146,7 +151,7 @@ public class DataController {
             @PathVariable("id") UUID id,
             @PathVariable("objectIndex") Integer objectIndex,
             @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
-        logger.info("Getting object from data");
+        logger.info("Getting object from data...");
 
         final ObjectAbstractResponse result = dataService.getObject(id, objectIndex, isAttributes);
 
@@ -158,7 +163,7 @@ public class DataController {
             @PathVariable("id") UUID id,
             @PathVariable("firstObjectIndex") Integer firstObjectIndex,
             @PathVariable("secondObjectIndex") Integer secondObjectIndex) throws IOException {
-        logger.info("Getting objects' comparison from data");
+        logger.info("Getting objects' comparison from data...");
 
         final ObjectsComparisonResponse result = dataService.getObjectsComparison(id, firstObjectIndex, secondObjectIndex);
 

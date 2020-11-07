@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.response.ProjectResponse;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,7 +26,7 @@ public class ImportService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    public Project postImport(MultipartFile importFile) throws IOException {
+    public ProjectResponse postImport(MultipartFile importFile) throws IOException {
         logger.info("ImportFile:\t{}\t{}", importFile.getOriginalFilename(), importFile.getContentType());
 
         Project project = null;
@@ -87,6 +88,9 @@ public class ImportService {
         project.setId(UUID.randomUUID());
 
         projectsContainer.addProject(project);
-        return project;
+
+        ProjectResponse projectResponse = new ProjectResponse(project);
+        logger.debug(projectResponse.toString());
+        return projectResponse;
     }
 }

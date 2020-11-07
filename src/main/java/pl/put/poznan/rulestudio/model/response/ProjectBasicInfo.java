@@ -4,13 +4,13 @@ import pl.put.poznan.rulestudio.model.Project;
 
 import java.util.UUID;
 
-public class ProjectBasicInfoResponse {
+public class ProjectBasicInfo {
 
     private UUID id;
 
     private String name;
 
-    public ProjectBasicInfoResponse(Project project) {
+    public ProjectBasicInfo(Project project) {
         this.id = project.getId();
         this.name = project.getName();
     }
@@ -25,7 +25,7 @@ public class ProjectBasicInfoResponse {
 
     @Override
     public String toString() {
-        return "ProjectBasicInfoResponse{" +
+        return "ProjectBasicInfo{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
