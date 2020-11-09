@@ -1,4 +1,4 @@
-export {default as fetchData} from "./fetchData";
+export {default as fetchData} from "./fetchData/fetchData";
 
 export {default as fetchCones} from "./fetchCones/fetchCones";
 export {default as fetchConeObjects} from "./fetchCones/fetchConeObjects";

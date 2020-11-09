@@ -55,7 +55,7 @@ class Cones extends Component {
      */
     getData = () => {
         const { project, serverBase } = this.props;
-        const pathParams = { projectId: project.result.id };
+        const pathParams = { projectId: project.id };
         const method = "GET";
 
         fetchCones(
@@ -75,9 +75,10 @@ class Cones extends Component {
                 }
             }
         }).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
+            if (error.constructor.name !== "AlertError") {
+                console.error(error);
             }
+
             if (this._isMounted) {
                 this.setState({
                     data: null,
@@ -128,17 +129,7 @@ class Cones extends Component {
      * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
      */
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
-            const { data } = this.state;
-            let newItems = parseConesItems(data, data.objectNames);
-
-            this.setState({
-                items: newItems,
-                displayedItems: newItems
-            });
-        }
-
-        if (prevProps.project.result.id !== this.props.project.result.id) {
+        if (prevProps.project.id !== this.props.project.id) {
             this.setState({ loading: true }, this.getData);
         }
     }
@@ -162,7 +153,7 @@ class Cones extends Component {
      */
     onCalculateClick = () => {
         const { project, serverBase } = this.props;
-        const pathParams = { projectId: project.result.id };
+        const pathParams = { projectId: project.id };
         const method = "PUT";
 
         this.setState({
@@ -171,9 +162,7 @@ class Cones extends Component {
             fetchCones(
                 pathParams, method, serverBase
             ).then(result => {
-                if (result) {
-                    let projectCopy = JSON.parse(JSON.stringify(project));
-
+                if (result != null) {
                     if (this._isMounted) {
                         const items = parseConesItems(result, result.objectNames);
 
@@ -184,17 +173,15 @@ class Cones extends Component {
                         });
                     }
 
-                    projectCopy.result.dominanceCones = result;
-                    this.props.onTabChange(projectCopy);
-
                     if (result.hasOwnProperty("isCurrentData")) {
                         this.props.showAlert(this.props.value, !result.isCurrentData);
                     }
                 }
             }).catch(error => {
-                if (!error.hasOwnProperty("open")) {
-                    console.log(error);
+                if (error.constructor.name !== "AlertError") {
+                    console.error(error);
                 }
+
                 if (this._isMounted) {
                     this.setState({
                         data: null,
@@ -297,7 +284,7 @@ class Cones extends Component {
 
     render() {
         const { loading, items, displayedItems, openDetails, selectedItem, attributesMenuEl, alertProps } = this.state;
-        const { project: { result: { id: projectId }}, serverBase } = this.props;
+        const { project: { id: projectId }, serverBase } = this.props;
 
         return (
             <CustomBox customScrollbar={true} id={"cones"} variant={"TabBody"}>

@@ -85,7 +85,7 @@ class Rules extends Component {
      */
     getRules = () => {
         const { project, serverBase } = this.props;
-        const pathParams = { projectId: project.result.id };
+        const pathParams = { projectId: project.id };
         const method = "GET";
 
         fetchRules(
@@ -118,13 +118,14 @@ class Rules extends Component {
                 }
 
                 if (result.hasOwnProperty("validateCurrentData")) {
-                    this.updateAlerts(result.validateCurrentData, null);
+                    this.updateAlerts(result.validateCurrentData);
                 }
             }
         }).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
+            if (error.constructor.name !== "AlertError") {
+                console.error(error);
             }
+
             if (this._isMounted) {
                 this.setState({
                     data: null,
@@ -208,7 +209,7 @@ class Rules extends Component {
             }));
         }
 
-        if (prevProps.project.result.id !== this.props.project.result.id) {
+        if (prevProps.project.id !== this.props.project.id) {
             const { parametersSaved, sort: { order, value } } = prevState;
             let project = { ...prevProps.project };
 
@@ -275,7 +276,7 @@ class Rules extends Component {
         this.setState({
             loading: true,
         }, () => {
-            const pathParams = { projectId: project.result.id };
+            const pathParams = { projectId: project.id };
             const method = "PUT";
             const data = parseFormData(parameters, null);
 
@@ -301,7 +302,6 @@ class Rules extends Component {
                     }
 
                     let projectCopy = JSON.parse(JSON.stringify(project));
-                    projectCopy.result.rules = result;
 
                     const newParameters = result.hasOwnProperty("parameters") ?
                         parseRulesParams(result.parameters) : { };
@@ -321,15 +321,16 @@ class Rules extends Component {
                     }
 
                     if (result.hasOwnProperty("validateCurrentData")) {
-                        this.updateAlerts(result.validateCurrentData, projectCopy);
+                        this.updateAlerts(result.validateCurrentData);
                     }
 
                     this.props.onTabChange(projectCopy);
                 }
             }).catch(error => {
-                if (!error.hasOwnProperty("open")) {
-                    console.log(error);
+                if (error.constructor.name !== "AlertError") {
+                    console.error(error);
                 }
+
                 if (this._isMounted) {
                     this.setState({
                         data: null,
@@ -363,7 +364,7 @@ class Rules extends Component {
         if (event.target.files[0]) {
             const { project, serverBase } = this.props;
 
-            const pathParams = { projectId: project.result.id };
+            const pathParams = { projectId: project.id };
             const method = "PUT";
             const data = parseFormData(null, { rules: event.target.files[0] });
 
@@ -389,9 +390,6 @@ class Rules extends Component {
                                 alertProps: alertProps
                             });
                         }
-                        let projectCopy = JSON.parse(JSON.stringify(project));
-                        projectCopy.result.rules = result;
-
                         if (result.hasOwnProperty("isCurrentData")) {
                             this.props.showAlert(this.props.value, !result.isCurrentData);
                         }
@@ -401,15 +399,14 @@ class Rules extends Component {
                         }
 
                         if (result.hasOwnProperty("validateCurrentData")) {
-                            this.updateAlerts(result.validateCurrentData, projectCopy);
+                            this.updateAlerts(result.validateCurrentData);
                         }
-
-                        this.props.onTabChange(projectCopy);
                     }
                 }).catch(error => {
-                    if (!error.hasOwnProperty("open")) {
-                        console.log(error);
+                    if (error.constructor.name !== "AlertError") {
+                        console.error(error);
                     }
+
                     if (this._isMounted) {
                         this.setState({
                             data: null,
@@ -439,23 +436,14 @@ class Rules extends Component {
      * @function
      * @memberOf Rules
      * @param {Object} validateCurrentData - The part of response from server
-     * @param {Object} project - Project that will be updated.
      */
-    updateAlerts = (validateCurrentData, project) => {
+    updateAlerts = (validateCurrentData) => {
         if (validateCurrentData.classification !== null) {
             if (validateCurrentData.classification.hasOwnProperty("isCurrentLearningData")) {
                 const isCurrentLearningData = validateCurrentData.classification.isCurrentLearningData;
 
-                if (project !== null && project.result.classification !== null) {
-                    project.result.classification.isCurrentLearningData = isCurrentLearningData;
-                }
-
                 if (validateCurrentData.classification.hasOwnProperty("isCurrentRuleSet")) {
                     const isCurrentRuleSet = validateCurrentData.classification.isCurrentRuleSet;
-
-                    if (project !== null && project.result.classification !== null) {
-                        project.result.classification.isCurrentRuleSet = isCurrentRuleSet;
-                    }
 
                     this.props.showAlert(this.props.value + 1, !(isCurrentLearningData && isCurrentRuleSet));
                 } else {
@@ -464,20 +452,12 @@ class Rules extends Component {
             }
 
             if (validateCurrentData.classification.hasOwnProperty("externalData")) {
-                if (project !== null && project.result.classification !== null) {
-                    project.result.classification.externalData = validateCurrentData.classification.externalData;
-                }
-
                 this.props.onDataUploaded(validateCurrentData.classification.externalData);
             }
         }
 
         if (validateCurrentData.unions !== null) {
             if (validateCurrentData.unions.hasOwnProperty("isCurrentData")) {
-                if (project !== null && project.result.unions !== null) {
-                    project.result.unions.isCurrentData = validateCurrentData.unions.isCurrentData;
-                }
-
                 this.props.showAlert(this.props.value - 1, !validateCurrentData.unions.isCurrentData);
             }
         }
@@ -491,13 +471,14 @@ class Rules extends Component {
      */
     onSaveRulesToXMLClick = () => {
         const { project, serverBase } = this.props;
-        const pathParams = { projectId: project.result.id };
+        const pathParams = { projectId: project.id };
         const queryParams = { format: "xml" };
 
         downloadRules(pathParams, queryParams, serverBase).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
+            if (error.constructor.name !== "AlertError") {
+                console.error(error);
             }
+
             if (this._isMounted) {
                 this.setState({alertProps: error});
             }
@@ -512,13 +493,14 @@ class Rules extends Component {
      */
     onSaveRulesToTXTClick = () => {
         const { project, serverBase } = this.props;
-        const pathParams = { projectId: project.result.id };
+        const pathParams = { projectId: project.id };
         const queryParams = { format: "txt" };
 
         downloadRules(pathParams, queryParams, serverBase).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
+            if (error.constructor.name !== "AlertError") {
+                console.error(error);
             }
+
             if (this._isMounted) {
                 this.setState({ alertProps: error });
             }
@@ -673,7 +655,7 @@ class Rules extends Component {
 
     render() {
         const { loading, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
-        const { project: { result: { id: projectId }}, serverBase } = this.props;
+        const { project: { id: projectId }, serverBase } = this.props;
 
         const resultsExists = Array.isArray(items) && Boolean(items.length);
 

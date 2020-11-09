@@ -84,7 +84,7 @@ class Classification extends Component {
      */
     getClassification = () => {
         const { project, serverBase } = this.props;
-        const pathParams = { projectId: project.result.id };
+        const pathParams = { projectId: project.id };
         const method = "GET";
 
         fetchClassification(
@@ -117,9 +117,10 @@ class Classification extends Component {
                 }
             }
         }).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
+            if (error.constructor.name !== "AlertError") {
+                console.error(error);
             }
+
             if (this._isMounted) {
                 this.setState({
                     data: null,
@@ -176,7 +177,7 @@ class Classification extends Component {
      * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
      */
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.project.result.id !== this.props.project.result.id) {
+        if (prevProps.project.id !== this.props.project.id) {
             const { parametersSaved, selected: { action } } = prevState;
             let project = { ...prevProps.project };
 
@@ -234,7 +235,7 @@ class Classification extends Component {
         this.setState({
             loading: true,
         }, () => {
-            const pathParams = { projectId: project.result.id };
+            const pathParams = { projectId: project.id };
 
             fetchClassification(
                 pathParams, method, data, serverBase
@@ -274,9 +275,10 @@ class Classification extends Component {
                     }
                 }
             }).catch(error => {
-                if (!error.hasOwnProperty("open")) {
-                    console.log(error);
+                if (error.constructor.name !== "AlertError") {
+                    console.error(error);
                 }
+
                 if (this._isMounted) {
                     this.setState({
                         data: null,
@@ -375,7 +377,7 @@ class Classification extends Component {
      */
     onSaveToFile = () => {
         const { project, serverBase } = this.props;
-        const pathParams = { projectId: project.result.id };
+        const pathParams = { projectId: project.id };
         const queryParams = { typeOfMatrix: "classification" };
 
         downloadMatrix(pathParams, queryParams, serverBase).catch(this.onSnackbarOpen);
@@ -493,7 +495,7 @@ class Classification extends Component {
 
     render() {
         const { loading, data, items, displayedItems, parameters, selected, open, attributesMenuEl, alertProps } = this.state;
-        const { project: { result: { id: projectId }}, serverBase } = this.props;
+        const { project: { id: projectId }, serverBase } = this.props;
 
         return (
             <CustomBox id={"classification"} variant={"Tab"}>

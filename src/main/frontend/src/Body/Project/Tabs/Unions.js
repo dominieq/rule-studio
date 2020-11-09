@@ -67,13 +67,13 @@ class Unions extends Component {
      */
     getUnions = () => {
         const { project, serverBase } = this.props;
-        const pathParams = { projectId: project.result.id }
+        const pathParams = { projectId: project.id }
         const queryParams = { typeOfUnions: undefined, consistencyThreshold: undefined };
 
         fetchUnions(
             pathParams, queryParams, "GET", serverBase
         ).then(result => {
-            if (result && this._isMounted) {
+            if (this._isMounted && result != null) {
                 const items = parseUnionsItems(result);
 
                 this.setState({
@@ -91,9 +91,10 @@ class Unions extends Component {
                 }
             }
         }).catch(error => {
-            if (!error.hasOwnProperty("open")) {
+            if (error.constructor.name !== "AlertError") {
                 console.log(error);
             }
+
             if (this._isMounted) {
                 this.setState({
                     data: null,
@@ -166,7 +167,7 @@ class Unions extends Component {
             }
         }
 
-        if (prevProps.project.result.id !== this.props.project.result.id) {
+        if (prevProps.project.id !== this.props.project.id) {
             const { parametersSaved } = prevState;
 
             if (!parametersSaved) {
@@ -219,7 +220,7 @@ class Unions extends Component {
         this.setState({
             loading: true,
         }, () => {
-            const pathParams = { projectId: project.result.id };
+            const pathParams = { projectId: project.id };
             const queryParams = { ...parameters };
 
             fetchUnions(
@@ -240,8 +241,8 @@ class Unions extends Component {
                             parametersSaved: true,
                         });
                     }
-                    let projectCopy = JSON.parse(JSON.stringify(project));
-                    projectCopy.result.unions = result;
+
+                    const projectCopy = JSON.parse(JSON.stringify(project));
                     projectCopy.parameters.consistencyThreshold = result.parameters.consistencyThreshold;
                     projectCopy.parameters.typeOfUnions = result.parameters.typeOfUnions.toLowerCase();
                     projectCopy.parametersSaved = true;
@@ -252,9 +253,10 @@ class Unions extends Component {
                     }
                 }
             }).catch(error => {
-                if (!error.hasOwnProperty("open")) {
+                if (error.constructor.name !== "AlertError") {
                     console.log(error);
                 }
+
                 if (this._isMounted) {
                     this.setState({
                         data: null,
@@ -355,7 +357,7 @@ class Unions extends Component {
 
     render() {
         const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
-        const { project: { result: { id: projectId }}, serverBase } = this.props;
+        const { project: { id: projectId }, serverBase } = this.props;
 
         return (
             <CustomBox id={"unions"} variant={"Tab"}>

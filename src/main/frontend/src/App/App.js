@@ -34,7 +34,6 @@ class App extends Component {
             body: "Home",
             currentProject: -1,
             projects: [],
-            indexOptions: [],
             darkTheme: true,
             serverBase: "http://localhost:8080",
             open: {
@@ -70,12 +69,13 @@ class App extends Component {
                 "GET", null, base
             ).then(result => {
                 if (Array.isArray(result)) {
-                    this.setState(({projects}) => ({
-                        projects: [
-                            ...projects,
-                            ...result.map(item => new Project(item))
-                        ]
-                    }));
+                    console.log(result);
+                    this.setState({
+                        projects: result.map(item => {
+                            console.log(item);
+                            return new Project(item.id, item.name)
+                        })
+                    });
                 } else {
                     this.setState({
                         alertProps: {
@@ -85,45 +85,15 @@ class App extends Component {
                         }
                     });
                 }
-            }).catch(error => {
-                if (error.constructor.name !== "AlertError") {
-                    console.error(error);
-                } else {
-                    this.setState({ alertProps: error });
-                }
-            }).finally(() => {
+            }).catch(
+                this.onSnackbarOpen
+            ).finally(() => {
                 this.setState({
                     loading: false,
                     serverBase: base
                 });
             });
         });
-    };
-
-    /**
-     * Creates a list of index options using provided attributes.
-     * Looks for description and identification attributes.
-     *
-     * @function
-     * @memberOf App
-     * @param {Object[]} attributes - The attributes property from information table.
-     * @returns {string[]} - The list of updated index options.
-     */
-    createNewIndexOptions = (attributes) => {
-        let indexOptions = ["default"];
-
-        if (Array.isArray(attributes) && attributes.length) {
-            for (let i = 0; i < attributes.length; i++) {
-                if (attributes[i].hasOwnProperty("identifierType") && attributes[i].active) {
-                    indexOptions = [ ...indexOptions, attributes[i].name ];
-                }
-                if (attributes[i].hasOwnProperty("type") && attributes[i].type === "description") {
-                    indexOptions = [ ...indexOptions, attributes[i].name ];
-                }
-            }
-        }
-
-        return indexOptions;
     };
 
     /**
@@ -140,17 +110,10 @@ class App extends Component {
                 let index;
 
                 for (let i = 0; i < projects.length; i++) {
-                    if (projects[i].result.id === project.result.id) {
+                    if (projects[i].id === project.id) {
                         index = i;
                         break;
                     }
-                }
-
-                const { result: { informationTable: { attributes }}} = project;
-                let indexOptions = this.createNewIndexOptions(attributes);
-
-                if (!indexOptions.includes(project.settings.indexOption)) {
-                    project.settings.indexOption = "default";
                 }
 
                 return {
@@ -161,8 +124,7 @@ class App extends Component {
                             ...project
                         },
                         ...projects.slice(index + 1)
-                    ],
-                    indexOptions: indexOptions,
+                    ]
                 };
             } else {
                 return { projects: projects };
@@ -170,54 +132,17 @@ class App extends Component {
         });
     };
 
-    /**
-     * Method is forwarded to the {@link ProjectTabs} and further to {@link Data} tab.
-     * Creates new index options for provided attributes and updates {@link App}'s state.
-     *
-     * @function
-     * @memberOf App
-     * @param {Object[]} attributes - The attributes property from information table.
-     */
-    updateIndexOptions = (attributes) => {
-        const indexOptions = this.createNewIndexOptions(attributes);
-
-        this.setState(({projects, currentProject}) => {
-            if (currentProject >= 0) {
-                if (!indexOptions.includes(projects[currentProject].settings.indexOption)) {
-                    projects[currentProject].settings.indexOption = "default";
-                }
-            }
-
-            return {
-                projects: [
-                    ...projects.slice(0, currentProject),
-                    {
-                        ...projects[currentProject]
-                    },
-                    ...projects.slice(currentProject + 1)
-                ],
-                indexOptions: indexOptions
-            };
-        });
-    };
-
     onBodyChange = (name) => {
-        this.setState(({currentProject, indexOptions}) => ({
+        this.setState(({currentProject}) => ({
             body: name,
-            currentProject: name !== "Project" ? -1 : currentProject,
-            indexOptions: name !== "Project" ? [] : indexOptions
+            currentProject: name !== "Project" ? -1 : currentProject
         }));
     };
 
     onCurrentProjectChange = (index) => {
-        const { projects } = this.state;
-        const { result: {informationTable: { attributes }}} = projects[index];
-        let indexOptions = this.createNewIndexOptions(attributes);
-
         this.setState({
             body: "Project",
-            currentProject: index,
-            indexOptions: indexOptions
+            currentProject: index
         });
     };
 
@@ -227,15 +152,20 @@ class App extends Component {
         }))
     };
 
-    onDialogOpen = (dialogName) => {
+    onToggleDialog = (dialogName) => {
         this.setState(({open}) => ({
-            open: {...open, [dialogName]: true}
+            open: {...open, [dialogName]: !open[dialogName]}
         }));
     };
 
-    onSnackbarOpen = (alertProps) => {
+    onSnackbarOpen = (exception) => {
+        if (exception.constructor.name !== "AlertError") {
+            console.error(exception);
+            return;
+        }
+
         this.setState({
-            alertProps: alertProps
+            alertProps: exception
         });
     };
 
@@ -278,26 +208,26 @@ class App extends Component {
                 loading: true,
                 loadingTitle: "Creating project"
             }, () => {
-                let data = new FormData();
+                const method = "POST";
+                const data = new FormData();
 
                 data.append("name", name);
                 files.map(file => data.append(file.type, file.file));
 
-                if (csvSpecs && Object.keys(csvSpecs).length) {
+                if (csvSpecs != null && Object.keys(csvSpecs).length) {
                     Object.keys(csvSpecs).map(key => data.append(key, csvSpecs[key]));
                 }
 
                 fetchProjects(
-                    "POST", data, serverBase
+                    method, data, serverBase
                 ).then(result => {
-                    if (result) {
-                        const indexOptions = this.createNewIndexOptions(result.informationTable.attributes);
+                    if (result != null && result.hasOwnProperty("id")
+                        && result.hasOwnProperty("name")) {
 
                         this.setState(({projects}) => ({
                             body: "Project",
                             currentProject: projects.length,
-                            projects: [...projects, new Project(result)],
-                            indexOptions: indexOptions,
+                            projects: [...projects, new Project(result.id, result.name)],
                             alertProps: {
                                 message: `${result.name} has been created!`,
                                 open: true,
@@ -305,13 +235,9 @@ class App extends Component {
                             }
                         }));
                     }
-                }).catch(error => {
-                    if (error.constructor.name !== "AlertError") {
-                        console.error(error);
-                    } else {
-                        this.setState({ alertProps: error });
-                    }
-                }).finally(() => {
+                }).catch(
+                    this.onSnackbarOpen
+                ).finally(() => {
                     this.setState({ loading: false });
                 });
             });
@@ -320,7 +246,7 @@ class App extends Component {
 
     onSaveProject = () => {
         const { serverBase, currentProject, projects } = this.state;
-        const pathParams = { projectId: projects[currentProject].result.id };
+        const pathParams = { projectId: projects[currentProject].id };
 
         if (currentProject >= 0) {
             exportProject(pathParams, serverBase).catch(error => {
@@ -348,14 +274,13 @@ class App extends Component {
                 importProject(
                     body, serverBase
                 ).then(result => {
-                    if (result) {
-                        const indexOptions = this.createNewIndexOptions(result.informationTable.attributes);
+                    if (result != null && result.hasOwnProperty("id")
+                        && result.hasOwnProperty("name")) {
 
                         this.setState(({projects}) => ({
                             body: "Project",
                             currentProject: projects.length,
-                            projects: [...projects, new Project(result)],
-                            indexOptions: indexOptions,
+                            projects: [...projects, new Project(result.id, result.name)],
                             alertProps: {
                                 message: `${result.name} has been imported!`,
                                 open: true,
@@ -363,13 +288,9 @@ class App extends Component {
                             }
                         }));
                     }
-                }).catch(error => {
-                    if (!error.hasOwnProperty("open")) {
-                        console.log(error);
-                    } else {
-                        this.setState({ alertProps: error });
-                    }
-                }).finally(() => {
+                }).catch(
+                    this.onSnackbarOpen
+                ).finally(() => {
                     this.setState({ loading: false, loadingTitle: "" });
                 });
             });
@@ -422,13 +343,13 @@ class App extends Component {
                 loading: true,
                 loadingTitle: "Deleting project"
             }, () => {
-                const pathParams = { projectId: projects[currentProject].result.id };
+                const pathParams = { projectId: projects[currentProject].id };
                 const method = "DELETE";
 
                 fetchProject(
                     pathParams, method, null, serverBase
                 ).then(() => {
-                    const removedProject = projects[currentProject].result.name;
+                    const removedProject = projects[currentProject].name;
 
                     this.setState(({projects, currentProject}) => ({
                         body: "Home",
@@ -437,21 +358,15 @@ class App extends Component {
                             ...projects.slice(0, currentProject),
                             ...projects.slice(currentProject + 1)
                         ],
-                        indexOptions: [],
                         alertProps: {
                             message: `${removedProject} has been successfully deleted!`,
                             open: true,
                             severity: "success"
                         }
                     }));
-                }).catch(error => {
-                    if (error.constructor.name !== "AlertError") {
-                        console.error(error);
-                        return;
-                    }
-
-                    this.setState({ alertProps: error });
-                }).finally(() => {
+                }).catch(
+                    this.onSnackbarOpen
+                ).finally(() => {
                     this.setState({ loading: false });
                 });
             });
@@ -480,7 +395,7 @@ class App extends Component {
                     loading: true,
                     loadingTitle: "Modifying project name"
                 }, () => {
-                    const pathParams = { projectId: projects[currentProject].result.id };
+                    const pathParams = { projectId: projects[currentProject].id };
                     const method = "PATCH"
                     const body = new FormData();
                     body.append("name", name);
@@ -492,7 +407,7 @@ class App extends Component {
                             this.setState(({currentProject, projects}) => ({
                                 projects: [
                                     ...projects.slice(0, currentProject),
-                                    {...projects[currentProject], result: result},
+                                    { ...projects[currentProject], name: result.name },
                                     ...projects.slice(currentProject + 1)
                                 ],
                                 alertProps: {
@@ -502,14 +417,9 @@ class App extends Component {
                                 },
                             }));
                         }
-                    }).catch(error => {
-                        if (error.constructor.name !== "AlertError") {
-                            console.error(error);
-                            return;
-                        }
-
-                        this.setState({ alertProps: error });
-                    }).finally(() => {
+                    }).catch(
+                        this.onSnackbarOpen
+                    ).finally(() => {
                         this.setState({ loading: false });
                     });
                 });
@@ -542,7 +452,7 @@ class App extends Component {
         const { currentProject, open: { renameDialog }, projects } = this.state;
 
         for (let i = 0; i < projects.length; i++) {
-            if (projects[i].result.name === name) {
+            if (projects[i].name === name) {
                 return renameDialog && currentProject === i;
             }
         }
@@ -550,7 +460,7 @@ class App extends Component {
     };
 
     render() {
-        const { currentProject, projects, indexOptions, open, serverBase, alertProps } = this.state;
+        const { currentProject, projects, open, serverBase, alertProps } = this.state;
         const { deleteDialog, importDialog, renameDialog, settingsDialog } = open;
 
         return (
@@ -560,12 +470,12 @@ class App extends Component {
                     appBarRef={this.appBarRef}
                     onBodyChange={this.onBodyChange}
                     onColorsChange={this.onColorsChange}
-                    onImportOpen={() => this.onDialogOpen("importDialog")}
+                    onImportOpen={() => this.onToggleDialog("importDialog")}
                 >
                     <ProjectMenu
                         currentProject={currentProject + 1}
                         onProjectClick={this.onCurrentProjectChange}
-                        onDialogOpen={this.onDialogOpen}
+                        onDialogOpen={this.onToggleDialog}
                         onSaveProject={this.onSaveProject}
                         onSnackbarOpen={this.onSnackbarOpen}
                         projects={["Select your project", ...projects]}
@@ -589,7 +499,6 @@ class App extends Component {
                                 project={projects[currentProject]}
                                 serverBase={serverBase}
                                 showAlert={this.onSnackbarOpen}
-                                updateIndexOptions={this.updateIndexOptions}
                                 updateProject={this.updateProject}
                             />,
                     }[this.state.body]
@@ -597,18 +506,16 @@ class App extends Component {
                 {currentProject >= 0 &&
                     <React.Fragment>
                         <RenameProjectDialog
-                            currentName={projects[currentProject].result.name}
+                            currentName={projects[currentProject].name}
                             open={renameDialog}
                             onClose={this.onRenameDialogClose}
                         />
                         <SettingsProjectDialog
-                            indexOptions={indexOptions}
                             open={settingsDialog}
-                            onClose={this.onSettingsDialogClose}
-                            settings={{ ...projects[currentProject].settings }}
+                            onClose={() => this.onToggleDialog("settingsDialog")}
                         />
                         <DeleteProjectDialog
-                            currentName={projects[currentProject].result.name}
+                            currentName={projects[currentProject].name}
                             open={deleteDialog}
                             onClose={this.onDeleteDialogClose}
                         />

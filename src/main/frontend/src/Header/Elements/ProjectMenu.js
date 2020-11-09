@@ -91,7 +91,7 @@ function ProjectMenu(props) {
                     </Typography>
                     {currentProject > 0 &&
                         <Typography color={"inherit"}>
-                            {projects[currentProject].result.name}
+                            {projects[currentProject].name}
                         </Typography>
                     }
                 </ListItem>
@@ -125,7 +125,7 @@ function ProjectMenu(props) {
                             selected={index === currentProject}
                             onClick={event => onMenuItemClick(event, index)}
                         >
-                            {project.result.name}
+                            {project.name}
                         </MenuItem>
                     ))}
                 </Menu>
@@ -134,7 +134,7 @@ function ProjectMenu(props) {
                 <section className={styles.Buttons}>
                     <FilesDetails
                         onSnackbarOpen={props.onSnackbarOpen}
-                        projectId={projects[currentProject].result.id}
+                        projectId={projects[currentProject].id}
                         serverBase={serverBase}
                         WrapperProps={{ id: "files-details-button" }}
                     />

@@ -6,7 +6,7 @@ import Cones from "./Tabs/Cones";
 import Data from "./Data/DisplayData";
 import Rules from "./Tabs/Rules";
 import Unions from "./Tabs/Unions";
-import { fetchData } from "../../Utils/utilFunctions/fetchFunctions";
+import { fetchData, fetchProject } from "../../Utils/utilFunctions/fetchFunctions";
 import StyledTab from "../../Utils/Navigation/StyledTab";
 import StyledTabs from "../../Utils/Navigation/StyledTabs";
 import ExternalFile from "../../Utils/Feedback/CustomIcons/ExternalFile";
@@ -21,7 +21,7 @@ import OutdatedData from "../../Utils/Feedback/AlertBadge/Alerts/OutdatedData";
  * @param {Object} props
  * @param {Object} props.project - Current project.
  * @param {string} props.serverBase - The name of the host.
- * @param {function} props.showAlert - Callback fired when an alert is opened.
+ * @param {function} props.onSnackbarOpen - Callback fired when an alert is opened.
  * @param {function} props.updateIndexOptions - Callback fired when an attribute was changed.
  * @param {function} props.updateProject - Callback fired when a part of current project was changed.
  */
@@ -30,7 +30,8 @@ class ProjectTabs extends React.Component {
         super(props);
 
         this.state = {
-            currentProject: null,
+            projectCopy: null,
+            informationTableCopy: null,
             loading: false,
             selected: 0,
             showAlert: Array(5).fill(false),
@@ -48,7 +49,7 @@ class ProjectTabs extends React.Component {
      */
     updateAlerts = (result) => {
         /* Update alert in Dominance cones */
-        if (result.dominanceCones !== null && result.dominanceCones.hasOwnProperty("isCurrentData")) {
+        if (result.dominanceCones != null && result.dominanceCones.hasOwnProperty("isCurrentData")) {
             this.setState(({showAlert}) => {
                 showAlert[0] = !result.dominanceCones.isCurrentData;
                 return { showAlert: showAlert };
@@ -62,7 +63,7 @@ class ProjectTabs extends React.Component {
         }
 
         /* Update alert in Class unions */
-        if (result.unions !== null && result.unions.hasOwnProperty("isCurrentData")) {
+        if (result.unions != null && result.unions.hasOwnProperty("isCurrentData")) {
             this.setState(({showAlert}) => {
                 showAlert[1] = !result.unions.isCurrentData;
                 return { showAlert: showAlert };
@@ -76,7 +77,7 @@ class ProjectTabs extends React.Component {
         }
 
         /* Update alerts in Rules */
-        if (result.rules !== null) {
+        if (result.rules != null) {
             if (result.rules.hasOwnProperty("isCurrentData")) {
                 this.setState(({showAlert}) => {
                     showAlert[2] = !result.rules.isCurrentData;
@@ -98,7 +99,7 @@ class ProjectTabs extends React.Component {
         }
 
         /* Update alerts in Classification */
-        if (result.classification !== null) {
+        if (result.classification != null) {
             if (result.classification.hasOwnProperty("isCurrentLearningData")) {
                 if (result.classification.hasOwnProperty("isCurrentRuleSet")) {
                     this.setState(({showAlert}) => {
@@ -127,7 +128,7 @@ class ProjectTabs extends React.Component {
         }
 
         /* Update alerts in CrossValidation */
-        if (result.crossValidation !== null && result.crossValidation.hasOwnProperty("isCurrentData")) {
+        if (result.crossValidation != null && result.crossValidation.hasOwnProperty("isCurrentData")) {
             this.setState(({showAlert}) => {
                 showAlert[4] = !result.crossValidation.isCurrentData;
                 return { showAlert: showAlert };
@@ -141,63 +142,70 @@ class ProjectTabs extends React.Component {
         }
     };
 
+    getProject = () => {
+        this.setState({
+            loading: true,
+        }, () => {
+            const { project: { id: projectId }, serverBase } = this.props;
+
+            const pathParams = { projectId };
+            const method = "GET"
+
+            fetchProject(
+                pathParams, method, null, serverBase
+            ).then(result => {
+                if (this._isMounted && result != null) {
+                    this.updateAlerts(result);
+                }
+            }).catch(
+                this.props.onSnackbarOpen
+            ).finally(() => {
+                if (this._isMounted) {
+                    this.setState({
+                        loading: true
+                    });
+                }
+            });
+        });
+    }
+
     /**
-     * Makes an API call on data to save changes (PUT) in current project.
-     * Then, updates fields from current project with values from response
-     * and saves changes in the {@link App}'s state.
+     * Utilizes {@link fetchData} to perform an API call with PUT method and information table in body.
+     * The goal of this function is to save user's changes made in information table.
      *
      * @function
      * @memberOf ProjectTabs
-     * @param {Object} currentProject - The project that will be send to server.
-     * @param {number} newValue - The id of currently selected tab.
+     * @param {Object} projectCopy - The local copy of a project that will be sent to server.
+     * @param {Object} informationTableCopy - The local copy of an information table that will be sent to server.
+     * @param {number} newValue - The index of currently selected tab.
      */
-    updateProjectOnServer = (currentProject, newValue) => {
+    updateProjectOnServer = (projectCopy, informationTableCopy, newValue) => {
         const { serverBase } = this.props;
-        let project = JSON.parse(JSON.stringify(currentProject));
 
-        const pathParams = { projectId: project.result.id };
+        const pathParams = { projectId: projectCopy.id };
         const method = "PUT";
         const body = new FormData();
-        body.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-        body.append("data", JSON.stringify(project.result.informationTable.objects));
+        body.append("metadata", JSON.stringify(informationTableCopy.attributes));
+        body.append("data", JSON.stringify(informationTableCopy.objects));
 
         fetchData(
             pathParams, method, body, serverBase
         ).then(result => {
-            if (result) {
-                let objects = Object.keys(result);
-
-                for (let i = 0; i < objects.length; i++) {
-                    if (result[objects[i]] !== null && project.result[objects[i]] !== null) {
-                        let bools = Object.keys(result[objects[i]])
-
-                        for (let j = 0; j < objects.length; j++) {
-                            if (project.result[objects[i]].hasOwnProperty(bools[j])) {
-                                project.result[objects[i]][bools[j]] = result[objects[i]][bools[j]];
-                            }
-                        }
-                    }
-                }
-
-                if (this._isMounted) {
-                    this.updateAlerts(result);
-                }
+            if (this._isMounted && result != null) {
+                this.updateAlerts(result);
             }
         }).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
-            } else {
-                this.props.showAlert(error);
-            }
+            this.props.onSnackbarOpen(error);
         }).finally(() => {
             if (this._isMounted) {
                 this.setState({
-                    currentProject: null,
+                    projectCopy: null,
                     loading: false,
                     selected: newValue
                 });
             }
-            this.props.updateProject(project);
+
+            this.props.updateProject(projectCopy);
         });
     };
 
@@ -210,9 +218,7 @@ class ProjectTabs extends React.Component {
      */
     componentDidMount() {
         this._isMounted = true;
-
-        const { project: { result } } = this.props;
-        this.updateAlerts(result);
+        this.getProject()
     };
 
     /**
@@ -232,7 +238,7 @@ class ProjectTabs extends React.Component {
      */
     shouldComponentUpdate(nextProps, nextState, nextContext) {
         const shallowComparison = this.props !== nextProps || this.state !== nextState;
-        const deepComparison = this.props.project.result.id !== nextProps.project.result.id;
+        const deepComparison = this.props.project.id !== nextProps.project.id;
 
         return shallowComparison || deepComparison;
     };
@@ -254,28 +260,15 @@ class ProjectTabs extends React.Component {
      * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
      */
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.project.settings.indexOption !== this.props.project.settings.indexOption && this.state.selected === 0) {
-            this.setState(({currentProject}) => {
-                if (currentProject !== null) {
-                    currentProject.settings.indexOption = this.props.project.settings.indexOption;
-                }
+        if (prevProps.project.id !== this.props.project.id) {
+            this.getProject()
 
-                return {
-                    currentProject: currentProject
-                };
-            });
-        }
-
-        if (prevProps.project.result.id !== this.props.project.result.id) {
-            const { project: { result } } = this.props;
-            this.updateAlerts(result);
-
-            const { currentProject, selected } = this.state;
-            if (currentProject !== null && selected === 0) {
+            const { projectCopy, informationTableCopy, selected } = this.state;
+            if (projectCopy != null && informationTableCopy != null && selected === 0) {
                 this.setState({
                     loading: true
                 }, () => {
-                    this.updateProjectOnServer(currentProject, selected);
+                    this.updateProjectOnServer(projectCopy, informationTableCopy, selected);
                 });
             }
         }
@@ -291,9 +284,9 @@ class ProjectTabs extends React.Component {
     componentWillUnmount() {
         this._isMounted = false;
 
-        const { currentProject, selected } = this.state;
-        if (currentProject !== null && selected === 0) {
-            this.updateProjectOnServer(currentProject, selected);
+        const { projectCopy, informationTableCopy, selected } = this.state;
+        if (projectCopy != null && informationTableCopy != null && selected === 0) {
+            this.updateProjectOnServer(projectCopy, informationTableCopy, selected);
         }
     };
 
@@ -307,13 +300,13 @@ class ProjectTabs extends React.Component {
      * @param {number} newValue - The id of tab that was selected.
      */
     onTabChange = (event, newValue) => {
-        const { currentProject, selected } = this.state;
+        const { projectCopy, informationTableCopy, selected } = this.state;
 
-        if (currentProject !== null && selected === 0 && newValue !== 0) {
+        if (projectCopy != null && informationTableCopy != null && selected === 0 && newValue !== 0) {
             this.setState({
                 loading: true
             }, () => {
-                this.updateProjectOnServer(currentProject, newValue);
+                this.updateProjectOnServer(projectCopy, informationTableCopy, newValue);
             });
         } else {
             this.setState({ selected: newValue });
@@ -327,10 +320,12 @@ class ProjectTabs extends React.Component {
      * @function
      * @memberOf ProjectTabs
      * @param {Object} project - Modified project from the {@link Data} tab.
+     * @param {Object} informationTable - Modified information table from the {@link Data} tab.
      */
-    onDataChange = (project) => {
+    onDataChange = (project, informationTable) => {
         this.setState({
-            currentProject: project
+            projectCopy: project,
+            informationTableCopy: informationTable
         });
     };
 
@@ -460,7 +455,6 @@ class ProjectTabs extends React.Component {
                                 <Data
                                     project={project}
                                     onDataChange={this.onDataChange}
-                                    onAttributesChange={this.props.updateIndexOptions}
                                     loading={loading}
                                     serverBase={serverBase}
                                 />
@@ -486,7 +480,7 @@ class ProjectTabs extends React.Component {
 ProjectTabs.propTypes = {
     project: PropTypes.object,
     serverBase: PropTypes.string,
-    showAlert: PropTypes.func,
+    onSnackbarOpen: PropTypes.func,
     updateIndexOptions: PropTypes.func,
     updateProject: PropTypes.func
 };

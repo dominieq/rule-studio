@@ -1,5 +1,5 @@
-import { InvalidPathParamsException } from "../../Classes";
-import { responseJson } from "./parseResponse";
+import { InvalidPathParamsException } from "../../../Classes";
+import { responseJson } from "../parseResponse";
 
 
 /**
@@ -8,7 +8,48 @@ import { responseJson } from "./parseResponse";
  * where <code>projectId</code> is the identifier of a selected project.
  *
  * <h3>Goal</h3>
- * The goal of this function is to retrieve or update specified project.
+ * The goal of this function is to retrieve or update information table from specified project.
+ *
+ * <h3>Examples</h3>
+ * When method is set to GET
+ * <br/>
+ * <br/>
+ * <pre><code>
+ *     {
+ *         "attributes": [ ],
+ *         "objects": [ ]
+ *     }
+ * </code></pre>
+ * When method is set to POST
+ * <br/>
+ * <br/>
+ * <pre><code>
+ *     {
+ *          "dominanceCones": {
+ *              "isCurrentData": true
+ *          },
+ *          "unions": {
+ *              "isCurrentData": true
+ *          },
+ *          "rules": {
+ *              "externalRules": false,
+ *              "isCurrentData": true
+ *          },
+ *          "classification": {
+ *              "externalData": false,
+ *              "isCurrentLearningData": true,
+ *              "isCurrentRuleSet": true
+ *          },
+ *          "crossValidation": {
+ *              "isCurrentData": true
+ *          }
+ *      }
+ * </code></pre>
+ *
+ * <h3>Usage</h3>
+ * In order to update information table, create a <code>FormData</code> object and append
+ * attributes and objects to the body using <code>append</code> method
+ * with keys <code>metadata</code> and <code>data</code>.
  *
  * @category Utils
  * @subcategory Functions

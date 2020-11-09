@@ -23,7 +23,26 @@ import { responseJson } from "../parseResponse";
  * <br/>
  * <br/>
  * <pre><code>
- *
+ *     {
+ *          "dominanceCones": {
+ *              "isCurrentData": true
+ *          },
+ *          "unions": {
+ *              "isCurrentData": true
+ *          },
+ *          "rules": {
+ *              "externalRules": false,
+ *              "isCurrentData": true
+ *          },
+ *          "classification": {
+ *              "externalData": false,
+ *              "isCurrentLearningData": true,
+ *              "isCurrentRuleSet": true
+ *          },
+ *          "crossValidation": {
+ *              "isCurrentData": true
+ *          }
+ *      }
  * </code></pre>
  *
  * <h3>Usage</h3>

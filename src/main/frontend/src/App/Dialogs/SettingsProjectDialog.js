@@ -59,26 +59,25 @@ class SettingsProjectDialog extends PureComponent {
         super(props);
 
         this.state = {
-            indexOption: "default",
+            attributes: ["Default"],
+            visibleObjectName: "Default"
         };
+
+        this._attributes = ["Default"];
     };
 
     onEnter = () => {
-        this.setState({...this.props.settings})
+        // TODO GET descriptive attributes
     };
 
     onIndexOptionChange = (event) => {
         this.setState({
-            indexOption: event.target.value
+            visibleObjectName: event.target.value
         });
     };
 
     onAcceptClick = () => {
-        this.props.onClose({...this.state})
-    };
-
-    onCancelClick = () => {
-        this.props.onClose({...this.props.settings});
+        // TODO POST visible object name
     };
 
     onEnterKeyPress = (event) => {
@@ -89,18 +88,17 @@ class SettingsProjectDialog extends PureComponent {
     };
 
     render() {
-        const { indexOption } = this.state;
-        const { children, indexOptions, open } = this.props;
+        const { attributes, visibleObjectName } = this.state;
+        const { open } = this.props;
 
         return (
             <SimpleDialog
                 aria-labelledby={"settings-project-dialog"}
-                onBackdropClick={this.onCancelClick}
+                onBackdropClick={this.props.onClose}
                 onEnter={this.onEnter}
-                onEscapeKeyDown={this.onCancelClick}
+                onEscapeKeyDown={this.props.onClose}
                 onKeyPress={this.onEnterKeyPress}
                 open={open}
-
             >
                 <DialogTitle>
                     Customize project settings
@@ -113,11 +111,11 @@ class SettingsProjectDialog extends PureComponent {
                             </SettingsIcons>
                             <CustomTextField
                                 onChange={this.onIndexOptionChange}
-                                outsideLabel={"Choose object's visible description"}
+                                outsideLabel={"Choose objects visible name"}
                                 select={true}
-                                value={indexOption}
+                                value={visibleObjectName}
                             >
-                                {indexOptions}
+                                {attributes}
                             </CustomTextField>
                             <CircleHelper
                                 title={"Sets default names of objects."}
@@ -132,26 +130,17 @@ class SettingsProjectDialog extends PureComponent {
                     </List>
                 </SimpleContent>
                 <DialogActions>
-                    <Cancel onClick={this.onCancelClick} />
+                    <Cancel onClick={this.props.onClose} />
                     <Accept onClick={this.onAcceptClick} />
                 </DialogActions>
-                {children}
             </SimpleDialog>
         );
     }
 }
 
 SettingsProjectDialog.propTypes = {
-    children: PropTypes.node,
-    indexOptions: PropTypes.arrayOf(PropTypes.oneOfType([
-        PropTypes.number,
-        PropTypes.string
-    ])),
     onClose: PropTypes.func,
     open: PropTypes.bool.isRequired,
-    settings: PropTypes.shape({
-        indexOption: PropTypes.string
-    })
 };
 
 export default SettingsProjectDialog;

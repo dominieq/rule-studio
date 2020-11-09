@@ -151,7 +151,7 @@ class CrossValidation extends Component {
      */
     getCrossValidation = () => {
         const { project, serverBase } = this.props;
-        const pathParams = { projectId: project.result.id }
+        const pathParams = { projectId: project.id }
         const method = "GET";
 
         fetchCrossValidation(
@@ -276,7 +276,7 @@ class CrossValidation extends Component {
         }
 
         /* Check if project has been changed by user and save changes from previous project */
-        if (prevProps.project.result.id !== this.props.project.result.id) {
+        if (prevProps.project.id !== this.props.project.id) {
             const { parametersSaved } = prevState;
 
             if (!parametersSaved) {
@@ -342,7 +342,7 @@ class CrossValidation extends Component {
         this.setState(({loading}) => ({
             loading: { ...loading, crossValidation: true },
         }), () => {
-            const pathParams = { projectId: project.result.id };
+            const pathParams = { projectId: project.id };
             const method = "PUT";
             const data = parseFormData(parameters, null);
 
@@ -411,7 +411,7 @@ class CrossValidation extends Component {
      */
     onSaveToFile = (queryParams) => {
         const { project, serverBase } = this.props;
-        const pathParams = { projectId: project.result.id };
+        const pathParams = { projectId: project.id };
 
         downloadMatrix(pathParams, queryParams, serverBase).catch(this.onSnackbarOpen);
     };
@@ -683,7 +683,7 @@ class CrossValidation extends Component {
             attributesMenuEl
         } = this.state;
 
-        const { project: { result: { id: projectId}}, serverBase } = this.props;
+        const { project: { id: projectId }, serverBase } = this.props;
 
         return (
             <CustomBox id={"cross-validation"} variant={"Tab"}>
