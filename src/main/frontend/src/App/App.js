@@ -511,8 +511,11 @@ class App extends Component {
                             onClose={this.onRenameDialogClose}
                         />
                         <SettingsProjectDialog
-                            open={settingsDialog}
                             onClose={() => this.onToggleDialog("settingsDialog")}
+                            onSnackbarOpen={this.onSnackbarOpen}
+                            open={settingsDialog}
+                            projectId={projects[currentProject].id}
+                            serverBase={serverBase}
                         />
                         <DeleteProjectDialog
                             currentName={projects[currentProject].name}

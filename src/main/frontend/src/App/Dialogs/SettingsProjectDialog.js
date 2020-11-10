@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
+import { fetchDescriptiveAttributes } from "../../Utils/utilFunctions/fetchFunctions";
 import Accept from "./Utils/Accept";
 import Cancel from "./Utils/Cancel";
 import SimpleContent from "./Utils/SimpleContent"
@@ -46,12 +47,11 @@ const SettingsIcons = withStyles({
  * @category Utils
  * @subcategory Feedback
  * @param {Object} props
- * @param {React.ReactNode} [props.children] - The optional content of the dialog.
- * @param {Array.<string|number>} props.indexOptions - The list of all possible options.
- * @param {function} props.onClose - Callback fired when the dialog requests to be closed.
- * @parma {boolean} props.open - If <code>true</code> the dialog is open.
- * @param {Object} props.settings - The settings from current project.
- * @param {string} props.setting.indexOption - Determines what should be displayed as an object's name.
+ * @param {function} props.onClose - Callback fired when the component requests to be closed.
+ * @param {function} props.onSnackbarOpen - Callback fired when the component requests to display an error.
+ * @param {boolean} props.open - If <code>true</code> the dialog is open.
+ * @param {string} props.projectId - The identifier of a selected project.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @returns {React.PureComponent}
  */
 class SettingsProjectDialog extends PureComponent {
@@ -59,16 +59,65 @@ class SettingsProjectDialog extends PureComponent {
         super(props);
 
         this.state = {
+            loading: {
+                attributes: false,
+                objectVisibleName: false
+            },
             attributes: ["Default"],
-            visibleObjectName: "Default"
+            objectVisibleName: "Default"
         };
 
         this._attributes = ["Default"];
     };
 
-    onEnter = () => {
-        // TODO GET descriptive attributes
+    processResult = (result) => {
+        if (this._isMounted && result != null && result.hasOwnProperty("available")
+            && result.hasOwnProperty("actual")) {
+
+            this.setState({
+                attributes: [ ...this._attributes, ...result.available ],
+                objectVisibleName: result.actual
+            });
+        }
     };
+
+    getDescriptiveAttributes = () => {
+        this.setState(({loading}) => ({
+            loading: { ...loading, objectVisibleName: true }
+        }), () => {
+            const { projectId, serverBase } = this.props;
+            const resource = "data";
+            const pathParams = { projectId };
+            const queryParams = { objectVisibleName: undefined };
+            const method = "GET";
+
+            fetchDescriptiveAttributes(
+                resource, pathParams, queryParams, method, serverBase
+            ).then(
+                this.processResult
+            ).catch(
+                this.props.onSnackbarOpen
+            ).finally(() => {
+                if (this._isMounted) {
+                    this.setState(({loading}) => ({
+                        loading: { ...loading, objectVisibleName: false }
+                    }));
+                }
+            });
+        });
+    };
+
+    componentDidMount() {
+        this._isMounted = true;
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        // TODO prepare more sophisticated conditions to get descriptive attributes
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
 
     onIndexOptionChange = (event) => {
         this.setState({
@@ -77,7 +126,30 @@ class SettingsProjectDialog extends PureComponent {
     };
 
     onAcceptClick = () => {
-        // TODO POST visible object name
+        this.setState(({loading}) => ({
+            loading: { ...loading, attributes: true }
+        }), () => {
+            const { projectId, serverBase } = this.props;
+            const { objectVisibleName } = this.state;
+            const resource = "data"
+            const pathParams = { projectId };
+            const queryParams = { objectVisibleName };
+            const method = "POST";
+
+            fetchDescriptiveAttributes(
+                resource, pathParams, queryParams, method, serverBase
+            ).then(
+                this.processResult
+            ).catch(
+                this.props.onSnackbarOpen
+            ).finally(() => {
+                if (this._isMounted) {
+                    this.setState(({loading}) => ({
+                        loading: { ...loading, attributes: false }
+                    }));
+                }
+            });
+        });
     };
 
     onEnterKeyPress = (event) => {
@@ -88,14 +160,14 @@ class SettingsProjectDialog extends PureComponent {
     };
 
     render() {
-        const { attributes, visibleObjectName } = this.state;
+        const { attributes, objectVisibleName } = this.state;
         const { open } = this.props;
 
         return (
             <SimpleDialog
                 aria-labelledby={"settings-project-dialog"}
                 onBackdropClick={this.props.onClose}
-                onEnter={this.onEnter}
+                onEnter={this.getDescriptiveAttributes}
                 onEscapeKeyDown={this.props.onClose}
                 onKeyPress={this.onEnterKeyPress}
                 open={open}
@@ -113,7 +185,7 @@ class SettingsProjectDialog extends PureComponent {
                                 onChange={this.onIndexOptionChange}
                                 outsideLabel={"Choose objects visible name"}
                                 select={true}
-                                value={visibleObjectName}
+                                value={objectVisibleName}
                             >
                                 {attributes}
                             </CustomTextField>
@@ -140,7 +212,10 @@ class SettingsProjectDialog extends PureComponent {
 
 SettingsProjectDialog.propTypes = {
     onClose: PropTypes.func,
+    onSnackbarOpen: PropTypes.func,
     open: PropTypes.bool.isRequired,
+    projectId: PropTypes.string,
+    serverBase: PropTypes.string
 };
 
 export default SettingsProjectDialog;
