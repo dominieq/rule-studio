@@ -39,7 +39,7 @@ public class DominanceConesService {
 
             DominanceCones dominanceCones = new DominanceCones();
             try {
-                dominanceCones.calculateDCones(informationTable);
+                dominanceCones.calculateDCones(informationTable, project.getDescriptiveAttributes());
             } catch (AttributeNotFoundException e) {
                 CalculationException ex = new CalculationException("Cannot calculate dominance cones if there are no active condition evaluation attributes.");
                 logger.error(ex.getMessage());

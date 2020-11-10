@@ -82,7 +82,7 @@ public class UnionsService {
             DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate unions.");
 
             final UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(informationTable, typeOfUnions, consistencyThreshold);
-            final DescriptiveAttributes descriptiveAttributes = new DescriptiveAttributes(informationTable);
+            final DescriptiveAttributes descriptiveAttributes = new DescriptiveAttributes(project.getDescriptiveAttributes());
 
             unionsWithHttpParameters = new UnionsWithHttpParameters(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold, informationTable.getHash(), descriptiveAttributes);
 

@@ -83,7 +83,7 @@ public class CrossValidationService {
         }
     }
 
-    private CrossValidation calculateCrossValidation(InformationTable informationTable, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult, Integer numberOfFolds, Long seed) {
+    private CrossValidation calculateCrossValidation(InformationTable informationTable, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult, Integer numberOfFolds, Long seed, DescriptiveAttributes projectDescriptiveAttributes) {
         DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate cross-validation.");
         DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate cross-validation.");
 
@@ -137,7 +137,7 @@ public class CrossValidationService {
         final OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, foldOrdinalMisclassificationMatrix);
         final OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(true, orderOfDecisions, foldOrdinalMisclassificationMatrix);
 
-        final DescriptiveAttributes descriptiveAttributes = new DescriptiveAttributes(informationTable);
+        final DescriptiveAttributes descriptiveAttributes = new DescriptiveAttributes(projectDescriptiveAttributes);
 
         CrossValidation crossValidation = new CrossValidation(numberOfFolds, informationTable, crossValidationSingleFolds, orderOfDecisions, meanOrdinalMisclassificationMatrix, sumOrdinalMisclassificationMatrix, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, seed, informationTable.getHash(), descriptiveAttributes);
         return crossValidation;
@@ -169,7 +169,7 @@ public class CrossValidationService {
 
         InformationTable informationTable = project.getInformationTable();
 
-        CrossValidation crossValidation = calculateCrossValidation(informationTable, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, seed);
+        CrossValidation crossValidation = calculateCrossValidation(informationTable, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, seed, project.getDescriptiveAttributes());
 
         project.setCrossValidation(crossValidation);
 
@@ -196,7 +196,7 @@ public class CrossValidationService {
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        CrossValidation crossValidation = calculateCrossValidation(informationTable, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, seed);
+        CrossValidation crossValidation = calculateCrossValidation(informationTable, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, seed, project.getDescriptiveAttributes());
 
         project.setCrossValidation(crossValidation);
 

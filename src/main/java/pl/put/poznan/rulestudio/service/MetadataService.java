@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
-import pl.put.poznan.rulestudio.model.NamedResource;
-import pl.put.poznan.rulestudio.model.Project;
-import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.*;
 import pl.put.poznan.rulestudio.model.response.AttributesResponse;
+import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse;
+import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.InformationTableResponse;
 
 import java.io.*;
@@ -139,5 +139,71 @@ public class MetadataService {
         final InputStreamResource resource = produceJsonResource(informationTable);
 
         return new NamedResource(project.getName(), resource);
+    }
+
+    public DescriptiveAttributesResponse getDescriptiveAttributes(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(project.getDescriptiveAttributes());
+        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        return descriptiveAttributesResponse;
+    }
+
+    public static void updateDescriptiveAttributesAcrossProject(Project project, String objectVisibleName) {
+        DominanceCones dominanceCones = project.getDominanceCones();
+        if((dominanceCones != null) && (dominanceCones.isCurrentData())) {
+            try {
+                dominanceCones.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
+            } catch (WrongParameterException ignore) {}
+        }
+
+        UnionsWithHttpParameters unions = project.getUnions();
+        if((unions != null && (unions.isCurrentData()))) {
+            try {
+                unions.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
+            } catch (WrongParameterException ignore) {}
+        }
+
+        RulesWithHttpParameters rules = project.getRules();
+        if((rules != null) && (rules.isCurrentData())) {
+            try {
+                rules.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
+            } catch (WrongParameterException ignore) {}
+        }
+
+        ProjectClassification projectClassification = project.getProjectClassification();
+        if((projectClassification != null) && (projectClassification.isCurrentLearningData())) {
+            try {
+                projectClassification.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
+            } catch (WrongParameterException ignore) {}
+            try {
+                projectClassification.getRulesDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
+            } catch (WrongParameterException ignore) {}
+        }
+
+        CrossValidation crossValidation = project.getCrossValidation();
+        if((crossValidation != null) && (crossValidation.isCurrentData())) {
+            try {
+                crossValidation.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
+            } catch (WrongParameterException ignore) {}
+        }
+    }
+
+    public DescriptiveAttributesResponse postDescriptiveAttributes(UUID id, String objectVisibleName) {
+        logger.info("Id:\t{}", id);
+        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        DescriptiveAttributes descriptiveAttributes = project.getDescriptiveAttributes();
+        descriptiveAttributes.setCurrentAttribute(objectVisibleName);
+
+        updateDescriptiveAttributesAcrossProject(project, objectVisibleName);
+
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(project.getDescriptiveAttributes());
+        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        return descriptiveAttributesResponse;
     }
 }

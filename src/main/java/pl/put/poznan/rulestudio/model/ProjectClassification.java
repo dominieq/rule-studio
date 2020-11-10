@@ -28,11 +28,11 @@ public class ProjectClassification extends AbstractClassification {
     private DescriptiveAttributes descriptiveAttributes;
     private DescriptiveAttributes rulesDescriptiveAttributes;
 
-    public ProjectClassification(InformationTable learningInformationTable, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, RuleSetWithCharacteristics ruleSetWithCharacteristics) {
-        this(learningInformationTable, classifiedInformationTable, classifierType, defaultClassificationResultType, ruleSetWithCharacteristics, null);
+    public ProjectClassification(InformationTable learningInformationTable, InformationTable classifiedInformationTable, DescriptiveAttributes projectDescriptiveAttributes, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, RuleSetWithCharacteristics ruleSetWithCharacteristics) {
+        this(learningInformationTable, classifiedInformationTable, projectDescriptiveAttributes, classifierType, defaultClassificationResultType, ruleSetWithCharacteristics, null);
     }
 
-    public ProjectClassification(InformationTable learningInformationTable, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, RuleSetWithCharacteristics ruleSetWithCharacteristics, String externalDataFileName) {
+    public ProjectClassification(InformationTable learningInformationTable, InformationTable classifiedInformationTable, DescriptiveAttributes projectDescriptiveAttributes, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, RuleSetWithCharacteristics ruleSetWithCharacteristics, String externalDataFileName) {
         orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, classifiedInformationTable);
         classify(learningInformationTable, classifiedInformationTable, classifierType, defaultClassificationResultType, ruleSetWithCharacteristics, orderOfDecisions);
 
@@ -53,8 +53,8 @@ public class ProjectClassification extends AbstractClassification {
         ruleSetHash = ruleSetWithCharacteristics.getHash();
         isCurrentRuleSet = true;
 
-        descriptiveAttributes = new DescriptiveAttributes(classifiedInformationTable);
-        rulesDescriptiveAttributes = new DescriptiveAttributes(learningInformationTable);   //@todo: change 'learningInformationTable' to original learning data of rules
+        descriptiveAttributes = new DescriptiveAttributes(projectDescriptiveAttributes);
+        rulesDescriptiveAttributes = new DescriptiveAttributes(projectDescriptiveAttributes);   //@todo: change 'learningInformationTable' to original learning data of rules
     }
 
     public InformationTable getClassifiedInformationTable() {

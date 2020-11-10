@@ -43,8 +43,53 @@ public class DescriptiveAttributes {
         currentAttribute = null;
     }
 
+    public DescriptiveAttributes(DescriptiveAttributes descriptiveAttributes) {
+        if(descriptiveAttributes == null) {
+            availableAttributesNames = new String[0];
+            availableAttributesIndices = new int[0];
+            currentAttribute = null;
+
+            return;
+        }
+
+        if(descriptiveAttributes.availableAttributesNames != null) {
+            int i, length = descriptiveAttributes.availableAttributesNames.length;
+            this.availableAttributesNames = new String[length];
+            for(i = 0; i < length; i++) {
+                this.availableAttributesNames[i] = descriptiveAttributes.availableAttributesNames[i];
+            }
+        } else {
+            availableAttributesNames = new String[0];
+        }
+
+        if(descriptiveAttributes.availableAttributesIndices != null) {
+            this.availableAttributesIndices = Arrays.copyOf(descriptiveAttributes.availableAttributesIndices, descriptiveAttributes.availableAttributesIndices.length);
+        } else {
+            availableAttributesIndices = new int[0];
+        }
+
+        this.currentAttribute = descriptiveAttributes.currentAttribute;
+    }
+
+    public DescriptiveAttributes(InformationTable informationTable, String currentAttribute) {
+        this(informationTable);
+        setCurrentAttribute(currentAttribute);
+    }
+
     public String[] getAvailableAttributesNames() {
         return availableAttributesNames;
+    }
+
+    public String getCurrentAttributeName() {
+        if(currentAttribute == null) {
+            return null;
+        }
+
+        if(availableAttributesNames == null) {
+            return null;
+        }
+
+        return availableAttributesNames[currentAttribute];
     }
 
     public int[] getAvailableAttributesIndices() {
@@ -69,7 +114,7 @@ public class DescriptiveAttributes {
 
     public void setCurrentAttribute(Integer currentAttribute) {
         if(availableAttributesNames == null) {
-            currentAttribute = null;
+            this.currentAttribute = null;
             return;
         }
 

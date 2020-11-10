@@ -77,7 +77,9 @@ public class ClassificationService {
 
         final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
-        final ProjectClassification projectClassification = new ProjectClassification(informationTable, informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics);
+        final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
+
+        final ProjectClassification projectClassification = new ProjectClassification(informationTable, informationTable, projectDescriptiveAttributes, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics);
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -113,7 +115,9 @@ public class ClassificationService {
         DataService.checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
         DataService.checkNumberOfObjects(newInformationTable, "There are no objects in external data. Couldn't classify.");
 
-        final ProjectClassification projectClassification = new ProjectClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, externalDataFile.getOriginalFilename());
+        final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
+
+        final ProjectClassification projectClassification = new ProjectClassification(projectInformationTable, newInformationTable, projectDescriptiveAttributes, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, externalDataFile.getOriginalFilename());
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -138,7 +142,9 @@ public class ClassificationService {
 
         final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
 
-        final ProjectClassification projectClassification = new ProjectClassification(informationTable, informationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics);
+        final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
+
+        final ProjectClassification projectClassification = new ProjectClassification(informationTable, informationTable, projectDescriptiveAttributes, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics);
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -176,7 +182,9 @@ public class ClassificationService {
         DataService.checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
         DataService.checkNumberOfObjects(newInformationTable, "There are no objects in external data. Couldn't classify.");
 
-        final ProjectClassification projectClassification = new ProjectClassification(projectInformationTable, newInformationTable, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, externalDataFile.getOriginalFilename());
+        final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
+
+        final ProjectClassification projectClassification = new ProjectClassification(projectInformationTable, newInformationTable, projectDescriptiveAttributes, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, externalDataFile.getOriginalFilename());
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);

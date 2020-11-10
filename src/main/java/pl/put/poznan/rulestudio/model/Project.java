@@ -1,6 +1,8 @@
 package pl.put.poznan.rulestudio.model;
 
 import org.rulelearn.data.InformationTable;
+import pl.put.poznan.rulestudio.exception.WrongParameterException;
+import pl.put.poznan.rulestudio.service.MetadataService;
 import pl.put.poznan.rulestudio.service.RulesService;
 
 import java.util.UUID;
@@ -9,6 +11,7 @@ public class Project {
     private UUID id;
     private String name;
     private InformationTable informationTable;
+    private DescriptiveAttributes descriptiveAttributes;
     private DominanceCones dominanceCones;
     private UnionsWithHttpParameters unions;
     private RulesWithHttpParameters rules;
@@ -25,6 +28,7 @@ public class Project {
         this.id = UUID.randomUUID();
         this.name = name;
         this.informationTable = null;
+        this.descriptiveAttributes = new DescriptiveAttributes();
         this.currentDominanceCones = false;
         this.currentUnionsWithSingleLimitingDecision = false;
         this.currentRules = false;
@@ -34,6 +38,7 @@ public class Project {
         this.id = UUID.randomUUID();
         this.name = name;
         this.informationTable = informationTable;
+        this.descriptiveAttributes = new DescriptiveAttributes(informationTable);
         this.currentDominanceCones = false;
         this.currentUnionsWithSingleLimitingDecision = false;
         this.currentRules = false;
@@ -103,6 +108,21 @@ public class Project {
                 crossValidation.setCurrentData(false);
             }
         }
+
+        String previousName = this.descriptiveAttributes.getCurrentAttributeName();
+        this.descriptiveAttributes = new DescriptiveAttributes(informationTable);
+        try {
+            this.descriptiveAttributes.setCurrentAttribute(previousName);
+        } catch (WrongParameterException ignore) {}
+        MetadataService.updateDescriptiveAttributesAcrossProject(this, this.descriptiveAttributes.getCurrentAttributeName());
+    }
+
+    public DescriptiveAttributes getDescriptiveAttributes() {
+        return descriptiveAttributes;
+    }
+
+    public void setDescriptiveAttributes(DescriptiveAttributes descriptiveAttributes) {
+        this.descriptiveAttributes = descriptiveAttributes;
     }
 
     public DominanceCones getDominanceCones() {
@@ -151,7 +171,7 @@ public class Project {
             rules.setValidityRulesContainer(validityRulesContainer);
 
             if(informationTable != null) {
-                RulesService.checkCoverageOfUploadedRules(rules, informationTable);
+                RulesService.checkCoverageOfUploadedRules(rules, informationTable, descriptiveAttributes);
             }
         }
     }
@@ -214,6 +234,7 @@ public class Project {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", informationTable=" + informationTable +
+                ", descriptiveAttributes=" + descriptiveAttributes +
                 ", dominanceCones=" + dominanceCones +
                 ", unions=" + unions +
                 ", rules=" + rules +

@@ -264,7 +264,7 @@ public class RulesService {
         RulesWithHttpParameters rules = project.getRules();
         if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (!rules.getConsistencyThreshold().equals(consistencyThreshold)) || (rules.getTypeOfRules() != typeOfRules)) {
             RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
-            DescriptiveAttributes descriptiveAttributes = new DescriptiveAttributes(project.getInformationTable());
+            DescriptiveAttributes descriptiveAttributes = new DescriptiveAttributes(project.getDescriptiveAttributes());
             rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, descriptiveAttributes);
 
             project.setRules(rules);
@@ -555,7 +555,7 @@ public class RulesService {
         return new NamedResource(project.getName(), resource);
     }
 
-    public static void checkCoverageOfUploadedRules(RulesWithHttpParameters rules, InformationTable informationTable) {
+    public static void checkCoverageOfUploadedRules(RulesWithHttpParameters rules, InformationTable informationTable, DescriptiveAttributes descriptiveAttributes) {
         String errorMessage = null;
         String ruleSetHash = rules.getRuleSet().getLearningInformationTableHash();
 
@@ -574,7 +574,7 @@ public class RulesService {
                 errorMessage = null;
                 rules.setCurrentData(true);
                 rules.setCoveragePresent(true);
-                rules.setDescriptiveAttributes(new DescriptiveAttributes(informationTable));
+                rules.setDescriptiveAttributes(new DescriptiveAttributes(descriptiveAttributes));
             } else {
                 errorMessage = String.format("Uploaded rules are not induced from the data in the current project. Access to a valid training set is required to calculate rule coverage information. Please upload new rules based on the current data or create a new project with a valid training set. Current data hash: \"%s\", rules hash: \"%s\".", informationTable.getHash(), ruleSetHash);
                 logger.info(errorMessage);
