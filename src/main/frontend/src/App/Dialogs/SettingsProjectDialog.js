@@ -76,7 +76,7 @@ class SettingsProjectDialog extends PureComponent {
 
             this.setState({
                 attributes: [ ...this._attributes, ...result.available ],
-                objectVisibleName: result.actual
+                objectVisibleName: result.actual === null ? "Default" : result.actual
             });
         }
     };
@@ -86,7 +86,7 @@ class SettingsProjectDialog extends PureComponent {
             loading: { ...loading, objectVisibleName: true }
         }), () => {
             const { projectId, serverBase } = this.props;
-            const resource = "data";
+            const resource = "metadata";
             const pathParams = { projectId };
             const queryParams = { objectVisibleName: undefined };
             const method = "GET";
@@ -121,7 +121,7 @@ class SettingsProjectDialog extends PureComponent {
 
     onIndexOptionChange = (event) => {
         this.setState({
-            visibleObjectName: event.target.value
+            objectVisibleName: event.target.value
         });
     };
 
@@ -131,9 +131,9 @@ class SettingsProjectDialog extends PureComponent {
         }), () => {
             const { projectId, serverBase } = this.props;
             const { objectVisibleName } = this.state;
-            const resource = "data"
+            const resource = "metadata"
             const pathParams = { projectId };
-            const queryParams = { objectVisibleName };
+            const queryParams = { objectVisibleName: objectVisibleName === "Default" ? undefined : objectVisibleName };
             const method = "POST";
 
             fetchDescriptiveAttributes(
@@ -148,6 +148,8 @@ class SettingsProjectDialog extends PureComponent {
                         loading: { ...loading, attributes: false }
                     }));
                 }
+
+                this.props.onClose();
             });
         });
     };

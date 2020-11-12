@@ -162,7 +162,7 @@ class ProjectTabs extends React.Component {
             ).finally(() => {
                 if (this._isMounted) {
                     this.setState({
-                        loading: true
+                        loading: false
                     });
                 }
             });
@@ -170,7 +170,7 @@ class ProjectTabs extends React.Component {
     }
 
     /**
-     * Utilizes {@link fetchData} to perform an API call with PUT method and information table in body.
+     * Utilizes {@link fetchData} to perform an API call with POST method and information table in body.
      * The goal of this function is to save user's changes made in information table.
      *
      * @function
@@ -183,7 +183,7 @@ class ProjectTabs extends React.Component {
         const { serverBase } = this.props;
 
         const pathParams = { projectId: projectCopy.id };
-        const method = "PUT";
+        const method = "POST";
         const body = new FormData();
         body.append("metadata", JSON.stringify(informationTableCopy.attributes));
         body.append("data", JSON.stringify(informationTableCopy.objects));
