@@ -69,12 +69,8 @@ class App extends Component {
                 "GET", null, base
             ).then(result => {
                 if (Array.isArray(result)) {
-                    console.log(result);
                     this.setState({
-                        projects: result.map(item => {
-                            console.log(item);
-                            return new Project(item.id, item.name)
-                        })
+                        projects: result.map(item => new Project(item.id, item.name))
                     });
                 } else {
                     this.setState({

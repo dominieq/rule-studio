@@ -58,7 +58,7 @@ async function fetchUnions(pathParams, queryParams, method, base = "http://local
     }
 
     const url = new URL(`/projects/${pathParams.projectId}/unions`, base);
-    if (queryParams.consistencyThreshold !== undefined && queryParams.typeOfUnions !== undefined) {
+    if (queryParams.consistencyThreshold != null && queryParams.typeOfUnions != null) {
         url.searchParams.append("typeOfUnions", queryParams.typeOfUnions);
         url.searchParams.append("consistencyThreshold", "" + queryParams.consistencyThreshold);
     }

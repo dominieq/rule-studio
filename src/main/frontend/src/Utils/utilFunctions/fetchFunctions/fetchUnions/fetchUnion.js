@@ -62,7 +62,7 @@ async function fetchUnion(pathParams, base = "http://localhost:8080") {
     }
 
     const url = new URL(`/projects/${pathParams.projectId}/unions/${pathParams.unionIndex}`, base) ;
-    if (pathParams.arrayPropertyType !== undefined) {
+    if (pathParams.arrayPropertyType != null) {
         url.pathname += `/${pathParams.arrayPropertyType}`;
     }
 

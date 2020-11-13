@@ -55,7 +55,7 @@ async function fetchDescriptiveAttributes(resource, pathParams, queryParams, met
 
     const url = new URL(`/projects/${pathParams.projectId}/${resource}/descriptiveAttributes`, base);
 
-    if (queryParams.objectVisibleName !== undefined) {
+    if (queryParams.objectVisibleName != null) {
         url.searchParams.append("objectVisibleName", queryParams.objectVisibleName)
     }
 

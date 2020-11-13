@@ -96,7 +96,7 @@ class CrossValidation extends Component {
         this.setState(({loading}) => ({
             loading: { ...loading, selectedFold: true }
         }), () => {
-            const { project: { result: { id: projectId }}, serverBase } = this.props;
+            const { project: { id: projectId }, serverBase } = this.props;
             const pathParams = { projectId, foldIndex };
 
             fetchFold(
@@ -191,19 +191,11 @@ class CrossValidation extends Component {
             }
         }).finally(() => {
             if ( this._isMounted ) {
-                const { project: { parameters, parametersSaved, result: { informationTable: { objects }}}} = this.props;
-                const { numberOfFolds, ...otherParams } = parameters;
-                let newParams = { };
-
-                if (objects.length < numberOfFolds) {
-                    newParams = { ...otherParams, numberOfFolds: objects.length };
-                } else {
-                    newParams = { ...otherParams, numberOfFolds: numberOfFolds };
-                }
+                const { project: { parameters: savedParameters, parametersSaved }} = this.props;
 
                 this.setState(({loading, parameters, selected}) => ({
                     loading: { ...loading, crossValidation: false },
-                    parameters: parametersSaved ? parameters : { ...parameters, ...newParams },
+                    parameters: parametersSaved ? parameters : { ...savedParameters },
                     parametersSaved: parametersSaved,
                     selected: { ...selected, item: null }
                 }));
