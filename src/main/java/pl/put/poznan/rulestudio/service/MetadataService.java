@@ -167,20 +167,25 @@ public class MetadataService {
         }
 
         RulesWithHttpParameters rules = project.getRules();
-        if((rules != null) && (rules.isCurrentData())) {
+        if((rules != null) && (rules.isCurrentData() != null) && (rules.isCurrentData())) {
             try {
                 rules.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
             } catch (WrongParameterException ignore) {}
         }
 
         ProjectClassification projectClassification = project.getProjectClassification();
-        if((projectClassification != null) && (projectClassification.isCurrentLearningData())) {
-            try {
-                projectClassification.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
-            } catch (WrongParameterException ignore) {}
-            try {
-                projectClassification.getRulesDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
-            } catch (WrongParameterException ignore) {}
+        if(projectClassification != null) {
+            if(projectClassification.isCurrentProjectData()) {
+                try {
+                    projectClassification.getClassifiedDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
+                } catch (WrongParameterException ignore) {}
+            }
+
+            if((projectClassification.isCurrentLearningData() != null) && (projectClassification.isCurrentLearningData())) {
+                try {
+                    projectClassification.getLearningDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
+                } catch (WrongParameterException ignore) {}
+            }
         }
 
         CrossValidation crossValidation = project.getCrossValidation();

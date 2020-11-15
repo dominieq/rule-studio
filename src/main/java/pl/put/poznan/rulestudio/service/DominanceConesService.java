@@ -71,7 +71,7 @@ public class DominanceConesService {
 
         final DominanceCones dominanceCones = getDominanceConesFromProject(project);
 
-        final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones, project.getInformationTable());
+        final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
         logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
         return mainDominanceConesResponse;
     }
@@ -84,7 +84,7 @@ public class DominanceConesService {
         calculateDominanceCones(project);
 
         final DominanceCones dominanceCones = project.getDominanceCones();
-        final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones, project.getInformationTable());
+        final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
         logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
         return mainDominanceConesResponse;
     }
@@ -103,7 +103,7 @@ public class DominanceConesService {
         calculateDominanceCones(project);
 
         final DominanceCones dominanceCones = project.getDominanceCones();
-        final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones, project.getInformationTable());
+        final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
         logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
         return mainDominanceConesResponse;
     }
@@ -144,7 +144,7 @@ public class DominanceConesService {
         final DominanceCones dominanceCones = getDominanceConesFromProject(project);
 
         final Integer descriptiveAttributeIndex = dominanceCones.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
-        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(dominanceCones.getInformationTable(), descriptiveAttributeIndex);
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
@@ -170,13 +170,13 @@ public class DominanceConesService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        getDominanceConesFromProject(project);
+        final DominanceCones dominanceCones = getDominanceConesFromProject(project);
 
         ObjectAbstractResponse objectAbstractResponse;
         if(isAttributes) {
-            objectAbstractResponse = new ObjectWithAttributesResponse(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectWithAttributesResponse(dominanceCones.getInformationTable(), objectIndex);
         } else {
-            objectAbstractResponse = new ObjectResponse(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectResponse(dominanceCones.getInformationTable(), objectIndex);
         }
         logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
         return objectAbstractResponse;
@@ -189,9 +189,9 @@ public class DominanceConesService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        getDominanceConesFromProject(project);
+        final DominanceCones dominanceCones = getDominanceConesFromProject(project);
 
-        final ObjectsComparisonResponse objectsComparisonResponse = ObjectsComparisonResponseBuilder.newInstance().build(project.getInformationTable(), firstObjectIndex, secondObjectIndex);
+        final ObjectsComparisonResponse objectsComparisonResponse = ObjectsComparisonResponseBuilder.newInstance().build(dominanceCones.getInformationTable(), firstObjectIndex, secondObjectIndex);
         logger.debug("objectsComparisonResponse:\t{}", objectsComparisonResponse.toString());
         return objectsComparisonResponse;
     }

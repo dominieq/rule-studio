@@ -25,11 +25,14 @@ public class MainClassificationResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String externalDataFileName;
 
-    @JsonProperty("isCurrentLearningData")
-    private Boolean isCurrentLearningData;
+    @JsonProperty("isCurrentProjectData")
+    private Boolean isCurrentProjectData;
 
     @JsonProperty("isCurrentRuleSet")
     private Boolean isCurrentRuleSet;
+
+    @JsonProperty("isCurrentLearningData")
+    private Boolean isCurrentLearningData;
 
     @JsonProperty("parameters")
     private ClassificationParameters classificationParameters;
@@ -55,13 +58,18 @@ public class MainClassificationResponse {
     }
 
     @JsonIgnore
-    public Boolean getCurrentLearningData() {
-        return isCurrentLearningData;
+    public Boolean getCurrentProjectData() {
+        return isCurrentProjectData;
     }
 
     @JsonIgnore
     public Boolean getCurrentRuleSet() {
         return isCurrentRuleSet;
+    }
+
+    @JsonIgnore
+    public Boolean getCurrentLearningData() {
+        return isCurrentLearningData;
     }
 
     public ClassificationParameters getClassificationParameters() {
@@ -75,8 +83,9 @@ public class MainClassificationResponse {
                 ", classifiedObjectMainPropertiesArray=" + Arrays.toString(classifiedObjectMainPropertiesArray) +
                 ", isExternalData=" + isExternalData +
                 ", externalDataFileName='" + externalDataFileName + '\'' +
-                ", isCurrentLearningData=" + isCurrentLearningData +
+                ", isCurrentProjectData=" + isCurrentProjectData +
                 ", isCurrentRuleSet=" + isCurrentRuleSet +
+                ", isCurrentLearningData=" + isCurrentLearningData +
                 ", classificationParameters=" + classificationParameters +
                 '}';
     }
@@ -88,8 +97,9 @@ public class MainClassificationResponse {
         private ClassifiedObjectMainProperties[] classifiedObjectMainPropertiesArray;
         private Boolean isExternalData;
         private String externalDataFileName;
-        private Boolean isCurrentLearningData;
+        private Boolean isCurrentProjectData;
         private Boolean isCurrentRuleSet;
+        private Boolean isCurrentLearningData;
         private ClassificationParameters classificationParameters;
 
         public static MainClassificationResponseBuilder newInstance() {
@@ -116,13 +126,18 @@ public class MainClassificationResponse {
             return this;
         }
 
-        public MainClassificationResponseBuilder setCurrentLearningData(Boolean currentLearningData) {
-            isCurrentLearningData = currentLearningData;
+        public MainClassificationResponseBuilder setCurrentProjectData(Boolean currentProjectData) {
+            isCurrentProjectData = currentProjectData;
             return this;
         }
 
         public MainClassificationResponseBuilder setCurrentRuleSet(Boolean currentRuleSet) {
             isCurrentRuleSet = currentRuleSet;
+            return this;
+        }
+
+        public MainClassificationResponseBuilder setCurrentLearningData(Boolean currentLearningData) {
+            isCurrentLearningData = currentLearningData;
             return this;
         }
 
@@ -138,8 +153,9 @@ public class MainClassificationResponse {
             mainClassificationResponse.classifiedObjectMainPropertiesArray = this.classifiedObjectMainPropertiesArray;
             mainClassificationResponse.isExternalData = this.isExternalData;
             mainClassificationResponse.externalDataFileName = this.externalDataFileName;
-            mainClassificationResponse.isCurrentLearningData = this.isCurrentLearningData;
+            mainClassificationResponse.isCurrentProjectData = this.isCurrentProjectData;
             mainClassificationResponse.isCurrentRuleSet = this.isCurrentRuleSet;
+            mainClassificationResponse.isCurrentLearningData = this.isCurrentLearningData;
             mainClassificationResponse.classificationParameters = this.classificationParameters;
 
             return mainClassificationResponse;
@@ -148,7 +164,7 @@ public class MainClassificationResponse {
         public MainClassificationResponse build(ProjectClassification projectClassification) {
             MainClassificationResponse mainClassificationResponse = new MainClassificationResponse();
 
-            mainClassificationResponse.objectNames = projectClassification.getDescriptiveAttributes().extractObjectNames(projectClassification.getClassifiedInformationTable());
+            mainClassificationResponse.objectNames = projectClassification.getClassifiedDescriptiveAttributes().extractObjectNames(projectClassification.getClassifiedInformationTable());
 
             Decision originalDecision;
             final int numberOfObjects = projectClassification.getClassifiedInformationTable().getNumberOfObjects();
@@ -160,8 +176,9 @@ public class MainClassificationResponse {
 
             mainClassificationResponse.isExternalData = projectClassification.isExternalData();
             mainClassificationResponse.externalDataFileName = projectClassification.getExternalDataFileName();
-            mainClassificationResponse.isCurrentLearningData = projectClassification.isCurrentLearningData();
+            mainClassificationResponse.isCurrentProjectData = projectClassification.isCurrentProjectData();
             mainClassificationResponse.isCurrentRuleSet = projectClassification.isCurrentRuleSet();
+            mainClassificationResponse.isCurrentLearningData = projectClassification.isCurrentLearningData();
 
             mainClassificationResponse.classificationParameters = ClassificationParametersBuilder.newInstance().build(projectClassification);
 

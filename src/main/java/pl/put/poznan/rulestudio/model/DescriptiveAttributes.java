@@ -73,7 +73,9 @@ public class DescriptiveAttributes {
 
     public DescriptiveAttributes(InformationTable informationTable, String currentAttribute) {
         this(informationTable);
-        setCurrentAttribute(currentAttribute);
+        try {
+            setCurrentAttribute(currentAttribute);
+        } catch (WrongParameterException ignore) {}
     }
 
     public String[] getAvailableAttributesNames() {

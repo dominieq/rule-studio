@@ -1,5 +1,6 @@
 package pl.put.poznan.rulestudio.model;
 
+import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import pl.put.poznan.rulestudio.enums.RuleType;
 import pl.put.poznan.rulestudio.enums.UnionType;
@@ -16,6 +17,7 @@ public class RulesWithHttpParameters implements Cloneable {
     private ValidityRulesContainer validityRulesContainer;
     private Boolean isCoveragePresent;
     private DescriptiveAttributes descriptiveAttributes;
+    private InformationTable informationTable;
   
     public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String rulesFileName) {
         this.externalRules = true;
@@ -23,15 +25,17 @@ public class RulesWithHttpParameters implements Cloneable {
         this.rulesFileName = rulesFileName;
     }
 
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, DescriptiveAttributes descriptiveAttributes) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, DescriptiveAttributes descriptiveAttributes, InformationTable informationTable) {
         this.externalRules = false;
         this.ruleSet = rules;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
         this.typeOfRules = ruleType;
         this.descriptiveAttributes = descriptiveAttributes;
+        this.informationTable = informationTable;
 
         this.isCurrentData = true;
+        this.isCoveragePresent = true;
     }
 
     public RuleSetWithCharacteristics getRuleSet() {
@@ -122,6 +126,14 @@ public class RulesWithHttpParameters implements Cloneable {
         this.descriptiveAttributes = descriptiveAttributes;
     }
 
+    public InformationTable getInformationTable() {
+        return informationTable;
+    }
+
+    public void setInformationTable(InformationTable informationTable) {
+        this.informationTable = informationTable;
+    }
+
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
@@ -136,6 +148,7 @@ public class RulesWithHttpParameters implements Cloneable {
                 ", validityRulesContainer=" + validityRulesContainer +
                 ", isCoveragePresent=" + isCoveragePresent +
                 ", descriptiveAttributes=" + descriptiveAttributes +
+                ", informationTable=" + informationTable +
                 '}';
     }
 

@@ -3,8 +3,9 @@ package pl.put.poznan.rulestudio.model;
 public class ValidityRulesContainer {
     private Boolean unions;
     private Boolean classificationExternal;
-    private Boolean classificationLearningData;
+    private Boolean classificationProjectData;
     private Boolean classificationRules;
+    private Boolean classificationLearningData;
 
     public ValidityRulesContainer(Project project) {
         UnionsWithHttpParameters unions = project.getUnions();
@@ -15,8 +16,9 @@ public class ValidityRulesContainer {
         ProjectClassification projectClassification = project.getProjectClassification();
         if(projectClassification != null) {
             this.classificationExternal = projectClassification.isExternalData();
-            this.classificationLearningData = projectClassification.isCurrentLearningData();
+            this.classificationProjectData = projectClassification.isCurrentProjectData();
             this.classificationRules = projectClassification.isCurrentRuleSet();
+            this.classificationLearningData = projectClassification.isCurrentLearningData();
         }
     }
 
@@ -36,12 +38,12 @@ public class ValidityRulesContainer {
         this.classificationExternal = classificationExternal;
     }
 
-    public Boolean getClassificationLearningData() {
-        return classificationLearningData;
+    public Boolean getClassificationProjectData() {
+        return classificationProjectData;
     }
 
-    public void setClassificationLearningData(Boolean classificationLearningData) {
-        this.classificationLearningData = classificationLearningData;
+    public void setClassificationProjectData(Boolean classificationProjectData) {
+        this.classificationProjectData = classificationProjectData;
     }
 
     public Boolean getClassificationRules() {
@@ -52,13 +54,22 @@ public class ValidityRulesContainer {
         this.classificationRules = classificationRules;
     }
 
+    public Boolean getClassificationLearningData() {
+        return classificationLearningData;
+    }
+
+    public void setClassificationLearningData(Boolean classificationLearningData) {
+        this.classificationLearningData = classificationLearningData;
+    }
+
     @Override
     public String toString() {
         return "ValidityRulesContainer{" +
                 "unions=" + unions +
                 ", classificationExternal=" + classificationExternal +
-                ", classificationLearningData=" + classificationLearningData +
+                ", classificationData=" + classificationProjectData +
                 ", classificationRules=" + classificationRules +
+                ", classificationLearningData=" + classificationLearningData +
                 '}';
     }
 }

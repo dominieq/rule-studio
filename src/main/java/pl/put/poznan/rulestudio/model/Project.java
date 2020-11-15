@@ -1,7 +1,6 @@
 package pl.put.poznan.rulestudio.model;
 
 import org.rulelearn.data.InformationTable;
-import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.service.MetadataService;
 import pl.put.poznan.rulestudio.service.RulesService;
 
@@ -95,7 +94,13 @@ public class Project {
             }
         }
         if(this.projectClassification != null) {
-            if (projectClassification.getLearningDataHash().equals(dataHash)) {
+            if(projectClassification.getProjectDataHash().equals(dataHash)) {
+                projectClassification.setCurrentProjectData(true);
+            } else {
+                projectClassification.setCurrentProjectData(false);
+            }
+
+            if ((projectClassification.isCurrentLearningData() != null) && (projectClassification.getLearningInformationTable().getHash().equals(dataHash))) {
                 projectClassification.setCurrentLearningData(true);
             } else {
                 projectClassification.setCurrentLearningData(false);
@@ -110,10 +115,7 @@ public class Project {
         }
 
         String previousName = this.descriptiveAttributes.getCurrentAttributeName();
-        this.descriptiveAttributes = new DescriptiveAttributes(informationTable);
-        try {
-            this.descriptiveAttributes.setCurrentAttribute(previousName);
-        } catch (WrongParameterException ignore) {}
+        this.descriptiveAttributes = new DescriptiveAttributes(informationTable, previousName);
         MetadataService.updateDescriptiveAttributesAcrossProject(this, this.descriptiveAttributes.getCurrentAttributeName());
     }
 
@@ -166,7 +168,7 @@ public class Project {
     }
 
     public void checkValidityOfRules() {
-        if(rules !=null) {
+        if(rules != null) {
             ValidityRulesContainer validityRulesContainer = new ValidityRulesContainer(this);
             rules.setValidityRulesContainer(validityRulesContainer);
 
@@ -186,7 +188,7 @@ public class Project {
         if(this.projectClassification != null) {
             if (this.rules == null) {
                 projectClassification.setCurrentRuleSet(null);
-            } else if (this.rules.getRuleSet().getHash().equals(projectClassification.getRuleSetHash())) {
+            } else if (this.rules.getRuleSet().getHash().equals(projectClassification.getRuleSet().getHash())) {
                 projectClassification.setCurrentRuleSet(true);
             } else {
                 projectClassification.setCurrentRuleSet(false);

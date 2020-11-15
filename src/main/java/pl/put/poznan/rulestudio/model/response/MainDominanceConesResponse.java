@@ -153,7 +153,7 @@ public class MainDominanceConesResponse {
             return dominanceConeCounts;
         }
 
-        public MainDominanceConesResponse build(DominanceCones dominanceCones, InformationTable informationTable) {
+        public MainDominanceConesResponse build(DominanceCones dominanceCones) {
             MainDominanceConesResponse mainDominanceConesResponse = new MainDominanceConesResponse();
 
             mainDominanceConesResponse.numberOfObjects = dominanceCones.getNumberOfObjects();
@@ -174,7 +174,7 @@ public class MainDominanceConesResponse {
                 mainDominanceConesResponse.negativeInverseDominanceConeCounts = null;
             }
 
-            mainDominanceConesResponse.objectNames = dominanceCones.getDescriptiveAttributes().extractObjectNames(informationTable);
+            mainDominanceConesResponse.objectNames = dominanceCones.getDescriptiveAttributes().extractObjectNames(dominanceCones.getInformationTable());
 
             return mainDominanceConesResponse;
         }

@@ -265,7 +265,7 @@ public class RulesService {
         if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (!rules.getConsistencyThreshold().equals(consistencyThreshold)) || (rules.getTypeOfRules() != typeOfRules)) {
             RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
             DescriptiveAttributes descriptiveAttributes = new DescriptiveAttributes(project.getDescriptiveAttributes());
-            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, descriptiveAttributes);
+            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, descriptiveAttributes, project.getInformationTable());
 
             project.setRules(rules);
             project.setCurrentRules(true);
@@ -499,7 +499,7 @@ public class RulesService {
         final RulesWithHttpParameters rules = getRulesFromProject(project);
 
         final Integer descriptiveAttributeIndex = rules.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
-        AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(rules.getInformationTable(), descriptiveAttributeIndex);
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
@@ -513,7 +513,7 @@ public class RulesService {
         final RulesWithHttpParameters rules = getRulesFromProject(project);
 
         final int[] indices = getCoveringObjectsIndices(rules.getRuleSet(), ruleIndex);
-        String[] objectNames = rules.getDescriptiveAttributes().extractChosenObjectNames(project.getInformationTable(), indices);
+        final String[] objectNames = rules.getDescriptiveAttributes().extractChosenObjectNames(rules.getInformationTable(), indices);
 
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
@@ -572,6 +572,7 @@ public class RulesService {
                 rules.getRuleSet().calculateBasicRuleCoverageInformation(informationTable);
 
                 errorMessage = null;
+                rules.setInformationTable(informationTable);
                 rules.setCurrentData(true);
                 rules.setCoveragePresent(true);
                 rules.setDescriptiveAttributes(new DescriptiveAttributes(descriptiveAttributes));
@@ -646,7 +647,7 @@ public class RulesService {
 
         final RulesWithHttpParameters rules = getRulesFromProject(project);
 
-        final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(rules.getRuleSet(), ruleIndex, rules.getDescriptiveAttributes(), project.getInformationTable());
+        final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(rules.getRuleSet(), ruleIndex, rules.getDescriptiveAttributes(), rules.getInformationTable());
         logger.debug("chosenRuleResponse:\t{}", chosenRuleResponse.toString());
         return chosenRuleResponse;
     }
@@ -658,13 +659,13 @@ public class RulesService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        getRulesFromProject(project);
+        final RulesWithHttpParameters rules = getRulesFromProject(project);
 
         ObjectAbstractResponse objectAbstractResponse;
         if(isAttributes) {
-            objectAbstractResponse = new ObjectWithAttributesResponse(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectWithAttributesResponse(rules.getInformationTable(), objectIndex);
         } else {
-            objectAbstractResponse = new ObjectResponse(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectResponse(rules.getInformationTable(), objectIndex);
         }
         logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
         return objectAbstractResponse;

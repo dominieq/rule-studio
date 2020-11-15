@@ -42,14 +42,14 @@ public class ClassificationService {
         return projectClassification;
     }
 
-    private static RuleSetWithCharacteristics getRuleSetToClassify(Project project) {
+    private static RulesWithHttpParameters getRulesToClassify(Project project) {
         if(project.getRules() == null) {
             NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        return project.getRules().getRuleSet();
+        return project.getRules();
     }
 
     public MainClassificationResponse getClassification(UUID id) {
@@ -75,11 +75,11 @@ public class ClassificationService {
         DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't reclassify.");
         DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't reclassify.");
 
-        final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
+        final RulesWithHttpParameters rulesWithHttpParameters = getRulesToClassify(project);
 
         final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
 
-        final ProjectClassification projectClassification = new ProjectClassification(informationTable, informationTable, projectDescriptiveAttributes, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics);
+        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, informationTable, typeOfClassifier, defaultClassificationResult, projectDescriptiveAttributes, informationTable);
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -109,7 +109,7 @@ public class ClassificationService {
         final Attribute[] attributes = projectInformationTable.getAttributes();
         MetadataService.checkAttributes(attributes, "There is no metadata in project. Couldn't read classified data from file.");
 
-        final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
+        final RulesWithHttpParameters rulesWithHttpParameters = getRulesToClassify(project);
 
         final InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, attributes, separator, header);
         DataService.checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
@@ -117,7 +117,7 @@ public class ClassificationService {
 
         final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
 
-        final ProjectClassification projectClassification = new ProjectClassification(projectInformationTable, newInformationTable, projectDescriptiveAttributes, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, externalDataFile.getOriginalFilename());
+        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, newInformationTable, typeOfClassifier, defaultClassificationResult, projectDescriptiveAttributes, projectInformationTable, externalDataFile.getOriginalFilename());
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -140,11 +140,11 @@ public class ClassificationService {
 
         DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't reclassify.");
 
-        final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
+        final RulesWithHttpParameters rulesWithHttpParameters = getRulesToClassify(project);
 
         final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
 
-        final ProjectClassification projectClassification = new ProjectClassification(informationTable, informationTable, projectDescriptiveAttributes, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics);
+        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, informationTable, typeOfClassifier, defaultClassificationResult, projectDescriptiveAttributes, informationTable);
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -176,7 +176,7 @@ public class ClassificationService {
         final InformationTable projectInformationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(projectInformationTable);
 
-        final RuleSetWithCharacteristics ruleSetWithCharacteristics = getRuleSetToClassify(project);
+        final RulesWithHttpParameters rulesWithHttpParameters = getRulesToClassify(project);
 
         final InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, projectInformationTable.getAttributes(), separator, header);
         DataService.checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
@@ -184,7 +184,7 @@ public class ClassificationService {
 
         final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
 
-        final ProjectClassification projectClassification = new ProjectClassification(projectInformationTable, newInformationTable, projectDescriptiveAttributes, typeOfClassifier, defaultClassificationResult, ruleSetWithCharacteristics, externalDataFile.getOriginalFilename());
+        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, newInformationTable, typeOfClassifier, defaultClassificationResult, projectDescriptiveAttributes, projectInformationTable, externalDataFile.getOriginalFilename());
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -199,7 +199,7 @@ public class ClassificationService {
 
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(projectClassification.getDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(projectClassification.getClassifiedDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -212,10 +212,10 @@ public class ClassificationService {
 
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
-        DescriptiveAttributes descriptiveAttributes = projectClassification.getDescriptiveAttributes();
-        descriptiveAttributes.setCurrentAttribute(objectVisibleName);
+        DescriptiveAttributes classifiedDescriptiveAttributes = projectClassification.getClassifiedDescriptiveAttributes();
+        classifiedDescriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(projectClassification.getDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(projectClassification.getClassifiedDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -227,8 +227,8 @@ public class ClassificationService {
 
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
-        final Integer descriptiveAttributeIndex = projectClassification.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
-        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        final Integer descriptiveAttributeIndex = projectClassification.getClassifiedDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(projectClassification.getClassifiedInformationTable(), descriptiveAttributeIndex);
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
@@ -266,9 +266,11 @@ public class ClassificationService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        getClassificationFromProject(project);
+        final ProjectClassification projectClassification = getClassificationFromProject(project);
 
-        final RuleMainPropertiesResponse ruleMainPropertiesResponse = RuleMainPropertiesResponseBuilder.newInstance().build(project.getRules().getRuleSet(), ruleIndex);
+        final RuleSetWithCharacteristics ruleSetWithCharacteristics = projectClassification.getRuleSet();
+
+        final RuleMainPropertiesResponse ruleMainPropertiesResponse = RuleMainPropertiesResponseBuilder.newInstance().build(ruleSetWithCharacteristics, ruleIndex);
         logger.debug("ruleMainPropertiesResponse:\t{}", ruleMainPropertiesResponse);
         return ruleMainPropertiesResponse;
     }
@@ -280,7 +282,7 @@ public class ClassificationService {
 
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(projectClassification.getRulesDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(projectClassification.getLearningDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -293,10 +295,10 @@ public class ClassificationService {
 
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
-        DescriptiveAttributes rulesDescriptiveAttributes = projectClassification.getRulesDescriptiveAttributes();
-        rulesDescriptiveAttributes.setCurrentAttribute(objectVisibleName);
+        DescriptiveAttributes learningDescriptiveAttributes = projectClassification.getLearningDescriptiveAttributes();
+        learningDescriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(projectClassification.getRulesDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(projectClassification.getLearningDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -308,8 +310,8 @@ public class ClassificationService {
 
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
-        final Integer descriptiveAttributeIndex = projectClassification.getRulesDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
-        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        final Integer descriptiveAttributeIndex = projectClassification.getLearningDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(projectClassification.getLearningInformationTable(), descriptiveAttributeIndex);
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
@@ -322,9 +324,9 @@ public class ClassificationService {
 
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
-        RulesWithHttpParameters rulesWithHttpParameters = RulesService.getRulesFromProject(project);
-        final int[] indices = RulesService.getCoveringObjectsIndices(rulesWithHttpParameters.getRuleSet(), ruleIndex);
-        String[] objectNames = projectClassification.getRulesDescriptiveAttributes().extractChosenObjectNames(project.getInformationTable(), indices);
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = projectClassification.getRuleSet();
+        final int[] indices = RulesService.getCoveringObjectsIndices(ruleSetWithCharacteristics, ruleIndex);
+        final String[] objectNames = projectClassification.getLearningDescriptiveAttributes().extractChosenObjectNames(projectClassification.getLearningInformationTable(), indices);
 
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
@@ -339,7 +341,7 @@ public class ClassificationService {
 
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
-        final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(project.getRules().getRuleSet(), ruleIndex, projectClassification.getRulesDescriptiveAttributes(), project.getInformationTable());
+        final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(projectClassification.getRuleSet(), ruleIndex, projectClassification.getLearningDescriptiveAttributes(), projectClassification.getLearningInformationTable());
         logger.debug("chosenRuleResponse:\t{}", chosenRuleResponse);
         return chosenRuleResponse;
     }
@@ -351,15 +353,13 @@ public class ClassificationService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        getClassificationFromProject(project);
-
-        RulesService.getRulesFromProject(project);
+        final ProjectClassification projectClassification = getClassificationFromProject(project);
 
         ObjectAbstractResponse objectAbstractResponse;
         if(isAttributes) {
-            objectAbstractResponse = new ObjectWithAttributesResponse(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectWithAttributesResponse(projectClassification.getLearningInformationTable(), objectIndex);
         } else {
-            objectAbstractResponse = new ObjectResponse(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectResponse(projectClassification.getLearningInformationTable(), objectIndex);
         }
         logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
         return objectAbstractResponse;

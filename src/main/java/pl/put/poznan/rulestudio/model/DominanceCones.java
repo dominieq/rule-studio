@@ -35,6 +35,8 @@ public class DominanceCones {
     @JsonIgnore
     private DescriptiveAttributes descriptiveAttributes;
 
+    private InformationTable informationTable;
+
     public DominanceCones() {
         numberOfObjects = 0;
 
@@ -99,6 +101,15 @@ public class DominanceCones {
         this.dataHash = dataHash;
     }
 
+    @JsonIgnore
+    public boolean isCurrentData() {
+        return isCurrentData;
+    }
+
+    public void setCurrentData(Boolean currentData) {
+        isCurrentData = currentData;
+    }
+
     public DescriptiveAttributes getDescriptiveAttributes() {
         return descriptiveAttributes;
     }
@@ -107,13 +118,12 @@ public class DominanceCones {
         this.descriptiveAttributes = descriptiveAttributes;
     }
 
-    @JsonIgnore
-    public boolean isCurrentData() {
-        return isCurrentData;
+    public InformationTable getInformationTable() {
+        return informationTable;
     }
 
-    public void setCurrentData(Boolean currentData) {
-        isCurrentData = currentData;
+    public void setInformationTable(InformationTable informationTable) {
+        this.informationTable = informationTable;
     }
 
     @Override
@@ -126,6 +136,8 @@ public class DominanceCones {
                 ", negativeInvDCones=" + Arrays.toString(negativeInvDCones) +
                 ", dataHash='" + dataHash + '\'' +
                 ", isCurrentData=" + isCurrentData +
+                ", descriptiveAttributes=" + descriptiveAttributes +
+                ", informationTable=" + informationTable +
                 '}';
     }
 
@@ -154,6 +166,7 @@ public class DominanceCones {
         this.dataHash = informationTable.getHash();
         this.isCurrentData = true;
         this.descriptiveAttributes = new DescriptiveAttributes(descriptiveAttributes);
+        this.informationTable = informationTable;
     }
 
     private void calculatePositiveDCones(InformationTable informationTable) {

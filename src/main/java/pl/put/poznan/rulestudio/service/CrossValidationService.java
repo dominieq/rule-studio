@@ -256,7 +256,7 @@ public class CrossValidationService {
 
         final CrossValidationSingleFold chosenFold = getChosenFoldFromCrossValidation(crossValidation, foldIndex);
         final int[] indices = chosenFold.getIndicesOfValidationObjects();
-        String[] objectNames = crossValidation.getDescriptiveAttributes().extractChosenObjectNames(crossValidation.getInformationTable(), indices);
+        final String[] objectNames = crossValidation.getDescriptiveAttributes().extractChosenObjectNames(crossValidation.getInformationTable(), indices);
 
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
@@ -274,7 +274,7 @@ public class CrossValidationService {
 
         final CrossValidationSingleFold chosenFold = getChosenFoldFromCrossValidation(crossValidation, foldIndex);
         final int[] indices = RulesService.getCoveringObjectsIndices(chosenFold.getRuLeStudioRuleSet(), ruleIndex);
-        String[] objectNames = crossValidation.getDescriptiveAttributes().extractChosenObjectNames(crossValidation.getInformationTable(), indices);
+        final String[] objectNames = crossValidation.getDescriptiveAttributes().extractChosenObjectNames(crossValidation.getInformationTable(), indices);
 
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());

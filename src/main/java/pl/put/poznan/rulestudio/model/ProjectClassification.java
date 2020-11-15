@@ -16,29 +16,46 @@ import java.util.List;
 
 public class ProjectClassification extends AbstractClassification {
     private InformationTable classifiedInformationTable;
+    private DescriptiveAttributes classifiedDescriptiveAttributes;
     private Decision[] orderOfDecisions;
     private ClassifierType classifierType;
     private DefaultClassificationResultType defaultClassificationResultType;
+    private String projectDataHash;
+    private Boolean isCurrentProjectData;
     private boolean externalData;
     private String externalDataFileName;
-    private String learningDataHash;
-    private Boolean isCurrentLearningData;
-    private String ruleSetHash;
+    private RuleSetWithCharacteristics ruleSet;
     private Boolean isCurrentRuleSet;
-    private DescriptiveAttributes descriptiveAttributes;
-    private DescriptiveAttributes rulesDescriptiveAttributes;
+    private InformationTable learningInformationTable;
+    private DescriptiveAttributes learningDescriptiveAttributes;
+    private Boolean isCurrentLearningData;
 
-    public ProjectClassification(InformationTable learningInformationTable, InformationTable classifiedInformationTable, DescriptiveAttributes projectDescriptiveAttributes, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, RuleSetWithCharacteristics ruleSetWithCharacteristics) {
-        this(learningInformationTable, classifiedInformationTable, projectDescriptiveAttributes, classifierType, defaultClassificationResultType, ruleSetWithCharacteristics, null);
+    public ProjectClassification(RulesWithHttpParameters rulesWithHttpParameters, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, DescriptiveAttributes projectDescriptiveAttributes, InformationTable projectDataInformationTable) {
+        this(rulesWithHttpParameters, classifiedInformationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, projectDataInformationTable, null);
     }
 
-    public ProjectClassification(InformationTable learningInformationTable, InformationTable classifiedInformationTable, DescriptiveAttributes projectDescriptiveAttributes, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, RuleSetWithCharacteristics ruleSetWithCharacteristics, String externalDataFileName) {
+    public ProjectClassification(RulesWithHttpParameters rulesWithHttpParameters, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, DescriptiveAttributes projectDescriptiveAttributes, InformationTable projectDataInformationTable, String externalDataFileName) {
+        final RuleSetWithCharacteristics ruleSetWithCharacteristics = rulesWithHttpParameters.getRuleSet();
+        if(rulesWithHttpParameters.isCoveragePresent()) {
+            this.learningInformationTable = rulesWithHttpParameters.getInformationTable();
+            this.learningDescriptiveAttributes = new DescriptiveAttributes(rulesWithHttpParameters.getDescriptiveAttributes());
+            this.isCurrentLearningData = rulesWithHttpParameters.isCurrentData();
+        } else {
+            this.learningInformationTable = projectDataInformationTable;
+            this.learningDescriptiveAttributes = new DescriptiveAttributes(projectDescriptiveAttributes);
+            this.isCurrentLearningData = null;
+        }
+
         orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, classifiedInformationTable);
-        classify(learningInformationTable, classifiedInformationTable, classifierType, defaultClassificationResultType, ruleSetWithCharacteristics, orderOfDecisions);
+        classify(this.learningInformationTable, classifiedInformationTable, classifierType, defaultClassificationResultType, ruleSetWithCharacteristics, orderOfDecisions);
 
         this.classifiedInformationTable = classifiedInformationTable;
+        this.classifiedDescriptiveAttributes = new DescriptiveAttributes(projectDescriptiveAttributes);
         this.classifierType = classifierType;
         this.defaultClassificationResultType = defaultClassificationResultType;
+
+        this.projectDataHash = projectDataInformationTable.getHash();
+        this.isCurrentProjectData = true;
 
         if(externalDataFileName != null) {
             this.externalData = true;
@@ -48,17 +65,16 @@ public class ProjectClassification extends AbstractClassification {
             this.externalDataFileName = null;
         }
 
-        learningDataHash = learningInformationTable.getHash();
-        isCurrentLearningData = true;
-        ruleSetHash = ruleSetWithCharacteristics.getHash();
-        isCurrentRuleSet = true;
-
-        descriptiveAttributes = new DescriptiveAttributes(projectDescriptiveAttributes);
-        rulesDescriptiveAttributes = new DescriptiveAttributes(projectDescriptiveAttributes);   //@todo: change 'learningInformationTable' to original learning data of rules
+        this.ruleSet = ruleSetWithCharacteristics;
+        this.isCurrentRuleSet = true;
     }
 
     public InformationTable getClassifiedInformationTable() {
         return classifiedInformationTable;
+    }
+
+    public DescriptiveAttributes getClassifiedDescriptiveAttributes() {
+        return classifiedDescriptiveAttributes;
     }
 
     public Decision[] getOrderOfDecisions() {
@@ -73,6 +89,18 @@ public class ProjectClassification extends AbstractClassification {
         return defaultClassificationResultType;
     }
 
+    public String getProjectDataHash() {
+        return projectDataHash;
+    }
+
+    public Boolean isCurrentProjectData() {
+        return isCurrentProjectData;
+    }
+
+    public void setCurrentProjectData(Boolean currentProjectData) {
+        isCurrentProjectData = currentProjectData;
+    }
+
     public boolean isExternalData() {
         return externalData;
     }
@@ -81,20 +109,8 @@ public class ProjectClassification extends AbstractClassification {
         return externalDataFileName;
     }
 
-    public String getLearningDataHash() {
-        return learningDataHash;
-    }
-
-    public Boolean isCurrentLearningData() {
-        return isCurrentLearningData;
-    }
-
-    public void setCurrentLearningData(Boolean currentLearningData) {
-        isCurrentLearningData = currentLearningData;
-    }
-
-    public String getRuleSetHash() {
-        return ruleSetHash;
+    public RuleSetWithCharacteristics getRuleSet() {
+        return ruleSet;
     }
 
     public Boolean isCurrentRuleSet() {
@@ -105,29 +121,39 @@ public class ProjectClassification extends AbstractClassification {
         isCurrentRuleSet = currentRuleSet;
     }
 
-    public DescriptiveAttributes getDescriptiveAttributes() {
-        return descriptiveAttributes;
+    public InformationTable getLearningInformationTable() {
+        return learningInformationTable;
     }
 
-    public DescriptiveAttributes getRulesDescriptiveAttributes() {
-        return rulesDescriptiveAttributes;
+    public DescriptiveAttributes getLearningDescriptiveAttributes() {
+        return learningDescriptiveAttributes;
+    }
+
+    public Boolean isCurrentLearningData() {
+        return isCurrentLearningData;
+    }
+
+    public void setCurrentLearningData(Boolean currentLearningData) {
+        isCurrentLearningData = currentLearningData;
     }
 
     @Override
     public String toString() {
         return "ProjectClassification{" +
                 "classifiedInformationTable=" + classifiedInformationTable +
+                ", classifiedDescriptiveAttributes=" + classifiedDescriptiveAttributes +
                 ", orderOfDecisions=" + Arrays.toString(orderOfDecisions) +
                 ", classifierType=" + classifierType +
                 ", defaultClassificationResultType=" + defaultClassificationResultType +
+                ", projectDataHash='" + projectDataHash + '\'' +
+                ", isCurrentProjectData=" + isCurrentProjectData +
                 ", externalData=" + externalData +
                 ", externalDataFileName='" + externalDataFileName + '\'' +
-                ", learningDataHash='" + learningDataHash + '\'' +
-                ", isCurrentLearningData=" + isCurrentLearningData +
-                ", ruleSetHash='" + ruleSetHash + '\'' +
+                ", ruleSet=" + ruleSet +
                 ", isCurrentRuleSet=" + isCurrentRuleSet +
-                ", descriptiveAttributes=" + descriptiveAttributes +
-                ", rulesDescriptiveAttributes=" + rulesDescriptiveAttributes +
+                ", learningInformationTable=" + learningInformationTable +
+                ", learningDescriptiveAttributes=" + learningDescriptiveAttributes +
+                ", isCurrentLearningData=" + isCurrentLearningData +
                 "} " + super.toString();
     }
 

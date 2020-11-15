@@ -44,7 +44,7 @@ public class ValidityContainerSerializer extends JsonSerializer<ValidityProjectC
         if(validityProjectContainer.getRulesExternal() != null) {
             jsonGenerator.writeStartObject();
                 jsonGenerator.writeBooleanField("externalRules", validityProjectContainer.getRulesExternal());
-                jsonGenerator.writeBooleanField("isCurrentData", validityProjectContainer.getRulesData());
+                jsonGenerator.writeObjectField("isCurrentData", validityProjectContainer.getRulesData());
             jsonGenerator.writeEndObject();
         } else {
             jsonGenerator.writeNull();
@@ -54,8 +54,9 @@ public class ValidityContainerSerializer extends JsonSerializer<ValidityProjectC
         if(validityProjectContainer.getClassificationExternal() != null) {
             jsonGenerator.writeStartObject();
                 jsonGenerator.writeBooleanField("externalData", validityProjectContainer.getClassificationExternal());
-                jsonGenerator.writeBooleanField("isCurrentLearningData", validityProjectContainer.getClassificationLearningData());
+                jsonGenerator.writeBooleanField("isCurrentProjectData", validityProjectContainer.getClassificationProjectData());
                 jsonGenerator.writeBooleanField("isCurrentRuleSet", validityProjectContainer.getClassificationRules());
+                jsonGenerator.writeObjectField("isCurrentLearningData", validityProjectContainer.getClassificationLearningData());
             jsonGenerator.writeEndObject();
         } else {
             jsonGenerator.writeNull();

@@ -84,7 +84,7 @@ public class UnionsService {
             final UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(informationTable, typeOfUnions, consistencyThreshold);
             final DescriptiveAttributes descriptiveAttributes = new DescriptiveAttributes(project.getDescriptiveAttributes());
 
-            unionsWithHttpParameters = new UnionsWithHttpParameters(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold, informationTable.getHash(), descriptiveAttributes);
+            unionsWithHttpParameters = new UnionsWithHttpParameters(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold, informationTable.getHash(), descriptiveAttributes, informationTable);
 
             project.setUnions(unionsWithHttpParameters);
             project.setCurrentUnionsWithSingleLimitingDecision(true);
@@ -225,7 +225,7 @@ public class UnionsService {
         final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
 
         final Integer descriptiveAttributeIndex = unionsWithHttpParameters.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
-        AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(project.getInformationTable(), descriptiveAttributeIndex);
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(unionsWithHttpParameters.getInformationTable(), descriptiveAttributeIndex);
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
@@ -241,7 +241,7 @@ public class UnionsService {
 
         final Union chosenClassUnion = getClassUnionByIndex(unionsWithHttpParameters, classUnionIndex);
         final int[] indices =  getClassUnionArrayPropertyValues(chosenClassUnion, classUnionArrayPropertyType);
-        final String[] objectNames = unionsWithHttpParameters.getDescriptiveAttributes().extractChosenObjectNames(project.getInformationTable(), indices);
+        final String[] objectNames = unionsWithHttpParameters.getDescriptiveAttributes().extractChosenObjectNames(unionsWithHttpParameters.getInformationTable(), indices);
 
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
@@ -295,7 +295,7 @@ public class UnionsService {
 
         final Union chosenClassUnion = getClassUnionByIndex(unionsWithHttpParameters, classUnionIndex);
 
-        final ClassUnionArrayPropertyResponse classUnionArrayPropertyResponse = ClassUnionArrayPropertyResponseBuilder.newInstance().build(chosenClassUnion, classUnionArrayPropertyType, unionsWithHttpParameters.getDescriptiveAttributes(), project.getInformationTable());
+        final ClassUnionArrayPropertyResponse classUnionArrayPropertyResponse = ClassUnionArrayPropertyResponseBuilder.newInstance().build(chosenClassUnion, classUnionArrayPropertyType, unionsWithHttpParameters.getDescriptiveAttributes(), unionsWithHttpParameters.getInformationTable());
         logger.debug("classUnionArrayPropertyResponse:\t{}", classUnionArrayPropertyResponse.toString());
         return classUnionArrayPropertyResponse;
     }
@@ -307,13 +307,13 @@ public class UnionsService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        getUnionsWithHttpParametersFromProject(project);
+        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
 
         ObjectAbstractResponse objectAbstractResponse;
         if(isAttributes) {
-            objectAbstractResponse = new ObjectWithAttributesResponse(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectWithAttributesResponse(unionsWithHttpParameters.getInformationTable(), objectIndex);
         } else {
-            objectAbstractResponse = new ObjectResponse(project.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectResponse(unionsWithHttpParameters.getInformationTable(), objectIndex);
         }
         logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
         return objectAbstractResponse;

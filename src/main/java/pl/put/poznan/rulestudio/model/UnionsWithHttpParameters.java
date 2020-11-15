@@ -1,9 +1,8 @@
 package pl.put.poznan.rulestudio.model;
 
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
+import org.rulelearn.data.InformationTable;
 import pl.put.poznan.rulestudio.enums.UnionType;
-
-import java.io.Serializable;
 
 public class UnionsWithHttpParameters {
     private UnionsWithSingleLimitingDecision unions;
@@ -12,8 +11,9 @@ public class UnionsWithHttpParameters {
     private String dataHash;
     private Boolean isCurrentData;
     private DescriptiveAttributes descriptiveAttributes;
+    private InformationTable informationTable;
 
-    public UnionsWithHttpParameters(UnionsWithSingleLimitingDecision unions, UnionType typeOfUnions, Double consistencyThreshold, String dataHash, DescriptiveAttributes descriptiveAttributes) {
+    public UnionsWithHttpParameters(UnionsWithSingleLimitingDecision unions, UnionType typeOfUnions, Double consistencyThreshold, String dataHash, DescriptiveAttributes descriptiveAttributes, InformationTable informationTable) {
         this.unions = unions;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
@@ -21,6 +21,7 @@ public class UnionsWithHttpParameters {
 
         this.isCurrentData = true;
         this.descriptiveAttributes = descriptiveAttributes;
+        this.informationTable = informationTable;
     }
 
     public UnionsWithSingleLimitingDecision getUnions() {
@@ -71,6 +72,14 @@ public class UnionsWithHttpParameters {
         this.descriptiveAttributes = descriptiveAttributes;
     }
 
+    public InformationTable getInformationTable() {
+        return informationTable;
+    }
+
+    public void setInformationTable(InformationTable informationTable) {
+        this.informationTable = informationTable;
+    }
+
     @Override
     public String toString() {
         return "UnionsWithHttpParameters{" +
@@ -80,6 +89,7 @@ public class UnionsWithHttpParameters {
                 ", dataHash='" + dataHash + '\'' +
                 ", isCurrentData=" + isCurrentData +
                 ", descriptiveAttributes=" + descriptiveAttributes +
+                ", informationTable=" + informationTable +
                 '}';
     }
 }
