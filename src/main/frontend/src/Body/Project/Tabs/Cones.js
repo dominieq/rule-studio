@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import { fetchCones } from "../../../Utils/utilFunctions/fetchFunctions";
-import { parseConesItems } from "../../../Utils/utilFunctions/parseItems"
+import { getItemName, parseConesItems } from "../../../Utils/utilFunctions/parseItems"
 import { parseConesListItems } from "../../../Utils/utilFunctions/parseListItems";
 import TabBody from "../Utils/TabBody";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
@@ -252,13 +252,16 @@ class Cones extends Component {
     }
 
     onObjectNamesChange = (names) => {
-        const { data } = this.state;
-        const items = parseConesItems(data, names);
-
-        this.setState({
-            items: items,
-            displayedItems: items
-        })
+        this.setState(({items, displayedItems}) => ({
+            items: items.map((item, index) => {
+                item.name = getItemName(index, names);
+                return item;
+            }),
+            displayedItems: displayedItems.map((item, index) => {
+                item.name = getItemName(index, names);
+                return item;
+            })
+        }));
     }
 
     onSnackbarOpen = (exception) => {

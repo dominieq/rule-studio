@@ -616,14 +616,16 @@ class CrossValidation extends Component {
     };
 
     onObjectNamesChange = (names) => {
-        this.setState(({displayedItems}) => {
-            const newItems = displayedItems.map((item, index) => {
+        this.setState(({items, displayedItems}) => ({
+            items: items.map((item, index) => {
                 item.name = getItemName(index, names);
                 return item;
-            });
-
-            return { displayedItems: newItems };
-        });
+            }),
+            displayedItems: displayedItems.map((item, index) => {
+                item.name = getItemName(index, names);
+                return item;
+            })
+        }));
     }
 
     onAttributesMenuOpen = (event) => {
