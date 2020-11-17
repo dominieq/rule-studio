@@ -545,37 +545,6 @@ class CrossValidation extends Component {
         }
     };
 
-    onNumberOfFoldsBlur = () => {
-        this.setState(({parameters}) => {
-            const { numberOfFolds } = parameters;
-            const { project: { result: { informationTable: { objects }}}} = this.props;
-
-            if (numberOfFolds > objects.length) {
-                return {
-                    parameters: { ...parameters, numberOfFolds: objects.length },
-                    alertProps: {
-                        message: "Number of folds should be less than or equal to number of objects.",
-                        open: true,
-                        severity: "warning"
-                    }
-                };
-            } else if (numberOfFolds < 2 && objects.length >= 2) {
-                return {
-                    parameters: { ...parameters, numberOfFolds: 2 },
-                    alertProps: {
-                        message: "Number of folds should be greater than or equal to 2.",
-                        open: true,
-                        severity: "warning"
-                    }
-                };
-            } else {
-                return {
-                    parameters: { ...parameters }
-                };
-            }
-        })
-    }
-
     onFoldIndexChange = (event) => {
         const { loading } = this.state;
         if (loading.crossValidation || loading.selectedFold) {
@@ -748,7 +717,6 @@ class CrossValidation extends Component {
                     <NumberOfFoldsSelector
                         TextFieldProps={{
                             onChange: this.onNumberOfFoldsChange,
-                            onBlur: this.onNumberOfFoldsBlur,
                             value: parameters.numberOfFolds
                         }}
                     />
