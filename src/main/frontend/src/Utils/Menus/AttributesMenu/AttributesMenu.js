@@ -27,6 +27,7 @@ const CustomMenu = withStyles( theme => ({
  * @param {Object} props
  * @param {Object} props.ListProps - Props applied to the List element from react-virtualized.
  * @param {string} props.MuiMenuProps - Props applied to the Menu element from Material-UI.
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onObjectNamesChange - Callback fired when object names have been changed.
  * @param {function} props.onSnackbarOpen - Callback fired when the component requests to display an error.
  * @param {string} props.projectId - The identifier of a selected project.
@@ -71,6 +72,11 @@ class AttributesMenu extends React.Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.projectId !== this.props.projectId) {
             this.getAttributes();
+            return;
+        }
+
+        if (prevProps.objectGlobalName !== this.props.objectGlobalName) {
+            this.getAttributes(this.getObjectNames);
         }
     }
 
@@ -110,7 +116,7 @@ class AttributesMenu extends React.Component {
         }
     }
 
-    getAttributes = () => {
+    getAttributes = (finallyCallback) => {
         this.setState(({loading}) => ({
             loading: { ...loading, attributes: true }
         }), () => {
@@ -129,7 +135,9 @@ class AttributesMenu extends React.Component {
                 if (this._isMounted) {
                     this.setState(({loading}) => ({
                         loading: { ...loading, attributes: false }
-                    }));
+                    }), () => {
+                        if (typeof finallyCallback === "function") finallyCallback();
+                    });
                 }
             });
         });
@@ -162,7 +170,7 @@ class AttributesMenu extends React.Component {
         });
     }
 
-    getObjectNames = () => {
+    getObjectNames = (finallyCallback) => {
         this.setState(({loading}) => ({
             loading: { ...loading, objectNames: true}
         }), () => {
@@ -181,7 +189,9 @@ class AttributesMenu extends React.Component {
                 if (this._isMounted) {
                     this.setState(({loading}) => ({
                         loading: { ...loading, objectNames: false }
-                    }));
+                    }), () => {
+                        if (typeof finallyCallback === "function") finallyCallback();
+                    });
                 }
             });
         });
@@ -264,6 +274,7 @@ AttributesMenu.propTypes = {
         id: PropTypes.string.isRequired,
     }),
     MuiMenuProps: PropTypes.shape({ ...MuiMenuPropTypes }),
+    objectGlobalName: PropTypes.string,
     onObjectNamesChange: PropTypes.func,
     onSnackbarOpen: PropTypes.func,
     projectId: PropTypes.string.isRequired,

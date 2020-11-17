@@ -19,10 +19,10 @@ import OutdatedData from "../../Utils/Feedback/AlertBadge/Alerts/OutdatedData";
  * @class
  * @category Tabs
  * @param {Object} props
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
+ * @param {function} props.onSnackbarOpen - Callback fired when the component request to display an error.
  * @param {Object} props.project - Current project.
- * @param {string} props.serverBase - The name of the host.
- * @param {function} props.onSnackbarOpen - Callback fired when an alert is opened.
- * @param {function} props.updateIndexOptions - Callback fired when an attribute was changed.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.updateProject - Callback fired when a part of current project was changed.
  */
 class ProjectTabs extends React.Component {
@@ -375,24 +375,19 @@ class ProjectTabs extends React.Component {
         });
     };
 
-    getTabProps = (index) => {
-        return ({
-            id: `project-tab-${index}`,
-            'aria-controls': `project-tabpanel-${index}`,
-        })
-    };
+    getTabProps = (index) => ({
+        id: `project-tab-${index}`,
+        'aria-controls': `project-tabpanel-${index}`
+    });
 
-    getTabBodyProps = (index) => {
-        const { project, serverBase } = this.props;
-
-        return ({
-            project: project,
-            onTabChange: this.props.updateProject,
-            serverBase: serverBase,
-            showAlert: this.showAlert,
-            value: index
-        });
-    };
+    getTabBodyProps = (index) => ({
+        objectGlobalName: this.props.objectGlobalName,
+        onTabChange: this.props.updateProject,
+        project: this.props.project,
+        serverBase: this.props.serverBase,
+        showAlert: this.showAlert,
+        value: index
+    });
 
     render() {
         const { loading ,selected, showAlert, showExternalRules, showExternalData } = this.state;
@@ -478,10 +473,10 @@ class ProjectTabs extends React.Component {
 }
 
 ProjectTabs.propTypes = {
+    objectGlobalName: PropTypes.string,
+    onSnackbarOpen: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
-    onSnackbarOpen: PropTypes.func,
-    updateIndexOptions: PropTypes.func,
     updateProject: PropTypes.func
 };
 

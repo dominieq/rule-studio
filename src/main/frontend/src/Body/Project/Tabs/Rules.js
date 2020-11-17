@@ -37,13 +37,14 @@ import { mdiTextBox } from '@mdi/js';
  * @category Tabs
  * @subcategory Tabs
  * @param {Object} props
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onDataUploaded - Callback fired when tab receives information that new data was uploaded.
  * @param {function} props.onRulesUploaded - Callback fired when tab receives information that rule set was uploaded.
  * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
  * @param {Object} props.project - Current project.
- * @param {string} props.serverBase - The name of the host.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
- * @param {number} props.value - The id of a tab.
+ * @param {number} props.value - The index of a selected tab.
  * @returns {React.Component}
  */
 class Rules extends Component {
@@ -655,7 +656,7 @@ class Rules extends Component {
 
     render() {
         const { loading, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
-        const { project: { id: projectId }, serverBase } = this.props;
+        const { objectGlobalName, project: { id: projectId }, serverBase } = this.props;
 
         const resultsExists = Array.isArray(items) && Boolean(items.length);
 
@@ -819,6 +820,7 @@ class Rules extends Component {
                     {selectedItem !== null &&
                         <RulesDialog
                             item={selectedItem}
+                            objectGlobalName={objectGlobalName}
                             onClose={() => this.toggleOpen("details")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.details}
@@ -835,6 +837,7 @@ class Rules extends Component {
 }
 
 Rules.propTypes = {
+    objectGlobalName: PropTypes.string,
     onDataUploaded: PropTypes.func,
     onRulesUploaded: PropTypes.func,
     onTabChange: PropTypes.func,

@@ -36,6 +36,7 @@ import { AttributesMenu } from "../../../Menus/AttributesMenu";
  * @param {number} props.item.traits.certainty - The certainty of suggested classification.
  * @param {number} props.item.traits.indicesOfCoveringRules - The number of rules that cover a selected object.
  * @param {function} props.item.toFilter - Returns item in an easy to filter form.
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onClose - Callback fired when the component requests to be closed.
  * @param {function} props.onSnackbarOpen - Callback fired when the component requests to display an error.
  * @param {boolean} props.open - If <code>true</code> the Dialog is open.
@@ -504,12 +505,11 @@ class ClassifiedObjectDialog extends React.PureComponent {
         const {
             disableAttributesMenu,
             item,
-            onSnackbarOpen,
+            objectGlobalName,
             projectId,
             resource,
             serverBase,
-            open,
-            onClose
+            open
         } = this.props;
 
         const { originalDecision, suggestedDecision, certainty } = item.traits;
@@ -517,7 +517,7 @@ class ClassifiedObjectDialog extends React.PureComponent {
         return (
             <FullscreenDialog
                 disableEscapeKeyDown={true}
-                onClose={onClose}
+                onClose={this.props.onClose}
                 onEnter={this.onEnter}
                 onEscapeKeyDown={this.onEscapeKeyDown}
                 open={open}
@@ -670,8 +670,9 @@ class ClassifiedObjectDialog extends React.PureComponent {
                             anchorEl: attributesMenuEl,
                             onClose: this.onAttributesMenuClose
                         }}
+                        objectGlobalName={objectGlobalName}
                         onObjectNamesChange={this.onCoveredObjectNamesChange}
-                        onSnackbarOpen={onSnackbarOpen}
+                        onSnackbarOpen={this.props.onSnackbarOpen}
                         projectId={projectId}
                         resource={`${resource}/rules`}
                         serverBase={serverBase}
@@ -701,12 +702,13 @@ ClassifiedObjectDialog.propTypes = {
         }),
         toFilter: PropTypes.func
     }),
+    objectGlobalName: PropTypes.string,
     onClose: PropTypes.func,
     onSnackbarOpen: PropTypes.func,
     open: PropTypes.bool.isRequired,
     projectId: PropTypes.string,
     resource: PropTypes.string,
-    serverBase: PropTypes.string,
+    serverBase: PropTypes.string
 };
 
 export default ClassifiedObjectDialog;

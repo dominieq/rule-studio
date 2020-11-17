@@ -21,11 +21,12 @@ import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
  * @category Tabs
  * @subcategory Tabs
  * @param {Object} props
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
  * @param {Object} props.project - Current project.
- * @param {string} props.serverBase - The name of the host.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
- * @param {number} props.value - The id of a tab.
+ * @param {number} props.value - The index of a selected tab.
  * @returns {React.Component}
  */
 class Cones extends Component {
@@ -287,7 +288,7 @@ class Cones extends Component {
 
     render() {
         const { loading, items, displayedItems, openDetails, selectedItem, attributesMenuEl, alertProps } = this.state;
-        const { project: { id: projectId }, serverBase } = this.props;
+        const { objectGlobalName ,project: { id: projectId }, serverBase } = this.props;
 
         return (
             <CustomBox customScrollbar={true} id={"cones"} variant={"TabBody"}>
@@ -302,8 +303,6 @@ class Cones extends Component {
                 </CustomHeader>
                 {Array.isArray(items) && items.length > 0 && !loading &&
                     <AttributesMenu
-                        onObjectNamesChange={this.onObjectNamesChange}
-                        onSnackbarOpen={this.onSnackbarOpen}
                         ListProps={{
                             id: "cones-main-desc-attribute-menu"
                         }}
@@ -311,6 +310,9 @@ class Cones extends Component {
                             anchorEl: attributesMenuEl,
                             onClose: this.onAttributesMenuClose
                         }}
+                        objectGlobalName={objectGlobalName}
+                        onObjectNamesChange={this.onObjectNamesChange}
+                        onSnackbarOpen={this.onSnackbarOpen}
                         projectId={projectId}
                         resource={"cones"}
                         serverBase={serverBase}
@@ -388,6 +390,7 @@ class Cones extends Component {
 }
 
 Cones.propTypes = {
+    objectGlobalName: PropTypes.string,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,

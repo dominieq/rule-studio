@@ -35,12 +35,13 @@ import {AttributesMenu} from "../../../Utils/Menus/AttributesMenu";
  * @category Tabs
  * @subcategory Tabs
  * @param {Object} props
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onDateUploaded - Callback fired when tab receives information that new data was uploaded.
  * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
  * @param {Object} props.project - Current project.
- * @param {string} props.serverBase - The name of the host.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
- * @param {number} props.value - The id of a tab.
+ * @param {number} props.value - The index of a selected tab.
  * @returns {React.Component}
  */
 class Classification extends Component {
@@ -497,7 +498,7 @@ class Classification extends Component {
 
     render() {
         const { loading, data, items, displayedItems, parameters, selected, open, attributesMenuEl, alertProps } = this.state;
-        const { project: { id: projectId }, serverBase } = this.props;
+        const { objectGlobalName, project: { id: projectId }, serverBase } = this.props;
 
         return (
             <CustomBox id={"classification"} variant={"Tab"}>
@@ -596,6 +597,7 @@ class Classification extends Component {
                         <ClassifiedObjectDialog
                             disableAttributesMenu={false}
                             item={selected.item}
+                            objectGlobalName={objectGlobalName}
                             onClose={() => this.toggleOpen("details")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.details}
@@ -634,6 +636,7 @@ class Classification extends Component {
                             anchorEl: attributesMenuEl,
                             onClose: this.onAttributesMenuClose
                         }}
+                        objectGlobalName={objectGlobalName}
                         onObjectNamesChange={this.onObjectNamesChange}
                         onSnackbarOpen={this.onSnackbarOpen}
                         projectId={projectId}
@@ -649,6 +652,7 @@ class Classification extends Component {
 }
 
 Classification.propTypes = {
+    objectGlobalName: PropTypes.string,
     onDataUploaded: PropTypes.func,
     onTabChange: PropTypes.func,
     project: PropTypes.object,

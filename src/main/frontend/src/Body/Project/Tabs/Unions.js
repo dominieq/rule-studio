@@ -26,11 +26,12 @@ import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
  * @category Tabs
  * @subcategory Tabs
  * @param {Object} props
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
  * @param {Object} props.project - Current project.
- * @param {string} props.serverBase - The name of the host.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
- * @param {number} props.value - The id of a tab.
+ * @param {number} props.value - The index of a selected tab.
  * @returns {React.Component}
  */
 class Unions extends Component {
@@ -357,7 +358,7 @@ class Unions extends Component {
 
     render() {
         const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
-        const { project: { id: projectId }, serverBase } = this.props;
+        const { objectGlobalName, project: { id: projectId }, serverBase } = this.props;
 
         return (
             <CustomBox id={"unions"} variant={"Tab"}>
@@ -422,6 +423,7 @@ class Unions extends Component {
                     {selectedItem != null &&
                         <UnionsDialog
                             item={selectedItem}
+                            objectGlobalName={objectGlobalName}
                             onClose={() => this.toggleOpen("details")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.details}
@@ -437,6 +439,7 @@ class Unions extends Component {
 }
 
 Unions.propTypes = {
+    objectGlobalName: PropTypes.string,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,

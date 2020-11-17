@@ -17,30 +17,31 @@ import {AttributesMenu} from "../../../Menus/AttributesMenu";
  * @name Rule Details Dialog
  * @constructor
  * @category Details Dialog
- * @param props {Object} - Any other props will be forwarded to the {@link FullscreenDialog} element.
- * @param props.item {Object} - The selected rule with it's characteristics.
- * @param props.item.id {number} - The id of a selected rule.
- * @param props.item.name {Object} - The name of a selected rule.
- * @param props.item.name.decisions {Object[][]} - The decision part of a rule
- * @param props.item.name.decisions[][].primary {number|string} - The part of the decision coloured with primary colour.
- * @param props.item.name.decisions[][].secondary {number|string} - The part of the decision coloured with secondary colour.
- * @param props.item.name.decisions[][].withBraces {boolean} - If <code>true</code> braces will be added to decision.
- * @param props.item.name.decisions[][].toString {function} - Returns decision as a single string.
- * @param props.item.name.conditions {Object[]} - The condition part of a rule.
- * @param props.item.name.conditions[].primary {number|string} - The part of the condition coloured with primary colour.
- * @param props.item.name.conditions[].secondary {number|string} - The part of the condition coloured with secondary colour.
- * @param props.item.name.conditions[].toString {function} - Returns condition as a single string.
- * @param props.item.name.decisionsToString {function} - Returns decisions as a single string concatenated with a logical AND and OR.
- * @param props.item.name.conditionsToString {function} - Returns conditions as a single string concatenated with a logical AND.
- * @param props.item.name.toString {function} - Returns concatenated output of <code>decisionsToString</code> and <code>conditionsToString</code>.
- * @param props.item.traits {Object} - The characteristics of a selected rule in a key-value form.
- * @param [props.item.traits.Type] {string}
- * @param props.item.toFilter {function} - Returns rule in an easy to filter form.
- * @param props.item.toSort {function} - Returns rule in an easy to sort form.
- * @param props.onClose {function} - Callback fired when the component requests to be closed.
- * @param props.onSnackbarOpen {function} - Callback fired when the component requests to display an error.
- * @param props.open {boolean} - If <code>true</code> the Dialog is open.
- * @param props.projectId {string} - The identifier of a selected project.
+ * @param {Object} props - Any other props will be forwarded to the {@link FullscreenDialog} element.
+ * @param {Object} props.item - The selected rule with it's characteristics.
+ * @param {number} props.item.id - The id of a selected rule.
+ * @param {Object} props.item.name - The name of a selected rule.
+ * @param {Object[][]} props.item.name.decisions - The decision part of a rule
+ * @param {number|string} props.item.name.decisions[][].primary - The part of the decision coloured with primary colour.
+ * @param {number|string} props.item.name.decisions[][].secondary - The part of the decision coloured with secondary colour.
+ * @param {boolean} props.item.name.decisions[][].withBraces - If <code>true</code> braces will be added to decision.
+ * @param {function} props.item.name.decisions[][].toString - Returns decision as a single string.
+ * @param {Object[]} props.item.name.conditions - The condition part of a rule.
+ * @param {number|string} props.item.name.conditions[].primary - The part of the condition coloured with primary colour.
+ * @param {number|string} props.item.name.conditions[].secondary - The part of the condition coloured with secondary colour.
+ * @param {function} props.item.name.conditions[].toString - Returns condition as a single string.
+ * @param {function} props.item.name.decisionsToString - Returns decisions as a single string concatenated with a logical AND and OR.
+ * @param {function} props.item.name.conditionsToString - Returns conditions as a single string concatenated with a logical AND.
+ * @param {function} props.item.name.toString - Returns concatenated output of <code>decisionsToString</code> and <code>conditionsToString</code>.
+ * @param {Object} props.item.traits - The characteristics of a selected rule in a key-value form.
+ * @param {string} [props.item.traits.Type]
+ * @param {function} props.item.toFilter - Returns rule in an easy to filter form.
+ * @param {function} props.item.toSort - Returns rule in an easy to sort form.
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
+ * @param {function} props.onClose - Callback fired when the component requests to be closed.
+ * @param {function} props.onSnackbarOpen - Callback fired when the component requests to display an error.
+ * @param {boolean} props.open - If <code>true</code> the Dialog is open.
+ * @param {string} props.projectId - The identifier of a selected project.
  * @param {string} props.serverBase - The host in the URL of an API call.
  * @returns {React.PureComponent}
  */
@@ -253,13 +254,13 @@ class RulesDialog extends React.PureComponent {
 
     render() {
         const { loading, coveredObjects, object, objectIndex, attributes, attributesMenuEl } = this.state;
-        const { item, onSnackbarOpen, projectId, serverBase, ...other } = this.props;
+        const { item, objectGlobalName, projectId, serverBase, open } = this.props;
 
         let displayTraits = { ...item.traits };
         delete displayTraits["Type"];
 
         return (
-            <FullscreenDialog {...other}>
+            <FullscreenDialog open={open} onClose={this.props.onClose}>
                 <FullscreenHeader
                     id={"rules-details-header"}
                     onClose={this.props.onClose}
@@ -309,8 +310,9 @@ class RulesDialog extends React.PureComponent {
                         anchorEl: attributesMenuEl,
                         onClose: this.onAttributesMenuClose
                     }}
+                    objectGlobalName={objectGlobalName}
                     onObjectNamesChange={this.onObjectNamesChange}
-                    onSnackbarOpen={onSnackbarOpen}
+                    onSnackbarOpen={this.props.onSnackbarOpen}
                     projectId={projectId}
                     resource={"rules"}
                     serverBase={serverBase}
@@ -346,6 +348,7 @@ RulesDialog.propTypes = {
         toFilter: PropTypes.func,
         toSort: PropTypes.func,
     }),
+    objectGlobalName: PropTypes.string,
     onClose: PropTypes.func,
     onSnackbarOpen: PropTypes.func,
     open: PropTypes.bool.isRequired,

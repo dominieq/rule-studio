@@ -18,21 +18,22 @@ import {AttributesMenu} from "../../../Menus/AttributesMenu";
  * @name Union Details Dialog
  * @constructor
  * @category Details Dialog
- * @param props {Object} - Any other props will be forwarded to the {@link FullscreenDialog} element.
- * @param props.item {Object} - The selected union with it's characteristics.
- * @param props.item.id {number} - The id of a selected union.
- * @param props.item.name {Object} - The name of a selected union.
- * @param props.item.name.primary {number|string} - The part of a name coloured with a primary colour.
- * @param props.item.name.secondary {number|string} - The part of a name coloured with a secondary colour.
- * @param props.item.name.toString {function} - Returns name as a single string.
- * @param props.item.traits {Object} - The characteristics of a selected union in a key-value form.
- * @param props.item.traits.Accuracy_of_approximation {number}
- * @param props.item.traits.Quality_of_approximation {number}
- * @param props.item.toFilter {function} - Returns item in an easy to filter form.
- * @param props.onClose {function} - Callback fired when the component requests to be closed.
- * @param props.onSnackbarOpen {function} - Callback fired when the component requests to display an error.
- * @param props.open {boolean} - If <code>true</code> the Dialog is open.
- * @param props.projectId {string} - The identifier of a selected project.
+ * @param {Object} props - Any other props will be forwarded to the {@link FullscreenDialog} element.
+ * @param {Object} props.item - The selected union with it's characteristics.
+ * @param {number} props.item.id - The id of a selected union.
+ * @param {Object} props.item.name - The name of a selected union.
+ * @param {number|string} props.item.name.primary - The part of a name coloured with a primary colour.
+ * @param {number|string} props.item.name.secondary - The part of a name coloured with a secondary colour.
+ * @param {function} props.item.name.toString - Returns name as a single string.
+ * @param {Object} props.item.traits - The characteristics of a selected union in a key-value form.
+ * @param {number} props.item.traits.Accuracy_of_approximation
+ * @param {number} props.item.traits.Quality_of_approximation
+ * @param {function} props.item.toFilter - Returns item in an easy to filter form.
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
+ * @param {function} props.onClose - Callback fired when the component requests to be closed.
+ * @param {function} props.onSnackbarOpen - Callback fired when the component requests to display an error.
+ * @param {boolean} props.open - If <code>true</code> the Dialog is open.
+ * @param {string} props.projectId - The identifier of a selected project.
  * @param {string} props.serverBase - The host in the URL of an API call.
  * @returns {React.PureComponent}
  */
@@ -309,16 +310,10 @@ class UnionsDialog extends React.PureComponent {
             attributesMenuEl
         } = this.state;
 
-        const {
-            item,
-            onSnackbarOpen,
-            projectId,
-            serverBase,
-            ...other
-        }  = this.props;
+        const { item, objectGlobalName, open, projectId, serverBase } = this.props;
 
         return (
-            <FullscreenDialog {...other}>
+            <FullscreenDialog open={open} onClose={this.props.onClose}>
                 <FullscreenHeader
                     id={"unions-details-header"}
                     onClose={this.props.onClose}
@@ -381,6 +376,7 @@ class UnionsDialog extends React.PureComponent {
                         anchorEl: attributesMenuEl,
                         onClose: this.onAttributesMenuClose
                     }}
+                    objectGlobalName={objectGlobalName}
                     onObjectNamesChange={this.onObjectNamesChange}
                     onSnackbarOpen={this.props.onSnackbarOpen}
                     projectId={projectId}
@@ -407,6 +403,7 @@ UnionsDialog.propTypes = {
         }),
         toFilter: PropTypes.func
     }),
+    objectGlobalName: PropTypes.string,
     onClose: PropTypes.func,
     onSnackbarOpen: PropTypes.func,
     open: PropTypes.bool,

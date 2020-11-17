@@ -34,6 +34,7 @@ class App extends Component {
             body: "Home",
             currentProject: -1,
             projects: [],
+            objectGlobalName: null,
             darkTheme: true,
             serverBase: "http://localhost:8080",
             open: {
@@ -298,28 +299,15 @@ class App extends Component {
     }
     
     /**
-     * Callback fired when {@link SettingsProjectDialog} requests to be closed.
-     * Method saves new settings in {@link App}'s state, then closes dialog.
+     * Callback fired when {@link SettingsProjectDialog} changed global visible object name.
      *
      * @function
      * @memberOf App
-     * @param {Object} newSettings - New project settings.
      */
-    onSettingsDialogClose = (newSettings) => {
-        if (newSettings && Object.keys(newSettings).length) {
-            this.setState(({currentProject, projects, open}) => ({
-                projects: [
-                    ...projects.slice(0, currentProject),
-                    {...projects[currentProject], settings: newSettings},
-                    ...projects.slice(currentProject + 1)
-                ],
-                open: {...open, settingsDialog: false}
-            }));
-        } else {
-            this.setState(prevState => ({
-                open: {...prevState.open, settingsDialog: false}
-            }));
-        }
+    onObjectNamesChange = (objectVisibleName) => {
+        this.setState({
+            objectGlobalName: objectVisibleName
+        });
     };
 
     /**
@@ -456,7 +444,7 @@ class App extends Component {
     };
 
     render() {
-        const { currentProject, projects, open, serverBase, alertProps } = this.state;
+        const { currentProject, projects, objectGlobalName, open, serverBase, alertProps } = this.state;
         const { deleteDialog, importDialog, renameDialog, settingsDialog } = open;
 
         return (
@@ -492,11 +480,12 @@ class App extends Component {
                         "Import": <Import onFilesAccepted={this.onFilesAccepted} />,
                         "Project":
                             <ProjectTabs
+                                objectGlobalName={objectGlobalName}
+                                onSnackbarOpen={this.onSnackbarOpen}
                                 project={projects[currentProject]}
                                 serverBase={serverBase}
-                                showAlert={this.onSnackbarOpen}
                                 updateProject={this.updateProject}
-                            />,
+                            />
                     }[this.state.body]
                 }
                 {currentProject >= 0 &&
@@ -508,6 +497,7 @@ class App extends Component {
                         />
                         <SettingsProjectDialog
                             onClose={() => this.onToggleDialog("settingsDialog")}
+                            onObjectNamesChange={this.onObjectNamesChange}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={settingsDialog}
                             projectId={projects[currentProject].id}

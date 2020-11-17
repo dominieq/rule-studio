@@ -48,6 +48,7 @@ const SettingsIcons = withStyles({
  * @subcategory Feedback
  * @param {Object} props
  * @param {function} props.onClose - Callback fired when the component requests to be closed.
+ * @param {function} props.onObjectNamesChanges - Callback fired when global object names have been changed.
  * @param {function} props.onSnackbarOpen - Callback fired when the component requests to display an error.
  * @param {boolean} props.open - If <code>true</code> the dialog is open.
  * @param {string} props.projectId - The identifier of a selected project.
@@ -70,13 +71,17 @@ class SettingsProjectDialog extends PureComponent {
         this._attributes = ["Default"];
     };
 
-    processResult = (result) => {
+    processResult = (result, setStateCallback) => {
         if (this._isMounted && result != null && result.hasOwnProperty("available")
             && result.hasOwnProperty("actual")) {
 
+            const objectVisibleName = result.actual === null ? "Default" : result.actual;
+
             this.setState({
                 attributes: [ ...this._attributes, ...result.available ],
-                objectVisibleName: result.actual === null ? "Default" : result.actual
+                objectVisibleName: objectVisibleName
+            }, () => {
+                if (typeof setStateCallback === "function") setStateCallback(objectVisibleName);
             });
         }
     };
@@ -138,9 +143,9 @@ class SettingsProjectDialog extends PureComponent {
 
             fetchDescriptiveAttributes(
                 resource, pathParams, queryParams, method, serverBase
-            ).then(
-                this.processResult
-            ).catch(
+            ).then(result => {
+                this.processResult(result, this.props.onObjectNamesChange);
+            }).catch(
                 this.props.onSnackbarOpen
             ).finally(() => {
                 if (this._isMounted) {
@@ -214,6 +219,7 @@ class SettingsProjectDialog extends PureComponent {
 
 SettingsProjectDialog.propTypes = {
     onClose: PropTypes.func,
+    onObjectNamesChange: PropTypes.func,
     onSnackbarOpen: PropTypes.func,
     open: PropTypes.bool.isRequired,
     projectId: PropTypes.string,
