@@ -167,17 +167,6 @@ public class Project {
         this.currentRules = currentRules;
     }
 
-    public void checkValidityOfRules() {
-        if(rules != null) {
-            ValidityRulesContainer validityRulesContainer = new ValidityRulesContainer(this);
-            rules.setValidityRulesContainer(validityRulesContainer);
-
-            if(informationTable != null) {
-                RulesService.checkCoverageOfUploadedRules(rules, informationTable, descriptiveAttributes);
-            }
-        }
-    }
-
     public RulesWithHttpParameters getRules() {
         return rules;
     }
@@ -185,17 +174,27 @@ public class Project {
     public void setRules(RulesWithHttpParameters rules) {
         this.rules = rules;
 
-        if(this.projectClassification != null) {
-            if (this.rules == null) {
-                projectClassification.setCurrentRuleSet(null);
-            } else if (this.rules.getRuleSet().getHash().equals(projectClassification.getRuleSet().getHash())) {
-                projectClassification.setCurrentRuleSet(true);
+        if (this.rules == null) {
+            if(this.projectClassification != null) {
+                this.projectClassification.setCurrentRuleSet(null);
+            }
+            return;
+        }
+
+        if (this.rules.isExternalRules()) {
+            RulesService.checkCoverageOfUploadedRules(this.rules, this.informationTable, this.descriptiveAttributes);
+        }
+
+        if (this.projectClassification != null) {
+            if (this.projectClassification.getRuleSet().getHash().equals(this.rules.getRuleSet().getHash())) {
+                this.projectClassification.setCurrentRuleSet(true);
             } else {
-                projectClassification.setCurrentRuleSet(false);
+                this.projectClassification.setCurrentRuleSet(false);
             }
         }
 
-        checkValidityOfRules();
+        ValidityRulesContainer validityRulesContainer = new ValidityRulesContainer(this);
+        this.rules.setValidityRulesContainer(validityRulesContainer);
     }
 
     public ProjectClassification getProjectClassification() {

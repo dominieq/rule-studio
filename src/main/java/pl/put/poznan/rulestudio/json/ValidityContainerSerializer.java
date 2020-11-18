@@ -55,7 +55,7 @@ public class ValidityContainerSerializer extends JsonSerializer<ValidityProjectC
             jsonGenerator.writeStartObject();
                 jsonGenerator.writeBooleanField("externalData", validityProjectContainer.getClassificationExternal());
                 jsonGenerator.writeBooleanField("isCurrentProjectData", validityProjectContainer.getClassificationProjectData());
-                jsonGenerator.writeBooleanField("isCurrentRuleSet", validityProjectContainer.getClassificationRules());
+                jsonGenerator.writeObjectField("isCurrentRuleSet", validityProjectContainer.getClassificationRules());
                 jsonGenerator.writeObjectField("isCurrentLearningData", validityProjectContainer.getClassificationLearningData());
             jsonGenerator.writeEndObject();
         } else {
