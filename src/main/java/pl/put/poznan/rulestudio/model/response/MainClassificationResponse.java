@@ -11,6 +11,7 @@ import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters;
 import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters.ClassificationParametersBuilder;
 import pl.put.poznan.rulestudio.model.response.ClassifiedObjectMainProperties.ClassifiedObjectMainPropertiesBuilder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainClassificationResponse {
@@ -25,14 +26,10 @@ public class MainClassificationResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String externalDataFileName;
 
-    @JsonProperty("isCurrentProjectData")
-    private Boolean isCurrentProjectData;
+    @JsonProperty("isCurrentData")
+    private Boolean isCurrentData;
 
-    @JsonProperty("isCurrentRuleSet")
-    private Boolean isCurrentRuleSet;
-
-    @JsonProperty("isCurrentLearningData")
-    private Boolean isCurrentLearningData;
+    private String[] errorMessages;
 
     @JsonProperty("parameters")
     private ClassificationParameters classificationParameters;
@@ -58,18 +55,12 @@ public class MainClassificationResponse {
     }
 
     @JsonIgnore
-    public Boolean getCurrentProjectData() {
-        return isCurrentProjectData;
+    public Boolean getCurrentData() {
+        return isCurrentData;
     }
 
-    @JsonIgnore
-    public Boolean getCurrentRuleSet() {
-        return isCurrentRuleSet;
-    }
-
-    @JsonIgnore
-    public Boolean getCurrentLearningData() {
-        return isCurrentLearningData;
+    public String[] getErrorMessages() {
+        return errorMessages;
     }
 
     public ClassificationParameters getClassificationParameters() {
@@ -83,9 +74,8 @@ public class MainClassificationResponse {
                 ", classifiedObjectMainPropertiesArray=" + Arrays.toString(classifiedObjectMainPropertiesArray) +
                 ", isExternalData=" + isExternalData +
                 ", externalDataFileName='" + externalDataFileName + '\'' +
-                ", isCurrentProjectData=" + isCurrentProjectData +
-                ", isCurrentRuleSet=" + isCurrentRuleSet +
-                ", isCurrentLearningData=" + isCurrentLearningData +
+                ", isCurrentData=" + isCurrentData +
+                ", errorMessages=" + Arrays.toString(errorMessages) +
                 ", classificationParameters=" + classificationParameters +
                 '}';
     }
@@ -97,9 +87,8 @@ public class MainClassificationResponse {
         private ClassifiedObjectMainProperties[] classifiedObjectMainPropertiesArray;
         private Boolean isExternalData;
         private String externalDataFileName;
-        private Boolean isCurrentProjectData;
-        private Boolean isCurrentRuleSet;
-        private Boolean isCurrentLearningData;
+        private Boolean isCurrentData;
+        private String[] errorMessages;
         private ClassificationParameters classificationParameters;
 
         public static MainClassificationResponseBuilder newInstance() {
@@ -126,18 +115,13 @@ public class MainClassificationResponse {
             return this;
         }
 
-        public MainClassificationResponseBuilder setCurrentProjectData(Boolean currentProjectData) {
-            isCurrentProjectData = currentProjectData;
+        public MainClassificationResponseBuilder setCurrentData(Boolean currentData) {
+            isCurrentData = currentData;
             return this;
         }
 
-        public MainClassificationResponseBuilder setCurrentRuleSet(Boolean currentRuleSet) {
-            isCurrentRuleSet = currentRuleSet;
-            return this;
-        }
-
-        public MainClassificationResponseBuilder setCurrentLearningData(Boolean currentLearningData) {
-            isCurrentLearningData = currentLearningData;
+        public MainClassificationResponseBuilder setErrorMessages(String[] errorMessages) {
+            this.errorMessages = errorMessages;
             return this;
         }
 
@@ -153,9 +137,7 @@ public class MainClassificationResponse {
             mainClassificationResponse.classifiedObjectMainPropertiesArray = this.classifiedObjectMainPropertiesArray;
             mainClassificationResponse.isExternalData = this.isExternalData;
             mainClassificationResponse.externalDataFileName = this.externalDataFileName;
-            mainClassificationResponse.isCurrentProjectData = this.isCurrentProjectData;
-            mainClassificationResponse.isCurrentRuleSet = this.isCurrentRuleSet;
-            mainClassificationResponse.isCurrentLearningData = this.isCurrentLearningData;
+            mainClassificationResponse.isCurrentData = this.isCurrentData;
             mainClassificationResponse.classificationParameters = this.classificationParameters;
 
             return mainClassificationResponse;
@@ -176,9 +158,45 @@ public class MainClassificationResponse {
 
             mainClassificationResponse.isExternalData = projectClassification.isExternalData();
             mainClassificationResponse.externalDataFileName = projectClassification.getExternalDataFileName();
-            mainClassificationResponse.isCurrentProjectData = projectClassification.isCurrentProjectData();
-            mainClassificationResponse.isCurrentRuleSet = projectClassification.isCurrentRuleSet();
-            mainClassificationResponse.isCurrentLearningData = projectClassification.isCurrentLearningData();
+
+            if ((projectClassification.isCurrentProjectData())
+                    && (projectClassification.isCurrentRuleSet() != null) && (projectClassification.isCurrentRuleSet())
+                    && (projectClassification.isOriginalLearningData())
+                    && (projectClassification.isCurrentLearningData())) {
+                mainClassificationResponse.isCurrentData = true;
+                mainClassificationResponse.errorMessages = null;
+            } else {
+                ArrayList<String> errorMessages = new ArrayList<>();
+
+                if (!projectClassification.isCurrentProjectData()) {
+                    if (projectClassification.isExternalData()) {
+                        errorMessages.add("Classified objects have been read with different metadata than current metadata in DATA tab.");
+                    } else {
+                        errorMessages.add("Classified objects are different from objects in DATA tab.");
+                    }
+                }
+
+                if (projectClassification.isCurrentRuleSet() == null) {
+                    errorMessages.add("Rule set used in classification is different from current rule set in RULES tab. Actually, there is no rule set in RULES tab.");
+                } else if (!projectClassification.isCurrentRuleSet()) {
+                    errorMessages.add("Rule set used in classification is different from current rule set in RULES tab");
+                }
+
+                if (!projectClassification.isOriginalLearningData()) {
+                    errorMessages.add("Rule set used in classification hadn't had access to real learning data. Actual data at that moment in DATA tab has been taken as a learning data.");
+                }
+
+                if (!projectClassification.isCurrentLearningData()) {
+                    if (projectClassification.isOriginalLearningData()) {
+                        errorMessages.add("Learning data is different from current data in DATA tab.");
+                    } else {
+                        errorMessages.add("Data used in classification as a learning data of rules is not the same as current data in DATA tab.");
+                    }
+                }
+
+                mainClassificationResponse.isCurrentData = false;
+                mainClassificationResponse.errorMessages = errorMessages.toArray(new String[0]);
+            }
 
             mainClassificationResponse.classificationParameters = ClassificationParametersBuilder.newInstance().build(projectClassification);
 

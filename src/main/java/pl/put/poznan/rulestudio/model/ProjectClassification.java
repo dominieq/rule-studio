@@ -22,10 +22,12 @@ public class ProjectClassification extends AbstractClassification {
     private DefaultClassificationResultType defaultClassificationResultType;
     private String projectDataHash;
     private Boolean isCurrentProjectData;
+    private String attributesHash;
     private boolean externalData;
     private String externalDataFileName;
     private RuleSetWithCharacteristics ruleSet;
     private Boolean isCurrentRuleSet;
+    private Boolean isOriginalLearningData;
     private InformationTable learningInformationTable;
     private DescriptiveAttributes learningDescriptiveAttributes;
     private Boolean isCurrentLearningData;
@@ -37,13 +39,15 @@ public class ProjectClassification extends AbstractClassification {
     public ProjectClassification(RulesWithHttpParameters rulesWithHttpParameters, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, DescriptiveAttributes projectDescriptiveAttributes, InformationTable projectDataInformationTable, String externalDataFileName) {
         final RuleSetWithCharacteristics ruleSetWithCharacteristics = rulesWithHttpParameters.getRuleSet();
         if(rulesWithHttpParameters.isCoveragePresent()) {
+            this.isOriginalLearningData = true;
             this.learningInformationTable = rulesWithHttpParameters.getInformationTable();
             this.learningDescriptiveAttributes = new DescriptiveAttributes(rulesWithHttpParameters.getDescriptiveAttributes());
             this.isCurrentLearningData = rulesWithHttpParameters.isCurrentData();
         } else {
+            this.isOriginalLearningData = false;
             this.learningInformationTable = projectDataInformationTable;
             this.learningDescriptiveAttributes = new DescriptiveAttributes(projectDescriptiveAttributes);
-            this.isCurrentLearningData = null;
+            this.isCurrentLearningData = true;
         }
 
         orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, classifiedInformationTable);
@@ -60,9 +64,11 @@ public class ProjectClassification extends AbstractClassification {
         if(externalDataFileName != null) {
             this.externalData = true;
             this.externalDataFileName = externalDataFileName;
+            this.attributesHash = new InformationTable(classifiedInformationTable.getAttributes(), new ArrayList<>()).getHash();
         } else {
             this.externalData = false;
             this.externalDataFileName = null;
+            this.attributesHash = null;
         }
 
         this.ruleSet = ruleSetWithCharacteristics;
@@ -101,6 +107,14 @@ public class ProjectClassification extends AbstractClassification {
         isCurrentProjectData = currentProjectData;
     }
 
+    public String getAttributesHash() {
+        return attributesHash;
+    }
+
+    public void setAttributesHash(String attributesHash) {
+        this.attributesHash = attributesHash;
+    }
+
     public boolean isExternalData() {
         return externalData;
     }
@@ -119,6 +133,14 @@ public class ProjectClassification extends AbstractClassification {
 
     public void setCurrentRuleSet(Boolean currentRuleSet) {
         isCurrentRuleSet = currentRuleSet;
+    }
+
+    public Boolean isOriginalLearningData() {
+        return isOriginalLearningData;
+    }
+
+    public void setOriginalLearningData(Boolean originalLearningData) {
+        isOriginalLearningData = originalLearningData;
     }
 
     public InformationTable getLearningInformationTable() {
@@ -147,10 +169,12 @@ public class ProjectClassification extends AbstractClassification {
                 ", defaultClassificationResultType=" + defaultClassificationResultType +
                 ", projectDataHash='" + projectDataHash + '\'' +
                 ", isCurrentProjectData=" + isCurrentProjectData +
+                ", attributesHash='" + attributesHash + '\'' +
                 ", externalData=" + externalData +
                 ", externalDataFileName='" + externalDataFileName + '\'' +
                 ", ruleSet=" + ruleSet +
                 ", isCurrentRuleSet=" + isCurrentRuleSet +
+                ", isOriginalLearningData=" + isOriginalLearningData +
                 ", learningInformationTable=" + learningInformationTable +
                 ", learningDescriptiveAttributes=" + learningDescriptiveAttributes +
                 ", isCurrentLearningData=" + isCurrentLearningData +

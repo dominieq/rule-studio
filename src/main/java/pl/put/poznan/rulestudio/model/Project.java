@@ -4,6 +4,7 @@ import org.rulelearn.data.InformationTable;
 import pl.put.poznan.rulestudio.service.MetadataService;
 import pl.put.poznan.rulestudio.service.RulesService;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class Project {
@@ -94,10 +95,19 @@ public class Project {
             }
         }
         if(this.projectClassification != null) {
-            if(projectClassification.getProjectDataHash().equals(dataHash)) {
-                projectClassification.setCurrentProjectData(true);
+            if (projectClassification.isExternalData()) {
+                final String attributesHash = new InformationTable(informationTable.getAttributes(), new ArrayList<>()).getHash();
+                if(projectClassification.getAttributesHash().equals(attributesHash)) {
+                    projectClassification.setCurrentProjectData(true);
+                } else {
+                    projectClassification.setCurrentProjectData(false);
+                }
             } else {
-                projectClassification.setCurrentProjectData(false);
+                if(projectClassification.getProjectDataHash().equals(dataHash)) {
+                    projectClassification.setCurrentProjectData(true);
+                } else {
+                    projectClassification.setCurrentProjectData(false);
+                }
             }
 
             if ((projectClassification.isCurrentLearningData() != null) && (projectClassification.getLearningInformationTable().getHash().equals(dataHash))) {
