@@ -130,9 +130,11 @@ public class RulesService {
 
         for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
             logger.info("ruleSet.size=" + rswc.size());
-            for(int i = 0; i < rswc.size(); i++) {
-                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
-                logger.info(i + ":\t" + ruleCharacteristics.toString());
+            if(logger.isDebugEnabled()) {
+                for(int i = 0; i < rswc.size(); i++) {
+                    RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                    logger.debug(i + ":\t" + ruleCharacteristics.toString());
+                }
             }
         }
 
@@ -179,9 +181,11 @@ public class RulesService {
 
         for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
             logger.info("ruleSet.size=" + rswc.size());
-            for(int i = 0; i < rswc.size(); i++) {
-                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
-                logger.info(i + ":\t" + ruleCharacteristics.toString());
+            if(logger.isDebugEnabled()) {
+                for(int i = 0; i < rswc.size(); i++) {
+                    RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                    logger.debug(i + ":\t" + ruleCharacteristics.toString());
+                }
             }
         }
 
