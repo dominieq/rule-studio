@@ -94,24 +94,17 @@ class ProjectTabs extends React.Component {
             /* Reset alerts if there are no rules*/
             this.setState(({showAlert}) => {
                 showAlert[2] = false;
-                return { showAlert: showAlert, showExternalAlert: false };
+                return { showAlert: showAlert, showExternalRules: false };
             });
         }
 
         /* Update alerts in Classification */
         if (result.classification != null) {
-            if (result.classification.hasOwnProperty("isCurrentLearningData")) {
-                if (result.classification.hasOwnProperty("isCurrentRuleSet")) {
-                    this.setState(({showAlert}) => {
-                        showAlert[3] = !(result.classification.isCurrentLearningData && result.classification.isCurrentRuleSet);
-                        return { showAlert: showAlert };
-                    });
-                } else {
-                    this.setState(({showAlert}) => {
-                        showAlert[3] = !result.classification.isCurrentLearningData;
-                        return { showAlert: showAlert };
-                    });
-                }
+            if (result.classification.hasOwnProperty("isCurrentData")) {
+               this.setState(({showAlert}) => {
+                   showAlert[3] = result.classification.isCurrentData;
+                   return { showAlert: showAlert }
+               })
             }
 
             if (result.classification.hasOwnProperty("externalData")) {

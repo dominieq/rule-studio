@@ -440,16 +440,8 @@ class Rules extends Component {
      */
     updateAlerts = (validateCurrentData) => {
         if (validateCurrentData.classification !== null) {
-            if (validateCurrentData.classification.hasOwnProperty("isCurrentLearningData")) {
-                const isCurrentLearningData = validateCurrentData.classification.isCurrentLearningData;
-
-                if (validateCurrentData.classification.hasOwnProperty("isCurrentRuleSet")) {
-                    const isCurrentRuleSet = validateCurrentData.classification.isCurrentRuleSet;
-
-                    this.props.showAlert(this.props.value + 1, !(isCurrentLearningData && isCurrentRuleSet));
-                } else {
-                    this.props.showAlert(this.props.value + 1, !isCurrentLearningData);
-                }
+            if (validateCurrentData.classification.hasOwnProperty("isCurrentData")) {
+                this.props.showAlert(this.props.value + 1, !validateCurrentData.classification.isCurrentData);
             }
 
             if (validateCurrentData.classification.hasOwnProperty("externalData")) {

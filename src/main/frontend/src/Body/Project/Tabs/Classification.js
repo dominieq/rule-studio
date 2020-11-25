@@ -105,12 +105,8 @@ class Classification extends Component {
                     parameters: { ...parameters, ...resultParameters }
                 }));
 
-                if (result.hasOwnProperty("isCurrentLearningData")) {
-                    if (result.hasOwnProperty("isCurrentRuleSet")) {
-                        this.props.showAlert(this.props.value, !(result.isCurrentLearningData && result.isCurrentRuleSet));
-                    } else {
-                        this.props.showAlert(this.props.value, !result.isCurrentLearningData);
-                    }
+                if (result.hasOwnProperty("isCurrentData")) {
+                    this.props.showAlert(this.props.value, !result.isCurrentData);
                 }
 
                 if (result.hasOwnProperty("externalData")) {
@@ -263,12 +259,8 @@ class Classification extends Component {
                     projectCopy.parametersSaved = true;
                     this.props.onTabChange(projectCopy);
 
-                    if (result.hasOwnProperty("isCurrentLearningData")) {
-                        if (result.hasOwnProperty("isCurrentRuleSet")) {
-                            this.props.showAlert(this.props.value, !(result.isCurrentLearningData && result.isCurrentRuleSet));
-                        } else {
-                            this.props.showAlert(this.props.value, !result.isCurrentLearningData);
-                        }
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        this.props.showAlert(this.props.value, !result.isCurrentData);
                     }
 
                     if (result.hasOwnProperty("externalData")) {
