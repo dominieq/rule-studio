@@ -256,8 +256,8 @@ class RulesDialog extends React.PureComponent {
         const { loading, coveredObjects, object, objectIndex, attributes, attributesMenuEl } = this.state;
         const { item, objectGlobalName, projectId, serverBase, open } = this.props;
 
-        let displayTraits = { ...item.traits };
-        delete displayTraits["Type"];
+        let displayedTraits = { ...item.traits };
+        delete displayedTraits["Type"];
 
         return (
             <FullscreenDialog open={open} onClose={this.props.onClose}>
@@ -268,14 +268,13 @@ class RulesDialog extends React.PureComponent {
                 />
                 <MultiColumns>
                     <div id={"rules-traits"} style={{display: "flex", flexDirection: "column"}}>
-                        {!loading.rule ?
-                            <TraitsTable traits={displayTraits} />
-                            :
-                            <StyledCircularProgress />
-                        }
+                        <TraitsTable traits={displayedTraits} />
                     </div>
                     <div id={"rules-table-content"} style={{display: "flex", flexDirection: "column", width: "20%"}}>
-                        {!loading.rule ?
+                        {loading.rule &&
+                        <StyledCircularProgress />
+                        }
+                        {!loading.rule && coveredObjects != null &&
                             <TableItemsList
                                 getItemsStyle={this.getItemsStyle}
                                 getName={this.getName}
@@ -285,8 +284,6 @@ class RulesDialog extends React.PureComponent {
                                 onSettingsClick={this.onAttributesMenuOpen}
                                 table={coveredObjects}
                             />
-                            :
-                            <StyledCircularProgress />
                         }
                     </div>
                     <div id={"rules-table-item"} style={{display: "flex", flexDirection: "column", width: "40%"}}>
