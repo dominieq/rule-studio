@@ -11,7 +11,8 @@ public class RuleMainProperties {
     @JsonProperty("ruleCharacteristics")
     private RuleCharacteristicsBean ruleCharacteristicsBean;
 
-    private Rule rule;
+    @JsonProperty("rule")
+    private RuleBean ruleBean;
 
     private RuleMainProperties() {
         //private constructor
@@ -21,15 +22,15 @@ public class RuleMainProperties {
         return ruleCharacteristicsBean;
     }
 
-    public Rule getRule() {
-        return rule;
+    public RuleBean getRuleBean() {
+        return ruleBean;
     }
 
     @Override
     public String toString() {
         return "RuleMainProperties{" +
                 "ruleCharacteristicsBean=" + ruleCharacteristicsBean +
-                ", rule=" + rule +
+                ", ruleBean=" + ruleBean +
                 '}';
     }
 
@@ -37,7 +38,7 @@ public class RuleMainProperties {
         private static final Logger logger = LoggerFactory.getLogger(RuleMainPropertiesBuilder.class);
 
         private RuleCharacteristicsBean ruleCharacteristicsBean;
-        private Rule rule;
+        private RuleBean ruleBean;
 
         public static RuleMainPropertiesBuilder newInstance() {
             return new RuleMainPropertiesBuilder();
@@ -48,15 +49,15 @@ public class RuleMainProperties {
             return this;
         }
 
-        public RuleMainPropertiesBuilder setRule(Rule rule) {
-            this.rule = rule;
+        public RuleMainPropertiesBuilder setRuleBean(RuleBean ruleBean) {
+            this.ruleBean = ruleBean;
             return this;
         }
 
         public RuleMainProperties build() {
             RuleMainProperties ruleMainProperties = new RuleMainProperties();
 
-            ruleMainProperties.rule = this.rule;
+            ruleMainProperties.ruleBean = this.ruleBean;
             ruleMainProperties.ruleCharacteristicsBean = this.ruleCharacteristicsBean;
 
             return ruleMainProperties;
@@ -65,7 +66,7 @@ public class RuleMainProperties {
         public RuleMainProperties build(Rule rule, RuleCharacteristics ruleCharacteristics) {
             RuleMainProperties ruleMainProperties = new RuleMainProperties();
 
-            ruleMainProperties.rule = rule;
+            ruleMainProperties.ruleBean = new RuleBean(rule);
             ruleMainProperties.ruleCharacteristicsBean = new RuleCharacteristicsBean(ruleCharacteristics);
 
             return ruleMainProperties;
