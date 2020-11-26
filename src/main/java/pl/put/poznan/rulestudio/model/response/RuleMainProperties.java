@@ -1,5 +1,6 @@
 package pl.put.poznan.rulestudio.model.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleCharacteristics;
 import org.slf4j.Logger;
@@ -7,7 +8,8 @@ import org.slf4j.LoggerFactory;
 
 public class RuleMainProperties {
 
-    private RuleCharacteristics ruleCharacteristics;
+    @JsonProperty("ruleCharacteristics")
+    private RuleCharacteristicsBean ruleCharacteristicsBean;
 
     private Rule rule;
 
@@ -15,8 +17,8 @@ public class RuleMainProperties {
         //private constructor
     }
 
-    public RuleCharacteristics getRuleCharacteristics() {
-        return ruleCharacteristics;
+    public RuleCharacteristicsBean getRuleCharacteristicsBean() {
+        return ruleCharacteristicsBean;
     }
 
     public Rule getRule() {
@@ -26,7 +28,7 @@ public class RuleMainProperties {
     @Override
     public String toString() {
         return "RuleMainProperties{" +
-                "ruleCharacteristics=" + ruleCharacteristics +
+                "ruleCharacteristicsBean=" + ruleCharacteristicsBean +
                 ", rule=" + rule +
                 '}';
     }
@@ -34,15 +36,15 @@ public class RuleMainProperties {
     public static class RuleMainPropertiesBuilder {
         private static final Logger logger = LoggerFactory.getLogger(RuleMainPropertiesBuilder.class);
 
-        private RuleCharacteristics ruleCharacteristics;
+        private RuleCharacteristicsBean ruleCharacteristicsBean;
         private Rule rule;
 
         public static RuleMainPropertiesBuilder newInstance() {
             return new RuleMainPropertiesBuilder();
         }
 
-        public RuleMainPropertiesBuilder setRuleCharacteristics(RuleCharacteristics ruleCharacteristics) {
-            this.ruleCharacteristics = ruleCharacteristics;
+        public RuleMainPropertiesBuilder setRuleCharacteristics(RuleCharacteristicsBean ruleCharacteristicsBean) {
+            this.ruleCharacteristicsBean = ruleCharacteristicsBean;
             return this;
         }
 
@@ -55,7 +57,7 @@ public class RuleMainProperties {
             RuleMainProperties ruleMainProperties = new RuleMainProperties();
 
             ruleMainProperties.rule = this.rule;
-            ruleMainProperties.ruleCharacteristics = this.ruleCharacteristics;
+            ruleMainProperties.ruleCharacteristicsBean = this.ruleCharacteristicsBean;
 
             return ruleMainProperties;
         }
@@ -64,7 +66,7 @@ public class RuleMainProperties {
             RuleMainProperties ruleMainProperties = new RuleMainProperties();
 
             ruleMainProperties.rule = rule;
-            ruleMainProperties.ruleCharacteristics = ruleCharacteristics;
+            ruleMainProperties.ruleCharacteristicsBean = new RuleCharacteristicsBean(ruleCharacteristics);
 
             return ruleMainProperties;
         }
