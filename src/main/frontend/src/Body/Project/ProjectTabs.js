@@ -30,8 +30,8 @@ class ProjectTabs extends React.Component {
         super(props);
 
         this.state = {
-            projectCopy: null,
-            informationTableCopy: null,
+            informationTable: null,
+            isUpdateNecessary: false,
             loading: false,
             selected: 0,
             showAlert: Array(5).fill(false),
@@ -184,18 +184,22 @@ class ProjectTabs extends React.Component {
      *
      * @function
      * @memberOf ProjectTabs
-     * @param {Object} projectCopy - The local copy of a project that will be sent to server.
-     * @param {Object} informationTableCopy - The local copy of an information table that will be sent to server.
+     * @param {string} projectId - The identifier of a selected project.
+     * @param {Object} informationTable - The local copy of an information table that will be sent to server.
      * @param {number} newValue - The index of currently selected tab.
      */
-    updateProjectOnServer = (projectCopy, informationTableCopy, newValue) => {
-        const { serverBase } = this.props;
+    updateProjectOnServer = (projectId, informationTable, newValue) => {
+        if (informationTable == null) {
+            this.setState({ selected: newValue });
+            return;
+        }
 
-        const pathParams = { projectId: projectCopy.id };
+        const pathParams = { projectId };
         const method = "POST";
         const body = new FormData();
-        body.append("metadata", JSON.stringify(informationTableCopy.attributes));
-        body.append("data", JSON.stringify(informationTableCopy.objects));
+        body.append("metadata", JSON.stringify(informationTable.attributes));
+        body.append("data", JSON.stringify(informationTable.objects));
+        const { serverBase } = this.props;
 
         fetchData(
             pathParams, method, body, serverBase
@@ -208,13 +212,10 @@ class ProjectTabs extends React.Component {
         }).finally(() => {
             if (this._isMounted) {
                 this.setState({
-                    projectCopy: null,
                     loading: false,
                     selected: newValue
                 });
             }
-
-            this.props.updateProject(projectCopy);
         });
     };
 
@@ -270,16 +271,17 @@ class ProjectTabs extends React.Component {
      */
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.project.id !== this.props.project.id) {
-            this.getProject()
-
-            const { projectCopy, informationTableCopy, selected } = this.state;
-            if (projectCopy != null && informationTableCopy != null && selected === 0) {
+            const { project: { id: projectId }} = prevProps;
+            const { informationTable, isUpdateNecessary, selected } = this.state;
+            if (isUpdateNecessary && selected === 0) {
                 this.setState({
                     loading: true
                 }, () => {
-                    this.updateProjectOnServer(projectCopy, informationTableCopy, selected);
+                    this.updateProjectOnServer(projectId, informationTable, selected);
                 });
             }
+
+            this.getProject()
         }
     };
 
@@ -293,9 +295,10 @@ class ProjectTabs extends React.Component {
     componentWillUnmount() {
         this._isMounted = false;
 
-        const { projectCopy, informationTableCopy, selected } = this.state;
-        if (projectCopy != null && informationTableCopy != null && selected === 0) {
-            this.updateProjectOnServer(projectCopy, informationTableCopy, selected);
+        const { project: { id: projectId }} = this.props;
+        const { informationTable, isUpdateNecessary, selected } = this.state;
+        if (isUpdateNecessary && selected === 0) {
+            this.updateProjectOnServer(projectId, informationTable, selected);
         }
     };
 
@@ -309,13 +312,14 @@ class ProjectTabs extends React.Component {
      * @param {number} newValue - The id of tab that was selected.
      */
     onTabChange = (event, newValue) => {
-        const { projectCopy, informationTableCopy, selected } = this.state;
+        const { project: { id: projectId }} = this.props;
+        const { informationTable, isUpdateNecessary, selected } = this.state;
 
-        if (projectCopy != null && informationTableCopy != null && selected === 0 && newValue !== 0) {
+        if (isUpdateNecessary && selected === 0 && newValue !== 0) {
             this.setState({
                 loading: true
             }, () => {
-                this.updateProjectOnServer(projectCopy, informationTableCopy, newValue);
+                this.updateProjectOnServer(projectId, informationTable, newValue);
             });
         } else {
             this.setState({ selected: newValue });
@@ -328,13 +332,13 @@ class ProjectTabs extends React.Component {
      *
      * @function
      * @memberOf ProjectTabs
-     * @param {Object} project - Modified project from the {@link Data} tab.
      * @param {Object} informationTable - Modified information table from the {@link Data} tab.
+     * @param {boolean} isUpdateNecessary - If <code>true</code> information table will be sent to server on exit.
      */
-    onDataChange = (project, informationTable) => {
+    onDataChange = (informationTable, isUpdateNecessary) => {
         this.setState({
-            projectCopy: project,
-            informationTableCopy: informationTable
+            informationTable: informationTable,
+            isUpdateNecessary: isUpdateNecessary
         });
     };
 
@@ -402,8 +406,20 @@ class ProjectTabs extends React.Component {
     });
 
     render() {
-        const { loading ,selected, showAlert, showExternalRules, showExternalData, alertMessages } = this.state;
-        const { project, serverBase } = this.props;
+        const {
+            informationTable,
+            loading,
+            selected,
+            showAlert,
+            showExternalRules,
+            showExternalData,
+            alertMessages
+        } = this.state;
+        
+        const {
+            project,
+            serverBase
+        } = this.props;
 
         return (
             <React.Fragment>
@@ -460,10 +476,12 @@ class ProjectTabs extends React.Component {
                     {
                         0: (
                                 <Data
-                                    project={project}
-                                    onDataChange={this.onDataChange}
+                                    informationTable={informationTable}
                                     loading={loading}
+                                    onDataChange={this.onDataChange}
+                                    project={project}
                                     serverBase={serverBase}
+                                    updateProject={this.props.updateProject}
                                 />
                             ),
                         1: <Cones {...this.getTabBodyProps(0)} />,
