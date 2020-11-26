@@ -97,21 +97,19 @@ class Rules extends Component {
                 const resultParameters = result.hasOwnProperty("parameters") ?
                     parseRulesParams(result.parameters) : { };
 
-                let alertProps = undefined;
-                if (result.hasOwnProperty("errorMessage")) {
-                    alertProps = { message: result.errorMessage, open: true, severity: "error" };
-                }
-
-                this.setState(({parameters}) => ({
+                this.setState(({parameters, alertProps}) => ({
                     data: result,
                     items: items,
                     displayedItems: items,
                     parameters: { ...parameters, ...resultParameters},
-                    alertProps: alertProps
+                    alertProps: result.hasOwnProperty("errorMessage") ?
+                        { message: result.errorMessage, open: true, severity: "error" } : alertProps
                 }));
 
                 if (result.hasOwnProperty("isCurrentData")) {
-                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                    const messages = result.hasOwnProperty("errorMessages") ?
+                        result.errorMessages : null;
+                    this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                 }
 
                 if (result.hasOwnProperty("externalRules")) {
@@ -288,18 +286,14 @@ class Rules extends Component {
                     if (this._isMounted) {
                         const items = parseRulesItems(result);
 
-                        let alertProps = undefined;
-                        if (result.hasOwnProperty("errorMessage")) {
-                            alertProps = { message: result.errorMessage, open: true, severity: "error" };
-                        }
-
-                        this.setState({
+                        this.setState(({alertProps}) => ({
                             data: result,
                             items: items,
                             displayedItems: items,
                             parametersSaved: true,
-                            alertProps: alertProps
-                        });
+                            alertProps: result.hasOwnProperty("errorMessage") ?
+                                { message: result.errorMessage, open: true, severity: "error" } : alertProps
+                        }));
                     }
 
                     let projectCopy = JSON.parse(JSON.stringify(project));
@@ -314,7 +308,9 @@ class Rules extends Component {
                     projectCopy.parametersSaved = true;
 
                     if (result.hasOwnProperty("isCurrentData")) {
-                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                        const messages = result.hasOwnProperty("errorMessages") ?
+                            result.errorMessages : null;
+                        this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                     }
 
                     if (result.hasOwnProperty("externalRules")) {
@@ -439,9 +435,11 @@ class Rules extends Component {
      * @param {Object} validateCurrentData - The part of response from server
      */
     updateAlerts = (validateCurrentData) => {
-        if (validateCurrentData.classification !== null) {
+        if (validateCurrentData.classification != null) {
             if (validateCurrentData.classification.hasOwnProperty("isCurrentData")) {
-                this.props.showAlert(this.props.value + 1, !validateCurrentData.classification.isCurrentData);
+                const messages = validateCurrentData.classification.hasOwnProperty("errorMessages") ?
+                    validateCurrentData.classification.errorMessages : null;
+                this.props.showAlert(this.props.value + 1, !validateCurrentData.classification.isCurrentData, messages);
             }
 
             if (validateCurrentData.classification.hasOwnProperty("externalData")) {
@@ -449,9 +447,11 @@ class Rules extends Component {
             }
         }
 
-        if (validateCurrentData.unions !== null) {
+        if (validateCurrentData.unions != null) {
             if (validateCurrentData.unions.hasOwnProperty("isCurrentData")) {
-                this.props.showAlert(this.props.value - 1, !validateCurrentData.unions.isCurrentData);
+                const messages = validateCurrentData.unions.hasOwnProperty("errorMessages") ?
+                    validateCurrentData.unions.errorMessages : null;
+                this.props.showAlert(this.props.value - 1, !validateCurrentData.unions.isCurrentData, messages);
             }
         }
     };

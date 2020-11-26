@@ -36,7 +36,8 @@ class ProjectTabs extends React.Component {
             selected: 0,
             showAlert: Array(5).fill(false),
             showExternalRules: false,
-            showExternalData: false
+            showExternalData: false,
+            alertMessages: Array(5).fill(null)
         };
     }
 
@@ -50,38 +51,46 @@ class ProjectTabs extends React.Component {
     updateAlerts = (result) => {
         /* Update alert in Dominance cones */
         if (result.dominanceCones != null && result.dominanceCones.hasOwnProperty("isCurrentData")) {
-            this.setState(({showAlert}) => {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[0] = !result.dominanceCones.isCurrentData;
-                return { showAlert: showAlert };
+                alertMessages[0] = result.dominanceCones.hasOwnProperty("errorMessages") ?
+                    result.dominanceCones.errorMessages : null;
+                return { showAlert, alertMessages };
             });
         } else {
             /* Reset alert if there are no dominance cones */
-            this.setState(({showAlert}) => {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[0] = false;
-                return { showAlert: showAlert }
-            })
+                alertMessages[0] = null;
+                return { showAlert, alertMessages };
+            });
         }
 
         /* Update alert in Class unions */
         if (result.unions != null && result.unions.hasOwnProperty("isCurrentData")) {
-            this.setState(({showAlert}) => {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[1] = !result.unions.isCurrentData;
-                return { showAlert: showAlert };
+                alertMessages[1] = result.unions.hasOwnProperty("errorMessages") ?
+                    result.unions.errorMessages : null
+                return { showAlert, alertMessages };
             });
         } else {
             /* Reset alert if there are no class unions */
-            this.setState(({showAlert}) => {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[1] = false;
-                return { showAlert: showAlert };
+                alertMessages[1] = null;
+                return { showAlert, alertMessages };
             });
         }
 
         /* Update alerts in Rules */
         if (result.rules != null) {
             if (result.rules.hasOwnProperty("isCurrentData")) {
-                this.setState(({showAlert}) => {
+                this.setState(({showAlert, alertMessages}) => {
                     showAlert[2] = !result.rules.isCurrentData;
-                    return { showAlert: showAlert };
+                    alertMessages[2] = result.rules.hasOwnProperty("errorMessages") ?
+                        result.rules.errorMessages : null;
+                    return { showAlert, alertMessages };
                 });
             }
 
@@ -92,19 +101,22 @@ class ProjectTabs extends React.Component {
             }
         } else {
             /* Reset alerts if there are no rules*/
-            this.setState(({showAlert}) => {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[2] = false;
-                return { showAlert: showAlert, showExternalRules: false };
+                alertMessages[2] = null;
+                return { showAlert, showExternalRules: false, alertMessages };
             });
         }
 
         /* Update alerts in Classification */
         if (result.classification != null) {
             if (result.classification.hasOwnProperty("isCurrentData")) {
-               this.setState(({showAlert}) => {
+               this.setState(({showAlert, alertMessages}) => {
                    showAlert[3] = result.classification.isCurrentData;
-                   return { showAlert: showAlert }
-               })
+                   alertMessages[3] = result.classification.hasOwnProperty("errorMessages") ?
+                       result.classification.errorMessages : null;
+                   return { showAlert, alertMessages }
+               });
             }
 
             if (result.classification.hasOwnProperty("externalData")) {
@@ -114,24 +126,28 @@ class ProjectTabs extends React.Component {
             }
         } else {
             /* Reset alerts if there are no classification results */
-            this.setState(({showAlert}) => {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[3] = false;
-                return { showAlert: showAlert, showExternalData: false };
-            })
+                alertMessages[3] = null;
+                return { showAlert, showExternalData: false, alertMessages };
+            });
         }
 
         /* Update alerts in CrossValidation */
         if (result.crossValidation != null && result.crossValidation.hasOwnProperty("isCurrentData")) {
-            this.setState(({showAlert}) => {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[4] = !result.crossValidation.isCurrentData;
-                return { showAlert: showAlert };
+                alertMessages[4] = result.crossValidation.hasOwnProperty("errorMessages") ?
+                    result.crossValidation.errorMessages : null;
+                return { showAlert, alertMessages };
             });
         } else {
             /* Reset alert if there are no cross-validation results */
-            this.setState(({showAlert}) => {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[4] = false;
-                return { showAlert: showAlert };
-            })
+                alertMessages[4] = null;
+                return { showAlert, alertMessages };
+            });
         }
     };
 
@@ -327,15 +343,18 @@ class ProjectTabs extends React.Component {
      *
      * @function
      * @memberOf ProjectTabs
-     * @param {number} index - The id of a tab.
+     * @param {number} index - The index of a selected tab.
      * @param {boolean} show - If <code>true</code> an alert about outdated results in tab will be displayed.
+     * @param {string[]} [messages] - Optional messages displayed in alert.
      */
-    showAlert = (index, show) => {
-        this.setState(({showAlert}) => {
+    showAlert = (index, show, messages) => {
+        this.setState(({showAlert, alertMessages}) => {
             showAlert[index] = show;
+            alertMessages[index] = messages;
 
             return {
-                showAlert: showAlert
+                showAlert: showAlert,
+                alertMessages: alertMessages
             };
         });
     };
@@ -383,7 +402,7 @@ class ProjectTabs extends React.Component {
     });
 
     render() {
-        const { loading ,selected, showAlert, showExternalRules, showExternalData } = this.state;
+        const { loading ,selected, showAlert, showExternalRules, showExternalData, alertMessages } = this.state;
         const { project, serverBase } = this.props;
 
         return (
@@ -392,7 +411,7 @@ class ProjectTabs extends React.Component {
                     <StyledTab label={"Data"} {...this.getTabProps(0)} />
                     <StyledTab
                         label={
-                            <OutdatedData invisible={!showAlert[0]}>
+                            <OutdatedData invisible={!showAlert[0]} messages={alertMessages[0]}>
                                 Dominance cones
                             </OutdatedData>
                         }
@@ -400,7 +419,7 @@ class ProjectTabs extends React.Component {
                     />
                     <StyledTab
                         label={
-                            <OutdatedData invisible={!showAlert[1]}>
+                            <OutdatedData invisible={!showAlert[1]} messages={alertMessages[1]}>
                                 Class unions
                             </OutdatedData>
                         }
@@ -411,7 +430,7 @@ class ProjectTabs extends React.Component {
                             <ExternalFile WrapperProps={{style: { marginBottom: 0, marginRight: 8}}} /> : null
                         }
                         label={
-                            <OutdatedData invisible={!showAlert[2]}>
+                            <OutdatedData invisible={!showAlert[2]} messages={alertMessages[2]}>
                                 Rules
                             </OutdatedData>
                         }
@@ -422,7 +441,7 @@ class ProjectTabs extends React.Component {
                             <ExternalFile WrapperProps={{style: { marginBottom: 0, marginRight: 8}}} /> : null
                         }
                         label={
-                            <OutdatedData invisible={!showAlert[3]}>
+                            <OutdatedData invisible={!showAlert[3]} messages={alertMessages[3]}>
                                 Classification
                             </OutdatedData>
                         }
@@ -430,7 +449,7 @@ class ProjectTabs extends React.Component {
                     />
                     <StyledTab
                         label={
-                            <OutdatedData invisible={!showAlert[4]}>
+                            <OutdatedData invisible={!showAlert[4]} messages={alertMessages[4]}>
                                 Cross-Validation
                             </OutdatedData>
                         }

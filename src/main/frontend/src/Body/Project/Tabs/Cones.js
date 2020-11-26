@@ -72,7 +72,9 @@ class Cones extends Component {
                 });
 
                 if (result.hasOwnProperty("isCurrentData")) {
-                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                    const messages = result.hasOwnProperty("errorMessages") ?
+                        result.errorMessages : null;
+                    this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                 }
             }
         }).catch(error => {
@@ -175,7 +177,9 @@ class Cones extends Component {
                     }
 
                     if (result.hasOwnProperty("isCurrentData")) {
-                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                        const messages = result.hasOwnProperty("errorMessages") ?
+                            result.errorMessages : null;
+                        this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                     }
                 }
             }).catch(error => {
