@@ -93,19 +93,16 @@ class Unions extends Component {
                     this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                 }
             }
-        }).catch(error => {
-            if (error.constructor.name !== "AlertError") {
-                console.log(error);
-            }
-
-            if (this._isMounted) {
-                this.setState({
-                    data: null,
-                    items: null,
-                    displayedItems: [],
-                    alertProps: error
-                });
-            }
+        }).catch(exception => {
+            this.onSnackbarOpen(exception, () => {
+                if (this._isMounted) {
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: []
+                    });
+                }
+            });
         }).finally(() => {
             if (this._isMounted) {
                 const { project: { parameters, parametersSaved }} = this.props;
@@ -258,18 +255,15 @@ class Unions extends Component {
                     }
                 }
             }).catch(error => {
-                if (error.constructor.name !== "AlertError") {
-                    console.log(error);
-                }
-
-                if (this._isMounted) {
-                    this.setState({
-                        data: null,
-                        items: null,
-                        displayedItems: [],
-                        alertProps: error
-                    });
-                }
+                this.onSnackbarOpen(error, () => {
+                    if (this._isMounted) {
+                        this.setState({
+                            data: null,
+                            items: null,
+                            displayedItems: []
+                        });
+                    }
+                });
             }).finally(() => {
                 if (this._isMounted) {
                     this.setState({
@@ -339,16 +333,14 @@ class Unions extends Component {
         }
     };
 
-    onSnackbarOpen = (exception) => {
+    onSnackbarOpen = (exception, setStateCallback) => {
         if (exception.constructor.name !== "AlertError") {
             console.error(exception);
             return;
         }
 
         if (this._isMounted) {
-            this.setState({
-                alertProps: exception
-            });
+            this.setState({ alertProps: exception }, setStateCallback);
         }
     }
 

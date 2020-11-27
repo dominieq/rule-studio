@@ -16,8 +16,6 @@ class AlertError extends Error {
         this.message = message;
         this.open = open;
         this.severity = severity;
-
-        Object.setPrototypeOf(this, AlertError);
     };
 }
 

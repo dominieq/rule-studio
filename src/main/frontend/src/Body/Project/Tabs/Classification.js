@@ -117,18 +117,15 @@ class Classification extends Component {
                 }
             }
         }).catch(error => {
-            if (error.constructor.name !== "AlertError") {
-                console.error(error);
-            }
-
-            if (this._isMounted) {
-                this.setState({
-                    data: null,
-                    items: null,
-                    displayedItems: [],
-                    alertProps: error
-                });
-            }
+            this.onSnackbarOpen(error, () => {
+                if (this._isMounted) {
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: []
+                    });
+                }
+            });
         }).finally(() => {
             if (this._isMounted) {
                 const { project: { parameters, parametersSaved, classifyAction }} = this.props;
@@ -273,19 +270,16 @@ class Classification extends Component {
                         this.props.onDataUploaded(result.externalData);
                     }
                 }
-            }).catch(error => {
-                if (error.constructor.name !== "AlertError") {
-                    console.error(error);
-                }
-
-                if (this._isMounted) {
-                    this.setState({
-                        data: null,
-                        items: null,
-                        displayedItems: [],
-                        alertProps: error
-                    });
-                }
+            }).catch(exception => {
+                this.onSnackbarOpen(exception, () => {
+                    if (this._isMounted) {
+                        this.setState({
+                            data: null,
+                            items: null,
+                            displayedItems: []
+                        });
+                    }
+                });
             }).finally(() => {
                 if (this._isMounted) {
                     this.setState(({selected}) => ({
@@ -379,7 +373,8 @@ class Classification extends Component {
         const pathParams = { projectId: project.id };
         const queryParams = { typeOfMatrix: "classification" };
 
-        downloadMatrix(pathParams, queryParams, serverBase).catch(this.onSnackbarOpen);
+        downloadMatrix(pathParams, queryParams, serverBase)
+            .catch(this.onSnackbarOpen);
     };
 
     onDefaultClassificationResultChange = (event) => {
@@ -473,16 +468,14 @@ class Classification extends Component {
         });
     };
 
-    onSnackbarOpen = (exception) => {
+    onSnackbarOpen = (exception, setStateCallback) => {
         if (exception.constructor.name !== "AlertError") {
             console.error(exception);
             return;
         }
 
         if (this._isMounted) {
-            this.setState({
-                alertProps: exception
-            });
+            this.setState({ alertProps: exception }, setStateCallback);
         }
     };
 

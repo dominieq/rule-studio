@@ -120,18 +120,15 @@ class CrossValidation extends Component {
                     });
                 }
             }).catch(exception => {
-                if (exception.constructor.name !== "AlertError") {
-                    console.error(exception);
-                }
-
-                if (this._isMounted) {
-                    this.setState({
-                        foldData: null,
-                        items: null,
-                        displayedItems: [],
-                        alertProps: exception
-                    });
-                }
+                this.onSnackbarOpen(exception, () => {
+                    if (this._isMounted) {
+                        this.setState({
+                            foldData: null,
+                            items: null,
+                            displayedItems: []
+                        });
+                    }
+                });
             }).finally(() => {
                 if (this._isMounted) {
                     this.setState(({loading}) => ({
@@ -186,17 +183,14 @@ class CrossValidation extends Component {
                 }
             }
         }).catch(exception => {
-            if (exception.constructor.name !== "AlertError") {
-                console.error(exception);
-            }
-
-            if ( this._isMounted ) {
-                this.setState({
-                    items: null,
-                    displayedItems: [],
-                    alertProps: exception
-                });
-            }
+            this.onSnackbarOpen(exception, () => {
+                if ( this._isMounted ) {
+                    this.setState({
+                        items: null,
+                        displayedItems: []
+                    });
+                }
+            });
         }).finally(() => {
             if ( this._isMounted ) {
                 const { project: { parameters: savedParameters, parametersSaved }} = this.props;
@@ -387,17 +381,14 @@ class CrossValidation extends Component {
                     }
                 }
             }).catch(exception => {
-                if (exception.constructor.name !== "AlertError") {
-                    console.error(exception);
-                }
-
-                if (this._isMounted) {
-                    this.setState({
-                        items: null,
-                        displayedItems: [],
-                        alertProps: exception
-                    });
-                }
+                this.onSnackbarOpen(exception, () => {
+                    if (this._isMounted) {
+                        this.setState({
+                            items: null,
+                            displayedItems: []
+                        });
+                    }
+                });
             }).finally(() => {
                 if (this._isMounted) {
                     this.setState(({loading, selected}) => ({
@@ -420,7 +411,8 @@ class CrossValidation extends Component {
         const { project, serverBase } = this.props;
         const pathParams = { projectId: project.id };
 
-        downloadMatrix(pathParams, queryParams, serverBase).catch(this.onSnackbarOpen);
+        downloadMatrix(pathParams, queryParams, serverBase)
+            .catch(this.onSnackbarOpen);
     };
 
     toggleOpen = (name) => {
@@ -626,16 +618,14 @@ class CrossValidation extends Component {
         });
     };
 
-    onSnackbarOpen = (exception) => {
+    onSnackbarOpen = (exception, setStateCallback) => {
         if (exception.constructor.name !== "AlertError") {
             console.error(exception);
             return;
         }
 
         if (this._isMounted) {
-            this.setState({
-                alertProps: exception
-            });
+            this.setState({ alertProps: exception }, setStateCallback);
         }
     };
 

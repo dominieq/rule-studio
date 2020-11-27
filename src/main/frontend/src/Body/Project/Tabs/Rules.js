@@ -120,19 +120,16 @@ class Rules extends Component {
                     this.updateAlerts(result.validateCurrentData);
                 }
             }
-        }).catch(error => {
-            if (error.constructor.name !== "AlertError") {
-                console.error(error);
-            }
-
-            if (this._isMounted) {
-                this.setState({
-                    data: null,
-                    items: null,
-                    displayedItems: [],
-                    alertProps: error
-                });
-            }
+        }).catch(exception => {
+            this.onSnackbarOpen(exception, () => {
+                if (this._isMounted) {
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: []
+                    });
+                }
+            });
         }).finally(() => {
             if (this._isMounted) {
                 const { displayedItems } = this.state;
@@ -323,19 +320,16 @@ class Rules extends Component {
 
                     this.props.onTabChange(projectCopy);
                 }
-            }).catch(error => {
-                if (error.constructor.name !== "AlertError") {
-                    console.error(error);
-                }
-
-                if (this._isMounted) {
-                    this.setState({
-                        data: null,
-                        items: null,
-                        displayedItems: [],
-                        alertProps: error
-                    });
-                }
+            }).catch(exception => {
+                this.onSnackbarOpen(exception, () => {
+                    if (this._isMounted) {
+                        this.setState({
+                            data: null,
+                            items: null,
+                            displayedItems: []
+                        });
+                    }
+                });
             }).finally(() => {
                 const { displayedItems } = this.state;
 
@@ -399,19 +393,16 @@ class Rules extends Component {
                             this.updateAlerts(result.validateCurrentData);
                         }
                     }
-                }).catch(error => {
-                    if (error.constructor.name !== "AlertError") {
-                        console.error(error);
-                    }
-
-                    if (this._isMounted) {
-                        this.setState({
-                            data: null,
-                            items: null,
-                            displayedItems: [],
-                            alertProps: error
-                        });
-                    }
+                }).catch(exception => {
+                    this.onSnackbarOpen(exception, () => {
+                        if (this._isMounted) {
+                            this.setState({
+                                data: null,
+                                items: null,
+                                displayedItems: []
+                            });
+                        }
+                    });
                 }).finally(() => {
                     const { displayedItems } = this.state;
 
@@ -467,15 +458,8 @@ class Rules extends Component {
         const pathParams = { projectId: project.id };
         const queryParams = { format: "xml" };
 
-        downloadRules(pathParams, queryParams, serverBase).catch(error => {
-            if (error.constructor.name !== "AlertError") {
-                console.error(error);
-            }
-
-            if (this._isMounted) {
-                this.setState({alertProps: error});
-            }
-        });
+        downloadRules(pathParams, queryParams, serverBase)
+            .catch(this.onSnackbarOpen);
     };
 
     /**
@@ -489,15 +473,8 @@ class Rules extends Component {
         const pathParams = { projectId: project.id };
         const queryParams = { format: "txt" };
 
-        downloadRules(pathParams, queryParams, serverBase).catch(error => {
-            if (error.constructor.name !== "AlertError") {
-                console.error(error);
-            }
-
-            if (this._isMounted) {
-                this.setState({ alertProps: error });
-            }
-        });
+        downloadRules(pathParams, queryParams, serverBase)
+            .catch(this.onSnackbarOpen);
     };
 
     toggleOpen = (name) => {
@@ -628,14 +605,13 @@ class Rules extends Component {
         }
     };
 
-    onSnackbarOpen = (exception) => {
+    onSnackbarOpen = (exception, setStateCallback) => {
         if (exception.constructor.name !== "AlertError") {
             console.error(exception);
             return;
         }
-        this.setState({
-            alertProps: exception
-        });
+
+        this.setState({ alertProps: exception }, setStateCallback);
     }
 
     onSnackbarClose = (event, reason) => {
