@@ -75,6 +75,11 @@ class CrossValidation extends Component {
                 typeOfUnions: "monotonic",
             },
             parametersSaved: true,
+            refreshNeeded: {
+                matrixMean: false,
+                matrixSum: false,
+                matrixFold: false
+            },
             selected: {
                 foldIndex: 0,
                 item: null,
@@ -351,9 +356,14 @@ class CrossValidation extends Component {
                         this.generateFoldNames(resultParams.numberOfFolds) : [];
 
                     if (this._isMounted) {
-                        this.setState(({selected}) => ({
+                        this.setState(({parametersSaved, selected}) => ({
                             folds: folds,
                             parametersSaved: true,
+                            refreshNeeded: {
+                                matrixMean: !parametersSaved,
+                                matrixSum: !parametersSaved,
+                                matrixFold: !parametersSaved
+                            },
                             selected: { ...selected, foldIndex: 0 }
                         }), () => {
                             const { selected: { foldIndex }} = this.state;
@@ -637,6 +647,12 @@ class CrossValidation extends Component {
         }
     };
 
+    onMatrixRefresh = (matrixType) => {
+        this.setState(({refreshNeeded}) => ({
+            refreshNeeded: { ...refreshNeeded, [matrixType]: false }
+        }));
+    };
+
     render() {
         const {
             loading,
@@ -646,6 +662,7 @@ class CrossValidation extends Component {
             displayedItems,
             open,
             parameters,
+            refreshNeeded,
             selected,
             alertProps,
             attributesMenuEl
@@ -840,9 +857,11 @@ class CrossValidation extends Component {
                     {folds != null &&
                         <MatrixDialog
                             onClose={() => this.toggleOpen("matrixMean")}
+                            onMatrixRefresh={() => this.onMatrixRefresh("matrixMean")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixMean}
                             projectId={projectId}
+                            refreshNeeded={refreshNeeded.matrixMean}
                             resource={"crossValidation"}
                             saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
                             serverBase={serverBase}
@@ -867,9 +886,11 @@ class CrossValidation extends Component {
                     {folds != null &&
                         <MatrixDialog
                             onClose={() => this.toggleOpen("matrixSum")}
+                            onMatrixRefresh={() => this.onMatrixRefresh("matrixSum")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixSum}
                             projectId={projectId}
+                            refreshNeeded={refreshNeeded.matrixSum}
                             resource={"crossValidation"}
                             saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
                             serverBase={serverBase}
@@ -894,6 +915,7 @@ class CrossValidation extends Component {
                     {foldData != null &&
                         <MatrixDialog
                             onClose={() => this.toggleOpen("matrixFold")}
+                            onMatrixRefresh={() => this.onMatrixRefresh("matrixFold")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixFold}
                             projectId={projectId}
@@ -903,6 +925,7 @@ class CrossValidation extends Component {
                                     numberOfFold: selected.foldIndex
                                 });
                             }}
+                            refreshNeeded={refreshNeeded.matrixFold}
                             resource={"crossValidation"}
                             serverBase={serverBase}
                             title={

@@ -33,9 +33,11 @@ const StyledMenu = withStyles(theme => ({
  * @param {number} props.cellDimensions.x - The width of a matrix cell.
  * @param {number} props.cellDimensions.y - The height of a matrix cell.
  * @param {function} props.onClose - Callback fired when dialog requests to be closed.
+ * @param {function} props.onMatrixRefresh - Callback fired when matrix refreshed it's content.
  * @param {function} props.onSnackbarOpen - Callback fired when the component request to display an error.
  * @param {boolean} props.open - If <code>true</code> the dialog will show up.
  * @param {string} props.projectId - The identifier of a selected project.
+ * @param {boolean} props.refreshNeeded - If <code>true</code> dialog will refresh it's content.
  * @param {string} props.resource - The name of a selected resource.
  * @param {function} [props.saveMatrix] - Callback fired when user requests to save matrix.
  * @param {string} props.serverBase - The host in the URL of an API call.
@@ -72,6 +74,7 @@ class MatrixDialog extends React.PureComponent {
 
     componentDidMount() {
         this._isMounted = true;
+        if (this.props.refreshNeeded) this.props.onMatrixRefresh();
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -87,6 +90,11 @@ class MatrixDialog extends React.PureComponent {
         }
 
         if (!prevProps.open && this.props.open) {
+            if (this.props.refreshNeeded) {
+                this.getMatrix(this.props.onMatrixRefresh)
+                return;
+            }
+
             const { misclassification } = this.state;
             if (misclassification.length === 0) {
                 this.getMatrix();
@@ -117,7 +125,7 @@ class MatrixDialog extends React.PureComponent {
         this._isMounted = false;
     }
 
-    getMatrix = () => {
+    getMatrix = (finallyCallback) => {
         let localRequestIndex = 0;
 
         this.setState(({loading, requestIndex}) => {
@@ -163,6 +171,8 @@ class MatrixDialog extends React.PureComponent {
                         loading: { ...loading, matrix: false }
                     }));
                 }
+
+                if (typeof finallyCallback === "function") finallyCallback();
             });
         });
     };
@@ -365,9 +375,11 @@ MatrixDialog.propTypes = {
         })
     ]),
     onClose: PropTypes.func,
+    onMatrixRefresh: PropTypes.func,
     onSnackbarOpen: PropTypes.func,
     open: PropTypes.bool.isRequired,
     projectId: PropTypes.string,
+    refreshNeeded: PropTypes.bool,
     resource: PropTypes.string,
     saveMatrix: PropTypes.func,
     serverBase: PropTypes.string,
@@ -376,6 +388,10 @@ MatrixDialog.propTypes = {
         typeOfMatrix: PropTypes.string,
         numberOfFold: PropTypes.number
     })
+};
+
+MatrixDialog.defaultProps = {
+    refreshNeeded: false
 };
 
 export default MatrixDialog;

@@ -59,6 +59,7 @@ class Classification extends Component {
                 typeOfClassifier: "SimpleRuleClassifier",
             },
             parametersSaved: true,
+            matrixRefreshNeeded: false,
             selected: {
                 item: null,
                 action: 0
@@ -245,12 +246,13 @@ class Classification extends Component {
 
                         const items = parseClassifiedItems(result.Objects, result.objectNames);
 
-                        this.setState({
+                        this.setState(({parametersSaved}) => ({
                             data: result,
                             items: items,
                             displayedItems: items,
-                            parametersSaved: true
-                        });
+                            parametersSaved: true,
+                            matrixRefreshNeeded: !parametersSaved
+                        }));
                     }
 
                     let projectCopy = JSON.parse(JSON.stringify(project));
@@ -492,8 +494,26 @@ class Classification extends Component {
         }
     };
 
+    onMatrixRefresh = () => {
+        this.setState({
+            matrixRefreshNeeded: false
+        });
+    };
+
     render() {
-        const { loading, data, items, displayedItems, parameters, selected, open, attributesMenuEl, alertProps } = this.state;
+        const {
+            loading,
+            data,
+            items,
+            displayedItems,
+            parameters,
+            matrixRefreshNeeded,
+            selected,
+            open,
+            attributesMenuEl,
+            alertProps
+        } = this.state;
+
         const { objectGlobalName, project: { id: projectId }, serverBase } = this.props;
 
         return (
@@ -605,9 +625,11 @@ class Classification extends Component {
                     {Array.isArray(items) && items.length > 0 &&
                         <MatrixDialog
                             onClose={() => this.toggleOpen("matrix")}
+                            onMatrixRefresh={this.onMatrixRefresh}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrix}
                             projectId={projectId}
+                            refreshNeeded={matrixRefreshNeeded}
                             resource={"classification"}
                             saveMatrix={this.onSaveToFile}
                             serverBase={serverBase}
