@@ -170,10 +170,11 @@ function RightClickContextMenu({
  * @subcategory Tabs
  * @param {Object} props - Arguments received from the parent component
  * @param {Object} props.project - Holds data about the current project like id, name and everything associated with the project e.g. information table, unions, cones etc.
- * @param {Object} props.project.result.informationTable - InformationTable received from the server, holds attributes and objects
- * @param {Array} props.project.result.informationTable.attributes - Attributes (metadata, might be empty)
- * @param {Array} props.project.result.informationTable.objects - Objects (data, might be empty)
- * @param {function} props.onDataChange - Method responsible for updating the whole project in the parent component (which is ProjectTabs.js)
+ * @param {Object} props.informationTable - InformationTable received from and sent to the server, holds attributes and objects
+ * @param {Array} props.project.informationTable.attributes - Attributes (metadata, might be empty)
+ * @param {Array} props.project.informationTable.objects - Objects (data, might be empty)
+ * @param {function} props.onDataChange - Callback method responsible for updating the informationTable in the parent component (which is ProjectTabs.js)
+ * @param {function} props.updateProject - Callback method responsible for updating the whole project (kept in App.js)
  * @returns {React.Component}
  */
 class DisplayData extends React.Component {
@@ -290,7 +291,7 @@ class DisplayData extends React.Component {
                         }
                     ],
             }, () => {
-                this.fetchDataFromServer();
+                this.fetchDataFromServerOrParent(true, false);
             })
         }
     }
@@ -384,8 +385,6 @@ class DisplayData extends React.Component {
      *
      * @function
      * @memberOf Data
-     * @param {Array} metadata - I.e. attributes received from the props. Each attribute consists of pairs key-value with name of the property as the key and value as the value.
-     * @returns {Array}
      */
     replaceMissingDataWithQuestionMarks = () => {
         if(this.isDataFromServer) {
@@ -415,13 +414,15 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for getting information table from the server, used when entering the data tab.
+     * Method responsible for getting information table from the server or from the parent component, used when entering the data tab.
      *
      * @function
      * @memberOf Data
+     * @param {boolean} isFetchNeeded - If <code>true</code> the informationTable will be fetched from the server.
+     * @param {boolean} cdm - If <code>true</code> this method is called from the ComponentDidMount method.
      */
-    fetchDataFromServer = () => {
-        if(!this.props.project.dataHistory.history.length) {
+    fetchDataFromServerOrParent = (isFetchNeeded, cdm) => {
+        if(isFetchNeeded) {
             this.setState({
                 isLoading: true
             }, () => {
@@ -463,22 +464,42 @@ class DisplayData extends React.Component {
                     }, () => {
                         this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
                         this.replaceMissingDataWithQuestionMarks(); 
+                        this.updateInfoTableInTheParent(!cdm);
                     });
                     
                 });
             });
         } else {
-            const headers = document.getElementsByClassName("react-grid-HeaderCell-sortable");
-            for(let i=0; i<headers.length; i++) {
-                for(let j=0; j<this.state.history[this.state.historySnapshot].columns.length; j++)
-                {
-                    if(headers[i].innerText === this.state.history[this.state.historySnapshot].columns[j].name) {
-                        this.setHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[j], i, true);
-                        break;
+            if(this.state.history.length === 1 && this.state.history[0].columns.length === 0) {
+                const history = [];
+                const rows = this.prepareDataFromImport(this.props.informationTable.objects);
+                const columns = this.prepareMetaDataFromImport(this.props.informationTable.attributes);
+
+                history.push({
+                    rows: rows,
+                    columns: columns,
+                    historyActionSubject: ''
+                })               
+
+                this.setState({
+                    history: history,
+                }, () => {
+                    this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
+                    this.replaceMissingDataWithQuestionMarks();
+                })
+            } else {
+                const headers = document.getElementsByClassName("react-grid-HeaderCell-sortable");
+                for(let i=0; i<headers.length; i++) {
+                    for(let j=0; j<this.state.history[this.state.historySnapshot].columns.length; j++)
+                    {
+                        if(headers[i].innerText === this.state.history[this.state.historySnapshot].columns[j].name) {
+                            this.setHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[j], i, true);
+                            break;
+                        }
                     }
                 }
+                this.replaceMissingDataWithQuestionMarks();
             }
-            this.replaceMissingDataWithQuestionMarks();
         }
     }
 
@@ -487,6 +508,8 @@ class DisplayData extends React.Component {
      * 
      * @function
      * @memberOf Data
+     * @param {Object[]} objects - Array representing objects (data)
+     * @param {Object[]} attributes - Array representing attributes (metadata)
      */
     sendInfoTableToServerDueToIdentifOrDescriptAttributeChange = (objects, attributes) => {
         this.setState({
@@ -520,7 +543,7 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * Method responsible for updating project attributes, makes them visible to choose in the "project settings" (object's visible description).
+     * Helper method responsible for preparing objects and attributes and forward them to {@link DisplayData#sendInfoTableToServerDueToIdentifOrDescriptAttributeChange}.
      *
      * @function
      * @memberOf Data
@@ -573,7 +596,8 @@ class DisplayData extends React.Component {
      * @memberOf Data
      */
     componentDidMount() {
-        this.fetchDataFromServer();
+        if(this.props.informationTable == null) this.fetchDataFromServerOrParent(true, true);
+        else this.fetchDataFromServerOrParent(false, true);
         this._isMounted = true;    
     }
 
@@ -586,10 +610,28 @@ class DisplayData extends React.Component {
     updateProject = () => {
         const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
         const tmpData = this.prepareDataFileBeforeSendingToServer();
+        this.updateInfoTableInTheParent(true, tmpMetaData, tmpData);
+
         const tmpProject = JSON.parse(JSON.stringify(this.props.project));
         tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history};
         tmpProject.isDataFromServer = false;
-        this.props.onDataChange(tmpProject, {attributes: tmpMetaData, objects: tmpData}); //run parent method
+        this.props.updateProject(tmpProject); //run parent method
+    }
+
+    /**
+     * @function
+     * @memberof Data
+     * @param {boolean} isUpdateNecessary - The parameter indicates if the information table should be send to the server.
+     * @param {Array} [args] - It is either empty array (no data were passed) or the array containing metadata and data, in that order. 
+     */
+    updateInfoTableInTheParent = (isUpdateNecessary, ...args) => {
+        if(args.length > 0) {
+            this.props.onDataChange({attributes: args[0], objects: args[1]}, isUpdateNecessary); //run parent method
+        } else {
+            const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
+            const tmpData = this.prepareDataFileBeforeSendingToServer();
+            this.props.onDataChange({attributes: tmpMetaData, objects: tmpData}, isUpdateNecessary); //run parent method
+        }
     }
 
     /**
@@ -3265,8 +3307,10 @@ class DisplayData extends React.Component {
 }
 
 DisplayData.propTypes = {
+    informationTable: PropTypes.oneOfType([() => null, PropTypes.any.isRequired]),
     project: PropTypes.any.isRequired,
-    onDataChange: PropTypes.func.isRequired
+    onDataChange: PropTypes.func.isRequired,
+    updateProject: PropTypes.func.isRequired
 };
 
 export default withStyles(StyledReactDataGrid)(DisplayData);
