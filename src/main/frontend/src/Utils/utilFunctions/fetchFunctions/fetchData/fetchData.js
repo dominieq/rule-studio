@@ -37,8 +37,7 @@ import { responseJson } from "../parseResponse";
  *          },
  *          "classification": {
  *              "externalData": false,
- *              "isCurrentLearningData": true,
- *              "isCurrentRuleSet": true
+ *              "isCurrentData": true
  *          },
  *          "crossValidation": {
  *              "isCurrentData": true

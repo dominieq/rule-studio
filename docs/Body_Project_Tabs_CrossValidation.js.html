@@ -131,11 +131,12 @@ import {AttributesMenu} from "../../../Utils/Menus/AttributesMenu";
  * @category Tabs
  * @subcategory Tabs
  * @param {Object} props
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
  * @param {Object} props.project - Current project.
- * @param {string} props.serverBase - The name of the host.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
- * @param {number} props.value - The id of a tab.
+ * @param {number} props.value - The index of a selected tab.
  * @returns {React.Component}
  */
 class CrossValidation extends Component {
@@ -161,6 +162,11 @@ class CrossValidation extends Component {
                 typeOfUnions: "monotonic",
             },
             parametersSaved: true,
+            refreshNeeded: {
+                matrixMean: false,
+                matrixSum: false,
+                matrixFold: false
+            },
             selected: {
                 foldIndex: 0,
                 item: null,
@@ -201,18 +207,15 @@ class CrossValidation extends Component {
                     });
                 }
             }).catch(exception => {
-                if (exception.constructor.name !== "AlertError") {
-                    console.error(exception);
-                }
-
-                if (this._isMounted) {
-                    this.setState({
-                        foldData: null,
-                        items: null,
-                        displayedItems: [],
-                        alertProps: exception
-                    });
-                }
+                this.onSnackbarOpen(exception, () => {
+                    if (this._isMounted) {
+                        this.setState({
+                            foldData: null,
+                            items: null,
+                            displayedItems: []
+                        });
+                    }
+                });
             }).finally(() => {
                 if (this._isMounted) {
                     this.setState(({loading}) => ({
@@ -261,21 +264,20 @@ class CrossValidation extends Component {
                 });
 
                 if (result.hasOwnProperty("isCurrentData")) {
-                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                    const messages = result.hasOwnProperty("errorMessages") ?
+                        result.errorMessages : null;
+                    this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                 }
             }
         }).catch(exception => {
-            if (exception.constructor.name !== "AlertError") {
-                console.error(exception);
-            }
-
-            if ( this._isMounted ) {
-                this.setState({
-                    items: null,
-                    displayedItems: [],
-                    alertProps: exception
-                });
-            }
+            this.onSnackbarOpen(exception, () => {
+                if ( this._isMounted ) {
+                    this.setState({
+                        items: null,
+                        displayedItems: []
+                    });
+                }
+            });
         }).finally(() => {
             if ( this._isMounted ) {
                 const { project: { parameters: savedParameters, parametersSaved }} = this.props;
@@ -435,9 +437,14 @@ class CrossValidation extends Component {
                         this.generateFoldNames(resultParams.numberOfFolds) : [];
 
                     if (this._isMounted) {
-                        this.setState(({selected}) => ({
+                        this.setState(({parametersSaved, selected}) => ({
                             folds: folds,
                             parametersSaved: true,
+                            refreshNeeded: {
+                                matrixMean: !parametersSaved,
+                                matrixSum: !parametersSaved,
+                                matrixFold: !parametersSaved
+                            },
                             selected: { ...selected, foldIndex: 0 }
                         }), () => {
                             const { selected: { foldIndex }} = this.state;
@@ -455,21 +462,20 @@ class CrossValidation extends Component {
                     this.props.onTabChange(projectCopy);
 
                     if (result.hasOwnProperty("isCurrentData")) {
-                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                        const messages = result.hasOwnProperty("errorMessages") ?
+                            result.errorMessages : null;
+                        this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                     }
                 }
             }).catch(exception => {
-                if (exception.constructor.name !== "AlertError") {
-                    console.error(exception);
-                }
-
-                if (this._isMounted) {
-                    this.setState({
-                        items: null,
-                        displayedItems: [],
-                        alertProps: exception
-                    });
-                }
+                this.onSnackbarOpen(exception, () => {
+                    if (this._isMounted) {
+                        this.setState({
+                            items: null,
+                            displayedItems: []
+                        });
+                    }
+                });
             }).finally(() => {
                 if (this._isMounted) {
                     this.setState(({loading, selected}) => ({
@@ -492,7 +498,8 @@ class CrossValidation extends Component {
         const { project, serverBase } = this.props;
         const pathParams = { projectId: project.id };
 
-        downloadMatrix(pathParams, queryParams, serverBase).catch(this.onSnackbarOpen);
+        downloadMatrix(pathParams, queryParams, serverBase)
+            .catch(this.onSnackbarOpen);
     };
 
     toggleOpen = (name) => {
@@ -632,37 +639,6 @@ class CrossValidation extends Component {
         }
     };
 
-    onNumberOfFoldsBlur = () => {
-        this.setState(({parameters}) => {
-            const { numberOfFolds } = parameters;
-            const { project: { result: { informationTable: { objects }}}} = this.props;
-
-            if (numberOfFolds > objects.length) {
-                return {
-                    parameters: { ...parameters, numberOfFolds: objects.length },
-                    alertProps: {
-                        message: "Number of folds should be less than or equal to number of objects.",
-                        open: true,
-                        severity: "warning"
-                    }
-                };
-            } else if (numberOfFolds &lt; 2 &amp;&amp; objects.length >= 2) {
-                return {
-                    parameters: { ...parameters, numberOfFolds: 2 },
-                    alertProps: {
-                        message: "Number of folds should be greater than or equal to 2.",
-                        open: true,
-                        severity: "warning"
-                    }
-                };
-            } else {
-                return {
-                    parameters: { ...parameters }
-                };
-            }
-        })
-    }
-
     onFoldIndexChange = (event) => {
         const { loading } = this.state;
         if (loading.crossValidation || loading.selectedFold) {
@@ -703,14 +679,16 @@ class CrossValidation extends Component {
     };
 
     onObjectNamesChange = (names) => {
-        this.setState(({displayedItems}) => {
-            const newItems = displayedItems.map((item, index) => {
+        this.setState(({items, displayedItems}) => ({
+            items: items.map((item, index) => {
                 item.name = getItemName(index, names);
                 return item;
-            });
-
-            return { displayedItems: newItems };
-        });
+            }),
+            displayedItems: displayedItems.map((item, index) => {
+                item.name = getItemName(index, names);
+                return item;
+            })
+        }));
     }
 
     onAttributesMenuOpen = (event) => {
@@ -727,16 +705,14 @@ class CrossValidation extends Component {
         });
     };
 
-    onSnackbarOpen = (exception) => {
+    onSnackbarOpen = (exception, setStateCallback) => {
         if (exception.constructor.name !== "AlertError") {
             console.error(exception);
             return;
         }
 
         if (this._isMounted) {
-            this.setState({
-                alertProps: exception
-            });
+            this.setState({ alertProps: exception }, setStateCallback);
         }
     };
 
@@ -748,6 +724,12 @@ class CrossValidation extends Component {
         }
     };
 
+    onMatrixRefresh = (matrixType) => {
+        this.setState(({refreshNeeded}) => ({
+            refreshNeeded: { ...refreshNeeded, [matrixType]: false }
+        }));
+    };
+
     render() {
         const {
             loading,
@@ -757,12 +739,13 @@ class CrossValidation extends Component {
             displayedItems,
             open,
             parameters,
+            refreshNeeded,
             selected,
             alertProps,
             attributesMenuEl
         } = this.state;
 
-        const { project: { id: projectId }, serverBase } = this.props;
+        const { objectGlobalName, project: { id: projectId }, serverBase } = this.props;
 
         return (
             &lt;CustomBox id={"cross-validation"} variant={"Tab"}>
@@ -833,7 +816,6 @@ class CrossValidation extends Component {
                     &lt;NumberOfFoldsSelector
                         TextFieldProps={{
                             onChange: this.onNumberOfFoldsChange,
-                            onBlur: this.onNumberOfFoldsBlur,
                             value: parameters.numberOfFolds
                         }}
                     />
@@ -940,6 +922,7 @@ class CrossValidation extends Component {
                             disableAttributesMenu={true}
                             coveredObjectResource={"crossValidation"}
                             item={selected.item}
+                            objectGlobalName={undefined}
                             onClose={() => this.toggleOpen("details")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.details}
@@ -951,9 +934,11 @@ class CrossValidation extends Component {
                     {folds != null &amp;&amp;
                         &lt;MatrixDialog
                             onClose={() => this.toggleOpen("matrixMean")}
+                            onMatrixRefresh={() => this.onMatrixRefresh("matrixMean")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixMean}
                             projectId={projectId}
+                            refreshNeeded={refreshNeeded.matrixMean}
                             resource={"crossValidation"}
                             saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
                             serverBase={serverBase}
@@ -978,9 +963,11 @@ class CrossValidation extends Component {
                     {folds != null &amp;&amp;
                         &lt;MatrixDialog
                             onClose={() => this.toggleOpen("matrixSum")}
+                            onMatrixRefresh={() => this.onMatrixRefresh("matrixSum")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixSum}
                             projectId={projectId}
+                            refreshNeeded={refreshNeeded.matrixSum}
                             resource={"crossValidation"}
                             saveMatrix={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
                             serverBase={serverBase}
@@ -1005,6 +992,7 @@ class CrossValidation extends Component {
                     {foldData != null &amp;&amp;
                         &lt;MatrixDialog
                             onClose={() => this.toggleOpen("matrixFold")}
+                            onMatrixRefresh={() => this.onMatrixRefresh("matrixFold")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixFold}
                             projectId={projectId}
@@ -1014,6 +1002,7 @@ class CrossValidation extends Component {
                                     numberOfFold: selected.foldIndex
                                 });
                             }}
+                            refreshNeeded={refreshNeeded.matrixFold}
                             resource={"crossValidation"}
                             serverBase={serverBase}
                             title={
@@ -1047,6 +1036,7 @@ class CrossValidation extends Component {
                                 anchorEl: attributesMenuEl,
                                 onClose: this.onAttributesMenuClose
                             }}
+                            objectGlobalName={objectGlobalName}
                             onObjectNamesChange={this.onObjectNamesChange}
                             onSnackbarOpen={this.onSnackbarOpen}
                             projectId={projectId}
@@ -1054,7 +1044,6 @@ class CrossValidation extends Component {
                             serverBase={serverBase}
                             queryParams={{ subject: selected.foldIndex }}
                         />
-
                     }
                 &lt;/CustomBox>
                 &lt;StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
@@ -1064,6 +1053,7 @@ class CrossValidation extends Component {
 }
 
 CrossValidation.propTypes = {
+    objectGlobalName: PropTypes.string,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,

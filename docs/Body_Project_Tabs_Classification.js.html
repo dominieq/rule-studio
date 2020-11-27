@@ -122,12 +122,13 @@ import {AttributesMenu} from "../../../Utils/Menus/AttributesMenu";
  * @category Tabs
  * @subcategory Tabs
  * @param {Object} props
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onDateUploaded - Callback fired when tab receives information that new data was uploaded.
  * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
  * @param {Object} props.project - Current project.
- * @param {string} props.serverBase - The name of the host.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
- * @param {number} props.value - The id of a tab.
+ * @param {number} props.value - The index of a selected tab.
  * @returns {React.Component}
  */
 class Classification extends Component {
@@ -145,6 +146,7 @@ class Classification extends Component {
                 typeOfClassifier: "SimpleRuleClassifier",
             },
             parametersSaved: true,
+            matrixRefreshNeeded: false,
             selected: {
                 item: null,
                 action: 0
@@ -191,12 +193,10 @@ class Classification extends Component {
                     parameters: { ...parameters, ...resultParameters }
                 }));
 
-                if (result.hasOwnProperty("isCurrentLearningData")) {
-                    if (result.hasOwnProperty("isCurrentRuleSet")) {
-                        this.props.showAlert(this.props.value, !(result.isCurrentLearningData &amp;&amp; result.isCurrentRuleSet));
-                    } else {
-                        this.props.showAlert(this.props.value, !result.isCurrentLearningData);
-                    }
+                if (result.hasOwnProperty("isCurrentData")) {
+                    const messages = result.hasOwnProperty("errorMessages") ?
+                        result.errorMessages : null;
+                    this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                 }
 
                 if (result.hasOwnProperty("externalData")) {
@@ -204,18 +204,15 @@ class Classification extends Component {
                 }
             }
         }).catch(error => {
-            if (error.constructor.name !== "AlertError") {
-                console.error(error);
-            }
-
-            if (this._isMounted) {
-                this.setState({
-                    data: null,
-                    items: null,
-                    displayedItems: [],
-                    alertProps: error
-                });
-            }
+            this.onSnackbarOpen(error, () => {
+                if (this._isMounted) {
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: []
+                    });
+                }
+            });
         }).finally(() => {
             if (this._isMounted) {
                 const { project: { parameters, parametersSaved, classifyAction }} = this.props;
@@ -333,12 +330,13 @@ class Classification extends Component {
 
                         const items = parseClassifiedItems(result.Objects, result.objectNames);
 
-                        this.setState({
+                        this.setState(({parametersSaved}) => ({
                             data: result,
                             items: items,
                             displayedItems: items,
-                            parametersSaved: true
-                        });
+                            parametersSaved: true,
+                            matrixRefreshNeeded: !parametersSaved
+                        }));
                     }
 
                     let projectCopy = JSON.parse(JSON.stringify(project));
@@ -349,31 +347,26 @@ class Classification extends Component {
                     projectCopy.parametersSaved = true;
                     this.props.onTabChange(projectCopy);
 
-                    if (result.hasOwnProperty("isCurrentLearningData")) {
-                        if (result.hasOwnProperty("isCurrentRuleSet")) {
-                            this.props.showAlert(this.props.value, !(result.isCurrentLearningData &amp;&amp; result.isCurrentRuleSet));
-                        } else {
-                            this.props.showAlert(this.props.value, !result.isCurrentLearningData);
-                        }
+                    if (result.hasOwnProperty("isCurrentData")) {
+                        const messages = result.hasOwnProperty("errorMessages")
+                            ? result.errorMessages : null;
+                        this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                     }
 
                     if (result.hasOwnProperty("externalData")) {
                         this.props.onDataUploaded(result.externalData);
                     }
                 }
-            }).catch(error => {
-                if (error.constructor.name !== "AlertError") {
-                    console.error(error);
-                }
-
-                if (this._isMounted) {
-                    this.setState({
-                        data: null,
-                        items: null,
-                        displayedItems: [],
-                        alertProps: error
-                    });
-                }
+            }).catch(exception => {
+                this.onSnackbarOpen(exception, () => {
+                    if (this._isMounted) {
+                        this.setState({
+                            data: null,
+                            items: null,
+                            displayedItems: []
+                        });
+                    }
+                });
             }).finally(() => {
                 if (this._isMounted) {
                     this.setState(({selected}) => ({
@@ -467,7 +460,8 @@ class Classification extends Component {
         const pathParams = { projectId: project.id };
         const queryParams = { typeOfMatrix: "classification" };
 
-        downloadMatrix(pathParams, queryParams, serverBase).catch(this.onSnackbarOpen);
+        downloadMatrix(pathParams, queryParams, serverBase)
+            .catch(this.onSnackbarOpen);
     };
 
     onDefaultClassificationResultChange = (event) => {
@@ -535,14 +529,16 @@ class Classification extends Component {
     };
 
     onObjectNamesChange = (names) => {
-        this.setState(({displayedItems}) => {
-            const newItems = displayedItems.map((item, index) => {
+        this.setState(({items, displayedItems}) => ({
+            items: items.map((item, index) => {
                 item.name = getItemName(index, names);
                 return item;
-            });
-
-            return { displayedItems: newItems };
-        });
+            }),
+            displayedItems: displayedItems.map((item, index) => {
+                item.name = getItemName(index, names);
+                return item;
+            })
+        }));
     };
 
     onAttributesMenuOpen = (event) => {
@@ -559,16 +555,14 @@ class Classification extends Component {
         });
     };
 
-    onSnackbarOpen = (exception) => {
+    onSnackbarOpen = (exception, setStateCallback) => {
         if (exception.constructor.name !== "AlertError") {
             console.error(exception);
             return;
         }
 
         if (this._isMounted) {
-            this.setState({
-                alertProps: exception
-            });
+            this.setState({ alertProps: exception }, setStateCallback);
         }
     };
 
@@ -580,9 +574,27 @@ class Classification extends Component {
         }
     };
 
+    onMatrixRefresh = () => {
+        this.setState({
+            matrixRefreshNeeded: false
+        });
+    };
+
     render() {
-        const { loading, data, items, displayedItems, parameters, selected, open, attributesMenuEl, alertProps } = this.state;
-        const { project: { id: projectId }, serverBase } = this.props;
+        const {
+            loading,
+            data,
+            items,
+            displayedItems,
+            parameters,
+            matrixRefreshNeeded,
+            selected,
+            open,
+            attributesMenuEl,
+            alertProps
+        } = this.state;
+
+        const { objectGlobalName, project: { id: projectId }, serverBase } = this.props;
 
         return (
             &lt;CustomBox id={"classification"} variant={"Tab"}>
@@ -681,6 +693,7 @@ class Classification extends Component {
                         &lt;ClassifiedObjectDialog
                             disableAttributesMenu={false}
                             item={selected.item}
+                            objectGlobalName={objectGlobalName}
                             onClose={() => this.toggleOpen("details")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.details}
@@ -692,9 +705,11 @@ class Classification extends Component {
                     {Array.isArray(items) &amp;&amp; items.length > 0 &amp;&amp;
                         &lt;MatrixDialog
                             onClose={() => this.toggleOpen("matrix")}
+                            onMatrixRefresh={this.onMatrixRefresh}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrix}
                             projectId={projectId}
+                            refreshNeeded={matrixRefreshNeeded}
                             resource={"classification"}
                             saveMatrix={this.onSaveToFile}
                             serverBase={serverBase}
@@ -719,6 +734,7 @@ class Classification extends Component {
                             anchorEl: attributesMenuEl,
                             onClose: this.onAttributesMenuClose
                         }}
+                        objectGlobalName={objectGlobalName}
                         onObjectNamesChange={this.onObjectNamesChange}
                         onSnackbarOpen={this.onSnackbarOpen}
                         projectId={projectId}
@@ -734,6 +750,7 @@ class Classification extends Component {
 }
 
 Classification.propTypes = {
+    objectGlobalName: PropTypes.string,
     onDataUploaded: PropTypes.func,
     onTabChange: PropTypes.func,
     project: PropTypes.object,

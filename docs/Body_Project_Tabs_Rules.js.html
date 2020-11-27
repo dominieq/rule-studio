@@ -124,13 +124,14 @@ import { mdiTextBox } from '@mdi/js';
  * @category Tabs
  * @subcategory Tabs
  * @param {Object} props
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onDataUploaded - Callback fired when tab receives information that new data was uploaded.
  * @param {function} props.onRulesUploaded - Callback fired when tab receives information that rule set was uploaded.
  * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
  * @param {Object} props.project - Current project.
- * @param {string} props.serverBase - The name of the host.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
- * @param {number} props.value - The id of a tab.
+ * @param {number} props.value - The index of a selected tab.
  * @returns {React.Component}
  */
 class Rules extends Component {
@@ -183,21 +184,19 @@ class Rules extends Component {
                 const resultParameters = result.hasOwnProperty("parameters") ?
                     parseRulesParams(result.parameters) : { };
 
-                let alertProps = undefined;
-                if (result.hasOwnProperty("errorMessage")) {
-                    alertProps = { message: result.errorMessage, open: true, severity: "error" };
-                }
-
-                this.setState(({parameters}) => ({
+                this.setState(({parameters, alertProps}) => ({
                     data: result,
                     items: items,
                     displayedItems: items,
                     parameters: { ...parameters, ...resultParameters},
-                    alertProps: alertProps
+                    alertProps: result.hasOwnProperty("errorMessage") ?
+                        { message: result.errorMessage, open: true, severity: "error" } : alertProps
                 }));
 
                 if (result.hasOwnProperty("isCurrentData")) {
-                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                    const messages = result.hasOwnProperty("errorMessages") ?
+                        result.errorMessages : null;
+                    this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                 }
 
                 if (result.hasOwnProperty("externalRules")) {
@@ -208,19 +207,16 @@ class Rules extends Component {
                     this.updateAlerts(result.validateCurrentData);
                 }
             }
-        }).catch(error => {
-            if (error.constructor.name !== "AlertError") {
-                console.error(error);
-            }
-
-            if (this._isMounted) {
-                this.setState({
-                    data: null,
-                    items: null,
-                    displayedItems: [],
-                    alertProps: error
-                });
-            }
+        }).catch(exception => {
+            this.onSnackbarOpen(exception, () => {
+                if (this._isMounted) {
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: []
+                    });
+                }
+            });
         }).finally(() => {
             if (this._isMounted) {
                 const { displayedItems } = this.state;
@@ -374,18 +370,14 @@ class Rules extends Component {
                     if (this._isMounted) {
                         const items = parseRulesItems(result);
 
-                        let alertProps = undefined;
-                        if (result.hasOwnProperty("errorMessage")) {
-                            alertProps = { message: result.errorMessage, open: true, severity: "error" };
-                        }
-
-                        this.setState({
+                        this.setState(({alertProps}) => ({
                             data: result,
                             items: items,
                             displayedItems: items,
                             parametersSaved: true,
-                            alertProps: alertProps
-                        });
+                            alertProps: result.hasOwnProperty("errorMessage") ?
+                                { message: result.errorMessage, open: true, severity: "error" } : alertProps
+                        }));
                     }
 
                     let projectCopy = JSON.parse(JSON.stringify(project));
@@ -400,7 +392,9 @@ class Rules extends Component {
                     projectCopy.parametersSaved = true;
 
                     if (result.hasOwnProperty("isCurrentData")) {
-                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                        const messages = result.hasOwnProperty("errorMessages") ?
+                            result.errorMessages : null;
+                        this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                     }
 
                     if (result.hasOwnProperty("externalRules")) {
@@ -413,19 +407,16 @@ class Rules extends Component {
 
                     this.props.onTabChange(projectCopy);
                 }
-            }).catch(error => {
-                if (error.constructor.name !== "AlertError") {
-                    console.error(error);
-                }
-
-                if (this._isMounted) {
-                    this.setState({
-                        data: null,
-                        items: null,
-                        displayedItems: [],
-                        alertProps: error
-                    });
-                }
+            }).catch(exception => {
+                this.onSnackbarOpen(exception, () => {
+                    if (this._isMounted) {
+                        this.setState({
+                            data: null,
+                            items: null,
+                            displayedItems: []
+                        });
+                    }
+                });
             }).finally(() => {
                 const { displayedItems } = this.state;
 
@@ -489,19 +480,16 @@ class Rules extends Component {
                             this.updateAlerts(result.validateCurrentData);
                         }
                     }
-                }).catch(error => {
-                    if (error.constructor.name !== "AlertError") {
-                        console.error(error);
-                    }
-
-                    if (this._isMounted) {
-                        this.setState({
-                            data: null,
-                            items: null,
-                            displayedItems: [],
-                            alertProps: error
-                        });
-                    }
+                }).catch(exception => {
+                    this.onSnackbarOpen(exception, () => {
+                        if (this._isMounted) {
+                            this.setState({
+                                data: null,
+                                items: null,
+                                displayedItems: []
+                            });
+                        }
+                    });
                 }).finally(() => {
                     const { displayedItems } = this.state;
 
@@ -525,17 +513,11 @@ class Rules extends Component {
      * @param {Object} validateCurrentData - The part of response from server
      */
     updateAlerts = (validateCurrentData) => {
-        if (validateCurrentData.classification !== null) {
-            if (validateCurrentData.classification.hasOwnProperty("isCurrentLearningData")) {
-                const isCurrentLearningData = validateCurrentData.classification.isCurrentLearningData;
-
-                if (validateCurrentData.classification.hasOwnProperty("isCurrentRuleSet")) {
-                    const isCurrentRuleSet = validateCurrentData.classification.isCurrentRuleSet;
-
-                    this.props.showAlert(this.props.value + 1, !(isCurrentLearningData &amp;&amp; isCurrentRuleSet));
-                } else {
-                    this.props.showAlert(this.props.value + 1, !isCurrentLearningData);
-                }
+        if (validateCurrentData.classification != null) {
+            if (validateCurrentData.classification.hasOwnProperty("isCurrentData")) {
+                const messages = validateCurrentData.classification.hasOwnProperty("errorMessages") ?
+                    validateCurrentData.classification.errorMessages : null;
+                this.props.showAlert(this.props.value + 1, !validateCurrentData.classification.isCurrentData, messages);
             }
 
             if (validateCurrentData.classification.hasOwnProperty("externalData")) {
@@ -543,9 +525,11 @@ class Rules extends Component {
             }
         }
 
-        if (validateCurrentData.unions !== null) {
+        if (validateCurrentData.unions != null) {
             if (validateCurrentData.unions.hasOwnProperty("isCurrentData")) {
-                this.props.showAlert(this.props.value - 1, !validateCurrentData.unions.isCurrentData);
+                const messages = validateCurrentData.unions.hasOwnProperty("errorMessages") ?
+                    validateCurrentData.unions.errorMessages : null;
+                this.props.showAlert(this.props.value - 1, !validateCurrentData.unions.isCurrentData, messages);
             }
         }
     };
@@ -561,15 +545,8 @@ class Rules extends Component {
         const pathParams = { projectId: project.id };
         const queryParams = { format: "xml" };
 
-        downloadRules(pathParams, queryParams, serverBase).catch(error => {
-            if (error.constructor.name !== "AlertError") {
-                console.error(error);
-            }
-
-            if (this._isMounted) {
-                this.setState({alertProps: error});
-            }
-        });
+        downloadRules(pathParams, queryParams, serverBase)
+            .catch(this.onSnackbarOpen);
     };
 
     /**
@@ -583,15 +560,8 @@ class Rules extends Component {
         const pathParams = { projectId: project.id };
         const queryParams = { format: "txt" };
 
-        downloadRules(pathParams, queryParams, serverBase).catch(error => {
-            if (error.constructor.name !== "AlertError") {
-                console.error(error);
-            }
-
-            if (this._isMounted) {
-                this.setState({ alertProps: error });
-            }
-        });
+        downloadRules(pathParams, queryParams, serverBase)
+            .catch(this.onSnackbarOpen);
     };
 
     toggleOpen = (name) => {
@@ -722,14 +692,13 @@ class Rules extends Component {
         }
     };
 
-    onSnackbarOpen = (exception) => {
+    onSnackbarOpen = (exception, setStateCallback) => {
         if (exception.constructor.name !== "AlertError") {
             console.error(exception);
             return;
         }
-        this.setState({
-            alertProps: exception
-        });
+
+        this.setState({ alertProps: exception }, setStateCallback);
     }
 
     onSnackbarClose = (event, reason) => {
@@ -742,7 +711,7 @@ class Rules extends Component {
 
     render() {
         const { loading, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
-        const { project: { id: projectId }, serverBase } = this.props;
+        const { objectGlobalName, project: { id: projectId }, serverBase } = this.props;
 
         const resultsExists = Array.isArray(items) &amp;&amp; Boolean(items.length);
 
@@ -906,6 +875,7 @@ class Rules extends Component {
                     {selectedItem !== null &amp;&amp;
                         &lt;RulesDialog
                             item={selectedItem}
+                            objectGlobalName={objectGlobalName}
                             onClose={() => this.toggleOpen("details")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.details}
@@ -922,6 +892,7 @@ class Rules extends Component {
 }
 
 Rules.propTypes = {
+    objectGlobalName: PropTypes.string,
     onDataUploaded: PropTypes.func,
     onRulesUploaded: PropTypes.func,
     onTabChange: PropTypes.func,

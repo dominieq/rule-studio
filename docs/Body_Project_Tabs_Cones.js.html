@@ -88,7 +88,7 @@
             <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import { fetchCones } from "../../../Utils/utilFunctions/fetchFunctions";
-import { parseConesItems } from "../../../Utils/utilFunctions/parseItems"
+import { getItemName, parseConesItems } from "../../../Utils/utilFunctions/parseItems"
 import { parseConesListItems } from "../../../Utils/utilFunctions/parseListItems";
 import TabBody from "../Utils/TabBody";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
@@ -108,11 +108,12 @@ import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
  * @category Tabs
  * @subcategory Tabs
  * @param {Object} props
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
  * @param {Object} props.project - Current project.
- * @param {string} props.serverBase - The name of the host.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
- * @param {number} props.value - The id of a tab.
+ * @param {number} props.value - The index of a selected tab.
  * @returns {React.Component}
  */
 class Cones extends Component {
@@ -158,22 +159,21 @@ class Cones extends Component {
                 });
 
                 if (result.hasOwnProperty("isCurrentData")) {
-                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                    const messages = result.hasOwnProperty("errorMessages") ?
+                        result.errorMessages : null;
+                    this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                 }
             }
-        }).catch(error => {
-            if (error.constructor.name !== "AlertError") {
-                console.error(error);
-            }
-
-            if (this._isMounted) {
-                this.setState({
-                    data: null,
-                    items: null,
-                    displayedItems: [],
-                    alertProps: error
-                });
-            }
+        }).catch(exception => {
+            this.onSnackbarOpen(exception, () => {
+                if (this._isMounted) {
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: []
+                    });
+                }
+            });
         }).finally(() => {
             if (this._isMounted) {
                 this.setState({
@@ -261,22 +261,21 @@ class Cones extends Component {
                     }
 
                     if (result.hasOwnProperty("isCurrentData")) {
-                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                        const messages = result.hasOwnProperty("errorMessages") ?
+                            result.errorMessages : null;
+                        this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                     }
                 }
-            }).catch(error => {
-                if (error.constructor.name !== "AlertError") {
-                    console.error(error);
-                }
-
-                if (this._isMounted) {
-                    this.setState({
-                        data: null,
-                        items: null,
-                        displayedItems: [],
-                        alertProps: error
-                    });
-                }
+            }).catch(exception => {
+                this.onSnackbarOpen(exception, () => {
+                    if (this._isMounted) {
+                        this.setState({
+                            data: null,
+                            items: null,
+                            displayedItems: []
+                        });
+                    }
+                });
             }).finally(() => {
                 if (this._isMounted) {
                     this.setState({
@@ -339,25 +338,26 @@ class Cones extends Component {
     }
 
     onObjectNamesChange = (names) => {
-        const { data } = this.state;
-        const items = parseConesItems(data, names);
-
-        this.setState({
-            items: items,
-            displayedItems: items
-        })
+        this.setState(({items, displayedItems}) => ({
+            items: items.map((item, index) => {
+                item.name = getItemName(index, names);
+                return item;
+            }),
+            displayedItems: displayedItems.map((item, index) => {
+                item.name = getItemName(index, names);
+                return item;
+            })
+        }));
     }
 
-    onSnackbarOpen = (exception) => {
+    onSnackbarOpen = (exception, setStateCallback) => {
         if (exception.constructor.name !== "AlertError") {
             console.error(exception);
             return;
         }
 
         if (this._isMounted) {
-            this.setState({
-                alertProps: exception
-            });
+            this.setState({ alertProps: exception }, setStateCallback);
         }
     }
 
@@ -371,7 +371,7 @@ class Cones extends Component {
 
     render() {
         const { loading, items, displayedItems, openDetails, selectedItem, attributesMenuEl, alertProps } = this.state;
-        const { project: { id: projectId }, serverBase } = this.props;
+        const { objectGlobalName ,project: { id: projectId }, serverBase } = this.props;
 
         return (
             &lt;CustomBox customScrollbar={true} id={"cones"} variant={"TabBody"}>
@@ -386,8 +386,6 @@ class Cones extends Component {
                 &lt;/CustomHeader>
                 {Array.isArray(items) &amp;&amp; items.length > 0 &amp;&amp; !loading &amp;&amp;
                     &lt;AttributesMenu
-                        onObjectNamesChange={this.onObjectNamesChange}
-                        onSnackbarOpen={this.onSnackbarOpen}
                         ListProps={{
                             id: "cones-main-desc-attribute-menu"
                         }}
@@ -395,6 +393,9 @@ class Cones extends Component {
                             anchorEl: attributesMenuEl,
                             onClose: this.onAttributesMenuClose
                         }}
+                        objectGlobalName={objectGlobalName}
+                        onObjectNamesChange={this.onObjectNamesChange}
+                        onSnackbarOpen={this.onSnackbarOpen}
                         projectId={projectId}
                         resource={"cones"}
                         serverBase={serverBase}
@@ -472,6 +473,7 @@ class Cones extends Component {
 }
 
 Cones.propTypes = {
+    objectGlobalName: PropTypes.string,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
