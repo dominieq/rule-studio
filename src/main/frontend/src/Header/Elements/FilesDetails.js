@@ -54,9 +54,8 @@ class FilesDetails extends React.PureComponent {
         super(props);
 
         this.state = {
-            loading: false,
             open: false,
-            files: [],
+            files: []
         };
 
         this.anchorRef = React.createRef();
@@ -67,21 +66,8 @@ class FilesDetails extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.projectId !== this.props.projectId) {
-            const { files } = this.state;
-
-            if (Array.isArray(files) && files.length !== 0) {
-                this.getProjectDetails();
-            }
-            return;
-        }
-
         if (!prevState.open && this.state.open) {
-            const { files } = this.state;
-
-            if (Array.isArray(files) && files.length === 0) {
-                this.getProjectDetails();
-            }
+            this.getProjectDetails();
         }
     }
 
@@ -91,7 +77,6 @@ class FilesDetails extends React.PureComponent {
 
     getProjectDetails = () => {
         this.setState({
-            loading: true,
             files: [{label: "Loading details"}]
         }, () => {
             const { projectId, serverBase } = this.props;
@@ -103,17 +88,17 @@ class FilesDetails extends React.PureComponent {
                 if (this._isMounted && result != null) {
                     let files = []
 
-                    if (result.hasOwnProperty("externalDataFileName"))
-                        files.push({ label: "External data", value: result.externalDataFileName });
-
-                    if (result.hasOwnProperty("rulesFileName"))
-                        files.push({ label: "Rules", value: result.rulesFileName });
+                    if (result.hasOwnProperty("metadataFileName"))
+                        files.push({ label: "Metadata", value: result.metadataFileName });
 
                     if (result.hasOwnProperty("dataFileName"))
                         files.push({ label: "Data", value: result.dataFileName });
 
-                    if (result.hasOwnProperty("metadataFileName"))
-                        files.push({ label: "Metadata", value: result.metadataFileName });
+                    if (result.hasOwnProperty("rulesFileName"))
+                        files.push({ label: "Rules", value: result.rulesFileName });
+
+                    if (result.hasOwnProperty("externalDataFileName"))
+                        files.push({ label: "External data", value: result.externalDataFileName });
 
                     this.setState({ files: files });
                 }
@@ -121,7 +106,15 @@ class FilesDetails extends React.PureComponent {
                 this.props.onSnackbarOpen(exception);
             }).finally(() => {
                 if (this._isMounted) {
-                    this.setState({ loading: false });
+                    this.setState(({files}) => {
+                        if (files.length === 1 && files[0].hasOwnProperty("label")
+                            && files[0].label === "Loading details") {
+
+                            return { files: [{label: "Error when fetching details"}]};
+                        }
+
+                        return { files };
+                    });
                 }
             });
         });
