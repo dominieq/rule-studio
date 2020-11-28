@@ -1,75 +1,108 @@
 package pl.put.poznan.rulestudio.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Arrays;
+
 public class ValidityRulesContainer {
-    private Boolean unions;
-    private Boolean classificationExternal;
-    private Boolean classificationProjectData;
-    private Boolean classificationRules;
-    private Boolean classificationLearningData;
+
+    @JsonProperty("unions")
+    private UnionsValidity unionsValidity;
+
+    @JsonProperty("classification")
+    private ClassificationValidity classificationValidity;
 
     public ValidityRulesContainer(Project project) {
-        UnionsWithHttpParameters unions = project.getUnions();
-        if(unions != null) {
-            this.unions = unions.isCurrentData();
+        final UnionsWithHttpParameters unions = project.getUnions();
+        if (unions != null) {
+            this.unionsValidity = new UnionsValidity(unions);
+        } else {
+            this.unionsValidity = null;
         }
 
-        ProjectClassification projectClassification = project.getProjectClassification();
-        if(projectClassification != null) {
-            this.classificationExternal = projectClassification.isExternalData();
-            this.classificationProjectData = projectClassification.isCurrentProjectData();
-            this.classificationRules = projectClassification.isCurrentRuleSet();
-            this.classificationLearningData = projectClassification.isCurrentLearningData();
+        final ProjectClassification projectClassification = project.getProjectClassification();
+        if (projectClassification != null) {
+            this.classificationValidity = new ClassificationValidity(projectClassification);
+        } else {
+            this.classificationValidity = null;
         }
     }
 
-    public Boolean getUnions() {
-        return unions;
+    public UnionsValidity getUnionsValidity() {
+        return unionsValidity;
     }
 
-    public void setUnions(Boolean unions) {
-        this.unions = unions;
-    }
-
-    public Boolean getClassificationExternal() {
-        return classificationExternal;
-    }
-
-    public void setClassificationExternal(Boolean classificationExternal) {
-        this.classificationExternal = classificationExternal;
-    }
-
-    public Boolean getClassificationProjectData() {
-        return classificationProjectData;
-    }
-
-    public void setClassificationProjectData(Boolean classificationProjectData) {
-        this.classificationProjectData = classificationProjectData;
-    }
-
-    public Boolean getClassificationRules() {
-        return classificationRules;
-    }
-
-    public void setClassificationRules(Boolean classificationRules) {
-        this.classificationRules = classificationRules;
-    }
-
-    public Boolean getClassificationLearningData() {
-        return classificationLearningData;
-    }
-
-    public void setClassificationLearningData(Boolean classificationLearningData) {
-        this.classificationLearningData = classificationLearningData;
+    public ClassificationValidity getClassificationValidity() {
+        return classificationValidity;
     }
 
     @Override
     public String toString() {
         return "ValidityRulesContainer{" +
-                "unions=" + unions +
-                ", classificationExternal=" + classificationExternal +
-                ", classificationData=" + classificationProjectData +
-                ", classificationRules=" + classificationRules +
-                ", classificationLearningData=" + classificationLearningData +
+                "unionsValidity=" + unionsValidity +
+                ", classificationValidity=" + classificationValidity +
                 '}';
+    }
+
+    private class UnionsValidity {
+
+        @JsonProperty("isCurrentData")
+        private Boolean isCurrentData;
+
+        public UnionsValidity(UnionsWithHttpParameters unions) {
+            this.isCurrentData = unions.isCurrentData();
+        }
+
+        @JsonIgnore
+        public Boolean getCurrentData() {
+            return isCurrentData;
+        }
+
+        @Override
+        public String toString() {
+            return "UnionsValidity{" +
+                    "isCurrentData=" + isCurrentData +
+                    '}';
+        }
+    }
+
+    private class ClassificationValidity {
+
+        private Boolean externalData;
+
+        @JsonProperty("isCurrentData")
+        private Boolean isCurrentData;
+
+        private String[] errorMessages;
+
+        public ClassificationValidity(ProjectClassification projectClassification) {
+            this.externalData = projectClassification.isExternalData();
+
+            this.errorMessages = projectClassification.interpretFlags();
+            this.isCurrentData = (this.errorMessages == null);
+        }
+
+        public Boolean getExternalData() {
+            return externalData;
+        }
+
+        @JsonIgnore
+        public Boolean getCurrentData() {
+            return isCurrentData;
+        }
+
+        public String[] getErrorMessages() {
+            return errorMessages;
+        }
+
+        @Override
+        public String toString() {
+            return "ClassificationValidity{" +
+                    "externalData=" + externalData +
+                    ", isCurrentData=" + isCurrentData +
+                    ", errorMessages=" + Arrays.toString(errorMessages) +
+                    '}';
+        }
     }
 }

@@ -279,4 +279,43 @@ public class ProjectClassification extends AbstractClassification {
 
         return orderedUniqueFullyDeterminedDecisions;
     }
+
+    public String[] interpretFlags() {
+        if ((this.isCurrentProjectData())
+                && (this.isCurrentRuleSet() != null) && (this.isCurrentRuleSet())
+                && (this.isOriginalLearningData())
+                && (this.isCurrentLearningData())) {
+            return null;
+        } else {
+            ArrayList<String> errorMessages = new ArrayList<>();
+
+            if (!this.isCurrentProjectData()) {
+                if (this.isExternalData()) {
+                    errorMessages.add("The classified objects have been uploaded with different attributes than current objects in the DATA tab.");
+                } else {
+                    errorMessages.add("The classified objects are different from the objects in the DATA tab.");
+                }
+            }
+
+            if (this.isCurrentRuleSet() == null) {
+                errorMessages.add("The rule set used in classification is different from the current rule set in the RULES tab; no rule set in the RULES tab.");
+            } else if (!this.isCurrentRuleSet()) {
+                errorMessages.add("The rule set used in classification is different from the current rule set in the RULES tab.");
+            }
+
+            if (!this.isOriginalLearningData()) {
+                errorMessages.add("The rule set used in classification didn't have access to learning data. The objects from the DATA tab were used as learning data.");
+            }
+
+            if (!this.isCurrentLearningData()) {
+                if (this.isOriginalLearningData()) {
+                    errorMessages.add("The learning data is different from current data in the DATA tab.");
+                } else {
+                    errorMessages.add("The data used in classification as a learning data for rules is not the same as the current data in the DATA tab.");
+                }
+            }
+
+            return errorMessages.toArray(new String[0]);
+        }
+    }
 }

@@ -1,70 +1,136 @@
 package pl.put.poznan.rulestudio.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ValidityProjectContainer extends ValidityRulesContainer {
-    private Boolean dominanceCones;
-    private Boolean rulesExternal;
-    private Boolean rulesData;
-    private Boolean crossValidation;
+
+    @JsonProperty("dominanceCones")
+    private DominanceConesValidity dominanceConesValidity;
+
+    @JsonProperty("rules")
+    private RulesValidity rulesValidity;
+
+    @JsonProperty("crossValidation")
+    private CrossValidationValidity crossValidationValidity;
 
     public ValidityProjectContainer(Project project) {
         super(project);
 
-        DominanceCones dominanceCones = project.getDominanceCones();
-        if(dominanceCones != null) {
-            this.dominanceCones = project.getDominanceCones().isCurrentData();
+        final DominanceCones dominanceCones = project.getDominanceCones();
+        if (dominanceCones != null) {
+            this.dominanceConesValidity = new DominanceConesValidity(dominanceCones);
+        } else {
+            this.dominanceConesValidity = null;
         }
 
-        RulesWithHttpParameters rules = project.getRules();
-        if(rules != null) {
-            this.rulesExternal = project.getRules().isExternalRules();
-            this.rulesData = project.getRules().isCurrentData();
+        final RulesWithHttpParameters rules = project.getRules();
+        if (rules != null) {
+            this.rulesValidity = new RulesValidity(rules);
+        } else {
+            this.rulesValidity = null;
         }
 
-        CrossValidation crossValidation = project.getCrossValidation();
-        if(crossValidation != null) {
-            this.crossValidation = project.getCrossValidation().isCurrentData();
+        final CrossValidation crossValidation = project.getCrossValidation();
+        if (crossValidation != null) {
+            this.crossValidationValidity = new CrossValidationValidity(crossValidation);
+        } else {
+            this.crossValidationValidity = null;
         }
     }
 
-    public Boolean getDominanceCones() {
-        return dominanceCones;
+    public DominanceConesValidity getDominanceConesValidity() {
+        return dominanceConesValidity;
     }
 
-    public void setDominanceCones(Boolean dominanceCones) {
-        this.dominanceCones = dominanceCones;
+    public RulesValidity getRulesValidity() {
+        return rulesValidity;
     }
 
-    public Boolean getRulesExternal() {
-        return rulesExternal;
-    }
-
-    public void setRulesExternal(Boolean rulesExternal) {
-        this.rulesExternal = rulesExternal;
-    }
-
-    public Boolean getRulesData() {
-        return rulesData;
-    }
-
-    public void setRulesData(Boolean rulesData) {
-        this.rulesData = rulesData;
-    }
-
-    public Boolean getCrossValidation() {
-        return crossValidation;
-    }
-
-    public void setCrossValidation(Boolean crossValidation) {
-        this.crossValidation = crossValidation;
+    public CrossValidationValidity getCrossValidationValidity() {
+        return crossValidationValidity;
     }
 
     @Override
     public String toString() {
         return "ValidityProjectContainer{" +
-                "dominanceCones=" + dominanceCones +
-                ", rulesExternal=" + rulesExternal +
-                ", rulesData=" + rulesData +
-                ", crossValidation=" + crossValidation +
+                "dominanceConesValidity=" + dominanceConesValidity +
+                ", rulesValidity=" + rulesValidity +
+                ", crossValidationValidity=" + crossValidationValidity +
                 "} " + super.toString();
+    }
+
+    private class DominanceConesValidity {
+
+        @JsonProperty("isCurrentData")
+        private Boolean isCurrentData;
+
+        public DominanceConesValidity(DominanceCones dominanceCones) {
+            this.isCurrentData = dominanceCones.isCurrentData();
+        }
+
+        @JsonIgnore
+        public Boolean getCurrentData() {
+            return isCurrentData;
+        }
+
+        @Override
+        public String toString() {
+            return "DominanceConesValidity{" +
+                    "isCurrentData=" + isCurrentData +
+                    '}';
+        }
+    }
+
+    private class RulesValidity {
+
+        private Boolean externalRules;
+
+        @JsonProperty("isCurrentData")
+        private Boolean isCurrentData;
+
+        public RulesValidity(RulesWithHttpParameters rules) {
+            this.externalRules = rules.isExternalRules();
+            this.isCurrentData = rules.isCurrentData();
+        }
+
+        public Boolean getExternalRules() {
+            return externalRules;
+        }
+
+        @JsonIgnore
+        public Boolean getCurrentData() {
+            return isCurrentData;
+        }
+
+        @Override
+        public String toString() {
+            return "RulesValidity{" +
+                    "externalRules=" + externalRules +
+                    ", isCurrentData=" + isCurrentData +
+                    '}';
+        }
+    }
+
+    private class CrossValidationValidity {
+
+        @JsonProperty("isCurrentData")
+        private Boolean isCurrentData;
+
+        public CrossValidationValidity(CrossValidation crossValidation) {
+            this.isCurrentData = crossValidation.isCurrentData();
+        }
+
+        @JsonIgnore
+        public Boolean getCurrentData() {
+            return isCurrentData;
+        }
+
+        @Override
+        public String toString() {
+            return "CrossValidationValidity{" +
+                    "isCurrentData=" + isCurrentData +
+                    '}';
+        }
     }
 }

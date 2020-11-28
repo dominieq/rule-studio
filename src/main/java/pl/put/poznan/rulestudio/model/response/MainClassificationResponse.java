@@ -11,7 +11,6 @@ import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters;
 import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters.ClassificationParametersBuilder;
 import pl.put.poznan.rulestudio.model.response.ClassifiedObjectMainProperties.ClassifiedObjectMainPropertiesBuilder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainClassificationResponse {
@@ -159,44 +158,8 @@ public class MainClassificationResponse {
             mainClassificationResponse.isExternalData = projectClassification.isExternalData();
             mainClassificationResponse.externalDataFileName = projectClassification.getExternalDataFileName();
 
-            if ((projectClassification.isCurrentProjectData())
-                    && (projectClassification.isCurrentRuleSet() != null) && (projectClassification.isCurrentRuleSet())
-                    && (projectClassification.isOriginalLearningData())
-                    && (projectClassification.isCurrentLearningData())) {
-                mainClassificationResponse.isCurrentData = true;
-                mainClassificationResponse.errorMessages = null;
-            } else {
-                ArrayList<String> errorMessages = new ArrayList<>();
-
-                if (!projectClassification.isCurrentProjectData()) {
-                    if (projectClassification.isExternalData()) {
-                        errorMessages.add("Classified objects have been read with different metadata than current metadata in DATA tab.");
-                    } else {
-                        errorMessages.add("Classified objects are different from objects in DATA tab.");
-                    }
-                }
-
-                if (projectClassification.isCurrentRuleSet() == null) {
-                    errorMessages.add("Rule set used in classification is different from current rule set in RULES tab. Actually, there is no rule set in RULES tab.");
-                } else if (!projectClassification.isCurrentRuleSet()) {
-                    errorMessages.add("Rule set used in classification is different from current rule set in RULES tab");
-                }
-
-                if (!projectClassification.isOriginalLearningData()) {
-                    errorMessages.add("Rule set used in classification hadn't had access to real learning data. Actual data at that moment in DATA tab has been taken as a learning data.");
-                }
-
-                if (!projectClassification.isCurrentLearningData()) {
-                    if (projectClassification.isOriginalLearningData()) {
-                        errorMessages.add("Learning data is different from current data in DATA tab.");
-                    } else {
-                        errorMessages.add("Data used in classification as a learning data of rules is not the same as current data in DATA tab.");
-                    }
-                }
-
-                mainClassificationResponse.isCurrentData = false;
-                mainClassificationResponse.errorMessages = errorMessages.toArray(new String[0]);
-            }
+            mainClassificationResponse.errorMessages = projectClassification.interpretFlags();
+            mainClassificationResponse.isCurrentData = (mainClassificationResponse.errorMessages == null);
 
             mainClassificationResponse.classificationParameters = ClassificationParametersBuilder.newInstance().build(projectClassification);
 
