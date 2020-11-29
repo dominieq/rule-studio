@@ -112,7 +112,7 @@ class ProjectTabs extends React.Component {
         if (result.classification != null) {
             if (result.classification.hasOwnProperty("isCurrentData")) {
                this.setState(({showAlert, alertMessages}) => {
-                   showAlert[3] = result.classification.isCurrentData;
+                   showAlert[3] = !result.classification.isCurrentData;
                    alertMessages[3] = result.classification.hasOwnProperty("errorMessages") ?
                        result.classification.errorMessages : null;
                    return { showAlert, alertMessages }
