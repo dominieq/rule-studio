@@ -207,11 +207,12 @@ class ProjectTabs extends React.Component {
             if (this._isMounted && result != null) {
                 this.updateAlerts(result);
             }
-        }).catch(error => {
-            this.props.onSnackbarOpen(error);
-        }).finally(() => {
+        }).catch(
+            this.props.onSnackbarOpen
+        ).finally(() => {
             if (this._isMounted) {
                 this.setState({
+                    isUpdateNecessary: false,
                     loading: false,
                     selected: newValue
                 });
