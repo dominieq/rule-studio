@@ -153,21 +153,21 @@ public class MetadataService {
 
     public static void updateDescriptiveAttributesAcrossProject(Project project, String objectVisibleName) {
         DominanceCones dominanceCones = project.getDominanceCones();
-        if((dominanceCones != null) && (dominanceCones.isCurrentData())) {
+        if(dominanceCones != null) {
             try {
                 dominanceCones.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
             } catch (WrongParameterException ignore) {}
         }
 
         UnionsWithHttpParameters unions = project.getUnions();
-        if((unions != null && (unions.isCurrentData()))) {
+        if(unions != null) {
             try {
                 unions.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
             } catch (WrongParameterException ignore) {}
         }
 
         RulesWithHttpParameters rules = project.getRules();
-        if((rules != null) && (rules.isCurrentData() != null) && (rules.isCurrentData())) {
+        if(rules != null) {
             try {
                 rules.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
             } catch (WrongParameterException ignore) {}
@@ -175,21 +175,17 @@ public class MetadataService {
 
         ProjectClassification projectClassification = project.getProjectClassification();
         if(projectClassification != null) {
-            if(projectClassification.isCurrentProjectData()) {
-                try {
-                    projectClassification.getClassifiedDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
-                } catch (WrongParameterException ignore) {}
-            }
+            try {
+                projectClassification.getClassifiedDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
+            } catch (WrongParameterException ignore) {}
 
-            if((projectClassification.isCurrentLearningData() != null) && (projectClassification.isCurrentLearningData())) {
-                try {
-                    projectClassification.getLearningDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
-                } catch (WrongParameterException ignore) {}
-            }
+            try {
+                projectClassification.getLearningDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
+            } catch (WrongParameterException ignore) {}
         }
 
         CrossValidation crossValidation = project.getCrossValidation();
-        if((crossValidation != null) && (crossValidation.isCurrentData())) {
+        if(crossValidation != null) {
             try {
                 crossValidation.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
             } catch (WrongParameterException ignore) {}
