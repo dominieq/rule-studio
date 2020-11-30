@@ -237,19 +237,29 @@ class Classification extends Component {
             fetchClassification(
                 pathParams, method, data, serverBase
             ).then(result => {
-                if (result) {
+                if (result != null) {
                     if (this._isMounted && result.hasOwnProperty("Objects")
                         && result.hasOwnProperty("objectNames")) {
 
                         const items = parseClassifiedItems(result.Objects, result.objectNames);
 
-                        this.setState(({parametersSaved}) => ({
-                            data: result,
-                            items: items,
-                            displayedItems: items,
-                            parametersSaved: true,
-                            matrixRefreshNeeded: !parametersSaved
-                        }));
+                        this.setState(({data, parametersSaved}) => {
+                            let objectsHaveChanged = false;
+                            if (data != null && data.hasOwnProperty("externalData")
+                                && result.hasOwnProperty("externalData")) {
+
+                                objectsHaveChanged = data.externalData !== result.externalData;
+                            }
+
+
+                            return {
+                                data: result,
+                                items: items,
+                                displayedItems: items,
+                                parametersSaved: true,
+                                matrixRefreshNeeded: !parametersSaved || objectsHaveChanged
+                            }
+                        });
                     }
 
                     let projectCopy = JSON.parse(JSON.stringify(project));
