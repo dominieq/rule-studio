@@ -14,8 +14,7 @@ import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.*;
 import pl.put.poznan.rulestudio.model.response.AttributesResponse;
-import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse;
-import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.GlobalDescriptiveAttributesResponse;
 import pl.put.poznan.rulestudio.model.response.InformationTableResponse;
 
 import java.io.*;
@@ -141,14 +140,30 @@ public class MetadataService {
         return new NamedResource(project.getName(), resource);
     }
 
-    public DescriptiveAttributesResponse getDescriptiveAttributes(UUID id) {
+    public GlobalDescriptiveAttributesResponse getGlobalDescriptiveAttributes(UUID id) {
         logger.info("Id:\t{}", id);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(project.getDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
-        return descriptiveAttributesResponse;
+        final GlobalDescriptiveAttributesResponse globalDescriptiveAttributesResponse = new GlobalDescriptiveAttributesResponse(project);
+        logger.debug("globalDescriptiveAttributesResponse:\t{}", globalDescriptiveAttributesResponse.toString());
+        return globalDescriptiveAttributesResponse;
+    }
+
+    public GlobalDescriptiveAttributesResponse postGlobalDescriptiveAttributes(UUID id, String objectVisibleName) {
+        logger.info("Id:\t{}", id);
+        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        DescriptiveAttributes descriptiveAttributes = project.getDescriptiveAttributes();
+        descriptiveAttributes.setCurrentAttribute(objectVisibleName);
+
+        updateDescriptiveAttributesAcrossProject(project, objectVisibleName);
+
+        final GlobalDescriptiveAttributesResponse globalDescriptiveAttributesResponse = new GlobalDescriptiveAttributesResponse(project);
+        logger.debug("globalDescriptiveAttributesResponse:\t{}", globalDescriptiveAttributesResponse.toString());
+        return globalDescriptiveAttributesResponse;
     }
 
     public static void updateDescriptiveAttributesAcrossProject(Project project, String objectVisibleName) {
@@ -190,21 +205,5 @@ public class MetadataService {
                 crossValidation.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
             } catch (WrongParameterException ignore) {}
         }
-    }
-
-    public DescriptiveAttributesResponse postDescriptiveAttributes(UUID id, String objectVisibleName) {
-        logger.info("Id:\t{}", id);
-        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
-
-        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
-
-        DescriptiveAttributes descriptiveAttributes = project.getDescriptiveAttributes();
-        descriptiveAttributes.setCurrentAttribute(objectVisibleName);
-
-        updateDescriptiveAttributesAcrossProject(project, objectVisibleName);
-
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(project.getDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
-        return descriptiveAttributesResponse;
     }
 }

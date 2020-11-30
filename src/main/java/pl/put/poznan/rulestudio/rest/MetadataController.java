@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.model.NamedResource;
 import pl.put.poznan.rulestudio.model.response.AttributesResponse;
-import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse;
+import pl.put.poznan.rulestudio.model.response.GlobalDescriptiveAttributesResponse;
 import pl.put.poznan.rulestudio.model.response.InformationTableResponse;
 import pl.put.poznan.rulestudio.service.MetadataService;
 
@@ -82,22 +82,22 @@ public class MetadataController {
     }
 
     @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DescriptiveAttributesResponse> getDescriptiveAttributes(
+    public ResponseEntity<GlobalDescriptiveAttributesResponse> getDescriptiveAttributes(
             @PathVariable("id") UUID id) {
         logger.info("Getting descriptive attributes in project...");
 
-        final DescriptiveAttributesResponse result = metadataService.getDescriptiveAttributes(id);
+        final GlobalDescriptiveAttributesResponse result = metadataService.getGlobalDescriptiveAttributes(id);
 
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DescriptiveAttributesResponse> postDescriptiveAttributes(
+    public ResponseEntity<GlobalDescriptiveAttributesResponse> postDescriptiveAttributes(
             @PathVariable("id") UUID id,
             @RequestParam(name = "objectVisibleName", required = false) String objectVisibleName) {
         logger.info("Posting descriptive attributes in project...");
 
-        final DescriptiveAttributesResponse result = metadataService.postDescriptiveAttributes(id, objectVisibleName);
+        final GlobalDescriptiveAttributesResponse result = metadataService.postGlobalDescriptiveAttributes(id, objectVisibleName);
 
         return ResponseEntity.ok(result);
     }

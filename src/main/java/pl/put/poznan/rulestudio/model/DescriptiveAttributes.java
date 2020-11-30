@@ -94,6 +94,14 @@ public class DescriptiveAttributes {
         return availableAttributesNames[currentAttribute];
     }
 
+    public Boolean hasEqualName(DescriptiveAttributes compared) {
+        if(this.getCurrentAttributeName() == null) {
+            return compared.getCurrentAttributeName() == null;
+        }
+
+        return this.getCurrentAttributeName().equals(compared.getCurrentAttributeName());
+    }
+
     public int[] getAvailableAttributesIndices() {
         return availableAttributesIndices;
     }

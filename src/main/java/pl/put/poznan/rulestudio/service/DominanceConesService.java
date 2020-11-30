@@ -16,7 +16,6 @@ import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenDominanceConeResponse.ChosenDominanceConeResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse.MainDominanceConesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse.ObjectsComparisonResponseBuilder;
 
@@ -115,7 +114,7 @@ public class DominanceConesService {
 
         final DominanceCones dominanceCones = getDominanceConesFromProject(project);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(dominanceCones.getDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(dominanceCones.getDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -131,7 +130,7 @@ public class DominanceConesService {
         DescriptiveAttributes descriptiveAttributes = dominanceCones.getDescriptiveAttributes();
         descriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(dominanceCones.getDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(dominanceCones.getDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }

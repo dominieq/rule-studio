@@ -26,7 +26,6 @@ import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenClassUnionResponse.ChosenClassUnionResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ClassUnionArrayPropertyResponse.ClassUnionArrayPropertyResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainClassUnionsResponse.MainClassUnionsResponseBuilder;
 
 import java.io.IOException;
@@ -196,7 +195,7 @@ public class UnionsService {
 
         final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(unionsWithHttpParameters.getDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(unionsWithHttpParameters.getDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -212,7 +211,7 @@ public class UnionsService {
         DescriptiveAttributes descriptiveAttributes = unionsWithHttpParameters.getDescriptiveAttributes();
         descriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(unionsWithHttpParameters.getDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(unionsWithHttpParameters.getDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }

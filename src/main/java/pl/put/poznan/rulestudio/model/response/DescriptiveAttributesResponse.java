@@ -12,8 +12,14 @@ public class DescriptiveAttributesResponse {
 
     private String actual;
 
-    private DescriptiveAttributesResponse() {
-        //private constructor
+    public DescriptiveAttributesResponse(DescriptiveAttributes descriptiveAttributes) {
+        this.available = descriptiveAttributes.getAvailableAttributesNames();
+
+        if(descriptiveAttributes.getCurrentAttribute() == null) {
+            this.actual = null;
+        } else {
+            this.actual = this.available[descriptiveAttributes.getCurrentAttribute()];
+        }
     }
 
     public String[] getAvailable() {
@@ -30,49 +36,5 @@ public class DescriptiveAttributesResponse {
                 "available=" + Arrays.toString(available) +
                 ", actual='" + actual + '\'' +
                 '}';
-    }
-
-    public static class DescriptiveAttributtesResponseBuilder {
-        private static final Logger logger = LoggerFactory.getLogger(DescriptiveAttributtesResponseBuilder.class);
-
-        private String[] available;
-        private String actual;
-
-        public static DescriptiveAttributtesResponseBuilder newInstance() {
-            return new DescriptiveAttributtesResponseBuilder();
-        }
-
-        public DescriptiveAttributtesResponseBuilder setAvailable(String[] available) {
-            this.available = available;
-            return this;
-        }
-
-        public DescriptiveAttributtesResponseBuilder setActual(String actual) {
-            this.actual = actual;
-            return this;
-        }
-
-        public DescriptiveAttributesResponse build() {
-            DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse();
-
-            descriptiveAttributesResponse.available = this.available;
-            descriptiveAttributesResponse.actual = this.actual;
-
-            return descriptiveAttributesResponse;
-        }
-
-        public DescriptiveAttributesResponse build(DescriptiveAttributes descriptiveAttributes) {
-            DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse();
-
-            descriptiveAttributesResponse.available = descriptiveAttributes.getAvailableAttributesNames();
-
-            if(descriptiveAttributes.getCurrentAttribute() == null) {
-                descriptiveAttributesResponse.actual = null;
-            } else {
-                descriptiveAttributesResponse.actual = descriptiveAttributesResponse.available[descriptiveAttributes.getCurrentAttribute()];
-            }
-
-            return descriptiveAttributesResponse;
-        }
     }
 }

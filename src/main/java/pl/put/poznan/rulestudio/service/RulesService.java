@@ -27,7 +27,6 @@ import pl.put.poznan.rulestudio.model.*;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainRulesResponse.MainRulesResponseBuilder;
 
 import java.io.ByteArrayInputStream;
@@ -477,7 +476,7 @@ public class RulesService {
 
         final RulesWithHttpParameters rules = getRulesFromProject(project);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(rules.getDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(rules.getDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -493,7 +492,7 @@ public class RulesService {
         DescriptiveAttributes descriptiveAttributes = rules.getDescriptiveAttributes();
         descriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(rules.getDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(rules.getDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }

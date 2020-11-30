@@ -15,7 +15,6 @@ import pl.put.poznan.rulestudio.model.*;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
-import pl.put.poznan.rulestudio.model.response.DescriptiveAttributesResponse.DescriptiveAttributtesResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.MainClassificationResponse.MainClassificationResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.OrdinalMisclassificationMatrixWithoutDeviationResponse.OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.RuleMainPropertiesResponse.RuleMainPropertiesResponseBuilder;
@@ -199,7 +198,7 @@ public class ClassificationService {
 
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(projectClassification.getClassifiedDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassification.getClassifiedDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -215,7 +214,7 @@ public class ClassificationService {
         DescriptiveAttributes classifiedDescriptiveAttributes = projectClassification.getClassifiedDescriptiveAttributes();
         classifiedDescriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(projectClassification.getClassifiedDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassification.getClassifiedDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -282,7 +281,7 @@ public class ClassificationService {
 
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(projectClassification.getLearningDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassification.getLearningDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -298,7 +297,7 @@ public class ClassificationService {
         DescriptiveAttributes learningDescriptiveAttributes = projectClassification.getLearningDescriptiveAttributes();
         learningDescriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = DescriptiveAttributtesResponseBuilder.newInstance().build(projectClassification.getLearningDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassification.getLearningDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
