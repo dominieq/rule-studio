@@ -11,6 +11,7 @@ class InvalidPathParamsException extends Error {
     constructor(message, pathParams) {
         super();
 
+        this.type = "InvalidPathParamsException";
         this.message = message;
         this.pathParams = pathParams;
     }

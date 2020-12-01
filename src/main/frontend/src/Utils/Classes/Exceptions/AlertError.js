@@ -13,6 +13,7 @@ class AlertError extends Error {
     constructor(message, open, severity) {
         super();
 
+        this.type = "AlertError";
         this.message = message;
         this.open = open;
         this.severity = severity;

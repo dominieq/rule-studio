@@ -449,7 +449,7 @@ class DisplayData extends React.Component {
                         })
                     }
                 }).catch(error => {
-                    if(!error.hasOwnProperty("open")) {
+                    if(!(error.hasOwnProperty("type") && error.type === "AlertError")) {
                         console.error(error);
                         return;
                     }
@@ -525,7 +525,7 @@ class DisplayData extends React.Component {
             fetchData(
                 pathParams, method, body, serverBase
             ).then().catch(error => {
-                if(!error.hasOwnProperty("open")) {
+                if(!(error.hasOwnProperty("type") && error.type === "AlertError")) {
                     console.error(error);
                     return;
                 }

@@ -479,7 +479,7 @@ class Classification extends Component {
     };
 
     onSnackbarOpen = (exception, setStateCallback) => {
-        if (exception.constructor.name !== "AlertError") {
+        if (!(exception.hasOwnProperty("type") && exception.type === "AlertError")) {
             console.error(exception);
             return;
         }
