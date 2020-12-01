@@ -162,7 +162,7 @@ public class DataController {
     public ResponseEntity<ObjectsComparisonResponse> getObjectsComparison(
             @PathVariable("id") UUID id,
             @PathVariable("firstObjectIndex") Integer firstObjectIndex,
-            @PathVariable("secondObjectIndex") Integer secondObjectIndex) throws IOException {
+            @PathVariable("secondObjectIndex") Integer secondObjectIndex) {
         logger.info("Getting objects' comparison from data...");
 
         final ObjectsComparisonResponse result = dataService.getObjectsComparison(id, firstObjectIndex, secondObjectIndex);

@@ -162,20 +162,20 @@ public class RuleCharacteristicsBean {
     @Override
     public String toString() {
         return "RuleCharacteristicsBean{" +
-                "support='" + support + '\'' +
-                ", strength='" + strength + '\'' +
-                ", confidence='" + confidence + '\'' +
-                ", coverageFactor='" + coverageFactor + '\'' +
-                ", coverage='" + coverage + '\'' +
-                ", negativeCoverage='" + negativeCoverage + '\'' +
-                ", epsilon='" + epsilon + '\'' +
-                ", epsilonPrime='" + epsilonPrime + '\'' +
-                ", fConfirmation='" + fConfirmation + '\'' +
-                ", aConfirmation='" + aConfirmation + '\'' +
-                ", zConfirmation='" + zConfirmation + '\'' +
-                ", lConfirmation='" + lConfirmation + '\'' +
-                ", c1Confirmation='" + c1Confirmation + '\'' +
-                ", sConfirmation='" + sConfirmation + '\'' +
+                "support=" + support +
+                ", strength=" + strength +
+                ", confidence=" + confidence +
+                ", coverageFactor=" + coverageFactor +
+                ", coverage=" + coverage +
+                ", negativeCoverage=" + negativeCoverage +
+                ", epsilon=" + epsilon +
+                ", epsilonPrime=" + epsilonPrime +
+                ", fConfirmation=" + fConfirmation +
+                ", aConfirmation=" + aConfirmation +
+                ", zConfirmation=" + zConfirmation +
+                ", lConfirmation=" + lConfirmation +
+                ", c1Confirmation=" + c1Confirmation +
+                ", sConfirmation=" + sConfirmation +
                 '}';
     }
 }

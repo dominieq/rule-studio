@@ -41,8 +41,8 @@ public class ClassifiedObjectMainProperties {
     @Override
     public String toString() {
         return "ClassifiedObjectMainProperties{" +
-                "originalDecision=" + originalDecision +
-                ", suggestedDecision=" + suggestedDecision +
+                "originalDecision='" + originalDecision + '\'' +
+                ", suggestedDecision='" + suggestedDecision + '\'' +
                 ", certainty=" + certainty +
                 ", numberOfCoveringRules=" + numberOfCoveringRules +
                 '}';

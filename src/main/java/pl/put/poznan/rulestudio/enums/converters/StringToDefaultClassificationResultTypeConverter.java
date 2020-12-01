@@ -6,9 +6,9 @@ import org.springframework.core.convert.converter.Converter;
 import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 
-public class StringToDefaultClassificationResultType implements Converter<String, DefaultClassificationResultType> {
+public class StringToDefaultClassificationResultTypeConverter implements Converter<String, DefaultClassificationResultType> {
 
-    private static final Logger logger = LoggerFactory.getLogger(StringToDefaultClassificationResultType.class);
+    private static final Logger logger = LoggerFactory.getLogger(StringToDefaultClassificationResultTypeConverter.class);
 
     @Override
     public DefaultClassificationResultType convert(String source) {

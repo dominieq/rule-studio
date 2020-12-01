@@ -12,11 +12,11 @@ public class RuLeStudioWebConfig implements WebMvcConfigurer {
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(new StringToUnionTypeConverter());
         registry.addConverter(new StringToClassifierTypeConverter());
-        registry.addConverter(new StringToDefaultClassificationResultType());
+        registry.addConverter(new StringToDefaultClassificationResultTypeConverter());
         registry.addConverter(new StringToRuleTypeConverter());
         registry.addConverter(new StringToDataFormatConverter());
         registry.addConverter(new StringToRulesFormatConverter());
-        registry.addConverter(new StringToMisclassificationMatrixType());
+        registry.addConverter(new StringToMisclassificationMatrixTypeConverter());
         registry.addConverter(new StringToOrderByRuleCharacteristicConverter());
         registry.addConverter(new StringToConeTypeConverter());
         registry.addConverter(new StringToClassUnionArrayPropertyTypeConverter());

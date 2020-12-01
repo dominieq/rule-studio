@@ -24,7 +24,7 @@ public class ChosenDominanceConeResponse {
     @Override
     public String toString() {
         return "ChosenDominanceConeResponse{" +
-                "DominanceCone=" + dominanceCone +
+                "dominanceCone=" + dominanceCone +
                 '}';
     }
 

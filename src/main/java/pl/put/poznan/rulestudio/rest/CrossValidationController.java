@@ -29,7 +29,7 @@ public class CrossValidationController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MainCrossValidationResponse> getCrossValidation(
-            @PathVariable("id") UUID id) throws IOException {
+            @PathVariable("id") UUID id) {
         logger.info("Getting cross validation...");
 
         final MainCrossValidationResponse result = crossValidationService.getCrossValidation(id);
@@ -116,7 +116,7 @@ public class CrossValidationController {
     @RequestMapping(value = "/{foldIndex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChosenCrossValidationFoldResponse> getChosenCrossValidationFold(
             @PathVariable("id") UUID id,
-            @PathVariable("foldIndex") Integer foldIndex) throws IOException {
+            @PathVariable("foldIndex") Integer foldIndex) {
         logger.info("Getting chosen cross validation fold...");
 
         final ChosenCrossValidationFoldResponse result = crossValidationService.getChosenCrossValidationFold(id, foldIndex);
@@ -141,7 +141,7 @@ public class CrossValidationController {
     public ResponseEntity<RuleMainPropertiesResponse> getRule(
             @PathVariable("id") UUID id,
             @PathVariable("foldIndex") Integer foldIndex,
-            @PathVariable("ruleIndex") Integer ruleIndex) throws IOException {
+            @PathVariable("ruleIndex") Integer ruleIndex) {
         logger.info("Getting rule from cross validation...");
 
         final RuleMainPropertiesResponse result = crossValidationService.getRule(id, foldIndex, ruleIndex);
@@ -153,7 +153,7 @@ public class CrossValidationController {
     public ResponseEntity<ChosenRuleResponse> getRuleCoveringObjects(
             @PathVariable("id") UUID id,
             @PathVariable("foldIndex") Integer foldIndex,
-            @PathVariable("ruleIndex") Integer ruleIndex) throws IOException {
+            @PathVariable("ruleIndex") Integer ruleIndex) {
         logger.info("Getting rule covering objects from cross validation...");
 
         final ChosenRuleResponse result = crossValidationService.getRuleCoveringObjects(id, foldIndex, ruleIndex);

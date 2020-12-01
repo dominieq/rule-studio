@@ -41,7 +41,7 @@ public class OrdinalMisclassificationMatrixWithoutDeviationResponse extends Ordi
                 "ordinalMisclassificationMatrixTraitsWithoutDeviation=" + ordinalMisclassificationMatrixTraitsWithoutDeviation +
                 ", decisionsDomain=" + Arrays.toString(decisionsDomain) +
                 ", value=" + Arrays.toString(value) +
-                "} " + super.toString();
+                '}';
     }
 
     public static class OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder {

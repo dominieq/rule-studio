@@ -31,7 +31,7 @@ public class ClassificationController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MainClassificationResponse> getClassification(
-            @PathVariable("id") UUID id) throws IOException {
+            @PathVariable("id") UUID id) {
         logger.info("Getting classification...");
 
         final MainClassificationResponse result = classificationService.getClassification(id);
@@ -127,7 +127,7 @@ public class ClassificationController {
     @RequestMapping(value = "/rules/{ruleIndex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RuleMainPropertiesResponse> getRule(
             @PathVariable("id") UUID id,
-            @PathVariable("ruleIndex") Integer ruleIndex) throws IOException {
+            @PathVariable("ruleIndex") Integer ruleIndex) {
         logger.info("Getting rule from classification...");
 
         final RuleMainPropertiesResponse result = classificationService.getRule(id, ruleIndex);
@@ -175,7 +175,7 @@ public class ClassificationController {
     @RequestMapping(value = "/rules/{ruleIndex}/coveringObjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChosenRuleResponse> getRuleCoveringObjects(
             @PathVariable("id") UUID id,
-            @PathVariable("ruleIndex") Integer ruleIndex) throws IOException {
+            @PathVariable("ruleIndex") Integer ruleIndex) {
         logger.info("Getting rule covering objects...");
 
         final ChosenRuleResponse result = classificationService.getRuleCoveringObjects(id, ruleIndex);

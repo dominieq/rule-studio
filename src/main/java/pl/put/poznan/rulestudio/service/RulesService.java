@@ -526,7 +526,7 @@ public class RulesService {
         return attributeFieldsResponse;
     }
 
-    public NamedResource download(UUID id, RulesFormat rulesFormat) throws IOException {
+    public NamedResource download(UUID id, RulesFormat rulesFormat) {
         logger.info("Id:\t{}", id);
         logger.info("RulesFormat:\t{}", rulesFormat);
 

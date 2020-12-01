@@ -6,9 +6,9 @@ import org.springframework.core.convert.converter.Converter;
 import pl.put.poznan.rulestudio.enums.MisclassificationMatrixType;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 
-public class StringToMisclassificationMatrixType implements Converter<String, MisclassificationMatrixType> {
+public class StringToMisclassificationMatrixTypeConverter implements Converter<String, MisclassificationMatrixType> {
 
-    private static final Logger logger = LoggerFactory.getLogger(StringToMisclassificationMatrixType.class);
+    private static final Logger logger = LoggerFactory.getLogger(StringToMisclassificationMatrixTypeConverter.class);
 
     @Override
     public MisclassificationMatrixType convert(String source) {

@@ -117,7 +117,7 @@ public class RulesController {
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public ResponseEntity<Resource> download(
             @PathVariable("id") UUID id,
-            @RequestParam(name = "format") RulesFormat rulesFormat) throws IOException {
+            @RequestParam(name = "format") RulesFormat rulesFormat) {
         logger.info("Downloading file");
         NamedResource namedResource = rulesService.download(id, rulesFormat);
         String projectName = namedResource.getName();
@@ -190,7 +190,7 @@ public class RulesController {
 
     @RequestMapping(value = "/arePossibleRulesAllowed", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Boolean>> arePossibleRulesAllowed(
-            @PathVariable("id") UUID id) throws IOException {
+            @PathVariable("id") UUID id) {
         logger.info("Checking if possible rules are allowed");
         Boolean result = rulesService.arePossibleRulesAllowed(id);
         return ResponseEntity.ok(Collections.singletonMap("arePossibleRulesAllowed", result));

@@ -321,7 +321,7 @@ public class DataService {
         return objectAbstractResponse;
     }
 
-    public ObjectsComparisonResponse getObjectsComparison(UUID id, Integer firstObjectIndex, Integer secondObjectIndex) throws IOException {
+    public ObjectsComparisonResponse getObjectsComparison(UUID id, Integer firstObjectIndex, Integer secondObjectIndex) {
         logger.info("Id:\t" + id);
         logger.info("firstObjectIndex:\t{}", firstObjectIndex);
         logger.info("secondObjectIndex:\t{}", secondObjectIndex);
