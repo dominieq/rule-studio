@@ -169,41 +169,28 @@ public class MetadataService {
     public static void updateDescriptiveAttributesAcrossProject(Project project, String objectVisibleName) {
         DominanceCones dominanceCones = project.getDominanceCones();
         if(dominanceCones != null) {
-            try {
-                dominanceCones.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
-            } catch (WrongParameterException ignore) {}
+            dominanceCones.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
         }
 
         UnionsWithHttpParameters unions = project.getUnions();
         if(unions != null) {
-            try {
-                unions.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
-            } catch (WrongParameterException ignore) {}
+            unions.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
         }
 
         RulesWithHttpParameters rules = project.getRules();
         if(rules != null) {
-            try {
-                rules.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
-            } catch (WrongParameterException ignore) {}
+            rules.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
         }
 
         ProjectClassification projectClassification = project.getProjectClassification();
         if(projectClassification != null) {
-            try {
-                projectClassification.getClassifiedDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
-            } catch (WrongParameterException ignore) {}
-
-            try {
-                projectClassification.getLearningDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
-            } catch (WrongParameterException ignore) {}
+            projectClassification.getClassifiedDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
+            projectClassification.getLearningDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
         }
 
         CrossValidation crossValidation = project.getCrossValidation();
         if(crossValidation != null) {
-            try {
-                crossValidation.getDescriptiveAttributes().setCurrentAttribute(objectVisibleName);
-            } catch (WrongParameterException ignore) {}
+            crossValidation.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
         }
     }
 }

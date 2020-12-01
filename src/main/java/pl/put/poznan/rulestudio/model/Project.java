@@ -126,7 +126,6 @@ public class Project {
 
         String previousName = this.descriptiveAttributes.getCurrentAttributeName();
         this.descriptiveAttributes = new DescriptiveAttributes(informationTable, previousName);
-        MetadataService.updateDescriptiveAttributesAcrossProject(this, this.descriptiveAttributes.getCurrentAttributeName());
     }
 
     public DescriptiveAttributes getDescriptiveAttributes() {

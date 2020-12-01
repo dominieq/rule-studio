@@ -73,9 +73,7 @@ public class DescriptiveAttributes {
 
     public DescriptiveAttributes(InformationTable informationTable, String currentAttribute) {
         this(informationTable);
-        try {
-            setCurrentAttribute(currentAttribute);
-        } catch (WrongParameterException ignore) {}
+        trySetCurrentAttribute(currentAttribute);
     }
 
     public String[] getAvailableAttributesNames() {
@@ -129,7 +127,7 @@ public class DescriptiveAttributes {
         }
 
         if((currentAttribute < 0) || (currentAttribute >= availableAttributesNames.length)) {
-            WrongParameterException ex = new WrongParameterException(String.format("Given attribute's index \"%d\" is incorrect. You can choose available attributes from %d to %d.", currentAttribute, 0, availableAttributesNames.length));
+            WrongParameterException ex = new WrongParameterException(String.format("Given attribute's index \"%d\" is incorrect. You can choose available attributes from %d to %d.", currentAttribute, 0, availableAttributesNames.length - 1));
             logger.error(ex.getMessage());
             throw ex;
         }
@@ -140,6 +138,10 @@ public class DescriptiveAttributes {
     public void setCurrentAttribute(String currentAttribute) {
         if(currentAttribute == null) {
             this.currentAttribute = null;
+            return;
+        }
+
+        if (currentAttribute.equals(getCurrentAttributeName())) {
             return;
         }
 
@@ -155,6 +157,16 @@ public class DescriptiveAttributes {
         WrongParameterException ex = new WrongParameterException(String.format("There is no descriptive attribute with given name \"%s\".", currentAttribute));
         logger.error(ex.getMessage());
         throw ex;
+    }
+
+    public Boolean trySetCurrentAttribute(String currentAttribute) {
+        try {
+            setCurrentAttribute(currentAttribute);
+        } catch (WrongParameterException ignore) {
+            return false;
+        }
+
+        return true;
     }
 
     public String[] extractObjectNames(InformationTable informationTable) {
