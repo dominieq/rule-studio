@@ -203,8 +203,8 @@ class Rules extends Component {
                     this.props.onRulesUploaded(result.externalRules);
                 }
 
-                if (result.hasOwnProperty("validateCurrentData")) {
-                    this.updateAlerts(result.validateCurrentData);
+                if (result.hasOwnProperty("validityRulesContainer")) {
+                    this.updateAlerts(result.validityRulesContainer);
                 }
             }
         }).catch(exception => {
@@ -401,8 +401,8 @@ class Rules extends Component {
                         this.props.onRulesUploaded(result.externalRules);
                     }
 
-                    if (result.hasOwnProperty("validateCurrentData")) {
-                        this.updateAlerts(result.validateCurrentData);
+                    if (result.hasOwnProperty("validityRulesContainer")) {
+                        this.updateAlerts(result.validityRulesContainer);
                     }
 
                     this.props.onTabChange(projectCopy);
@@ -476,8 +476,8 @@ class Rules extends Component {
                             this.props.onRulesUploaded(result.externalRules);
                         }
 
-                        if (result.hasOwnProperty("validateCurrentData")) {
-                            this.updateAlerts(result.validateCurrentData);
+                        if (result.hasOwnProperty("validityRulesContainer")) {
+                            this.updateAlerts(result.validityRulesContainer);
                         }
                     }
                 }).catch(exception => {
@@ -510,26 +510,26 @@ class Rules extends Component {
      *
      * @function
      * @memberOf Rules
-     * @param {Object} validateCurrentData - The part of response from server
+     * @param {Object} validityRulesContainer - The part of response from server
      */
-    updateAlerts = (validateCurrentData) => {
-        if (validateCurrentData.classification != null) {
-            if (validateCurrentData.classification.hasOwnProperty("isCurrentData")) {
-                const messages = validateCurrentData.classification.hasOwnProperty("errorMessages") ?
-                    validateCurrentData.classification.errorMessages : null;
-                this.props.showAlert(this.props.value + 1, !validateCurrentData.classification.isCurrentData, messages);
+    updateAlerts = (validityRulesContainer) => {
+        if (validityRulesContainer.classification != null) {
+            if (validityRulesContainer.classification.hasOwnProperty("isCurrentData")) {
+                const messages = validityRulesContainer.classification.hasOwnProperty("errorMessages") ?
+                    validityRulesContainer.classification.errorMessages : null;
+                this.props.showAlert(this.props.value + 1, !validityRulesContainer.classification.isCurrentData, messages);
             }
 
-            if (validateCurrentData.classification.hasOwnProperty("externalData")) {
-                this.props.onDataUploaded(validateCurrentData.classification.externalData);
+            if (validityRulesContainer.classification.hasOwnProperty("externalData")) {
+                this.props.onDataUploaded(validityRulesContainer.classification.externalData);
             }
         }
 
-        if (validateCurrentData.unions != null) {
-            if (validateCurrentData.unions.hasOwnProperty("isCurrentData")) {
-                const messages = validateCurrentData.unions.hasOwnProperty("errorMessages") ?
-                    validateCurrentData.unions.errorMessages : null;
-                this.props.showAlert(this.props.value - 1, !validateCurrentData.unions.isCurrentData, messages);
+        if (validityRulesContainer.unions != null) {
+            if (validityRulesContainer.unions.hasOwnProperty("isCurrentData")) {
+                const messages = validityRulesContainer.unions.hasOwnProperty("errorMessages") ?
+                    validityRulesContainer.unions.errorMessages : null;
+                this.props.showAlert(this.props.value - 1, !validityRulesContainer.unions.isCurrentData, messages);
             }
         }
     };
@@ -693,7 +693,7 @@ class Rules extends Component {
     };
 
     onSnackbarOpen = (exception, setStateCallback) => {
-        if (exception.constructor.name !== "AlertError") {
+        if (!(exception.hasOwnProperty("type") &amp;&amp; exception.type === "AlertError")) {
             console.error(exception);
             return;
         }

@@ -184,8 +184,8 @@ class FilesDetails extends React.PureComponent {
                     if (result.hasOwnProperty("rulesFileName"))
                         files.push({ label: "Rules", value: result.rulesFileName });
 
-                    if (result.hasOwnProperty("externalDataFileName"))
-                        files.push({ label: "External data", value: result.externalDataFileName });
+                    if (result.hasOwnProperty("externalClassifiedDataFileName"))
+                        files.push({ label: "Classified external data", value: result.externalClassifiedDataFileName });
 
                     this.setState({ files: files });
                 }

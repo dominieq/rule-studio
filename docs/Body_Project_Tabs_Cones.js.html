@@ -351,7 +351,7 @@ class Cones extends Component {
     }
 
     onSnackbarOpen = (exception, setStateCallback) => {
-        if (exception.constructor.name !== "AlertError") {
+        if (!(exception.hasOwnProperty("type") &amp;&amp; exception.type === "AlertError")) {
             console.error(exception);
             return;
         }

@@ -243,7 +243,7 @@ class App extends Component {
     };
 
     onSnackbarOpen = (exception) => {
-        if (exception.constructor.name !== "AlertError") {
+        if (!(exception.hasOwnProperty("type") &amp;&amp; exception.type === "AlertError")) {
             console.error(exception);
             return;
         }

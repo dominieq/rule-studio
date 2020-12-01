@@ -324,19 +324,29 @@ class Classification extends Component {
             fetchClassification(
                 pathParams, method, data, serverBase
             ).then(result => {
-                if (result) {
+                if (result != null) {
                     if (this._isMounted &amp;&amp; result.hasOwnProperty("Objects")
                         &amp;&amp; result.hasOwnProperty("objectNames")) {
 
                         const items = parseClassifiedItems(result.Objects, result.objectNames);
 
-                        this.setState(({parametersSaved}) => ({
-                            data: result,
-                            items: items,
-                            displayedItems: items,
-                            parametersSaved: true,
-                            matrixRefreshNeeded: !parametersSaved
-                        }));
+                        this.setState(({data, parametersSaved}) => {
+                            let objectsHaveChanged = false;
+                            if (data != null &amp;&amp; data.hasOwnProperty("externalData")
+                                &amp;&amp; result.hasOwnProperty("externalData")) {
+
+                                objectsHaveChanged = data.externalData !== result.externalData;
+                            }
+
+
+                            return {
+                                data: result,
+                                items: items,
+                                displayedItems: items,
+                                parametersSaved: true,
+                                matrixRefreshNeeded: !parametersSaved || objectsHaveChanged
+                            }
+                        });
                     }
 
                     let projectCopy = JSON.parse(JSON.stringify(project));
@@ -556,7 +566,7 @@ class Classification extends Component {
     };
 
     onSnackbarOpen = (exception, setStateCallback) => {
-        if (exception.constructor.name !== "AlertError") {
+        if (!(exception.hasOwnProperty("type") &amp;&amp; exception.type === "AlertError")) {
             console.error(exception);
             return;
         }
