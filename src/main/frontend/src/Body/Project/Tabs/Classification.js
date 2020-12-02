@@ -55,8 +55,8 @@ class Classification extends Component {
             displayedItems: [],
             externalData: false,
             parameters: {
-                defaultClassificationResult: "majorityDecisionClass",
-                typeOfClassifier: "SimpleRuleClassifier",
+                defaultClassificationResultType: "majorityDecisionClass",
+                classifierType: "SimpleRuleClassifier",
             },
             parametersSaved: true,
             matrixRefreshNeeded: false,
@@ -129,12 +129,12 @@ class Classification extends Component {
         }).finally(() => {
             if (this._isMounted) {
                 const { project: { parameters, parametersSaved, classifyAction }} = this.props;
-                const { defaultClassificationResult, typeOfClassifier } = parameters;
+                const { defaultClassificationResultType, classifierType } = parameters;
 
                 this.setState(({parameters, selected}) => ({
                     loading: false,
                     parameters: parametersSaved ?
-                        parameters : { ...parameters, ...{ defaultClassificationResult, typeOfClassifier }},
+                        parameters : { ...parameters, ...{ defaultClassificationResultType, classifierType }},
                     parametersSaved: parametersSaved,
                     selected: { ...selected, item: null, action: classifyAction }
                 }));
@@ -394,7 +394,7 @@ class Classification extends Component {
 
         if (!loading) {
             this.setState(({parameters}) => ({
-                parameters: {...parameters, defaultClassificationResult: event.target.value},
+                parameters: {...parameters, defaultClassificationResultType: event.target.value},
                 parametersSaved: false
             }));
         }
@@ -405,7 +405,7 @@ class Classification extends Component {
 
         if (!loading) {
             this.setState(({parameters}) => ({
-                parameters: {...parameters, typeOfClassifier: event.target.value},
+                parameters: {...parameters, classifierType: event.target.value},
                 parametersSaved: false
             }));
         }
@@ -532,13 +532,13 @@ class Classification extends Component {
                     <TypeOfClassifierSelector
                         TextFieldProps={{
                             onChange: this.onClassifierTypeChange,
-                            value: parameters.typeOfClassifier
+                            value: parameters.classifierType
                         }}
                     />
                     <DefaultClassificationResultSelector
                         TextFieldProps={{
                             onChange: this.onDefaultClassificationResultChange,
-                            value: parameters.defaultClassificationResult
+                            value: parameters.defaultClassificationResultType
                         }}
                     />
                 </CustomDrawer>

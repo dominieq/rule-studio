@@ -67,10 +67,10 @@ class CrossValidation extends Component {
             displayedItems: [],
             parameters: {
                 consistencyThreshold: 0,
-                defaultClassificationResult: "majorityDecisionClass",
+                defaultClassificationResultType: "majorityDecisionClass",
                 numberOfFolds: 10,
                 seed: 0,
-                typeOfClassifier: "SimpleRuleClassifier",
+                classifierType: "SimpleRuleClassifier",
                 typeOfRules: "certain",
                 typeOfUnions: "monotonic",
             },
@@ -445,7 +445,7 @@ class CrossValidation extends Component {
         }
 
         this.setState(({parameters}) => ({
-            parameters: {...parameters, defaultClassificationResult: event.target.value},
+            parameters: {...parameters, defaultClassificationResultType: event.target.value},
             parametersSaved: false
         }));
     };
@@ -519,7 +519,7 @@ class CrossValidation extends Component {
         }
 
         this.setState(({parameters}) => ({
-            parameters: {...parameters, typeOfClassifier: event.target.value},
+            parameters: {...parameters, classifierType: event.target.value},
             parametersSaved: false
         }));
     };
@@ -702,13 +702,13 @@ class CrossValidation extends Component {
                         style={{marginBottom: 16}}
                         TextFieldProps={{
                             onChange: this.onTypeOfClassifierChange,
-                            value: parameters.typeOfClassifier
+                            value: parameters.classifierType
                         }}
                     />
                     <DefaultClassificationResultSelector
                         TextFieldProps={{
                             onChange: this.onDefaultClassificationResultChange,
-                            value: parameters.defaultClassificationResult
+                            value: parameters.defaultClassificationResultType
                         }}
                     />
                     <StyledDivider
@@ -771,7 +771,7 @@ class CrossValidation extends Component {
                                     onChange={this.onFoldIndexChange}
                                     InputProps={{
                                         startAdornment: (
-                                            <InputAdornment>
+                                            <InputAdornment position={"start"}>
                                                 Fold:
                                             </InputAdornment>
                                         )
