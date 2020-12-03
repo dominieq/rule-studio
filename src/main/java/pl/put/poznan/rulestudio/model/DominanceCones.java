@@ -12,27 +12,18 @@ import java.util.Arrays;
 public class DominanceCones {
     private int numberOfObjects;
 
-    @JsonProperty("Positive dominance cone")
     private IntSortedSet[] positiveDCones;
 
-    @JsonProperty("Negative dominance cone")
     private IntSortedSet[] negativeDCones;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonProperty("Positive inverse dominance cone")
     private IntSortedSet[] positiveInvDCones;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonProperty("Negative inverse dominance cone")
     private IntSortedSet[] negativeInvDCones;
 
-    @JsonIgnore
     private String dataHash;
 
-    @JsonProperty("isCurrentData")
     private Boolean isCurrentData;
 
-    @JsonIgnore
     private DescriptiveAttributes descriptiveAttributes;
 
     private InformationTable informationTable;
@@ -101,7 +92,6 @@ public class DominanceCones {
         this.dataHash = dataHash;
     }
 
-    @JsonIgnore
     public boolean isCurrentData() {
         return isCurrentData;
     }

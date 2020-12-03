@@ -291,7 +291,7 @@ public class ProjectClassification extends AbstractClassification {
 
             if (!this.isCurrentProjectData()) {
                 if (this.isExternalData()) {
-                    errorMessages.add("The classified objects have been uploaded with different attributes than current objects in the DATA tab.");
+                    errorMessages.add("The classified objects have been uploaded with different attributes than current attributes in the DATA tab.");
                 } else {
                     errorMessages.add("The classified objects are different from the objects in the DATA tab.");
                 }

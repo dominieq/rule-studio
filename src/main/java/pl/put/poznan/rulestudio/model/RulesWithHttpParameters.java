@@ -191,7 +191,7 @@ public class RulesWithHttpParameters implements Cloneable {
             ArrayList<String> errorMessages = new ArrayList<>();
 
             if ((this.isExternalRules()) && (!this.isCurrentAttributes())) {
-                errorMessages.add("The rule set has been uploaded with different attributes than current objects in the DATA tab.");
+                errorMessages.add("The rule set has been uploaded with different attributes than current attributes in the DATA tab.");
             }
 
             if (this.isCurrentLearningData() == null) {

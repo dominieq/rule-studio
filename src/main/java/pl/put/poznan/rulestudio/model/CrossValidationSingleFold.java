@@ -33,12 +33,10 @@ public class CrossValidationSingleFold {
         this.indicesOfValidationObjects = indicesOfValidationObjects;
     }
 
-    @JsonProperty("ruleSet")
     public RuLeStudioRuleSet getRuLeStudioRuleSet() {
         return ruLeStudioRuleSet;
     }
 
-    @JsonProperty("ruleSet")
     public void setRuLeStudioRuleSet(RuLeStudioRuleSet ruLeStudioRuleSet) {
         this.ruLeStudioRuleSet = ruLeStudioRuleSet;
     }
