@@ -243,24 +243,12 @@ class Classification extends Component {
 
                         const items = parseClassifiedItems(result.Objects, result.objectNames);
 
-                        this.setState(({data, parametersSaved}) => {
-                            let objectsHaveChanged = false;
-                            let bothAreExternal = false;
-
-                            if (data != null && data.hasOwnProperty("externalData")
-                                && result.hasOwnProperty("externalData")) {
-
-                                objectsHaveChanged = data.externalData !== result.externalData;
-                                bothAreExternal = data.externalData && result.externalData;
-                            }
-
-                            return {
-                                data: result,
-                                items: items,
-                                displayedItems: items,
-                                parametersSaved: true,
-                                matrixRefreshNeeded: !parametersSaved || objectsHaveChanged || bothAreExternal
-                            }
+                        this.setState({
+                            data: result,
+                            items: items,
+                            displayedItems: items,
+                            parametersSaved: true,
+                            matrixRefreshNeeded: true
                         });
                     }
 

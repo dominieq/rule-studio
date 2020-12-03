@@ -350,13 +350,13 @@ class CrossValidation extends Component {
                         this.generateFoldNames(resultParams.numberOfFolds) : [];
 
                     if (this._isMounted) {
-                        this.setState(({parametersSaved, selected}) => ({
+                        this.setState(({selected}) => ({
                             folds: folds,
                             parametersSaved: true,
                             refreshNeeded: {
-                                matrixMean: !parametersSaved,
-                                matrixSum: !parametersSaved,
-                                matrixFold: !parametersSaved
+                                matrixMean: true,
+                                matrixSum: true,
+                                matrixFold: true
                             },
                             selected: { ...selected, foldIndex: 0 }
                         }), () => {
