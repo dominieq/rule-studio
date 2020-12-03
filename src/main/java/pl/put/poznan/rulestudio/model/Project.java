@@ -1,7 +1,6 @@
 package pl.put.poznan.rulestudio.model;
 
 import org.rulelearn.data.InformationTable;
-import pl.put.poznan.rulestudio.service.MetadataService;
 import pl.put.poznan.rulestudio.service.RulesService;
 
 import java.util.ArrayList;
@@ -86,12 +85,21 @@ public class Project {
             }
         }
         if(this.rules != null) {
-            if(rules.getRuleSet().getLearningInformationTableHash() == null) {
-                rules.setCurrentData(null);
+            if (rules.isExternalRules()) {
+                final String attributesHash = new InformationTable(informationTable.getAttributes(), new ArrayList<>()).getHash();
+                if (rules.getAttributesHash().equals(attributesHash)) {
+                    rules.setCurrentAttributes(true);
+                } else {
+                    rules.setCurrentAttributes(false);
+                }
+            }
+
+            if (rules.getRuleSet().getLearningInformationTableHash() == null) {
+                rules.setCurrentLearningData(null);
             } else if (rules.getRuleSet().getLearningInformationTableHash().equals(dataHash)) {
-                rules.setCurrentData(true);
+                rules.setCurrentLearningData(true);
             } else {
-                rules.setCurrentData(false);
+                rules.setCurrentLearningData(false);
             }
         }
         if(this.projectClassification != null) {

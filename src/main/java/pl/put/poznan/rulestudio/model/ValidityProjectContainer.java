@@ -3,6 +3,8 @@ package pl.put.poznan.rulestudio.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Arrays;
+
 public class ValidityProjectContainer extends ValidityRulesContainer {
 
     @JsonProperty("dominanceCones")
@@ -89,9 +91,13 @@ public class ValidityProjectContainer extends ValidityRulesContainer {
         @JsonProperty("isCurrentData")
         private Boolean isCurrentData;
 
+        private String[] errorMessages;
+
         public RulesValidity(RulesWithHttpParameters rules) {
             this.externalRules = rules.isExternalRules();
-            this.isCurrentData = rules.isCurrentData();
+
+            this.errorMessages = rules.interpretFlags();
+            this.isCurrentData = (this.errorMessages == null);
         }
 
         public Boolean getExternalRules() {
@@ -103,11 +109,16 @@ public class ValidityProjectContainer extends ValidityRulesContainer {
             return isCurrentData;
         }
 
+        public String[] getErrorMessages() {
+            return errorMessages;
+        }
+
         @Override
         public String toString() {
             return "RulesValidity{" +
                     "externalRules=" + externalRules +
                     ", isCurrentData=" + isCurrentData +
+                    ", errorMessages=" + Arrays.toString(errorMessages) +
                     '}';
         }
     }

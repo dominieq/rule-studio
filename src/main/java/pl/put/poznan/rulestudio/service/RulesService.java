@@ -569,7 +569,7 @@ public class RulesService {
             errorMessage = String.format("Provided rule set doesn't have the learning information table hash. It can't be determined, if this rule set was generated based on the current data of the project. Rule coverage information can't be calculated without a valid training set. Current data hash: \"%s\".", informationTable.getHash());
             logger.info(errorMessage);
 
-            rules.setCurrentData(null);
+            rules.setCurrentLearningData(null);
             rules.setCoveragePresent(false);
             rules.setDescriptiveAttributes(new DescriptiveAttributes());
         } else if(ruleSetHash.equals(informationTable.getHash())) {
@@ -578,14 +578,14 @@ public class RulesService {
 
             errorMessage = null;
             rules.setInformationTable(informationTable);
-            rules.setCurrentData(true);
+            rules.setCurrentLearningData(true);
             rules.setCoveragePresent(true);
             rules.setDescriptiveAttributes(new DescriptiveAttributes(descriptiveAttributes));
         } else {
             errorMessage = String.format("Uploaded rules are not induced from the data in the current project. Access to a valid training set is required to calculate rule coverage information. Please upload new rules based on the current data or create a new project with a valid training set. Current data hash: \"%s\", rules hash: \"%s\".", informationTable.getHash(), ruleSetHash);
             logger.info(errorMessage);
 
-            rules.setCurrentData(false);
+            rules.setCurrentLearningData(false);
             rules.setCoveragePresent(false);
             rules.setDescriptiveAttributes(new DescriptiveAttributes());
         }
@@ -606,7 +606,7 @@ public class RulesService {
 
         RuleSetWithCharacteristics ruleSetWithCharacteristics = parseRules(rulesFile, attributes);
 
-        project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, rulesFile.getOriginalFilename()));
+        project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, rulesFile.getOriginalFilename(), attributes));
     }
 
     public MainRulesResponse putUploadRules(UUID id, MultipartFile rulesFile) throws IOException {

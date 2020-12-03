@@ -27,6 +27,8 @@ public class MainRulesResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean isCurrentData;
 
+    private String[] errorMessages;
+
     private Boolean externalRules;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -55,6 +57,10 @@ public class MainRulesResponse {
         return isCurrentData;
     }
 
+    public String[] getErrorMessages() {
+        return errorMessages;
+    }
+
     public Boolean getExternalRules() {
         return externalRules;
     }
@@ -77,6 +83,7 @@ public class MainRulesResponse {
                 "ruleMainPropertiesArray=" + Arrays.toString(ruleMainPropertiesArray) +
                 ", rulesParameters=" + rulesParameters +
                 ", isCurrentData=" + isCurrentData +
+                ", errorMessages=" + Arrays.toString(errorMessages) +
                 ", externalRules=" + externalRules +
                 ", externalRulesFileName='" + externalRulesFileName + '\'' +
                 ", errorMessage='" + errorMessage + '\'' +
@@ -90,6 +97,7 @@ public class MainRulesResponse {
         private RuleMainProperties[] ruleMainPropertiesArray;
         private RulesParameters rulesParameters;
         private Boolean isCurrentData;
+        private String[] errorMessages;
         private Boolean externalRules;
         private String externalRulesFileName;
         private String errorMessage;
@@ -111,6 +119,11 @@ public class MainRulesResponse {
 
         public MainRulesResponseBuilder setCurrentData(Boolean currentData) {
             isCurrentData = currentData;
+            return this;
+        }
+
+        public MainRulesResponseBuilder setErrorMessages(String[] errorMessages) {
+            this.errorMessages = errorMessages;
             return this;
         }
 
@@ -140,6 +153,7 @@ public class MainRulesResponse {
             mainRulesResponse.ruleMainPropertiesArray = this.ruleMainPropertiesArray;
             mainRulesResponse.rulesParameters = this.rulesParameters;
             mainRulesResponse.isCurrentData = this.isCurrentData;
+            mainRulesResponse.errorMessages = this.errorMessages;
             mainRulesResponse.externalRules = this.externalRules;
             mainRulesResponse.externalRulesFileName = this.externalRulesFileName;
             mainRulesResponse.errorMessage = this.errorMessage;
@@ -159,7 +173,10 @@ public class MainRulesResponse {
             }
 
             mainRulesResponse.rulesParameters = RulesParametersBuilder.newInstance().build(rulesWithHttpParameters);
-            mainRulesResponse.isCurrentData = rulesWithHttpParameters.isCurrentData();
+
+            mainRulesResponse.errorMessages = rulesWithHttpParameters.interpretFlags();
+            mainRulesResponse.isCurrentData = (mainRulesResponse.errorMessages == null);
+
             mainRulesResponse.externalRules = rulesWithHttpParameters.isExternalRules();
             mainRulesResponse.externalRulesFileName = rulesWithHttpParameters.getRulesFileName();
             mainRulesResponse.errorMessage = rulesWithHttpParameters.getErrorMessage();

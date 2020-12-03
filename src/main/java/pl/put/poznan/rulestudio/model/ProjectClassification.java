@@ -42,7 +42,7 @@ public class ProjectClassification extends AbstractClassification {
             this.isOriginalLearningData = true;
             this.learningInformationTable = rulesWithHttpParameters.getInformationTable();
             this.learningDescriptiveAttributes = new DescriptiveAttributes(rulesWithHttpParameters.getDescriptiveAttributes());
-            this.isCurrentLearningData = rulesWithHttpParameters.isCurrentData();
+            this.isCurrentLearningData = rulesWithHttpParameters.isCurrentLearningData();
         } else {
             this.isOriginalLearningData = false;
             this.learningInformationTable = projectDataInformationTable;
