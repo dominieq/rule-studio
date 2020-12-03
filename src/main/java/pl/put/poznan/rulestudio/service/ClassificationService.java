@@ -63,10 +63,10 @@ public class ClassificationService {
         return mainClassificationResponse;
     }
 
-    public MainClassificationResponse putClassification(UUID id, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult) {
+    public MainClassificationResponse putClassification(UUID id, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType) {
         logger.info("Id:\t{}", id);
-        logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
-        logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
+        logger.info("ClassifierType:\t{}", classifierType);
+        logger.info("DefaultClassificationResultType:\t{}", defaultClassificationResultType);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -78,7 +78,7 @@ public class ClassificationService {
 
         final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
 
-        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, informationTable, typeOfClassifier, defaultClassificationResult, projectDescriptiveAttributes, informationTable);
+        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, informationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, informationTable);
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -88,14 +88,14 @@ public class ClassificationService {
 
     public MainClassificationResponse putClassificationNewData(
             UUID id,
-            ClassifierType typeOfClassifier,
-            DefaultClassificationResultType defaultClassificationResult,
+            ClassifierType classifierType,
+            DefaultClassificationResultType defaultClassificationResultType,
             MultipartFile externalDataFile,
             Character separator,
             Boolean header) throws IOException {
         logger.info("Id:\t{}", id);
-        logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
-        logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
+        logger.info("ClassifierType:\t{}", classifierType);
+        logger.info("DefaultClassificationResultType:\t{}", defaultClassificationResultType);
         logger.info("Data:\t{}\t{}", externalDataFile.getOriginalFilename(), externalDataFile.getContentType());
         logger.info("Separator:\t{}", separator);
         logger.info("Header:\t{}", header);
@@ -116,7 +116,7 @@ public class ClassificationService {
 
         final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
 
-        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, newInformationTable, typeOfClassifier, defaultClassificationResult, projectDescriptiveAttributes, projectInformationTable, externalDataFile.getOriginalFilename());
+        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, newInformationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, projectInformationTable, externalDataFile.getOriginalFilename());
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -124,10 +124,10 @@ public class ClassificationService {
         return mainClassificationResponse;
     }
 
-    public MainClassificationResponse postClassification(UUID id, ClassifierType typeOfClassifier, DefaultClassificationResultType defaultClassificationResult, String metadata, String data) throws IOException {
+    public MainClassificationResponse postClassification(UUID id, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
-        logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
-        logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
+        logger.info("ClassifierType:\t{}", classifierType);
+        logger.info("DefaultClassificationResultType:\t{}", defaultClassificationResultType);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
@@ -143,7 +143,7 @@ public class ClassificationService {
 
         final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
 
-        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, informationTable, typeOfClassifier, defaultClassificationResult, projectDescriptiveAttributes, informationTable);
+        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, informationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, informationTable);
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -153,16 +153,16 @@ public class ClassificationService {
 
     public MainClassificationResponse postClassificationNewData(
             UUID id,
-            ClassifierType typeOfClassifier,
-            DefaultClassificationResultType defaultClassificationResult,
+            ClassifierType classifierType,
+            DefaultClassificationResultType defaultClassificationResultType,
             String metadata,
             String data,
             MultipartFile externalDataFile,
             Character separator,
             Boolean header) throws IOException {
         logger.info("Id:\t{}", id);
-        logger.info("TypeOfClassifier:\t{}", typeOfClassifier);
-        logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
+        logger.info("ClassifierType:\t{}", classifierType);
+        logger.info("DefaultClassificationResultType:\t{}", defaultClassificationResultType);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
@@ -183,7 +183,7 @@ public class ClassificationService {
 
         final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
 
-        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, newInformationTable, typeOfClassifier, defaultClassificationResult, projectDescriptiveAttributes, projectInformationTable, externalDataFile.getOriginalFilename());
+        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, newInformationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, projectInformationTable, externalDataFile.getOriginalFilename());
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);

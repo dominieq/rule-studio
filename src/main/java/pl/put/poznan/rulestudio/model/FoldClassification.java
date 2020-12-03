@@ -8,8 +8,8 @@ import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
 
 public class FoldClassification extends AbstractClassification {
 
-    public FoldClassification(InformationTable learningInformationTable, InformationTable classifiedInformationTable, ClassifierType typeOfClassifier, DefaultClassificationResultType typeOfDefaultClassificationResult, RuleSetWithCharacteristics ruleSetWithCharacteristics, Decision[] orderOfDecisions) {
-        classify(learningInformationTable, classifiedInformationTable, typeOfClassifier, typeOfDefaultClassificationResult, ruleSetWithCharacteristics, orderOfDecisions);
+    public FoldClassification(InformationTable learningInformationTable, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, RuleSetWithCharacteristics ruleSetWithCharacteristics, Decision[] orderOfDecisions) {
+        classify(learningInformationTable, classifiedInformationTable, classifierType, defaultClassificationResultType, ruleSetWithCharacteristics, orderOfDecisions);
     }
 
     @Override

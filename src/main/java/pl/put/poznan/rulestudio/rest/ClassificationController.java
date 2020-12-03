@@ -42,8 +42,8 @@ public class ClassificationController {
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MainClassificationResponse> putClassification(
             @PathVariable("id") UUID id,
-            @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
-            @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
+            @RequestParam(name = "classifierType") ClassifierType classifierType,
+            @RequestParam(name = "defaultClassificationResultType") DefaultClassificationResultType defaultClassificationResultType,
             @RequestParam(name = "externalDataFile", required = false) MultipartFile externalDataFile,
             @RequestParam(name = "separator", defaultValue = ",") Character separator,
             @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
@@ -51,9 +51,9 @@ public class ClassificationController {
 
         MainClassificationResponse result = null;
         if(externalDataFile != null) {
-            result = classificationService.putClassificationNewData(id, typeOfClassifier, defaultClassificationResult, externalDataFile, separator, header);
+            result = classificationService.putClassificationNewData(id, classifierType, defaultClassificationResultType, externalDataFile, separator, header);
         } else {
-            result = classificationService.putClassification(id, typeOfClassifier, defaultClassificationResult);
+            result = classificationService.putClassification(id, classifierType, defaultClassificationResultType);
         }
 
         return ResponseEntity.ok(result);
@@ -62,8 +62,8 @@ public class ClassificationController {
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MainClassificationResponse> postClassification(
             @PathVariable("id") UUID id,
-            @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
-            @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
+            @RequestParam(name = "classifierType") ClassifierType classifierType,
+            @RequestParam(name = "defaultClassificationResultType") DefaultClassificationResultType defaultClassificationResultType,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data,
             @RequestParam(name = "externalDataFile", required = false) MultipartFile externalDataFile,
@@ -73,9 +73,9 @@ public class ClassificationController {
 
         MainClassificationResponse result = null;
         if(externalDataFile != null) {
-            result = classificationService.postClassificationNewData(id, typeOfClassifier, defaultClassificationResult, metadata, data, externalDataFile, separator, header);
+            result = classificationService.postClassificationNewData(id, classifierType, defaultClassificationResultType, metadata, data, externalDataFile, separator, header);
         } else {
-            result = classificationService.postClassification(id, typeOfClassifier, defaultClassificationResult, metadata, data);
+            result = classificationService.postClassification(id, classifierType, defaultClassificationResultType, metadata, data);
         }
 
         return ResponseEntity.ok(result);

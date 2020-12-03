@@ -43,13 +43,13 @@ public class CrossValidationController {
             @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
             @RequestParam(name = "typeOfRules") RuleType typeOfRules,
-            @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
-            @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
+            @RequestParam(name = "classifierType") ClassifierType classifierType,
+            @RequestParam(name = "defaultClassificationResultType") DefaultClassificationResultType defaultClassificationResultType,
             @RequestParam(name = "numberOfFolds") Integer numberOfFolds,
             @RequestParam(name = "seed", defaultValue = "0") Long seed) {
         logger.info("Putting cross validation...");
 
-        final MainCrossValidationResponse result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, seed);
+        final MainCrossValidationResponse result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, classifierType, defaultClassificationResultType, numberOfFolds, seed);
 
         return ResponseEntity.ok(result);
     }
@@ -60,15 +60,15 @@ public class CrossValidationController {
             @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
             @RequestParam(name = "typeOfRules") RuleType typeOfRules,
-            @RequestParam(name = "typeOfClassifier") ClassifierType typeOfClassifier,
-            @RequestParam(name = "defaultClassificationResult") DefaultClassificationResultType defaultClassificationResult,
+            @RequestParam(name = "classifierType") ClassifierType classifierType,
+            @RequestParam(name = "defaultClassificationResultType") DefaultClassificationResultType defaultClassificationResultType,
             @RequestParam(name = "numberOfFolds") Integer numberOfFolds,
             @RequestParam(name = "seed", defaultValue = "0") Long seed,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting cross validation...");
 
-        final MainCrossValidationResponse result = crossValidationService.postCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, typeOfClassifier, defaultClassificationResult, numberOfFolds, seed, metadata, data);
+        final MainCrossValidationResponse result = crossValidationService.postCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, classifierType, defaultClassificationResultType, numberOfFolds, seed, metadata, data);
 
         return ResponseEntity.ok(result);
     }

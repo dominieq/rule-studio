@@ -139,8 +139,8 @@ public class CrossValidationParameters {
             crossValidationParameters.typeOfUnions = crossValidation.getTypeOfUnions();
             crossValidationParameters.consistencyThreshold = crossValidation.getConsistencyThreshold();
             crossValidationParameters.typeOfRules = crossValidation.getTypeOfRules();
-            crossValidationParameters.classifierType = crossValidation.getTypeOfClassifier();
-            crossValidationParameters.defaultClassificationResultType = crossValidation.getDefaultClassificationResult();
+            crossValidationParameters.classifierType = crossValidation.getClassifierType();
+            crossValidationParameters.defaultClassificationResultType = crossValidation.getDefaultClassificationResultType();
             crossValidationParameters.numberOfFolds = crossValidation.getNumberOfFolds();
             crossValidationParameters.seed = crossValidation.getSeed();
 

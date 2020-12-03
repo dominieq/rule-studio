@@ -50,12 +50,12 @@ public abstract class AbstractClassification {
                 '}';
     }
 
-    protected SimpleEvaluatedClassificationResult createDefaultSimpleEvaluatedClassificationResult(DefaultClassificationResultType defaultClassificationResult, InformationTable informationTable) {
+    protected SimpleEvaluatedClassificationResult createDefaultSimpleEvaluatedClassificationResult(DefaultClassificationResultType defaultClassificationResultType, InformationTable informationTable) {
         InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = DataService.createInformationTableWithDecisionDistributions(informationTable);
         SimpleEvaluatedClassificationResult simpleEvaluatedClassificationResult = null;
         SimpleDecision simpleDecision = null;
 
-        switch (defaultClassificationResult) {
+        switch (defaultClassificationResultType) {
             case MAJORITY_DECISION_CLASS:
                 List<Decision> modes = informationTableWithDecisionDistributions.getDecisionDistribution().getMode();
 
@@ -79,7 +79,7 @@ public abstract class AbstractClassification {
                 simpleEvaluatedClassificationResult = new SimpleEvaluatedClassificationResult(simpleDecision, 1.0);
                 break;
             default:
-                WrongParameterException ex = new WrongParameterException(String.format("Given default classification result \"%s\" is unrecognized.", defaultClassificationResult));
+                WrongParameterException ex = new WrongParameterException(String.format("Given default classification result \"%s\" is unrecognized.", defaultClassificationResultType));
                 logger.error(ex.getMessage());
                 break;
         }
@@ -87,12 +87,12 @@ public abstract class AbstractClassification {
         return simpleEvaluatedClassificationResult;
     }
 
-    protected SimpleClassificationResult createDefaultSimpleClassificationResult(DefaultClassificationResultType defaultClassificationResult, InformationTable informationTable) {
+    protected SimpleClassificationResult createDefaultSimpleClassificationResult(DefaultClassificationResultType defaultClassificationResultType, InformationTable informationTable) {
         InformationTableWithDecisionDistributions informationTableWithDecisionDistributions = DataService.createInformationTableWithDecisionDistributions(informationTable);
         SimpleClassificationResult simpleClassificationResult = null;
         SimpleDecision simpleDecision = null;
 
-        switch (defaultClassificationResult) {
+        switch (defaultClassificationResultType) {
             case MAJORITY_DECISION_CLASS:
                 List<Decision> modes = informationTableWithDecisionDistributions.getDecisionDistribution().getMode();
 
@@ -116,7 +116,7 @@ public abstract class AbstractClassification {
                 simpleClassificationResult = new SimpleClassificationResult(simpleDecision);
                 break;
             default:
-                WrongParameterException ex = new WrongParameterException(String.format("Given default classification result \"%s\" is unrecognized.", defaultClassificationResult));
+                WrongParameterException ex = new WrongParameterException(String.format("Given default classification result \"%s\" is unrecognized.", defaultClassificationResultType));
                 logger.error(ex.getMessage());
                 break;
         }
@@ -141,7 +141,7 @@ public abstract class AbstractClassification {
         logger.info("Learning information table and rule set are compatible.");
     }
 
-    protected void classify(InformationTable learningInformationTable, InformationTable classifiedInformationTable, ClassifierType typeOfClassifier, DefaultClassificationResultType typeOfDefaultClassificationResult, RuleSetWithCharacteristics ruleSetWithCharacteristics, Decision[] orderOfDecisions) {
+    protected void classify(InformationTable learningInformationTable, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, RuleSetWithCharacteristics ruleSetWithCharacteristics, Decision[] orderOfDecisions) {
         if(logger.isDebugEnabled()) {
             logger.debug("RuleSet size = {}", ruleSetWithCharacteristics.size());
             for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
@@ -154,28 +154,28 @@ public abstract class AbstractClassification {
 
         RuleClassifier classifier = null;
 
-        switch (typeOfClassifier) {
+        switch (classifierType) {
             case SIMPLE_RULE_CLASSIFIER:
-                simpleClassificationResult = createDefaultSimpleClassificationResult(typeOfDefaultClassificationResult, learningInformationTable);
+                simpleClassificationResult = createDefaultSimpleClassificationResult(defaultClassificationResultType, learningInformationTable);
                 classifier = new SimpleRuleClassifier(ruleSetWithCharacteristics, simpleClassificationResult);
                 break;
             case SIMPLE_OPTIMIZING_COUNTING_RULE_CLASSIFIER:
-                simpleClassificationResult = createDefaultSimpleClassificationResult(typeOfDefaultClassificationResult, learningInformationTable);
+                simpleClassificationResult = createDefaultSimpleClassificationResult(defaultClassificationResultType, learningInformationTable);
                 checkLearningInformationTableCompatibility(learningInformationTable, ruleSetWithCharacteristics);
                 classifier = new SimpleOptimizingCountingRuleClassifier(ruleSetWithCharacteristics, simpleClassificationResult, learningInformationTable);
                 break;
             case SCORING_RULE_CLASSIFIER_SCORE:
-                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, learningInformationTable);
+                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(defaultClassificationResultType, learningInformationTable);
                 checkLearningInformationTableCompatibility(learningInformationTable, ruleSetWithCharacteristics);
                 classifier = new ScoringRuleClassifier(ruleSetWithCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.SCORE, learningInformationTable);
                 break;
             case SCORING_RULE_CLASSIFIER_HYBRID:
-                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(typeOfDefaultClassificationResult, learningInformationTable);
+                simpleEvaluatedClassificationResult = createDefaultSimpleEvaluatedClassificationResult(defaultClassificationResultType, learningInformationTable);
                 checkLearningInformationTableCompatibility(learningInformationTable, ruleSetWithCharacteristics);
                 classifier = new ScoringRuleClassifier(ruleSetWithCharacteristics, simpleEvaluatedClassificationResult, ScoringRuleClassifier.Mode.HYBRID, learningInformationTable);
                 break;
             default:
-                WrongParameterException ex = new WrongParameterException(String.format("Given type of classifier \"%s\" is unrecognized.", typeOfClassifier));
+                WrongParameterException ex = new WrongParameterException(String.format("Given type of classifier \"%s\" is unrecognized.", classifierType));
                 logger.error(ex.getMessage());
                 throw ex;
         }
