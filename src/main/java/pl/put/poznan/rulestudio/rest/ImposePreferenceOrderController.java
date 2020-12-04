@@ -1,12 +1,12 @@
 package pl.put.poznan.rulestudio.rest;
 
-import org.rulelearn.data.InformationTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.put.poznan.rulestudio.model.response.InformationTableResponse;
 import pl.put.poznan.rulestudio.service.ImposePreferenceOrderService;
 
 import java.io.IOException;
@@ -27,25 +27,25 @@ public class ImposePreferenceOrderController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<InformationTable> getImposePreferenceOrder(
+    public ResponseEntity<InformationTableResponse> getImposePreferenceOrder(
             @PathVariable("id") UUID id,
-            @RequestParam(name = "binarizeNominalAttributesWith3PlusValues") Boolean binarizeNominalAttributesWith3PlusValues) {
+            @RequestParam(name = "binarizeNominalAttributesWith3PlusValues") Boolean binarizeNominalAttributesWith3PlusValues) throws IOException {
         logger.info("Getting impose preference order...");
 
-        InformationTable result = imposePreferenceOrderService.getImposePreferenceOrder(id, binarizeNominalAttributesWith3PlusValues);
+        final InformationTableResponse result = imposePreferenceOrderService.getImposePreferenceOrder(id, binarizeNominalAttributesWith3PlusValues);
 
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<InformationTable> postImposePreferenceOrder(
+    public ResponseEntity<InformationTableResponse> postImposePreferenceOrder(
             @PathVariable("id") UUID id,
             @RequestParam(name = "binarizeNominalAttributesWith3PlusValues") Boolean binarizeNominalAttributesWith3PlusValues,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting impose preference order...");
 
-        InformationTable result = imposePreferenceOrderService.postImposePreferenceOrder(id, binarizeNominalAttributesWith3PlusValues, metadata, data);
+        final InformationTableResponse result = imposePreferenceOrderService.postImposePreferenceOrder(id, binarizeNominalAttributesWith3PlusValues, metadata, data);
 
         return ResponseEntity.ok(result);
     }

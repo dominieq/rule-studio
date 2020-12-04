@@ -6,7 +6,7 @@ import Cones from "./Tabs/Cones";
 import Data from "./Data/DisplayData";
 import Rules from "./Tabs/Rules";
 import Unions from "./Tabs/Unions";
-import { fetchData } from "../../Utils/utilFunctions/fetchFunctions";
+import { fetchData, fetchProject } from "../../Utils/utilFunctions/fetchFunctions";
 import StyledTab from "../../Utils/Navigation/StyledTab";
 import StyledTabs from "../../Utils/Navigation/StyledTabs";
 import ExternalFile from "../../Utils/Feedback/CustomIcons/ExternalFile";
@@ -19,10 +19,10 @@ import OutdatedData from "../../Utils/Feedback/AlertBadge/Alerts/OutdatedData";
  * @class
  * @category Tabs
  * @param {Object} props
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
+ * @param {function} props.onSnackbarOpen - Callback fired when the component request to display an error.
  * @param {Object} props.project - Current project.
- * @param {string} props.serverBase - The name of the host.
- * @param {function} props.showAlert - Callback fired when an alert is opened.
- * @param {function} props.updateIndexOptions - Callback fired when an attribute was changed.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.updateProject - Callback fired when a part of current project was changed.
  */
 class ProjectTabs extends React.Component {
@@ -30,12 +30,14 @@ class ProjectTabs extends React.Component {
         super(props);
 
         this.state = {
-            currentProject: null,
+            informationTable: null,
+            isUpdateNecessary: false,
             loading: false,
             selected: 0,
             showAlert: Array(5).fill(false),
             showExternalRules: false,
-            showExternalData: false
+            showExternalData: false,
+            alertMessages: Array(5).fill(null)
         };
     }
 
@@ -48,39 +50,47 @@ class ProjectTabs extends React.Component {
      */
     updateAlerts = (result) => {
         /* Update alert in Dominance cones */
-        if (result.dominanceCones !== null && result.dominanceCones.hasOwnProperty("isCurrentData")) {
-            this.setState(({showAlert}) => {
+        if (result.dominanceCones != null && result.dominanceCones.hasOwnProperty("isCurrentData")) {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[0] = !result.dominanceCones.isCurrentData;
-                return { showAlert: showAlert };
+                alertMessages[0] = result.dominanceCones.hasOwnProperty("errorMessages") ?
+                    result.dominanceCones.errorMessages : null;
+                return { showAlert, alertMessages };
             });
         } else {
             /* Reset alert if there are no dominance cones */
-            this.setState(({showAlert}) => {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[0] = false;
-                return { showAlert: showAlert }
-            })
+                alertMessages[0] = null;
+                return { showAlert, alertMessages };
+            });
         }
 
         /* Update alert in Class unions */
-        if (result.unions !== null && result.unions.hasOwnProperty("isCurrentData")) {
-            this.setState(({showAlert}) => {
+        if (result.unions != null && result.unions.hasOwnProperty("isCurrentData")) {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[1] = !result.unions.isCurrentData;
-                return { showAlert: showAlert };
+                alertMessages[1] = result.unions.hasOwnProperty("errorMessages") ?
+                    result.unions.errorMessages : null
+                return { showAlert, alertMessages };
             });
         } else {
             /* Reset alert if there are no class unions */
-            this.setState(({showAlert}) => {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[1] = false;
-                return { showAlert: showAlert };
+                alertMessages[1] = null;
+                return { showAlert, alertMessages };
             });
         }
 
         /* Update alerts in Rules */
-        if (result.rules !== null) {
+        if (result.rules != null) {
             if (result.rules.hasOwnProperty("isCurrentData")) {
-                this.setState(({showAlert}) => {
+                this.setState(({showAlert, alertMessages}) => {
                     showAlert[2] = !result.rules.isCurrentData;
-                    return { showAlert: showAlert };
+                    alertMessages[2] = result.rules.hasOwnProperty("errorMessages") ?
+                        result.rules.errorMessages : null;
+                    return { showAlert, alertMessages };
                 });
             }
 
@@ -91,26 +101,22 @@ class ProjectTabs extends React.Component {
             }
         } else {
             /* Reset alerts if there are no rules*/
-            this.setState(({showAlert}) => {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[2] = false;
-                return { showAlert: showAlert, showExternalAlert: false };
+                alertMessages[2] = null;
+                return { showAlert, showExternalRules: false, alertMessages };
             });
         }
 
         /* Update alerts in Classification */
-        if (result.classification !== null) {
-            if (result.classification.hasOwnProperty("isCurrentLearningData")) {
-                if (result.classification.hasOwnProperty("isCurrentRuleSet")) {
-                    this.setState(({showAlert}) => {
-                        showAlert[3] = !(result.classification.isCurrentLearningData && result.classification.isCurrentRuleSet);
-                        return { showAlert: showAlert };
-                    });
-                } else {
-                    this.setState(({showAlert}) => {
-                        showAlert[3] = !result.classification.isCurrentLearningData;
-                        return { showAlert: showAlert };
-                    });
-                }
+        if (result.classification != null) {
+            if (result.classification.hasOwnProperty("isCurrentData")) {
+               this.setState(({showAlert, alertMessages}) => {
+                   showAlert[3] = !result.classification.isCurrentData;
+                   alertMessages[3] = result.classification.hasOwnProperty("errorMessages") ?
+                       result.classification.errorMessages : null;
+                   return { showAlert, alertMessages }
+               });
             }
 
             if (result.classification.hasOwnProperty("externalData")) {
@@ -120,82 +126,97 @@ class ProjectTabs extends React.Component {
             }
         } else {
             /* Reset alerts if there are no classification results */
-            this.setState(({showAlert}) => {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[3] = false;
-                return { showAlert: showAlert, showExternalData: false };
-            })
+                alertMessages[3] = null;
+                return { showAlert, showExternalData: false, alertMessages };
+            });
         }
 
         /* Update alerts in CrossValidation */
-        if (result.crossValidation !== null && result.crossValidation.hasOwnProperty("isCurrentData")) {
-            this.setState(({showAlert}) => {
+        if (result.crossValidation != null && result.crossValidation.hasOwnProperty("isCurrentData")) {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[4] = !result.crossValidation.isCurrentData;
-                return { showAlert: showAlert };
+                alertMessages[4] = result.crossValidation.hasOwnProperty("errorMessages") ?
+                    result.crossValidation.errorMessages : null;
+                return { showAlert, alertMessages };
             });
         } else {
             /* Reset alert if there are no cross-validation results */
-            this.setState(({showAlert}) => {
+            this.setState(({showAlert, alertMessages}) => {
                 showAlert[4] = false;
-                return { showAlert: showAlert };
-            })
+                alertMessages[4] = null;
+                return { showAlert, alertMessages };
+            });
         }
     };
 
+    getProject = () => {
+        this.setState({
+            loading: true,
+        }, () => {
+            const { project: { id: projectId }, serverBase } = this.props;
+
+            const pathParams = { projectId };
+            const method = "GET"
+
+            fetchProject(
+                pathParams, method, null, serverBase
+            ).then(result => {
+                if (this._isMounted && result != null) {
+                    this.updateAlerts(result);
+                }
+            }).catch(
+                this.props.onSnackbarOpen
+            ).finally(() => {
+                if (this._isMounted) {
+                    this.setState({
+                        loading: false
+                    });
+                }
+            });
+        });
+    }
+
     /**
-     * Makes an API call on data to save changes (PUT) in current project.
-     * Then, updates fields from current project with values from response
-     * and saves changes in the {@link App}'s state.
+     * Utilizes {@link fetchData} to perform an API call with POST method and information table in body.
+     * The goal of this function is to save user's changes made in information table.
      *
      * @function
      * @memberOf ProjectTabs
-     * @param {Object} currentProject - The project that will be send to server.
-     * @param {number} newValue - The id of currently selected tab.
+     * @param {string} projectId - The identifier of a selected project.
+     * @param {Object} informationTable - The local copy of an information table that will be sent to server.
+     * @param {number} newValue - The index of currently selected tab.
      */
-    updateProjectOnServer = (currentProject, newValue) => {
-        const { serverBase } = this.props;
-        let project = JSON.parse(JSON.stringify(currentProject));
+    updateProjectOnServer = (projectId, informationTable, newValue) => {
+        if (informationTable == null) {
+            this.setState({ selected: newValue });
+            return;
+        }
 
-        let data = new FormData();
-        data.append("metadata", JSON.stringify(project.result.informationTable.attributes));
-        data.append("data", JSON.stringify(project.result.informationTable.objects));
+        const pathParams = { projectId };
+        const method = "POST";
+        const body = new FormData();
+        body.append("metadata", JSON.stringify(informationTable.attributes));
+        body.append("data", JSON.stringify(informationTable.objects));
+        const { serverBase } = this.props;
 
         fetchData(
-            serverBase, project.result.id, data
+            pathParams, method, body, serverBase
         ).then(result => {
-            if (result) {
-                let objects = Object.keys(result);
-
-                for (let i = 0; i < objects.length; i++) {
-                    if (result[objects[i]] !== null && project.result[objects[i]] !== null) {
-                        let bools = Object.keys(result[objects[i]])
-
-                        for (let j = 0; j < objects.length; j++) {
-                            if (project.result[objects[i]].hasOwnProperty(bools[j])) {
-                                project.result[objects[i]][bools[j]] = result[objects[i]][bools[j]];
-                            }
-                        }
-                    }
-                }
-
-                if (this._isMounted) {
-                    this.updateAlerts(result);
-                }
+            if (this._isMounted && result != null) {
+                this.updateAlerts(result);
             }
-        }).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
-            } else {
-                this.props.showAlert(error);
-            }
-        }).finally(() => {
+        }).catch(
+            this.props.onSnackbarOpen
+        ).finally(() => {
             if (this._isMounted) {
                 this.setState({
-                    currentProject: null,
+                    isUpdateNecessary: false,
                     loading: false,
                     selected: newValue
                 });
             }
-            this.props.updateProject(project);
         });
     };
 
@@ -208,9 +229,7 @@ class ProjectTabs extends React.Component {
      */
     componentDidMount() {
         this._isMounted = true;
-
-        const { project: { result } } = this.props;
-        this.updateAlerts(result);
+        this.getProject()
     };
 
     /**
@@ -230,7 +249,7 @@ class ProjectTabs extends React.Component {
      */
     shouldComponentUpdate(nextProps, nextState, nextContext) {
         const shallowComparison = this.props !== nextProps || this.state !== nextState;
-        const deepComparison = this.props.project.result.id !== nextProps.project.result.id;
+        const deepComparison = this.props.project.id !== nextProps.project.id;
 
         return shallowComparison || deepComparison;
     };
@@ -252,30 +271,18 @@ class ProjectTabs extends React.Component {
      * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
      */
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.project.settings.indexOption !== this.props.project.settings.indexOption && this.state.selected === 0) {
-            this.setState(({currentProject}) => {
-                if (currentProject !== null) {
-                    currentProject.settings.indexOption = this.props.project.settings.indexOption;
-                }
-
-                return {
-                    currentProject: currentProject
-                };
-            });
-        }
-
-        if (prevProps.project.result.id !== this.props.project.result.id) {
-            const { project: { result } } = this.props;
-            this.updateAlerts(result);
-
-            const { currentProject, selected } = this.state;
-            if (currentProject !== null && selected === 0) {
+        if (prevProps.project.id !== this.props.project.id) {
+            const { project: { id: projectId }} = prevProps;
+            const { informationTable, isUpdateNecessary, selected } = this.state;
+            if (isUpdateNecessary && selected === 0) {
                 this.setState({
                     loading: true
                 }, () => {
-                    this.updateProjectOnServer(currentProject, selected);
+                    this.updateProjectOnServer(projectId, informationTable, selected);
                 });
             }
+
+            this.getProject()
         }
     };
 
@@ -289,9 +296,10 @@ class ProjectTabs extends React.Component {
     componentWillUnmount() {
         this._isMounted = false;
 
-        const { currentProject, selected } = this.state;
-        if (currentProject !== null && selected === 0) {
-            this.updateProjectOnServer(currentProject, selected);
+        const { project: { id: projectId }} = this.props;
+        const { informationTable, isUpdateNecessary, selected } = this.state;
+        if (isUpdateNecessary && selected === 0) {
+            this.updateProjectOnServer(projectId, informationTable, selected);
         }
     };
 
@@ -305,13 +313,14 @@ class ProjectTabs extends React.Component {
      * @param {number} newValue - The id of tab that was selected.
      */
     onTabChange = (event, newValue) => {
-        const { currentProject, selected } = this.state;
+        const { project: { id: projectId }} = this.props;
+        const { informationTable, isUpdateNecessary, selected } = this.state;
 
-        if (currentProject !== null && selected === 0 && newValue !== 0) {
+        if (isUpdateNecessary && selected === 0 && newValue !== 0) {
             this.setState({
                 loading: true
             }, () => {
-                this.updateProjectOnServer(currentProject, newValue);
+                this.updateProjectOnServer(projectId, informationTable, newValue);
             });
         } else {
             this.setState({ selected: newValue });
@@ -324,11 +333,13 @@ class ProjectTabs extends React.Component {
      *
      * @function
      * @memberOf ProjectTabs
-     * @param {Object} project - Modified project from the {@link Data} tab.
+     * @param {Object} informationTable - Modified information table from the {@link Data} tab.
+     * @param {boolean} isUpdateNecessary - If <code>true</code> information table will be sent to server on exit.
      */
-    onDataChange = (project) => {
+    onDataChange = (informationTable, isUpdateNecessary) => {
         this.setState({
-            currentProject: project
+            informationTable: informationTable,
+            isUpdateNecessary: isUpdateNecessary
         });
     };
 
@@ -337,15 +348,18 @@ class ProjectTabs extends React.Component {
      *
      * @function
      * @memberOf ProjectTabs
-     * @param {number} index - The id of a tab.
+     * @param {number} index - The index of a selected tab.
      * @param {boolean} show - If <code>true</code> an alert about outdated results in tab will be displayed.
+     * @param {string[]} [messages] - Optional messages displayed in alert.
      */
-    showAlert = (index, show) => {
-        this.setState(({showAlert}) => {
+    showAlert = (index, show, messages) => {
+        this.setState(({showAlert, alertMessages}) => {
             showAlert[index] = show;
+            alertMessages[index] = messages;
 
             return {
-                showAlert: showAlert
+                showAlert: showAlert,
+                alertMessages: alertMessages
             };
         });
     };
@@ -378,28 +392,35 @@ class ProjectTabs extends React.Component {
         });
     };
 
-    getTabProps = (index) => {
-        return ({
-            id: `project-tab-${index}`,
-            'aria-controls': `project-tabpanel-${index}`,
-        })
-    };
+    getTabProps = (index) => ({
+        id: `project-tab-${index}`,
+        'aria-controls': `project-tabpanel-${index}`
+    });
 
-    getTabBodyProps = (index) => {
-        const { project, serverBase } = this.props;
-
-        return ({
-            project: project,
-            onTabChange: this.props.updateProject,
-            serverBase: serverBase,
-            showAlert: this.showAlert,
-            value: index
-        });
-    };
+    getTabBodyProps = (index) => ({
+        objectGlobalName: this.props.objectGlobalName,
+        onTabChange: this.props.updateProject,
+        project: this.props.project,
+        serverBase: this.props.serverBase,
+        showAlert: this.showAlert,
+        value: index
+    });
 
     render() {
-        const { loading ,selected, showAlert, showExternalRules, showExternalData } = this.state;
-        const { project, serverBase } = this.props;
+        const {
+            informationTable,
+            loading,
+            selected,
+            showAlert,
+            showExternalRules,
+            showExternalData,
+            alertMessages
+        } = this.state;
+        
+        const {
+            project,
+            serverBase
+        } = this.props;
 
         return (
             <React.Fragment>
@@ -407,7 +428,7 @@ class ProjectTabs extends React.Component {
                     <StyledTab label={"Data"} {...this.getTabProps(0)} />
                     <StyledTab
                         label={
-                            <OutdatedData invisible={!showAlert[0]}>
+                            <OutdatedData invisible={!showAlert[0]} messages={alertMessages[0]}>
                                 Dominance cones
                             </OutdatedData>
                         }
@@ -415,7 +436,7 @@ class ProjectTabs extends React.Component {
                     />
                     <StyledTab
                         label={
-                            <OutdatedData invisible={!showAlert[1]}>
+                            <OutdatedData invisible={!showAlert[1]} messages={alertMessages[1]}>
                                 Class unions
                             </OutdatedData>
                         }
@@ -426,7 +447,7 @@ class ProjectTabs extends React.Component {
                             <ExternalFile WrapperProps={{style: { marginBottom: 0, marginRight: 8}}} /> : null
                         }
                         label={
-                            <OutdatedData invisible={!showAlert[2]}>
+                            <OutdatedData invisible={!showAlert[2]} messages={alertMessages[2]}>
                                 Rules
                             </OutdatedData>
                         }
@@ -437,7 +458,7 @@ class ProjectTabs extends React.Component {
                             <ExternalFile WrapperProps={{style: { marginBottom: 0, marginRight: 8}}} /> : null
                         }
                         label={
-                            <OutdatedData invisible={!showAlert[3]}>
+                            <OutdatedData invisible={!showAlert[3]} messages={alertMessages[3]}>
                                 Classification
                             </OutdatedData>
                         }
@@ -445,7 +466,7 @@ class ProjectTabs extends React.Component {
                     />
                     <StyledTab
                         label={
-                            <OutdatedData invisible={!showAlert[4]}>
+                            <OutdatedData invisible={!showAlert[4]} messages={alertMessages[4]}>
                                 Cross-Validation
                             </OutdatedData>
                         }
@@ -456,11 +477,12 @@ class ProjectTabs extends React.Component {
                     {
                         0: (
                                 <Data
-                                    project={project}
-                                    onDataChange={this.onDataChange}
-                                    onAttributesChange={this.props.updateIndexOptions}
+                                    informationTable={informationTable}
                                     loading={loading}
+                                    onDataChange={this.onDataChange}
+                                    project={project}
                                     serverBase={serverBase}
+                                    updateProject={this.props.updateProject}
                                 />
                             ),
                         1: <Cones {...this.getTabBodyProps(0)} />,
@@ -482,10 +504,10 @@ class ProjectTabs extends React.Component {
 }
 
 ProjectTabs.propTypes = {
+    objectGlobalName: PropTypes.string,
+    onSnackbarOpen: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,
-    showAlert: PropTypes.func,
-    updateIndexOptions: PropTypes.func,
     updateProject: PropTypes.func
 };
 

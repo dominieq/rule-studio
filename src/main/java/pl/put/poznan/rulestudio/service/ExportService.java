@@ -20,27 +20,30 @@ public class ExportService {
 
     private static final Logger logger = LoggerFactory.getLogger(ExportService.class);
 
+    public static final String version = "1.0.0-rc.7";
+
     @Autowired
     ProjectsContainer projectsContainer;
 
     public NamedResource getExport(UUID id) throws IOException {
         logger.info("Id:\t{}", id);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
-
-        InputStreamResource resource;
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        XStream xStream = new XStream();
-        xStream.toXML(project, baos);
+        final XStream xStream = new XStream();
+        ObjectOutputStream oos = xStream.createObjectOutputStream(baos);
+        oos.writeObject(version);
+        oos.writeObject(project);
+        oos.close();
 
         logger.info("Size before compressing:\t{} B", baos.size());
         logger.info("Compressing...");
 
-        InputStream zipIs = new ByteArrayInputStream(baos.toByteArray());
+        final InputStream zipIs = new ByteArrayInputStream(baos.toByteArray());
         ByteArrayOutputStream zipBaos = new ByteArrayOutputStream();
         ZipOutputStream zipOs = new ZipOutputStream(zipBaos);
-        ZipEntry zipEntry = new ZipEntry(project.getName() + ".xml");
+        final ZipEntry zipEntry = new ZipEntry(project.getName() + ".xml");
         zipOs.putNextEntry(zipEntry);
         byte[] bytes = new byte[1024];
         int length;
@@ -52,8 +55,8 @@ public class ExportService {
 
         logger.info("Size after compressing:\t{} B", zipBaos.size());
 
-        InputStream is = new ByteArrayInputStream(zipBaos.toByteArray());
-        resource = new InputStreamResource(is);
+        final InputStream is = new ByteArrayInputStream(zipBaos.toByteArray());
+        final InputStreamResource resource = new InputStreamResource(is);
 
 
         return new NamedResource(project.getName(), resource);

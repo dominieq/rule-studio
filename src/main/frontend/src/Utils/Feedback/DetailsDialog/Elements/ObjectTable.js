@@ -11,17 +11,13 @@ import VirtualizedTable from "../../../DataDisplay/VirtualizedTable";
  * @category Details Dialog
  * @subcategory Utilities
  * @param {Object} props
- * @param {Object} props.informationTable  - The information table from current project.
- * @param {string} [props.objectHeader]  - The name of a selected object.
- * @param {number} props.objectIndex  - The index of a selected object.
+ * @param {Object} props.attributes  - The array of attributes from information table.
+ * @param {number} props.object  - An object selected from information table.
+ * @param {string} props.objectHeader  - The name of a selected object.
  * @returns {React.ReactElement}
  */
 function ObjectTable(props) {
-    const {
-        informationTable: { attributes, objects },
-        objectHeader,
-        objectIndex
-    } = props;
+    const { attributes, object, objectHeader } = props;
 
     const rowCount = attributes.length;
 
@@ -33,7 +29,7 @@ function ObjectTable(props) {
         },
         {
             dataKey: "object",
-            label: objectHeader ? objectHeader : `Object ${objectIndex + 1}`,
+            label: objectHeader,
             width: 100
         }
     ];
@@ -42,7 +38,7 @@ function ObjectTable(props) {
     for (let i = 0; i < attributes.length; i++) {
         rows.push({
             name: attributes[i].name,
-            object: objects[objectIndex][attributes[i].name]
+            object: object[attributes[i].name]
         })
     }
 
@@ -57,8 +53,8 @@ function ObjectTable(props) {
 }
 
 ObjectTable.propTypes = {
-    informationTable: PropTypes.object.isRequired,
-    objectIndex: PropTypes.number.isRequired,
+    attributes: PropTypes.arrayOf(PropTypes.object),
+    object: PropTypes.object,
     objectHeader: PropTypes.string,
 };
 

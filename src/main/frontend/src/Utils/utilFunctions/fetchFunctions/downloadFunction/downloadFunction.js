@@ -6,7 +6,7 @@ import { AlertError } from "../../../Classes";
  *
  * @category Utils
  * @subcategory Functions
- * @param {string} link - The link to download data from.
+ * @param {string|URL} link - The link to download data from.
  * @throws AlertError
  */
 async function downloadFunction(link) {

@@ -55,7 +55,7 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 
     @ExceptionHandler({NoDataException.class, NoRulesException.class})
     public void noDataException(
-            NoDataException ex,
+            RuntimeException ex,
             HttpServletResponse response) throws IOException {
         response.sendError(463, ex.getMessage());
     }

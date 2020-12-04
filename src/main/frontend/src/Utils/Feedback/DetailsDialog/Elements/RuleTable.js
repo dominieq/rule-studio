@@ -123,6 +123,7 @@ function RuleTable(props) {
                     rowCount={ruleList.length}
                     rowHeight={rowHeight}
                     rowRenderer={rowRenderer}
+                    style={{outline: "none"}}
                     width={width}
                 />
             )}

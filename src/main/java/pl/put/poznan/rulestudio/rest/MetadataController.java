@@ -1,6 +1,5 @@
 package pl.put.poznan.rulestudio.rest;
 
-import org.rulelearn.data.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.model.NamedResource;
-import pl.put.poznan.rulestudio.model.Project;
+import pl.put.poznan.rulestudio.model.response.AttributesResponse;
+import pl.put.poznan.rulestudio.model.response.GlobalDescriptiveAttributesResponse;
+import pl.put.poznan.rulestudio.model.response.InformationTableResponse;
 import pl.put.poznan.rulestudio.service.MetadataService;
 
 import java.io.IOException;
@@ -31,29 +32,35 @@ public class MetadataController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Attribute[]> getMetadata(
-            @PathVariable("id") UUID id) {
-        logger.info("Getting metadata");
-        Attribute[] result = metadataService.getMetadata(id);
+    public ResponseEntity<AttributesResponse> getMetadata(
+            @PathVariable("id") UUID id) throws IOException {
+        logger.info("Getting metadata...");
+
+        final AttributesResponse result = metadataService.getMetadata(id);
+
         return ResponseEntity.ok(result);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Project> putMetadata(
+    @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<InformationTableResponse> putMetadata(
             @PathVariable("id") UUID id,
-            @RequestBody String metadata) throws IOException {
-        logger.info("Putting metadata");
-        Project result = metadataService.putMetadata(id, metadata);
+            @RequestParam(name = "metadata") String metadata) throws IOException {
+        logger.info("Putting metadata...");
+
+        final InformationTableResponse result = metadataService.putMetadata(id, metadata);
+
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Resource> download(
+    public ResponseEntity<Resource> getDownload(
             @PathVariable("id") UUID id) throws IOException {
-        logger.info("Downloading server's metadata");
-        NamedResource namedResource = metadataService.getDownload(id);
-        String projectName = namedResource.getName();
-        Resource resource = namedResource.getResource();
+        logger.info("Downloading server's metadata...");
+
+        final NamedResource namedResource = metadataService.getDownload(id);
+        final String projectName = namedResource.getName();
+        final Resource resource = namedResource.getResource();
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " metadata.json")
                 .body(resource);
@@ -63,12 +70,35 @@ public class MetadataController {
     public ResponseEntity<Resource> putDownload(
             @PathVariable("id") UUID id,
             @RequestParam(name = "metadata") String metadata) throws IOException {
-        logger.info("Downloading client's metadata");
-        NamedResource namedResource = metadataService.putDownload(id, metadata);
-        String projectName = namedResource.getName();
-        Resource resource = namedResource.getResource();
+        logger.info("Downloading client's metadata...");
+
+        final NamedResource namedResource = metadataService.putDownload(id, metadata);
+        final String projectName = namedResource.getName();
+        final Resource resource = namedResource.getResource();
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + " metadata.json")
                 .body(resource);
+    }
+
+    @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GlobalDescriptiveAttributesResponse> getDescriptiveAttributes(
+            @PathVariable("id") UUID id) {
+        logger.info("Getting descriptive attributes in project...");
+
+        final GlobalDescriptiveAttributesResponse result = metadataService.getGlobalDescriptiveAttributes(id);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GlobalDescriptiveAttributesResponse> postDescriptiveAttributes(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "objectVisibleName", required = false) String objectVisibleName) {
+        logger.info("Posting descriptive attributes in project...");
+
+        final GlobalDescriptiveAttributesResponse result = metadataService.postGlobalDescriptiveAttributes(id, objectVisibleName);
+
+        return ResponseEntity.ok(result);
     }
 }

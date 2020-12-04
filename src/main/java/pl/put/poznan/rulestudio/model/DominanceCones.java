@@ -12,25 +12,21 @@ import java.util.Arrays;
 public class DominanceCones {
     private int numberOfObjects;
 
-    @JsonProperty("Positive dominance cone")
     private IntSortedSet[] positiveDCones;
 
-    @JsonProperty("Negative dominance cone")
     private IntSortedSet[] negativeDCones;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonProperty("Positive inverse dominance cone")
     private IntSortedSet[] positiveInvDCones;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonProperty("Negative inverse dominance cone")
     private IntSortedSet[] negativeInvDCones;
 
-    @JsonIgnore
     private String dataHash;
 
-    @JsonProperty("isCurrentData")
     private Boolean isCurrentData;
+
+    private DescriptiveAttributes descriptiveAttributes;
+
+    private InformationTable informationTable;
 
     public DominanceCones() {
         numberOfObjects = 0;
@@ -45,7 +41,7 @@ public class DominanceCones {
     }
 
     public DominanceCones(InformationTable informationTable) {
-        calculateDCones(informationTable);
+        calculateDCones(informationTable, null);
     }
 
     public int getNumberOfObjects() {
@@ -96,13 +92,28 @@ public class DominanceCones {
         this.dataHash = dataHash;
     }
 
-    @JsonIgnore
     public boolean isCurrentData() {
         return isCurrentData;
     }
 
     public void setCurrentData(Boolean currentData) {
         isCurrentData = currentData;
+    }
+
+    public DescriptiveAttributes getDescriptiveAttributes() {
+        return descriptiveAttributes;
+    }
+
+    public void setDescriptiveAttributes(DescriptiveAttributes descriptiveAttributes) {
+        this.descriptiveAttributes = descriptiveAttributes;
+    }
+
+    public InformationTable getInformationTable() {
+        return informationTable;
+    }
+
+    public void setInformationTable(InformationTable informationTable) {
+        this.informationTable = informationTable;
     }
 
     @Override
@@ -115,10 +126,12 @@ public class DominanceCones {
                 ", negativeInvDCones=" + Arrays.toString(negativeInvDCones) +
                 ", dataHash='" + dataHash + '\'' +
                 ", isCurrentData=" + isCurrentData +
+                ", descriptiveAttributes=" + descriptiveAttributes +
+                ", informationTable=" + informationTable +
                 '}';
     }
 
-    public void calculateDCones(InformationTable informationTable) {
+    public void calculateDCones(InformationTable informationTable, DescriptiveAttributes descriptiveAttributes) {
         this.numberOfObjects = informationTable.getNumberOfObjects();
 
         this.positiveDCones = new IntSortedSet[this.numberOfObjects];
@@ -142,6 +155,8 @@ public class DominanceCones {
 
         this.dataHash = informationTable.getHash();
         this.isCurrentData = true;
+        this.descriptiveAttributes = new DescriptiveAttributes(descriptiveAttributes);
+        this.informationTable = informationTable;
     }
 
     private void calculatePositiveDCones(InformationTable informationTable) {

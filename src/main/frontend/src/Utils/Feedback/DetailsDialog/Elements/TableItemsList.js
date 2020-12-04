@@ -7,6 +7,7 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 import Typography from "@material-ui/core/Typography";
 import { AutoSizer, List } from "react-virtualized";
 import TextWithHoverTooltip from "../../../DataDisplay/TextWithHoverTooltip";
+import { MoreSettingsIconButton } from "../../../Inputs/StyledButton";
 
 const listStyles = makeStyles(theme => ({
     root: {
@@ -31,11 +32,16 @@ const listStyles = makeStyles(theme => ({
     },
     headerText: {
         ...theme.typography.subheader,
+        flexGrow: 1,
+        textAlign: "center"
     },
     listWrapper: {
         flexGrow: 1,
         width: "100%",
     },
+    customisable: {
+        paddingLeft: "1em"
+    }
 }), {name: "TableItemsList"});
 
 /**
@@ -52,18 +58,30 @@ const listStyles = makeStyles(theme => ({
  * @category Details Dialog
  * @subcategory Utilities
  * @param {Object} props
+ * @param {boolean} [props.customisable = true] - If <code>true</code> settings button will be visible.
  * @param {function} [props.getItemStyle] - Should return a style object for an item with specified index.
  * @param {function} [props.getName] - Should return a name for an item with specified index.
  * @param {string} [props.headerText] - The header of the {@link TableItemsList}.
  * @param {number} props.itemIndex - The index of currently selected item.
  * @param {string} [props.itemText = "Object"] - The prefix used to name items from table.
  * @param {function} props.onItemInTableSelected - Callback fired when an item in table is selected.
+ * @param {function} [props.onSettingsClick]  - Callback fired when settings button was clicked on.
  * @param {number} [props.rowHeight = 53] - The height of a row in a list.
  * @param {Object[]} props.table - The one of arrays from item's tables property.
  * @returns {React.ReactElement}
  */
 function TableItemsList(props) {
-    const { headerText, itemIndex, itemText, onItemInTableSelected, rowHeight, table } = props;
+    const {
+        customisable,
+        headerText,
+        itemIndex,
+        itemText,
+        onItemInTableSelected,
+        onSettingsClick,
+        rowHeight,
+        table
+    } = props;
+
     const listClasses = listStyles();
 
     const rowRenderer = ({key, index, style}) => {
@@ -74,7 +92,7 @@ function TableItemsList(props) {
 
         let border = undefined;
         if (typeof props.getItemsStyle === "function") {
-            border = props.getItemsStyle(index);
+            border = props.getItemsStyle(table[index]);
         }
 
         return (
@@ -105,8 +123,24 @@ function TableItemsList(props) {
                     className={listClasses.header}
                     component={"header"}
                 >
+                    {customisable &&
+                        <MoreSettingsIconButton
+                            edge={"start"}
+                            onClick={onSettingsClick}
+                            TooltipProps={{
+                                WrapperProps: {
+                                    'aria-label': "more-settings-icon-button-wrapper",
+                                    style: { display: "flex" }
+                                }
+                            }}
+                        />
+                    }
                     <Typography
-                        className={clsx(listClasses.textItem, listClasses.headerText)}
+                        className={clsx(
+                            listClasses.headerText,
+                            listClasses.textItem,
+                            {[listClasses.customisable]: customisable}
+                        )}
                         noWrap={true}
                     >
                         {headerText}
@@ -132,17 +166,20 @@ function TableItemsList(props) {
 }
 
 TableItemsList.propTypes = {
+    customisable: PropTypes.bool,
     getItemsStyle: PropTypes.func,
     getName: PropTypes.func,
     headerText: PropTypes.string,
     itemIndex: PropTypes.number,
     itemText: PropTypes.string,
     onItemInTableSelected: PropTypes.func,
+    onSettingsClick: PropTypes.func,
     rowHeight: PropTypes.number,
     table: PropTypes.array.isRequired,
 };
 
 TableItemsList.defaultProps = {
+    customisable: true,
     itemText: "Object",
     rowHeight: 53,
 };
