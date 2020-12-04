@@ -24,6 +24,10 @@ import pl.put.poznan.rulestudio.enums.RulesFormat;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.*;
 import pl.put.poznan.rulestudio.model.*;
+import pl.put.poznan.rulestudio.model.response.*;
+import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
+import pl.put.poznan.rulestudio.model.response.MainRulesResponse.MainRulesResponseBuilder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -125,9 +129,11 @@ public class RulesService {
 
         for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
             logger.info("ruleSet.size=" + rswc.size());
-            for(int i = 0; i < rswc.size(); i++) {
-                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
-                logger.info(i + ":\t" + ruleCharacteristics.toString());
+            if(logger.isDebugEnabled()) {
+                for(int i = 0; i < rswc.size(); i++) {
+                    RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                    logger.debug(i + ":\t" + ruleCharacteristics.toString());
+                }
             }
         }
 
@@ -174,9 +180,11 @@ public class RulesService {
 
         for(RuleSetWithCharacteristics rswc : parsedRules.values()) {
             logger.info("ruleSet.size=" + rswc.size());
-            for(int i = 0; i < rswc.size(); i++) {
-                RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
-                logger.info(i + ":\t" + ruleCharacteristics.toString());
+            if(logger.isDebugEnabled()) {
+                for(int i = 0; i < rswc.size(); i++) {
+                    RuleCharacteristics ruleCharacteristics = rswc.getRuleCharacteristics(i);
+                    logger.debug(i + ":\t" + ruleCharacteristics.toString());
+                }
             }
         }
 
@@ -259,7 +267,8 @@ public class RulesService {
         RulesWithHttpParameters rules = project.getRules();
         if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (!rules.getConsistencyThreshold().equals(consistencyThreshold)) || (rules.getTypeOfRules() != typeOfRules)) {
             RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
-            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules);
+            DescriptiveAttributes descriptiveAttributes = new DescriptiveAttributes(project.getDescriptiveAttributes());
+            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, descriptiveAttributes, project.getInformationTable());
 
             project.setRules(rules);
             project.setCurrentRules(true);
@@ -268,20 +277,61 @@ public class RulesService {
         }
     }
 
-    public RulesWithHttpParameters getRules(UUID id, OrderByRuleCharacteristic orderBy, Boolean desc) {
-        logger.info("Id:\t{}", id);
-        logger.info("OrderBy:\t{}", orderBy);
-        logger.info("Desc:\t{}", desc);
-
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
-
-        project.checkValidityOfRules();
+    public static RulesWithHttpParameters getRulesFromProject(Project project) {
         RulesWithHttpParameters rules = project.getRules();
         if(rules == null) {
             EmptyResponseException ex = new EmptyResponseException("There are no rules in project to show.");
             logger.error(ex.getMessage());
             throw ex;
         }
+
+        return rules;
+    }
+
+    public static int[] getCoveringObjectsIndices(RuleSetWithCharacteristics ruleSetWithCharacteristics, Integer ruleIndex) {
+        int[] indices;
+
+        if((ruleIndex < 0) || (ruleIndex >= ruleSetWithCharacteristics.size())) {
+            WrongParameterException ex = new WrongParameterException(String.format("Given rule's index \"%d\" is incorrect. You can choose rule from %d to %d", ruleIndex, 0, ruleSetWithCharacteristics.size() - 1));
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        final RuleCharacteristics ruleCharacteristics = ruleSetWithCharacteristics.getRuleCharacteristics(ruleIndex);
+        final BasicRuleCoverageInformation basicRuleCoverageInformation = ruleCharacteristics.getRuleCoverageInformation();
+        if(basicRuleCoverageInformation != null) {
+            indices = basicRuleCoverageInformation.getIndicesOfCoveredObjects().toIntArray();
+        } else {
+            indices = new int[0];
+        }
+
+        return indices;
+    }
+
+    public static int[] getCoveringObjectsIndices(RuLeStudioRuleSet ruLeStudioRuleSet, Integer ruleIndex) {
+        final RuLeStudioRule[] rules = ruLeStudioRuleSet.getRuLeStudioRules();
+        if((ruleIndex < 0) || (ruleIndex >= rules.length)) {
+            WrongParameterException ex = new WrongParameterException(String.format("Given rule's index \"%d\" is incorrect. You can choose rule from %d to %d", ruleIndex, 0, rules.length - 1));
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+
+        return rules[ruleIndex].getIndicesOfCoveredObjects();
+    }
+
+    public MainRulesResponse getRules(UUID id, OrderByRuleCharacteristic orderBy, Boolean desc) {
+        logger.info("Id:\t{}", id);
+        logger.info("OrderBy:\t{}", orderBy);
+        logger.info("Desc:\t{}", desc);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        RulesWithHttpParameters rules = getRulesFromProject(project);
+        if ((rules.isExternalRules()) && ((rules.isCoveragePresent() == null) || (!rules.isCoveragePresent()))) {
+            RulesService.checkCoverageOfUploadedRules(rules, project.getInformationTable(), project.getDescriptiveAttributes());
+        }
+        ValidityRulesContainer validityRulesContainer = new ValidityRulesContainer(project);
+        rules.setValidityRulesContainer(validityRulesContainer);
 
         try {
             rules = (RulesWithHttpParameters) project.getRules().clone();
@@ -290,7 +340,7 @@ public class RulesService {
             rules = project.getRules();
         }
 
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = rules.getRuleSet();
+        final RuleSetWithCharacteristics ruleSetWithCharacteristics = rules.getRuleSet();
         if (!orderBy.equals(OrderByRuleCharacteristic.NONE)) {
 
             int i, rulesNumber = ruleSetWithCharacteristics.size();
@@ -352,8 +402,8 @@ public class RulesService {
                     throw ex;
             }
 
-            ArrayIndexComparator comparator = new ArrayIndexComparator(characteristicValues);
-            Integer[] indices = comparator.createIndexArray();
+            final ArrayIndexComparator comparator = new ArrayIndexComparator(characteristicValues);
+            final Integer[] indices = comparator.createIndexArray();
             Arrays.sort(indices, comparator);
 
             int x, step;
@@ -376,24 +426,28 @@ public class RulesService {
             rules.setRuleSet(sortedRuleSet);
         }
 
-        logger.debug("rulesWithHttpParameters:\t{}", rules.toString());
-        return rules;
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        return mainRulesResponse;
     }
 
-    public RulesWithHttpParameters putRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
+    public MainRulesResponse putRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
         logger.info("TypeOfRules:\t{}", typeOfRules);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         calculateRulesWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
 
-        return project.getRules();
+        final RulesWithHttpParameters rules = project.getRules();
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        return mainRulesResponse;
     }
 
-    public RulesWithHttpParameters postRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, String metadata, String data) throws IOException {
+    public MainRulesResponse postRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("TypeOfUnions:\t{}", typeOfUnions);
         logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
@@ -402,17 +456,77 @@ public class RulesService {
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
         calculateRulesWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
 
-        return project.getRules();
+        final RulesWithHttpParameters rules = project.getRules();
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        return mainRulesResponse;
     }
 
-    public NamedResource download(UUID id, RulesFormat rulesFormat) throws IOException {
+    public DescriptiveAttributesResponse getDescriptiveAttributes(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final RulesWithHttpParameters rules = getRulesFromProject(project);
+
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(rules.getDescriptiveAttributes());
+        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        return descriptiveAttributesResponse;
+    }
+
+    public DescriptiveAttributesResponse postDescriptiveAttributes(UUID id, String objectVisibleName) {
+        logger.info("Id:\t{}", id);
+        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final RulesWithHttpParameters rules = getRulesFromProject(project);
+
+        DescriptiveAttributes descriptiveAttributes = rules.getDescriptiveAttributes();
+        descriptiveAttributes.setCurrentAttribute(objectVisibleName);
+
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(rules.getDescriptiveAttributes());
+        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        return descriptiveAttributesResponse;
+    }
+
+    public AttributeFieldsResponse getObjectNames(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final RulesWithHttpParameters rules = getRulesFromProject(project);
+
+        final Integer descriptiveAttributeIndex = rules.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(rules.getInformationTable(), descriptiveAttributeIndex);
+        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        return attributeFieldsResponse;
+    }
+
+    public AttributeFieldsResponse getObjectNames(UUID id, Integer ruleIndex) {
+        logger.info("Id:\t{}", id);
+        logger.info("RuleIndex:\t{}", ruleIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final RulesWithHttpParameters rules = getRulesFromProject(project);
+
+        final int[] indices = getCoveringObjectsIndices(rules.getRuleSet(), ruleIndex);
+        final String[] objectNames = rules.getDescriptiveAttributes().extractChosenObjectNames(rules.getInformationTable(), indices);
+
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
+        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        return attributeFieldsResponse;
+    }
+
+    public NamedResource download(UUID id, RulesFormat rulesFormat) {
         logger.info("Id:\t{}", id);
         logger.info("RulesFormat:\t{}", rulesFormat);
 
@@ -447,31 +561,33 @@ public class RulesService {
         return new NamedResource(project.getName(), resource);
     }
 
-    public static void checkCoverageOfUploadedRules(RulesWithHttpParameters rules, InformationTable informationTable) {
-        String errorMessage = null;
+    public static void checkCoverageOfUploadedRules(RulesWithHttpParameters rules, InformationTable informationTable, DescriptiveAttributes descriptiveAttributes) {
+        String errorMessage;
         String ruleSetHash = rules.getRuleSet().getLearningInformationTableHash();
 
-        if((rules.isExternalRules()) && ((rules.isCoveragePresent() == null) || (!rules.isCoveragePresent()))) {
-            if(ruleSetHash == null) {
-                errorMessage = String.format("Provided rule set doesn't have the learning information table hash. It can't be determined, if this rule set was generated based on the current data of the project. Rule coverage information can't be calculated without a valid training set. Current data hash: \"%s\".", informationTable.getHash());
-                logger.info(errorMessage);
+        if(ruleSetHash == null) {
+            errorMessage = String.format("Provided rule set doesn't have the learning information table hash. It can't be determined, if this rule set was generated based on the current data of the project. Rule coverage information can't be calculated without a valid training set. Current data hash: \"%s\".", informationTable.getHash());
+            logger.info(errorMessage);
 
-                rules.setCurrentData(null);
-                rules.setCoveragePresent(false);
-            } else if(ruleSetHash.equals(informationTable.getHash())) {
-                logger.info("Current metadata and objects in the project are correct training set of uploaded rules. Calculating rule coverage information.");
-                rules.getRuleSet().calculateBasicRuleCoverageInformation(informationTable);
+            rules.setCurrentLearningData(null);
+            rules.setCoveragePresent(false);
+            rules.setDescriptiveAttributes(new DescriptiveAttributes());
+        } else if(ruleSetHash.equals(informationTable.getHash())) {
+            logger.info("Current metadata and objects in the project are correct training set of uploaded rules. Calculating rule coverage information.");
+            rules.getRuleSet().calculateBasicRuleCoverageInformation(informationTable);
 
-                errorMessage = null;
-                rules.setCurrentData(true);
-                rules.setCoveragePresent(true);
-            } else {
-                errorMessage = String.format("Uploaded rules are not induced from the data in the current project. Access to a valid training set is required to calculate rule coverage information. Please upload new rules based on the current data or create a new project with a valid training set. Current data hash: \"%s\", rules hash: \"%s\".", informationTable.getHash(), ruleSetHash);
-                logger.info(errorMessage);
+            errorMessage = null;
+            rules.setInformationTable(informationTable);
+            rules.setCurrentLearningData(true);
+            rules.setCoveragePresent(true);
+            rules.setDescriptiveAttributes(new DescriptiveAttributes(descriptiveAttributes));
+        } else {
+            errorMessage = String.format("Uploaded rules are not induced from the data in the current project. Access to a valid training set is required to calculate rule coverage information. Please upload new rules based on the current data or create a new project with a valid training set. Current data hash: \"%s\", rules hash: \"%s\".", informationTable.getHash(), ruleSetHash);
+            logger.info(errorMessage);
 
-                rules.setCurrentData(false);
-                rules.setCoveragePresent(false);
-            }
+            rules.setCurrentLearningData(false);
+            rules.setCoveragePresent(false);
+            rules.setDescriptiveAttributes(new DescriptiveAttributes());
         }
 
         rules.setErrorMessage(errorMessage);
@@ -479,11 +595,7 @@ public class RulesService {
 
     private static void uploadRulesToProject(Project project, MultipartFile rulesFile) throws IOException {
         InformationTable informationTable = project.getInformationTable();
-        if(informationTable == null) {
-            NoDataException ex = new NoDataException("There is no data in project. Couldn't read rules file.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't read rules file.");
 
         Attribute[] attributes = informationTable.getAttributes();
         if((attributes == null) || (attributes.length == 0)) {
@@ -494,35 +606,73 @@ public class RulesService {
 
         RuleSetWithCharacteristics ruleSetWithCharacteristics = parseRules(rulesFile, attributes);
 
-        project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, rulesFile.getOriginalFilename()));
+        project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, rulesFile.getOriginalFilename(), attributes));
     }
 
-    public RulesWithHttpParameters putUploadRules(UUID id, MultipartFile rulesFile) throws IOException {
+    public MainRulesResponse putUploadRules(UUID id, MultipartFile rulesFile) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         uploadRulesToProject(project, rulesFile);
 
-        return project.getRules();
+        final RulesWithHttpParameters rules = project.getRules();
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        return mainRulesResponse;
     }
 
-    public RulesWithHttpParameters postUploadRules(UUID id, MultipartFile rulesFile, String metadata, String data) throws IOException {
+    public MainRulesResponse postUploadRules(UUID id, MultipartFile rulesFile, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
         uploadRulesToProject(project, rulesFile);
 
-        return project.getRules();
+        final RulesWithHttpParameters rules = project.getRules();
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        return mainRulesResponse;
+    }
+
+    public ChosenRuleResponse getChosenRule(UUID id, Integer ruleIndex) {
+        logger.info("Id:\t{}", id);
+        logger.info("RuleIndex:\t{}", ruleIndex);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final RulesWithHttpParameters rules = getRulesFromProject(project);
+
+        final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(rules.getRuleSet(), ruleIndex, rules.getDescriptiveAttributes(), rules.getInformationTable());
+        logger.debug("chosenRuleResponse:\t{}", chosenRuleResponse.toString());
+        return chosenRuleResponse;
+    }
+
+    public ObjectAbstractResponse getObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
+        logger.info("Id:\t{}", id);
+        logger.info("RuleIndex:\t{}", objectIndex);
+        logger.info("IsAttributes:\t{}", isAttributes);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final RulesWithHttpParameters rules = getRulesFromProject(project);
+
+        ObjectAbstractResponse objectAbstractResponse;
+        if(isAttributes) {
+            objectAbstractResponse = new ObjectWithAttributesResponse(rules.getInformationTable(), objectIndex);
+        } else {
+            objectAbstractResponse = new ObjectResponse(rules.getInformationTable(), objectIndex);
+        }
+        logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
+        return objectAbstractResponse;
     }
 
     public Boolean arePossibleRulesAllowed(UUID id)  {

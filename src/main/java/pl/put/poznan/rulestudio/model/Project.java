@@ -3,17 +3,18 @@ package pl.put.poznan.rulestudio.model;
 import org.rulelearn.data.InformationTable;
 import pl.put.poznan.rulestudio.service.RulesService;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class Project {
     private UUID id;
     private String name;
     private InformationTable informationTable;
+    private DescriptiveAttributes descriptiveAttributes;
     private DominanceCones dominanceCones;
     private UnionsWithHttpParameters unions;
     private RulesWithHttpParameters rules;
-    private Classification classification;
+    private ProjectClassification projectClassification;
     private CrossValidation crossValidation;
     private String metadataFileName;
     private String dataFileName;
@@ -26,6 +27,7 @@ public class Project {
         this.id = UUID.randomUUID();
         this.name = name;
         this.informationTable = null;
+        this.descriptiveAttributes = new DescriptiveAttributes();
         this.currentDominanceCones = false;
         this.currentUnionsWithSingleLimitingDecision = false;
         this.currentRules = false;
@@ -35,6 +37,7 @@ public class Project {
         this.id = UUID.randomUUID();
         this.name = name;
         this.informationTable = informationTable;
+        this.descriptiveAttributes = new DescriptiveAttributes(informationTable);
         this.currentDominanceCones = false;
         this.currentUnionsWithSingleLimitingDecision = false;
         this.currentRules = false;
@@ -82,19 +85,43 @@ public class Project {
             }
         }
         if(this.rules != null) {
-            if(rules.getRuleSet().getLearningInformationTableHash() == null) {
-                rules.setCurrentData(null);
+            if (rules.isExternalRules()) {
+                final String attributesHash = new InformationTable(informationTable.getAttributes(), new ArrayList<>()).getHash();
+                if (rules.getAttributesHash().equals(attributesHash)) {
+                    rules.setCurrentAttributes(true);
+                } else {
+                    rules.setCurrentAttributes(false);
+                }
+            }
+
+            if (rules.getRuleSet().getLearningInformationTableHash() == null) {
+                rules.setCurrentLearningData(null);
             } else if (rules.getRuleSet().getLearningInformationTableHash().equals(dataHash)) {
-                rules.setCurrentData(true);
+                rules.setCurrentLearningData(true);
             } else {
-                rules.setCurrentData(false);
+                rules.setCurrentLearningData(false);
             }
         }
-        if(this.classification != null) {
-            if (classification.getLearningDataHash().equals(dataHash)) {
-                classification.setCurrentLearningData(true);
+        if(this.projectClassification != null) {
+            if (projectClassification.isExternalData()) {
+                final String attributesHash = new InformationTable(informationTable.getAttributes(), new ArrayList<>()).getHash();
+                if(projectClassification.getAttributesHash().equals(attributesHash)) {
+                    projectClassification.setCurrentProjectData(true);
+                } else {
+                    projectClassification.setCurrentProjectData(false);
+                }
             } else {
-                classification.setCurrentLearningData(false);
+                if(projectClassification.getProjectDataHash().equals(dataHash)) {
+                    projectClassification.setCurrentProjectData(true);
+                } else {
+                    projectClassification.setCurrentProjectData(false);
+                }
+            }
+
+            if ((projectClassification.isCurrentLearningData() != null) && (projectClassification.getLearningInformationTable().getHash().equals(dataHash))) {
+                projectClassification.setCurrentLearningData(true);
+            } else {
+                projectClassification.setCurrentLearningData(false);
             }
         }
         if(this.crossValidation != null) {
@@ -104,6 +131,17 @@ public class Project {
                 crossValidation.setCurrentData(false);
             }
         }
+
+        String previousName = this.descriptiveAttributes.getCurrentAttributeName();
+        this.descriptiveAttributes = new DescriptiveAttributes(informationTable, previousName);
+    }
+
+    public DescriptiveAttributes getDescriptiveAttributes() {
+        return descriptiveAttributes;
+    }
+
+    public void setDescriptiveAttributes(DescriptiveAttributes descriptiveAttributes) {
+        this.descriptiveAttributes = descriptiveAttributes;
     }
 
     public DominanceCones getDominanceCones() {
@@ -146,17 +184,6 @@ public class Project {
         this.currentRules = currentRules;
     }
 
-    public void checkValidityOfRules() {
-        if(rules !=null) {
-            ValidityRulesContainer validityRulesContainer = new ValidityRulesContainer(this);
-            rules.setValidityRulesContainer(validityRulesContainer);
-
-            if(informationTable != null) {
-                RulesService.checkCoverageOfUploadedRules(rules, informationTable);
-            }
-        }
-    }
-
     public RulesWithHttpParameters getRules() {
         return rules;
     }
@@ -164,25 +191,35 @@ public class Project {
     public void setRules(RulesWithHttpParameters rules) {
         this.rules = rules;
 
-        if(this.classification != null) {
-            if (this.rules == null) {
-                classification.setCurrentRuleSet(null);
-            } else if (this.rules.getRuleSet().getHash().equals(classification.getRuleSetHash())) {
-                classification.setCurrentRuleSet(true);
+        if (this.rules == null) {
+            if(this.projectClassification != null) {
+                this.projectClassification.setCurrentRuleSet(null);
+            }
+            return;
+        }
+
+        if (this.rules.isExternalRules()) {
+            RulesService.checkCoverageOfUploadedRules(this.rules, this.informationTable, this.descriptiveAttributes);
+        }
+
+        if (this.projectClassification != null) {
+            if (this.projectClassification.getRuleSet().getHash().equals(this.rules.getRuleSet().getHash())) {
+                this.projectClassification.setCurrentRuleSet(true);
             } else {
-                classification.setCurrentRuleSet(false);
+                this.projectClassification.setCurrentRuleSet(false);
             }
         }
 
-        checkValidityOfRules();
+        ValidityRulesContainer validityRulesContainer = new ValidityRulesContainer(this);
+        this.rules.setValidityRulesContainer(validityRulesContainer);
     }
 
-    public Classification getClassification() {
-        return classification;
+    public ProjectClassification getProjectClassification() {
+        return projectClassification;
     }
 
-    public void setClassification(Classification classification) {
-        this.classification = classification;
+    public void setProjectClassification(ProjectClassification projectClassification) {
+        this.projectClassification = projectClassification;
     }
 
     public CrossValidation getCrossValidation() {
@@ -215,10 +252,11 @@ public class Project {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", informationTable=" + informationTable +
+                ", descriptiveAttributes=" + descriptiveAttributes +
                 ", dominanceCones=" + dominanceCones +
                 ", unions=" + unions +
                 ", rules=" + rules +
-                ", classification=" + classification +
+                ", projectClassification=" + projectClassification +
                 ", crossValidation=" + crossValidation +
                 ", metadataFileName='" + metadataFileName + '\'' +
                 ", dataFileName='" + dataFileName + '\'' +

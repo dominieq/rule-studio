@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.put.poznan.rulestudio.model.Project;
-import pl.put.poznan.rulestudio.model.ProjectsContainer;
-import pl.put.poznan.rulestudio.model.RulesWithHttpParameters;
+import pl.put.poznan.rulestudio.model.*;
+import pl.put.poznan.rulestudio.model.response.ProjectResponse;
+import pl.put.poznan.rulestudio.model.response.ProjectsResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,20 +23,19 @@ public class ProjectsService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    public ArrayList<Project> getProjects() {
-        ArrayList<Project> result = new ArrayList<Project>(projectsContainer.getProjectHashMap().values());
-
-        logger.debug(result.toString());
-        return result;
+    public ProjectsResponse getProjects() {
+        final ProjectsResponse projectsResponse = new ProjectsResponse(projectsContainer);
+        logger.debug(projectsResponse.toString());
+        return projectsResponse;
     }
 
     private Project createEmptyProject(String name) {
-        Project project = new Project(name);
+        final Project project = new Project(name);
         projectsContainer.addProject(project);
         return project;
     }
 
-    public Project createProject(
+    public ProjectResponse createProject(
             String name,
             MultipartFile metadataFile,
             MultipartFile dataFile,
@@ -51,12 +50,14 @@ public class ProjectsService {
         logger.info("Header:\t{}", header);
 
         if(metadataFile == null) {
-            return createEmptyProject(name);
+            final ProjectResponse projectResponse = new ProjectResponse(createEmptyProject(name));
+            logger.debug(projectResponse.toString());
+            return projectResponse;
         }
 
         InformationTable informationTable = null;
         Project project;
-        Attribute[] attributes = MetadataService.attributesFromMultipartFileMetadata(metadataFile);
+        final Attribute[] attributes = MetadataService.attributesFromMultipartFileMetadata(metadataFile);
 
         if(dataFile != null) { //load data from file
             informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
@@ -70,14 +71,16 @@ public class ProjectsService {
         if(dataFile != null)    project.setDataFileName(dataFile.getOriginalFilename());
 
         if(rulesFile != null) { //load rules from file
-            RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
+            final RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
 
-            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, rulesFile.getOriginalFilename()));
+            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, rulesFile.getOriginalFilename(), attributes));
         }
 
 
         projectsContainer.addProject(project);
-        logger.debug(project.toString());
-        return project;
+
+        final ProjectResponse projectResponse = new ProjectResponse(project);
+        logger.debug(projectResponse.toString());
+        return projectResponse;
     }
 }

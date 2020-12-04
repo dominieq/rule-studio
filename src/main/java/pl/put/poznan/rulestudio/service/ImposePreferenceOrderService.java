@@ -5,9 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.response.InformationTableResponse;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -20,39 +20,38 @@ public class ImposePreferenceOrderService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    public InformationTable getImposePreferenceOrder(UUID id, Boolean binarizeNominalAttributesWith3PlusValues) {
+    public InformationTableResponse getImposePreferenceOrder(UUID id, Boolean binarizeNominalAttributesWith3PlusValues) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("BinarizeNominalAttributesWith3PlusValues:\t" + binarizeNominalAttributesWith3PlusValues);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InformationTable informationTable = project.getInformationTable();
-        if(informationTable == null) {
-            NoDataException ex = new NoDataException("There is no data in project. Couldn't perform operation.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't perform operation.");
 
         informationTable = informationTable.imposePreferenceOrders(binarizeNominalAttributesWith3PlusValues);
 
-        logger.debug("InformationTable:\t{}", informationTable);
-        return informationTable;
+        final InformationTableResponse informationTableResponse = new InformationTableResponse(informationTable);
+        logger.debug(informationTableResponse.toString());
+        return informationTableResponse;
     }
 
-    public InformationTable postImposePreferenceOrder(UUID id, Boolean binarizeNominalAttributesWith3PlusValues, String metadata, String data) throws IOException {
+    public InformationTableResponse postImposePreferenceOrder(UUID id, Boolean binarizeNominalAttributesWith3PlusValues, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
         logger.info("BinarizeNominalAttributesWith3PlusValues:\t{}", binarizeNominalAttributesWith3PlusValues);
-        logger.info("Metadata:\t{}", metadata);
+        logger.info("Metadata size:\t{} B", metadata.length());
+        logger.debug("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = ProjectService
+        final InformationTable informationTable = ProjectService
                 .createInformationTableFromString(metadata, data)
                 .imposePreferenceOrders(binarizeNominalAttributesWith3PlusValues);
 
-        logger.debug("InformationTable:\t{}", informationTable);
-        return informationTable;
+        final InformationTableResponse informationTableResponse = new InformationTableResponse(informationTable);
+        logger.debug(informationTableResponse.toString());
+        return informationTableResponse;
     }
 }

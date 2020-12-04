@@ -27,6 +27,7 @@ import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 
 import { StyledCheckbox, StyledRadio, StyledCustomTextField} from './StyledComponents';
 import StyledDivider from '../../../Utils/DataDisplay/StyledDivider';
+import { fetchData } from '../../../Utils/utilFunctions/fetchFunctions';
 
 const selectors = Data.Selectors;
 const { DropDownEditor } = Editors;
@@ -169,11 +170,11 @@ function RightClickContextMenu({
  * @subcategory Tabs
  * @param {Object} props - Arguments received from the parent component
  * @param {Object} props.project - Holds data about the current project like id, name and everything associated with the project e.g. information table, unions, cones etc.
- * @param {Object} props.project.result.informationTable - InformationTable received from the server, holds attributes and objects
- * @param {Array} props.project.result.informationTable.attributes - Attributes (metadata, might be empty)
- * @param {Array} props.project.result.informationTable.objects - Objects (data, might be empty)
- * @param {function} props.onAttributesChange - Method responsible for updating project attributes, makes them visible to choose in the "project settings" (object's visible description).
- * @param {function} props.onDataChange - Method responsible for updating the whole project in the parent component (which is ProjectTabs.js)
+ * @param {Object} props.informationTable - InformationTable received from and sent to the server, holds attributes and objects
+ * @param {Array} props.project.informationTable.attributes - Attributes (metadata, might be empty)
+ * @param {Array} props.project.informationTable.objects - Objects (data, might be empty)
+ * @param {function} props.onDataChange - Callback method responsible for updating the informationTable in the parent component (which is ProjectTabs.js)
+ * @param {function} props.updateProject - Callback method responsible for updating the whole project (kept in App.js)
  * @returns {React.Component}
  */
 class DisplayData extends React.Component {
@@ -218,8 +219,8 @@ class DisplayData extends React.Component {
                 :
                 [
                     {
-                        rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
-                        columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
+                        rows: [],
+                        columns: [],
                         historyActionSubject: ''
                     }
                 ],
@@ -242,7 +243,7 @@ class DisplayData extends React.Component {
      * @param {Object} prevState - Old state object containing all the properties from state e.g. state.columns or state.rows
      */
     componentDidUpdate(prevProps, prevState) {
-        if(prevProps.project.result.id !== this.props.project.result.id) {
+        if(prevProps.project.id !== this.props.project.id) {
             this.ctrlKeyDown = -1;
             this.ctrlPlusC = false;
             this.isDataFromServer = this.props.project.isDataFromServer;
@@ -284,14 +285,13 @@ class DisplayData extends React.Component {
                     :
                     [
                         {
-                            rows: this.prepareDataFromImport(this.props.project.result.informationTable.objects),
-                            columns: this.prepareMetaDataFromImport(this.props.project.result.informationTable.attributes),
+                            rows: [],
+                            columns: [],
                             historyActionSubject: ''
                         }
                     ],
             }, () => {
-                this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
-                this.replaceMissingDataWithQuestionMarks();
+                this.fetchDataFromServerOrParent(true, false);
             })
         }
     }
@@ -385,8 +385,6 @@ class DisplayData extends React.Component {
      *
      * @function
      * @memberOf Data
-     * @param {Array} metadata - I.e. attributes received from the props. Each attribute consists of pairs key-value with name of the property as the key and value as the value.
-     * @returns {Array}
      */
     replaceMissingDataWithQuestionMarks = () => {
         if(this.isDataFromServer) {
@@ -416,55 +414,144 @@ class DisplayData extends React.Component {
     }
 
     /**
-     * A component's lifecycle method. Fired once when component was mounted.
-     * Method responsible for setting the color of column headers accordingly to the attribute preference type during initialization of the component.
-     * Runs only once, after component is mounted (after first [render]{@link DisplayData#render} and before methods shouldComponentUpdate() and [componentDidUpdate]{@link DisplayData#componentDidUpdate}).
+     * Method responsible for getting information table from the server or from the parent component, used when entering the data tab.
      *
      * @function
      * @memberOf Data
+     * @param {boolean} isFetchNeeded - If <code>true</code> the informationTable will be fetched from the server.
+     * @param {boolean} cdm - If <code>true</code> this method is called from the ComponentDidMount method.
      */
-    componentDidMount() {
-        const headers = document.getElementsByClassName("react-grid-HeaderCell-sortable");
-        for(let i=0; i<headers.length; i++) {
-            for(let j=0; j<this.state.history[this.state.historySnapshot].columns.length; j++)
-            {
-                if(headers[i].innerText === this.state.history[this.state.historySnapshot].columns[j].name) {
-                    this.setHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[j], i, true);
-                    break;
+    fetchDataFromServerOrParent = (isFetchNeeded, cdm) => {
+        if(isFetchNeeded) {
+            this.setState({
+                isLoading: true
+            }, () => {
+                const serverBase = this.props.serverBase;
+                const pathParams = { projectId: this.props.project.id };
+                const method = "GET";
+                const body = null;
+
+                fetchData(
+                    pathParams, method, body, serverBase
+                ).then(result => {
+                    if (result != null) {
+                        const rows = this.prepareDataFromImport(result.objects);
+                        const columns = this.prepareMetaDataFromImport(result.attributes);
+                        
+                        let history = [...this.state.history];
+                        let newHistory = {...history[this.state.historySnapshot]};
+                        newHistory.rows = rows;
+                        newHistory.columns = columns;
+                        history[this.state.historySnapshot] = newHistory;
+
+                        this.setState({
+                            history: history,
+                        })
+                    }
+                }).catch(error => {
+                    if(!(error.hasOwnProperty("type") && error.type === "AlertError")) {
+                        console.error(error);
+                        return;
+                    }
+                    this.setState({
+                        isOpenedNotification: error.open,
+                        errorMessage: error.message,
+                        errorMessageSeverity: error.severity
+                    })
+                }).finally(() => {
+                    this.setState({
+                        isLoading: false
+                    }, () => {
+                        this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
+                        this.replaceMissingDataWithQuestionMarks(); 
+                        this.updateInfoTableInTheParent(!cdm);
+                    });
+                    
+                });
+            });
+        } else {
+            if(this.state.history.length === 1 && this.state.history[0].columns.length === 0) {
+                const history = [];
+                const rows = this.prepareDataFromImport(this.props.informationTable.objects);
+                const columns = this.prepareMetaDataFromImport(this.props.informationTable.attributes);
+
+                history.push({
+                    rows: rows,
+                    columns: columns,
+                    historyActionSubject: ''
+                })               
+
+                this.setState({
+                    history: history,
+                }, () => {
+                    this.state.history[this.state.historySnapshot].columns.forEach( (col,idx) => this.setHeaderColorAndStyleAndRightClick(col,idx,true));
+                    this.replaceMissingDataWithQuestionMarks();
+                })
+            } else {
+                const headers = document.getElementsByClassName("react-grid-HeaderCell-sortable");
+                for(let i=0; i<headers.length; i++) {
+                    for(let j=0; j<this.state.history[this.state.historySnapshot].columns.length; j++)
+                    {
+                        if(headers[i].innerText === this.state.history[this.state.historySnapshot].columns[j].name) {
+                            this.setHeaderColorAndStyleAndRightClick(this.state.history[this.state.historySnapshot].columns[j], i, true);
+                            break;
+                        }
+                    }
                 }
+                this.replaceMissingDataWithQuestionMarks();
             }
         }
-
-        this._isMounted = true;
-        this.replaceMissingDataWithQuestionMarks();
     }
 
     /**
-     * Method responsible for preparing whole project to update it (in the parent).
-     *
+     * Method responsible for updating (sending to server) information table, so it will be possible to make attributes visible to choose in the "project settings" (objects visible name).
+     * 
      * @function
      * @memberOf Data
+     * @param {Object[]} objects - Array representing objects (data)
+     * @param {Object[]} attributes - Array representing attributes (metadata)
      */
-    updateProject = () => {
-        const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
-        const tmpData = this.prepareDataFileBeforeSendingToServer();
-        const tmpProject = JSON.parse(JSON.stringify(this.props.project));
-        tmpProject.result.informationTable.attributes = tmpMetaData;
-        tmpProject.result.informationTable.objects = tmpData;
-        tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history};
-        tmpProject.isDataFromServer = false;
-        this.props.onDataChange(tmpProject); //run parent method
+    sendInfoTableToServerDueToIdentifOrDescriptAttributeChange = (objects, attributes) => {
+        this.setState({
+            isLoading: true
+        }, () => {
+            const serverBase = this.props.serverBase;
+            const pathParams = { projectId: this.props.project.id };
+            const method = "POST";
+            const body = new FormData();
+            body.append("metadata", JSON.stringify(attributes));
+            body.append("data", JSON.stringify(objects));
+
+            fetchData(
+                pathParams, method, body, serverBase
+            ).then().catch(error => {
+                if(!(error.hasOwnProperty("type") && error.type === "AlertError")) {
+                    console.error(error);
+                    return;
+                }
+                this.setState({
+                    isOpenedNotification: error.open,
+                    errorMessage: error.message,
+                    errorMessageSeverity: error.severity
+                })
+            }).finally(() => {
+                this.setState({
+                    isLoading: false
+                });
+            });
+        })
     }
 
     /**
-     * Method responsible for updating project attributes, makes them visible to choose in the "project settings" (object's visible description).
+     * Helper method responsible for preparing objects and attributes and forward them to {@link DisplayData#sendInfoTableToServerDueToIdentifOrDescriptAttributeChange}.
      *
      * @function
      * @memberOf Data
      */
     updateChangedIdentifOrDescriptAttribute = () => {
         const attributes = this.prepareMetadataFileBeforeSendingToServer();
-        this.props.onAttributesChange(attributes); //run parent method
+        const objects = this.prepareDataFileBeforeSendingToServer();
+        this.sendInfoTableToServerDueToIdentifOrDescriptAttributeChange(objects, attributes);
     }
 
     /**
@@ -497,6 +584,53 @@ class DisplayData extends React.Component {
             ) {
                 this.updateChangedIdentifOrDescriptAttribute();
             }
+        }
+    }
+
+    /**
+     * A component's lifecycle method. Fired once when component was mounted.
+     * Method responsible for setting the color of column headers accordingly to the attribute preference type during initialization of the component.
+     * Runs only once, after component is mounted (after first [render]{@link DisplayData#render} and before methods shouldComponentUpdate() and [componentDidUpdate]{@link DisplayData#componentDidUpdate}).
+     *
+     * @function
+     * @memberOf Data
+     */
+    componentDidMount() {
+        if(this.props.informationTable == null) this.fetchDataFromServerOrParent(true, true);
+        else this.fetchDataFromServerOrParent(false, true);
+        this._isMounted = true;    
+    }
+
+    /**
+     * Method responsible for preparing whole project to update it (in the parent).
+     *
+     * @function
+     * @memberOf Data
+     */
+    updateProject = () => {
+        const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
+        const tmpData = this.prepareDataFileBeforeSendingToServer();
+        this.updateInfoTableInTheParent(true, tmpMetaData, tmpData);
+
+        const tmpProject = JSON.parse(JSON.stringify(this.props.project));
+        tmpProject.dataHistory = {historySnapshot: this.state.historySnapshot, history: this.state.history};
+        tmpProject.isDataFromServer = false;
+        this.props.updateProject(tmpProject); //run parent method
+    }
+
+    /**
+     * @function
+     * @memberof Data
+     * @param {boolean} isUpdateNecessary - The parameter indicates if the information table should be send to the server.
+     * @param {Array} [args] - It is either empty array (no data were passed) or the array containing metadata and data, in that order. 
+     */
+    updateInfoTableInTheParent = (isUpdateNecessary, ...args) => {
+        if(args.length > 0) {
+            this.props.onDataChange({attributes: args[0], objects: args[1]}, isUpdateNecessary); //run parent method
+        } else {
+            const tmpMetaData = this.prepareMetadataFileBeforeSendingToServer();
+            const tmpData = this.prepareDataFileBeforeSendingToServer();
+            this.props.onDataChange({attributes: tmpMetaData, objects: tmpData}, isUpdateNecessary); //run parent method
         }
     }
 
@@ -1268,7 +1402,7 @@ class DisplayData extends React.Component {
                 formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
                 formData.append('data', JSON.stringify(this.prepareDataFileBeforeSendingToServer()));
 
-                fetch(`${base}/projects/${this.props.project.result.id}/imposePreferenceOrder`, {
+                fetch(`${base}/projects/${this.props.project.id}/imposePreferenceOrder`, {
                     method: 'POST',
                     body: formData
                 }).then(response => {
@@ -1343,7 +1477,7 @@ class DisplayData extends React.Component {
                 isLoading: true,
                 isOpenedTransform: false,
             }, () => {
-                let link = `${base}/projects/${this.props.project.result.id}/imposePreferenceOrder?binarizeNominalAttributesWith3PlusValues=${this.state.binarizeNominalAttributesWith3PlusValues}`;
+                let link = `${base}/projects/${this.props.project.id}/imposePreferenceOrder?binarizeNominalAttributesWith3PlusValues=${this.state.binarizeNominalAttributesWith3PlusValues}`;
 
                 fetch(link, {
                     method: 'GET'
@@ -1538,17 +1672,17 @@ class DisplayData extends React.Component {
      */
     saveToFile = () => {
         if(this.state.saveToFileMetaData) {
-            this.saveMetaDataToJson(this.props.project.result.name + "_metadata.json");
+            this.saveMetaDataToJson(this.props.project.name + "_metadata.json");
         }
         if(this.state.saveToFileData === 'json') {
-            this.saveDataToCsvOrJson(this.props.project.result.name + "_data.json", -1, -1);
+            this.saveDataToCsvOrJson(this.props.project.name + "_data.json", -1, -1);
         } else if(this.state.saveToFileData === 'csv') {
             let separator = " ";
             if(this.state.saveToFileCsvSeparator === "tab") separator = "%09";
             else if(this.state.saveToFileCsvSeparator === "semicolon") separator = ";";
             else if(this.state.saveToFileCsvSeparator === "comma") separator = ",";
             //else it is space
-            this.saveDataToCsvOrJson(this.props.project.result.name + "_data.csv", this.state.saveToFileCsvHeader, separator);
+            this.saveDataToCsvOrJson(this.props.project.name + "_data.csv", this.state.saveToFileCsvHeader, separator);
         }
 
         this.setState({
@@ -1573,7 +1707,7 @@ class DisplayData extends React.Component {
         const base = this.props.serverBase;
         if(this.state.dataModified) {
             let filename = name;
-            let link = `${base}/projects/${this.props.project.result.id}/data/download`;
+            let link = `${base}/projects/${this.props.project.id}/data/download`;
             if(header === -1) { //json
                 link += `?format=json`;
             } else { //csv
@@ -1643,7 +1777,7 @@ class DisplayData extends React.Component {
         } else {
             let filename = name;
 
-            let link = `${base}/projects/${this.props.project.result.id}/data/download`;
+            let link = `${base}/projects/${this.props.project.id}/data/download`;
             if(header === -1) { //json
                 link += `?format=json`;
             } else { //csv
@@ -1724,7 +1858,7 @@ class DisplayData extends React.Component {
             let formData = new FormData();
             formData.append('metadata', JSON.stringify(this.prepareMetadataFileBeforeSendingToServer()));
 
-            fetch(`${base}/projects/${this.props.project.result.id}/metadata/download`, {
+            fetch(`${base}/projects/${this.props.project.id}/metadata/download`, {
                 method: 'PUT',
                 body: formData
             }).then(response => {
@@ -1779,7 +1913,7 @@ class DisplayData extends React.Component {
             })
         } else {
             let filename = name;
-            fetch(`${base}/projects/${this.props.project.result.id}/metadata/download`, {
+            fetch(`${base}/projects/${this.props.project.id}/metadata/download`, {
                 method: 'GET'
             }).then(response => {
                 if(response.status === 200) {
@@ -3173,9 +3307,10 @@ class DisplayData extends React.Component {
 }
 
 DisplayData.propTypes = {
+    informationTable: PropTypes.oneOfType([() => null, PropTypes.any.isRequired]),
     project: PropTypes.any.isRequired,
     onDataChange: PropTypes.func.isRequired,
-    onAttributesChange: PropTypes.func.isRequired
+    updateProject: PropTypes.func.isRequired
 };
 
 export default withStyles(StyledReactDataGrid)(DisplayData);

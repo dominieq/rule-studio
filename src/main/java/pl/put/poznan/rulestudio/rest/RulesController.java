@@ -15,7 +15,7 @@ import pl.put.poznan.rulestudio.enums.RulesFormat;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
-import pl.put.poznan.rulestudio.model.RulesWithHttpParameters;
+import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.service.RulesService;
 
 import java.io.IOException;
@@ -38,28 +38,32 @@ public class RulesController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RulesWithHttpParameters> getRules (
+    public ResponseEntity<MainRulesResponse> getRules (
             @PathVariable("id") UUID id,
             @RequestParam(name = "orderBy", defaultValue = "none") OrderByRuleCharacteristic orderBy,
             @RequestParam(name = "desc", defaultValue = "true") Boolean desc) {
         logger.info("Getting rules...");
-        RulesWithHttpParameters result = rulesService.getRules(id, orderBy, desc);
+
+        final MainRulesResponse result = rulesService.getRules(id, orderBy, desc);
+
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RulesWithHttpParameters> putRules (
+    public ResponseEntity<MainRulesResponse> putRules (
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
             @RequestParam(name = "typeOfRules") RuleType typeOfRules) {
         logger.info("Putting rules...");
-        RulesWithHttpParameters result = rulesService.putRules(id, typeOfUnions, consistencyThreshold, typeOfRules);
+
+        final MainRulesResponse result = rulesService.putRules(id, typeOfUnions, consistencyThreshold, typeOfRules);
+
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RulesWithHttpParameters> postRules (
+    public ResponseEntity<MainRulesResponse> postRules (
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfUnions") UnionType typeOfUnions,
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold,
@@ -67,14 +71,53 @@ public class RulesController {
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting rules...");
-        RulesWithHttpParameters result = rulesService.postRules(id, typeOfUnions, consistencyThreshold, typeOfRules, metadata, data);
+
+        final MainRulesResponse result = rulesService.postRules(id, typeOfUnions, consistencyThreshold, typeOfRules, metadata, data);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DescriptiveAttributesResponse> getDescriptiveAttributes (
+            @PathVariable("id") UUID id) {
+        logger.info("Getting descriptive attributes in rules...");
+
+        final DescriptiveAttributesResponse result = rulesService.getDescriptiveAttributes(id);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DescriptiveAttributesResponse> postDescriptiveAttributes(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "objectVisibleName", required = false) String objectVisibleName) {
+        logger.info("Posting descriptive attributes in rules...");
+
+        final DescriptiveAttributesResponse result = rulesService.postDescriptiveAttributes(id, objectVisibleName);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/objectNames", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AttributeFieldsResponse> getObjectNames(
+            @PathVariable("id") UUID id,
+            @RequestParam(name = "subject", required = false) Integer ruleIndex) {
+        logger.info("Getting object names in rules...");
+
+        AttributeFieldsResponse result;
+        if(ruleIndex != null) {
+            result = rulesService.getObjectNames(id, ruleIndex);
+        } else {
+            result = rulesService.getObjectNames(id);
+        }
+
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public ResponseEntity<Resource> download(
             @PathVariable("id") UUID id,
-            @RequestParam(name = "format") RulesFormat rulesFormat) throws IOException {
+            @RequestParam(name = "format") RulesFormat rulesFormat) {
         logger.info("Downloading file");
         NamedResource namedResource = rulesService.download(id, rulesFormat);
         String projectName = namedResource.getName();
@@ -99,28 +142,55 @@ public class RulesController {
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RulesWithHttpParameters> putUploadRules (
+    public ResponseEntity<MainRulesResponse> putUploadRules (
             @PathVariable("id") UUID id,
             @RequestParam(name = "rules") MultipartFile rulesFile) throws IOException {
         logger.info("Uploading rules (PUT)...");
-        RulesWithHttpParameters result = rulesService.putUploadRules(id, rulesFile);
+
+        final MainRulesResponse result = rulesService.putUploadRules(id, rulesFile);
+
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RulesWithHttpParameters> postUploadRules (
+    public ResponseEntity<MainRulesResponse> postUploadRules (
             @PathVariable("id") UUID id,
             @RequestParam(name = "rules") MultipartFile rulesFile,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Uploading rules (POST)...");
-        RulesWithHttpParameters result = rulesService.postUploadRules(id, rulesFile, metadata, data);
+
+        final MainRulesResponse result = rulesService.postUploadRules(id, rulesFile, metadata, data);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/{ruleIndex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChosenRuleResponse> getChosenRule (
+            @PathVariable("id") UUID id,
+            @PathVariable("ruleIndex") Integer ruleIndex) {
+        logger.info("Getting chosen rule...");
+
+        final ChosenRuleResponse result = rulesService.getChosenRule(id, ruleIndex);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/object", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ObjectAbstractResponse> getObject (
+            @PathVariable("id") UUID id,
+            @RequestParam("objectIndex") Integer objectIndex,
+            @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
+        logger.info("Getting object from rules...");
+
+        final ObjectAbstractResponse result = rulesService.getObject(id, objectIndex, isAttributes);
+
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/arePossibleRulesAllowed", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Boolean>> arePossibleRulesAllowed(
-            @PathVariable("id") UUID id) throws IOException {
+            @PathVariable("id") UUID id) {
         logger.info("Checking if possible rules are allowed");
         Boolean result = rulesService.arePossibleRulesAllowed(id);
         return ResponseEntity.ok(Collections.singletonMap("arePossibleRulesAllowed", result));

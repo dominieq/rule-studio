@@ -32,4 +32,11 @@ public class ProjectsContainer {
     public Project removeProject(UUID id) {
         return projectHashMap.remove(id);
     }
+
+    @Override
+    public String toString() {
+        return "ProjectsContainer{" +
+                "projectHashMap=" + projectHashMap +
+                '}';
+    }
 }

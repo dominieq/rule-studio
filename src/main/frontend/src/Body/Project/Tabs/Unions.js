@@ -26,11 +26,12 @@ import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
  * @category Tabs
  * @subcategory Tabs
  * @param {Object} props
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
  * @param {Object} props.project - Current project.
- * @param {string} props.serverBase - The name of the host.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
- * @param {number} props.value - The id of a tab.
+ * @param {number} props.value - The index of a selected tab.
  * @returns {React.Component}
  */
 class Unions extends Component {
@@ -67,11 +68,13 @@ class Unions extends Component {
      */
     getUnions = () => {
         const { project, serverBase } = this.props;
+        const pathParams = { projectId: project.id }
+        const queryParams = { typeOfUnions: undefined, consistencyThreshold: undefined };
 
         fetchUnions(
-            serverBase, project.result.id, "GET", null
+            pathParams, queryParams, "GET", serverBase
         ).then(result => {
-            if (result && this._isMounted) {
+            if (this._isMounted && result != null) {
                 const items = parseUnionsItems(result);
 
                 this.setState({
@@ -79,27 +82,27 @@ class Unions extends Component {
                     items: items,
                     displayedItems: items,
                     parameters: {
-                        consistencyThreshold: result.consistencyThreshold,
-                        typeOfUnions: result.typeOfUnions.toLowerCase()
+                        consistencyThreshold: result.parameters.consistencyThreshold,
+                        typeOfUnions: result.parameters.typeOfUnions.toLowerCase()
                     }
                 });
 
                 if (result.hasOwnProperty("isCurrentData")) {
-                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                    const messages = result.hasOwnProperty("errorMessages") ?
+                        result.errorMessages : null;
+                    this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                 }
             }
-        }).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
-            }
-            if (this._isMounted) {
-                this.setState({
-                    data: null,
-                    items: null,
-                    displayedItems: [],
-                    alertProps: error
-                });
-            }
+        }).catch(exception => {
+            this.onSnackbarOpen(exception, () => {
+                if (this._isMounted) {
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: []
+                    });
+                }
+            });
         }).finally(() => {
             if (this._isMounted) {
                 const { project: { parameters, parametersSaved }} = this.props;
@@ -164,7 +167,7 @@ class Unions extends Component {
             }
         }
 
-        if (prevProps.project.result.id !== this.props.project.result.id) {
+        if (prevProps.project.id !== this.props.project.id) {
             const { parametersSaved } = prevState;
 
             if (!parametersSaved) {
@@ -217,11 +220,11 @@ class Unions extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let method = "PUT";
-            let data = { ...parameters };
+            const pathParams = { projectId: project.id };
+            const queryParams = { ...parameters };
 
             fetchUnions(
-                serverBase, project.result.id, method, data
+                pathParams, queryParams, "PUT", serverBase
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
@@ -232,35 +235,35 @@ class Unions extends Component {
                             items: items,
                             displayedItems: items,
                             parameters: {
-                                consistencyThreshold: result.consistencyThreshold,
-                                typeOfUnions: result.typeOfUnions.toLowerCase()
+                                consistencyThreshold: result.parameters.consistencyThreshold,
+                                typeOfUnions: result.parameters.typeOfUnions.toLowerCase()
                             },
                             parametersSaved: true,
                         });
                     }
-                    let projectCopy = JSON.parse(JSON.stringify(project));
-                    projectCopy.result.unions = result;
-                    projectCopy.parameters.consistencyThreshold = result.consistencyThreshold;
-                    projectCopy.parameters.typeOfUnions = result.typeOfUnions.toLowerCase();
+
+                    const projectCopy = JSON.parse(JSON.stringify(project));
+                    projectCopy.parameters.consistencyThreshold = result.parameters.consistencyThreshold;
+                    projectCopy.parameters.typeOfUnions = result.parameters.typeOfUnions.toLowerCase();
                     projectCopy.parametersSaved = true;
                     this.props.onTabChange(projectCopy);
 
                     if (result.hasOwnProperty("isCurrentData")) {
-                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                        const messages = result.hasOwnProperty("errorMessages") ?
+                            result.errorMessages : null;
+                        this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                     }
                 }
             }).catch(error => {
-                if (!error.hasOwnProperty("open")) {
-                    console.log(error);
-                }
-                if (this._isMounted) {
-                    this.setState({
-                        data: null,
-                        items: null,
-                        displayedItems: [],
-                        alertProps: error
-                    });
-                }
+                this.onSnackbarOpen(error, () => {
+                    if (this._isMounted) {
+                        this.setState({
+                            data: null,
+                            items: null,
+                            displayedItems: []
+                        });
+                    }
+                });
             }).finally(() => {
                 if (this._isMounted) {
                     this.setState({
@@ -330,6 +333,17 @@ class Unions extends Component {
         }
     };
 
+    onSnackbarOpen = (exception, setStateCallback) => {
+        if (!(exception.hasOwnProperty("type") && exception.type === "AlertError")) {
+            console.error(exception);
+            return;
+        }
+
+        if (this._isMounted) {
+            this.setState({ alertProps: exception }, setStateCallback);
+        }
+    }
+
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
             this.setState(({alertProps}) => ({
@@ -340,7 +354,7 @@ class Unions extends Component {
 
     render() {
         const { loading, data, displayedItems, parameters, selectedItem, open, alertProps } = this.state;
-        const { project: { result, settings } } = this.props;
+        const { objectGlobalName, project: { id: projectId }, serverBase } = this.props;
 
         return (
             <CustomBox id={"unions"} variant={"Tab"}>
@@ -387,6 +401,7 @@ class Unions extends Component {
                             onItemSelected: this.onDetailsOpen
                         }}
                         ListSubheaderProps={{
+                            disableLeftGutter: true,
                             style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
                         }}
                         noFilterResults={!displayedItems}
@@ -401,14 +416,16 @@ class Unions extends Component {
                             }
                         ]}
                     />
-                    {selectedItem !== null &&
-                    <UnionsDialog
-                        item={selectedItem}
-                        onClose={() => this.toggleOpen("details")}
-                        open={open.details}
-                        projectResult={result}
-                        settings={settings}
-                    />
+                    {selectedItem != null &&
+                        <UnionsDialog
+                            item={selectedItem}
+                            objectGlobalName={objectGlobalName}
+                            onClose={() => this.toggleOpen("details")}
+                            onSnackbarOpen={this.onSnackbarOpen}
+                            open={open.details}
+                            projectId={projectId}
+                            serverBase={serverBase}
+                        />
                     }
                 </CustomBox>
                 <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
@@ -418,6 +435,7 @@ class Unions extends Component {
 }
 
 Unions.propTypes = {
+    objectGlobalName: PropTypes.string,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,

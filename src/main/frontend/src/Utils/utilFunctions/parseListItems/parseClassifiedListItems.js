@@ -5,7 +5,7 @@ import { conjugateContent } from "../parseItems/parseDetails";
  *
  * @category Utils
  * @subcategory Functions
- * @param {Object[]} items - An array of items prepared by {@link parseClassificationItems} or {@link parseCrossValidationItems}.
+ * @param {Object[]} items - An array of items prepared by {@link parseClassifiedItems}.
  * @returns {Object[]} - An array of list items displayed in {@link ResultList}.
  */
 function parseClassifiedListItems(items) {
@@ -16,7 +16,7 @@ function parseClassifiedListItems(items) {
             listItems.push({
                 id: items[i].id,
                 header: items[i].name.toString(),
-                subheader: "Covered by " + conjugateContent(items[i].tables.indicesOfCoveringRules.length, "rule"),
+                subheader: "Covered by " + conjugateContent(items[i].traits.numberOfCoveringRules, "rule"),
                 multiContent: [
                     {
                         title: "Original decision:",

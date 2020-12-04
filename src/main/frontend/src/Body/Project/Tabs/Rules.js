@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
-import { downloadRules, fetchRules, uploadRules } from "../../../Utils/utilFunctions/fetchFunctions";
+import { downloadRules, fetchRules } from "../../../Utils/utilFunctions/fetchFunctions";
 import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
 import { parseRulesItems } from  "../../../Utils/utilFunctions/parseItems";
 import { parseRulesListItems } from "../../../Utils/utilFunctions/parseListItems";
@@ -37,13 +37,14 @@ import { mdiTextBox } from '@mdi/js';
  * @category Tabs
  * @subcategory Tabs
  * @param {Object} props
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onDataUploaded - Callback fired when tab receives information that new data was uploaded.
  * @param {function} props.onRulesUploaded - Callback fired when tab receives information that rule set was uploaded.
  * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
  * @param {Object} props.project - Current project.
- * @param {string} props.serverBase - The name of the host.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
- * @param {number} props.value - The id of a tab.
+ * @param {number} props.value - The index of a selected tab.
  * @returns {React.Component}
  */
 class Rules extends Component {
@@ -85,51 +86,50 @@ class Rules extends Component {
      */
     getRules = () => {
         const { project, serverBase } = this.props;
+        const pathParams = { projectId: project.id };
+        const method = "GET";
 
         fetchRules(
-            serverBase, project.result.id, "GET", null
+            pathParams, method, null, serverBase
         ).then(result => {
             if (result && this._isMounted) {
                 const items = parseRulesItems(result);
-                const resultParameters = parseRulesParams(result);
+                const resultParameters = result.hasOwnProperty("parameters") ?
+                    parseRulesParams(result.parameters) : { };
 
-                let alertProps = undefined;
-                if (result.hasOwnProperty("errorMessage")) {
-                    alertProps = { message: result.errorMessage, open: true, severity: "error" };
-                }
-
-                this.setState(({parameters}) => ({
+                this.setState(({parameters, alertProps}) => ({
                     data: result,
                     items: items,
                     displayedItems: items,
                     parameters: { ...parameters, ...resultParameters},
-                    alertProps: alertProps
+                    alertProps: result.hasOwnProperty("errorMessage") ?
+                        { message: result.errorMessage, open: true, severity: "error" } : alertProps
                 }));
 
                 if (result.hasOwnProperty("isCurrentData")) {
-                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                    const messages = result.hasOwnProperty("errorMessages") ?
+                        result.errorMessages : null;
+                    this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                 }
 
                 if (result.hasOwnProperty("externalRules")) {
                     this.props.onRulesUploaded(result.externalRules);
                 }
 
-                if (result.hasOwnProperty("validateCurrentData")) {
-                    this.updateAlerts(result.validateCurrentData, null);
+                if (result.hasOwnProperty("validityRulesContainer")) {
+                    this.updateAlerts(result.validityRulesContainer);
                 }
             }
-        }).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
-            }
-            if (this._isMounted) {
-                this.setState({
-                    data: null,
-                    items: null,
-                    displayedItems: [],
-                    alertProps: error
-                });
-            }
+        }).catch(exception => {
+            this.onSnackbarOpen(exception, () => {
+                if (this._isMounted) {
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: []
+                    });
+                }
+            });
         }).finally(() => {
             if (this._isMounted) {
                 const { displayedItems } = this.state;
@@ -205,7 +205,7 @@ class Rules extends Component {
             }));
         }
 
-        if (prevProps.project.result.id !== this.props.project.result.id) {
+        if (prevProps.project.id !== this.props.project.id) {
             const { parametersSaved, sort: { order, value } } = prevState;
             let project = { ...prevProps.project };
 
@@ -272,34 +272,31 @@ class Rules extends Component {
         this.setState({
             loading: true,
         }, () => {
-            let method = "PUT";
-            let data = parseFormData(parameters, null);
+            const pathParams = { projectId: project.id };
+            const method = "PUT";
+            const data = parseFormData(parameters, null);
 
             fetchRules(
-                serverBase, project.result.id, method, data
+                pathParams, method, data, serverBase
             ).then(result => {
                 if (result) {
                     if (this._isMounted) {
                         const items = parseRulesItems(result);
 
-                        let alertProps = undefined;
-                        if (result.hasOwnProperty("errorMessage")) {
-                            alertProps = { message: result.errorMessage, open: true, severity: "error" };
-                        }
-
-                        this.setState({
+                        this.setState(({alertProps}) => ({
                             data: result,
                             items: items,
                             displayedItems: items,
                             parametersSaved: true,
-                            alertProps: alertProps
-                        });
+                            alertProps: result.hasOwnProperty("errorMessage") ?
+                                { message: result.errorMessage, open: true, severity: "error" } : alertProps
+                        }));
                     }
 
                     let projectCopy = JSON.parse(JSON.stringify(project));
-                    projectCopy.result.rules = result;
 
-                    const newParameters = parseRulesParams(result);
+                    const newParameters = result.hasOwnProperty("parameters") ?
+                        parseRulesParams(result.parameters) : { };
                     projectCopy.parameters = {
                         ...projectCopy.parameters,
                         consistencyThreshold: newParameters.consistencyThreshold,
@@ -308,31 +305,31 @@ class Rules extends Component {
                     projectCopy.parametersSaved = true;
 
                     if (result.hasOwnProperty("isCurrentData")) {
-                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                        const messages = result.hasOwnProperty("errorMessages") ?
+                            result.errorMessages : null;
+                        this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                     }
 
                     if (result.hasOwnProperty("externalRules")) {
                         this.props.onRulesUploaded(result.externalRules);
                     }
 
-                    if (result.hasOwnProperty("validateCurrentData")) {
-                        this.updateAlerts(result.validateCurrentData, projectCopy);
+                    if (result.hasOwnProperty("validityRulesContainer")) {
+                        this.updateAlerts(result.validityRulesContainer);
                     }
 
                     this.props.onTabChange(projectCopy);
                 }
-            }).catch(error => {
-                if (!error.hasOwnProperty("open")) {
-                    console.log(error);
-                }
-                if (this._isMounted) {
-                    this.setState({
-                        data: null,
-                        items: null,
-                        displayedItems: [],
-                        alertProps: error
-                    });
-                }
+            }).catch(exception => {
+                this.onSnackbarOpen(exception, () => {
+                    if (this._isMounted) {
+                        this.setState({
+                            data: null,
+                            items: null,
+                            displayedItems: []
+                        });
+                    }
+                });
             }).finally(() => {
                 const { displayedItems } = this.state;
 
@@ -358,16 +355,15 @@ class Rules extends Component {
         if (event.target.files[0]) {
             const { project, serverBase } = this.props;
 
-            let method = "PUT";
-            let files = { rules: event.target.files[0] }
-
-            let data = parseFormData(null, files);
+            const pathParams = { projectId: project.id };
+            const method = "PUT";
+            const data = parseFormData(null, { rules: event.target.files[0] });
 
             this.setState({
                 loading: true,
             }, () => {
-                uploadRules(
-                    serverBase, project.result.id, method, data
+                fetchRules(
+                    pathParams, method, data, serverBase, true
                 ).then(result => {
                     if (result) {
                         if (this._isMounted) {
@@ -385,35 +381,30 @@ class Rules extends Component {
                                 alertProps: alertProps
                             });
                         }
-                        let projectCopy = JSON.parse(JSON.stringify(project));
-                        projectCopy.result.rules = result;
-
                         if (result.hasOwnProperty("isCurrentData")) {
-                            this.props.showAlert(this.props.value, !result.isCurrentData);
+                            const messages = result.hasOwnProperty("errorMessages") ?
+                                result.errorMessages : null;
+                            this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                         }
 
                         if (result.hasOwnProperty("externalRules")) {
                             this.props.onRulesUploaded(result.externalRules);
                         }
 
-                        if (result.hasOwnProperty("validateCurrentData")) {
-                            this.updateAlerts(result.validateCurrentData, projectCopy);
+                        if (result.hasOwnProperty("validityRulesContainer")) {
+                            this.updateAlerts(result.validityRulesContainer);
                         }
-
-                        this.props.onTabChange(projectCopy);
                     }
-                }).catch(error => {
-                    if (!error.hasOwnProperty("open")) {
-                        console.log(error);
-                    }
-                    if (this._isMounted) {
-                        this.setState({
-                            data: null,
-                            items: null,
-                            displayedItems: [],
-                            alertProps: error
-                        });
-                    }
+                }).catch(exception => {
+                    this.onSnackbarOpen(exception, () => {
+                        if (this._isMounted) {
+                            this.setState({
+                                data: null,
+                                items: null,
+                                displayedItems: []
+                            });
+                        }
+                    });
                 }).finally(() => {
                     const { displayedItems } = this.state;
 
@@ -434,47 +425,26 @@ class Rules extends Component {
      *
      * @function
      * @memberOf Rules
-     * @param {Object} validateCurrentData - The part of response from server
-     * @param {Object} project - Project that will be updated.
+     * @param {Object} validityRulesContainer - The part of response from server
      */
-    updateAlerts = (validateCurrentData, project) => {
-        if (validateCurrentData.classification !== null) {
-            if (validateCurrentData.classification.hasOwnProperty("isCurrentLearningData")) {
-                const isCurrentLearningData = validateCurrentData.classification.isCurrentLearningData;
-
-                if (project !== null && project.result.classification !== null) {
-                    project.result.classification.isCurrentLearningData = isCurrentLearningData;
-                }
-
-                if (validateCurrentData.classification.hasOwnProperty("isCurrentRuleSet")) {
-                    const isCurrentRuleSet = validateCurrentData.classification.isCurrentRuleSet;
-
-                    if (project !== null && project.result.classification !== null) {
-                        project.result.classification.isCurrentRuleSet = isCurrentRuleSet;
-                    }
-
-                    this.props.showAlert(this.props.value + 1, !(isCurrentLearningData && isCurrentRuleSet));
-                } else {
-                    this.props.showAlert(this.props.value + 1, !isCurrentLearningData);
-                }
+    updateAlerts = (validityRulesContainer) => {
+        if (validityRulesContainer.classification != null) {
+            if (validityRulesContainer.classification.hasOwnProperty("isCurrentData")) {
+                const messages = validityRulesContainer.classification.hasOwnProperty("errorMessages") ?
+                    validityRulesContainer.classification.errorMessages : null;
+                this.props.showAlert(this.props.value + 1, !validityRulesContainer.classification.isCurrentData, messages);
             }
 
-            if (validateCurrentData.classification.hasOwnProperty("externalData")) {
-                if (project !== null && project.result.classification !== null) {
-                    project.result.classification.externalData = validateCurrentData.classification.externalData;
-                }
-
-                this.props.onDataUploaded(validateCurrentData.classification.externalData);
+            if (validityRulesContainer.classification.hasOwnProperty("externalData")) {
+                this.props.onDataUploaded(validityRulesContainer.classification.externalData);
             }
         }
 
-        if (validateCurrentData.unions !== null) {
-            if (validateCurrentData.unions.hasOwnProperty("isCurrentData")) {
-                if (project !== null && project.result.unions !== null) {
-                    project.result.unions.isCurrentData = validateCurrentData.unions.isCurrentData;
-                }
-
-                this.props.showAlert(this.props.value - 1, !validateCurrentData.unions.isCurrentData);
+        if (validityRulesContainer.unions != null) {
+            if (validityRulesContainer.unions.hasOwnProperty("isCurrentData")) {
+                const messages = validityRulesContainer.unions.hasOwnProperty("errorMessages") ?
+                    validityRulesContainer.unions.errorMessages : null;
+                this.props.showAlert(this.props.value - 1, !validityRulesContainer.unions.isCurrentData, messages);
             }
         }
     };
@@ -487,16 +457,11 @@ class Rules extends Component {
      */
     onSaveRulesToXMLClick = () => {
         const { project, serverBase } = this.props;
-        let data = { format: "xml" };
+        const pathParams = { projectId: project.id };
+        const queryParams = { format: "xml" };
 
-        downloadRules(serverBase, project.result.id, data).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
-            }
-            if (this._isMounted) {
-                this.setState({alertProps: error});
-            }
-        });
+        downloadRules(pathParams, queryParams, serverBase)
+            .catch(this.onSnackbarOpen);
     };
 
     /**
@@ -507,16 +472,11 @@ class Rules extends Component {
      */
     onSaveRulesToTXTClick = () => {
         const { project, serverBase } = this.props;
-        let data = { format: "txt" };
+        const pathParams = { projectId: project.id };
+        const queryParams = { format: "txt" };
 
-        downloadRules(serverBase, project.result.id, data).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
-            }
-            if (this._isMounted) {
-                this.setState({ alertProps: error });
-            }
-        });
+        downloadRules(pathParams, queryParams, serverBase)
+            .catch(this.onSnackbarOpen);
     };
 
     toggleOpen = (name) => {
@@ -647,6 +607,15 @@ class Rules extends Component {
         }
     };
 
+    onSnackbarOpen = (exception, setStateCallback) => {
+        if (!(exception.hasOwnProperty("type") && exception.type === "AlertError")) {
+            console.error(exception);
+            return;
+        }
+
+        this.setState({ alertProps: exception }, setStateCallback);
+    }
+
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
             this.setState(({alertProps}) => ({
@@ -657,7 +626,7 @@ class Rules extends Component {
 
     render() {
         const { loading, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
-        const { project: { result, settings } } = this.props;
+        const { objectGlobalName, project: { id: projectId }, serverBase } = this.props;
 
         const resultsExists = Array.isArray(items) && Boolean(items.length);
 
@@ -796,7 +765,8 @@ class Rules extends Component {
                             onItemSelected: this.onDetailsOpen
                         }}
                         ListSubheaderProps={{
-                            disableHelper: false,
+                            disableLeftGutter: true,
+                            disableRightGutter: false,
                             helper: (
                                 <p aria-label={"helper-text"} style={{margin: 0, textAlign: "justify"}}>
                                     {
@@ -820,10 +790,12 @@ class Rules extends Component {
                     {selectedItem !== null &&
                         <RulesDialog
                             item={selectedItem}
+                            objectGlobalName={objectGlobalName}
                             onClose={() => this.toggleOpen("details")}
+                            onSnackbarOpen={this.onSnackbarOpen}
                             open={open.details}
-                            projectResult={result}
-                            settings={settings}
+                            projectId={projectId}
+                            serverBase={serverBase}
                         />
                     }
                 </CustomBox>
@@ -835,6 +807,7 @@ class Rules extends Component {
 }
 
 Rules.propTypes = {
+    objectGlobalName: PropTypes.string,
     onDataUploaded: PropTypes.func,
     onRulesUploaded: PropTypes.func,
     onTabChange: PropTypes.func,

@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core";
+import { fetchObject, fetchRule } from "../../../utilFunctions/fetchFunctions";
 import { getItemName, getRuleName } from "../../../utilFunctions/parseItems";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
 import CustomTooltip from "../../../DataDisplay/CustomTooltip";
@@ -12,72 +12,141 @@ import ObjectTable from "../Elements/ObjectTable";
 import RuleTable, { estimateTableHeight } from "../Elements/RuleTable";
 import TableItemsList from "../Elements/TableItemsList";
 import TraitsTable from "../Elements/TraitsTable";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
+import StyledCircularProgress from "../../StyledCircularProgress";
 import ArrowBack from "@material-ui/icons/ArrowBack";
-import Fade from "@material-ui/core/Fade";
-
-const StyledMenu = withStyles(theme => ({
-    list: {
-        backgroundColor: theme.palette.background.sub,
-        color: theme.palette.text.main2
-    }
-}), {name: "ContextMenu"})(props => <Menu {...props} />);
+import { AttributesMenu } from "../../../Menus/AttributesMenu";
 
 /**
  * The fullscreen dialog with details of a selected classified object.
  *
- * @name Classified Object Details Dialog
  * @constructor
- * @category Details Dialog
- * @param props {Object} - Any other props will be forwarded to the {@link FullscreenDialog} element.
- * @param props.informationTable {Object} - The information table from current project.
- * @param props.informationTable.attributes {Object[]} - Attributes from information table.
- * @param props.informationTable.objects {Object[]} - Objects from information table.
- * @param props.item {Object} - The selected object with it's characteristics.
- * @param props.item.id {number} - The id of a selected object.
- * @param props.item.name {Object} - The name of a selected object.
- * @param props.item.name.primary {number|string} - The part of a name coloured with a primary colour.
- * @param props.item.name.secondary {number|string} - The part of a name coloured with a secondary colour.
- * @param props.item.name.toString {function} - Returns name as a single string.
- * @param props.item.traits {Object} - The characteristics of a selected object in a key-value form.
- * @param props.item.traits.attributes {Object[]} - Attributes from classified information table.
- * @param props.item.traits.objects {Object[]} - Objects from classified information table.
- * @param props.item.traits.originalDecision {string|number} - The original classification.
- * @param props.item.traits.suggestedDecision {string|number} - The suggested classification.
- * @param props.item.traits.certainty {number} - The certainty of suggested classification.
- * @param props.item.tables {Object} - The characteristics of a selected object in key-array form.
- * @param props.item.tables.indicesOfCoveringRules {number[]} - Rules that cover a selected object.
- * @param props.item.toFilter {function} - Returns item in an easy to filter form.
- * @param props.onClose {function} - Callback fired when the component requests to be closed.
- * @param props.open {boolean} - If <code>true</code> the Dialog is open.
- * @param props.ruleSet {Object[]} - The rule set from current project.
- * @param props.settings {Object} - Project settings.
- * @param props.settings.indexOption {string} - Determines what should be displayed as an object's name.
- * @returns{React.PureComponent}
+ * @category Dialogs
+ * @param {Object} props
+ * @param {string} props.coveredObjectResource - The name of a selected resource when fetching covered object.
+ * @param {boolean} props.disableAttributesMenu - If <code>true</code> the attributes menu will be disabled.
+ * @param {Object} props.item - The selected object with it's characteristics.
+ * @param {number} props.item.id - The id of a selected object.
+ * @param {Object} props.item.name - The name of a selected object.
+ * @param {number|string} props.item.name.primary - The part of a name coloured with a primary colour.
+ * @param {number|string} props.item.name.secondary - The part of a name coloured with a secondary colour.
+ * @param {function} props.item.name.toString - Returns name as a single string.
+ * @param {Object} props.item.traits - The characteristics of a selected object in a key-value form.
+ * @param {string|number} props.item.traits.originalDecision - The original classification.
+ * @param {string|number} props.item.traits.suggestedDecision - The suggested classification.
+ * @param {number} props.item.traits.certainty - The certainty of suggested classification.
+ * @param {number} props.item.traits.indicesOfCoveringRules - The number of rules that cover a selected object.
+ * @param {function} props.item.toFilter - Returns item in an easy to filter form.
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
+ * @param {function} props.onClose - Callback fired when the component requests to be closed.
+ * @param {function} props.onSnackbarOpen - Callback fired when the component requests to display an error.
+ * @param {boolean} props.open - If <code>true</code> the Dialog is open.
+ * @param {string} props.projectId - The identifier of a selected project.
+ * @param {string} props.resource - The name of a selected resource when fetching.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
+ * @returns {React.PureComponent}
  */
 class ClassifiedObjectDialog extends React.PureComponent {
     constructor(props) {
         super(props);
 
         this.state = {
-            direction: "forward",
-            itemInTableIndex: undefined,
-            mouseX: null,
-            mouseY: null,
-            ruleInTableIndex: undefined,
+            loading: {
+                object: false,
+                rule: false,
+                coveredObjects: false,
+                coveredObject: false,
+            },
+            requestIndex: {
+                object: false,
+                rule: false,
+                coveredObjects: false,
+                coveredObject: false
+            },
+            object: null,
+            coveringRules: [],
+            attributes: [],
+            rule: null,
+            ruleTraits: null,
+            ruleIndex: -1,
+            coveredObjects: [],
+            coveredSupportingObjects: [],
+            coveredObjectNames: [],
+            coveredAttributes: [],
+            coveredObject: null,
+            coveredObjectIndex: -1,
             ruleTableHeight: 0,
+            direction: "forward",
             slide: 0,
-            sliding: false
+            sliding: false,
+            attributesMenuEl: null,
         };
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        const { ruleInTableIndex } = this.state;
+    componentDidMount() {
+        this._isMounted = true;
 
-        if (!Number.isNaN(Number(ruleInTableIndex))) {
-            const { ruleSet } = this.props;
-            let height = estimateTableHeight(ruleSet[ruleInTableIndex].rule);
+        const { item: { id }} = this.props;
+        this.getObject(id, true);
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.projectId !== this.props.projectId) {
+            this.setState({
+                object: null,
+                coveringRules: [],
+                attributes: [],
+                rule: null,
+                ruleTraits: null,
+                ruleIndex: -1,
+                coveredObjects: [],
+                coveredSupportingObjects: [],
+                coveredObjectNames: [],
+                coveredAttributes: [],
+                coveredObject: null,
+                coveredObjectIndex: - 1,
+                direction: "forward",
+                slide: 0
+            });
+
+            return;
+        }
+
+        if (prevProps.item.id !== this.props.item.id) {
+            this.setState({
+                object: null,
+                coveringRules: [],
+                rule: null,
+                ruleTraits: null,
+                ruleIndex: -1,
+                coveredObjects: [],
+                coveredSupportingObjects: [],
+                coveredObjectNames: [],
+                coveredObject: null,
+                coveredObjectIndex: -1,
+                direction: "forward",
+                slide: 0
+            }, () => {
+                const { item: { id }} = this.props;
+                this.getObject(id, false);
+            });
+
+            return;
+        }
+
+        if (prevState.ruleIndex !== this.state.ruleIndex) {
+            this.setState({
+                coveredObjects: [],
+                coveredSupportingObjects: [],
+                coveredObjectNames: [],
+                coveredObject: null,
+                coveredObjectIndex: -1
+            }, () => {
+                if (this.state.ruleIndex > -1) this.getCoveredObjects(this.state.ruleIndex)
+            });
+        }
+
+        if (this.state.ruleIndex > -1) {
+            const height = estimateTableHeight(this.state.rule);
 
             if (prevState.ruleTableHeight !== height) {
                 this.setState({
@@ -87,26 +156,201 @@ class ClassifiedObjectDialog extends React.PureComponent {
         }
     }
 
-    onContextMenu = (event) => {
-        event.preventDefault();
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
 
-        this.setState({
-            mouseX: event.clientX - 2,
-            mouseY: event.clientY - 4
+    getObject = (objectIndex, isAttributes) => {
+        let localRequestIndex = 0;
+
+        this.setState(({loading, requestIndex}) => {
+            localRequestIndex = requestIndex.object;
+
+            return {
+                loading: { ...loading, object: true },
+                requestIndex: { ...requestIndex, object: localRequestIndex + 1 }
+            };
+        }, () => {
+            const { projectId, resource, serverBase } = this.props;
+            const pathParams = { projectId };
+            const queryParams = { objectIndex, isAttributes };
+
+            fetchObject(
+                resource, pathParams, queryParams, serverBase
+            ).then(result => {
+                if (this._isMounted && result != null && result.hasOwnProperty("object")
+                    && result.hasOwnProperty("indicesOfCoveringRules")) {
+
+                    this.setState(({requestIndex, attributes}) => {
+                        if (requestIndex.object !== localRequestIndex + 1) {
+                            return { };
+                        }
+
+                        return {
+                            requestIndex: { ...requestIndex, object: 0 },
+                            object: result.object,
+                            coveringRules: result.indicesOfCoveringRules,
+                            attributes: result.hasOwnProperty("attributes") ? result.attributes : attributes
+                        };
+                    });
+                }
+            }).catch(exception => {
+                this.props.onSnackbarOpen(exception);
+            }).finally(() => {
+                if (this._isMounted) {
+                    this.setState(({loading}) => ({
+                        loading: { ...loading, object: false },
+                    }));
+                }
+            });
+        });
+    }
+
+    getCoveringRule = (ruleIndex, finallyCallback) => {
+        let localRequestIndex = 0;
+
+        this.setState(({loading, requestIndex}) => {
+            localRequestIndex = requestIndex.rule;
+
+            return {
+                loading: { ...loading, rule: true },
+                requestIndex: { ...requestIndex, rule: localRequestIndex + 1 }
+            };
+        }, () => {
+            const { projectId, resource: resourceBase, serverBase } = this.props;
+            const resource = resourceBase + "/rules";
+            const pathParams = { projectId, ruleIndex };
+
+            fetchRule(
+                resource, pathParams, serverBase
+            ).then(result => {
+                if (this._isMounted && result != null && result.hasOwnProperty("rule")
+                    && result.hasOwnProperty("ruleCharacteristics")) {
+
+                    this.setState(({requestIndex}) => {
+                        if (requestIndex.rule !== localRequestIndex + 1) {
+                            return { };
+                        }
+
+                        return {
+                            requestIndex: { ...requestIndex, rule: 0 },
+                            rule: result.rule,
+                            ruleTraits: result.ruleCharacteristics
+                        };
+                    });
+                }
+            }).catch(exception => {
+                this.props.onSnackbarOpen(exception);
+            }).finally(() => {
+                if (this._isMounted) {
+                    this.setState(({loading}) => ({
+                        loading: { ...loading, rule: false }
+                    }), () => {
+                        if (typeof finallyCallback === "function") finallyCallback();
+                    });
+                }
+            });
         });
     };
 
-    onContextMenuClose = () => {
-        this.setState({
-            mouseX: null,
-            mouseY: null
+    getCoveredObjects = (ruleIndex) => {
+        let localRequestIndex = 0;
+
+        this.setState(({loading, requestIndex}) => {
+            localRequestIndex = requestIndex.coveredObjects;
+
+            return {
+                loading: { ...loading, coveredObjects: true },
+                requestIndex: { ...requestIndex, coveredObjects: localRequestIndex + 1 }
+            };
+        }, () => {
+            const { projectId, resource: resourceBase, serverBase } = this.props;
+            const resource = resourceBase + "/rules";
+            const pathParams = { projectId, ruleIndex };
+
+            fetchRule(
+                resource, pathParams, serverBase, true
+            ).then(result => {
+                if (this._isMounted && result != null && result.hasOwnProperty("objectNames")
+                    && result.hasOwnProperty("indicesOfCoveredObjects") && result.hasOwnProperty("isSupportingObject")) {
+
+                    this.setState(({requestIndex}) => {
+                        if (requestIndex.coveredObjects !== localRequestIndex + 1) {
+                            return { };
+                        }
+
+                        return {
+                            requestIndex: { ...requestIndex, coveredObjects: 0 },
+                            coveredObjects: result.indicesOfCoveredObjects,
+                            coveredSupportingObjects: result.isSupportingObject,
+                            coveredObjectNames: result.objectNames
+                        };
+                    });
+                }
+            }).catch(exception => {
+                this.props.onSnackbarOpen(exception);
+            }).finally(() => {
+                if (this._isMounted) {
+                    this.setState(({loading}) => ({
+                        loading: { ...loading, coveredObjects: false }
+                    }));
+                }
+            });
         });
     };
+
+    getCoveredObject = (objectIndex, finallyCallback) => {
+        let localRequestIndex = 0;
+
+        this.setState(({loading, requestIndex}) => {
+            localRequestIndex = requestIndex.coveredObject;
+
+            return {
+                loading: { ...loading, coveredObject: true },
+                requestIndex: { ...requestIndex, coveredObject: localRequestIndex + 1 }
+            };
+        }, () => {
+            const { coveredAttributes } = this.state;
+            const { coveredObjectResource, projectId, resource: resourceBase, serverBase } = this.props;
+
+            const resource = coveredObjectResource != null ? coveredObjectResource : resourceBase + "/rules";
+            const pathParams = { projectId };
+            const queryParams = { objectIndex, isAttributes: coveredAttributes.length === 0 };
+
+            fetchObject(
+                resource, pathParams, queryParams, serverBase
+            ).then(result => {
+                if (this._isMounted && result != null && result.hasOwnProperty("value")) {
+                    this.setState(({requestIndex, coveredAttributes}) => {
+                        if (requestIndex.coveredObject !== localRequestIndex + 1) {
+                            return { };
+                        }
+
+                        return {
+                            requestIndex: { ...requestIndex, coveredObject: 0 },
+                            coveredObject: result.value,
+                            coveredAttributes: result.hasOwnProperty("attributes") ?
+                                result.attributes : coveredAttributes
+                        };
+                    });
+                }
+            }).catch(exception => {
+                this.props.onSnackbarOpen(exception);
+            }).finally(() => {
+                if (this._isMounted) {
+                    this.setState(({loading}) => ({
+                        loading: { ...loading, coveredObject: false }
+                    }), () => {
+                        if (typeof finallyCallback === "function") finallyCallback();
+                    })
+                }
+            })
+        })
+    }
 
     onEnter = () => {
         this.setState({
             direction: "forward",
-            ruleInTableIndex: undefined,
             slide: 0
         });
     };
@@ -122,16 +366,34 @@ class ClassifiedObjectDialog extends React.PureComponent {
     };
 
     onItemInTableSelected = (index) => {
+        const finallyCallback = () => this.setState({ coveredObjectIndex: index });
+        this.getCoveredObject(index, finallyCallback)
+    };
+
+    onCoveringRuleSelected = (index) => {
+        const finallyCallback = () => this.setState({ ruleIndex: index });
+        this.getCoveringRule(index, finallyCallback);
+    };
+
+    onCoveredObjectNamesChange = (names) => {
         this.setState({
-            itemInTableIndex: index
+            coveredObjectNames: names
         });
     };
 
-    onRuleInTableSelected = (index) => {
+    onAttributesMenuOpen = (event) => {
+        const currentTarget = event.currentTarget;
+
         this.setState({
-            ruleInTableIndex: index
+            attributesMenuEl: currentTarget
         });
     };
+
+    onAttributesMenuClose = () => {
+        this.setState({
+            attributesMenuEl: null
+        })
+    }
 
     getClassificationTitle = () => {
         const { item } = this.props;
@@ -147,16 +409,15 @@ class ClassifiedObjectDialog extends React.PureComponent {
     };
 
     getRulesTitle = () => {
-        const { ruleInTableIndex } = this.state;
+        const { ruleIndex, rule } = this.state;
 
-        if (!Number.isNaN(Number(ruleInTableIndex))) {
-            const { ruleSet } = this.props;
-            const ruleName = getRuleName(ruleSet[ruleInTableIndex].rule);
+        if (ruleIndex > -1) {
+            const ruleName = getRuleName(rule);
 
             return (
                 <ColouredTitle
                     text={[
-                        { primary: `Rule ${ruleInTableIndex + 1}: ` },
+                        { primary: `Rule ${ruleIndex + 1}: ` },
                         ...getTitleDecisions(ruleName.decisions),
                         { secondary: "\u2190" },
                         ...getTitleConditions(ruleName.conditions)
@@ -171,33 +432,21 @@ class ClassifiedObjectDialog extends React.PureComponent {
     };
 
     getCoveredObjectName = (index) => {
-        const { informationTable: { objects }, settings } = this.props;
-
-        if (objects != null && settings != null) {
-            return getItemName(index, objects, settings).toString();
-        } else {
-            return undefined;
-        }
+        const { coveredObjects, coveredObjectNames } = this.state;
+        return getItemName(coveredObjects.indexOf(index), coveredObjectNames).toString();
     };
 
     getCoveredObjectStyle = (index) => {
-        const { ruleInTableIndex } = this.state;
-        const { ruleSet } = this.props;
+        const { ruleIndex, coveredObjects, coveredSupportingObjects } = this.state;
 
-        if (!Number.isNaN(Number(ruleInTableIndex))) {
-            const { isSupportingObject } = ruleSet[ruleInTableIndex];
-
-            if (isSupportingObject[index]) {
-                return {
-                    borderLeft: "4px solid green"
-                };
+        if (ruleIndex > -1) {
+            if (coveredSupportingObjects[coveredObjects.indexOf(index)]) {
+                return { borderLeft: "4px solid green" };
             } else {
-                return {
-                    borderLeft: "4px solid red"
-                };
+                return { borderLeft: "4px solid red" };
             }
         } else {
-            return {};
+            return { };
         }
     };
 
@@ -225,35 +474,53 @@ class ClassifiedObjectDialog extends React.PureComponent {
             direction: direction,
             sliding: true
         }, () => {
-            setTimeout(() => this.setState(({itemInTableIndex}) => ({
+            setTimeout(() => this.setState({
                 direction: "forward",
-                itemInTableIndex: nextSlide === 0 ? undefined : itemInTableIndex,
                 slide: nextSlide,
                 sliding: false
-            })), 1000);
+            }), 1000);
         });
     }
 
     render() {
         const {
+            loading,
+            object,
+            coveringRules,
+            attributes,
+            rule,
+            ruleTraits,
+            ruleIndex,
+            coveredObjects,
+            coveredObject,
+            coveredObjectIndex,
+            coveredAttributes,
             direction,
-            itemInTableIndex,
-            mouseX,
-            mouseY,
-            ruleInTableIndex,
             ruleTableHeight,
             slide,
-            sliding
+            sliding,
+            attributesMenuEl,
         } = this.state;
-        const { informationTable, item, ruleSet, settings, ...other } = this.props;
-        const { attributes, objects, originalDecision, suggestedDecision, certainty } = item.traits;
+
+        const {
+            disableAttributesMenu,
+            item,
+            objectGlobalName,
+            projectId,
+            resource,
+            serverBase,
+            open
+        } = this.props;
+
+        const { originalDecision, suggestedDecision, certainty } = item.traits;
 
         return (
             <FullscreenDialog
                 disableEscapeKeyDown={true}
+                onClose={this.props.onClose}
                 onEnter={this.onEnter}
                 onEscapeKeyDown={this.onEscapeKeyDown}
-                {...other}
+                open={open}
             >
                 <CustomHeader style={{ padding: 0 }}>
                     <Slides
@@ -300,117 +567,126 @@ class ClassifiedObjectDialog extends React.PureComponent {
                     value={slide}
                 >
                     <MultiColumns>
-                        <div id={"classified-object"} style={{width: "40%"}}>
-                            <ObjectTable
-                                informationTable={{attributes, objects}}
-                                objectIndex={item.id}
-                                objectHeader={item.name.toString()}
-                            />
+                        <div id={"classified-object"} style={{display: "flex", flexDirection: "column", width: "40%"}}>
+                            {loading.object &&
+                                <StyledCircularProgress />
+                            }
+                            {!loading.object && object != null &&
+                                <ObjectTable
+                                    attributes={attributes}
+                                    object={object}
+                                    objectHeader={item.name.toString()}
+                                />
+                            }
                         </div>
-                        <div
-                            id={"classified-covering-rules"}
-                            style={{display: "flex", flexDirection: "column", width: "15%"}}
-                        >
-                            <TableItemsList
-                                headerText={"Covering rules"}
-                                itemIndex={ruleInTableIndex}
-                                itemText={"Rule"}
-                                onItemInTableSelected={this.onRuleInTableSelected}
-                                table={item.tables.indicesOfCoveringRules}
-                            />
+                        <div id={"classified-covering-rules"} style={{display: "flex", flexDirection: "column", width: "15%"}}>
+                            {loading.object &&
+                                <StyledCircularProgress/>
+                            }
+                            {!loading.object && object != null &&
+                                <TableItemsList
+                                    customisable={false}
+                                    headerText={"Covering rules"}
+                                    itemIndex={ruleIndex}
+                                    itemText={"Rule"}
+                                    onItemInTableSelected={this.onCoveringRuleSelected}
+                                    table={coveringRules}
+                                />
+                            }
                         </div>
-                        <div
-                            id={"classified-rules-traits"}
-                            style={{display: "flex", flexDirection: "column", width: "40%"}}
-                        >
-                            {!Number.isNaN(Number(ruleInTableIndex)) &&
+                        <div id={"classified-rules-traits"} style={{display: "flex", flexDirection: "column", width: "40%"}}>
+                            {loading.rule &&
+                                <StyledCircularProgress />
+                            }
+                            {!loading.rule && ruleIndex > -1 &&
                                 <React.Fragment>
                                     <CustomTooltip
                                         arrow={true}
-                                        enterDelay={500}
+                                        enterDelay={250}
                                         enterNextDelay={500}
                                         placement={"top"}
-                                        title={"Right click to open menu"}
+                                        title={"Double click to view see details"}
                                         WrapperProps={{
                                             id: "rule-table",
-                                            onContextMenu: this.onContextMenu,
+                                            onDoubleClick: () => this.slide("forward", 1),
                                             style: { marginBottom: "5%", minHeight: ruleTableHeight }
                                         }}
                                     >
-                                        <RuleTable rule={ruleSet[ruleInTableIndex].rule} />
+                                        <RuleTable rule={rule} />
                                     </CustomTooltip>
                                     <div id={"traits-table"} style={{flexGrow: 1}}>
-                                        <TraitsTable traits={ruleSet[ruleInTableIndex].ruleCharacteristics} />
+                                        <TraitsTable traits={ruleTraits} />
                                     </div>
                                 </React.Fragment>
                             }
                         </div>
                     </MultiColumns>
                     <MultiColumns>
-                        <div id={"rule-traits"}>
-                            {!Number.isNaN(Number(ruleInTableIndex)) &&
-                                <TraitsTable
-                                    traits={ruleSet[ruleInTableIndex].ruleCharacteristics}
-                                />
+                        <div id={"rule-traits"} style={{display: "flex", flexDirection: "column", width: "20%"}}>
+                            {loading.rule &&
+                                <StyledCircularProgress />
+                            }
+                            {!loading.rule && ruleIndex > -1 &&
+                                <TraitsTable traits={ruleTraits}/>
                             }
                         </div>
-                        <div
-                            id={"rule-covered-object-list"}
-                            style={{ display: "flex", flexDirection: "column", width: "20%"}}
-                        >
-                            {!Number.isNaN(Number(ruleInTableIndex)) &&
+                        <div id={"rule-covered-object-list"} style={{display: "flex", flexDirection: "column", width: "20%"}}>
+                            {loading.coveredObjects &&
+                                <StyledCircularProgress />
+                            }
+                            {!loading.coveredObjects && coveredObjects.length > 0 &&
                                 <TableItemsList
+                                    customisable={!disableAttributesMenu}
                                     getItemsStyle={this.getCoveredObjectStyle}
                                     getName={this.getCoveredObjectName}
                                     headerText={"Covered objects"}
-                                    itemIndex={itemInTableIndex}
+                                    itemIndex={coveredObjectIndex}
                                     onItemInTableSelected={this.onItemInTableSelected}
-                                    table={ruleSet[ruleInTableIndex].indicesOfCoveredObjects}
+                                    onSettingsClick={this.onAttributesMenuOpen}
+                                    table={coveredObjects}
                                 />
                             }
                         </div>
-                        <div id={"rule-covered-object-details"} style={{ width: "40%" }}>
-                            {!Number.isNaN(Number(itemInTableIndex)) &&
+                        <div id={"rule-covered-object-details"} style={{display: "flex", flexDirection: "column", width: "40%"}}>
+                            {loading.coveredObject &&
+                                <StyledCircularProgress />
+                            }
+                            {!loading.coveredObject && coveredObjectIndex > -1 &&
                                 <ObjectTable
-                                    informationTable={informationTable}
-                                    objectIndex={itemInTableIndex}
-                                    objectHeader={this.getCoveredObjectName(itemInTableIndex).toString()}
+                                    attributes={coveredAttributes}
+                                    object={coveredObject}
+                                    objectHeader={this.getCoveredObjectName(coveredObjectIndex).toString()}
                                 />
                             }
                         </div>
                     </MultiColumns>
                 </Slides>
-                <StyledMenu
-                    anchorPosition={
-                        mouseX !== null && mouseY !== null
-                            ? { top: mouseY, left: mouseX }
-                            : undefined
-                    }
-                    anchorReference={"anchorPosition"}
-                    keepMounted={true}
-                    onClose={this.onContextMenuClose}
-                    open={mouseY !== null}
-                    TransitionComponent={Fade}
-                >
-                    <MenuItem
-                        onClick={() => {
-                            this.slide("forward", 1);
-                            this.onContextMenuClose();
+                {!disableAttributesMenu &&
+                    <AttributesMenu
+                        ListProps={{
+                            id: "classified-object-desc-attributes-menu"
                         }}
-                    >
-                        Show rule's details
-                    </MenuItem>
-                </StyledMenu>
+                        MuiMenuProps={{
+                            anchorEl: attributesMenuEl,
+                            onClose: this.onAttributesMenuClose
+                        }}
+                        objectGlobalName={objectGlobalName}
+                        onObjectNamesChange={this.onCoveredObjectNamesChange}
+                        onSnackbarOpen={this.props.onSnackbarOpen}
+                        projectId={projectId}
+                        resource={`${resource}/rules`}
+                        serverBase={serverBase}
+                        queryParams={{subject: ruleIndex}}
+                    />
+                }
             </FullscreenDialog>
         );
     }
 }
 
 ClassifiedObjectDialog.propTypes = {
-    informationTable: PropTypes.exact({
-        attributes: PropTypes.array,
-        objects: PropTypes.array
-    }),
+    coveredObjectResource: PropTypes.string,
+    disableAttributesMenu: PropTypes.bool,
     item: PropTypes.exact({
         id: PropTypes.number,
         name: PropTypes.shape({
@@ -419,23 +695,20 @@ ClassifiedObjectDialog.propTypes = {
             toString: PropTypes.func
         }),
         traits: PropTypes.shape({
-            attributes: PropTypes.arrayOf(PropTypes.object),
-            objects: PropTypes.arrayOf(PropTypes.object),
             originalDecision: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
             suggestedDecision: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-            certainty: PropTypes.number
-        }),
-        tables: PropTypes.shape({
-            indicesOfCoveringRules: PropTypes.arrayOf(PropTypes.number)
+            certainty: PropTypes.number,
+            indicesOfCoveringRules: PropTypes.number
         }),
         toFilter: PropTypes.func
     }),
+    objectGlobalName: PropTypes.string,
     onClose: PropTypes.func,
+    onSnackbarOpen: PropTypes.func,
     open: PropTypes.bool.isRequired,
-    ruleSet: PropTypes.arrayOf(PropTypes.object),
-    settings: PropTypes.shape({
-        indexOption: PropTypes.string
-    })
+    projectId: PropTypes.string,
+    resource: PropTypes.string,
+    serverBase: PropTypes.string
 };
 
 export default ClassifiedObjectDialog;
