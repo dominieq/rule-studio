@@ -181,19 +181,21 @@ public class ProjectClassification extends AbstractClassification {
                 "} " + super.toString();
     }
 
-    private static Decision[] induceOrderedUniqueFullyDeterminedDecisions(RuleSetWithCharacteristics ruleSetWithCharacteristics, InformationTable informationTable) {
+    private Decision[] induceOrderedUniqueFullyDeterminedDecisions(RuleSetWithCharacteristics ruleSetWithCharacteristics, InformationTable informationTable) {
         List<Decision> allDecisions = new ArrayList<>();
 
         Decision[] informationTableDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
         if(informationTableDecisions != null) {
             for(int i = 0; i < informationTableDecisions.length; i++) {
                 allDecisions.add(informationTableDecisions[i]);
+                logger.debug(String.format("%d:\tObject's decision:\t%s", i, allDecisions.get(allDecisions.size() - 1).toString()));
             }
         }
 
         for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
             Rule rule = ruleSetWithCharacteristics.getRule(i);
             allDecisions.add(new SimpleDecision(rule.getDecision().getLimitingEvaluation(), rule.getDecision().getAttributeWithContext().getAttributeIndex()));
+            logger.debug(String.format("%d:\tRule's decision:\t%s", informationTableDecisions.length + i, allDecisions.get(i).toString()));
         }
 
 
@@ -225,9 +227,11 @@ public class ProjectClassification extends AbstractClassification {
             }
         }
 
+        logger.debug(String.format("First decision:\t%d %s", startingIndex - 1, orderedUniqueFullyDeterminedDecisionsList.get(0).toString()));
         //iterate through objects and extract next unique fully-determined decisions, retaining respective order of comparable decisions
         for (int i = startingIndex; i < allDecisions.size(); i++) {
             candidateDecision = allDecisions.get(i);
+            logger.debug(String.format("%d\tcandidate %s", i, candidateDecision.toString()));
 
             //verify if candidate decision satisfies loop entry condition of being fully-determined
             if (candidateDecision.hasNoMissingEvaluation()) {
@@ -239,9 +243,12 @@ public class ProjectClassification extends AbstractClassification {
                     candidateDecisionEvaluationField = candidateDecision.getEvaluation(candidateDecision.getAttributeIndices().iterator().nextInt());
                     alreadyPresentDecisionEvaluationField = alreadyPresentDecision.getEvaluation(alreadyPresentDecision.getAttributeIndices().iterator().nextInt());
                     //candidate decision has identical evaluation field to compared decision from the list
+                    //if (candidateDecision.equals(alreadyPresentDecision)) {
+                    //if (candidateDecision == alreadyPresentDecision) {
                     if (candidateDecisionEvaluationField.equals(alreadyPresentDecisionEvaluationField)) {
                         //ignore candidate decision since it is already present in the list of decisions
                         iterate = false;
+                        logger.debug(String.format("%d\trejected", i));
                     }
                     //candidate decision is different than compared decision from the list
                     else {

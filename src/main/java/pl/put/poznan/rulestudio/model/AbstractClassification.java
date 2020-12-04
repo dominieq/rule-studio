@@ -199,10 +199,25 @@ public abstract class AbstractClassification {
             }
         }
 
+
         Decision[] suggestedDecisions = new Decision[classificationResults.length];
         for(int i = 0; i < classificationResults.length; i++) {
             suggestedDecisions[i] = classificationResults[i].getSuggestedDecision();
         }
+
+        //replace suggestedDecisions objects received from classificationResults with equals decision objects from classifiedInformation
+        //it is passed to OrdinalMisclassificationMatrix and is correctly used when DATA objects aren't learning data set of current rules
+        Decision[] informationTableDecisions = classifiedInformationTable.getOrderedUniqueFullyDeterminedDecisions();
+        for (int i = 0; i < suggestedDecisions.length; i++) {
+            for (int j = 0; j < informationTableDecisions.length; j++) {
+                if (suggestedDecisions[i].equals(informationTableDecisions[j])) {
+                    logger.debug(String.format("%d suggested decision replaced on %d informationTable decision\t%s\t->\t%s", i, j, suggestedDecisions[i].toString(), informationTableDecisions[j].toString()));
+                    suggestedDecisions[i] = informationTableDecisions[j];
+                    break;
+                }
+            }
+        }
+
         ordinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, classifiedInformationTable.getDecisions(), suggestedDecisions);
     }
 }
