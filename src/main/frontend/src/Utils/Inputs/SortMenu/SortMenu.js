@@ -2,9 +2,9 @@ import React, {useState} from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import CustomControlLabel from "./Elements/CustomControlLabel";
+import CustomFormLabel from "./Elements/CustomFormLabel";
 import StyledDivider from "../../DataDisplay/StyledDivider";
 import StyledRadioButton from "../StyledRadioButton";
-import FormLabel from "@material-ui/core/FormLabel";
 import Menu from "@material-ui/core/Menu";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Zoom from "@material-ui/core/Zoom";
@@ -28,13 +28,6 @@ const menuStyles = makeStyles(theme => ({
         color: theme.palette.text.main1
     }
 }), {name: "SortMenu"});
-
-const labelStyles = makeStyles(theme => ({
-    root: {
-        color: theme.palette.text.special1,
-        marginBottom: "0.5rem"
-    }
-}), {name: "CustomLabel"});
 
 const virtualStyles = makeStyles(theme => ({
     root: {
@@ -85,7 +78,6 @@ function SortMenu(props) {
     const [scrollToIndex, setScrollToIndex] = useState(undefined);
 
     const menuClasses = menuStyles();
-    const labelClasses = labelStyles();
     const virtualClasses = virtualStyles();
 
     const getIndexOfValue = (value) => {
@@ -154,9 +146,9 @@ function SortMenu(props) {
             TransitionComponent={Zoom}
             {...other}
         >
-            <FormLabel classes={{...labelClasses}} component={"header"} style={{outline: 0}}>
+            <CustomFormLabel style={{ outline: 0 }}>
                 Choose category to order by:
-            </FormLabel>
+            </CustomFormLabel>
             <RadioGroup
                 onChange={ContentProps.onCategoryChange}
                 value={ContentProps.value}
@@ -182,9 +174,9 @@ function SortMenu(props) {
                 flexItem={false}
                 orientation={"horizontal"}
             />
-            <FormLabel classes={{...labelClasses}} component={"header"} style={{marginTop: "0.5rem"}}>
+            <CustomFormLabel style={{marginTop: "0.5rem"}}>
                 Choose sorting order:
-            </FormLabel>
+            </CustomFormLabel>
             {ContentProps.chooseOrder &&
                 <RadioGroup
                     onChange={ContentProps.onOrderChange}

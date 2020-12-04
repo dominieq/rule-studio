@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import { fetchCones } from "../../../Utils/utilFunctions/fetchFunctions";
-import { parseConesItems } from "../../../Utils/utilFunctions/parseItems"
+import { getItemName, parseConesItems } from "../../../Utils/utilFunctions/parseItems"
 import { parseConesListItems } from "../../../Utils/utilFunctions/parseListItems";
 import TabBody from "../Utils/TabBody";
 import CalculateButton from "../Utils/Buttons/CalculateButton";
@@ -9,6 +9,7 @@ import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CustomBox from "../../../Utils/Containers/CustomBox"
 import { ConesDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { AttributesMenu } from "../../../Utils/Menus/AttributesMenu";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
@@ -20,11 +21,12 @@ import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
  * @category Tabs
  * @subcategory Tabs
  * @param {Object} props
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onTabChange - Callback fired when a tab is changed and there are unsaved changes in this tab.
  * @param {Object} props.project - Current project.
- * @param {string} props.serverBase - The name of the host.
+ * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.showAlert - Callback fired when results in this tab are based on outdated information table.
- * @param {number} props.value - The id of a tab.
+ * @param {number} props.value - The index of a selected tab.
  * @returns {React.Component}
  */
 class Cones extends Component {
@@ -38,6 +40,7 @@ class Cones extends Component {
             displayedItems: [],
             selectedItem: null,
             openDetails: false,
+            attributesMenuEl: null,
             alertProps: undefined,
         };
 
@@ -53,13 +56,14 @@ class Cones extends Component {
      */
     getData = () => {
         const { project, serverBase } = this.props;
+        const pathParams = { projectId: project.id };
+        const method = "GET";
 
         fetchCones(
-            serverBase, project.result.id, "GET", null
+            pathParams, method, serverBase
         ).then(result => {
-            if (result && this._isMounted) {
-                const { project: { result: { informationTable: { objects }}, settings }} = this.props;
-                const items = parseConesItems(result, objects, settings);
+            if (this._isMounted && result != null) {
+                const items = parseConesItems(result, result.objectNames);
 
                 this.setState({
                     data: result,
@@ -68,21 +72,21 @@ class Cones extends Component {
                 });
 
                 if (result.hasOwnProperty("isCurrentData")) {
-                    this.props.showAlert(this.props.value, !result.isCurrentData);
+                    const messages = result.hasOwnProperty("errorMessages") ?
+                        result.errorMessages : null;
+                    this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                 }
             }
-        }).catch(error => {
-            if (!error.hasOwnProperty("open")) {
-                console.log(error);
-            }
-            if (this._isMounted) {
-                this.setState({
-                    data: null,
-                    items: null,
-                    displayedItems: [],
-                    alertProps: error
-                });
-            }
+        }).catch(exception => {
+            this.onSnackbarOpen(exception, () => {
+                if (this._isMounted) {
+                    this.setState({
+                        data: null,
+                        items: null,
+                        displayedItems: []
+                    });
+                }
+            });
         }).finally(() => {
             if (this._isMounted) {
                 this.setState({
@@ -125,19 +129,7 @@ class Cones extends Component {
      * @param {Object} snapshot - Returned from another lifecycle method <code>getSnapshotBeforeUpdate</code>. Usually undefined.
      */
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.project.settings.indexOption !== prevProps.project.settings.indexOption) {
-            const { data } = this.state;
-            const { result: { informationTable: { objects } }, settings } = this.props.project;
-
-            let newItems = parseConesItems(data, objects, settings);
-
-            this.setState({
-                items: newItems,
-                displayedItems: newItems
-            });
-        }
-
-        if (prevProps.project.result.id !== this.props.project.result.id) {
+        if (prevProps.project.id !== this.props.project.id) {
             this.setState({ loading: true }, this.getData);
         }
     }
@@ -161,19 +153,18 @@ class Cones extends Component {
      */
     onCalculateClick = () => {
         const { project, serverBase } = this.props;
+        const pathParams = { projectId: project.id };
+        const method = "PUT";
 
         this.setState({
             loading: true,
         }, () => {
             fetchCones(
-                serverBase, project.result.id, "PUT", null
+                pathParams, method, serverBase
             ).then(result => {
-                if (result) {
-                    let projectCopy = JSON.parse(JSON.stringify(project));
-
+                if (result != null) {
                     if (this._isMounted) {
-                        const { result: { informationTable: { objects } }, settings } = projectCopy;
-                        const items = parseConesItems(result, objects, settings);
+                        const items = parseConesItems(result, result.objectNames);
 
                         this.setState({
                             data: result,
@@ -182,25 +173,22 @@ class Cones extends Component {
                         });
                     }
 
-                    projectCopy.result.dominanceCones = result;
-                    this.props.onTabChange(projectCopy);
-
                     if (result.hasOwnProperty("isCurrentData")) {
-                        this.props.showAlert(this.props.value, !result.isCurrentData);
+                        const messages = result.hasOwnProperty("errorMessages") ?
+                            result.errorMessages : null;
+                        this.props.showAlert(this.props.value, !result.isCurrentData, messages);
                     }
                 }
-            }).catch(error => {
-                if (!error.hasOwnProperty("open")) {
-                    console.log(error);
-                }
-                if (this._isMounted) {
-                    this.setState({
-                        data: null,
-                        items: null,
-                        displayedItems: [],
-                        alertProps: error
-                    });
-                }
+            }).catch(exception => {
+                this.onSnackbarOpen(exception, () => {
+                    if (this._isMounted) {
+                        this.setState({
+                            data: null,
+                            items: null,
+                            displayedItems: []
+                        });
+                    }
+                });
             }).finally(() => {
                 if (this._isMounted) {
                     this.setState({
@@ -248,6 +236,44 @@ class Cones extends Component {
         });
     };
 
+    onAttributesMenuOpen = (event) => {
+        const currentTarget = event.currentTarget;
+
+        this.setState({
+            attributesMenuEl: currentTarget
+        });
+    }
+
+    onAttributesMenuClose = () => {
+        this.setState({
+            attributesMenuEl: null
+        });
+    }
+
+    onObjectNamesChange = (names) => {
+        this.setState(({items, displayedItems}) => ({
+            items: items.map((item, index) => {
+                item.name = getItemName(index, names);
+                return item;
+            }),
+            displayedItems: displayedItems.map((item, index) => {
+                item.name = getItemName(index, names);
+                return item;
+            })
+        }));
+    }
+
+    onSnackbarOpen = (exception, setStateCallback) => {
+        if (!(exception.hasOwnProperty("type") && exception.type === "AlertError")) {
+            console.error(exception);
+            return;
+        }
+
+        if (this._isMounted) {
+            this.setState({ alertProps: exception }, setStateCallback);
+        }
+    }
+
     onSnackbarClose = (event, reason) => {
         if (reason !== 'clickaway') {
             this.setState(({alertProps}) => ({
@@ -257,8 +283,8 @@ class Cones extends Component {
     };
 
     render() {
-        const { loading, items, displayedItems, openDetails, selectedItem, alertProps } = this.state;
-        const { project: { result } } = this.props;
+        const { loading, items, displayedItems, openDetails, selectedItem, attributesMenuEl, alertProps } = this.state;
+        const { objectGlobalName ,project: { id: projectId }, serverBase } = this.props;
 
         return (
             <CustomBox customScrollbar={true} id={"cones"} variant={"TabBody"}>
@@ -271,16 +297,33 @@ class Cones extends Component {
                     <span style={{flexGrow: 1}}/>
                     <FilterTextField onChange={this.onFilterChange} />
                 </CustomHeader>
+                {Array.isArray(items) && items.length > 0 && !loading &&
+                    <AttributesMenu
+                        ListProps={{
+                            id: "cones-main-desc-attribute-menu"
+                        }}
+                        MuiMenuProps={{
+                            anchorEl: attributesMenuEl,
+                            onClose: this.onAttributesMenuClose
+                        }}
+                        objectGlobalName={objectGlobalName}
+                        onObjectNamesChange={this.onObjectNamesChange}
+                        onSnackbarOpen={this.onSnackbarOpen}
+                        projectId={projectId}
+                        resource={"cones"}
+                        serverBase={serverBase}
+                    />
+                }
                 <TabBody
                     content={parseConesListItems(displayedItems)}
                     id={"cones-list"}
-                    isArray={Array.isArray(displayedItems) && Boolean(displayedItems.length)}
+                    isArray={Array.isArray(displayedItems) && displayedItems.length > 0}
                     isLoading={loading}
                     ListProps={{
                         onItemSelected: this.onDetailsOpen
                     }}
                     ListSubheaderProps={{
-                        disableHelper: false,
+                        disableRightGutter: false,
                         helper: (
                             <React.Fragment>
                                 <header style={{textAlign: "left"}}>
@@ -314,23 +357,26 @@ class Cones extends Component {
                             </React.Fragment>
 
                         ),
+                        onSettingsClick: this.onAttributesMenuOpen,
                         style: this.upperBar.current ? { top: this.upperBar.current.offsetHeight } : undefined
                     }}
                     noFilterResults={!displayedItems}
                     subheaderContent={[
                         {
                             label: "Number of objects:",
-                            value: displayedItems && displayedItems.length
+                            value: displayedItems != null && displayedItems.length
                         }
                     ]}
                 />
-                {selectedItem !== null &&
+                {selectedItem != null &&
                     <ConesDialog
                         item={selectedItem}
                         items={items}
                         onClose={this.onDetailsClose}
+                        onSnackbarOpen={this.onSnackbarOpen}
                         open={openDetails}
-                        projectResult={result}
+                        projectId={projectId}
+                        serverBase={serverBase}
                     />
                 }
                 <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
@@ -340,6 +386,7 @@ class Cones extends Component {
 }
 
 Cones.propTypes = {
+    objectGlobalName: PropTypes.string,
     onTabChange: PropTypes.func,
     project: PropTypes.object,
     serverBase: PropTypes.string,

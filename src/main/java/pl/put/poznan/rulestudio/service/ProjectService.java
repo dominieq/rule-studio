@@ -7,10 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.exception.ProjectNotFoundException;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.ValidityProjectContainer;
+import pl.put.poznan.rulestudio.model.response.ProjectDetailsResponse;
+import pl.put.poznan.rulestudio.model.response.ProjectResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,13 +43,17 @@ public class ProjectService {
         return informationTable;
     }
 
-    public Project getProject(UUID id) {
+    public ValidityProjectContainer getProject(UUID id) {
         logger.info("Id:\t" + id);
 
-        return getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = getProjectFromProjectsContainer(projectsContainer, id);
+
+        final ValidityProjectContainer validityProjectContainer = new ValidityProjectContainer(project);
+        logger.debug(validityProjectContainer.toString());
+        return validityProjectContainer;
     }
 
-    public Project setProject(
+    public ValidityProjectContainer setProject(
             UUID id,
             MultipartFile metadataFile,
             MultipartFile dataFile,
@@ -65,7 +71,9 @@ public class ProjectService {
             project.setInformationTable(new InformationTable(new Attribute[0], new ArrayList<>()));
             project.setRules(null);
 
-            return project;
+            final ValidityProjectContainer validityProjectContainer = new ValidityProjectContainer(project);
+            logger.debug(validityProjectContainer.toString());
+            return validityProjectContainer;
         }
 
         Attribute[] attributes;
@@ -81,21 +89,19 @@ public class ProjectService {
 
         if(dataFile != null) { //load new data from file
             attributes = informationTable.getAttributes();
-            if(attributes == null) {
-                NoDataException ex = new NoDataException("There is no metadata in project. Couldn't read data file.");
-                logger.error(ex.getMessage());
-                throw ex;
-            }
+            MetadataService.checkAttributes(attributes, "There is no metadata in project. Couldn't read data file.");
             informationTable = DataService.informationTableFromMultipartFileData(dataFile, attributes, separator, header);
             project.setDataFileName(dataFile.getOriginalFilename());
         }
 
         project.setInformationTable(informationTable);
 
-        return project;
+        final ValidityProjectContainer validityProjectContainer = new ValidityProjectContainer(project);
+        logger.debug(validityProjectContainer.toString());
+        return validityProjectContainer;
     }
 
-    public Project renameProject(UUID id, String name) {
+    public ProjectResponse renameProject(UUID id, String name) {
         logger.info("Id:\t" + id);
         logger.info("Name:\t" + name);
 
@@ -103,18 +109,30 @@ public class ProjectService {
 
         project.setName(name);
 
-        return project;
+        ProjectResponse projectResponse = new ProjectResponse(project);
+        logger.debug(projectResponse.toString());
+        return projectResponse;
     }
 
     public void deleteProject(UUID id) {
         logger.info("Id:\t" + id);
 
-        Project project = projectsContainer.removeProject(id);
+        final Project project = projectsContainer.removeProject(id);
 
         if(project == null) {
             ProjectNotFoundException ex = new ProjectNotFoundException();
             logger.error(ex.getMessage());
             throw ex;
         }
+    }
+
+    public ProjectDetailsResponse getDetails(UUID id) {
+        logger.info("Id:\t" + id);
+
+        final Project project = getProjectFromProjectsContainer(projectsContainer, id);
+
+        ProjectDetailsResponse projectDetailsResponse = new ProjectDetailsResponse(project);
+        logger.debug(projectDetailsResponse.toString());
+        return projectDetailsResponse;
     }
 }

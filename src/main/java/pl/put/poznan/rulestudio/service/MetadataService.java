@@ -12,9 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.exception.NoDataException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
-import pl.put.poznan.rulestudio.model.NamedResource;
-import pl.put.poznan.rulestudio.model.Project;
-import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.*;
+import pl.put.poznan.rulestudio.model.response.AttributesResponse;
+import pl.put.poznan.rulestudio.model.response.GlobalDescriptiveAttributesResponse;
+import pl.put.poznan.rulestudio.model.response.InformationTableResponse;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -28,6 +29,14 @@ public class MetadataService {
     @Autowired
     ProjectsContainer projectsContainer;
 
+    public static void checkAttributes(Attribute[] attributes, String message) {
+        if(attributes == null) {
+            NoDataException ex = new NoDataException(message);
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+    }
+
     private static Attribute[] attributesFromInputStreamMetadata(InputStream targetStream) throws IOException {
         Attribute[] attributes;
         AttributeParser attributeParser = new AttributeParser();
@@ -40,11 +49,7 @@ public class MetadataService {
             throw ex;
         }
 
-        if(attributes == null) {
-            WrongParameterException ex = new WrongParameterException("Invalid format of json metadata, there are no attributes.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        checkAttributes(attributes, "Invalid format of json metadata, there are no attributes.");
 
         for(int i = 0; i < attributes.length; i++) {
             logger.info(i + ":\t" + attributes[i]);
@@ -63,44 +68,40 @@ public class MetadataService {
         return attributesFromInputStreamMetadata(targetStream);
     }
 
-    public Attribute[] getMetadata(UUID id) {
+    public AttributesResponse getMetadata(UUID id) throws IOException {
         logger.info("Id:\t" + id);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = project.getInformationTable();
-        if (informationTable == null) {
-            NoDataException ex = new NoDataException("There is no metadata in project. Couldn't get it.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        final InformationTable informationTable = project.getInformationTable();
+        DataService.checkInformationTable(informationTable, "There is no metadata in project. Couldn't get it.");
 
-        Attribute[] result = informationTable.getAttributes();
+        final AttributesResponse result = new AttributesResponse(informationTable);
         logger.debug(result.toString());
         return result;
     }
 
-    public Project putMetadata(UUID id, String metadata) throws IOException {
+    public InformationTableResponse putMetadata(UUID id, String metadata) throws IOException {
         logger.info("Id:\t" + id);
-        logger.info("Metadata:\t" + metadata);
+        logger.info("Metadata size:\t{} B", metadata.length());
+        logger.debug("Metadata:\t{}", metadata);
 
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Attribute[] attributes = attributesFromStringMetadata(metadata);
 
-        Attribute[] attributes = attributesFromStringMetadata(metadata);
-
-        InformationTable informationTable = new InformationTable(attributes, new ArrayList<>());
-
+        final InformationTable informationTable = new InformationTable(attributes, new ArrayList<>());
         project.setInformationTable(informationTable);
-        logger.debug(project.toString());
 
-        return project;
+        final InformationTableResponse informationTableResponse = new InformationTableResponse(informationTable);
+        logger.debug(informationTableResponse.toString());
+        return informationTableResponse;
     }
 
     private InputStreamResource produceJsonResource(InformationTable informationTable) throws IOException {
         StringWriter sw = new StringWriter();
 
-        InformationTableWriter itw = new InformationTableWriter();
+        final InformationTableWriter itw = new InformationTableWriter();
         itw.writeAttributes(informationTable, sw);
 
         byte[] barray = sw.toString().getBytes();
@@ -112,34 +113,84 @@ public class MetadataService {
     public NamedResource getDownload(UUID id) throws IOException {
         logger.info("Id:\t" + id);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        InformationTable informationTable = project.getInformationTable();
-        if (informationTable == null) {
-            NoDataException ex = new NoDataException("There is no metadata in project. Couldn't download it.");
-            logger.error(ex.getMessage());
-            throw ex;
-        }
+        final InformationTable informationTable = project.getInformationTable();
+        DataService.checkInformationTable(informationTable, "There is no metadata in project. Couldn't download it.");
 
-        InputStreamResource resource = produceJsonResource(informationTable);
+        final InputStreamResource resource = produceJsonResource(informationTable);
 
         return new NamedResource(project.getName(), resource);
     }
 
     public NamedResource putDownload(UUID id, String metadata) throws IOException {
-        logger.info("Downloading metadata in json format");
         logger.info("Id:\t{}", id);
-        logger.info("Metadata:\t{}", metadata);
+        logger.info("Metadata size:\t{} B", metadata.length());
+        logger.debug("Metadata:\t{}", metadata);
 
-        Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         // prepare attributes from metadata
-        Attribute[] attributes = attributesFromStringMetadata(metadata);
-        InformationTable informationTable = new InformationTable(attributes, new ArrayList<>());
+        final Attribute[] attributes = attributesFromStringMetadata(metadata);
+        final InformationTable informationTable = new InformationTable(attributes, new ArrayList<>());
 
         // serialize data from InformationTable object
-        InputStreamResource resource = produceJsonResource(informationTable);
+        final InputStreamResource resource = produceJsonResource(informationTable);
 
         return new NamedResource(project.getName(), resource);
+    }
+
+    public GlobalDescriptiveAttributesResponse getGlobalDescriptiveAttributes(UUID id) {
+        logger.info("Id:\t{}", id);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        final GlobalDescriptiveAttributesResponse globalDescriptiveAttributesResponse = new GlobalDescriptiveAttributesResponse(project);
+        logger.debug("globalDescriptiveAttributesResponse:\t{}", globalDescriptiveAttributesResponse.toString());
+        return globalDescriptiveAttributesResponse;
+    }
+
+    public GlobalDescriptiveAttributesResponse postGlobalDescriptiveAttributes(UUID id, String objectVisibleName) {
+        logger.info("Id:\t{}", id);
+        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+
+        final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
+
+        DescriptiveAttributes descriptiveAttributes = project.getDescriptiveAttributes();
+        descriptiveAttributes.setCurrentAttribute(objectVisibleName);
+
+        updateDescriptiveAttributesAcrossProject(project, objectVisibleName);
+
+        final GlobalDescriptiveAttributesResponse globalDescriptiveAttributesResponse = new GlobalDescriptiveAttributesResponse(project);
+        logger.debug("globalDescriptiveAttributesResponse:\t{}", globalDescriptiveAttributesResponse.toString());
+        return globalDescriptiveAttributesResponse;
+    }
+
+    public static void updateDescriptiveAttributesAcrossProject(Project project, String objectVisibleName) {
+        DominanceCones dominanceCones = project.getDominanceCones();
+        if(dominanceCones != null) {
+            dominanceCones.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
+        }
+
+        UnionsWithHttpParameters unions = project.getUnions();
+        if(unions != null) {
+            unions.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
+        }
+
+        RulesWithHttpParameters rules = project.getRules();
+        if(rules != null) {
+            rules.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
+        }
+
+        ProjectClassification projectClassification = project.getProjectClassification();
+        if(projectClassification != null) {
+            projectClassification.getClassifiedDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
+            projectClassification.getLearningDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
+        }
+
+        CrossValidation crossValidation = project.getCrossValidation();
+        if(crossValidation != null) {
+            crossValidation.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
+        }
     }
 }

@@ -1,7 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { fetchConeObjects, fetchObject } from "../../../utilFunctions/fetchFunctions";
 import ColouredTitle from "../../../DataDisplay/ColouredTitle";
-import { FullscreenDialog, MultiColumns, FullscreenHeader} from "../../../DataDisplay/FullscreenDialog";
+import { FullscreenDialog, MultiColumns, FullscreenHeader } from "../../../DataDisplay/FullscreenDialog";
+import StyledCircularProgress from "../../StyledCircularProgress";
 import TablesList from "../Elements/TablesList";
 import ObjectsComparisonTable from "../Elements/ObjectsComparisonTable";
 import TableItemsList from "../Elements/TableItemsList";
@@ -19,16 +21,18 @@ import TableItemsList from "../Elements/TableItemsList";
  * @param props.item.name.primary {number|string} - The part of a name coloured with a primary colour.
  * @param props.item.name.secondary {number|string} - The part of a name coloured with a secondary colour.
  * @param props.item.name.toString {function} - Returns name as a single string.
- * @param props.item.tables {Object} - Contains the dominance cones of an item.
- * @param props.item.tables.Positive_dominance_cone {number[]} - The array of objects indices.
- * @param props.item.tables.Negative_dominance_cone {number[]} - The array of objects indices.
- * @param props.item.tables.Positive_inverse_dominance_cone {number[]} - The array of objects indices.
- * @param props.item.tables.Negative_inverse_dominance_cone {number[]} - The array of objects indices.
+ * @param props.item.traits {Object} - Contains the dominance cones of an item.
+ * @param props.item.traits.Positive_dominance_cone {number} - The number of objects that belong to this cone.
+ * @param props.item.traits.Negative_dominance_cone {number} - The number of objects that belong to this cone.
+ * @param props.item.traits.Positive_inverse_dominance_cone {number} - The number of objects that belong to this cone.
+ * @param props.item.traits.Negative_inverse_dominance_cone {number} - The number of objects that belong to this cone.
  * @param props.item.toFilter {function} - Returns item in an easy to filter form.
  * @param props.items {Object[]} - Should be an array of all objects.
- * @param props.open {boolean} - If <code>true</code> the Dialog is open.
  * @param props.onClose {function} - Callback fired when the component requests to be closed.
- * @param props.projectResult {Object} - Part of a project received from server.
+ * @param props.onSnackbarOpen {function} - Callback fired when the component requests to display an error.
+ * @param props.open {boolean} - If <code>true</code> the Dialog is open.
+ * @param props.projectId {string} - The identifier of a selected project.
+ * @param {string} props.serverBase - The host in the URL of an API call.
  * @returns {React.PureComponent}
  */
 class ConesDialog extends React.PureComponent {
@@ -36,29 +40,173 @@ class ConesDialog extends React.PureComponent {
         super(props);
 
         this.state = {
-            tableIndex: undefined,
-            itemInTableIndex: undefined,
+            loading: {
+                firstObject: false,
+                secondObject: false,
+                coneObjects: false
+            },
+            requestIndex: {
+                firstObject: 0,
+                secondObject: 0,
+                coneObjects: 0
+            },
+            firstObject: null,
+            secondObject: null,
+            coneObjects: [],
+            attributes: [],
+            coneIndex: -1,
+            coneObjectIndex: -1
         };
+
+        this._cones = [
+            "positive",
+            "negative",
+            "positiveInverted",
+            "negativeInverted"
+        ];
     }
 
-    onExited = () => {
-        this.setState({
-            tableIndex: undefined,
-            itemInTableIndex: undefined
+    componentDidMount() {
+        this._isMounted = true;
+
+        const objectIndex = this.props.item.id;
+        this.getObject(objectIndex, true, "firstObject");
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.projectId !== this.props.projectId) {
+            this.setState({
+                firstObject: null,
+                secondObject: null,
+                coneObjects: [],
+                attributes: [],
+                coneIndex: -1,
+                coneObjectIndex: -1,
+            });
+
+            return;
+        }
+
+        if (prevProps.item.id !== this.props.item.id) {
+            this.setState({
+                secondObject: null,
+                coneObjects: [],
+                coneIndex: -1,
+                coneObjectIndex: -1
+            }, () =>  {
+                const objectIndex = this.props.item.id;
+                this.getObject(objectIndex, false, "firstObject")
+            });
+        }
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    getObject = (objectIndex, isAttributes, whichObject, finallyCallback) => {
+        let localRequestIndex = 0;
+
+        this.setState(({loading, requestIndex}) => {
+            localRequestIndex = requestIndex[whichObject];
+
+            return {
+                loading: { ...loading, [whichObject]: true },
+                requestIndex: { ...requestIndex, [whichObject]: localRequestIndex + 1 }
+            };
+        }, () => {
+            const { projectId, serverBase } = this.props;
+            const resource = "cones"
+            const pathParams = { projectId }
+            const queryParams = { objectIndex, isAttributes }
+
+            fetchObject(
+                resource, pathParams, queryParams, serverBase
+            ).then(result => {
+                if (this._isMounted &&  result != null) {
+                    this.setState(({requestIndex, attributes}) => {
+                        if (requestIndex[whichObject] !== localRequestIndex + 1) {
+                            return { };
+                        }
+
+                        return {
+                            requestIndex: { ...requestIndex, [whichObject]: 0 },
+                            [whichObject]: result.value,
+                            attributes: result.hasOwnProperty("attributes") ? result.attributes : attributes
+                        };
+                    });
+                }
+            }).catch(exception => {
+                this.props.onSnackbarOpen(exception);
+            }).finally(() => {
+                if (this._isMounted) {
+                    this.setState(({loading}) => ({
+                        loading: { ...loading, [whichObject]: false }
+                    }), () => {
+                        if (typeof finallyCallback === "function") {
+                            finallyCallback();
+                        }
+                    });
+                }
+            });
         });
-    };
+    }
+
+    getConeObjects = () => {
+        let localRequestIndex = 0;
+
+        this.setState(({loading, requestIndex}) => {
+            localRequestIndex = requestIndex.coneObjects;
+
+            return {
+                loading: { ...loading, coneObjects: true },
+                requestIndex: { ...requestIndex, coneObjects: localRequestIndex + 1 }
+            }
+        }, () => {
+            const { item: { id }, projectId, serverBase } = this.props;
+            const { coneIndex } = this.state;
+            const pathParams = { projectId, objectIndex: id, coneType: this._cones[coneIndex] }
+
+            fetchConeObjects(
+                pathParams, serverBase
+            ).then(result => {
+                if (this._isMounted && Array.isArray(result)) {
+                    this.setState(({requestIndex}) => {
+                        if (requestIndex.coneObjects !== localRequestIndex + 1) {
+                            return { };
+                        }
+
+                        return {
+                            requestIndex: { ...requestIndex, coneObjects: 0 },
+                            coneObjects: result.slice()
+                        };
+                    });
+                }
+            }).catch((exception) => {
+                this.props.onSnackbarOpen(exception);
+            }).finally(() => {
+                if (this._isMounted) {
+                    this.setState(({loading}) => ({
+                        loading: { ...loading, coneObjects: false }
+                    }));
+                }
+            })
+        })
+    }
 
     onTableSelected = (index) => {
         this.setState({
-            tableIndex: index,
-            itemInTableIndex: undefined
-        });
+            coneIndex: index,
+            coneObjectIndex: -1
+        }, () => this.getConeObjects());
     };
 
     onItemInTableSelected = (index) => {
-        this.setState({
-            itemInTableIndex: index
+        const finallyCallback = () => this.setState({
+            coneObjectIndex: index
         });
+
+        this.getObject(index, false, "secondObject", finallyCallback);
     };
 
     getConesTitle = () => {
@@ -80,11 +228,11 @@ class ConesDialog extends React.PureComponent {
     };
 
     render() {
-        const { tableIndex, itemInTableIndex } = this.state;
-        const { item, items, projectResult, ...other } = this.props;
+        const { loading, firstObject, secondObject, attributes, coneObjects, coneIndex, coneObjectIndex } = this.state;
+        const { item, items, onSnackbarOpen, projectId, serverBase, ...other } = this.props;
 
         return (
-            <FullscreenDialog onExited={this.onExited} {...other}>
+            <FullscreenDialog {...other}>
                 <FullscreenHeader
                     id={"cones-details-header"}
                     onClose={this.props.onClose}
@@ -95,30 +243,37 @@ class ConesDialog extends React.PureComponent {
                         <TablesList
                             headerText={"Dominance cones"}
                             onTableSelected={this.onTableSelected}
-                            tableIndex={tableIndex}
-                            tables={item.tables}
+                            tableIndex={coneIndex}
+                            tables={item.traits}
                         />
                     </div>
                     <div id={"cones-table-content"} style={{display: "flex", flexDirection: "column", width: "22.5%"}}>
-                        {!Number.isNaN(Number(tableIndex)) &&
+                        {loading.coneObjects &&
+                            <StyledCircularProgress />
+                        }
+                        {!loading.coneObjects && coneIndex > -1 &&
                             <TableItemsList
+                                customisable={false}
                                 getName={this.getName}
-                                headerText={Object.keys(item.tables)[tableIndex]}
-                                itemIndex={itemInTableIndex}
+                                headerText={Object.keys(item.traits)[coneIndex]}
+                                itemIndex={coneObjectIndex}
                                 onItemInTableSelected={this.onItemInTableSelected}
-                                table={Object.values(item.tables)[tableIndex]}
+                                table={coneObjects}
                             />
                         }
                     </div>
-                    <div id={"cones-comparison"} style={{width: "50%"}}>
-                        {!Number.isNaN(Number(itemInTableIndex)) &&
+                    <div id={"cones-comparison"} style={{display: "flex", flexDirection: "column", width: "50%"}}>
+                        {loading.secondObject &&
+                            <StyledCircularProgress />
+                        }
+                        {!loading.secondObject && coneObjectIndex > -1 &&
                             <ObjectsComparisonTable
-                                informationTable={projectResult.informationTable}
-                                objectIndex={item.id}
-                                objectHeader={item.name.toString()}
-                                objectInTableIndex={itemInTableIndex}
-                                objectInTableHeader={items ? items[itemInTableIndex].name.toString() : undefined}
-                                tableIndex={tableIndex}
+                                attributes={attributes}
+                                coneIndex={coneIndex}
+                                firstObject={firstObject}
+                                firstObjectHeader={this.getName(item.id)}
+                                secondObject={secondObject}
+                                secondObjectHeader={this.getName(coneObjectIndex)}
                             />
                         }
                     </div>
@@ -136,18 +291,20 @@ ConesDialog.propTypes = {
             secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
             toString: PropTypes.func
         }),
-        tables: PropTypes.shape({
-            'Positive dominance cone': PropTypes.arrayOf(PropTypes.number),
-            'Negative dominance cone': PropTypes.arrayOf(PropTypes.number),
-            'Positive inverse dominance cone': PropTypes.arrayOf(PropTypes.number),
-            'Negative inverse dominance cone': PropTypes.arrayOf(PropTypes.number),
+        traits: PropTypes.shape({
+            'Positive dominance cone': PropTypes.number,
+            'Negative dominance cone': PropTypes.number,
+            'Positive inverse dominance cone': PropTypes.number,
+            'Negative inverse dominance cone': PropTypes.number,
         }),
         toFilter: PropTypes.func
     }),
     items: PropTypes.arrayOf(PropTypes.object),
-    open: PropTypes.bool.isRequired,
     onClose: PropTypes.func,
-    projectResult: PropTypes.object,
+    onSnackbarOpen: PropTypes.func,
+    open: PropTypes.bool.isRequired,
+    projectId: PropTypes.string.isRequired,
+    serverBase: PropTypes.string
 };
 
 export default ConesDialog;

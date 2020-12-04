@@ -71,10 +71,12 @@ function TablesList(props) {
     const keys = Object.keys(tables);
 
     for(let i = 0; i < keys.length; i++) {
+        const count = Array.isArray(tables[keys[i]]) ? tables[keys[i]].length : tables[keys[i]];
+
         displayedTables.push({
             id: i,
             name: keys[i],
-            count: " (" + tables[keys[i]].length + ")"
+            count: " (" + count + ")"
         });
     }
 

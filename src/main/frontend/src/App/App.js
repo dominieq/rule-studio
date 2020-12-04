@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import { fetchProject, fetchProjects, } from "./fetchFunctions";
-import { exportProject, importProject } from "../Utils/utilFunctions/fetchFunctions";
+import { exportProject, fetchProject, fetchProjects, importProject } from "../Utils/utilFunctions/fetchFunctions";
 import Header from "../Header/Header";
 import { ProjectMenu } from "../Header/Elements";
 import Help from '../Body/Help/Help';
@@ -37,7 +36,7 @@ class App extends Component {
             body: "Home",
             currentProject: -1,
             projects: [],
-            indexOptions: [],
+            objectGlobalName: null,
             darkTheme: true,
             serverBase: "http://localhost:8080",
             open: {
@@ -71,15 +70,12 @@ class App extends Component {
             loadingTitle: "Loading projects",
         }, () => {
             fetchProjects(
-                base, "GET", null
+                "GET", null, base
             ).then(result => {
                 if (Array.isArray(result)) {
-                    this.setState(({projects}) => ({
-                        projects: [
-                            ...projects,
-                            ...result.map(item => new Project(item))
-                        ]
-                    }), () => {this.checkIfProjectInURLExists()});
+                    this.setState({
+                        projects: result.map(item => new Project(item.id, item.name))
+                    }, () => {this.checkIfProjectInURLExists()});
                 } else {
                     this.setState({
                         alertProps: {
@@ -89,41 +85,15 @@ class App extends Component {
                         }
                     });
                 }
-            }).catch(error => {
-                this.setState({ alertProps: error });
-            }).finally(() => {
+            }).catch(
+                this.onSnackbarOpen
+            ).finally(() => {
                 this.setState({
                     loading: false,
                     serverBase: base
                 });
             });
         });
-    };
-
-    /**
-     * Creates a list of index options using provided attributes.
-     * Looks for description and identification attributes.
-     *
-     * @function
-     * @memberOf App
-     * @param {Object[]} attributes - The attributes property from information table.
-     * @returns {string[]} - The list of updated index options.
-     */
-    createNewIndexOptions = (attributes) => {
-        let indexOptions = ["default"];
-
-        if (Array.isArray(attributes) && attributes.length) {
-            for (let i = 0; i < attributes.length; i++) {
-                if (attributes[i].hasOwnProperty("identifierType") && attributes[i].active) {
-                    indexOptions = [ ...indexOptions, attributes[i].name ];
-                }
-                if (attributes[i].hasOwnProperty("type") && attributes[i].type === "description") {
-                    indexOptions = [ ...indexOptions, attributes[i].name ];
-                }
-            }
-        }
-
-        return indexOptions;
     };
 
     /**
@@ -140,17 +110,10 @@ class App extends Component {
                 let index;
 
                 for (let i = 0; i < projects.length; i++) {
-                    if (projects[i].result.id === project.result.id) {
+                    if (projects[i].id === project.id) {
                         index = i;
                         break;
                     }
-                }
-
-                const { result: { informationTable: { attributes }}} = project;
-                let indexOptions = this.createNewIndexOptions(attributes);
-
-                if (!indexOptions.includes(project.settings.indexOption)) {
-                    project.settings.indexOption = "default";
                 }
 
                 return {
@@ -161,8 +124,7 @@ class App extends Component {
                             ...project
                         },
                         ...projects.slice(index + 1)
-                    ],
-                    indexOptions: indexOptions,
+                    ]
                 };
             } else {
                 return { projects: projects };
@@ -170,58 +132,26 @@ class App extends Component {
         });
     };
 
-    /**
-     * Method is forwarded to the {@link ProjectTabs} and further to {@link Data} tab.
-     * Creates new index options for provided attributes and updates {@link App}'s state.
-     *
-     * @function
-     * @memberOf App
-     * @param {Object[]} attributes - The attributes property from information table.
-     */
-    updateIndexOptions = (attributes) => {
-        const indexOptions = this.createNewIndexOptions(attributes);
-
-        this.setState(({projects, currentProject}) => {
-            if (currentProject >= 0) {
-                if (!indexOptions.includes(projects[currentProject].settings.indexOption)) {
-                    projects[currentProject].settings.indexOption = "default";
-                }
-            }
-
-            return {
-                projects: [
-                    ...projects.slice(0, currentProject),
-                    {
-                        ...projects[currentProject]
-                    },
-                    ...projects.slice(currentProject + 1)
-                ],
-                indexOptions: indexOptions
-            };
-        });
-    };
-
     onBodyChange = (name) => {
-        this.setState(({currentProject, indexOptions}) => ({
+        this.setState(({currentProject}) => ({
             body: name,
-            currentProject: name !== "Project" ? -1 : currentProject,
-            indexOptions: name !== "Project" ? [] : indexOptions
+            currentProject: name !== "Project" ? -1 : currentProject
         }));
     };
 
     onCurrentProjectChange = (index, tabName) => {
         const { projects } = this.state;
-        const { result: {informationTable: { attributes }}} = projects[index];
-        let indexOptions = this.createNewIndexOptions(attributes);
 
-        if(tabName !== "" && tabNames.includes(tabName)) this.props.history.replace(`/${projects[index].result.id}/${tabName}`);
-        else this.props.history.replace(`/${projects[index].result.id}/${tabNames[0]}`);
+        if (tabName !== "" && tabNames.includes(tabName)) {
+            this.props.history.replace(`/${projects[index].id}/${tabName}`);
+        } else { 
+            this.props.history.replace(`/${projects[index].id}/${tabNames[0]}`);
+        }
         this.existsPath = `${projects[index].result.id}`;
-        
+      
         this.setState({
             body: "Project",
-            currentProject: index,
-            indexOptions: indexOptions
+            currentProject: index
         });
     };
 
@@ -231,15 +161,20 @@ class App extends Component {
         }))
     };
 
-    onDialogOpen = (dialogName) => {
+    onToggleDialog = (dialogName) => {
         this.setState(({open}) => ({
-            open: {...open, [dialogName]: true}
+            open: {...open, [dialogName]: !open[dialogName]}
         }));
     };
 
-    onSnackbarOpen = (alertProps) => {
+    onSnackbarOpen = (exception) => {
+        if (!(exception.hasOwnProperty("type") && exception.type === "AlertError")) {
+            console.error(exception);
+            return;
+        }
+
         this.setState({
-            alertProps: alertProps
+            alertProps: exception
         });
     };
 
@@ -282,28 +217,29 @@ class App extends Component {
                 loading: true,
                 loadingTitle: "Creating project"
             }, () => {
-                let data = new FormData();
+                const method = "POST";
+                const data = new FormData();
 
                 data.append("name", name);
                 files.map(file => data.append(file.type, file.file));
 
-                if (csvSpecs && Object.keys(csvSpecs).length) {
+                if (csvSpecs != null && Object.keys(csvSpecs).length) {
                     Object.keys(csvSpecs).map(key => data.append(key, csvSpecs[key]));
                 }
 
                 fetchProjects(
-                    serverBase,"POST", data
+                    method, data, serverBase
                 ).then(result => {
-                    if (result) {
-                        const indexOptions = this.createNewIndexOptions(result.informationTable.attributes);
+                    if (result != null && result.hasOwnProperty("id")
+                        && result.hasOwnProperty("name")) {
 
                         this.props.history.replace(`/${result.id}`);
                         this.existsPath = `${result.id}`;
+                      
                         this.setState(({projects}) => ({
                             body: "Project",
                             currentProject: projects.length,
-                            projects: [...projects, new Project(result)],
-                            indexOptions: indexOptions,
+                            projects: [...projects, new Project(result.id, result.name)],
                             alertProps: {
                                 message: `${result.name} has been created!`,
                                 open: true,
@@ -311,9 +247,9 @@ class App extends Component {
                             }
                         }));
                     }
-                }).catch(error => {
-                    this.setState({ alertProps: error });
-                }).finally(() => {
+                }).catch(
+                    this.onSnackbarOpen
+                ).finally(() => {
                     this.setState({ loading: false });
                 });
             });
@@ -322,14 +258,16 @@ class App extends Component {
 
     onSaveProject = () => {
         const { serverBase, currentProject, projects } = this.state;
+        const pathParams = { projectId: projects[currentProject].id };
 
         if (currentProject >= 0) {
-            exportProject(serverBase, projects[currentProject].result.id).catch(error => {
-                if (!error.hasOwnProperty("open")) {
-                    console.log(error);
-                } else {
-                    this.setState({ alertProps: error });
+            exportProject(pathParams, serverBase).catch(error => {
+                if (error.constructor.name !== "AlertError") {
+                    console.error(error);
+                    return;
                 }
+
+                this.setState({ alertProps: error });
             });
         }
     };
@@ -342,21 +280,22 @@ class App extends Component {
                 loading: true,
                 loadingTitle: "Importing project"
             }, () => {
-                let data = new FormData();
-                data.append("importFile", file);
+                const body = new FormData();
+                body.append("importFile", file);
 
                 importProject(
-                    serverBase, data
+                    body, serverBase
                 ).then(result => {
-                    if (result) {
-                        const indexOptions = this.createNewIndexOptions(result.informationTable.attributes);
+                    if (result != null && result.hasOwnProperty("id")
+                        && result.hasOwnProperty("name")) {
+                      
                         this.props.history.replace(`/${result.id}`);
                         this.existsPath = `${result.id}`;
+
                         this.setState(({projects}) => ({
                             body: "Project",
                             currentProject: projects.length,
-                            projects: [...projects, new Project(result)],
-                            indexOptions: indexOptions,
+                            projects: [...projects, new Project(result.id, result.name)],
                             alertProps: {
                                 message: `${result.name} has been imported!`,
                                 open: true,
@@ -364,13 +303,9 @@ class App extends Component {
                             }
                         }));
                     }
-                }).catch(error => {
-                    if (!error.hasOwnProperty("open")) {
-                        console.log(error);
-                    } else {
-                        this.setState({ alertProps: error });
-                    }
-                }).finally(() => {
+                }).catch(
+                    this.onSnackbarOpen
+                ).finally(() => {
                     this.setState({ loading: false, loadingTitle: "" });
                 });
             });
@@ -382,28 +317,15 @@ class App extends Component {
     }
     
     /**
-     * Callback fired when {@link SettingsProjectDialog} requests to be closed.
-     * Method saves new settings in {@link App}'s state, then closes dialog.
+     * Callback fired when {@link SettingsProjectDialog} changed global visible object name.
      *
      * @function
      * @memberOf App
-     * @param {Object} newSettings - New project settings.
      */
-    onSettingsDialogClose = (newSettings) => {
-        if (newSettings && Object.keys(newSettings).length) {
-            this.setState(({currentProject, projects, open}) => ({
-                projects: [
-                    ...projects.slice(0, currentProject),
-                    {...projects[currentProject], settings: newSettings},
-                    ...projects.slice(currentProject + 1)
-                ],
-                open: {...open, settingsDialog: false}
-            }));
-        } else {
-            this.setState(prevState => ({
-                open: {...prevState.open, settingsDialog: false}
-            }));
-        }
+    onObjectNamesChange = (objectVisibleName) => {
+        this.setState({
+            objectGlobalName: objectVisibleName
+        });
     };
 
     /**
@@ -423,10 +345,13 @@ class App extends Component {
                 loading: true,
                 loadingTitle: "Deleting project"
             }, () => {
+                const pathParams = { projectId: projects[currentProject].id };
+                const method = "DELETE";
+
                 fetchProject(
-                    serverBase, projects[currentProject].result.id, "DELETE", null
+                    pathParams, method, null, serverBase
                 ).then(() => {
-                    const removedProject = projects[currentProject].result.name;
+                    const removedProject = projects[currentProject].name;
 
                     this.setState(({projects, currentProject}) => ({
                         body: "Home",
@@ -435,16 +360,15 @@ class App extends Component {
                             ...projects.slice(0, currentProject),
                             ...projects.slice(currentProject + 1)
                         ],
-                        indexOptions: [],
                         alertProps: {
                             message: `${removedProject} has been successfully deleted!`,
                             open: true,
                             severity: "success"
                         }
                     }));
-                }).catch(error => {
-                    this.setState({ alertProps: error });
-                }).finally(() => {
+                }).catch(
+                    this.onSnackbarOpen
+                ).finally(() => {
                     this.setState({ loading: false });
                 });
             });
@@ -473,17 +397,19 @@ class App extends Component {
                     loading: true,
                     loadingTitle: "Modifying project name"
                 }, () => {
-                    let data = new FormData();
-                    data.append("name", name);
+                    const pathParams = { projectId: projects[currentProject].id };
+                    const method = "PATCH"
+                    const body = new FormData();
+                    body.append("name", name);
 
                     fetchProject(
-                        serverBase, projects[currentProject].result.id, "PATCH", data
+                        pathParams, method, body, serverBase
                     ).then(result => {
                         if (result) {
                             this.setState(({currentProject, projects}) => ({
                                 projects: [
                                     ...projects.slice(0, currentProject),
-                                    {...projects[currentProject], result: result},
+                                    { ...projects[currentProject], name: result.name },
                                     ...projects.slice(currentProject + 1)
                                 ],
                                 alertProps: {
@@ -493,9 +419,9 @@ class App extends Component {
                                 },
                             }));
                         }
-                    }).catch(error => {
-                        this.setState({ alertProps: error });
-                    }).finally(() => {
+                    }).catch(
+                        this.onSnackbarOpen
+                    ).finally(() => {
                         this.setState({ loading: false });
                     });
                 });
@@ -528,7 +454,7 @@ class App extends Component {
         const { currentProject, open: { renameDialog }, projects } = this.state;
 
         for (let i = 0; i < projects.length; i++) {
-            if (projects[i].result.name === name) {
+            if (projects[i].name === name) {
                 return renameDialog && currentProject === i;
             }
         }
@@ -543,7 +469,7 @@ class App extends Component {
         if(urlSplitted.length >= 4) {
             const projectId = url.split('/')[3];
             for (let i = 0; i < projects.length; i++) {
-                if (projects[i].result.id === projectId) {
+                if (projects[i].id === projectId) {
                     if(urlSplitted.length >= 5) {
                         this.onCurrentProjectChange(i, url.split('/')[4]);
                     }
@@ -554,7 +480,7 @@ class App extends Component {
     };
 
     render() {
-        const { currentProject, projects, indexOptions, open, serverBase, alertProps } = this.state;
+        const { currentProject, projects, objectGlobalName, open, serverBase, alertProps } = this.state;
         const { deleteDialog, importDialog, renameDialog, settingsDialog } = open;
 
         return (
@@ -564,13 +490,14 @@ class App extends Component {
                     appBarRef={this.appBarRef}
                     onBodyChange={this.onBodyChange}
                     onColorsChange={this.onColorsChange}
-                    onImportOpen={() => this.onDialogOpen("importDialog")}
+                    onImportOpen={() => this.onToggleDialog("importDialog")}
                 >
                     <ProjectMenu
                         currentProject={currentProject + 1}
                         onProjectClick={this.onCurrentProjectChange}
-                        onDialogOpen={this.onDialogOpen}
+                        onDialogOpen={this.onToggleDialog}
                         onSaveProject={this.onSaveProject}
+                        onSnackbarOpen={this.onSnackbarOpen}
                         projects={["Select your project", ...projects]}
                     />
                 </Header>
@@ -593,10 +520,10 @@ class App extends Component {
                                 path={`/${this.existsPath}`}
                                 render={(routerProps) =>
                                     <ProjectTabs
+                                        objectGlobalName={objectGlobalName}
+                                        onSnackbarOpen={this.onSnackbarOpen}
                                         project={projects[currentProject]}
                                         serverBase={serverBase}
-                                        showAlert={this.onSnackbarOpen}
-                                        updateIndexOptions={this.updateIndexOptions}
                                         updateProject={this.updateProject}
                                         {...routerProps}
                                     />
@@ -608,18 +535,20 @@ class App extends Component {
                 {currentProject >= 0 &&
                     <React.Fragment>
                         <RenameProjectDialog
-                            currentName={projects[currentProject].result.name}
+                            currentName={projects[currentProject].name}
                             open={renameDialog}
                             onClose={this.onRenameDialogClose}
                         />
                         <SettingsProjectDialog
-                            indexOptions={indexOptions}
+                            onClose={() => this.onToggleDialog("settingsDialog")}
+                            onObjectNamesChange={this.onObjectNamesChange}
+                            onSnackbarOpen={this.onSnackbarOpen}
                             open={settingsDialog}
-                            onClose={this.onSettingsDialogClose}
-                            settings={{ ...projects[currentProject].settings }}
+                            projectId={projects[currentProject].id}
+                            serverBase={serverBase}
                         />
                         <DeleteProjectDialog
-                            currentName={projects[currentProject].result.name}
+                            currentName={projects[currentProject].name}
                             open={deleteDialog}
                             onClose={this.onDeleteDialogClose}
                         />

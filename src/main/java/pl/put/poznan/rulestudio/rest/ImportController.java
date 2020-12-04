@@ -7,7 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pl.put.poznan.rulestudio.model.Project;
+import pl.put.poznan.rulestudio.model.response.ProjectResponse;
 import pl.put.poznan.rulestudio.service.ImportService;
 
 import java.io.IOException;
@@ -27,13 +27,12 @@ public class ImportController {
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Project> postImport(
+    public ResponseEntity<ProjectResponse> postImport(
             @RequestParam(name = "importFile") MultipartFile importFile) throws IOException {
         logger.info("Posting import...");
 
-        Project result = importService.postImport(importFile);
+        final ProjectResponse result = importService.postImport(importFile);
 
-        logger.debug(result.toString());
         return ResponseEntity.ok(result);
     }
 }

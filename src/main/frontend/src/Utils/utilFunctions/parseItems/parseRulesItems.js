@@ -12,20 +12,14 @@ import { getRuleName } from "./parseElements";
 function parseRulesItems(data) {
     let items = [];
 
-    if (data && Object.keys(data).includes("ruleSet")) {
-        for (let i = 0; i < data.ruleSet.length; i++) {
+    if (data != null && data.hasOwnProperty("Rules")) {
+        for (let i = 0; i < data.Rules.length; i++) {
             items.push({
                 id: i,
-                name: getRuleName(data.ruleSet[i].rule),
+                name: getRuleName(data.Rules[i].rule),
                 traits: {
-                    "Type": data.ruleSet[i].rule.type.toLowerCase(),
-                    ...data.ruleSet[i].ruleCharacteristics
-                },
-                tables: {
-                    indicesOfCoveredObjects: Array.isArray(data.ruleSet[i].indicesOfCoveredObjects) ?
-                        data.ruleSet[i].indicesOfCoveredObjects.slice() : [],
-                    isSupportingObject: Array.isArray(data.ruleSet[i].isSupportingObject) ?
-                        data.ruleSet[i].isSupportingObject.slice() : []
+                    "Type": data.Rules[i].rule.type.toLowerCase(),
+                    ...data.Rules[i].ruleCharacteristics
                 },
                 toFilter() {
                     return [

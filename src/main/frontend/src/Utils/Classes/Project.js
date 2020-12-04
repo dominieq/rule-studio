@@ -6,18 +6,20 @@
  * @constructor
  * @category Utils
  * @subcategory Classes
- * @param {Object} result An object received from server with data and calculation results.
+ * @param {string} id - The identifier of a project.
+ * @param {string} name - The name of a project.
  */
 class Project {
-    constructor(result) {
-        this.result = result;
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
 
         this.parameters = {
             consistencyThreshold: 0,
-            defaultClassificationResult: "majorityDecisionClass",
+            defaultClassificationResultType: "majorityDecisionClass",
             numberOfFolds: 10,
             seed: 0,
-            typeOfClassifier: "SimpleRuleClassifier",
+            classifierType: "SimpleRuleClassifier",
             typeOfRules: "certain",
             typeOfUnions: "monotonic"
         };
@@ -32,10 +34,6 @@ class Project {
 
         this.foldIndex = 0;
         this.classifyAction = 0;
-
-        this.settings = {
-            indexOption: "default",
-        };
 
         this.dataHistory = {
             historySnapshot: 0,
