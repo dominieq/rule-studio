@@ -246,13 +246,15 @@ class App extends Component {
         const pathParams = { projectId: projects[currentProject].id };
 
         if (currentProject >= 0) {
-            exportProject(pathParams, serverBase).catch(error => {
-                if (error.constructor.name !== "AlertError") {
-                    console.error(error);
-                    return;
-                }
-
-                this.setState({ alertProps: error });
+            this.setState({
+                loading: true,
+                loadingTitle: "Compressing project"
+            }, () => {
+                exportProject(pathParams, serverBase)
+                    .catch(this.onSnackbarOpen)
+                    .finally(() => {
+                        this.setState({ loading: false });
+                    });
             });
         }
     };
