@@ -163,7 +163,8 @@ public class DataService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final InformationTable informationTable = project.getInformationTable();
+        InformationTable informationTable = project.getInformationTable();
+        if(informationTable == null) informationTable = new InformationTable(new Attribute[0], new ArrayList<>());
         checkInformationTable(informationTable, "There are no objects in project. Couldn't get them.");
 
         final InformationTableResponse informationTableResponse = new InformationTableResponse(informationTable);
