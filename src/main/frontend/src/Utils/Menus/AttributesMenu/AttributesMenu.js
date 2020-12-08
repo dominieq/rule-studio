@@ -74,8 +74,11 @@ class AttributesMenu extends React.Component {
             this.getAttributes();
             return;
         }
-
         if (prevProps.objectGlobalName !== this.props.objectGlobalName) {
+            if (this.props.objectGlobalName === "") {
+                return;
+            }
+
             this.getAttributes(this.getObjectNames);
         }
     }
