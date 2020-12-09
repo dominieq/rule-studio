@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import CustomTooltip from "../../DataDisplay/CustomTooltip";
-import { StyledIconButton } from "../StyledButton";
+import CustomTooltip from "../../../DataDisplay/CustomTooltip";
+import { StyledIconButton } from "../index";
 import Badge from "@material-ui/core/Badge";
 import Sort from "@material-ui/icons/Sort";
 
@@ -17,10 +17,10 @@ const useStyles = makeStyles(theme => ({
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/badge/" target="_blank">Badge</a>.
  *
- * @name Dot Badge
+ * @name DotBadge
  * @constructor
  * @category Utils
- * @subcategory Sort Menu
+ * @subcategory Feedback
  * @param props {Object} - Any other props will be forwarded to the Badge component.
  * @returns {React.ReactElement} - The Badge component from Material-UI library.
  */
@@ -44,10 +44,10 @@ function DotBadge(props) {
  * The {@link StyledIconButton} wrapped around in {@link DotBadge} and {@link CustomTooltip}.
  * Use badge to signal that sorting parameters has changed.
  *
- * @name Sort Button
+ * @name SortButton
  * @constructor
  * @category Utils
- * @subcategory Sort Menu
+ * @subcategory Buttons
  * @param props {Object}
  * @param [props.ButtonProps] {Object} - Props applied to the {@link StyledIconButton} element.
  * @param [props.icon] {React.ReactNode} - The content of the {@link StyledIconButton} element.

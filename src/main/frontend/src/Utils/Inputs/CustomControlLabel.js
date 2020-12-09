@@ -3,15 +3,15 @@ import { withStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 /**
+ * <h3>Overview</h3>
  * The FormControlLabel from Material-UI library with custom styling.
  * For full documentation check out Material-UI docs
  * <a href="https://material-ui.com/api/form-control-label/" target="_blank">FormControlLabel</a>.
  *
- * @name Custom Control Label
  * @constructor
  * @category Utils
- * @subcategory Sort Menu
- * @param props {Object} - Any other props will be forwarded to the FormControlLabel component.
+ * @subcategory Inputs
+ * @param props {Object} - All props are forwarded to the FormControlLabel component.
  */
 const CustomControlLabel = withStyles(theme => ({
     root: {

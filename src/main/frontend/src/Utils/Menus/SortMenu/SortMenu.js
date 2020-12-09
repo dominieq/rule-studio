@@ -1,10 +1,9 @@
 import React, {useState} from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import CustomControlLabel from "./Elements/CustomControlLabel";
-import CustomFormLabel from "./Elements/CustomFormLabel";
+import { CustomControlLabel, CustomFormLabel } from "../../Inputs";
 import StyledDivider from "../../DataDisplay/StyledDivider";
-import StyledRadioButton from "../StyledRadioButton";
+import StyledRadioButton from "../../Inputs/StyledRadioButton";
 import Menu from "@material-ui/core/Menu";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Zoom from "@material-ui/core/Zoom";
@@ -50,25 +49,25 @@ const virtualStyles = makeStyles(theme => ({
 }), {name: "CategoriesBox"});
 
 /**
+ * <h3>Overview</h3>
  * The Menu component that displays categories and orders to sort by.
  * Categories are stored inside a virtualized list.
  *
- * @name Sort Menu
- * @constructor
+ * @class
  * @category Utils
- * @subcategory Sort Menu
- * @param props {Object} - Any other props will be forwarded to the Menu component.
- * @param [props.ContentProps] {Object} - Props applied to content elements.
- * @param [props.ContentProps.categories] {Object[]} - The array of categories to sort by.
- * @param [props.ContentProps.categories[].label] {string} - The label of a category.
- * @param [props.ContentProps.categories[].value] {string} - The value of a category.
- * @param [props.ContentProps.chooseOrder] {boolean} - If <code>true</code> choosing order will be enabled.
- * @param [props.ContentProps.onCategoryChange] {function} - The callback fired when category was changed.
- * @param [props.ContentProps.onOrderChange] {function} - The callback fired when order was changed.
- * @param [props.ContentProps.order] - The currently selected order.
- * @param [props.ContentProps.RadioComponent] - The component used to render radio button elements.
- * @param [props.ContentProps.rowHeight] - The height of a row in the virtualized radio button group.
- * @param [props.ContentProps.value] - The currently selected category.
+ * @subcategory Menus
+ * @param {Object} props - Any other props will be forwarded to the Menu component.
+ * @param {Object} [props.ContentProps] - Props applied to content elements.
+ * @param {Object[]} [props.ContentProps.categories] - The array of categories to sort by.
+ * @param {string} [props.ContentProps.categories[].label] - The label of a category.
+ * @param {string} [props.ContentProps.categories[].value] - The value of a category.
+ * @param {boolean} [props.ContentProps.chooseOrder] - If <code>true</code> choosing order will be enabled.
+ * @param {function} [props.ContentProps.onCategoryChange]  - The callback fired when category was changed.
+ * @param {function} [props.ContentProps.onOrderChange]  - The callback fired when order was changed.
+ * @param {"asc"|"desc"} [props.ContentProps.order] - The currently selected order.
+ * @param {React.ReactNode} [props.ContentProps.RadioComponent] - The component used to render radio button elements.
+ * @param {number|string} [props.ContentProps.rowHeight] - The height of a row in the virtualized radio button group.
+ * @param {string} [props.ContentProps.value] - The currently selected category.
  * @returns {React.ReactElement} - The sort menu with order and categories displayed as radio button groups
  */
 function SortMenu(props) {

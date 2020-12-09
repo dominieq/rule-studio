@@ -1,7 +1,7 @@
 /**
  * Compares property values from sorted objects.
  *
- * @memberOf Sort Menu
+ * @memberOf SortMenu
  * @param key {string} - The value of a property from sorted objects.
  * @param [order="asc"] {"asc"|"desc"} - The order of sorting.
  * @returns {function} - The function that compares objects.

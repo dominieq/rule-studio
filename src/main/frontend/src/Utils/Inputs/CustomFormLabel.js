@@ -1,8 +1,8 @@
 import React from "react";
-import { mergeClasses } from "../../../utilFunctions";
+import { mergeClasses } from "../utilFunctions";
 import FormLabel from "@material-ui/core/FormLabel";
 import { makeStyles } from "@material-ui/core/styles";
-import CustomFormLabelPropTypes from "./propTypes/CustomFormLabelPropTypes";
+import { MuiFormLabelPropTypes } from "./propTypes";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -12,6 +12,7 @@ const useStyles = makeStyles(theme => ({
 }), {name: "CustomFormLabel"});
 
 /**
+ * <h3>Overview</h3>
  * The FormLabel component from Material-UI library with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/form-label/" target="_blank">FormLabel</a>.
@@ -19,8 +20,8 @@ const useStyles = makeStyles(theme => ({
  * @class
  * @category Utils
  * @subcategory Inputs
- * @param {Object} props - Any other props will forwarded to the FormLabel component.
- * @param {Object} ref - Hold reference to the FormLabel component.
+ * @param {Object} props - All props except classes are forwarded to the FormLabel component.
+ * @param {Object} ref - Holds reference to the FormLabel component.
  * @returns {React.ReactElement}
  */
 function CustomFormLabel(props, ref) {
@@ -35,6 +36,6 @@ function CustomFormLabel(props, ref) {
 }
 
 const CustomFormLabelForwardRef = React.forwardRef(CustomFormLabel)
-CustomFormLabelForwardRef.propTypes = { ...CustomFormLabelPropTypes };
+CustomFormLabelForwardRef.propTypes = { ...MuiFormLabelPropTypes };
 
 export default CustomFormLabelForwardRef;

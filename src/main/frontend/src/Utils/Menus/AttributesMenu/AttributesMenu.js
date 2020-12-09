@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import { fetchDescriptiveAttributes, fetchObjectNames } from "../../utilFunctions/fetchFunctions";
-import { CustomControlLabel, CustomFormLabel } from "../../Inputs/SortMenu";
+import { CustomControlLabel, CustomFormLabel } from "../../Inputs";
 import StyledRadioButton from "../../Inputs/StyledRadioButton";
 import Menu from "@material-ui/core/Menu";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -23,7 +23,7 @@ const CustomMenu = withStyles( theme => ({
  *
  * @class
  * @category Utils
- * @subcategory Feedback
+ * @subcategory Menus
  * @param {Object} props
  * @param {Object} props.ListProps - Props applied to the List element from react-virtualized.
  * @param {string} props.MuiMenuProps - Props applied to the Menu element from Material-UI.

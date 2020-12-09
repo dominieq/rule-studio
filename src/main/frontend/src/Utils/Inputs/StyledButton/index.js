@@ -4,6 +4,7 @@ export {default as StyledIconButton} from "./StyledIconButton";
 
 // Export variants
 export {default as MoreSettingsIconButton} from "./Buttons/MoreSettingsIconButton";
+export {default as SortButton} from "./Buttons/SortButton";
 
 // Export prop-types
 export {default as StyledButtonPropTypes} from "./propTypes/StyledButtonPropTypes";

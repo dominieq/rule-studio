@@ -2,7 +2,7 @@
  * Creates an array of "label-value" pairs that represent categories used to sort given data set.
  * Values should be unique. Labels don't have this restriction.
  *
- * @memberOf Sort Menu
+ * @memberOf SortMenu
  * @param labels {string[]} - The array of labels used to sort a given set of data.
  * @param values {string[]} - The array of values associated with <code>label</code>.
  * @param [noneLabel="none"] {string} - The label used to reset filtration.
