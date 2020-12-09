@@ -48,10 +48,10 @@ async function fetchObjectNames(resource, pathParams, queryParams, base = "http:
     const url = new URL(`/projects/${pathParams.projectId}/${resource}/objectNames`, base);
 
     if (queryParams != null) {
-        if (queryParams.hasOwnProperty("subject")) {
+        if (queryParams.hasOwnProperty("subject") && queryParams.subject != null) {
             url.searchParams.append("subject", queryParams.subject.toString());
         }
-        if (queryParams.hasOwnProperty("set")) {
+        if (queryParams.hasOwnProperty("set") &&  queryParams.set != null) {
             url.searchParams.append("set", queryParams.set);
         }
     }

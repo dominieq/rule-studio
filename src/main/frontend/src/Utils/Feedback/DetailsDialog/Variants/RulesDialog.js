@@ -260,7 +260,7 @@ class RulesDialog extends React.PureComponent {
         delete displayedTraits["Type"];
 
         return (
-            <FullscreenDialog open={open} onClose={this.props.onClose}>
+            <FullscreenDialog keepMounted={true} open={open} onClose={this.props.onClose}>
                 <FullscreenHeader
                     id={"rules-details-header"}
                     onClose={this.props.onClose}

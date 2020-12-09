@@ -178,11 +178,17 @@ class SettingsProjectDialog extends PureComponent {
         });
     };
 
-    onAcceptClick = (finallyCallback) => {
+    onAcceptClick = (setStateCallback) => {
         const { hasChanged } = this.state;
 
         if (hasChanged) {
-            this.postDescriptiveAttributes(finallyCallback);
+            this.postDescriptiveAttributes(() => {
+                this.setState({
+                    hasChanged: false
+                }, () => {
+                    if (typeof setStateCallback === "function") setStateCallback();
+                });
+            });
         } else {
             this.props.onClose();
         }
@@ -213,7 +219,7 @@ class SettingsProjectDialog extends PureComponent {
                 onBackdropClick={this.props.onClose}
                 onEnter={() => this.getDescriptiveAttributes(() => {
                     const {isEverywhere} = this.state;
-                    if (!isEverywhere) this.props.onObjectNamesChange("");
+                    if (!isEverywhere) this.props.onObjectNamesChange(null);
                 })}
                 onEscapeKeyDown={this.props.onClose}
                 onKeyPress={this.onEnterKeyPress}

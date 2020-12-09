@@ -313,7 +313,7 @@ class UnionsDialog extends React.PureComponent {
         const { item, objectGlobalName, open, projectId, serverBase } = this.props;
 
         return (
-            <FullscreenDialog open={open} onClose={this.props.onClose}>
+            <FullscreenDialog keepMounted={true} open={open} onClose={this.props.onClose}>
                 <FullscreenHeader
                     id={"unions-details-header"}
                     onClose={this.props.onClose}
