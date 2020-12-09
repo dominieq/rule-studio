@@ -38,7 +38,7 @@ const CustomMenu = withStyles( theme => ({
  * @param {string} props.queryParams.set - The name of the set that narrows down object names.
  * @returns {React.Component}
  */
-class AttributesMenu extends React.Component {
+class AttributesMenu extends React.PureComponent {
     constructor(props) {
         super(props);
 
@@ -62,13 +62,6 @@ class AttributesMenu extends React.Component {
         this.getAttributes();
     }
 
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-        const shallowComparison = this.props !== nextProps || this.state !== nextState;
-        const deepComparison = this.props.projectId !== nextProps.projectId;
-
-        return shallowComparison || deepComparison;
-    }
-
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.projectId !== this.props.projectId) {
             this.getAttributes();
@@ -76,6 +69,10 @@ class AttributesMenu extends React.Component {
         }
 
         if (prevProps.objectGlobalName !== this.props.objectGlobalName) {
+            if (prevProps.objectGlobalName != null && this.props.objectGlobalName == null) {
+                return;
+            }
+
             this.getAttributes(this.getObjectNames);
         }
     }
@@ -177,23 +174,32 @@ class AttributesMenu extends React.Component {
             const { projectId, resource, serverBase, queryParams } = this.props;
             const pathParams = { projectId };
 
+            const onFinallyCallback = () => {
+                this.setState(({loading}) => ({
+                    loading: { ...loading, objectNames: false }
+                }), () => {
+                    if (typeof finallyCallback === "function") finallyCallback();
+                });
+            }
+
+            if (this._isMounted && queryParams != null
+                && queryParams.subject != null && queryParams.subject < 0) {
+
+                onFinallyCallback();
+                return;
+            }
+
             fetchObjectNames(
                 resource, pathParams, queryParams, serverBase
             ).then(result => {
                 if (this._isMounted && Array.isArray(result)) {
                     this.props.onObjectNamesChange(result);
                 }
-            }).catch(exception => {
-                this.props.onSnackbarOpen(exception)
-            }).finally(() => {
-                if (this._isMounted) {
-                    this.setState(({loading}) => ({
-                        loading: { ...loading, objectNames: false }
-                    }), () => {
-                        if (typeof finallyCallback === "function") finallyCallback();
-                    });
-                }
-            });
+            }).catch(
+                this.props.onSnackbarOpen
+            ).finally(
+                onFinallyCallback
+            );
         });
     }
 

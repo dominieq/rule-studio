@@ -232,7 +232,7 @@ class ConesDialog extends React.PureComponent {
         const { item, items, onSnackbarOpen, projectId, serverBase, ...other } = this.props;
 
         return (
-            <FullscreenDialog {...other}>
+            <FullscreenDialog keepMounted={true} {...other}>
                 <FullscreenHeader
                     id={"cones-details-header"}
                     onClose={this.props.onClose}

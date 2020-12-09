@@ -517,6 +517,7 @@ class ClassifiedObjectDialog extends React.PureComponent {
         return (
             <FullscreenDialog
                 disableEscapeKeyDown={true}
+                keepMounted={true}
                 onClose={this.props.onClose}
                 onEnter={this.onEnter}
                 onEscapeKeyDown={this.onEscapeKeyDown}

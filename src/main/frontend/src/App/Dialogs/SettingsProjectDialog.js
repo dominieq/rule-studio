@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { fetchDescriptiveAttributes } from "../../Utils/utilFunctions/fetchFunctions";
 import Accept from "./Utils/Accept";
 import Cancel from "./Utils/Cancel";
@@ -14,20 +15,8 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import EyeSettings from  "mdi-material-ui/EyeSettings";
+import { StyledButton } from "../../Utils/Inputs/StyledButton";
 
-/**
- * The ListItemIcon from Material-UI library with custom styling.
- * For full documentation check out Material-UI docs on
- * <a href=https://material-ui.com/api/list-item-icon/ target="_blank">ListItemIcon</a>.
- *
- * @class
- * @inner
- * @memberOf SettingsProjectDialog
- * @category Utils
- * @subcategory Feedback
- * @param {Object} props - Any other props will be forwarded to the ListItemIcon component.
- * @returns {React.ReactElement}
- */
 const SettingsIcons = withStyles({
     root: {
         color: "inherit",
@@ -36,6 +25,35 @@ const SettingsIcons = withStyles({
     }
 
 }, {name: "MuiListItemIcon"})(props => <ListItemIcon {...props}>{props.children}</ListItemIcon>);
+
+const useStyles = makeStyles(theme => ({
+    root: {
+        padding: 0,
+        textAlign: "center",
+        textTransform: "none"
+    },
+    warning: {
+        color: theme.palette.warning.main
+    },
+}), {name: "UpdateHelperText"});
+
+function UpdateAlert(props, ref) {
+    const { children, onClick } = props;
+
+    const classes = useStyles();
+
+    return (
+        <StyledButton
+            ButtonRef={ref}
+            className={clsx("MuiFormHelperText-root", classes.root, classes.warning)}
+            onClick={onClick}
+        >
+            {children}
+        </StyledButton>
+    );
+}
+
+const UpdateAlertForwardRef = React.forwardRef(UpdateAlert);
 
 /**
  * Allows the user to choose index option in current project.
@@ -65,7 +83,9 @@ class SettingsProjectDialog extends PureComponent {
                 objectVisibleName: false
             },
             attributes: ["Default"],
-            objectVisibleName: "Default"
+            objectVisibleName: "Default",
+            isEverywhere: true,
+            hasChanged: false
         };
 
         this._attributes = ["Default"];
@@ -77,16 +97,17 @@ class SettingsProjectDialog extends PureComponent {
 
             const objectVisibleName = result.actual === null ? "Default" : result.actual;
 
-            this.setState({
+            this.setState(({isEverywhere}) => ({
                 attributes: [ ...this._attributes, ...result.available ],
-                objectVisibleName: objectVisibleName
-            }, () => {
+                objectVisibleName: objectVisibleName,
+                isEverywhere: result.hasOwnProperty("isEverywhere") ? result.isEverywhere : isEverywhere
+            }), () => {
                 if (typeof setStateCallback === "function") setStateCallback(objectVisibleName);
             });
         }
     };
 
-    getDescriptiveAttributes = () => {
+    getDescriptiveAttributes = (processResultCallback) => {
         this.setState(({loading}) => ({
             loading: { ...loading, objectVisibleName: true }
         }), () => {
@@ -98,9 +119,9 @@ class SettingsProjectDialog extends PureComponent {
 
             fetchDescriptiveAttributes(
                 resource, pathParams, queryParams, method, serverBase
-            ).then(
-                this.processResult
-            ).catch(
+            ).then(result => {
+                this.processResult(result, processResultCallback);
+            }).catch(
                 this.props.onSnackbarOpen
             ).finally(() => {
                 if (this._isMounted) {
@@ -112,25 +133,7 @@ class SettingsProjectDialog extends PureComponent {
         });
     };
 
-    componentDidMount() {
-        this._isMounted = true;
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        // TODO prepare more sophisticated conditions to get descriptive attributes
-    }
-
-    componentWillUnmount() {
-        this._isMounted = false;
-    }
-
-    onIndexOptionChange = (event) => {
-        this.setState({
-            objectVisibleName: event.target.value
-        });
-    };
-
-    onAcceptClick = () => {
+    postDescriptiveAttributes = (finallyCallback) => {
         this.setState(({loading}) => ({
             loading: { ...loading, attributes: true }
         }), () => {
@@ -138,7 +141,8 @@ class SettingsProjectDialog extends PureComponent {
             const { objectVisibleName } = this.state;
             const resource = "metadata"
             const pathParams = { projectId };
-            const queryParams = { objectVisibleName: objectVisibleName === "Default" ? undefined : objectVisibleName };
+            const queryParams = { objectVisibleName: objectVisibleName === "Default"
+                    ? undefined : objectVisibleName };
             const method = "POST";
 
             fetchDescriptiveAttributes(
@@ -151,12 +155,43 @@ class SettingsProjectDialog extends PureComponent {
                 if (this._isMounted) {
                     this.setState(({loading}) => ({
                         loading: { ...loading, attributes: false }
-                    }));
+                    }), () => {
+                        if (typeof finallyCallback === "function") finallyCallback();
+                    });
                 }
-
-                this.props.onClose();
             });
         });
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    onIndexOptionChange = (event) => {
+        this.setState({
+            objectVisibleName: event.target.value,
+            hasChanged: true
+        });
+    };
+
+    onAcceptClick = (setStateCallback) => {
+        const { hasChanged } = this.state;
+
+        if (hasChanged) {
+            this.postDescriptiveAttributes(() => {
+                this.setState({
+                    hasChanged: false
+                }, () => {
+                    if (typeof setStateCallback === "function") setStateCallback();
+                });
+            });
+        } else {
+            this.props.onClose();
+        }
     };
 
     onEnterKeyPress = (event) => {
@@ -166,15 +201,26 @@ class SettingsProjectDialog extends PureComponent {
         }
     };
 
+    getHelperText = (isEverywhere) => {
+        if (isEverywhere) {
+            return undefined;
+        }
+
+        return "Visible object name has changed in some tabs. Click to refresh."
+    }
+
     render() {
-        const { attributes, objectVisibleName } = this.state;
+        const { attributes, objectVisibleName, isEverywhere } = this.state;
         const { open } = this.props;
 
         return (
             <SimpleDialog
                 aria-labelledby={"settings-project-dialog"}
                 onBackdropClick={this.props.onClose}
-                onEnter={this.getDescriptiveAttributes}
+                onEnter={() => this.getDescriptiveAttributes(() => {
+                    const {isEverywhere} = this.state;
+                    if (!isEverywhere) this.props.onObjectNamesChange(null);
+                })}
                 onEscapeKeyDown={this.props.onClose}
                 onKeyPress={this.onEnterKeyPress}
                 open={open}
@@ -189,6 +235,11 @@ class SettingsProjectDialog extends PureComponent {
                                 <EyeSettings />
                             </SettingsIcons>
                             <CustomTextField
+                                helperText={this.getHelperText(isEverywhere)}
+                                FormHelperTextProps={{
+                                    component: UpdateAlertForwardRef,
+                                    onClick: this.postDescriptiveAttributes
+                                }}
                                 onChange={this.onIndexOptionChange}
                                 outsideLabel={"Choose objects visible name"}
                                 select={true}
@@ -210,7 +261,7 @@ class SettingsProjectDialog extends PureComponent {
                 </SimpleContent>
                 <DialogActions>
                     <Cancel onClick={this.props.onClose} />
-                    <Accept onClick={this.onAcceptClick} />
+                    <Accept onClick={() => this.onAcceptClick(this.props.onClose)} />
                 </DialogActions>
             </SimpleDialog>
         );
