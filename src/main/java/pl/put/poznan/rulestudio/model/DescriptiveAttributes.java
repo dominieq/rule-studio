@@ -76,6 +76,13 @@ public class DescriptiveAttributes {
         trySetCurrentAttribute(currentAttribute);
     }
 
+    public DescriptiveAttributes(InformationTable informationTable, String[] currentAttributePriority) {
+        this(informationTable);
+        for (String candidateAttribute : currentAttributePriority) {
+            if (trySetCurrentAttribute(candidateAttribute)) break;
+        }
+    }
+
     public String[] getAvailableAttributesNames() {
         return availableAttributesNames;
     }

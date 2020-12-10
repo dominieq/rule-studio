@@ -32,13 +32,13 @@ public class RulesWithHttpParameters implements Cloneable {
         this.isCurrentAttributes = true;
     }
 
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, DescriptiveAttributes descriptiveAttributes, InformationTable informationTable) {
+    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, String[] descriptiveAttributesPriority, InformationTable informationTable) {
         this.externalRules = false;
         this.ruleSet = rules;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
         this.typeOfRules = ruleType;
-        this.descriptiveAttributes = descriptiveAttributes;
+        this.descriptiveAttributes = new DescriptiveAttributes(informationTable, descriptiveAttributesPriority);
         this.informationTable = informationTable;
 
         this.isCurrentLearningData = true;

@@ -13,14 +13,14 @@ public class UnionsWithHttpParameters {
     private DescriptiveAttributes descriptiveAttributes;
     private InformationTable informationTable;
 
-    public UnionsWithHttpParameters(UnionsWithSingleLimitingDecision unions, UnionType typeOfUnions, Double consistencyThreshold, String dataHash, DescriptiveAttributes descriptiveAttributes, InformationTable informationTable) {
+    public UnionsWithHttpParameters(UnionsWithSingleLimitingDecision unions, UnionType typeOfUnions, Double consistencyThreshold, String dataHash, String[] descriptiveAttributesPriority, InformationTable informationTable) {
         this.unions = unions;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
         this.dataHash = dataHash;
 
         this.isCurrentData = true;
-        this.descriptiveAttributes = descriptiveAttributes;
+        this.descriptiveAttributes = new DescriptiveAttributes(informationTable, descriptiveAttributesPriority);
         this.informationTable = informationTable;
     }
 

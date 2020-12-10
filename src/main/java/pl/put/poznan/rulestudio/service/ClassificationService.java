@@ -20,6 +20,7 @@ import pl.put.poznan.rulestudio.model.response.OrdinalMisclassificationMatrixWit
 import pl.put.poznan.rulestudio.model.response.RuleMainPropertiesResponse.RuleMainPropertiesResponseBuilder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -51,6 +52,29 @@ public class ClassificationService {
         return project.getRules();
     }
 
+    private static String[] createClassifiedDescriptiveAttributesPriority(Project project) {
+        ArrayList<String> classifiedDescriptiveAttributesPriorityArrayList = new ArrayList<>();
+        final ProjectClassification previousProjectClassification = project.getProjectClassification();
+        if (previousProjectClassification != null) {
+            classifiedDescriptiveAttributesPriorityArrayList.add(previousProjectClassification.getClassifiedDescriptiveAttributes().getCurrentAttributeName());
+        }
+        classifiedDescriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
+        return classifiedDescriptiveAttributesPriorityArrayList.toArray(new String[0]);
+    }
+
+    private static String[] createLearningDescriptiveAttributesPriority(Project project, RulesWithHttpParameters rulesWithHttpParameters) {
+        ArrayList<String> learningDescriptiveAttributesPriorityArrayList = new ArrayList<>();
+        final ProjectClassification previousProjectClassification = project.getProjectClassification();
+        if (previousProjectClassification != null) {
+            learningDescriptiveAttributesPriorityArrayList.add(previousProjectClassification.getLearningDescriptiveAttributes().getCurrentAttributeName());
+        }
+        if (rulesWithHttpParameters.isCoveragePresent()) {
+            learningDescriptiveAttributesPriorityArrayList.add(rulesWithHttpParameters.getDescriptiveAttributes().getCurrentAttributeName());
+        }
+        learningDescriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
+        return learningDescriptiveAttributesPriorityArrayList.toArray(new String[0]);
+    }
+
     public MainClassificationResponse getClassification(UUID id) {
         logger.info("Id:\t{}", id);
 
@@ -76,9 +100,10 @@ public class ClassificationService {
 
         final RulesWithHttpParameters rulesWithHttpParameters = getRulesToClassify(project);
 
-        final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
+        final String[] classifiedDescriptiveAttributesPriority = createClassifiedDescriptiveAttributesPriority(project);
+        final String[] learningDescriptiveAttributesPriority = createLearningDescriptiveAttributesPriority(project, rulesWithHttpParameters);
 
-        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, informationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, informationTable);
+        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, informationTable, classifierType, defaultClassificationResultType, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, informationTable);
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -114,9 +139,10 @@ public class ClassificationService {
         DataService.checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
         DataService.checkNumberOfObjects(newInformationTable, "There are no objects in external data. Couldn't classify.");
 
-        final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
+        final String[] classifiedDescriptiveAttributesPriority = createClassifiedDescriptiveAttributesPriority(project);
+        final String[] learningDescriptiveAttributesPriority = createLearningDescriptiveAttributesPriority(project, rulesWithHttpParameters);
 
-        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, newInformationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, projectInformationTable, externalDataFile.getOriginalFilename());
+        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, newInformationTable, classifierType, defaultClassificationResultType, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, projectInformationTable, externalDataFile.getOriginalFilename());
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -141,9 +167,10 @@ public class ClassificationService {
 
         final RulesWithHttpParameters rulesWithHttpParameters = getRulesToClassify(project);
 
-        final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
+        final String[] classifiedDescriptiveAttributesPriority = createClassifiedDescriptiveAttributesPriority(project);
+        final String[] learningDescriptiveAttributesPriority = createLearningDescriptiveAttributesPriority(project, rulesWithHttpParameters);
 
-        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, informationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, informationTable);
+        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, informationTable, classifierType, defaultClassificationResultType, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, informationTable);
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -181,9 +208,10 @@ public class ClassificationService {
         DataService.checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
         DataService.checkNumberOfObjects(newInformationTable, "There are no objects in external data. Couldn't classify.");
 
-        final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
+        final String[] classifiedDescriptiveAttributesPriority = createClassifiedDescriptiveAttributesPriority(project);
+        final String[] learningDescriptiveAttributesPriority = createLearningDescriptiveAttributesPriority(project, rulesWithHttpParameters);
 
-        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, newInformationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, projectInformationTable, externalDataFile.getOriginalFilename());
+        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, newInformationTable, classifierType, defaultClassificationResultType, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, projectInformationTable, externalDataFile.getOriginalFilename());
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);

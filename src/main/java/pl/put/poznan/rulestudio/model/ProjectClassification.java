@@ -32,29 +32,29 @@ public class ProjectClassification extends AbstractClassification {
     private DescriptiveAttributes learningDescriptiveAttributes;
     private Boolean isCurrentLearningData;
 
-    public ProjectClassification(RulesWithHttpParameters rulesWithHttpParameters, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, DescriptiveAttributes projectDescriptiveAttributes, InformationTable projectDataInformationTable) {
-        this(rulesWithHttpParameters, classifiedInformationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, projectDataInformationTable, null);
+    public ProjectClassification(RulesWithHttpParameters rulesWithHttpParameters, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable) {
+        this(rulesWithHttpParameters, classifiedInformationTable, classifierType, defaultClassificationResultType, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, projectDataInformationTable, null);
     }
 
-    public ProjectClassification(RulesWithHttpParameters rulesWithHttpParameters, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, DescriptiveAttributes projectDescriptiveAttributes, InformationTable projectDataInformationTable, String externalDataFileName) {
+    public ProjectClassification(RulesWithHttpParameters rulesWithHttpParameters, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable, String externalDataFileName) {
         final RuleSetWithCharacteristics ruleSetWithCharacteristics = rulesWithHttpParameters.getRuleSet();
         if(rulesWithHttpParameters.isCoveragePresent()) {
             this.isOriginalLearningData = true;
             this.learningInformationTable = rulesWithHttpParameters.getInformationTable();
-            this.learningDescriptiveAttributes = new DescriptiveAttributes(rulesWithHttpParameters.getDescriptiveAttributes());
             this.isCurrentLearningData = rulesWithHttpParameters.isCurrentLearningData();
         } else {
             this.isOriginalLearningData = false;
             this.learningInformationTable = projectDataInformationTable;
-            this.learningDescriptiveAttributes = new DescriptiveAttributes(projectDescriptiveAttributes);
             this.isCurrentLearningData = true;
         }
+        this.learningDescriptiveAttributes = new DescriptiveAttributes(this.learningInformationTable, learningDescriptiveAttributesPriority);
+
 
         orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, classifiedInformationTable);
         classify(this.learningInformationTable, classifiedInformationTable, classifierType, defaultClassificationResultType, ruleSetWithCharacteristics, orderOfDecisions);
 
         this.classifiedInformationTable = classifiedInformationTable;
-        this.classifiedDescriptiveAttributes = new DescriptiveAttributes(projectDescriptiveAttributes);
+        this.classifiedDescriptiveAttributes = new DescriptiveAttributes(classifiedInformationTable, classifiedDescriptiveAttributesPriority);
         this.classifierType = classifierType;
         this.defaultClassificationResultType = defaultClassificationResultType;
 

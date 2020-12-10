@@ -20,6 +20,7 @@ import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse.MainDo
 import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse.ObjectsComparisonResponseBuilder;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -36,9 +37,17 @@ public class DominanceConesService {
             DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate dominance cones.");
             DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate dominance cones.");
 
+            ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
+            final DominanceCones previousDominanceCones = project.getDominanceCones();
+            if (previousDominanceCones != null) {
+                descriptiveAttributesPriorityArrayList.add(previousDominanceCones.getDescriptiveAttributes().getCurrentAttributeName());
+            }
+            descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
+            final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
+
             DominanceCones dominanceCones = new DominanceCones();
             try {
-                dominanceCones.calculateDCones(informationTable, project.getDescriptiveAttributes());
+                dominanceCones.calculateDCones(informationTable, descriptiveAttributesPriority);
             } catch (AttributeNotFoundException e) {
                 CalculationException ex = new CalculationException("Cannot calculate dominance cones if there are no active condition evaluation attributes.");
                 logger.error(ex.getMessage());
