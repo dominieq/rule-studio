@@ -47,7 +47,7 @@ public class CrossValidation {
             DefaultClassificationResultType defaultClassificationResultType,
             Long seed,
             String dataHash,
-            DescriptiveAttributes descriptiveAttributes) {
+            String[] descriptiveAttributesPriority) {
 
         this.numberOfFolds = numberOfFolds;
         this.informationTable = informationTable;
@@ -62,7 +62,7 @@ public class CrossValidation {
         this.defaultClassificationResultType = defaultClassificationResultType;
         this.seed = seed;
         this.dataHash = dataHash;
-        this.descriptiveAttributes = descriptiveAttributes;
+        this.descriptiveAttributes = new DescriptiveAttributes(informationTable, descriptiveAttributesPriority);
 
         this.isCurrentData = true;
     }

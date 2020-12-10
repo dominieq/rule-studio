@@ -131,7 +131,7 @@ public class DominanceCones {
                 '}';
     }
 
-    public void calculateDCones(InformationTable informationTable, DescriptiveAttributes descriptiveAttributes) {
+    public void calculateDCones(InformationTable informationTable, String[] descriptiveAttributesPriority) {
         this.numberOfObjects = informationTable.getNumberOfObjects();
 
         this.positiveDCones = new IntSortedSet[this.numberOfObjects];
@@ -155,7 +155,7 @@ public class DominanceCones {
 
         this.dataHash = informationTable.getHash();
         this.isCurrentData = true;
-        this.descriptiveAttributes = new DescriptiveAttributes(descriptiveAttributes);
+        this.descriptiveAttributes = new DescriptiveAttributes(informationTable, descriptiveAttributesPriority);
         this.informationTable = informationTable;
     }
 
