@@ -18,7 +18,7 @@ import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
 import CircleHelper from "../../../Utils/Feedback/CircleHelper";
-import { RulesDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { RulesDialog } from "../../../Utils/Dialogs/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import { createCategories, simpleSort, SortMenu } from "../../../Utils/Menus/SortMenu";
 import { SortButton } from "../../../Utils/Inputs/StyledButton";

@@ -16,11 +16,11 @@ import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultCl
 import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
 import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer";
-import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
+import MatrixDialog from "../../../Utils/Dialogs/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CircleHelper from "../../../Utils/Feedback/CircleHelper";
-import { CSVDialog } from "../../../Utils/Feedback/CSVDialog";
-import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog"
+import CSVDialog from "../../../Utils/Dialogs/CSVDialog";
+import { ClassifiedObjectDialog } from "../../../Utils/Dialogs/DetailsDialog"
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomButtonGroup from "../../../Utils/Inputs/CustomButtonGroup";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";

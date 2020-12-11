@@ -14,7 +14,7 @@ import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
-import { UnionsDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { UnionsDialog } from "../../../Utils/Dialogs/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 

@@ -8,7 +8,7 @@ import CalculateButton from "../Utils/Buttons/CalculateButton";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CustomBox from "../../../Utils/Containers/CustomBox"
-import { ConesDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { ConesDialog } from "../../../Utils/Dialogs/DetailsDialog";
 import { AttributesMenu } from "../../../Utils/Menus/AttributesMenu";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";

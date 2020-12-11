@@ -14,6 +14,7 @@ const StyledButtonPropTypes = {
     endIcon: PropTypes.node,
     fullWidth: PropTypes.bool,
     href: PropTypes.string,
+    onClick: PropTypes.func,
     size: PropTypes.oneOf(["small", "medium", "large"]),
     startIcon: PropTypes.node,
     variant: PropTypes.oneOf(["text", "outlined", "contained"])

@@ -23,10 +23,10 @@ import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
-import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
+import MatrixDialog from "../../../Utils/Dialogs/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
-import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { ClassifiedObjectDialog } from "../../../Utils/Dialogs/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomTextField from "../../../Utils/Inputs/CustomTextField";
 import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
