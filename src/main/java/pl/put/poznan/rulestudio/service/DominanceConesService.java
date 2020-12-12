@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import pl.put.poznan.rulestudio.enums.ConeType;
 import pl.put.poznan.rulestudio.exception.CalculationException;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
-import pl.put.poznan.rulestudio.model.DescriptiveAttributes;
-import pl.put.poznan.rulestudio.model.DominanceCones;
-import pl.put.poznan.rulestudio.model.Project;
-import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.*;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenDominanceConeResponse.ChosenDominanceConeResponseBuilder;
@@ -86,12 +83,16 @@ public class DominanceConesService {
 
     public MainDominanceConesResponse putDominanceCones(UUID id) {
         logger.info("Id:\t{}", id);
+        CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         calculateDominanceCones(project);
 
-        final DominanceCones dominanceCones = project.getDominanceCones();
+        calculationsStopWatch.stop();
+        DominanceCones dominanceCones = project.getDominanceCones();
+        dominanceCones.setCalculationsTime(calculationsStopWatch.getReadableTime());
+
         final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
         logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
         return mainDominanceConesResponse;
@@ -102,6 +103,7 @@ public class DominanceConesService {
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
+        CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -110,7 +112,10 @@ public class DominanceConesService {
 
         calculateDominanceCones(project);
 
-        final DominanceCones dominanceCones = project.getDominanceCones();
+        calculationsStopWatch.stop();
+        DominanceCones dominanceCones = project.getDominanceCones();
+        dominanceCones.setCalculationsTime(calculationsStopWatch.getReadableTime());
+
         final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
         logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
         return mainDominanceConesResponse;
