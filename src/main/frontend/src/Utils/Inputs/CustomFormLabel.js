@@ -1,8 +1,8 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { mergeClasses } from "../utilFunctions";
 import FormLabel from "@material-ui/core/FormLabel";
 import { makeStyles } from "@material-ui/core/styles";
-import { MuiFormLabelPropTypes } from "./propTypes";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -35,7 +35,18 @@ function CustomFormLabel(props, ref) {
     )
 }
 
-const CustomFormLabelForwardRef = React.forwardRef(CustomFormLabel)
-CustomFormLabelForwardRef.propTypes = { ...MuiFormLabelPropTypes };
+const CustomFormLabelForwardRef = React.forwardRef(CustomFormLabel);
+
+CustomFormLabelForwardRef.propTypes = {
+    children: PropTypes.node,
+    classes: PropTypes.object,
+    color: PropTypes.oneOf(["primary", "secondary"]),
+    component: PropTypes.elementType,
+    disabled: PropTypes.bool,
+    error: PropTypes.bool,
+    filled: PropTypes.bool,
+    focused: PropTypes.bool,
+    required: PropTypes.bool
+};
 
 export default CustomFormLabelForwardRef;

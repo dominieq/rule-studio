@@ -1,15 +1,14 @@
 import React from "react";
-import StyledButton from "../StyledButton";
-import { StyledButtonPropTypes } from "../propTypes"
+import StyledButton from "./StyledButton/StyledButton";
+import { StyledButtonPropTypes } from "./StyledButton/propTypes"
 
 /**
  * <h3>Overview</h3>
  * The {@link StyledButton} element with "OK" text, primary colour and outlined styling.
  *
- * @class
- * @category Utils
- * @subcategory Buttons
- * @param {Object} props - All will be forwarded to the {@link StyledButton} element.
+ * @constructor
+ * @category Buttons
+ * @param {Object} props - All props will be forwarded to the {@link StyledButton} element.
  * @returns {React.ReactElement}
  */
 function AcceptButton(props) {

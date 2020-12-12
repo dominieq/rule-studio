@@ -20,7 +20,7 @@ import { withStyles, createStyles } from '@material-ui/core/styles';
 import { DraggableHeader } from 'react-data-grid-addons';
 import PropTypes from 'prop-types';
 import CustomLoadingIcon from './CustomLoadingIcon';
-import { StyledButton } from '../../../Utils/Inputs/StyledButton';
+import { StyledButton } from '../../../Utils/Buttons';
 import NumericFilter from './NumericFilter';
 import AttributesVirtualizedTable from './AttributesVirtualizedTable';
 import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';

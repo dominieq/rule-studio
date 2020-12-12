@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { AcceptButton, CancelButton } from "../Inputs/StyledButton";
+import { AcceptButton, CancelButton } from "../Buttons";
 import StyledDialogContent from "./StyledDialogContent";
 import CustomTextField from "../Inputs/CustomTextField";
 import StyledPaper from "../Surfaces/StyledPaper";

@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { fetchCones } from "../../../Utils/utilFunctions/fetchFunctions";
 import { getItemName, parseConesItems } from "../../../Utils/utilFunctions/parseItems"
 import { parseConesListItems } from "../../../Utils/utilFunctions/parseListItems";
-import TabBody from "../Utils/TabBody";
-import CalculateButton from "../Utils/Buttons/CalculateButton";
+import TabBody from "../../../Utils/Containers/TabBody";
+import CalculateButton from "../../../Utils/Buttons/CalculateButton";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
 import CustomBox from "../../../Utils/Containers/CustomBox"

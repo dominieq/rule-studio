@@ -1,8 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import CustomTooltip from "../../../DataDisplay/CustomTooltip";
-import { StyledIconButton } from "../index";
+import CustomTooltip from "../DataDisplay/CustomTooltip";
+import StyledIconButton from "./StyledButton/StyledIconButton";
+import { ButtonWithTooltipPropTypes, StyledIconButtonPropTypes } from "./StyledButton/propTypes";
 import Badge from "@material-ui/core/Badge";
 import Sort from "@material-ui/icons/Sort";
 
@@ -17,12 +18,11 @@ const useStyles = makeStyles(theme => ({
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/badge/" target="_blank">Badge</a>.
  *
- * @name DotBadge
  * @constructor
  * @category Utils
  * @subcategory Feedback
  * @param props {Object} - Any other props will be forwarded to the Badge component.
- * @returns {React.ReactElement} - The Badge component from Material-UI library.
+ * @returns {React.ReactElement}
  */
 function DotBadge(props) {
     const classes = useStyles();
@@ -41,50 +41,42 @@ function DotBadge(props) {
 }
 
 /**
+ * <h3>Overview</h3>
  * The {@link StyledIconButton} wrapped around in {@link DotBadge} and {@link CustomTooltip}.
  * Use badge to signal that sorting parameters has changed.
  *
- * @name SortButton
  * @constructor
- * @category Utils
- * @subcategory Buttons
- * @param props {Object}
- * @param [props.ButtonProps] {Object} - Props applied to the {@link StyledIconButton} element.
- * @param [props.icon] {React.ReactNode} - The content of the {@link StyledIconButton} element.
- * @param [props.invisible] {boolean} - If <code>true</code> the {@link DotBadge} element will be hidden.
- * @param props.tooltip {React.ReactNode} - The content of the {@link CustomTooltip} element.
- * @param [props.TooltipProps] {Object} - Props applied to the {@link CustomTooltip} element.
+ * @category Buttons
+ * @param {Object} props - Any other props will be forwarded to the {@link StyledIconButtonPropTypes} element.
+ * @param {React.ReactNode} [props.icon] - The content of the {@link StyledIconButton} element.
+ * @param {boolean} [props.invisible] - If <code>true</code> the {@link DotBadge} element will be hidden.
+ * @param {React.ReactNode} props.tooltip - The content of the {@link CustomTooltip} element.
+ * @param {string} props.tooltipId - The id of the {@link CustomTooltip} element.
+ * @param {Object} [props.TooltipProps] - Props applied to the {@link CustomTooltip} element.
  * @returns {React.ReactElement}
  */
 function SortButton(props) {
-    const { ButtonProps, icon, invisible, tooltip, TooltipProps } = props;
+    const { icon, invisible, tooltip, tooltipId, TooltipProps, ...other } = props;
 
     return (
-        <CustomTooltip title={tooltip} {...TooltipProps}>
+        <CustomTooltip id={tooltipId} title={tooltip} {...TooltipProps}>
             <DotBadge invisible={invisible}>
-                <StyledIconButton
-                    aria-label={"sort button"}
-                    color={"secondary"}
-                    {...ButtonProps}
-                >
-                    { Boolean(icon) ? icon : <Sort /> }
+                <StyledIconButton aria-label={"sort-button"} color={"secondary"} {...other}>
+                    { icon != null ? icon : <Sort /> }
                 </StyledIconButton>
             </DotBadge>
         </CustomTooltip>
-    )
+    );
 }
 
 SortButton.propTypes = {
-    ButtonProps: PropTypes.shape({
-        'aria-label': PropTypes.any,
-        'aria-controls': PropTypes.any,
-        'aria-haspopup': PropTypes.bool,
-        onClick: PropTypes.func,
-    }),
+    'aria-label': PropTypes.any,
+    'aria-controls': PropTypes.any,
+    'aria-haspopup': PropTypes.bool,
+    ...StyledIconButtonPropTypes,
     icon: PropTypes.node,
     invisible: PropTypes.bool,
-    tooltip: PropTypes.node.isRequired,
-    TooltipProps: PropTypes.object,
+    ...ButtonWithTooltipPropTypes,
 };
 
 export default SortButton;

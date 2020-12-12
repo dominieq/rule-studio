@@ -14,7 +14,7 @@ import DeleteProjectDialog from "../Utils/Dialogs/DeleteProjectDialog";
 import ImportProjectDialog from "../Utils/Dialogs/ImportProjectDialog";
 import RenameProjectDialog from "../Utils/Dialogs/RenameProjectDialog";
 import SettingsProjectDialog from "../Utils/Dialogs/SettingsProjectDialog";
-import {DarkTheme, LightTheme} from "./Themes/Themes";
+import { DarkTheme, LightTheme } from "../Utils/Themes/Themes";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import {MuiThemeProvider} from "@material-ui/core/styles";
 

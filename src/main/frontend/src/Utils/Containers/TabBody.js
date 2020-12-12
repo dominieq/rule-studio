@@ -1,18 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
-import FilterNoResults from "./Filtering/FilterNoResults";
-import CustomBox from "../../../Utils/Containers/CustomBox";
-import { ResultList, ResultListSubheader } from "../../../Utils/DataDisplay/ResultList";
-import StyledCircularProgress from "../../../Utils/Feedback/StyledCircularProgress";
+import FilterNoResults from "../../Body/Project/Utils/Filtering/FilterNoResults";
+import CustomBox from "./CustomBox";
+import { ResultList, ResultListSubheader } from "../DataDisplay/ResultList";
+import StyledCircularProgress from "../Feedback/StyledCircularProgress";
 
 /**
  * Utility that presents results from calculations in tabs.
  * Takes care of displaying progress circle when results are being generated.
  * Displays a message when user tried to filter result list but no matches were found.
  *
- * @class
- * @category Tabs
- * @subcategory Utilities
+ * @constructor
+ * @category Utils
+ * @subcategory Containers
  * @param {Object} props
  * @param {Object[]} props.content - The content of the {@link ResultList} element. Should be a list of list-items.
  * @param {string} props.id - The id of the {@link CustomBox} element that wraps around the {@link ResultList}.

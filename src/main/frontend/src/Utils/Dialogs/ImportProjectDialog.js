@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import StyledDialogContent from "./StyledDialogContent";
-import { AcceptButton, CancelButton } from "../Inputs/StyledButton";
+import { AcceptButton, CancelButton } from "../Buttons";
 import FileSelectZone from "../../Body/Import/Elements/FileSelectZone";
 import StyledPaper from "../Surfaces/StyledPaper";
 import Dialog from "@material-ui/core/Dialog";

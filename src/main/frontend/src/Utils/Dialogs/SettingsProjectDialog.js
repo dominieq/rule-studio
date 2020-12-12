@@ -3,11 +3,10 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { fetchDescriptiveAttributes } from "../utilFunctions/fetchFunctions";
-import { AcceptButton, CancelButton } from "../Inputs/StyledButton";
+import { AcceptButton, CancelButton, StyledButton } from "../Buttons";
 import StyledDialogContent from "./StyledDialogContent"
 import CustomTextField from "../Inputs/CustomTextField";
 import CircleHelper from "../Feedback/CircleHelper";
-import { StyledButton } from "../Inputs/StyledButton";
 import StyledPaper from "../Surfaces/StyledPaper";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";

@@ -1,7 +1,7 @@
 import React, {Fragment} from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import { StyledIconButton } from "../Inputs/StyledButton";
+import { StyledIconButton } from "../Buttons";
 import StyledDivider from "../DataDisplay/StyledDivider";
 import Drawer from "@material-ui/core/Drawer";
 import WindowClose from "mdi-material-ui/WindowClose";

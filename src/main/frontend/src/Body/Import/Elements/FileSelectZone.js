@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip"
 import StyledFileChip from "../../../Utils/DataDisplay/StyledFileChip";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
-import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../../Utils/Buttons";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Typography from "@material-ui/core/Typography";
 import DeleteCircle from "mdi-material-ui/DeleteCircle"

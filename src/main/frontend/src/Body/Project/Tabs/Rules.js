@@ -5,11 +5,10 @@ import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parse
 import { parseRulesItems } from  "../../../Utils/utilFunctions/parseItems";
 import { parseRulesListItems } from "../../../Utils/utilFunctions/parseListItems";
 import { parseRulesParams } from "../../../Utils/utilFunctions/parseParams";
-import TabBody from "../Utils/TabBody";
+import TabBody from "../../../Utils/Containers/TabBody";
 import filterFunction from "../Utils/Filtering/FilterFunction";
 import FilterTextField from "../Utils/Filtering/FilterTextField";
-import CalculateButton from "../Utils/Buttons/CalculateButton";
-import SettingsButton from "../Utils/Buttons/SettingsButton";
+import { CalculateButton, SettingsButton, SortButton, StyledIconButton } from "../../../Utils/Buttons";
 import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
 import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
 import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
@@ -21,9 +20,7 @@ import CircleHelper from "../../../Utils/Feedback/CircleHelper";
 import { RulesDialog } from "../../../Utils/Dialogs/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import { createCategories, simpleSort, SortMenu } from "../../../Utils/Menus/SortMenu";
-import { SortButton } from "../../../Utils/Inputs/StyledButton";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
-import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import FileUpload from "mdi-material-ui/FileUpload";
@@ -722,15 +719,14 @@ class Rules extends Component {
                         </CustomTooltip>
                         <span style={{flexGrow: 1}} />
                         <SortButton
-                            ButtonProps={{
-                                "aria-controls": "rules-sort-menu",
-                                "aria-haspopup": true,
-                                "aria-label": "sort rules",
-                                disabled: !resultsExists || loading,
-                                onClick: this.onSortMenuOpen
-                            }}
+                            aria-controls={"rules-sort-menu"}
+                            aria-haspopup={true}
+                            aria-label={"sort-rules"}
+                            disabled={!resultsExists || loading}
+                            onClick={this.onSortMenuOpen}
                             invisible={sort.value === "id" && sort.order === "asc"}
                             tooltip={resultsExists ? "Sort rules" : "No content to sort"}
+                            tooltipId={"rules-sort-button-tooltip"}
                             TooltipProps={{
                                 WrapperProps: { style: { marginRight: "0.5rem" } }
                             }}

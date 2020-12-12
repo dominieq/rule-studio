@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import CustomPopper from "../Surfaces/CustomPopper";
 import CustomTooltip from "../DataDisplay/CustomTooltip";
-import { StyledButton } from "./StyledButton";
+import { StyledButton } from "../Buttons";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Grow from "@material-ui/core/Grow";

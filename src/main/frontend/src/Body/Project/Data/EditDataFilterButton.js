@@ -3,7 +3,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import './EditDataButtons.css';
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
-import { StyledButton, StyledIconButton } from "../../../Utils/Inputs/StyledButton";
+import { StyledButton, StyledIconButton } from "../../../Utils/Buttons";
 
 /**
  * This class generates Filter button and passes all the other buttons as children.

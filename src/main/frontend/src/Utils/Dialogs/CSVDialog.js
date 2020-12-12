@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import StyledDialogContent from "./StyledDialogContent";
+import { AcceptButton, CancelButton } from "../Buttons";
 import CustomTextField from "../Inputs/CustomTextField";
 import CustomTooltip from "../DataDisplay/CustomTooltip";
-import { StyledButton } from "../Inputs/StyledButton";
 import StyledCheckbox from "../Inputs/StyledCheckbox";
 import StyledPaper from "../Surfaces/StyledPaper";
 import Dialog from "@material-ui/core/Dialog";
@@ -136,22 +136,10 @@ class CSVDialog extends React.PureComponent {
                     </div>
                 </StyledDialogContent>
                 <DialogActions>
-                    <StyledButton
-                        aria-label={"cancel upload"}
-                        color={"secondary"}
-                        onClick={this.onCancel}
-                        variant={"outlined"}
-                    >
-                        Cancel
-                    </StyledButton>
-                    <StyledButton
-                        aria-label={"confirm upload"}
-                        color={"primary"}
-                        onClick={this.onConfirm}
-                        variant={"outlined"}
-                    >
+                    <CancelButton aria-label={"cancel-upload"} onClick={this.onCancel}/>
+                    <AcceptButton aria-label={"confirm upload"} onClick={this.onConfirm}>
                         Confirm
-                    </StyledButton>
+                    </AcceptButton>
                 </DialogActions>
             </Dialog>
         );

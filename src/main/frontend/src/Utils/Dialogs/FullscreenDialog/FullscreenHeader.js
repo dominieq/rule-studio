@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CustomHeader from "../../Surfaces/CustomHeader";
 import Typography from "@material-ui/core/Typography";
 import CustomTooltip from "../../DataDisplay/CustomTooltip";
-import { StyledIconButton } from "../../Inputs/StyledButton";
+import { StyledIconButton } from "../../Buttons";
 import WindowClose from "mdi-material-ui/WindowClose";
 
 const useStyles = makeStyles(theme=> ({

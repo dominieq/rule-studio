@@ -7,7 +7,7 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 import Typography from "@material-ui/core/Typography";
 import { AutoSizer, List } from "react-virtualized";
 import TextWithHoverTooltip from "./TextWithHoverTooltip";
-import { MoreSettingsIconButton } from "../Inputs/StyledButton";
+import { MoreSettingsIconButton } from "../Buttons";
 
 const listStyles = makeStyles(theme => ({
     root: {
