@@ -17,6 +17,7 @@ import { AttributesMenu } from "../../Menus/AttributesMenu";
  *
  * @constructor
  * @category Dialogs
+ * @subcategory Details Dialogs
  * @param {Object} props - Any other props will be forwarded to the {@link FullscreenDialog} element.
  * @param {Object} props.item - The selected union with it's characteristics.
  * @param {number} props.item.id - The id of a selected union.

@@ -14,6 +14,7 @@ import StyledCircularProgress from "../../Feedback/StyledCircularProgress";
  *
  * @constructor
  * @category Dialogs
+ * @subcategory Details Dialogs
  * @param {Object} props - Any other props will be forwarded to the {@link FullscreenDialog} element.
  * @param {Object} props.item - The selected object with it's dominance cones.
  * @param {number} props.item.id - The id of a selected object.

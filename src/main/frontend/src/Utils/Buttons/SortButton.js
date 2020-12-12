@@ -47,7 +47,7 @@ function DotBadge(props) {
  *
  * @constructor
  * @category Buttons
- * @param {Object} props - Any other props will be forwarded to the {@link StyledIconButtonPropTypes} element.
+ * @param {Object} props - Any other props will be forwarded to the {@link StyledIconButton} element.
  * @param {React.ReactNode} [props.icon] - The content of the {@link StyledIconButton} element.
  * @param {boolean} [props.invisible] - If <code>true</code> the {@link DotBadge} element will be hidden.
  * @param {React.ReactNode} props.tooltip - The content of the {@link CustomTooltip} element.

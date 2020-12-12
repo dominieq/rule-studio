@@ -22,6 +22,7 @@ import ArrowBack from "@material-ui/icons/ArrowBack";
  *
  * @constructor
  * @category Dialogs
+ * @subcategory Details Dialogs
  * @param {Object} props
  * @param {string} props.coveredObjectResource - The name of a selected resource when fetching covered object.
  * @param {boolean} props.disableAttributesMenu - If <code>true</code> the attributes menu will be disabled.
