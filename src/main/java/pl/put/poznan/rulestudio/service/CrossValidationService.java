@@ -84,6 +84,8 @@ public class CrossValidationService {
     }
 
     private void calculateCrossValidationInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, Integer numberOfFolds, Long seed) {
+        CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
+
         final InformationTable informationTable = project.getInformationTable();
         DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate cross-validation.");
         DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate cross-validation.");
@@ -147,6 +149,8 @@ public class CrossValidationService {
         final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
 
         CrossValidation crossValidation = new CrossValidation(numberOfFolds, informationTable, crossValidationSingleFolds, orderOfDecisions, meanOrdinalMisclassificationMatrix, sumOrdinalMisclassificationMatrix, typeOfUnions, consistencyThreshold, typeOfRules, classifierType, defaultClassificationResultType, seed, informationTable.getHash(), descriptiveAttributesPriority);
+        calculationsStopWatch.stop();
+        crossValidation.setCalculationsTime(calculationsStopWatch.getReadableTime());
 
         project.setCrossValidation(crossValidation);
     }

@@ -12,6 +12,7 @@ public class UnionsWithHttpParameters {
     private Boolean isCurrentData;
     private DescriptiveAttributes descriptiveAttributes;
     private InformationTable informationTable;
+    private String calculationsTime;
 
     public UnionsWithHttpParameters(UnionsWithSingleLimitingDecision unions, UnionType typeOfUnions, Double consistencyThreshold, String dataHash, String[] descriptiveAttributesPriority, InformationTable informationTable) {
         this.unions = unions;
@@ -80,6 +81,14 @@ public class UnionsWithHttpParameters {
         this.informationTable = informationTable;
     }
 
+    public String getCalculationsTime() {
+        return calculationsTime;
+    }
+
+    public void setCalculationsTime(String calculationsTime) {
+        this.calculationsTime = calculationsTime;
+    }
+
     @Override
     public String toString() {
         return "UnionsWithHttpParameters{" +
@@ -90,6 +99,7 @@ public class UnionsWithHttpParameters {
                 ", isCurrentData=" + isCurrentData +
                 ", descriptiveAttributes=" + descriptiveAttributes +
                 ", informationTable=" + informationTable +
+                ", calculationsTime='" + calculationsTime + '\'' +
                 '}';
     }
 }

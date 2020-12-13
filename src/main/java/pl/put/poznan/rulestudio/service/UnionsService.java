@@ -74,6 +74,8 @@ public class UnionsService {
     public static void calculateUnionsWithHttpParametersInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold) {
         UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
         if((!project.isCurrentUnionsWithSingleLimitingDecision()) || (unionsWithHttpParameters.getTypeOfUnions() != typeOfUnions) || (!unionsWithHttpParameters.getConsistencyThreshold().equals(consistencyThreshold))) {
+            CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
+
             InformationTable informationTable = project.getInformationTable();
             DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate unions.");
             DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate unions.");
@@ -89,6 +91,8 @@ public class UnionsService {
             final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
 
             unionsWithHttpParameters = new UnionsWithHttpParameters(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold, informationTable.getHash(), descriptiveAttributesPriority, informationTable);
+            calculationsStopWatch.stop();
+            unionsWithHttpParameters.setCalculationsTime(calculationsStopWatch.getReadableTime());
 
             project.setUnions(unionsWithHttpParameters);
             project.setCurrentUnionsWithSingleLimitingDecision(true);

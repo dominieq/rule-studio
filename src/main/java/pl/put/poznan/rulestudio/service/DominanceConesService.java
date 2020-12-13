@@ -30,6 +30,8 @@ public class DominanceConesService {
 
     private void calculateDominanceCones(Project project) {
         if(!project.isCurrentDominanceCones()) {
+            CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
+
             final InformationTable informationTable = project.getInformationTable();
             DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate dominance cones.");
             DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate dominance cones.");
@@ -50,6 +52,8 @@ public class DominanceConesService {
                 logger.error(ex.getMessage());
                 throw ex;
             }
+            calculationsStopWatch.stop();
+            dominanceCones.setCalculationsTime(calculationsStopWatch.getReadableTime());
 
             project.setDominanceCones(dominanceCones);
             project.setCurrentDominanceCones(true);
@@ -83,16 +87,12 @@ public class DominanceConesService {
 
     public MainDominanceConesResponse putDominanceCones(UUID id) {
         logger.info("Id:\t{}", id);
-        CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         calculateDominanceCones(project);
 
-        calculationsStopWatch.stop();
-        DominanceCones dominanceCones = project.getDominanceCones();
-        dominanceCones.setCalculationsTime(calculationsStopWatch.getReadableTime());
-
+        final DominanceCones dominanceCones = project.getDominanceCones();
         final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
         logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
         return mainDominanceConesResponse;
@@ -103,7 +103,6 @@ public class DominanceConesService {
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
-        CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -112,10 +111,7 @@ public class DominanceConesService {
 
         calculateDominanceCones(project);
 
-        calculationsStopWatch.stop();
-        DominanceCones dominanceCones = project.getDominanceCones();
-        dominanceCones.setCalculationsTime(calculationsStopWatch.getReadableTime());
-
+        final DominanceCones dominanceCones = project.getDominanceCones();
         final MainDominanceConesResponse mainDominanceConesResponse = MainDominanceConesResponseBuilder.newInstance().build(dominanceCones);
         logger.debug("mainDominanceConesResponse:\t{}", mainDominanceConesResponse.toString());
         return mainDominanceConesResponse;

@@ -266,6 +266,8 @@ public class RulesService {
 
         RulesWithHttpParameters rules = project.getRules();
         if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (!rules.getConsistencyThreshold().equals(consistencyThreshold)) || (rules.getTypeOfRules() != typeOfRules)) {
+            CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
+
             RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
 
             ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
@@ -277,6 +279,8 @@ public class RulesService {
             final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
 
             rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, descriptiveAttributesPriority, project.getInformationTable());
+            calculationsStopWatch.stop();
+            rules.setCalculationsTime(calculationsStopWatch.getReadableTime());
 
             project.setRules(rules);
             project.setCurrentRules(true);
