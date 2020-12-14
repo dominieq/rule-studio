@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
@@ -11,7 +12,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
  * @constructor
  * @category Utils
  * @subcategory Inputs
- * @param props {Object} - All props are forwarded to the FormControlLabel component.
+ * @param {Object} props - All props will be forwarded to the FormControlLabel component.
  */
 const CustomControlLabel = withStyles(theme => ({
     root: {
@@ -26,5 +27,17 @@ const CustomControlLabel = withStyles(theme => ({
 }), {name: "CustomControlLabel"})(props => (
     <FormControlLabel labelPlacement={"start"} {...props} />
 ));
+
+CustomControlLabel.propTypes = {
+    checked: PropTypes.bool,
+    classes: PropTypes.object,
+    control: PropTypes.element.isRequired,
+    disabled: PropTypes.bool,
+    inputRef: PropTypes.object,
+    label: PropTypes.node,
+    labelPlacement: PropTypes.oneOf(["bottom", "end", "start", "top"]),
+    onChange: PropTypes.func,
+    value: PropTypes.any
+}
 
 export default CustomControlLabel;
