@@ -5,22 +5,19 @@ import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parse
 import { getItemName, parseClassifiedItems } from "../../../Utils/utilFunctions/parseItems";
 import { parseClassifiedListItems } from "../../../Utils/utilFunctions/parseListItems";
 import { parseClassificationParams } from "../../../Utils/utilFunctions/parseParams";
-import TabBody from "../Utils/TabBody";
-import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterTextField from "../Utils/Filtering/FilterTextField";
-import CalculateButton from "../Utils/Buttons/CalculateButton";
-import MatrixButton from "../Utils/Buttons/MatrixButton";
-import MatrixDownloadButton from "../Utils/Buttons/MatrixDownloadButton";
-import SettingsButton from "../Utils/Buttons/SettingsButton";
-import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
-import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
+import TabBody from "../../../Utils/Containers/TabBody";
+import filterFunction from "../Filtering/FilterFunction";
+import FilterTextField from "../Filtering/FilterTextField";
+import DefaultClassificationResultSelector from "../Calculations/DefaultClassificationResultSelector";
+import TypeOfClassifierSelector from "../Calculations/TypeOfClassifierSelector";
+import { CalculateButton, MatrixButton, MatrixDownloadButton, SettingsButton } from "../../../Utils/Buttons";
 import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer";
-import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
+import MatrixDialog from "../../../Utils/Dialogs/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CircleHelper from "../../../Utils/Feedback/CircleHelper";
-import { CSVDialog } from "../../../Utils/Feedback/CSVDialog";
-import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog"
+import CSVDialog from "../../../Utils/Dialogs/CSVDialog";
+import { ClassifiedObjectDialog } from "../../../Utils/Dialogs/DetailsDialog"
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomButtonGroup from "../../../Utils/Inputs/CustomButtonGroup";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
@@ -31,8 +28,8 @@ import {AttributesMenu} from "../../../Utils/Menus/AttributesMenu";
  * The classification tab in RuLeStudio.
  * Presents the list of all object from information table with suggested classification based on generated rules.
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
@@ -575,7 +572,7 @@ class Classification extends Component {
                                 <StyledDivider margin={16} />
                                 <MatrixButton
                                     onClick={() => this.toggleOpen("matrix")}
-                                    title={"Show ordinal misclassification matrix and it's details"}
+                                    tooltip={"Show ordinal misclassification matrix and it's details"}
                                 />
                             </React.Fragment>
                         }
@@ -629,7 +626,7 @@ class Classification extends Component {
                             title={
                                 <React.Fragment>
                                     <MatrixDownloadButton
-                                        onSave={this.onSaveToFile}
+                                        onClick={this.onSaveToFile}
                                         tooltip={"Download matrix (txt)"}
                                     />
                                     <span aria-label={"matrix title"} style={{paddingLeft: 8}}>

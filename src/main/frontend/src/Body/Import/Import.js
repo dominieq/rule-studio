@@ -4,10 +4,10 @@ import { FileSelectZone } from "./Elements";
 import CustomBox from "../../Utils/Containers/CustomBox";
 import CollapsibleDivider from "../../Utils/DataDisplay/CollapsibleDivider";
 import StyledDivider from "../../Utils/DataDisplay/StyledDivider";
-import { CSVDialog } from "../../Utils/Feedback/CSVDialog";
+import CSVDialog from "../../Utils/Dialogs/CSVDialog";
 import CustomSwitch from "../../Utils/Inputs/CustomSwitch";
 import CustomTextField from "../../Utils/Inputs/CustomTextField";
-import { StyledButton }  from "../../Utils/Inputs/StyledButton"
+import { StyledButton }  from "../../Utils/Buttons"
 import CustomSection from "../../Utils/Surfaces/CustomSection";
 import Collapse from "@material-ui/core/Collapse";
 import styles from "./styles/Import.module.css";

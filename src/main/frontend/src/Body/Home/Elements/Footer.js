@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import styles from "../styles/Footer.module.css";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
-import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../../Utils/Buttons";
 import Typography from "@material-ui/core/Typography";
 import GitHub from "@material-ui/icons/GitHub";
 

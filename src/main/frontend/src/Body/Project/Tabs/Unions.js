@@ -3,18 +3,18 @@ import PropTypes from "prop-types";
 import { fetchUnions } from "../../../Utils/utilFunctions/fetchFunctions";
 import { parseUnionsItems } from "../../../Utils/utilFunctions/parseItems";
 import { parseUnionsListItems } from "../../../Utils/utilFunctions/parseListItems";
-import TabBody from "../Utils/TabBody";
-import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterTextField from "../Utils/Filtering/FilterTextField";
-import CalculateButton from "../Utils/Buttons/CalculateButton";
-import SettingsButton from "../Utils/Buttons/SettingsButton";
-import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
-import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
+import TabBody from "../../../Utils/Containers/TabBody";
+import filterFunction from "../Filtering/FilterFunction";
+import FilterTextField from "../Filtering/FilterTextField";
+import CalculateButton from "../../../Utils/Buttons/CalculateButton";
+import SettingsButton from "../../../Utils/Buttons/SettingsButton";
+import TypeOfUnionsSelector from "../Calculations/TypeOfUnionsSelector";
+import ThresholdSelector from "../Calculations/ThresholdSelector";
 import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
-import { UnionsDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { UnionsDialog } from "../../../Utils/Dialogs/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
@@ -22,8 +22,8 @@ import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
  * The class unions tab in RuLeStudio.
  * Presents the list of all unions generated for the information table in current project
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.

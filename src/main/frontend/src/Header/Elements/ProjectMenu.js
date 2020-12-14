@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from "@material-ui/core/styles";
 import FilesDetails from "./FilesDetails";
 import CustomTooltip from "../../Utils/DataDisplay/CustomTooltip";
-import { StyledIconButton } from "../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../Utils/Buttons";
 import StyledDivider from "../../Utils/DataDisplay/StyledDivider";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";

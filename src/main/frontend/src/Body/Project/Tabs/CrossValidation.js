@@ -6,30 +6,26 @@ import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parse
 import { getItemName, parseClassifiedItems } from "../../../Utils/utilFunctions/parseItems";
 import { parseClassifiedListItems } from "../../../Utils/utilFunctions/parseListItems";
 import { parseCrossValidationParams } from "../../../Utils/utilFunctions/parseParams";
-import TabBody from "../Utils/TabBody";
-import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterTextField from "../Utils/Filtering/FilterTextField";
-import CalculateButton from "../Utils/Buttons/CalculateButton";
-import MatrixButton from "../Utils/Buttons/MatrixButton";
-import MatrixDownloadButton from "../Utils/Buttons/MatrixDownloadButton";
-import MatrixSwapButton from "../Utils/Buttons/MatrixSwapButton";
-import SettingsButton from "../Utils/Buttons/SettingsButton";
-import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
-import NumberOfFoldsSelector from "../Utils/Calculations/NumberOfFoldsSelector";
-import SeedSelector from "../Utils/Calculations/SeedSelector";
-import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
-import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
-import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
-import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
+import TabBody from "../../../Utils/Containers/TabBody";
+import filterFunction from "../Filtering/FilterFunction";
+import FilterTextField from "../Filtering/FilterTextField";
+import { CalculateButton, MatrixButton, MatrixDownloadButton, MatrixSwapButton,
+    SettingsButton, StyledIconButton } from "../../../Utils/Buttons";
+import DefaultClassificationResultSelector from "../Calculations/DefaultClassificationResultSelector";
+import NumberOfFoldsSelector from "../Calculations/NumberOfFoldsSelector";
+import SeedSelector from "../Calculations/SeedSelector";
+import ThresholdSelector from "../Calculations/ThresholdSelector";
+import TypeOfClassifierSelector from "../Calculations/TypeOfClassifierSelector";
+import TypeOfRulesSelector from "../Calculations/TypeOfRulesSelector";
+import TypeOfUnionsSelector from "../Calculations/TypeOfUnionsSelector";
 import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
-import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
+import MatrixDialog from "../../../Utils/Dialogs/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
-import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { ClassifiedObjectDialog } from "../../../Utils/Dialogs/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomTextField from "../../../Utils/Inputs/CustomTextField";
-import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -40,8 +36,8 @@ import {AttributesMenu} from "../../../Utils/Menus/AttributesMenu";
  * The cross-validation tab in RuLeStudio.
  * Presents the outcome of cross-validation for information table from current project.
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
@@ -754,7 +750,7 @@ class CrossValidation extends Component {
                                 <p id={"all-folds"} style={{margin: "0 16px 0 0", fontSize: "1.15rem"}}>All folds:</p>
                                 <MatrixButton
                                     onClick={() => this.toggleOpen("matrixMean")}
-                                    title={"Show mean ordinal misclassification matrix"}
+                                    tooltip={"Show mean ordinal misclassification matrix"}
                                 />
                                 <CustomTooltip title={"Show accumulated ordinal misclassification matrix"}>
                                     <StyledIconButton
@@ -788,7 +784,7 @@ class CrossValidation extends Component {
                                 <p id={"fold-colon"} style={{margin: "0 16px 0 4px", fontSize: "1.15rem"}}>:</p>
                                 <MatrixButton
                                     onClick={() => this.toggleOpen("matrixFold")}
-                                    title={`Open ordinal misclassification matrix for fold ${selected.foldIndex + 1}`}
+                                    tooltip={`Open ordinal misclassification matrix for fold ${selected.foldIndex + 1}`}
                                 />
                             </Fragment>
                         }
@@ -858,11 +854,11 @@ class CrossValidation extends Component {
                             title={
                                 <React.Fragment>
                                     <MatrixSwapButton
-                                        onSwap={() => this.swapMatrix("matrixMean", "matrixSum")}
+                                        onClick={() => this.swapMatrix("matrixMean", "matrixSum")}
                                         tooltip={"Go to accumulated ordinal misclassification matrix"}
                                     />
                                     <MatrixDownloadButton
-                                        onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
+                                        onClick={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
                                         tooltip={"Download mean matrix (txt)"}
                                     />
                                     <span aria-label={"mean matrix title"} style={{paddingLeft: 8}}>
@@ -887,11 +883,11 @@ class CrossValidation extends Component {
                             title={
                                 <React.Fragment>
                                     <MatrixSwapButton
-                                        onSwap={() => this.swapMatrix("matrixSum", "matrixMean")}
+                                        onClick={() => this.swapMatrix("matrixSum", "matrixMean")}
                                         tooltip={"Go to mean ordinal misclassification matrix"}
                                     />
                                     <MatrixDownloadButton
-                                        onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
+                                        onClick={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
                                         tooltip={"Download accumulated matrix (txt)"}
                                     />
                                     <span aria-label={"sum matrix title"} style={{paddingLeft: 8}}>
@@ -921,7 +917,7 @@ class CrossValidation extends Component {
                             title={
                                 <React.Fragment>
                                     <MatrixDownloadButton
-                                        onSave={() => {
+                                        onClick={() => {
                                             this.onSaveToFile({
                                                 typeOfMatrix: "crossValidationFold",
                                                 numberOfFold: selected.foldIndex
