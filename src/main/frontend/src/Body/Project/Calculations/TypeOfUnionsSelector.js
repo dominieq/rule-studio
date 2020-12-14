@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
-import CustomTextField from "../../../../Utils/Inputs/CustomTextField";
+import CircleHelper from "../../../Utils/Feedback/CircleHelper";
+import CustomTextField from "../../../Utils/Inputs/CustomTextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import styles from "./styles/Calculations.module.css"
 
@@ -45,8 +45,8 @@ const tooltipStyles = makeStyles({
  * Presents type of unions and allows user to choose between values.
  *
  * @name TypeOfUnions
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Calculations
  * @param {Object} props
  * @param {Object} props.CircleHelperProps - Props applied to the {@link CircleHelper} element.

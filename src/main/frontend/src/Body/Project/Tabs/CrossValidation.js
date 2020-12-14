@@ -7,17 +7,17 @@ import { getItemName, parseClassifiedItems } from "../../../Utils/utilFunctions/
 import { parseClassifiedListItems } from "../../../Utils/utilFunctions/parseListItems";
 import { parseCrossValidationParams } from "../../../Utils/utilFunctions/parseParams";
 import TabBody from "../../../Utils/Containers/TabBody";
-import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterTextField from "../Utils/Filtering/FilterTextField";
+import filterFunction from "../Filtering/FilterFunction";
+import FilterTextField from "../Filtering/FilterTextField";
 import { CalculateButton, MatrixButton, MatrixDownloadButton, MatrixSwapButton,
     SettingsButton, StyledIconButton } from "../../../Utils/Buttons";
-import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
-import NumberOfFoldsSelector from "../Utils/Calculations/NumberOfFoldsSelector";
-import SeedSelector from "../Utils/Calculations/SeedSelector";
-import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
-import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
-import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
-import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
+import DefaultClassificationResultSelector from "../Calculations/DefaultClassificationResultSelector";
+import NumberOfFoldsSelector from "../Calculations/NumberOfFoldsSelector";
+import SeedSelector from "../Calculations/SeedSelector";
+import ThresholdSelector from "../Calculations/ThresholdSelector";
+import TypeOfClassifierSelector from "../Calculations/TypeOfClassifierSelector";
+import TypeOfRulesSelector from "../Calculations/TypeOfRulesSelector";
+import TypeOfUnionsSelector from "../Calculations/TypeOfUnionsSelector";
 import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import MatrixDialog from "../../../Utils/Dialogs/MatrixDialog";
@@ -36,8 +36,8 @@ import {AttributesMenu} from "../../../Utils/Menus/AttributesMenu";
  * The cross-validation tab in RuLeStudio.
  * Presents the outcome of cross-validation for information table from current project.
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.

@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
-import CustomTextField from "../../../../Utils/Inputs/CustomTextField";
+import CircleHelper from "../../../Utils/Feedback/CircleHelper";
+import CustomTextField from "../../../Utils/Inputs/CustomTextField";
 import styles from "./styles/Calculations.module.css";
 
 const tooltip = {
@@ -18,8 +18,8 @@ const tooltip = {
  * Presents type of rules and allows user to choose between values.
  *
  * @name TypeOfRules
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Calculations
  * @param {Object} props
  * @param {Object} props.CircleHelperProps - Props applied to the {@link CircleHelper} element.

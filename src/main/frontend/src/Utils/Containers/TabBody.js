@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import FilterNoResults from "../../Body/Project/Utils/Filtering/FilterNoResults";
+import FilterNoResults from "../../Body/Project/Filtering/FilterNoResults";
 import CustomBox from "./CustomBox";
 import { ResultList, ResultListSubheader } from "../DataDisplay/ResultList";
 import StyledCircularProgress from "../Feedback/StyledCircularProgress";

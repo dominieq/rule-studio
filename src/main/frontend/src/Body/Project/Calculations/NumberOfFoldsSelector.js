@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styles from "./styles/Calculations.module.css";
-import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
-import CustomTextField from "../../../../Utils/Inputs/CustomTextField";
+import CircleHelper from "../../../Utils/Feedback/CircleHelper";
+import CustomTextField from "../../../Utils/Inputs/CustomTextField";
 
 const tooltip = {
     main: "Number of parts of equal (or differing by 1) size that the training data set is randomly split into " +
@@ -17,8 +17,8 @@ const tooltip = {
  * Presents number of folds and allows user to type new value.
  *
  * @name NumberOfFolds
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Calculations
  * @param {Object} props
  * @param {Object} props.CircleHelperProps - Props applied to the {@link CircleHelper} element.

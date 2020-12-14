@@ -165,8 +165,8 @@ function RightClickContextMenu({
  * Presents the list of all objects (and attributes) from information table, allows to add, remove and edit them.
  *
  * @name Data
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props - Arguments received from the parent component
  * @param {Object} props.project - Holds data about the current project like id, name and everything associated with the project e.g. information table, unions, cones etc.

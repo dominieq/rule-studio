@@ -6,10 +6,10 @@ import { getItemName, parseClassifiedItems } from "../../../Utils/utilFunctions/
 import { parseClassifiedListItems } from "../../../Utils/utilFunctions/parseListItems";
 import { parseClassificationParams } from "../../../Utils/utilFunctions/parseParams";
 import TabBody from "../../../Utils/Containers/TabBody";
-import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterTextField from "../Utils/Filtering/FilterTextField";
-import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
-import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
+import filterFunction from "../Filtering/FilterFunction";
+import FilterTextField from "../Filtering/FilterTextField";
+import DefaultClassificationResultSelector from "../Calculations/DefaultClassificationResultSelector";
+import TypeOfClassifierSelector from "../Calculations/TypeOfClassifierSelector";
 import { CalculateButton, MatrixButton, MatrixDownloadButton, SettingsButton } from "../../../Utils/Buttons";
 import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer";
@@ -28,8 +28,8 @@ import {AttributesMenu} from "../../../Utils/Menus/AttributesMenu";
  * The classification tab in RuLeStudio.
  * Presents the list of all object from information table with suggested classification based on generated rules.
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.

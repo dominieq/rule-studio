@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
-import CustomTextField from "../../../../Utils/Inputs/CustomTextField";
+import CustomTextField from "../../../Utils/Inputs/CustomTextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Magnify from "mdi-material-ui/Magnify";
 
@@ -9,9 +9,9 @@ import Magnify from "mdi-material-ui/Magnify";
  * When user starts typing a timer is set for 300 milliseconds.
  * When the time is up, <code>onChange</code> function is fired with user's input as argument.
  *
- * @name Filter TextField
  * @constructor
- * @category Filtering
+ * @category Project
+ * @subcategory Filtering
  * @param {Object} props
  * @param {Object} props.inputRef - Reference object forwarded to the {@link CustomTextField} element.
  * @param {function} props.onChange - Callback fired when input was changed.

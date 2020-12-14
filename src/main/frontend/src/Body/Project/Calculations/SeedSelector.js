@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import CircleHelper from "../../../../Utils/Feedback/CircleHelper";
-import CustomTextField from "../../../../Utils/Inputs/CustomTextField";
-import CustomTooltip from "../../../../Utils/DataDisplay/CustomTooltip";
-import { StyledIconButton } from "../../../../Utils/Buttons";
+import CircleHelper from "../../../Utils/Feedback/CircleHelper";
+import CustomTextField from "../../../Utils/Inputs/CustomTextField";
+import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
+import { StyledIconButton } from "../../../Utils/Buttons";
 import styles from "./styles/Calculations.module.css";
 import Shuffle from "@material-ui/icons/Shuffle";
 
@@ -16,8 +16,8 @@ const tooltip = {
  * Presents seed and allows user to type or randomize new value.
  *
  * @name Seed
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Calculations
  * @param {Object} props
  * @param {Object} props.CircleHelperProps - Props applied to the {@link CircleHelper} element.

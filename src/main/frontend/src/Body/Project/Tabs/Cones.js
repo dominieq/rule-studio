@@ -5,8 +5,8 @@ import { getItemName, parseConesItems } from "../../../Utils/utilFunctions/parse
 import { parseConesListItems } from "../../../Utils/utilFunctions/parseListItems";
 import TabBody from "../../../Utils/Containers/TabBody";
 import CalculateButton from "../../../Utils/Buttons/CalculateButton";
-import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterTextField from "../Utils/Filtering/FilterTextField";
+import filterFunction from "../Filtering/FilterFunction";
+import FilterTextField from "../Filtering/FilterTextField";
 import CustomBox from "../../../Utils/Containers/CustomBox"
 import { ConesDialog } from "../../../Utils/Dialogs/DetailsDialog";
 import { AttributesMenu } from "../../../Utils/Menus/AttributesMenu";
@@ -17,8 +17,8 @@ import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
  * The dominance cones tab in RuLeStudio.
  * Presents the list of all objects from information table with details about their dominance cones.
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.

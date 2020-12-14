@@ -6,12 +6,12 @@ import { parseRulesItems } from  "../../../Utils/utilFunctions/parseItems";
 import { parseRulesListItems } from "../../../Utils/utilFunctions/parseListItems";
 import { parseRulesParams } from "../../../Utils/utilFunctions/parseParams";
 import TabBody from "../../../Utils/Containers/TabBody";
-import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterTextField from "../Utils/Filtering/FilterTextField";
+import filterFunction from "../Filtering/FilterFunction";
+import FilterTextField from "../Filtering/FilterTextField";
 import { CalculateButton, SettingsButton, SortButton, StyledIconButton } from "../../../Utils/Buttons";
-import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
-import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
-import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
+import ThresholdSelector from "../Calculations/ThresholdSelector";
+import TypeOfUnionsSelector from "../Calculations/TypeOfUnionsSelector";
+import TypeOfRulesSelector from "../Calculations/TypeOfRulesSelector";
 import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
@@ -31,8 +31,8 @@ import { mdiTextBox } from '@mdi/js';
  * The rules tab in RuLeStudio.
  * Presents the list of all rules generated for information table from current project.
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.

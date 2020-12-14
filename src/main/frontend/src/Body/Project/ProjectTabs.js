@@ -16,8 +16,8 @@ import OutdatedData from "../../Utils/Feedback/AlertBadge/Alerts/OutdatedData";
  * The Project section in RuLeStudio. Allows user to choose between tabs.
  * If necessary, displays information about outdated results shown in currently selected tab.
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onSnackbarOpen - Callback fired when the component request to display an error.

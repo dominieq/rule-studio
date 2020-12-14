@@ -12,7 +12,8 @@ const useStyles = makeStyles(theme=> ({
  * Displays information that provided phrase gave no results.
  *
  * @constructor
- * @category Filtering
+ * @category Project
+ * @subcategory Filtering
  * @returns {React.ReactElement}
  */
 function FilterNoResults() {
