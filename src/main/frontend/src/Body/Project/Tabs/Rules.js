@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
+import { nonNullProperty } from "../../../Utils/utilFunctions";
 import { downloadRules, fetchRules } from "../../../Utils/utilFunctions/fetchFunctions";
 import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
 import { parseRulesItems } from  "../../../Utils/utilFunctions/parseItems";
@@ -625,7 +626,7 @@ class Rules extends Component {
     };
 
     render() {
-        const { loading, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
+        const { loading, items, data, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
         const { objectGlobalName, project: { id: projectId }, serverBase } = this.props;
 
         const resultsExists = Array.isArray(items) && Boolean(items.length);
@@ -783,7 +784,12 @@ class Rules extends Component {
                         subheaderContent={[
                             {
                                 label: "Number of rules:",
-                                value: displayedItems && displayedItems.length
+                                value: Array.isArray(displayedItems) ? displayedItems.length : "-"
+                            },
+                            {
+                                label: "Calculated in:",
+                                value: nonNullProperty(data, "calculationsTime") ?
+                                    data.calculationsTime : "-"
                             }
                         ]}
                     />
