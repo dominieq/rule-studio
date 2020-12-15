@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
+import { nonNullProperty } from "../../../Utils/utilFunctions";
 import { fetchCones } from "../../../Utils/utilFunctions/fetchFunctions";
 import { getItemName, parseConesItems } from "../../../Utils/utilFunctions/parseItems"
 import { parseConesListItems } from "../../../Utils/utilFunctions/parseListItems";
@@ -283,7 +284,7 @@ class Cones extends Component {
     };
 
     render() {
-        const { loading, items, displayedItems, openDetails, selectedItem, attributesMenuEl, alertProps } = this.state;
+        const { loading, items, data, displayedItems, openDetails, selectedItem, attributesMenuEl, alertProps } = this.state;
         const { objectGlobalName ,project: { id: projectId }, serverBase } = this.props;
 
         return (
@@ -364,7 +365,12 @@ class Cones extends Component {
                     subheaderContent={[
                         {
                             label: "Number of objects:",
-                            value: displayedItems != null && displayedItems.length
+                            value: Array.isArray(displayedItems) ? displayedItems.length : "-"
+                        },
+                        {
+                            label: "Calculated in:",
+                            value: nonNullProperty(data, "calculationsTime") ?
+                                data.calculationsTime : "-"
                         }
                     ]}
                 />

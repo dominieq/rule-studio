@@ -27,6 +27,8 @@ public class MainClassUnionsResponse {
     @JsonProperty("parameters")
     private ClassUnionsParameters classUnionsParameters;
 
+    private String calculationsTime;
+
     private MainClassUnionsResponse() {
         //private constructor
     }
@@ -48,6 +50,10 @@ public class MainClassUnionsResponse {
         return classUnionsParameters;
     }
 
+    public String getCalculationsTime() {
+        return calculationsTime;
+    }
+
     @Override
     public String toString() {
         return "MainClassUnionsResponse{" +
@@ -55,6 +61,7 @@ public class MainClassUnionsResponse {
                 ", qualityOfApproximation=" + qualityOfApproximation +
                 ", isCurrentData=" + isCurrentData +
                 ", classUnionsParameters=" + classUnionsParameters +
+                ", calculationsTime='" + calculationsTime + '\'' +
                 '}';
     }
 
@@ -65,6 +72,7 @@ public class MainClassUnionsResponse {
         private Double qualityOfApproximation;
         private Boolean isCurrentData;
         private ClassUnionsParameters classUnionsParameters;
+        private String calculationsTime;
 
         public static MainClassUnionsResponseBuilder newInstance() {
             return new MainClassUnionsResponseBuilder();
@@ -90,6 +98,11 @@ public class MainClassUnionsResponse {
             return this;
         }
 
+        public MainClassUnionsResponseBuilder setCalculationsTime(String calculationsTime) {
+            this.calculationsTime = calculationsTime;
+            return this;
+        }
+
         public MainClassUnionsResponse build() {
             MainClassUnionsResponse mainClassUnionsResponse = new MainClassUnionsResponse();
 
@@ -97,6 +110,7 @@ public class MainClassUnionsResponse {
             mainClassUnionsResponse.qualityOfApproximation = this.qualityOfApproximation;
             mainClassUnionsResponse.isCurrentData = this.isCurrentData;
             mainClassUnionsResponse.classUnionsParameters = this.classUnionsParameters;
+            mainClassUnionsResponse.calculationsTime = this.calculationsTime;
 
             return mainClassUnionsResponse;
         }
@@ -124,6 +138,7 @@ public class MainClassUnionsResponse {
             mainClassUnionsResponse.isCurrentData = unionsWithHttpParameters.isCurrentData();
 
             mainClassUnionsResponse.classUnionsParameters = ClassUnionsParametersBuilder.newInstance().build(unionsWithHttpParameters);
+            mainClassUnionsResponse.calculationsTime = unionsWithHttpParameters.getCalculationsTime();
 
             return mainClassUnionsResponse;
         }

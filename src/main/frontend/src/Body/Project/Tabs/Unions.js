@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
+import { nonNullProperty } from "../../../Utils/utilFunctions";
 import { fetchUnions } from "../../../Utils/utilFunctions/fetchFunctions";
 import { parseUnionsItems } from "../../../Utils/utilFunctions/parseItems";
 import { parseUnionsListItems } from "../../../Utils/utilFunctions/parseListItems";
@@ -408,11 +409,17 @@ class Unions extends Component {
                         subheaderContent={[
                             {
                                 label: "Number of unions:",
-                                value: displayedItems ? displayedItems.length : undefined
+                                value: Array.isArray(displayedItems) ? displayedItems.length : "-"
                             },
                             {
                                 label: "Quality of classification:",
-                                value: data ? data.qualityOfApproximation : undefined
+                                value: nonNullProperty(data, "qualityOfApproximation") ?
+                                    data.qualityOfApproximation : "-"
+                            },
+                            {
+                                label: "Calculated in:",
+                                value: nonNullProperty(data, "calculationsTime") ?
+                                    data.calculationsTime : "-"
                             }
                         ]}
                     />

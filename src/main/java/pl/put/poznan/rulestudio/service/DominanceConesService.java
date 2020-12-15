@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import pl.put.poznan.rulestudio.enums.ConeType;
 import pl.put.poznan.rulestudio.exception.CalculationException;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
-import pl.put.poznan.rulestudio.model.DescriptiveAttributes;
-import pl.put.poznan.rulestudio.model.DominanceCones;
-import pl.put.poznan.rulestudio.model.Project;
-import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.*;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenDominanceConeResponse.ChosenDominanceConeResponseBuilder;
@@ -33,6 +30,8 @@ public class DominanceConesService {
 
     private void calculateDominanceCones(Project project) {
         if(!project.isCurrentDominanceCones()) {
+            CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
+
             final InformationTable informationTable = project.getInformationTable();
             DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate dominance cones.");
             DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate dominance cones.");
@@ -53,6 +52,8 @@ public class DominanceConesService {
                 logger.error(ex.getMessage());
                 throw ex;
             }
+            calculationsStopWatch.stop();
+            dominanceCones.setCalculationsTime(calculationsStopWatch.getReadableTime());
 
             project.setDominanceCones(dominanceCones);
             project.setCurrentDominanceCones(true);

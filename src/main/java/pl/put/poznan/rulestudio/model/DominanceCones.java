@@ -1,8 +1,5 @@
 package pl.put.poznan.rulestudio.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.dominance.DominanceConeCalculator;
@@ -27,6 +24,8 @@ public class DominanceCones {
     private DescriptiveAttributes descriptiveAttributes;
 
     private InformationTable informationTable;
+
+    private String calculationsTime;
 
     public DominanceCones() {
         numberOfObjects = 0;
@@ -116,6 +115,16 @@ public class DominanceCones {
         this.informationTable = informationTable;
     }
 
+    public String getCalculationsTime() {
+        return calculationsTime;
+    }
+
+    public void setCalculationsTime(String calculationsTime) {
+        if(this.calculationsTime == null) {
+            this.calculationsTime = calculationsTime;
+        }
+    }
+
     @Override
     public String toString() {
         return "DominanceCones{" +
@@ -128,6 +137,7 @@ public class DominanceCones {
                 ", isCurrentData=" + isCurrentData +
                 ", descriptiveAttributes=" + descriptiveAttributes +
                 ", informationTable=" + informationTable +
+                ", calculationsTime='" + calculationsTime + '\'' +
                 '}';
     }
 

@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import BigNumber from "bignumber.js";
+import { nonNullProperty } from "../../../Utils/utilFunctions";
 import { fetchCrossValidation, fetchFold, downloadMatrix } from "../../../Utils/utilFunctions/fetchFunctions";
 import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
 import { getItemName, parseClassifiedItems } from "../../../Utils/utilFunctions/parseItems";
@@ -61,6 +62,7 @@ class CrossValidation extends Component {
             foldData: null,
             items: null,
             displayedItems: [],
+            calculationsTime: "-",
             parameters: {
                 consistencyThreshold: 0,
                 defaultClassificationResultType: "majorityDecisionClass",
@@ -163,8 +165,10 @@ class CrossValidation extends Component {
                 const folds = resultParams.hasOwnProperty("numberOfFolds") ?
                     this.generateFoldNames(resultParams.numberOfFolds) : [];
 
-                this.setState(({parameters, selected}) => ({
+                this.setState(({calculationsTime, parameters, selected}) => ({
                     folds: folds,
+                    calculationsTime: nonNullProperty(result, "calculationsTime") ?
+                        result.calculationsTime : calculationsTime,
                     parameters: { ...parameters, ...resultParams },
                     selected: { ...selected, foldIndex: foldIndex }
                 }), () => {
@@ -346,8 +350,10 @@ class CrossValidation extends Component {
                         this.generateFoldNames(resultParams.numberOfFolds) : [];
 
                     if (this._isMounted) {
-                        this.setState(({selected}) => ({
+                        this.setState(({calculationsTime, selected}) => ({
                             folds: folds,
+                            calculationsTime: nonNullProperty(result, "calculationsTime") ?
+                                result.calculationsTime : calculationsTime,
                             parametersSaved: true,
                             refreshNeeded: {
                                 matrixMean: true,
@@ -646,6 +652,7 @@ class CrossValidation extends Component {
             foldData,
             items,
             displayedItems,
+            calculationsTime,
             open,
             parameters,
             refreshNeeded,
@@ -811,18 +818,22 @@ class CrossValidation extends Component {
                             },
                             {
                                 label: "Training objects:",
-                                value: foldData != null && foldData.hasOwnProperty("numberOfTrainingObjects") ?
-                                    foldData.numberOfTrainingObjects : "undefined"
+                                value: nonNullProperty(foldData, "numberOfTrainingObjects") ?
+                                    foldData.numberOfTrainingObjects : "-"
                             },
                             {
                                 label: "Rules:",
-                                value: foldData != null && foldData.hasOwnProperty("numberOfRules") ?
-                                    foldData.numberOfRules : "undefined"
+                                value: nonNullProperty(foldData, "numberOfRules") ?
+                                    foldData.numberOfRules : "-"
                             },
                             {
                                 label: "Test objects:",
-                                value: foldData != null && foldData.hasOwnProperty("numberOfTestObjects") ?
-                                    foldData.numberOfTestObjects : "undefined",
+                                value: nonNullProperty(foldData, "numberOfTestObjects") ?
+                                    foldData.numberOfTestObjects : "-",
+                            },
+                            {
+                                label: "Calculated in:",
+                                value: calculationsTime
                             }
                         ]}
                     />

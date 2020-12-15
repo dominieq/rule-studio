@@ -40,6 +40,9 @@ public class MainRulesResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private ValidityRulesContainer validityRulesContainer;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String calculationsTime;
+
     private MainRulesResponse() {
         //private constructor
     }
@@ -77,6 +80,10 @@ public class MainRulesResponse {
         return validityRulesContainer;
     }
 
+    public String getCalculationsTime() {
+        return calculationsTime;
+    }
+
     @Override
     public String toString() {
         return "MainRulesResponse{" +
@@ -88,6 +95,7 @@ public class MainRulesResponse {
                 ", externalRulesFileName='" + externalRulesFileName + '\'' +
                 ", errorMessage='" + errorMessage + '\'' +
                 ", validityRulesContainer=" + validityRulesContainer +
+                ", calculationsTime='" + calculationsTime + '\'' +
                 '}';
     }
 
@@ -102,6 +110,7 @@ public class MainRulesResponse {
         private String externalRulesFileName;
         private String errorMessage;
         private ValidityRulesContainer validityRulesContainer;
+        private String calculationsTime;
 
         public static MainRulesResponseBuilder newInstance() {
             return new MainRulesResponseBuilder();
@@ -147,6 +156,11 @@ public class MainRulesResponse {
             return this;
         }
 
+        public MainRulesResponseBuilder setCalculationsTime(String calculationsTime) {
+            this.calculationsTime = calculationsTime;
+            return this;
+        }
+
         public MainRulesResponse build() {
             MainRulesResponse mainRulesResponse = new MainRulesResponse();
 
@@ -158,6 +172,7 @@ public class MainRulesResponse {
             mainRulesResponse.externalRulesFileName = this.externalRulesFileName;
             mainRulesResponse.errorMessage = this.errorMessage;
             mainRulesResponse.validityRulesContainer = this.validityRulesContainer;
+            mainRulesResponse.calculationsTime = this.calculationsTime;
 
             return mainRulesResponse;
         }
@@ -181,6 +196,7 @@ public class MainRulesResponse {
             mainRulesResponse.externalRulesFileName = rulesWithHttpParameters.getRulesFileName();
             mainRulesResponse.errorMessage = rulesWithHttpParameters.getErrorMessage();
             mainRulesResponse.validityRulesContainer = rulesWithHttpParameters.getValidityRulesContainer();
+            mainRulesResponse.calculationsTime = rulesWithHttpParameters.getCalculationsTime();
 
             return mainRulesResponse;
         }

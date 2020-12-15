@@ -26,6 +26,7 @@ public class CrossValidation {
     private String dataHash;
     private Boolean isCurrentData;
     private DescriptiveAttributes descriptiveAttributes;
+    private String calculationsTime;
 
     public CrossValidation(Integer numberOfFolds, CrossValidationSingleFold[] crossValidationSingleFolds, OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix, OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix) {
         this.numberOfFolds = numberOfFolds;
@@ -187,6 +188,14 @@ public class CrossValidation {
         this.descriptiveAttributes = descriptiveAttributes;
     }
 
+    public String getCalculationsTime() {
+        return calculationsTime;
+    }
+
+    public void setCalculationsTime(String calculationsTime) {
+        this.calculationsTime = calculationsTime;
+    }
+
     @Override
     public String toString() {
         return "CrossValidation{" +
@@ -205,6 +214,7 @@ public class CrossValidation {
                 ", dataHash='" + dataHash + '\'' +
                 ", isCurrentData=" + isCurrentData +
                 ", descriptiveAttributes=" + descriptiveAttributes +
+                ", calculationsTime='" + calculationsTime + '\'' +
                 '}';
     }
 }

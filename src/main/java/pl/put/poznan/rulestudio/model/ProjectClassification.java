@@ -31,12 +31,15 @@ public class ProjectClassification extends AbstractClassification {
     private InformationTable learningInformationTable;
     private DescriptiveAttributes learningDescriptiveAttributes;
     private Boolean isCurrentLearningData;
+    private String calculationsTime;
 
     public ProjectClassification(RulesWithHttpParameters rulesWithHttpParameters, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable) {
         this(rulesWithHttpParameters, classifiedInformationTable, classifierType, defaultClassificationResultType, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, projectDataInformationTable, null);
     }
 
     public ProjectClassification(RulesWithHttpParameters rulesWithHttpParameters, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable, String externalDataFileName) {
+        CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
+
         final RuleSetWithCharacteristics ruleSetWithCharacteristics = rulesWithHttpParameters.getRuleSet();
         if(rulesWithHttpParameters.isCoveragePresent()) {
             this.isOriginalLearningData = true;
@@ -73,6 +76,9 @@ public class ProjectClassification extends AbstractClassification {
 
         this.ruleSet = ruleSetWithCharacteristics;
         this.isCurrentRuleSet = true;
+
+        calculationsStopWatch.stop();
+        this.calculationsTime = calculationsStopWatch.getReadableTime();
     }
 
     public InformationTable getClassifiedInformationTable() {
@@ -159,6 +165,10 @@ public class ProjectClassification extends AbstractClassification {
         isCurrentLearningData = currentLearningData;
     }
 
+    public String getCalculationsTime() {
+        return calculationsTime;
+    }
+
     @Override
     public String toString() {
         return "ProjectClassification{" +
@@ -178,6 +188,7 @@ public class ProjectClassification extends AbstractClassification {
                 ", learningInformationTable=" + learningInformationTable +
                 ", learningDescriptiveAttributes=" + learningDescriptiveAttributes +
                 ", isCurrentLearningData=" + isCurrentLearningData +
+                ", calculationsTime='" + calculationsTime + '\'' +
                 "} " + super.toString();
     }
 

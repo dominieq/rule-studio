@@ -23,6 +23,7 @@ public class RulesWithHttpParameters implements Cloneable {
     private Boolean isCoveragePresent;
     private DescriptiveAttributes descriptiveAttributes;
     private InformationTable informationTable;
+    private String calculationsTime;
   
     public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String rulesFileName, Attribute[] attributes) {
         this.externalRules = true;
@@ -159,6 +160,14 @@ public class RulesWithHttpParameters implements Cloneable {
         this.informationTable = informationTable;
     }
 
+    public String getCalculationsTime() {
+        return calculationsTime;
+    }
+
+    public void setCalculationsTime(String calculationsTime) {
+        this.calculationsTime = calculationsTime;
+    }
+
     @Override
     public String toString() {
         return "RulesWithHttpParameters{" +
@@ -171,10 +180,12 @@ public class RulesWithHttpParameters implements Cloneable {
                 ", rulesFileName='" + rulesFileName + '\'' +
                 ", isCurrentLearningData=" + isCurrentLearningData +
                 ", attributesHash='" + attributesHash + '\'' +
+                ", isCurrentAttributes=" + isCurrentAttributes +
                 ", validityRulesContainer=" + validityRulesContainer +
                 ", isCoveragePresent=" + isCoveragePresent +
                 ", descriptiveAttributes=" + descriptiveAttributes +
                 ", informationTable=" + informationTable +
+                ", calculationsTime='" + calculationsTime + '\'' +
                 '}';
     }
 

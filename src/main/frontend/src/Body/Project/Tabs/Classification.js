@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { nonNullProperty } from "../../../Utils/utilFunctions";
 import { downloadMatrix, fetchClassification } from "../../../Utils/utilFunctions/fetchFunctions";
 import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
 import { getItemName, parseClassifiedItems } from "../../../Utils/utilFunctions/parseItems";
@@ -595,7 +596,12 @@ class Classification extends Component {
                         subheaderContent={[
                             {
                                 label: "Number of objects:",
-                                value: displayedItems && displayedItems.length,
+                                value: Array.isArray(displayedItems) ? displayedItems.length : "-"
+                            },
+                            {
+                                label: "Calculated in:",
+                                value: nonNullProperty(data, "calculationsTime") ?
+                                    data.calculationsTime : "-"
                             }
                         ]}
                     />
