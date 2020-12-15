@@ -28,9 +28,11 @@ const CustomMenu = withStyles( theme => ({
  * @param {Object} props.ListProps - Props applied to the List element from react-virtualized.
  * @param {string} props.MuiMenuProps - Props applied to the Menu element from Material-UI.
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
+ * @param {function} props.onAttributesRefreshed - Callback fired when component has just refreshed it's content.
  * @param {function} props.onObjectNamesChange - Callback fired when object names have been changed.
  * @param {function} props.onSnackbarOpen - Callback fired when the component requests to display an error.
  * @param {string} props.projectId - The identifier of a selected project.
+ * @param {boolean} props.refreshNeeded - If <code>true</code> the component will refresh it's content.
  * @param {string} props.resource - The name of a selected resource.
  * @param {string} props.serverBase - The host in the URL of an API call.
  * @param {Object} props.queryParams - The query parameters in the URL of an API call.
@@ -65,6 +67,13 @@ class AttributesMenu extends React.PureComponent {
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.projectId !== this.props.projectId) {
             this.getAttributes();
+            return;
+        }
+
+        if (prevProps.MuiMenuProps.anchorEl == null && this.props.MuiMenuProps.anchorEl != null
+            && this.props.refreshNeeded) {
+
+            this.getAttributes(() => this.getObjectNames(this.props.onAttributesRefreshed));
             return;
         }
 
@@ -281,15 +290,21 @@ AttributesMenu.propTypes = {
     }),
     MuiMenuProps: PropTypes.shape({ ...MuiMenuPropTypes }),
     objectGlobalName: PropTypes.string,
+    onAttributesRefreshed: PropTypes.func,
     onObjectNamesChange: PropTypes.func,
     onSnackbarOpen: PropTypes.func,
     projectId: PropTypes.string.isRequired,
+    refreshNeeded: PropTypes.bool,
     resource: PropTypes.string.isRequired,
     serverBase: PropTypes.string,
     queryParams: PropTypes.shape({
         subject: PropTypes.number,
         set: PropTypes.string
     })
+}
+
+AttributesMenu.defaultProps = {
+    refreshNeeded: false
 }
 
 export default AttributesMenu;

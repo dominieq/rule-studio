@@ -60,6 +60,7 @@ class Rules extends Component {
                 typeOfRules: "certain",
                 typeOfUnions: "monotonic"
             },
+            parametersSaved: true,
             selectedItem: null,
             open: {
                 details: false,
