@@ -24,14 +24,16 @@ import OutdatedData from "../../Utils/Feedback/AlertBadge/Alerts/OutdatedData";
  * @param {Object} props.project - Current project.
  * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.updateProject - Callback fired when a part of current project was changed.
+ * @returns {React.PureComponent}
  */
-class ProjectTabs extends React.Component {
+class ProjectTabs extends React.PureComponent {
     constructor(props) {
         super(props);
 
         this.state = {
             informationTable: null,
             isUpdateNecessary: false,
+            refreshNeeded: false,
             loading: false,
             selected: 0,
             showAlert: Array(5).fill(false),
@@ -233,28 +235,6 @@ class ProjectTabs extends React.Component {
     };
 
     /**
-     * A component's lifecycle method. Fired before rendering to determine whether a component should update.
-     * <br>
-     * <br>
-     * Apart from making a shallow comparison between props and state,
-     * method compares the id of current project to the updated project.
-     * Component will update if the identities are different.
-     *
-     * @function
-     * @memberOf ProjectTabs
-     * @param {Object} nextProps - New props that will replace old props.
-     * @param {Object} nextState - New state that will replace old state
-     * @param {Object} nextContext - New context that will replace old context.
-     * @returns {boolean} - If <code>true</code> the component will update.
-     */
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-        const shallowComparison = this.props !== nextProps || this.state !== nextState;
-        const deepComparison = this.props.project.id !== nextProps.project.id;
-
-        return shallowComparison || deepComparison;
-    };
-
-    /**
      * A component's lifecycle method. Fired after a component was updated.
      * <br>
      * <br>
@@ -279,6 +259,10 @@ class ProjectTabs extends React.Component {
                     loading: true
                 }, () => {
                     this.updateProjectOnServer(projectId, informationTable, selected);
+                });
+            } else if (selected !== 0) {
+                this.setState({
+                    refreshNeeded: true
                 });
             }
 
@@ -339,7 +323,8 @@ class ProjectTabs extends React.Component {
     onDataChange = (informationTable, isUpdateNecessary) => {
         this.setState({
             informationTable: informationTable,
-            isUpdateNecessary: isUpdateNecessary
+            isUpdateNecessary: isUpdateNecessary,
+            refreshNeeded: false
         });
     };
 
@@ -410,6 +395,7 @@ class ProjectTabs extends React.Component {
         const {
             informationTable,
             loading,
+            refreshNeeded,
             selected,
             showAlert,
             showExternalRules,
@@ -481,6 +467,7 @@ class ProjectTabs extends React.Component {
                                     loading={loading}
                                     onDataChange={this.onDataChange}
                                     project={project}
+                                    refreshNeeded={refreshNeeded}
                                     serverBase={serverBase}
                                     updateProject={this.props.updateProject}
                                 />
