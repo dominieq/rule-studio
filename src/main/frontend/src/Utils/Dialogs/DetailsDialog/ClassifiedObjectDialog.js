@@ -637,7 +637,7 @@ class ClassifiedObjectDialog extends React.PureComponent {
                             {loading.coveredObjects &&
                                 <StyledCircularProgress />
                             }
-                            {!loading.coveredObjects && coveredObjects.length > 0 &&
+                            {!loading.coveredObjects && Array.isArray(coveredObjects) && coveredObjects.length > 0 &&
                                 <TableItemsList
                                     customisable={!disableAttributesMenu}
                                     getItemsStyle={this.getCoveredObjectStyle}

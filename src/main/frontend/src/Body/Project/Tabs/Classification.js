@@ -57,7 +57,10 @@ class Classification extends Component {
                 classifierType: "SimpleRuleClassifier",
             },
             parametersSaved: true,
-            matrixRefreshNeeded: false,
+            refreshNeeded: {
+                attributesMenu: false,
+                matrix: false
+            },
             selected: {
                 item: null,
                 action: 0
@@ -246,7 +249,10 @@ class Classification extends Component {
                             items: items,
                             displayedItems: items,
                             parametersSaved: true,
-                            matrixRefreshNeeded: true
+                            refreshNeeded: {
+                                attributesMenu: true,
+                                matrix: true
+                            }
                         });
                     }
 
@@ -466,6 +472,12 @@ class Classification extends Component {
         });
     };
 
+    onComponentRefresh = (target) => {
+        this.setState(({refreshNeeded}) => ({
+            refreshNeeded: { ...refreshNeeded, [target]: false }
+        }));
+    };
+
     onSnackbarOpen = (exception, setStateCallback) => {
         if (!(exception.hasOwnProperty("type") && exception.type === "AlertError")) {
             console.error(exception);
@@ -485,12 +497,6 @@ class Classification extends Component {
         }
     };
 
-    onMatrixRefresh = () => {
-        this.setState({
-            matrixRefreshNeeded: false
-        });
-    };
-
     render() {
         const {
             loading,
@@ -498,7 +504,7 @@ class Classification extends Component {
             items,
             displayedItems,
             parameters,
-            matrixRefreshNeeded,
+            refreshNeeded,
             selected,
             open,
             attributesMenuEl,
@@ -621,11 +627,11 @@ class Classification extends Component {
                     {Array.isArray(items) && items.length > 0 &&
                         <MatrixDialog
                             onClose={() => this.toggleOpen("matrix")}
-                            onMatrixRefresh={this.onMatrixRefresh}
+                            onMatrixRefresh={() => this.onComponentRefresh("matrix")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrix}
                             projectId={projectId}
-                            refreshNeeded={matrixRefreshNeeded}
+                            refreshNeeded={refreshNeeded.matrix}
                             resource={"classification"}
                             saveMatrix={this.onSaveToFile}
                             serverBase={serverBase}
@@ -651,9 +657,11 @@ class Classification extends Component {
                             onClose: this.onAttributesMenuClose
                         }}
                         objectGlobalName={objectGlobalName}
+                        onAttributesRefreshed={() => this.onComponentRefresh("attributesMenu")}
                         onObjectNamesChange={this.onObjectNamesChange}
                         onSnackbarOpen={this.onSnackbarOpen}
                         projectId={projectId}
+                        refreshNeeded={refreshNeeded.attributesMenu}
                         resource={"classification"}
                         serverBase={serverBase}
                     />

@@ -39,6 +39,9 @@ class Cones extends Component {
             data: null,
             items: null,
             displayedItems: [],
+            refreshNeeded: {
+                attributesMenu: false
+            },
             selectedItem: null,
             openDetails: false,
             attributesMenuEl: null,
@@ -170,7 +173,10 @@ class Cones extends Component {
                         this.setState({
                             data: result,
                             items: items,
-                            displayedItems: items
+                            displayedItems: items,
+                            refreshNeeded: {
+                                attributesMenu: true
+                            }
                         });
                     }
 
@@ -264,6 +270,12 @@ class Cones extends Component {
         }));
     }
 
+    onComponentRefreshed = (target) => {
+        this.setState(({refreshNeeded}) => ({
+            refreshNeeded: { ...refreshNeeded, [target]: false }
+        }));
+    }
+
     onSnackbarOpen = (exception, setStateCallback) => {
         if (!(exception.hasOwnProperty("type") && exception.type === "AlertError")) {
             console.error(exception);
@@ -284,7 +296,18 @@ class Cones extends Component {
     };
 
     render() {
-        const { loading, items, data, displayedItems, openDetails, selectedItem, attributesMenuEl, alertProps } = this.state;
+        const {
+            loading,
+            items,
+            data,
+            displayedItems,
+            refreshNeeded,
+            openDetails,
+            selectedItem,
+            attributesMenuEl,
+            alertProps
+        } = this.state;
+
         const { objectGlobalName ,project: { id: projectId }, serverBase } = this.props;
 
         return (
@@ -298,23 +321,23 @@ class Cones extends Component {
                     <span style={{flexGrow: 1}}/>
                     <FilterTextField onChange={this.onFilterChange} />
                 </CustomHeader>
-                {Array.isArray(items) && items.length > 0 && !loading &&
-                    <AttributesMenu
-                        ListProps={{
-                            id: "cones-main-desc-attribute-menu"
-                        }}
-                        MuiMenuProps={{
-                            anchorEl: attributesMenuEl,
-                            onClose: this.onAttributesMenuClose
-                        }}
-                        objectGlobalName={objectGlobalName}
-                        onObjectNamesChange={this.onObjectNamesChange}
-                        onSnackbarOpen={this.onSnackbarOpen}
-                        projectId={projectId}
-                        resource={"cones"}
-                        serverBase={serverBase}
-                    />
-                }
+                <AttributesMenu
+                    ListProps={{
+                        id: "cones-main-desc-attribute-menu"
+                    }}
+                    MuiMenuProps={{
+                        anchorEl: attributesMenuEl,
+                        onClose: this.onAttributesMenuClose
+                    }}
+                    objectGlobalName={objectGlobalName}
+                    onAttributesRefreshed={() => this.onComponentRefreshed("attributesMenu")}
+                    onObjectNamesChange={this.onObjectNamesChange}
+                    onSnackbarOpen={this.onSnackbarOpen}
+                    projectId={projectId}
+                    refreshNeeded={refreshNeeded.attributesMenu}
+                    resource={"cones"}
+                    serverBase={serverBase}
+                />
                 <TabBody
                     content={parseConesListItems(displayedItems)}
                     id={"cones-list"}

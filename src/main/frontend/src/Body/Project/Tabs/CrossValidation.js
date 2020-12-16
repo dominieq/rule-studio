@@ -74,6 +74,7 @@ class CrossValidation extends Component {
             },
             parametersSaved: true,
             refreshNeeded: {
+                attributesMenu: false,
                 matrixMean: false,
                 matrixSum: false,
                 matrixFold: false
@@ -356,6 +357,7 @@ class CrossValidation extends Component {
                                 result.calculationsTime : calculationsTime,
                             parametersSaved: true,
                             refreshNeeded: {
+                                attributesMenu: true,
                                 matrixMean: true,
                                 matrixSum: true,
                                 matrixFold: true
@@ -620,6 +622,12 @@ class CrossValidation extends Component {
         });
     };
 
+    onComponentRefresh = (target) => {
+        this.setState(({refreshNeeded}) => ({
+            refreshNeeded: { ...refreshNeeded, [target]: false }
+        }));
+    };
+
     onSnackbarOpen = (exception, setStateCallback) => {
         if (!(exception.hasOwnProperty("type") && exception.type === "AlertError")) {
             console.error(exception);
@@ -637,12 +645,6 @@ class CrossValidation extends Component {
                 alertProps: {...alertProps, open: false}
             }));
         }
-    };
-
-    onMatrixRefresh = (matrixType) => {
-        this.setState(({refreshNeeded}) => ({
-            refreshNeeded: { ...refreshNeeded, [matrixType]: false }
-        }));
     };
 
     render() {
@@ -854,7 +856,7 @@ class CrossValidation extends Component {
                     {folds != null &&
                         <MatrixDialog
                             onClose={() => this.toggleOpen("matrixMean")}
-                            onMatrixRefresh={() => this.onMatrixRefresh("matrixMean")}
+                            onMatrixRefresh={() => this.onComponentRefresh("matrixMean")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixMean}
                             projectId={projectId}
@@ -883,7 +885,7 @@ class CrossValidation extends Component {
                     {folds != null &&
                         <MatrixDialog
                             onClose={() => this.toggleOpen("matrixSum")}
-                            onMatrixRefresh={() => this.onMatrixRefresh("matrixSum")}
+                            onMatrixRefresh={() => this.onComponentRefresh("matrixSum")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixSum}
                             projectId={projectId}
@@ -912,7 +914,7 @@ class CrossValidation extends Component {
                     {foldData != null &&
                         <MatrixDialog
                             onClose={() => this.toggleOpen("matrixFold")}
-                            onMatrixRefresh={() => this.onMatrixRefresh("matrixFold")}
+                            onMatrixRefresh={() => this.onComponentRefresh("matrixFold")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixFold}
                             projectId={projectId}
@@ -947,24 +949,24 @@ class CrossValidation extends Component {
                             }}
                         />
                     }
-                    {Array.isArray(items) && items.length > 0 &&
-                        <AttributesMenu
-                            ListProps={{
-                                id: "cross-validation-main-desc-attr-menu"
-                            }}
-                            MuiMenuProps={{
-                                anchorEl: attributesMenuEl,
-                                onClose: this.onAttributesMenuClose
-                            }}
-                            objectGlobalName={objectGlobalName}
-                            onObjectNamesChange={this.onObjectNamesChange}
-                            onSnackbarOpen={this.onSnackbarOpen}
-                            projectId={projectId}
-                            resource={"crossValidation"}
-                            serverBase={serverBase}
-                            queryParams={{ subject: selected.foldIndex }}
-                        />
-                    }
+                    <AttributesMenu
+                        ListProps={{
+                            id: "cross-validation-main-desc-attr-menu"
+                        }}
+                        MuiMenuProps={{
+                            anchorEl: attributesMenuEl,
+                            onClose: this.onAttributesMenuClose
+                        }}
+                        objectGlobalName={objectGlobalName}
+                        onAttributesRefreshed={() => this.onComponentRefresh("attributesMenu")}
+                        onObjectNamesChange={this.onObjectNamesChange}
+                        onSnackbarOpen={this.onSnackbarOpen}
+                        projectId={projectId}
+                        refreshNeeded={refreshNeeded.attributesMenu}
+                        resource={"crossValidation"}
+                        serverBase={serverBase}
+                        queryParams={{ subject: selected.foldIndex }}
+                    />
                 </CustomBox>
                 <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
             </CustomBox>
