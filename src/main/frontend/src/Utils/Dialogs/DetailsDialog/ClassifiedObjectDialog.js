@@ -608,7 +608,7 @@ class ClassifiedObjectDialog extends React.PureComponent {
                                         enterDelay={250}
                                         enterNextDelay={500}
                                         placement={"top"}
-                                        title={"Double click to view see details"}
+                                        title={"Double click to see details"}
                                         WrapperProps={{
                                             id: "rule-table",
                                             onDoubleClick: () => this.slide("forward", 1),
