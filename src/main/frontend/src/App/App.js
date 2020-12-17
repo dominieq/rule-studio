@@ -103,14 +103,18 @@ class App extends Component {
      */
     updateProject = (project) => {
         this.setState(({projects}) => {
-            if (projects.length) {
-                let index;
+            if (projects.length > 0) {
+                let index = -1;
 
                 for (let i = 0; i < projects.length; i++) {
                     if (projects[i].id === project.id) {
                         index = i;
                         break;
                     }
+                }
+
+                if (index === -1) {
+                    return { projects: projects };
                 }
 
                 return {
