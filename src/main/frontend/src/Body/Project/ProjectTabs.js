@@ -7,7 +7,7 @@ import Data from "./Data/DisplayData";
 import Rules from "./Tabs/Rules";
 import Unions from "./Tabs/Unions";
 import { fetchData, fetchProject } from "../../Utils/utilFunctions/fetchFunctions";
-import StyledTab from "../../Utils/Navigation/StyledTab";
+import StyledLinkTab from "../../Utils/Navigation/StyledLinkTab";
 import StyledTabs from "../../Utils/Navigation/StyledTabs";
 import ExternalFile from "../../Utils/Feedback/CustomIcons/ExternalFile";
 import OutdatedData from "../../Utils/Feedback/AlertBadge/Alerts/OutdatedData";
@@ -460,26 +460,30 @@ class ProjectTabs extends React.Component {
         return (
             <React.Fragment>
                 <StyledTabs aria-label={"project tabs"} onChange={this.onTabChange} value={selected}>
-                    <StyledTab label={"Data"} {...this.getTabProps(0)} link={`/${project.id}/${tabNames[0]}`}/>
-                    <StyledTab
+                    <StyledLinkTab
+                        label={"Data"}
+                        to={`/${project.id}/${tabNames[0]}`}
+                        {...this.getTabProps(0)}
+                    />
+                    <StyledLinkTab
                         label={
                             <OutdatedData invisible={!showAlert[0]} messages={alertMessages[0]}>
                                 Dominance cones
                             </OutdatedData>
                         }
+                        to={`/${project.id}/${tabNames[1]}`}
                         {...this.getTabProps(1)}
-                        link={`/${project.id}/${tabNames[1]}`}
                     />
-                    <StyledTab
+                    <StyledLinkTab
                         label={
                             <OutdatedData invisible={!showAlert[1]} messages={alertMessages[1]}>
                                 Class unions
                             </OutdatedData>
                         }
+                        to={`/${project.id}/${tabNames[2]}`}
                         {...this.getTabProps(2)}
-                        link={`/${project.id}/${tabNames[2]}`}
                     />
-                    <StyledTab
+                    <StyledLinkTab
                         icon={showExternalRules ?
                             <ExternalFile WrapperProps={{style: { marginBottom: 0, marginRight: 8}}} /> : null
                         }
@@ -488,10 +492,10 @@ class ProjectTabs extends React.Component {
                                 Rules
                             </OutdatedData>
                         }
+                        to={`/${project.id}/${tabNames[3]}`}
                         {...this.getTabProps(3)}
-                        link={`/${project.id}/${tabNames[3]}`}
                     />
-                    <StyledTab
+                    <StyledLinkTab
                         icon={showExternalData ?
                             <ExternalFile WrapperProps={{style: { marginBottom: 0, marginRight: 8}}} /> : null
                         }
@@ -500,17 +504,17 @@ class ProjectTabs extends React.Component {
                                 Classification
                             </OutdatedData>
                         }
+                        to={`/${project.id}/${tabNames[4]}`}
                         {...this.getTabProps(4)}
-                        link={`/${project.id}/${tabNames[4]}`}
                     />
-                    <StyledTab
+                    <StyledLinkTab
                         label={
                             <OutdatedData invisible={!showAlert[4]} messages={alertMessages[4]}>
                                 Cross-Validation
                             </OutdatedData>
                         }
+                        to={`/${project.id}/${tabNames[5]}`}
                         {...this.getTabProps(5)}
-                        link={`/${project.id}/${tabNames[5]}`}
                     />
                 </StyledTabs>
                 <Switch>

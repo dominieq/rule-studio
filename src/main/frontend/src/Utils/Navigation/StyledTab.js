@@ -1,9 +1,8 @@
 import React from "react";
-import PropTypes from "prop-types";
+import { MuiTabPropTypes } from "./propTypes";
 import { makeStyles } from "@material-ui/core/styles";
 import { mergeClasses } from "../utilFunctions";
 import Tab from "@material-ui/core/Tab";
-import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -35,33 +34,23 @@ const useStyles = makeStyles(theme => ({
  * For full documentation check Material-UI docs on
  * <a href="https://material-ui.com/api/tab/" target="_blank">Tab</a>.
  *
- * @name Styled Tab
  * @constructor
  * @category Utils
  * @subcategory Navigation
- * @param props {Object} - Any other props will be forwarded to the Tab component.
- * @returns {React.ReactElement} - The Tab component from Material-UI.
+ * @param {Object} props - All props will be forwarded to the Tab component.
+ * @returns {React.ReactElement}
  */
 function StyledTab(props) {
-    const { classes: propsClasses, link, ...other } = props;
+    const { classes: propsClasses, ...other } = props;
 
     let classes = useStyles();
     if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
-        <Tab classes={{...classes}} component={Link} to={link} {...other} />
+        <Tab classes={{...classes}} {...other} />
     );
 }
 
-StyledTab.propTypes = {
-    classes: PropTypes.object,
-    disabled: PropTypes.bool,
-    disableFocusRipple: PropTypes.bool,
-    disableRipple: PropTypes.bool,
-    icon: PropTypes.node,
-    label: PropTypes.node,
-    value: PropTypes.any,
-    wrapped: PropTypes.bool
-};
+StyledTab.propTypes = { ...MuiTabPropTypes };
 
 export default StyledTab;
