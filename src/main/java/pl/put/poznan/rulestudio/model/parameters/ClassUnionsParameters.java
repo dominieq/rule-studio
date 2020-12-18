@@ -3,7 +3,7 @@ package pl.put.poznan.rulestudio.model.parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.enums.UnionType;
-import pl.put.poznan.rulestudio.model.UnionsWithHttpParameters;
+import pl.put.poznan.rulestudio.model.ProjectClassUnions;
 
 public class ClassUnionsParameters {
 
@@ -60,11 +60,11 @@ public class ClassUnionsParameters {
             return classUnionsParameters;
         }
 
-        public ClassUnionsParameters build(UnionsWithHttpParameters unionsWithHttpParameters) {
+        public ClassUnionsParameters build(ProjectClassUnions projectClassUnions) {
             ClassUnionsParameters classUnionsParameters = new ClassUnionsParameters();
 
-            classUnionsParameters.typeOfUnions = unionsWithHttpParameters.getTypeOfUnions();
-            classUnionsParameters.consistencyThreshold = unionsWithHttpParameters.getConsistencyThreshold();
+            classUnionsParameters.typeOfUnions = projectClassUnions.getTypeOfUnions();
+            classUnionsParameters.consistencyThreshold = projectClassUnions.getConsistencyThreshold();
 
             return classUnionsParameters;
         }

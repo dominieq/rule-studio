@@ -172,9 +172,9 @@ public class MetadataService {
             dominanceCones.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
         }
 
-        UnionsWithHttpParameters unions = project.getUnions();
-        if(unions != null) {
-            unions.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
+        ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
+        if(projectClassUnions != null) {
+            projectClassUnions.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
         }
 
         RulesWithHttpParameters rules = project.getRules();

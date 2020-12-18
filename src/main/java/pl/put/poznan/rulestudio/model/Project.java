@@ -12,7 +12,7 @@ public class Project {
     private InformationTable informationTable;
     private DescriptiveAttributes descriptiveAttributes;
     private DominanceCones dominanceCones;
-    private UnionsWithHttpParameters unions;
+    private ProjectClassUnions projectClassUnions;
     private RulesWithHttpParameters rules;
     private ProjectClassification projectClassification;
     private CrossValidation crossValidation;
@@ -77,11 +77,11 @@ public class Project {
                 dominanceCones.setCurrentData(false);
             }
         }
-        if(this.unions != null) {
-            if (unions.getDataHash().equals(dataHash)) {
-                unions.setCurrentData(true);
+        if(this.projectClassUnions != null) {
+            if (projectClassUnions.getDataHash().equals(dataHash)) {
+                projectClassUnions.setCurrentData(true);
             } else {
-                unions.setCurrentData(false);
+                projectClassUnions.setCurrentData(false);
             }
         }
         if(this.rules != null) {
@@ -152,12 +152,12 @@ public class Project {
         this.dominanceCones = dominanceCones;
     }
 
-    public UnionsWithHttpParameters getUnions() {
-        return unions;
+    public ProjectClassUnions getProjectClassUnions() {
+        return projectClassUnions;
     }
 
-    public void setUnions(UnionsWithHttpParameters unions) {
-        this.unions = unions;
+    public void setProjectClassUnions(ProjectClassUnions projectClassUnions) {
+        this.projectClassUnions = projectClassUnions;
     }
 
     public boolean isCurrentDominanceCones() {
@@ -254,7 +254,7 @@ public class Project {
                 ", informationTable=" + informationTable +
                 ", descriptiveAttributes=" + descriptiveAttributes +
                 ", dominanceCones=" + dominanceCones +
-                ", unions=" + unions +
+                ", projectClassUnions=" + projectClassUnions +
                 ", rules=" + rules +
                 ", projectClassification=" + projectClassification +
                 ", crossValidation=" + crossValidation +

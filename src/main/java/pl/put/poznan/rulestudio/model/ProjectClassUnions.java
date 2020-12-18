@@ -4,7 +4,7 @@ import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.InformationTable;
 import pl.put.poznan.rulestudio.enums.UnionType;
 
-public class UnionsWithHttpParameters {
+public class ProjectClassUnions {
     private UnionsWithSingleLimitingDecision unions;
     private UnionType typeOfUnions;
     private Double consistencyThreshold;
@@ -14,7 +14,7 @@ public class UnionsWithHttpParameters {
     private InformationTable informationTable;
     private String calculationsTime;
 
-    public UnionsWithHttpParameters(UnionsWithSingleLimitingDecision unions, UnionType typeOfUnions, Double consistencyThreshold, String dataHash, String[] descriptiveAttributesPriority, InformationTable informationTable) {
+    public ProjectClassUnions(UnionsWithSingleLimitingDecision unions, UnionType typeOfUnions, Double consistencyThreshold, String dataHash, String[] descriptiveAttributesPriority, InformationTable informationTable) {
         this.unions = unions;
         this.typeOfUnions = typeOfUnions;
         this.consistencyThreshold = consistencyThreshold;
@@ -91,7 +91,7 @@ public class UnionsWithHttpParameters {
 
     @Override
     public String toString() {
-        return "UnionsWithHttpParameters{" +
+        return "ProjectClassUnions{" +
                 "unions=" + unions +
                 ", typeOfUnions=" + typeOfUnions +
                 ", consistencyThreshold=" + consistencyThreshold +

@@ -261,14 +261,14 @@ public class RulesService {
     }
 
     public static void calculateRulesWithHttpParametersInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
-        UnionsService.calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
-        UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
+        UnionsService.calculateClassUnionsInProject(project, typeOfUnions, consistencyThreshold);
+        ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
 
         RulesWithHttpParameters rules = project.getRules();
         if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (!rules.getConsistencyThreshold().equals(consistencyThreshold)) || (rules.getTypeOfRules() != typeOfRules)) {
             CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
 
-            RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
+            RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(projectClassUnions.getUnions(), typeOfRules);
 
             ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
             final RulesWithHttpParameters previousRules = project.getRules();

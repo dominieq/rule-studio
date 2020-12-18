@@ -71,9 +71,9 @@ public class UnionsService {
         return unionsWithSingleLimitingDecision;
     }
 
-    public static void calculateUnionsWithHttpParametersInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold) {
-        UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
-        if((!project.isCurrentUnionsWithSingleLimitingDecision()) || (unionsWithHttpParameters.getTypeOfUnions() != typeOfUnions) || (!unionsWithHttpParameters.getConsistencyThreshold().equals(consistencyThreshold))) {
+    public static void calculateClassUnionsInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold) {
+        final ProjectClassUnions previousProjectClassUnions = project.getProjectClassUnions();
+        if((!project.isCurrentUnionsWithSingleLimitingDecision()) || (previousProjectClassUnions.getTypeOfUnions() != typeOfUnions) || (!previousProjectClassUnions.getConsistencyThreshold().equals(consistencyThreshold))) {
             CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
 
             InformationTable informationTable = project.getInformationTable();
@@ -83,18 +83,17 @@ public class UnionsService {
             final UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(informationTable, typeOfUnions, consistencyThreshold);
 
             ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
-            final UnionsWithHttpParameters previousUnions = project.getUnions();
-            if (previousUnions != null) {
-                descriptiveAttributesPriorityArrayList.add(previousUnions.getDescriptiveAttributes().getCurrentAttributeName());
+            if (previousProjectClassUnions != null) {
+                descriptiveAttributesPriorityArrayList.add(previousProjectClassUnions.getDescriptiveAttributes().getCurrentAttributeName());
             }
             descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
             final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
 
-            unionsWithHttpParameters = new UnionsWithHttpParameters(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold, informationTable.getHash(), descriptiveAttributesPriority, informationTable);
+            ProjectClassUnions newProjectClassUnions = new ProjectClassUnions(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold, informationTable.getHash(), descriptiveAttributesPriority, informationTable);
             calculationsStopWatch.stop();
-            unionsWithHttpParameters.setCalculationsTime(calculationsStopWatch.getReadableTime());
+            newProjectClassUnions.setCalculationsTime(calculationsStopWatch.getReadableTime());
 
-            project.setUnions(unionsWithHttpParameters);
+            project.setProjectClassUnions(newProjectClassUnions);
             project.setCurrentUnionsWithSingleLimitingDecision(true);
         } else {
             logger.info("Unions are already calculated with given configuration, skipping current calculation.");
@@ -138,15 +137,15 @@ public class UnionsService {
         return values;
     }
 
-    private UnionsWithHttpParameters getUnionsWithHttpParametersFromProject(Project project) {
-        final UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
-        if(unionsWithHttpParameters == null) {
+    private ProjectClassUnions getClassUnionsFromProject(Project project) {
+        final ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
+        if(projectClassUnions == null) {
             EmptyResponseException ex = new EmptyResponseException("Unions haven't been calculated.");
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        return unionsWithHttpParameters;
+        return projectClassUnions;
     }
 
     public MainClassUnionsResponse getUnions(UUID id) {
@@ -154,9 +153,9 @@ public class UnionsService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
+        final ProjectClassUnions projectClassUnions = getClassUnionsFromProject(project);
 
-        final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(unionsWithHttpParameters);
+        final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(projectClassUnions);
         logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
         return mainClassUnionsResponse;
     }
@@ -168,10 +167,10 @@ public class UnionsService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
+        calculateClassUnionsInProject(project, typeOfUnions, consistencyThreshold);
 
-        final UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
-        final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(unionsWithHttpParameters);
+        final ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
+        final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(projectClassUnions);
         logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
         return mainClassUnionsResponse;
     }
@@ -189,10 +188,10 @@ public class UnionsService {
         final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
+        calculateClassUnionsInProject(project, typeOfUnions, consistencyThreshold);
 
-        final UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
-        final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(unionsWithHttpParameters);
+        final ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
+        final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(projectClassUnions);
         logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
         return mainClassUnionsResponse;
     }
@@ -202,9 +201,9 @@ public class UnionsService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
+        final ProjectClassUnions projectClassUnions = getClassUnionsFromProject(project);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(unionsWithHttpParameters.getDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassUnions.getDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -215,12 +214,12 @@ public class UnionsService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
+        final ProjectClassUnions projectClassUnions = getClassUnionsFromProject(project);
 
-        DescriptiveAttributes descriptiveAttributes = unionsWithHttpParameters.getDescriptiveAttributes();
+        DescriptiveAttributes descriptiveAttributes = projectClassUnions.getDescriptiveAttributes();
         descriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(unionsWithHttpParameters.getDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassUnions.getDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -230,10 +229,10 @@ public class UnionsService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
+        final ProjectClassUnions projectClassUnions = getClassUnionsFromProject(project);
 
-        final Integer descriptiveAttributeIndex = unionsWithHttpParameters.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
-        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(unionsWithHttpParameters.getInformationTable(), descriptiveAttributeIndex);
+        final Integer descriptiveAttributeIndex = projectClassUnions.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(projectClassUnions.getInformationTable(), descriptiveAttributeIndex);
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
@@ -245,21 +244,21 @@ public class UnionsService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
+        final ProjectClassUnions projectClassUnions = getClassUnionsFromProject(project);
 
-        final Union chosenClassUnion = getClassUnionByIndex(unionsWithHttpParameters, classUnionIndex);
+        final Union chosenClassUnion = getClassUnionByIndex(projectClassUnions, classUnionIndex);
         final int[] indices =  getClassUnionArrayPropertyValues(chosenClassUnion, classUnionArrayPropertyType);
-        final String[] objectNames = unionsWithHttpParameters.getDescriptiveAttributes().extractChosenObjectNames(unionsWithHttpParameters.getInformationTable(), indices);
+        final String[] objectNames = projectClassUnions.getDescriptiveAttributes().extractChosenObjectNames(projectClassUnions.getInformationTable(), indices);
 
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
 
-    private Union getClassUnionByIndex(UnionsWithHttpParameters unionsWithHttpParameters, Integer classUnionIndex) {
+    private Union getClassUnionByIndex(ProjectClassUnions projectClassUnions, Integer classUnionIndex) {
         final Union[] upwardUnions, downwardUnions;
-        upwardUnions = unionsWithHttpParameters.getUnions().getUpwardUnions();
-        downwardUnions = unionsWithHttpParameters.getUnions().getDownwardUnions();
+        upwardUnions = projectClassUnions.getUnions().getUpwardUnions();
+        downwardUnions = projectClassUnions.getUnions().getDownwardUnions();
         final int numberOfUnions = upwardUnions.length + downwardUnions.length;
         if((classUnionIndex < 0) || (classUnionIndex >= numberOfUnions)) {
             WrongParameterException ex = new WrongParameterException(String.format("Given class union's index \"%d\" is incorrect. You can choose unions from %d to %d", classUnionIndex, 0, numberOfUnions - 1));
@@ -283,9 +282,9 @@ public class UnionsService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
+        final ProjectClassUnions projectClassUnions = getClassUnionsFromProject(project);
 
-        final Union chosenClassUnion = getClassUnionByIndex(unionsWithHttpParameters, classUnionIndex);
+        final Union chosenClassUnion = getClassUnionByIndex(projectClassUnions, classUnionIndex);
 
         final ChosenClassUnionResponse chosenClassUnionResponse = ChosenClassUnionResponseBuilder.newInstance().build(chosenClassUnion);
         logger.debug("chosenClassUnionResponse:\t{}", chosenClassUnionResponse.toString());
@@ -299,11 +298,11 @@ public class UnionsService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
+        final ProjectClassUnions projectClassUnions = getClassUnionsFromProject(project);
 
-        final Union chosenClassUnion = getClassUnionByIndex(unionsWithHttpParameters, classUnionIndex);
+        final Union chosenClassUnion = getClassUnionByIndex(projectClassUnions, classUnionIndex);
 
-        final ClassUnionArrayPropertyResponse classUnionArrayPropertyResponse = ClassUnionArrayPropertyResponseBuilder.newInstance().build(chosenClassUnion, classUnionArrayPropertyType, unionsWithHttpParameters.getDescriptiveAttributes(), unionsWithHttpParameters.getInformationTable());
+        final ClassUnionArrayPropertyResponse classUnionArrayPropertyResponse = ClassUnionArrayPropertyResponseBuilder.newInstance().build(chosenClassUnion, classUnionArrayPropertyType, projectClassUnions.getDescriptiveAttributes(), projectClassUnions.getInformationTable());
         logger.debug("classUnionArrayPropertyResponse:\t{}", classUnionArrayPropertyResponse.toString());
         return classUnionArrayPropertyResponse;
     }
@@ -315,13 +314,13 @@ public class UnionsService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final UnionsWithHttpParameters unionsWithHttpParameters = getUnionsWithHttpParametersFromProject(project);
+        final ProjectClassUnions projectClassUnions = getClassUnionsFromProject(project);
 
         ObjectAbstractResponse objectAbstractResponse;
         if(isAttributes) {
-            objectAbstractResponse = new ObjectWithAttributesResponse(unionsWithHttpParameters.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectWithAttributesResponse(projectClassUnions.getInformationTable(), objectIndex);
         } else {
-            objectAbstractResponse = new ObjectResponse(unionsWithHttpParameters.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectResponse(projectClassUnions.getInformationTable(), objectIndex);
         }
         logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
         return objectAbstractResponse;

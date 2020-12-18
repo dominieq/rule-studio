@@ -22,9 +22,9 @@ public class GlobalDescriptiveAttributesResponse extends DescriptiveAttributesRe
             }
         }
 
-        UnionsWithHttpParameters unions = project.getUnions();
-        if (unions != null) {
-            if (!globaDescriptiveAttributes.hasEqualName(unions.getDescriptiveAttributes())) {
+        ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
+        if (projectClassUnions != null) {
+            if (!globaDescriptiveAttributes.hasEqualName(projectClassUnions.getDescriptiveAttributes())) {
                 this.isEverywhere = false;
                 return;
             }
