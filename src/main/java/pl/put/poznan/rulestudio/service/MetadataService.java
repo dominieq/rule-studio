@@ -177,9 +177,9 @@ public class MetadataService {
             projectClassUnions.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
         }
 
-        RulesWithHttpParameters rules = project.getRules();
-        if(rules != null) {
-            rules.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
+        ProjectRules projectRules = project.getProjectRules();
+        if(projectRules != null) {
+            projectRules.getDescriptiveAttributes().trySetCurrentAttribute(objectVisibleName);
         }
 
         ProjectClassification projectClassification = project.getProjectClassification();

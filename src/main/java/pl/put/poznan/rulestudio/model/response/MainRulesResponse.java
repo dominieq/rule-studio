@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.put.poznan.rulestudio.model.RulesWithHttpParameters;
+import pl.put.poznan.rulestudio.model.ProjectRules;
 import pl.put.poznan.rulestudio.model.ValidityRulesContainer;
 import pl.put.poznan.rulestudio.model.parameters.RulesParameters;
 import pl.put.poznan.rulestudio.model.parameters.RulesParameters.RulesParametersBuilder;
@@ -177,26 +177,26 @@ public class MainRulesResponse {
             return mainRulesResponse;
         }
 
-        public MainRulesResponse build(RulesWithHttpParameters rulesWithHttpParameters) {
+        public MainRulesResponse build(ProjectRules projectRules) {
             MainRulesResponse mainRulesResponse = new MainRulesResponse();
 
-            final RuleSetWithCharacteristics rules = rulesWithHttpParameters.getRuleSet();
+            final RuleSetWithCharacteristics rules = projectRules.getRuleSet();
             final int numberOfRules = rules.size();
             mainRulesResponse.ruleMainPropertiesArray = new RuleMainProperties[numberOfRules];
             for(int i = 0; i < numberOfRules; i++) {
                 mainRulesResponse.ruleMainPropertiesArray[i] = RuleMainPropertiesBuilder.newInstance().build(rules.getRule(i), rules.getRuleCharacteristics(i));
             }
 
-            mainRulesResponse.rulesParameters = RulesParametersBuilder.newInstance().build(rulesWithHttpParameters);
+            mainRulesResponse.rulesParameters = RulesParametersBuilder.newInstance().build(projectRules);
 
-            mainRulesResponse.errorMessages = rulesWithHttpParameters.interpretFlags();
+            mainRulesResponse.errorMessages = projectRules.interpretFlags();
             mainRulesResponse.isCurrentData = (mainRulesResponse.errorMessages == null);
 
-            mainRulesResponse.externalRules = rulesWithHttpParameters.isExternalRules();
-            mainRulesResponse.externalRulesFileName = rulesWithHttpParameters.getRulesFileName();
-            mainRulesResponse.errorMessage = rulesWithHttpParameters.getErrorMessage();
-            mainRulesResponse.validityRulesContainer = rulesWithHttpParameters.getValidityRulesContainer();
-            mainRulesResponse.calculationsTime = rulesWithHttpParameters.getCalculationsTime();
+            mainRulesResponse.externalRules = projectRules.isExternalRules();
+            mainRulesResponse.externalRulesFileName = projectRules.getRulesFileName();
+            mainRulesResponse.errorMessage = projectRules.getErrorMessage();
+            mainRulesResponse.validityRulesContainer = projectRules.getValidityRulesContainer();
+            mainRulesResponse.calculationsTime = projectRules.getCalculationsTime();
 
             return mainRulesResponse;
         }

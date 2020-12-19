@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.enums.RuleType;
 import pl.put.poznan.rulestudio.enums.UnionType;
-import pl.put.poznan.rulestudio.model.RulesWithHttpParameters;
+import pl.put.poznan.rulestudio.model.ProjectRules;
 
 public class RulesParameters {
 
@@ -75,16 +75,16 @@ public class RulesParameters {
             return rulesParameters;
         }
 
-        public RulesParameters build(RulesWithHttpParameters rulesWithHttpParameters) {
-            if(rulesWithHttpParameters.getTypeOfUnions() == null) {
+        public RulesParameters build(ProjectRules projectRules) {
+            if(projectRules.getTypeOfUnions() == null) {
                 return null;
             }
 
             RulesParameters rulesParameters = new RulesParameters();
 
-            rulesParameters.typeOfUnions = rulesWithHttpParameters.getTypeOfUnions();
-            rulesParameters.consistencyThreshold = rulesWithHttpParameters.getConsistencyThreshold();
-            rulesParameters.typeOfRules = rulesWithHttpParameters.getTypeOfRules();
+            rulesParameters.typeOfUnions = projectRules.getTypeOfUnions();
+            rulesParameters.consistencyThreshold = projectRules.getConsistencyThreshold();
+            rulesParameters.typeOfRules = projectRules.getTypeOfRules();
 
             return rulesParameters;
         }

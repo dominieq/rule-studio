@@ -8,7 +8,7 @@ import pl.put.poznan.rulestudio.enums.UnionType;
 
 import java.util.ArrayList;
 
-public class RulesWithHttpParameters implements Cloneable {
+public class ProjectRules implements Cloneable {
     private RuleSetWithCharacteristics ruleSet;
     private UnionType typeOfUnions;
     private Double consistencyThreshold;
@@ -25,7 +25,7 @@ public class RulesWithHttpParameters implements Cloneable {
     private InformationTable informationTable;
     private String calculationsTime;
   
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String rulesFileName, Attribute[] attributes) {
+    public ProjectRules(RuleSetWithCharacteristics rules, String rulesFileName, Attribute[] attributes) {
         this.externalRules = true;
         this.ruleSet = rules;
         this.rulesFileName = rulesFileName;
@@ -33,7 +33,7 @@ public class RulesWithHttpParameters implements Cloneable {
         this.isCurrentAttributes = true;
     }
 
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, String[] descriptiveAttributesPriority, InformationTable informationTable) {
+    public ProjectRules(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, String[] descriptiveAttributesPriority, InformationTable informationTable) {
         this.externalRules = false;
         this.ruleSet = rules;
         this.typeOfUnions = typeOfUnions;
@@ -170,7 +170,7 @@ public class RulesWithHttpParameters implements Cloneable {
 
     @Override
     public String toString() {
-        return "RulesWithHttpParameters{" +
+        return "ProjectRules{" +
                 "ruleSet=" + ruleSet +
                 ", typeOfUnions=" + typeOfUnions +
                 ", consistencyThreshold=" + consistencyThreshold +

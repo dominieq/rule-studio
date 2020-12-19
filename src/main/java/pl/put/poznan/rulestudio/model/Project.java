@@ -13,7 +13,7 @@ public class Project {
     private DescriptiveAttributes descriptiveAttributes;
     private DominanceCones dominanceCones;
     private ProjectClassUnions projectClassUnions;
-    private RulesWithHttpParameters rules;
+    private ProjectRules projectRules;
     private ProjectClassification projectClassification;
     private CrossValidation crossValidation;
     private String metadataFileName;
@@ -84,22 +84,22 @@ public class Project {
                 projectClassUnions.setCurrentData(false);
             }
         }
-        if(this.rules != null) {
-            if (rules.isExternalRules()) {
+        if(this.projectRules != null) {
+            if (projectRules.isExternalRules()) {
                 final String attributesHash = new InformationTable(informationTable.getAttributes(), new ArrayList<>()).getHash();
-                if (rules.getAttributesHash().equals(attributesHash)) {
-                    rules.setCurrentAttributes(true);
+                if (projectRules.getAttributesHash().equals(attributesHash)) {
+                    projectRules.setCurrentAttributes(true);
                 } else {
-                    rules.setCurrentAttributes(false);
+                    projectRules.setCurrentAttributes(false);
                 }
             }
 
-            if (rules.getRuleSet().getLearningInformationTableHash() == null) {
-                rules.setCurrentLearningData(null);
-            } else if (rules.getRuleSet().getLearningInformationTableHash().equals(dataHash)) {
-                rules.setCurrentLearningData(true);
+            if (projectRules.getRuleSet().getLearningInformationTableHash() == null) {
+                projectRules.setCurrentLearningData(null);
+            } else if (projectRules.getRuleSet().getLearningInformationTableHash().equals(dataHash)) {
+                projectRules.setCurrentLearningData(true);
             } else {
-                rules.setCurrentLearningData(false);
+                projectRules.setCurrentLearningData(false);
             }
         }
         if(this.projectClassification != null) {
@@ -184,26 +184,26 @@ public class Project {
         this.currentRules = currentRules;
     }
 
-    public RulesWithHttpParameters getRules() {
-        return rules;
+    public ProjectRules getProjectRules() {
+        return projectRules;
     }
 
-    public void setRules(RulesWithHttpParameters rules) {
-        this.rules = rules;
+    public void setProjectRules(ProjectRules projectRules) {
+        this.projectRules = projectRules;
 
-        if (this.rules == null) {
+        if (this.projectRules == null) {
             if(this.projectClassification != null) {
                 this.projectClassification.setCurrentRuleSet(null);
             }
             return;
         }
 
-        if (this.rules.isExternalRules()) {
-            RulesService.checkCoverageOfUploadedRules(this.rules, this.informationTable, this.descriptiveAttributes);
+        if (this.projectRules.isExternalRules()) {
+            RulesService.checkCoverageOfUploadedRules(this.projectRules, this.informationTable, this.descriptiveAttributes);
         }
 
         if (this.projectClassification != null) {
-            if (this.projectClassification.getRuleSet().getHash().equals(this.rules.getRuleSet().getHash())) {
+            if (this.projectClassification.getRuleSet().getHash().equals(this.projectRules.getRuleSet().getHash())) {
                 this.projectClassification.setCurrentRuleSet(true);
             } else {
                 this.projectClassification.setCurrentRuleSet(false);
@@ -211,7 +211,7 @@ public class Project {
         }
 
         ValidityRulesContainer validityRulesContainer = new ValidityRulesContainer(this);
-        this.rules.setValidityRulesContainer(validityRulesContainer);
+        this.projectRules.setValidityRulesContainer(validityRulesContainer);
     }
 
     public ProjectClassification getProjectClassification() {
@@ -255,7 +255,7 @@ public class Project {
                 ", descriptiveAttributes=" + descriptiveAttributes +
                 ", dominanceCones=" + dominanceCones +
                 ", projectClassUnions=" + projectClassUnions +
-                ", rules=" + rules +
+                ", projectRules=" + projectRules +
                 ", projectClassification=" + projectClassification +
                 ", crossValidation=" + crossValidation +
                 ", metadataFileName='" + metadataFileName + '\'' +

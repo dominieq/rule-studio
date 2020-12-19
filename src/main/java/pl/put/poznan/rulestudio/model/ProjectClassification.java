@@ -33,18 +33,18 @@ public class ProjectClassification extends AbstractClassification {
     private Boolean isCurrentLearningData;
     private String calculationsTime;
 
-    public ProjectClassification(RulesWithHttpParameters rulesWithHttpParameters, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable) {
-        this(rulesWithHttpParameters, classifiedInformationTable, classifierType, defaultClassificationResultType, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, projectDataInformationTable, null);
+    public ProjectClassification(ProjectRules projectRules, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable) {
+        this(projectRules, classifiedInformationTable, classifierType, defaultClassificationResultType, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, projectDataInformationTable, null);
     }
 
-    public ProjectClassification(RulesWithHttpParameters rulesWithHttpParameters, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable, String externalDataFileName) {
+    public ProjectClassification(ProjectRules projectRules, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable, String externalDataFileName) {
         CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
 
-        final RuleSetWithCharacteristics ruleSetWithCharacteristics = rulesWithHttpParameters.getRuleSet();
-        if(rulesWithHttpParameters.isCoveragePresent()) {
+        final RuleSetWithCharacteristics ruleSetWithCharacteristics = projectRules.getRuleSet();
+        if(projectRules.isCoveragePresent()) {
             this.isOriginalLearningData = true;
-            this.learningInformationTable = rulesWithHttpParameters.getInformationTable();
-            this.isCurrentLearningData = rulesWithHttpParameters.isCurrentLearningData();
+            this.learningInformationTable = projectRules.getInformationTable();
+            this.isCurrentLearningData = projectRules.isCurrentLearningData();
         } else {
             this.isOriginalLearningData = false;
             this.learningInformationTable = projectDataInformationTable;

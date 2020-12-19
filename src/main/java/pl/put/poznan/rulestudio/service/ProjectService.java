@@ -69,7 +69,7 @@ public class ProjectService {
 
         if((metadataFile == null) && (dataFile == null)) {
             project.setInformationTable(new InformationTable(new Attribute[0], new ArrayList<>()));
-            project.setRules(null);
+            project.setProjectRules(null);
 
             final ValidityProjectContainer validityProjectContainer = new ValidityProjectContainer(project);
             logger.debug(validityProjectContainer.toString());
@@ -83,7 +83,7 @@ public class ProjectService {
             attributes = MetadataService.attributesFromMultipartFileMetadata(metadataFile);
 
             informationTable = new InformationTable(attributes, new ArrayList<>());
-            project.setRules(null);
+            project.setProjectRules(null);
             project.setMetadataFileName(metadataFile.getOriginalFilename());
         }
 
