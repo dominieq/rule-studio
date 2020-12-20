@@ -596,7 +596,7 @@ class DisplayData extends React.Component {
      * @memberOf Data
      */
     componentDidMount() {
-        if(this.props.informationTable == null) this.fetchDataFromServerOrParent(true, true);
+        if(this.props.informationTable == null || this.props.refreshNeeded) this.fetchDataFromServerOrParent(true, true);
         else this.fetchDataFromServerOrParent(false, true);
         this._isMounted = true;    
     }
