@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.model.ProjectRules;
 import pl.put.poznan.rulestudio.model.ValidityRulesContainer;
 import pl.put.poznan.rulestudio.model.parameters.RulesParameters;
-import pl.put.poznan.rulestudio.model.parameters.RulesParameters.RulesParametersBuilder;
 import pl.put.poznan.rulestudio.model.response.RuleMainProperties.RuleMainPropertiesBuilder;
 
 import java.util.Arrays;
@@ -187,7 +186,7 @@ public class MainRulesResponse {
                 mainRulesResponse.ruleMainPropertiesArray[i] = RuleMainPropertiesBuilder.newInstance().build(rules.getRule(i), rules.getRuleCharacteristics(i));
             }
 
-            mainRulesResponse.rulesParameters = RulesParametersBuilder.newInstance().build(projectRules);
+            mainRulesResponse.rulesParameters = projectRules.getRulesParameters();
 
             mainRulesResponse.errorMessages = projectRules.interpretFlags();
             mainRulesResponse.isCurrentData = (mainRulesResponse.errorMessages == null);

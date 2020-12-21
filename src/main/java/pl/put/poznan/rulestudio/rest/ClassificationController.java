@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.enums.ClassifierType;
 import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
+import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters;
+import pl.put.poznan.rulestudio.model.parameters.ClassificationParametersImpl;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.service.ClassificationService;
 
@@ -49,11 +51,13 @@ public class ClassificationController {
             @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
         logger.info("Putting classification...");
 
+        final ClassificationParameters classificationParameters = new ClassificationParametersImpl(classifierType, defaultClassificationResultType);
+
         MainClassificationResponse result = null;
         if(externalDataFile != null) {
-            result = classificationService.putClassificationNewData(id, classifierType, defaultClassificationResultType, externalDataFile, separator, header);
+            result = classificationService.putClassificationNewData(id, classificationParameters, externalDataFile, separator, header);
         } else {
-            result = classificationService.putClassification(id, classifierType, defaultClassificationResultType);
+            result = classificationService.putClassification(id, classificationParameters);
         }
 
         return ResponseEntity.ok(result);
@@ -71,11 +75,13 @@ public class ClassificationController {
             @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
         logger.info("Posting classification...");
 
+        final ClassificationParameters classificationParameters = new ClassificationParametersImpl(classifierType, defaultClassificationResultType);
+
         MainClassificationResponse result = null;
         if(externalDataFile != null) {
-            result = classificationService.postClassificationNewData(id, classifierType, defaultClassificationResultType, metadata, data, externalDataFile, separator, header);
+            result = classificationService.postClassificationNewData(id, classificationParameters, metadata, data, externalDataFile, separator, header);
         } else {
-            result = classificationService.postClassification(id, classifierType, defaultClassificationResultType, metadata, data);
+            result = classificationService.postClassification(id, classificationParameters, metadata, data);
         }
 
         return ResponseEntity.ok(result);

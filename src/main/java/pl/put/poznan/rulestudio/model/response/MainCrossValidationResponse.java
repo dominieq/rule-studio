@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.model.CrossValidation;
 import pl.put.poznan.rulestudio.model.parameters.CrossValidationParameters;
-import pl.put.poznan.rulestudio.model.parameters.CrossValidationParameters.CrossValidationParametersBuilder;
-import pl.put.poznan.rulestudio.model.response.ChosenCrossValidationFoldResponse.ChosenCrossValidationFoldResponseBuilder;
 
 public class MainCrossValidationResponse {
 
@@ -85,7 +83,7 @@ public class MainCrossValidationResponse {
             MainCrossValidationResponse mainCrossValidationResponse = new MainCrossValidationResponse();
 
             mainCrossValidationResponse.isCurrentData = crossValidation.isCurrentData();
-            mainCrossValidationResponse.crossValidationParameters = CrossValidationParametersBuilder.newInstance().build(crossValidation);
+            mainCrossValidationResponse.crossValidationParameters = crossValidation.getCrossValidationParameters();
             mainCrossValidationResponse.calculationsTime = crossValidation.getCalculationsTime();
 
             return mainCrossValidationResponse;

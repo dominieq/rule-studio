@@ -17,6 +17,7 @@ import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulestudio.exception.IncompatibleLearningInformationTableException;
 import pl.put.poznan.rulestudio.exception.NoHashInRuleSetException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
+import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters;
 import pl.put.poznan.rulestudio.service.DataService;
 
 import java.util.Arrays;
@@ -141,13 +142,16 @@ public abstract class AbstractClassification {
         logger.info("Learning information table and rule set are compatible.");
     }
 
-    protected void classify(InformationTable learningInformationTable, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, RuleSetWithCharacteristics ruleSetWithCharacteristics, Decision[] orderOfDecisions) {
+    protected void classify(InformationTable learningInformationTable, InformationTable classifiedInformationTable, ClassificationParameters classificationParameters, RuleSetWithCharacteristics ruleSetWithCharacteristics, Decision[] orderOfDecisions) {
         if(logger.isDebugEnabled()) {
             logger.debug("RuleSet size = {}", ruleSetWithCharacteristics.size());
             for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
                 logger.debug("\tRegula nr {}:\t{}", i, ruleSetWithCharacteristics.getRule(i));
             }
         }
+
+        final ClassifierType classifierType = classificationParameters.getClassifierType();
+        final DefaultClassificationResultType defaultClassificationResultType = classificationParameters.getDefaultClassificationResultType();
 
         SimpleClassificationResult simpleClassificationResult = null;
         SimpleEvaluatedClassificationResult simpleEvaluatedClassificationResult = null;

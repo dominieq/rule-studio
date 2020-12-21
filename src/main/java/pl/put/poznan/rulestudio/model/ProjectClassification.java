@@ -7,8 +7,7 @@ import org.rulelearn.data.SimpleDecision;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.types.EvaluationField;
-import pl.put.poznan.rulestudio.enums.ClassifierType;
-import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
+import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,8 +17,7 @@ public class ProjectClassification extends AbstractClassification {
     private InformationTable classifiedInformationTable;
     private DescriptiveAttributes classifiedDescriptiveAttributes;
     private Decision[] orderOfDecisions;
-    private ClassifierType classifierType;
-    private DefaultClassificationResultType defaultClassificationResultType;
+    private ClassificationParameters classificationParameters;
     private String projectDataHash;
     private Boolean isCurrentProjectData;
     private String attributesHash;
@@ -33,11 +31,11 @@ public class ProjectClassification extends AbstractClassification {
     private Boolean isCurrentLearningData;
     private String calculationsTime;
 
-    public ProjectClassification(ProjectRules projectRules, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable) {
-        this(projectRules, classifiedInformationTable, classifierType, defaultClassificationResultType, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, projectDataInformationTable, null);
+    public ProjectClassification(ProjectRules projectRules, InformationTable classifiedInformationTable, ClassificationParameters classificationParameters, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable) {
+        this(projectRules, classifiedInformationTable, classificationParameters, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, projectDataInformationTable, null);
     }
 
-    public ProjectClassification(ProjectRules projectRules, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable, String externalDataFileName) {
+    public ProjectClassification(ProjectRules projectRules, InformationTable classifiedInformationTable, ClassificationParameters classificationParameters, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable, String externalDataFileName) {
         CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
 
         final RuleSetWithCharacteristics ruleSetWithCharacteristics = projectRules.getRuleSet();
@@ -54,12 +52,11 @@ public class ProjectClassification extends AbstractClassification {
 
 
         orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, classifiedInformationTable);
-        classify(this.learningInformationTable, classifiedInformationTable, classifierType, defaultClassificationResultType, ruleSetWithCharacteristics, orderOfDecisions);
+        classify(this.learningInformationTable, classifiedInformationTable, classificationParameters, ruleSetWithCharacteristics, orderOfDecisions);
 
         this.classifiedInformationTable = classifiedInformationTable;
         this.classifiedDescriptiveAttributes = new DescriptiveAttributes(classifiedInformationTable, classifiedDescriptiveAttributesPriority);
-        this.classifierType = classifierType;
-        this.defaultClassificationResultType = defaultClassificationResultType;
+        this.classificationParameters = classificationParameters;
 
         this.projectDataHash = projectDataInformationTable.getHash();
         this.isCurrentProjectData = true;
@@ -93,12 +90,8 @@ public class ProjectClassification extends AbstractClassification {
         return orderOfDecisions;
     }
 
-    public ClassifierType getClassifierType() {
-        return classifierType;
-    }
-
-    public DefaultClassificationResultType getDefaultClassificationResultType() {
-        return defaultClassificationResultType;
+    public ClassificationParameters getClassificationParameters() {
+        return classificationParameters;
     }
 
     public String getProjectDataHash() {
@@ -175,8 +168,7 @@ public class ProjectClassification extends AbstractClassification {
                 "classifiedInformationTable=" + classifiedInformationTable +
                 ", classifiedDescriptiveAttributes=" + classifiedDescriptiveAttributes +
                 ", orderOfDecisions=" + Arrays.toString(orderOfDecisions) +
-                ", classifierType=" + classifierType +
-                ", defaultClassificationResultType=" + defaultClassificationResultType +
+                ", classificationParameters=" + classificationParameters +
                 ", projectDataHash='" + projectDataHash + '\'' +
                 ", isCurrentProjectData=" + isCurrentProjectData +
                 ", attributesHash='" + attributesHash + '\'' +

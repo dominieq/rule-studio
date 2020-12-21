@@ -110,8 +110,8 @@ public class ChosenCrossValidationFoldResponse {
         }
 
         public ChosenCrossValidationFoldResponse build(CrossValidation crossValidation, Integer foldIndex) {
-            if((foldIndex < 0) || (foldIndex >= crossValidation.getNumberOfFolds())) {
-                WrongParameterException ex = new WrongParameterException(String.format("Given fold's index \"%d\" is incorrect. You can choose fold from %d to %d", foldIndex, 0, crossValidation.getNumberOfFolds() - 1));
+            if((foldIndex < 0) || (foldIndex >= crossValidation.getCrossValidationParameters().getNumberOfFolds())) {
+                WrongParameterException ex = new WrongParameterException(String.format("Given fold's index \"%d\" is incorrect. You can choose fold from %d to %d", foldIndex, 0, crossValidation.getCrossValidationParameters().getNumberOfFolds() - 1));
                 logger.error(ex.getMessage());
                 throw ex;
             }

@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.model.ProjectClassUnions;
 import pl.put.poznan.rulestudio.model.parameters.ClassUnionsParameters;
-import pl.put.poznan.rulestudio.model.parameters.ClassUnionsParameters.ClassUnionsParametersBuilder;
 import pl.put.poznan.rulestudio.model.response.ClassUnionMainProperties.ClassUnionMainPropertiesBuilder;
 
 import java.util.Arrays;
@@ -137,7 +136,7 @@ public class MainClassUnionsResponse {
             mainClassUnionsResponse.qualityOfApproximation = unions.getQualityOfApproximation();
             mainClassUnionsResponse.isCurrentData = projectClassUnions.isCurrentData();
 
-            mainClassUnionsResponse.classUnionsParameters = ClassUnionsParametersBuilder.newInstance().build(projectClassUnions);
+            mainClassUnionsResponse.classUnionsParameters = projectClassUnions.getClassUnionsParameters();
             mainClassUnionsResponse.calculationsTime = projectClassUnions.getCalculationsTime();
 
             return mainClassUnionsResponse;

@@ -21,9 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.enums.OrderByRuleCharacteristic;
 import pl.put.poznan.rulestudio.enums.RuleType;
 import pl.put.poznan.rulestudio.enums.RulesFormat;
-import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.*;
 import pl.put.poznan.rulestudio.model.*;
+import pl.put.poznan.rulestudio.model.parameters.RulesParameters;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
@@ -260,15 +260,15 @@ public class RulesService {
         return resultSet;
     }
 
-    public static void calculateRulesInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
-        UnionsService.calculateClassUnionsInProject(project, typeOfUnions, consistencyThreshold);
+    public static void calculateRulesInProject(Project project, RulesParameters rulesParameters) {
+        UnionsService.calculateClassUnionsInProject(project, rulesParameters);
         ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
 
         final ProjectRules previousProjectRules = project.getProjectRules();
-        if ((!project.isCurrentRules()) || (previousProjectRules.getTypeOfUnions() != typeOfUnions) || (!previousProjectRules.getConsistencyThreshold().equals(consistencyThreshold)) || (previousProjectRules.getTypeOfRules() != typeOfRules)) {
+        if ((!project.isCurrentRules()) || (!previousProjectRules.getRulesParameters().equals(rulesParameters))) {
             CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
 
-            RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(projectClassUnions.getUnions(), typeOfRules);
+            RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(projectClassUnions.getUnions(), rulesParameters.getTypeOfRules());
 
             ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
             if (previousProjectRules != null) {
@@ -277,7 +277,7 @@ public class RulesService {
             descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
             final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
 
-            ProjectRules projectRules = new ProjectRules(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, descriptiveAttributesPriority, project.getInformationTable());
+            ProjectRules projectRules = new ProjectRules(ruleSetWithCharacteristics, rulesParameters, descriptiveAttributesPriority, project.getInformationTable());
             calculationsStopWatch.stop();
             projectRules.setCalculationsTime(calculationsStopWatch.getReadableTime());
 
@@ -442,15 +442,13 @@ public class RulesService {
         return mainRulesResponse;
     }
 
-    public MainRulesResponse putRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
+    public MainRulesResponse putRules(UUID id, RulesParameters rulesParameters) {
         logger.info("Id:\t{}", id);
-        logger.info("TypeOfUnions:\t{}", typeOfUnions);
-        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
-        logger.info("TypeOfRules:\t{}", typeOfRules);
+        logger.info("RulesParameters:\t{}", rulesParameters);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateRulesInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
+        calculateRulesInProject(project, rulesParameters);
 
         final ProjectRules projectRules = project.getProjectRules();
         final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(projectRules);
@@ -458,11 +456,9 @@ public class RulesService {
         return mainRulesResponse;
     }
 
-    public MainRulesResponse postRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, String metadata, String data) throws IOException {
+    public MainRulesResponse postRules(UUID id, RulesParameters rulesParameters, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
-        logger.info("TypeOfUnions:\t{}", typeOfUnions);
-        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
-        logger.info("TypeOfRules:\t{}", typeOfRules);
+        logger.info("RulesParameters:\t{}", rulesParameters);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
@@ -472,7 +468,7 @@ public class RulesService {
         final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateRulesInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
+        calculateRulesInProject(project, rulesParameters);
 
         final ProjectRules projectRules = project.getProjectRules();
         final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(projectRules);

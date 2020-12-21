@@ -14,11 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.put.poznan.rulestudio.enums.ClassUnionArrayPropertyType;
-import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.CalculationException;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.*;
+import pl.put.poznan.rulestudio.model.parameters.ClassUnionsParameters;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenClassUnionResponse.ChosenClassUnionResponseBuilder;
@@ -38,10 +38,10 @@ public class UnionsService {
     @Autowired
     ProjectsContainer projectsContainer;
 
-    public static UnionsWithSingleLimitingDecision calculateUnionsWithSingleLimitingDecision(InformationTable informationTable, UnionType typeOfUnions, Double consistencyThreshold) {
+    public static UnionsWithSingleLimitingDecision calculateUnionsWithSingleLimitingDecision(InformationTable informationTable, ClassUnionsParameters classUnionsParameters) {
         ConsistencyMeasure<Union> consistencyMeasure = null;
 
-        switch (typeOfUnions) {
+        switch (classUnionsParameters.getTypeOfUnions()) {
             case MONOTONIC:
                 consistencyMeasure = EpsilonConsistencyMeasure.getInstance();
                 break;
@@ -49,7 +49,7 @@ public class UnionsService {
                 consistencyMeasure = RoughMembershipMeasure.getInstance();
                 break;
             default:
-                WrongParameterException ex = new WrongParameterException(String.format("Given type of unions \"%s\" is unrecognized.", typeOfUnions));
+                WrongParameterException ex = new WrongParameterException(String.format("Given type of unions \"%s\" is unrecognized.", classUnionsParameters.getTypeOfUnions()));
                 logger.error(ex.getMessage());
                 throw ex;
         }
@@ -60,7 +60,7 @@ public class UnionsService {
         try {
             unionsWithSingleLimitingDecision = new UnionsWithSingleLimitingDecision(
                     informationTableWithDecisionDistributions,
-                    new VCDominanceBasedRoughSetCalculator(consistencyMeasure, consistencyThreshold)
+                    new VCDominanceBasedRoughSetCalculator(consistencyMeasure, classUnionsParameters.getConsistencyThreshold())
             );
         } catch (InvalidSizeException e) {
             CalculationException ex = new CalculationException("Cannot create unions for less than one fully-determined decision.");
@@ -71,16 +71,16 @@ public class UnionsService {
         return unionsWithSingleLimitingDecision;
     }
 
-    public static void calculateClassUnionsInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold) {
+    public static void calculateClassUnionsInProject(Project project, ClassUnionsParameters classUnionsParameters) {
         final ProjectClassUnions previousProjectClassUnions = project.getProjectClassUnions();
-        if((!project.isCurrentUnionsWithSingleLimitingDecision()) || (previousProjectClassUnions.getTypeOfUnions() != typeOfUnions) || (!previousProjectClassUnions.getConsistencyThreshold().equals(consistencyThreshold))) {
+        if((!project.isCurrentUnionsWithSingleLimitingDecision()) || (!previousProjectClassUnions.getClassUnionsParameters().equals(classUnionsParameters))) {
             CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
 
             InformationTable informationTable = project.getInformationTable();
             DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate unions.");
             DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate unions.");
 
-            final UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(informationTable, typeOfUnions, consistencyThreshold);
+            final UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(informationTable, classUnionsParameters);
 
             ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
             if (previousProjectClassUnions != null) {
@@ -89,7 +89,7 @@ public class UnionsService {
             descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
             final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
 
-            ProjectClassUnions newProjectClassUnions = new ProjectClassUnions(unionsWithSingleLimitingDecision, typeOfUnions, consistencyThreshold, informationTable.getHash(), descriptiveAttributesPriority, informationTable);
+            ProjectClassUnions newProjectClassUnions = new ProjectClassUnions(unionsWithSingleLimitingDecision, classUnionsParameters, informationTable.getHash(), descriptiveAttributesPriority, informationTable);
             calculationsStopWatch.stop();
             newProjectClassUnions.setCalculationsTime(calculationsStopWatch.getReadableTime());
 
@@ -160,14 +160,13 @@ public class UnionsService {
         return mainClassUnionsResponse;
     }
 
-    public MainClassUnionsResponse putUnions(UUID id, UnionType typeOfUnions, Double consistencyThreshold) {
+    public MainClassUnionsResponse putUnions(UUID id, ClassUnionsParameters classUnionsParameters) {
         logger.info("Id:\t{}", id);
-        logger.info("TypeOfUnions:\t{}", typeOfUnions);
-        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
+        logger.info("ClassUnionsParameters:\t{}", classUnionsParameters);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateClassUnionsInProject(project, typeOfUnions, consistencyThreshold);
+        calculateClassUnionsInProject(project, classUnionsParameters);
 
         final ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
         final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(projectClassUnions);
@@ -175,10 +174,9 @@ public class UnionsService {
         return mainClassUnionsResponse;
     }
 
-    public MainClassUnionsResponse postUnions(UUID id, UnionType typeOfUnions, Double consistencyThreshold, String metadata, String data) throws IOException {
+    public MainClassUnionsResponse postUnions(UUID id, ClassUnionsParameters classUnionsParameters, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
-        logger.info("TypeOfUnions:\t{}", typeOfUnions);
-        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
+        logger.info("ClassUnionsParameters:\t{}", classUnionsParameters);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
@@ -188,7 +186,7 @@ public class UnionsService {
         final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateClassUnionsInProject(project, typeOfUnions, consistencyThreshold);
+        calculateClassUnionsInProject(project, classUnionsParameters);
 
         final ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
         final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(projectClassUnions);
