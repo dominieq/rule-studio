@@ -289,6 +289,12 @@ class ProjectTabs extends React.Component {
             this.getProject();
             this.activateTabUpToURL();
         }
+
+        if(this.props.history.action === "POP") {
+            if(prevProps.location !== this.props.location) {
+                this.activateTabUpToURL();
+            }
+        }
     };
 
     /**
@@ -414,12 +420,12 @@ class ProjectTabs extends React.Component {
     activateTabUpToURL = () => {
         const url = window.location.href.toString();
         const urlSplitted = url.split('/');
-        if(urlSplitted.length < 5) this.props.history.replace(`/${this.props.project.id}/data`);
+        if(urlSplitted.length < 5) {
+            this.props.history.replace({pathname: `/${this.props.project.id}/${tabNames[0]}`, state: {projectId: this.props.project.id}});
+            this.onTabChange(null,0);
+        }
         else {
             switch(urlSplitted[4]) {
-                case tabNames[0]:
-                    this.onTabChange(null,0);
-                    break;
                 case tabNames[1]:
                     this.onTabChange(null,1);
                     break;
@@ -436,7 +442,7 @@ class ProjectTabs extends React.Component {
                     this.onTabChange(null,5);
                     break;
                 default:
-                    //do nothing
+                    this.onTabChange(null,0);
             }
         }
     };
@@ -462,7 +468,7 @@ class ProjectTabs extends React.Component {
                 <StyledTabs aria-label={"project tabs"} onChange={this.onTabChange} value={selected}>
                     <StyledLinkTab
                         label={"Data"}
-                        to={`/${project.id}/${tabNames[0]}`}
+                        to={{pathname: `/${project.id}/${tabNames[0]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(0)}
                     />
                     <StyledLinkTab
@@ -471,8 +477,9 @@ class ProjectTabs extends React.Component {
                                 Dominance cones
                             </OutdatedData>
                         }
-                        to={`/${project.id}/${tabNames[1]}`}
+                        to={{pathname: `/${project.id}/${tabNames[1]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(1)}
+                        
                     />
                     <StyledLinkTab
                         label={
@@ -480,8 +487,9 @@ class ProjectTabs extends React.Component {
                                 Class unions
                             </OutdatedData>
                         }
-                        to={`/${project.id}/${tabNames[2]}`}
+                        to={{pathname: `/${project.id}/${tabNames[2]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(2)}
+                        
                     />
                     <StyledLinkTab
                         icon={showExternalRules ?
@@ -492,8 +500,9 @@ class ProjectTabs extends React.Component {
                                 Rules
                             </OutdatedData>
                         }
-                        to={`/${project.id}/${tabNames[3]}`}
+                        to={{pathname: `/${project.id}/${tabNames[3]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(3)}
+                        
                     />
                     <StyledLinkTab
                         icon={showExternalData ?
@@ -504,8 +513,9 @@ class ProjectTabs extends React.Component {
                                 Classification
                             </OutdatedData>
                         }
-                        to={`/${project.id}/${tabNames[4]}`}
+                        to={{pathname: `/${project.id}/${tabNames[4]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(4)}
+                        
                     />
                     <StyledLinkTab
                         label={
@@ -513,8 +523,9 @@ class ProjectTabs extends React.Component {
                                 Cross-Validation
                             </OutdatedData>
                         }
-                        to={`/${project.id}/${tabNames[5]}`}
+                        to={{pathname: `/${project.id}/${tabNames[5]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(5)}
+                        
                     />
                 </StyledTabs>
                 <Switch>
