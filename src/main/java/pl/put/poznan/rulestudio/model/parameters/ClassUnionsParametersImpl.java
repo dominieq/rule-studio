@@ -24,12 +24,10 @@ public class ClassUnionsParametersImpl implements ClassUnionsParameters {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ClassUnionsParametersImpl)) return false;
-        ClassUnionsParametersImpl that = (ClassUnionsParametersImpl) o;
-        return getTypeOfUnions() == that.getTypeOfUnions() &&
-                getConsistencyThreshold().equals(that.getConsistencyThreshold());
+    public Boolean equalsTo(ClassUnionsParameters that) {
+        if (that == null) return false;
+        return this.getTypeOfUnions() == that.getTypeOfUnions() &&
+                this.getConsistencyThreshold().equals(that.getConsistencyThreshold());
     }
 
     @Override

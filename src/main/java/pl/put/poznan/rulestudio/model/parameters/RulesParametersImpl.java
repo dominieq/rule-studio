@@ -26,12 +26,10 @@ public class RulesParametersImpl extends ClassUnionsParametersImpl implements Ru
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof RulesParametersImpl)) return false;
-        if (!super.equals(o)) return false;
-        RulesParametersImpl that = (RulesParametersImpl) o;
-        return getTypeOfRules() == that.getTypeOfRules();
+    public Boolean equalsTo(RulesParameters that) {
+        if (that == null) return false;
+        if (!super.equalsTo(that)) return false;
+        return this.getTypeOfRules() == that.getTypeOfRules();
     }
 
     @Override

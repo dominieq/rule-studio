@@ -5,4 +5,6 @@ import pl.put.poznan.rulestudio.enums.RuleType;
 public interface RulesParameters extends ClassUnionsParameters {
 
     RuleType getTypeOfRules();
+
+    Boolean equalsTo(RulesParameters that);
 }

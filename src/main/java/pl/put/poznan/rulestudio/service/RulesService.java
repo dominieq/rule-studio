@@ -262,30 +262,30 @@ public class RulesService {
 
     public static void calculateRulesInProject(Project project, RulesParameters rulesParameters) {
         UnionsService.calculateClassUnionsInProject(project, rulesParameters);
-        ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
+        final ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
 
         final ProjectRules previousProjectRules = project.getProjectRules();
-        if ((!project.isCurrentRules()) || (!previousProjectRules.getRulesParameters().equals(rulesParameters))) {
-            CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
-
-            RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(projectClassUnions.getUnions(), rulesParameters.getTypeOfRules());
-
-            ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
-            if (previousProjectRules != null) {
-                descriptiveAttributesPriorityArrayList.add(previousProjectRules.getDescriptiveAttributes().getCurrentAttributeName());
-            }
-            descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
-            final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
-
-            ProjectRules projectRules = new ProjectRules(ruleSetWithCharacteristics, rulesParameters, descriptiveAttributesPriority, project.getInformationTable());
-            calculationsStopWatch.stop();
-            projectRules.setCalculationsTime(calculationsStopWatch.getReadableTime());
-
-            project.setProjectRules(projectRules);
-            project.setCurrentRules(true);
-        } else {
+        if((previousProjectRules != null) && (!previousProjectRules.isExternalRules()) && (previousProjectRules.isCurrentLearningData()) && (previousProjectRules.getRulesParameters().equalsTo(rulesParameters))) {
             logger.info("Rules are already calculated with given configuration, skipping current calculation.");
+            return;
         }
+
+        CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
+
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(projectClassUnions.getUnions(), rulesParameters.getTypeOfRules());
+
+        ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
+        if (previousProjectRules != null) {
+            descriptiveAttributesPriorityArrayList.add(previousProjectRules.getDescriptiveAttributes().getCurrentAttributeName());
+        }
+        descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
+        final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
+
+        ProjectRules projectRules = new ProjectRules(ruleSetWithCharacteristics, rulesParameters, descriptiveAttributesPriority, project.getInformationTable());
+        calculationsStopWatch.stop();
+        projectRules.setCalculationsTime(calculationsStopWatch.getReadableTime());
+
+        project.setProjectRules(projectRules);
     }
 
     public static ProjectRules getRulesFromProject(Project project) {

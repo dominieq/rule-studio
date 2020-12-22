@@ -73,31 +73,31 @@ public class UnionsService {
 
     public static void calculateClassUnionsInProject(Project project, ClassUnionsParameters classUnionsParameters) {
         final ProjectClassUnions previousProjectClassUnions = project.getProjectClassUnions();
-        if((!project.isCurrentUnionsWithSingleLimitingDecision()) || (!previousProjectClassUnions.getClassUnionsParameters().equals(classUnionsParameters))) {
-            CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
-
-            InformationTable informationTable = project.getInformationTable();
-            DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate unions.");
-            DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate unions.");
-
-            final UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(informationTable, classUnionsParameters);
-
-            ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
-            if (previousProjectClassUnions != null) {
-                descriptiveAttributesPriorityArrayList.add(previousProjectClassUnions.getDescriptiveAttributes().getCurrentAttributeName());
-            }
-            descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
-            final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
-
-            ProjectClassUnions newProjectClassUnions = new ProjectClassUnions(unionsWithSingleLimitingDecision, classUnionsParameters, informationTable.getHash(), descriptiveAttributesPriority, informationTable);
-            calculationsStopWatch.stop();
-            newProjectClassUnions.setCalculationsTime(calculationsStopWatch.getReadableTime());
-
-            project.setProjectClassUnions(newProjectClassUnions);
-            project.setCurrentUnionsWithSingleLimitingDecision(true);
-        } else {
+        if((previousProjectClassUnions != null) && (previousProjectClassUnions.isCurrentData()) && (previousProjectClassUnions.getClassUnionsParameters().equalsTo(classUnionsParameters))) {
             logger.info("Unions are already calculated with given configuration, skipping current calculation.");
+            return;
         }
+
+        CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
+
+        InformationTable informationTable = project.getInformationTable();
+        DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate unions.");
+        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate unions.");
+
+        final UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = calculateUnionsWithSingleLimitingDecision(informationTable, classUnionsParameters);
+
+        ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
+        if (previousProjectClassUnions != null) {
+            descriptiveAttributesPriorityArrayList.add(previousProjectClassUnions.getDescriptiveAttributes().getCurrentAttributeName());
+        }
+        descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
+        final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
+
+        ProjectClassUnions newProjectClassUnions = new ProjectClassUnions(unionsWithSingleLimitingDecision, classUnionsParameters, informationTable.getHash(), descriptiveAttributesPriority, informationTable);
+        calculationsStopWatch.stop();
+        newProjectClassUnions.setCalculationsTime(calculationsStopWatch.getReadableTime());
+
+        project.setProjectClassUnions(newProjectClassUnions);
     }
 
     public static int[] getClassUnionArrayPropertyValues(Union union, ClassUnionArrayPropertyType classUnionArrayPropertyType) {

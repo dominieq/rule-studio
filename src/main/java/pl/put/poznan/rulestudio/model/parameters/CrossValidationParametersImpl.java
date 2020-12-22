@@ -5,6 +5,8 @@ import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulestudio.enums.RuleType;
 import pl.put.poznan.rulestudio.enums.UnionType;
 
+import java.util.Objects;
+
 public class CrossValidationParametersImpl implements CrossValidationParameters, ClassificationParameters, RulesParameters {
 
     private RulesParameters rulesParameters;
@@ -48,6 +50,30 @@ public class CrossValidationParametersImpl implements CrossValidationParameters,
 
     public Long getSeed() {
         return seed;
+    }
+
+    @Override
+    public Boolean equalsTo(RulesParameters that) {
+        return this.rulesParameters.equalsTo(that);
+    }
+
+    @Override
+    public Boolean equalsTo(ClassUnionsParameters that) {
+        return this.rulesParameters.equalsTo(that);
+    }
+
+    @Override
+    public Boolean equalsTo(ClassificationParameters that) {
+        return this.classificationParameters.equalsTo(that);
+    }
+
+    @Override
+    public Boolean equalsTo(CrossValidationParameters that) {
+        if (that == null) return false;
+        if (!this.rulesParameters.equalsTo((RulesParameters) that)) return false;
+        if (!this.classificationParameters.equalsTo((ClassificationParameters) that)) return false;
+        return Objects.equals(getNumberOfFolds(), that.getNumberOfFolds()) &&
+                Objects.equals(getSeed(), that.getSeed());
     }
 
     @Override

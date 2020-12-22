@@ -25,6 +25,13 @@ public class ClassificationParametersImpl implements ClassificationParameters {
     }
 
     @Override
+    public Boolean equalsTo(ClassificationParameters that) {
+        if (that == null) return false;
+        return this.getClassifierType() == that.getClassifierType() &&
+                this.getDefaultClassificationResultType() == that.getDefaultClassificationResultType();
+    }
+
+    @Override
     public String toString() {
         return "ClassificationParametersImpl{" +
                 "classifierType=" + classifierType +

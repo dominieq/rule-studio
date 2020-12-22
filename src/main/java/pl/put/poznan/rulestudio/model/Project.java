@@ -19,18 +19,11 @@ public class Project {
     private String metadataFileName;
     private String dataFileName;
 
-    private boolean currentDominanceCones;
-    private boolean currentUnionsWithSingleLimitingDecision;
-    private boolean currentRules;
-
     public Project(String name) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.informationTable = null;
         this.descriptiveAttributes = new DescriptiveAttributes();
-        this.currentDominanceCones = false;
-        this.currentUnionsWithSingleLimitingDecision = false;
-        this.currentRules = false;
     }
 
     public Project(String name, InformationTable informationTable) {
@@ -38,9 +31,6 @@ public class Project {
         this.name = name;
         this.informationTable = informationTable;
         this.descriptiveAttributes = new DescriptiveAttributes(informationTable);
-        this.currentDominanceCones = false;
-        this.currentUnionsWithSingleLimitingDecision = false;
-        this.currentRules = false;
     }
 
     public UUID getId() {
@@ -65,9 +55,6 @@ public class Project {
 
     public void setInformationTable(InformationTable informationTable) {
         this.informationTable = informationTable;
-        this.setCurrentDominanceCones(false);
-        this.setCurrentUnionsWithSingleLimitingDecision(false);
-        this.setCurrentRules(false);
 
         String dataHash = informationTable.getHash();
         if(this.dominanceCones != null) {
@@ -160,30 +147,6 @@ public class Project {
         this.projectClassUnions = projectClassUnions;
     }
 
-    public boolean isCurrentDominanceCones() {
-        return currentDominanceCones;
-    }
-
-    public void setCurrentDominanceCones(boolean currentDominanceCones) {
-        this.currentDominanceCones = currentDominanceCones;
-    }
-
-    public boolean isCurrentUnionsWithSingleLimitingDecision() {
-        return currentUnionsWithSingleLimitingDecision;
-    }
-
-    public void setCurrentUnionsWithSingleLimitingDecision(boolean currentUnionsWithSingleLimitingDecision) {
-        this.currentUnionsWithSingleLimitingDecision = currentUnionsWithSingleLimitingDecision;
-    }
-
-    public boolean isCurrentRules() {
-        return currentRules;
-    }
-
-    public void setCurrentRules(boolean currentRules) {
-        this.currentRules = currentRules;
-    }
-
     public ProjectRules getProjectRules() {
         return projectRules;
     }
@@ -260,9 +223,6 @@ public class Project {
                 ", crossValidation=" + crossValidation +
                 ", metadataFileName='" + metadataFileName + '\'' +
                 ", dataFileName='" + dataFileName + '\'' +
-                ", currentDominanceCones=" + currentDominanceCones +
-                ", currentUnionsWithSingleLimitingDecision=" + currentUnionsWithSingleLimitingDecision +
-                ", currentRules=" + currentRules +
                 '}';
     }
 }

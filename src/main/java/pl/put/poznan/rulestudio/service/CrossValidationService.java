@@ -85,6 +85,12 @@ public class CrossValidationService {
     }
 
     private void calculateCrossValidationInProject(Project project, CrossValidationParameters crossValidationParameters) {
+        final CrossValidation previousCrossValidation = project.getCrossValidation();
+        if((previousCrossValidation != null) && (previousCrossValidation.isCurrentData()) && (previousCrossValidation.getCrossValidationParameters().equalsTo(crossValidationParameters))) {
+            logger.info("Cross-validation is already calculated with given configuration, skipping current calculation.");
+            return;
+        }
+
         CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
 
         final InformationTable informationTable = project.getInformationTable();
@@ -144,7 +150,6 @@ public class CrossValidationService {
         final OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(true, orderOfDecisions, foldOrdinalMisclassificationMatrix);
 
         ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
-        final CrossValidation previousCrossValidation = project.getCrossValidation();
         if (previousCrossValidation != null) {
             descriptiveAttributesPriorityArrayList.add(previousCrossValidation.getDescriptiveAttributes().getCurrentAttributeName());
         }

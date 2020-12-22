@@ -8,4 +8,6 @@ public interface ClassificationParameters {
     ClassifierType getClassifierType();
 
     DefaultClassificationResultType getDefaultClassificationResultType();
+
+    Boolean equalsTo(ClassificationParameters that);
 }

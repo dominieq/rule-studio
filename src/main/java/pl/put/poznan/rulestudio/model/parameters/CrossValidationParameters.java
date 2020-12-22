@@ -5,4 +5,6 @@ public interface CrossValidationParameters {
     Integer getNumberOfFolds();
 
     Long getSeed();
+
+    Boolean equalsTo(CrossValidationParameters that);
 }

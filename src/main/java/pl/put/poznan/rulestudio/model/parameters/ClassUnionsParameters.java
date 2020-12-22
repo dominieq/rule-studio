@@ -7,4 +7,6 @@ public interface ClassUnionsParameters {
     UnionType getTypeOfUnions();
 
     Double getConsistencyThreshold();
+
+    Boolean equalsTo(ClassUnionsParameters that);
 }
