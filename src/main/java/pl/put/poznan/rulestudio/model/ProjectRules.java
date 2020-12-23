@@ -3,16 +3,13 @@ package pl.put.poznan.rulestudio.model;
 import org.rulelearn.data.Attribute;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
-import pl.put.poznan.rulestudio.enums.RuleType;
-import pl.put.poznan.rulestudio.enums.UnionType;
+import pl.put.poznan.rulestudio.model.parameters.RulesParameters;
 
 import java.util.ArrayList;
 
-public class RulesWithHttpParameters implements Cloneable {
+public class ProjectRules implements Cloneable {
     private RuleSetWithCharacteristics ruleSet;
-    private UnionType typeOfUnions;
-    private Double consistencyThreshold;
-    private RuleType typeOfRules;
+    private RulesParameters rulesParameters;
     private boolean externalRules;
     private String errorMessage;
     private String rulesFileName;
@@ -25,7 +22,7 @@ public class RulesWithHttpParameters implements Cloneable {
     private InformationTable informationTable;
     private String calculationsTime;
   
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, String rulesFileName, Attribute[] attributes) {
+    public ProjectRules(RuleSetWithCharacteristics rules, String rulesFileName, Attribute[] attributes) {
         this.externalRules = true;
         this.ruleSet = rules;
         this.rulesFileName = rulesFileName;
@@ -33,12 +30,10 @@ public class RulesWithHttpParameters implements Cloneable {
         this.isCurrentAttributes = true;
     }
 
-    public RulesWithHttpParameters(RuleSetWithCharacteristics rules, UnionType typeOfUnions, Double consistencyThreshold, RuleType ruleType, String[] descriptiveAttributesPriority, InformationTable informationTable) {
+    public ProjectRules(RuleSetWithCharacteristics rules, RulesParameters rulesParameters, String[] descriptiveAttributesPriority, InformationTable informationTable) {
         this.externalRules = false;
         this.ruleSet = rules;
-        this.typeOfUnions = typeOfUnions;
-        this.consistencyThreshold = consistencyThreshold;
-        this.typeOfRules = ruleType;
+        this.rulesParameters = rulesParameters;
         this.descriptiveAttributes = new DescriptiveAttributes(informationTable, descriptiveAttributesPriority);
         this.informationTable = informationTable;
 
@@ -56,28 +51,12 @@ public class RulesWithHttpParameters implements Cloneable {
         this.ruleSet = ruleSet;
     }
 
-    public UnionType getTypeOfUnions() {
-        return typeOfUnions;
+    public RulesParameters getRulesParameters() {
+        return rulesParameters;
     }
 
-    public void setTypeOfUnions(UnionType typeOfUnions) {
-        this.typeOfUnions = typeOfUnions;
-    }
-
-    public Double getConsistencyThreshold() {
-        return consistencyThreshold;
-    }
-
-    public void setConsistencyThreshold(Double consistencyThreshold) {
-        this.consistencyThreshold = consistencyThreshold;
-    }
-
-    public RuleType getTypeOfRules() {
-        return typeOfRules;
-    }
-
-    public void setTypeOfRules(RuleType typeOfRules) {
-        this.typeOfRules = typeOfRules;
+    public void setRulesParameters(RulesParameters rulesParameters) {
+        this.rulesParameters = rulesParameters;
     }
 
     public boolean isExternalRules() {
@@ -170,11 +149,9 @@ public class RulesWithHttpParameters implements Cloneable {
 
     @Override
     public String toString() {
-        return "RulesWithHttpParameters{" +
+        return "ProjectRules{" +
                 "ruleSet=" + ruleSet +
-                ", typeOfUnions=" + typeOfUnions +
-                ", consistencyThreshold=" + consistencyThreshold +
-                ", typeOfRules=" + typeOfRules +
+                ", rulesParameters=" + rulesParameters +
                 ", externalRules=" + externalRules +
                 ", errorMessage='" + errorMessage + '\'' +
                 ", rulesFileName='" + rulesFileName + '\'' +

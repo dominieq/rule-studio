@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.model.ProjectClassification;
 import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters;
-import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters.ClassificationParametersBuilder;
 import pl.put.poznan.rulestudio.model.response.ClassifiedObjectMainProperties.ClassifiedObjectMainPropertiesBuilder;
 
 import java.util.Arrays;
@@ -175,7 +174,7 @@ public class MainClassificationResponse {
             mainClassificationResponse.errorMessages = projectClassification.interpretFlags();
             mainClassificationResponse.isCurrentData = (mainClassificationResponse.errorMessages == null);
 
-            mainClassificationResponse.classificationParameters = ClassificationParametersBuilder.newInstance().build(projectClassification);
+            mainClassificationResponse.classificationParameters = projectClassification.getClassificationParameters();
             mainClassificationResponse.calculationsTime = projectClassification.getCalculationsTime();
 
             return mainClassificationResponse;

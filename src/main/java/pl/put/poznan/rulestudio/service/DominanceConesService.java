@@ -29,37 +29,37 @@ public class DominanceConesService {
     ProjectsContainer projectsContainer;
 
     private void calculateDominanceCones(Project project) {
-        if(!project.isCurrentDominanceCones()) {
-            CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
-
-            final InformationTable informationTable = project.getInformationTable();
-            DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate dominance cones.");
-            DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate dominance cones.");
-
-            ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
-            final DominanceCones previousDominanceCones = project.getDominanceCones();
-            if (previousDominanceCones != null) {
-                descriptiveAttributesPriorityArrayList.add(previousDominanceCones.getDescriptiveAttributes().getCurrentAttributeName());
-            }
-            descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
-            final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
-
-            DominanceCones dominanceCones = new DominanceCones();
-            try {
-                dominanceCones.calculateDCones(informationTable, descriptiveAttributesPriority);
-            } catch (AttributeNotFoundException e) {
-                CalculationException ex = new CalculationException("Cannot calculate dominance cones if there are no active condition evaluation attributes.");
-                logger.error(ex.getMessage());
-                throw ex;
-            }
-            calculationsStopWatch.stop();
-            dominanceCones.setCalculationsTime(calculationsStopWatch.getReadableTime());
-
-            project.setDominanceCones(dominanceCones);
-            project.setCurrentDominanceCones(true);
-        } else {
+        final DominanceCones previousDominanceCones = project.getDominanceCones();
+        if((previousDominanceCones != null) && (previousDominanceCones.isCurrentData())) {
             logger.info("Dominance cones are already calculated with given configuration, skipping current calculation.");
+            return;
         }
+
+        CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
+
+        final InformationTable informationTable = project.getInformationTable();
+        DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate dominance cones.");
+        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate dominance cones.");
+
+        ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
+        if (previousDominanceCones != null) {
+            descriptiveAttributesPriorityArrayList.add(previousDominanceCones.getDescriptiveAttributes().getCurrentAttributeName());
+        }
+        descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
+        final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
+
+        DominanceCones dominanceCones = new DominanceCones();
+        try {
+            dominanceCones.calculateDCones(informationTable, descriptiveAttributesPriority);
+        } catch (AttributeNotFoundException e) {
+            CalculationException ex = new CalculationException("Cannot calculate dominance cones if there are no active condition evaluation attributes.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+        calculationsStopWatch.stop();
+        dominanceCones.setCalculationsTime(calculationsStopWatch.getReadableTime());
+
+        project.setDominanceCones(dominanceCones);
     }
 
     private DominanceCones getDominanceConesFromProject(Project project) {

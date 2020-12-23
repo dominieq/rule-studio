@@ -13,10 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.put.poznan.rulestudio.enums.*;
-import pl.put.poznan.rulestudio.enums.RuleType;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.*;
+import pl.put.poznan.rulestudio.model.parameters.CrossValidationParameters;
+import pl.put.poznan.rulestudio.model.parameters.CrossValidationParametersImpl;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenCrossValidationFoldResponse.ChosenCrossValidationFoldResponseBuilder;
@@ -51,8 +52,8 @@ public class CrossValidationService {
     }
 
     private static CrossValidationSingleFold getChosenFoldFromCrossValidation(CrossValidation crossValidation, Integer foldIndex) {
-        if((foldIndex < 0) || (foldIndex >= crossValidation.getNumberOfFolds())) {
-            WrongParameterException ex = new WrongParameterException(String.format("Given fold's index \"%d\" is incorrect. You can choose fold from %d to %d", foldIndex, 0, crossValidation.getNumberOfFolds() - 1));
+        if((foldIndex < 0) || (foldIndex >= crossValidation.getCrossValidationParameters().getNumberOfFolds())) {
+            WrongParameterException ex = new WrongParameterException(String.format("Given fold's index \"%d\" is incorrect. You can choose fold from %d to %d", foldIndex, 0, crossValidation.getCrossValidationParameters().getNumberOfFolds() - 1));
             logger.error(ex.getMessage());
             throw ex;
         }
@@ -83,12 +84,20 @@ public class CrossValidationService {
         }
     }
 
-    private void calculateCrossValidationInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, Integer numberOfFolds, Long seed) {
+    private void calculateCrossValidationInProject(Project project, CrossValidationParameters crossValidationParameters) {
+        final CrossValidation previousCrossValidation = project.getCrossValidation();
+        if((previousCrossValidation != null) && (previousCrossValidation.isCurrentData()) && (previousCrossValidation.getCrossValidationParameters().equalsTo(crossValidationParameters))) {
+            logger.info("Cross-validation is already calculated with given configuration, skipping current calculation.");
+            return;
+        }
+
         CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
 
         final InformationTable informationTable = project.getInformationTable();
         DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate cross-validation.");
         DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate cross-validation.");
+
+        final Integer numberOfFolds = crossValidationParameters.getNumberOfFolds();
 
         if(numberOfFolds < 2) {
             WrongParameterException ex = new WrongParameterException(String.format("There must be at least 2 folds, %d is not enough. Couldn't calculate cross-validation.", numberOfFolds));
@@ -110,7 +119,7 @@ public class CrossValidationService {
         int[] indicesOfTrainingObjects, indicesOfValidationObjects;
 
         CrossValidator crossValidator = new CrossValidator(new Random());
-        crossValidator.setSeed(seed);
+        crossValidator.setSeed(crossValidationParameters.getSeed());
         List<CrossValidator.CrossValidationFold<InformationTable>> folds = crossValidator.splitStratifiedIntoKFold(DataService.createInformationTableWithDecisionDistributions(informationTable), numberOfFolds);
         for(i = 0; i < folds.size(); i++) {
             logger.info("Creating fold: {}/{}", i+1, folds.size());
@@ -118,10 +127,10 @@ public class CrossValidationService {
             final InformationTable trainingTable = folds.get(i).getTrainingTable();
             final InformationTable validationTable = folds.get(i).getValidationTable();
 
-            final UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsService.calculateUnionsWithSingleLimitingDecision(trainingTable, typeOfUnions, consistencyThreshold);
-            final RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.calculateRuleSetWithCharacteristics(unionsWithSingleLimitingDecision, typeOfRules);
+            final UnionsWithSingleLimitingDecision unionsWithSingleLimitingDecision = UnionsService.calculateUnionsWithSingleLimitingDecision(trainingTable, (CrossValidationParametersImpl) crossValidationParameters);
+            final RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.calculateRuleSetWithCharacteristics(unionsWithSingleLimitingDecision, ((CrossValidationParametersImpl) crossValidationParameters).getTypeOfRules());
 
-            final FoldClassification foldClassification = new FoldClassification(trainingTable, validationTable, classifierType, defaultClassificationResultType, ruleSetWithCharacteristics, orderOfDecisions);
+            final FoldClassification foldClassification = new FoldClassification(trainingTable, validationTable, (CrossValidationParametersImpl) crossValidationParameters, ruleSetWithCharacteristics, orderOfDecisions);
 
             foldOrdinalMisclassificationMatrix[i] = foldClassification.getOrdinalMisclassificationMatrix();
 
@@ -141,14 +150,13 @@ public class CrossValidationService {
         final OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(true, orderOfDecisions, foldOrdinalMisclassificationMatrix);
 
         ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
-        final CrossValidation previousCrossValidation = project.getCrossValidation();
         if (previousCrossValidation != null) {
             descriptiveAttributesPriorityArrayList.add(previousCrossValidation.getDescriptiveAttributes().getCurrentAttributeName());
         }
         descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
         final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
 
-        CrossValidation crossValidation = new CrossValidation(numberOfFolds, informationTable, crossValidationSingleFolds, orderOfDecisions, meanOrdinalMisclassificationMatrix, sumOrdinalMisclassificationMatrix, typeOfUnions, consistencyThreshold, typeOfRules, classifierType, defaultClassificationResultType, seed, informationTable.getHash(), descriptiveAttributesPriority);
+        CrossValidation crossValidation = new CrossValidation(informationTable, crossValidationSingleFolds, orderOfDecisions, meanOrdinalMisclassificationMatrix, sumOrdinalMisclassificationMatrix, crossValidationParameters, informationTable.getHash(), descriptiveAttributesPriority);
         calculationsStopWatch.stop();
         crossValidation.setCalculationsTime(calculationsStopWatch.getReadableTime());
 
@@ -167,19 +175,13 @@ public class CrossValidationService {
         return mainCrossValidationResponse;
     }
 
-    public MainCrossValidationResponse putCrossValidation(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, Integer numberOfFolds, Long seed) {
+    public MainCrossValidationResponse putCrossValidation(UUID id, CrossValidationParameters crossValidationParameters) {
         logger.info("Id:\t{}", id);
-        logger.info("TypeOfUnions:\t{}", typeOfUnions);
-        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
-        logger.info("TypeOfRules:\t{}", typeOfRules);
-        logger.info("ClassifierType:\t{}", classifierType);
-        logger.info("DefaultClassificationResultType:\t{}", defaultClassificationResultType);
-        logger.info("NumberOfFolds:\t{}", numberOfFolds);
-        logger.info("Seed:\t{}", seed);
+        logger.info("CrossValidationParameters:\t{}", crossValidationParameters);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateCrossValidationInProject(project, typeOfUnions, consistencyThreshold, typeOfRules, classifierType, defaultClassificationResultType, numberOfFolds, seed);
+        calculateCrossValidationInProject(project, crossValidationParameters);
 
         final CrossValidation crossValidation = project.getCrossValidation();
         final MainCrossValidationResponse mainCrossValidationResponse = MainCrossValidationResponseBuilder.newInstance().build(crossValidation);
@@ -187,25 +189,19 @@ public class CrossValidationService {
         return mainCrossValidationResponse;
     }
 
-    public MainCrossValidationResponse postCrossValidation(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResult, Integer numberOfFolds, Long seed, String metadata, String data) throws IOException {
+    public MainCrossValidationResponse postCrossValidation(UUID id, CrossValidationParameters crossValidationParameters, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
-        logger.info("TypeOfUnions:\t{}", typeOfUnions);
-        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
-        logger.info("TypeOfRules:\t{}", typeOfRules);
-        logger.info("ClassifierType:\t{}", classifierType);
-        logger.info("DefaultClassificationResult:\t{}", defaultClassificationResult);
-        logger.info("NumberOfFolds:\t{}", numberOfFolds);
+        logger.info("CrossValidationParameters:\t{}", crossValidationParameters);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
-        logger.info("Seed:\t{}", seed);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateCrossValidationInProject(project, typeOfUnions, consistencyThreshold, typeOfRules, classifierType, defaultClassificationResult, numberOfFolds, seed);
+        calculateCrossValidationInProject(project, crossValidationParameters);
 
         final CrossValidation crossValidation = project.getCrossValidation();
         final MainCrossValidationResponse mainCrossValidationResponse = MainCrossValidationResponseBuilder.newInstance().build(crossValidation);

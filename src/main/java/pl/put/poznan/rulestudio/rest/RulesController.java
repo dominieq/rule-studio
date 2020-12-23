@@ -15,6 +15,8 @@ import pl.put.poznan.rulestudio.enums.RulesFormat;
 import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
 import pl.put.poznan.rulestudio.model.NamedResource;
+import pl.put.poznan.rulestudio.model.parameters.RulesParameters;
+import pl.put.poznan.rulestudio.model.parameters.RulesParametersImpl;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.service.RulesService;
 
@@ -57,7 +59,8 @@ public class RulesController {
             @RequestParam(name = "typeOfRules") RuleType typeOfRules) {
         logger.info("Putting rules...");
 
-        final MainRulesResponse result = rulesService.putRules(id, typeOfUnions, consistencyThreshold, typeOfRules);
+        final RulesParameters rulesParameters = RulesParametersImpl.getInstance(typeOfUnions, consistencyThreshold, typeOfRules);
+        final MainRulesResponse result = rulesService.putRules(id, rulesParameters);
 
         return ResponseEntity.ok(result);
     }
@@ -72,7 +75,8 @@ public class RulesController {
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting rules...");
 
-        final MainRulesResponse result = rulesService.postRules(id, typeOfUnions, consistencyThreshold, typeOfRules, metadata, data);
+        final RulesParameters rulesParameters = RulesParametersImpl.getInstance(typeOfUnions, consistencyThreshold, typeOfRules);
+        final MainRulesResponse result = rulesService.postRules(id, rulesParameters, metadata, data);
 
         return ResponseEntity.ok(result);
     }

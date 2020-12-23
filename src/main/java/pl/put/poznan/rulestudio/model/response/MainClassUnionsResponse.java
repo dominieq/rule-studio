@@ -7,9 +7,8 @@ import org.rulelearn.approximations.UnionWithSingleLimitingDecision;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.put.poznan.rulestudio.model.UnionsWithHttpParameters;
+import pl.put.poznan.rulestudio.model.ProjectClassUnions;
 import pl.put.poznan.rulestudio.model.parameters.ClassUnionsParameters;
-import pl.put.poznan.rulestudio.model.parameters.ClassUnionsParameters.ClassUnionsParametersBuilder;
 import pl.put.poznan.rulestudio.model.response.ClassUnionMainProperties.ClassUnionMainPropertiesBuilder;
 
 import java.util.Arrays;
@@ -115,8 +114,8 @@ public class MainClassUnionsResponse {
             return mainClassUnionsResponse;
         }
 
-        public MainClassUnionsResponse build(UnionsWithHttpParameters unionsWithHttpParameters) {
-            final UnionsWithSingleLimitingDecision unions = unionsWithHttpParameters.getUnions();
+        public MainClassUnionsResponse build(ProjectClassUnions projectClassUnions) {
+            final UnionsWithSingleLimitingDecision unions = projectClassUnions.getUnions();
             MainClassUnionsResponse mainClassUnionsResponse = new MainClassUnionsResponse();
 
             final Union[] upwardUnions, downwardUnions;
@@ -135,10 +134,10 @@ public class MainClassUnionsResponse {
             }
 
             mainClassUnionsResponse.qualityOfApproximation = unions.getQualityOfApproximation();
-            mainClassUnionsResponse.isCurrentData = unionsWithHttpParameters.isCurrentData();
+            mainClassUnionsResponse.isCurrentData = projectClassUnions.isCurrentData();
 
-            mainClassUnionsResponse.classUnionsParameters = ClassUnionsParametersBuilder.newInstance().build(unionsWithHttpParameters);
-            mainClassUnionsResponse.calculationsTime = unionsWithHttpParameters.getCalculationsTime();
+            mainClassUnionsResponse.classUnionsParameters = projectClassUnions.getClassUnionsParameters();
+            mainClassUnionsResponse.calculationsTime = projectClassUnions.getCalculationsTime();
 
             return mainClassUnionsResponse;
         }

@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.enums.ClassUnionArrayPropertyType;
 import pl.put.poznan.rulestudio.enums.UnionType;
+import pl.put.poznan.rulestudio.model.parameters.ClassUnionsParameters;
+import pl.put.poznan.rulestudio.model.parameters.ClassUnionsParametersImpl;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.service.UnionsService;
 
@@ -45,7 +47,8 @@ public class UnionsController {
             @RequestParam(name = "consistencyThreshold") Double consistencyThreshold) {
         logger.info("Putting unions with single limiting decision...");
 
-        final MainClassUnionsResponse result = unionsService.putUnions(id, typeOfUnions, consistencyThreshold);
+        final ClassUnionsParameters classUnionsParameters = new ClassUnionsParametersImpl(typeOfUnions, consistencyThreshold);
+        final MainClassUnionsResponse result = unionsService.putUnions(id, classUnionsParameters);
 
         return ResponseEntity.ok(result);
     }
@@ -59,7 +62,8 @@ public class UnionsController {
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting unions with single limiting decision...");
 
-        final MainClassUnionsResponse result = unionsService.postUnions(id, typeOfUnions, consistencyThreshold, metadata, data);
+        final ClassUnionsParameters classUnionsParameters = new ClassUnionsParametersImpl(typeOfUnions, consistencyThreshold);
+        final MainClassUnionsResponse result = unionsService.postUnions(id, classUnionsParameters, metadata, data);
 
         return ResponseEntity.ok(result);
     }

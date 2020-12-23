@@ -14,9 +14,9 @@ public class ValidityRulesContainer {
     private ClassificationValidity classificationValidity;
 
     public ValidityRulesContainer(Project project) {
-        final UnionsWithHttpParameters unions = project.getUnions();
-        if (unions != null) {
-            this.unionsValidity = new UnionsValidity(unions);
+        final ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
+        if (projectClassUnions != null) {
+            this.unionsValidity = new UnionsValidity(projectClassUnions);
         } else {
             this.unionsValidity = null;
         }
@@ -50,8 +50,8 @@ public class ValidityRulesContainer {
         @JsonProperty("isCurrentData")
         private Boolean isCurrentData;
 
-        public UnionsValidity(UnionsWithHttpParameters unions) {
-            this.isCurrentData = unions.isCurrentData();
+        public UnionsValidity(ProjectClassUnions projectClassUnions) {
+            this.isCurrentData = projectClassUnions.isCurrentData();
         }
 
         @JsonIgnore

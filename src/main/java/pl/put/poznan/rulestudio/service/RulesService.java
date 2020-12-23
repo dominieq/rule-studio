@@ -21,9 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.put.poznan.rulestudio.enums.OrderByRuleCharacteristic;
 import pl.put.poznan.rulestudio.enums.RuleType;
 import pl.put.poznan.rulestudio.enums.RulesFormat;
-import pl.put.poznan.rulestudio.enums.UnionType;
 import pl.put.poznan.rulestudio.exception.*;
 import pl.put.poznan.rulestudio.model.*;
+import pl.put.poznan.rulestudio.model.parameters.RulesParameters;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
@@ -260,44 +260,43 @@ public class RulesService {
         return resultSet;
     }
 
-    public static void calculateRulesWithHttpParametersInProject(Project project, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
-        UnionsService.calculateUnionsWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold);
-        UnionsWithHttpParameters unionsWithHttpParameters = project.getUnions();
+    public static void calculateRulesInProject(Project project, RulesParameters rulesParameters) {
+        UnionsService.calculateClassUnionsInProject(project, rulesParameters);
+        final ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
 
-        RulesWithHttpParameters rules = project.getRules();
-        if ((!project.isCurrentRules()) || (rules.getTypeOfUnions() != typeOfUnions) || (!rules.getConsistencyThreshold().equals(consistencyThreshold)) || (rules.getTypeOfRules() != typeOfRules)) {
-            CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
-
-            RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(unionsWithHttpParameters.getUnions(), typeOfRules);
-
-            ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
-            final RulesWithHttpParameters previousRules = project.getRules();
-            if (previousRules != null) {
-                descriptiveAttributesPriorityArrayList.add(previousRules.getDescriptiveAttributes().getCurrentAttributeName());
-            }
-            descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
-            final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
-
-            rules = new RulesWithHttpParameters(ruleSetWithCharacteristics, typeOfUnions, consistencyThreshold, typeOfRules, descriptiveAttributesPriority, project.getInformationTable());
-            calculationsStopWatch.stop();
-            rules.setCalculationsTime(calculationsStopWatch.getReadableTime());
-
-            project.setRules(rules);
-            project.setCurrentRules(true);
-        } else {
+        final ProjectRules previousProjectRules = project.getProjectRules();
+        if((previousProjectRules != null) && (!previousProjectRules.isExternalRules()) && (previousProjectRules.isCurrentLearningData()) && (previousProjectRules.getRulesParameters().equalsTo(rulesParameters))) {
             logger.info("Rules are already calculated with given configuration, skipping current calculation.");
+            return;
         }
+
+        CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
+
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = calculateRuleSetWithCharacteristics(projectClassUnions.getUnions(), rulesParameters.getTypeOfRules());
+
+        ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
+        if (previousProjectRules != null) {
+            descriptiveAttributesPriorityArrayList.add(previousProjectRules.getDescriptiveAttributes().getCurrentAttributeName());
+        }
+        descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
+        final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
+
+        ProjectRules projectRules = new ProjectRules(ruleSetWithCharacteristics, rulesParameters, descriptiveAttributesPriority, project.getInformationTable());
+        calculationsStopWatch.stop();
+        projectRules.setCalculationsTime(calculationsStopWatch.getReadableTime());
+
+        project.setProjectRules(projectRules);
     }
 
-    public static RulesWithHttpParameters getRulesFromProject(Project project) {
-        RulesWithHttpParameters rules = project.getRules();
-        if(rules == null) {
+    public static ProjectRules getRulesFromProject(Project project) {
+        ProjectRules projectRules = project.getProjectRules();
+        if(projectRules == null) {
             EmptyResponseException ex = new EmptyResponseException("There are no rules in project to show.");
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        return rules;
+        return projectRules;
     }
 
     public static int[] getCoveringObjectsIndices(RuleSetWithCharacteristics ruleSetWithCharacteristics, Integer ruleIndex) {
@@ -338,21 +337,21 @@ public class RulesService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        RulesWithHttpParameters rules = getRulesFromProject(project);
-        if ((rules.isExternalRules()) && ((rules.isCoveragePresent() == null) || (!rules.isCoveragePresent()))) {
-            RulesService.checkCoverageOfUploadedRules(rules, project.getInformationTable(), project.getDescriptiveAttributes());
+        ProjectRules projectRules = getRulesFromProject(project);
+        if ((projectRules.isExternalRules()) && ((projectRules.isCoveragePresent() == null) || (!projectRules.isCoveragePresent()))) {
+            RulesService.checkCoverageOfUploadedRules(projectRules, project.getInformationTable(), project.getDescriptiveAttributes());
         }
         ValidityRulesContainer validityRulesContainer = new ValidityRulesContainer(project);
-        rules.setValidityRulesContainer(validityRulesContainer);
+        projectRules.setValidityRulesContainer(validityRulesContainer);
 
         try {
-            rules = (RulesWithHttpParameters) project.getRules().clone();
+            projectRules = (ProjectRules) project.getProjectRules().clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
-            rules = project.getRules();
+            projectRules = project.getProjectRules();
         }
 
-        final RuleSetWithCharacteristics ruleSetWithCharacteristics = rules.getRuleSet();
+        final RuleSetWithCharacteristics ruleSetWithCharacteristics = projectRules.getRuleSet();
         if (!orderBy.equals(OrderByRuleCharacteristic.NONE)) {
 
             int i, rulesNumber = ruleSetWithCharacteristics.size();
@@ -435,35 +434,31 @@ public class RulesService {
 
             RuleSetWithCharacteristics sortedRuleSet = new RuleSetWithCharacteristics(ruleArray, ruleCharacteristicsArray);
             sortedRuleSet.setLearningInformationTableHash(ruleSetWithCharacteristics.getLearningInformationTableHash());
-            rules.setRuleSet(sortedRuleSet);
+            projectRules.setRuleSet(sortedRuleSet);
         }
 
-        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(projectRules);
         logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
         return mainRulesResponse;
     }
 
-    public MainRulesResponse putRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules) {
+    public MainRulesResponse putRules(UUID id, RulesParameters rulesParameters) {
         logger.info("Id:\t{}", id);
-        logger.info("TypeOfUnions:\t{}", typeOfUnions);
-        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
-        logger.info("TypeOfRules:\t{}", typeOfRules);
+        logger.info("RulesParameters:\t{}", rulesParameters);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        calculateRulesWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
+        calculateRulesInProject(project, rulesParameters);
 
-        final RulesWithHttpParameters rules = project.getRules();
-        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        final ProjectRules projectRules = project.getProjectRules();
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(projectRules);
         logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
         return mainRulesResponse;
     }
 
-    public MainRulesResponse postRules(UUID id, UnionType typeOfUnions, Double consistencyThreshold, RuleType typeOfRules, String metadata, String data) throws IOException {
+    public MainRulesResponse postRules(UUID id, RulesParameters rulesParameters, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
-        logger.info("TypeOfUnions:\t{}", typeOfUnions);
-        logger.info("ConsistencyThreshold:\t{}", consistencyThreshold);
-        logger.info("TypeOfRules:\t{}", typeOfRules);
+        logger.info("RulesParameters:\t{}", rulesParameters);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
@@ -473,10 +468,10 @@ public class RulesService {
         final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        calculateRulesWithHttpParametersInProject(project, typeOfUnions, consistencyThreshold, typeOfRules);
+        calculateRulesInProject(project, rulesParameters);
 
-        final RulesWithHttpParameters rules = project.getRules();
-        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        final ProjectRules projectRules = project.getProjectRules();
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(projectRules);
         logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
         return mainRulesResponse;
     }
@@ -486,9 +481,9 @@ public class RulesService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final RulesWithHttpParameters rules = getRulesFromProject(project);
+        final ProjectRules projectRules = getRulesFromProject(project);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(rules.getDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectRules.getDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -499,12 +494,12 @@ public class RulesService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final RulesWithHttpParameters rules = getRulesFromProject(project);
+        final ProjectRules projectRules = getRulesFromProject(project);
 
-        DescriptiveAttributes descriptiveAttributes = rules.getDescriptiveAttributes();
+        DescriptiveAttributes descriptiveAttributes = projectRules.getDescriptiveAttributes();
         descriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
-        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(rules.getDescriptiveAttributes());
+        final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectRules.getDescriptiveAttributes());
         logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
@@ -514,10 +509,10 @@ public class RulesService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final RulesWithHttpParameters rules = getRulesFromProject(project);
+        final ProjectRules projectRules = getRulesFromProject(project);
 
-        final Integer descriptiveAttributeIndex = rules.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
-        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(rules.getInformationTable(), descriptiveAttributeIndex);
+        final Integer descriptiveAttributeIndex = projectRules.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
+        final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(projectRules.getInformationTable(), descriptiveAttributeIndex);
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
@@ -528,10 +523,10 @@ public class RulesService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final RulesWithHttpParameters rules = getRulesFromProject(project);
+        final ProjectRules projectRules = getRulesFromProject(project);
 
-        final int[] indices = getCoveringObjectsIndices(rules.getRuleSet(), ruleIndex);
-        final String[] objectNames = rules.getDescriptiveAttributes().extractChosenObjectNames(rules.getInformationTable(), indices);
+        final int[] indices = getCoveringObjectsIndices(projectRules.getRuleSet(), ruleIndex);
+        final String[] objectNames = projectRules.getDescriptiveAttributes().extractChosenObjectNames(projectRules.getInformationTable(), indices);
 
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
         logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
@@ -544,13 +539,13 @@ public class RulesService {
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        if(project.getRules() == null) {
+        if(project.getProjectRules() == null) {
             NoRulesException ex = new NoRulesException("There are no rules in this project.");
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getRules().getRuleSet();
+        RuleSetWithCharacteristics ruleSetWithCharacteristics = project.getProjectRules().getRuleSet();
         String rulesString;
 
         switch (rulesFormat) {
@@ -573,36 +568,36 @@ public class RulesService {
         return new NamedResource(project.getName(), resource);
     }
 
-    public static void checkCoverageOfUploadedRules(RulesWithHttpParameters rules, InformationTable informationTable, DescriptiveAttributes descriptiveAttributes) {
+    public static void checkCoverageOfUploadedRules(ProjectRules projectRules, InformationTable informationTable, DescriptiveAttributes descriptiveAttributes) {
         String errorMessage;
-        String ruleSetHash = rules.getRuleSet().getLearningInformationTableHash();
+        String ruleSetHash = projectRules.getRuleSet().getLearningInformationTableHash();
 
         if(ruleSetHash == null) {
             errorMessage = String.format("Provided rule set doesn't have the learning information table hash. It can't be determined, if this rule set was generated based on the current data of the project. Rule coverage information can't be calculated without a valid training set. Current data hash: \"%s\".", informationTable.getHash());
             logger.info(errorMessage);
 
-            rules.setCurrentLearningData(null);
-            rules.setCoveragePresent(false);
-            rules.setDescriptiveAttributes(new DescriptiveAttributes());
+            projectRules.setCurrentLearningData(null);
+            projectRules.setCoveragePresent(false);
+            projectRules.setDescriptiveAttributes(new DescriptiveAttributes());
         } else if(ruleSetHash.equals(informationTable.getHash())) {
             logger.info("Current metadata and objects in the project are correct training set of uploaded rules. Calculating rule coverage information.");
-            rules.getRuleSet().calculateBasicRuleCoverageInformation(informationTable);
+            projectRules.getRuleSet().calculateBasicRuleCoverageInformation(informationTable);
 
             errorMessage = null;
-            rules.setInformationTable(informationTable);
-            rules.setCurrentLearningData(true);
-            rules.setCoveragePresent(true);
-            rules.setDescriptiveAttributes(new DescriptiveAttributes(descriptiveAttributes));
+            projectRules.setInformationTable(informationTable);
+            projectRules.setCurrentLearningData(true);
+            projectRules.setCoveragePresent(true);
+            projectRules.setDescriptiveAttributes(new DescriptiveAttributes(descriptiveAttributes));
         } else {
             errorMessage = String.format("Uploaded rules are not induced from the data in the current project. Access to a valid training set is required to calculate rule coverage information. Please upload new rules based on the current data or create a new project with a valid training set. Current data hash: \"%s\", rules hash: \"%s\".", informationTable.getHash(), ruleSetHash);
             logger.info(errorMessage);
 
-            rules.setCurrentLearningData(false);
-            rules.setCoveragePresent(false);
-            rules.setDescriptiveAttributes(new DescriptiveAttributes());
+            projectRules.setCurrentLearningData(false);
+            projectRules.setCoveragePresent(false);
+            projectRules.setDescriptiveAttributes(new DescriptiveAttributes());
         }
 
-        rules.setErrorMessage(errorMessage);
+        projectRules.setErrorMessage(errorMessage);
     }
 
     private static void uploadRulesToProject(Project project, MultipartFile rulesFile) throws IOException {
@@ -618,7 +613,7 @@ public class RulesService {
 
         RuleSetWithCharacteristics ruleSetWithCharacteristics = parseRules(rulesFile, attributes);
 
-        project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, rulesFile.getOriginalFilename(), attributes));
+        project.setProjectRules(new ProjectRules(ruleSetWithCharacteristics, rulesFile.getOriginalFilename(), attributes));
     }
 
     public MainRulesResponse putUploadRules(UUID id, MultipartFile rulesFile) throws IOException {
@@ -629,8 +624,8 @@ public class RulesService {
 
         uploadRulesToProject(project, rulesFile);
 
-        final RulesWithHttpParameters rules = project.getRules();
-        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        final ProjectRules projectRules = project.getProjectRules();
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(projectRules);
         logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
         return mainRulesResponse;
     }
@@ -649,8 +644,8 @@ public class RulesService {
 
         uploadRulesToProject(project, rulesFile);
 
-        final RulesWithHttpParameters rules = project.getRules();
-        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(rules);
+        final ProjectRules projectRules = project.getProjectRules();
+        final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(projectRules);
         logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
         return mainRulesResponse;
     }
@@ -661,9 +656,9 @@ public class RulesService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final RulesWithHttpParameters rules = getRulesFromProject(project);
+        final ProjectRules projectRules = getRulesFromProject(project);
 
-        final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(rules.getRuleSet(), ruleIndex, rules.getDescriptiveAttributes(), rules.getInformationTable());
+        final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(projectRules.getRuleSet(), ruleIndex, projectRules.getDescriptiveAttributes(), projectRules.getInformationTable());
         logger.debug("chosenRuleResponse:\t{}", chosenRuleResponse.toString());
         return chosenRuleResponse;
     }
@@ -675,13 +670,13 @@ public class RulesService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final RulesWithHttpParameters rules = getRulesFromProject(project);
+        final ProjectRules projectRules = getRulesFromProject(project);
 
         ObjectAbstractResponse objectAbstractResponse;
         if(isAttributes) {
-            objectAbstractResponse = new ObjectWithAttributesResponse(rules.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectWithAttributesResponse(projectRules.getInformationTable(), objectIndex);
         } else {
-            objectAbstractResponse = new ObjectResponse(rules.getInformationTable(), objectIndex);
+            objectAbstractResponse = new ObjectResponse(projectRules.getInformationTable(), objectIndex);
         }
         logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
         return objectAbstractResponse;

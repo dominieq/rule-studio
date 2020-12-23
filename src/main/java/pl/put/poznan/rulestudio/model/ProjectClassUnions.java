@@ -2,22 +2,20 @@ package pl.put.poznan.rulestudio.model;
 
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.rulelearn.data.InformationTable;
-import pl.put.poznan.rulestudio.enums.UnionType;
+import pl.put.poznan.rulestudio.model.parameters.ClassUnionsParameters;
 
-public class UnionsWithHttpParameters {
+public class ProjectClassUnions {
     private UnionsWithSingleLimitingDecision unions;
-    private UnionType typeOfUnions;
-    private Double consistencyThreshold;
+    private ClassUnionsParameters classUnionsParameters;
     private String dataHash;
     private Boolean isCurrentData;
     private DescriptiveAttributes descriptiveAttributes;
     private InformationTable informationTable;
     private String calculationsTime;
 
-    public UnionsWithHttpParameters(UnionsWithSingleLimitingDecision unions, UnionType typeOfUnions, Double consistencyThreshold, String dataHash, String[] descriptiveAttributesPriority, InformationTable informationTable) {
+    public ProjectClassUnions(UnionsWithSingleLimitingDecision unions, ClassUnionsParameters classUnionsParameters, String dataHash, String[] descriptiveAttributesPriority, InformationTable informationTable) {
         this.unions = unions;
-        this.typeOfUnions = typeOfUnions;
-        this.consistencyThreshold = consistencyThreshold;
+        this.classUnionsParameters = classUnionsParameters;
         this.dataHash = dataHash;
 
         this.isCurrentData = true;
@@ -33,20 +31,12 @@ public class UnionsWithHttpParameters {
         this.unions = unions;
     }
 
-    public UnionType getTypeOfUnions() {
-        return typeOfUnions;
+    public ClassUnionsParameters getClassUnionsParameters() {
+        return classUnionsParameters;
     }
 
-    public void setTypeOfUnions(UnionType typeOfUnions) {
-        this.typeOfUnions = typeOfUnions;
-    }
-
-    public Double getConsistencyThreshold() {
-        return consistencyThreshold;
-    }
-
-    public void setConsistencyThreshold(Double consistencyThreshold) {
-        this.consistencyThreshold = consistencyThreshold;
+    public void setClassUnionsParameters(ClassUnionsParameters classUnionsParameters) {
+        this.classUnionsParameters = classUnionsParameters;
     }
 
     public String getDataHash() {
@@ -91,10 +81,9 @@ public class UnionsWithHttpParameters {
 
     @Override
     public String toString() {
-        return "UnionsWithHttpParameters{" +
+        return "ProjectClassUnions{" +
                 "unions=" + unions +
-                ", typeOfUnions=" + typeOfUnions +
-                ", consistencyThreshold=" + consistencyThreshold +
+                ", classUnionsParameters=" + classUnionsParameters +
                 ", dataHash='" + dataHash + '\'' +
                 ", isCurrentData=" + isCurrentData +
                 ", descriptiveAttributes=" + descriptiveAttributes +
