@@ -74,6 +74,26 @@ public class ClassificationService {
         return learningDescriptiveAttributesPriorityArrayList.toArray(new String[0]);
     }
 
+    private void calculateClassificationInProject(Project project, ClassificationParameters classificationParameters) {
+        final ProjectClassification previousProjectClassification = project.getProjectClassification();
+        if((previousProjectClassification != null) && (!previousProjectClassification.isExternalData()) && (previousProjectClassification.isCurrentProjectData()) && (previousProjectClassification.isCurrentRuleSet()) && (previousProjectClassification.isCurrentLearningData()) && (previousProjectClassification.getClassificationParameters().equalsTo(classificationParameters))) {
+            logger.info("Classification is already calculated with given configuration, skipping current calculation.");
+            return;
+        }
+
+        final InformationTable informationTable = project.getInformationTable();
+        DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't reclassify.");
+        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't reclassify.");
+
+        final ProjectRules projectRules = getRulesToClassify(project);
+
+        final String[] classifiedDescriptiveAttributesPriority = createClassifiedDescriptiveAttributesPriority(project);
+        final String[] learningDescriptiveAttributesPriority = createLearningDescriptiveAttributesPriority(project, projectRules);
+
+        final ProjectClassification projectClassification = new ProjectClassification(projectRules, informationTable, classificationParameters, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, informationTable);
+        project.setProjectClassification(projectClassification);
+    }
+
     public MainClassificationResponse getClassification(UUID id) {
         logger.info("Id:\t{}", id);
 
@@ -92,18 +112,9 @@ public class ClassificationService {
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final InformationTable informationTable = project.getInformationTable();
-        DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't reclassify.");
-        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't reclassify.");
+        calculateClassificationInProject(project, classificationParameters);
 
-        final ProjectRules projectRules = getRulesToClassify(project);
-
-        final String[] classifiedDescriptiveAttributesPriority = createClassifiedDescriptiveAttributesPriority(project);
-        final String[] learningDescriptiveAttributesPriority = createLearningDescriptiveAttributesPriority(project, projectRules);
-
-        final ProjectClassification projectClassification = new ProjectClassification(projectRules, informationTable, classificationParameters, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, informationTable);
-        project.setProjectClassification(projectClassification);
-
+        final ProjectClassification projectClassification = project.getProjectClassification();
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
         logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
         return mainClassificationResponse;
@@ -158,16 +169,9 @@ public class ClassificationService {
         final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't reclassify.");
+        calculateClassificationInProject(project, classificationParameters);
 
-        final ProjectRules projectRules = getRulesToClassify(project);
-
-        final String[] classifiedDescriptiveAttributesPriority = createClassifiedDescriptiveAttributesPriority(project);
-        final String[] learningDescriptiveAttributesPriority = createLearningDescriptiveAttributesPriority(project, projectRules);
-
-        final ProjectClassification projectClassification = new ProjectClassification(projectRules, informationTable, classificationParameters, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, informationTable);
-        project.setProjectClassification(projectClassification);
-
+        final ProjectClassification projectClassification = project.getProjectClassification();
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
         logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
         return mainClassificationResponse;
