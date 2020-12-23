@@ -7,10 +7,12 @@ import Data from "./Data/DisplayData";
 import Rules from "./Tabs/Rules";
 import Unions from "./Tabs/Unions";
 import { fetchData, fetchProject } from "../../Utils/utilFunctions/fetchFunctions";
-import StyledTab from "../../Utils/Navigation/StyledTab";
+import StyledLinkTab from "../../Utils/Navigation/StyledLinkTab";
 import StyledTabs from "../../Utils/Navigation/StyledTabs";
 import ExternalFile from "../../Utils/Feedback/CustomIcons/ExternalFile";
 import OutdatedData from "../../Utils/Feedback/AlertBadge/Alerts/OutdatedData";
+import { Route, Switch } from 'react-router-dom';
+import { tabNames } from "../../Utils/Constants/TabsNamesInPath";
 
 /**
  * The Project section in RuLeStudio. Allows user to choose between tabs.
@@ -231,7 +233,8 @@ class ProjectTabs extends React.PureComponent {
      */
     componentDidMount() {
         this._isMounted = true;
-        this.getProject()
+        this.getProject();
+        this.activateTabUpToURL();
     };
 
     /**
@@ -254,6 +257,7 @@ class ProjectTabs extends React.PureComponent {
         if (prevProps.project.id !== this.props.project.id) {
             const { project: { id: projectId }} = prevProps;
             const { informationTable, isUpdateNecessary, selected } = this.state;
+          
             if (isUpdateNecessary && selected === 0) {
                 this.setState({
                     loading: true
@@ -266,7 +270,14 @@ class ProjectTabs extends React.PureComponent {
                 });
             }
 
-            this.getProject()
+            this.getProject();
+            this.activateTabUpToURL();
+        }
+
+        if (this.props.history.action === "POP") {
+            if (prevProps.location !== this.props.location) {
+                this.activateTabUpToURL();
+            }
         }
     };
 
@@ -391,6 +402,40 @@ class ProjectTabs extends React.PureComponent {
         value: index
     });
 
+    activateTabUpToURL = () => {
+        const url = window.location.href.toString();
+        const urlSplitted = url.split('/');
+
+        if (urlSplitted.length < 5) {
+            this.props.history.replace({
+                pathname: `/${this.props.project.id}/${tabNames[0]}`,
+                state: { projectId: this.props.project.id }
+            });
+            this.onTabChange(null,0);
+        }
+        else {
+            switch (urlSplitted[4]) {
+                case tabNames[1]:
+                    this.onTabChange(null,1);
+                    break;
+                case tabNames[2]:
+                    this.onTabChange(null,2);
+                    break;
+                case tabNames[3]:
+                    this.onTabChange(null,3);
+                    break;
+                case tabNames[4]:
+                    this.onTabChange(null,4);
+                    break;
+                case tabNames[5]:
+                    this.onTabChange(null,5);
+                    break;
+                default:
+                    this.onTabChange(null,0);
+            }
+        }
+    };
+
     render() {
         const {
             informationTable,
@@ -411,24 +456,32 @@ class ProjectTabs extends React.PureComponent {
         return (
             <React.Fragment>
                 <StyledTabs aria-label={"project tabs"} onChange={this.onTabChange} value={selected}>
-                    <StyledTab label={"Data"} {...this.getTabProps(0)} />
-                    <StyledTab
+                    <StyledLinkTab
+                        label={"Data"}
+                        to={{pathname: `/${project.id}/${tabNames[0]}`, state: {projectId: project.id}}}
+                        {...this.getTabProps(0)}
+                    />
+                    <StyledLinkTab
                         label={
                             <OutdatedData invisible={!showAlert[0]} messages={alertMessages[0]}>
                                 Dominance cones
                             </OutdatedData>
                         }
+                        to={{pathname: `/${project.id}/${tabNames[1]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(1)}
+                        
                     />
-                    <StyledTab
+                    <StyledLinkTab
                         label={
                             <OutdatedData invisible={!showAlert[1]} messages={alertMessages[1]}>
                                 Class unions
                             </OutdatedData>
                         }
+                        to={{pathname: `/${project.id}/${tabNames[2]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(2)}
+                        
                     />
-                    <StyledTab
+                    <StyledLinkTab
                         icon={showExternalRules ?
                             <ExternalFile WrapperProps={{style: { marginBottom: 0, marginRight: 8}}} /> : null
                         }
@@ -437,9 +490,11 @@ class ProjectTabs extends React.PureComponent {
                                 Rules
                             </OutdatedData>
                         }
+                        to={{pathname: `/${project.id}/${tabNames[3]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(3)}
+                        
                     />
-                    <StyledTab
+                    <StyledLinkTab
                         icon={showExternalData ?
                             <ExternalFile WrapperProps={{style: { marginBottom: 0, marginRight: 8}}} /> : null
                         }
@@ -448,43 +503,66 @@ class ProjectTabs extends React.PureComponent {
                                 Classification
                             </OutdatedData>
                         }
+                        to={{pathname: `/${project.id}/${tabNames[4]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(4)}
+                        
                     />
-                    <StyledTab
+                    <StyledLinkTab
                         label={
                             <OutdatedData invisible={!showAlert[4]} messages={alertMessages[4]}>
                                 Cross-Validation
                             </OutdatedData>
                         }
+                        to={{pathname: `/${project.id}/${tabNames[5]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(5)}
+                        
                     />
                 </StyledTabs>
+                <Switch>
                 {
                     {
-                        0: (
-                                <Data
-                                    informationTable={informationTable}
-                                    loading={loading}
-                                    onDataChange={this.onDataChange}
-                                    project={project}
-                                    refreshNeeded={refreshNeeded}
-                                    serverBase={serverBase}
-                                    updateProject={this.props.updateProject}
-                                />
-                            ),
-                        1: <Cones {...this.getTabBodyProps(0)} />,
-                        2: <Unions {...this.getTabBodyProps(1)} />,
-                        3: (
-                                <Rules
-                                    onDataUploaded={this.onDataUploaded}
-                                    onRulesUploaded={this.onRulesUploaded}
-                                    {...this.getTabBodyProps(2)}
-                                />
-                            ),
-                        4: <Classification onDataUploaded={this.onDataUploaded} {...this.getTabBodyProps(3)} />,
-                        5: <CrossValidation {...this.getTabBodyProps(4)} />
+
+                        0: <Route
+                            path={`/${project.id}/${tabNames[0]}`}
+                            render={() => <Data
+                                informationTable={informationTable}
+                                loading={loading}
+                                onDataChange={this.onDataChange}
+                                project={project}
+                                serverBase={serverBase}
+                                updateProject={this.props.updateProject}/>
+                            }
+                        />,
+                        1: <Route
+                            path={`/${project.id}/${tabNames[1]}`}
+                            render={() => <Cones {...this.getTabBodyProps(0)} />}
+                        />,
+                        2: <Route
+                            path={`/${project.id}/${tabNames[2]}`}
+                            render={() => <Unions {...this.getTabBodyProps(1)} />}
+                        />,
+                        3: <Route
+                            path={`/${project.id}/${tabNames[3]}`}
+                            render={() => <Rules
+                                onDataUploaded={this.onDataUploaded}
+                                onRulesUploaded={this.onRulesUploaded}
+                                {...this.getTabBodyProps(2)}/>
+                            }
+                        />,
+                        4: <Route
+                            path={`/${project.id}/${tabNames[4]}`}
+                            render={() => <Classification
+                                onDataUploaded={this.onDataUploaded}
+                                {...this.getTabBodyProps(3)}/>
+                            }
+                        />,
+                        5: <Route
+                            path={`/${project.id}/${tabNames[5]}`}
+                            render={() => <CrossValidation {...this.getTabBodyProps(4)} />}
+                        />
                     }[selected]
                 }
+                </Switch>
             </React.Fragment>
         );
     }
