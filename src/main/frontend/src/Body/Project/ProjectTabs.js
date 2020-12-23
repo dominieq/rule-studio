@@ -290,8 +290,8 @@ class ProjectTabs extends React.Component {
             this.activateTabUpToURL();
         }
 
-        if(this.props.history.action === "POP") {
-            if(prevProps.location !== this.props.location) {
+        if (this.props.history.action === "POP") {
+            if (prevProps.location !== this.props.location) {
                 this.activateTabUpToURL();
             }
         }
@@ -420,12 +420,16 @@ class ProjectTabs extends React.Component {
     activateTabUpToURL = () => {
         const url = window.location.href.toString();
         const urlSplitted = url.split('/');
-        if(urlSplitted.length < 5) {
-            this.props.history.replace({pathname: `/${this.props.project.id}/${tabNames[0]}`, state: {projectId: this.props.project.id}});
+
+        if (urlSplitted.length < 5) {
+            this.props.history.replace({
+                pathname: `/${this.props.project.id}/${tabNames[0]}`,
+                state: { projectId: this.props.project.id }
+            });
             this.onTabChange(null,0);
         }
         else {
-            switch(urlSplitted[4]) {
+            switch (urlSplitted[4]) {
                 case tabNames[1]:
                     this.onTabChange(null,1);
                     break;
@@ -531,31 +535,44 @@ class ProjectTabs extends React.Component {
                 <Switch>
                 {
                     {
-                        0: (
-                            <Route path={`/${project.id}/${tabNames[0]}`} render={() =>
-                                <Data
-                                    informationTable={informationTable}
-                                    loading={loading}
-                                    onDataChange={this.onDataChange}
-                                    project={project}
-                                    serverBase={serverBase}
-                                    updateProject={this.props.updateProject}
-                                />}
-                            />
-                            ),
-                        1: <Route path={`/${project.id}/${tabNames[1]}`} render={() => <Cones {...this.getTabBodyProps(0)} />}/>,
-                        2: <Route path={`/${project.id}/${tabNames[2]}`} render={() => <Unions {...this.getTabBodyProps(1)} />}/>,
-                        3: (
-                            <Route path={`/${project.id}/${tabNames[3]}`} render={() =>
-                            <Rules
-                                    onDataUploaded={this.onDataUploaded}
-                                    onRulesUploaded={this.onRulesUploaded}
-                                    {...this.getTabBodyProps(2)}
-                                />}
-                            />
-                            ),
-                        4: <Route path={`/${project.id}/${tabNames[4]}`} render={() => <Classification onDataUploaded={this.onDataUploaded} {...this.getTabBodyProps(3)} />}/>,
-                        5: <Route path={`/${project.id}/${tabNames[5]}`} render={() => <CrossValidation {...this.getTabBodyProps(4)} />}/>
+                        0: <Route
+                            path={`/${project.id}/${tabNames[0]}`}
+                            render={() => <Data
+                                informationTable={informationTable}
+                                loading={loading}
+                                onDataChange={this.onDataChange}
+                                project={project}
+                                serverBase={serverBase}
+                                updateProject={this.props.updateProject}/>
+                            }
+                        />,
+                        1: <Route
+                            path={`/${project.id}/${tabNames[1]}`}
+                            render={() => <Cones {...this.getTabBodyProps(0)} />}
+                        />,
+                        2: <Route
+                            path={`/${project.id}/${tabNames[2]}`}
+                            render={() => <Unions {...this.getTabBodyProps(1)} />}
+                        />,
+                        3: <Route
+                            path={`/${project.id}/${tabNames[3]}`}
+                            render={() => <Rules
+                                onDataUploaded={this.onDataUploaded}
+                                onRulesUploaded={this.onRulesUploaded}
+                                {...this.getTabBodyProps(2)}/>
+                            }
+                        />,
+                        4: <Route
+                            path={`/${project.id}/${tabNames[4]}`}
+                            render={() => <Classification
+                                onDataUploaded={this.onDataUploaded}
+                                {...this.getTabBodyProps(3)}/>
+                            }
+                        />,
+                        5: <Route
+                            path={`/${project.id}/${tabNames[5]}`}
+                            render={() => <CrossValidation {...this.getTabBodyProps(4)} />}
+                        />
                     }[selected]
                 }
                 </Switch>

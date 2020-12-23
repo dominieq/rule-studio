@@ -96,52 +96,63 @@ class App extends Component {
         });
         
         this.props.history.listen((location, action) => {
-            if(action === "POP") {
-                if(location.state && location.state.bodyName) {
-                    if(location.state.bodyName === "Project") {
-                        if(location.state.projectIndex >=0 && location.state.projectIndex < this.state.projects.length) {
+            if (action === "POP") {
+                if (location.state && location.state.bodyName) {
+                    if (location.state.bodyName === "Project") {
+                        if (location.state.projectIndex >= 0 && location.state.projectIndex < this.state.projects.length) {
                             this.existsPath = `${this.state.projects[location.state.projectIndex].id}`;
+
                             this.setState({
                                 body: location.state.bodyName,
                                 currentProject: location.state.projectIndex
-                            })
+                            });
                         } else {
                             this.setState({
                                 body: "Import",
                                 currentProject: -1
-                            })
-                            this.props.history.replace({pathname: "/newProject", state: {bodyName: "Import"}});
+                            });
+
+                            this.props.history.replace({
+                                pathname: "/newProject",
+                                state: { bodyName: "Import" }
+                            });
                         }
                     } else {
                         this.setState({
                             body: location.state.bodyName,
                             currentProject: -1
-                        })
+                        });
                     }
                 } else if (location.state) {
                     let i;
+
                     for (i = 0; i < this.state.projects.length; i++) {
                         if (this.state.projects[i].id === location.state.projectId) {
                             break;
                         }
                     }
-                    if(i < this.state.projects.length) {
+
+                    if (i < this.state.projects.length) {
                         this.existsPath = `${location.state.projectId}`;
+
                         this.setState({
                             body: "Project",
                             currentProject: i
-                        })
+                        });
                     } else {
-                        //Project has been removed. Redirect to the New Project page
                         this.setState({
                             body: "Import",
                             currentProject: -1
-                        })
-                        this.props.history.replace({pathname: "/newProject", state: {bodyName: "Import"}});
+                        });
+
+                        this.props.history.replace({
+                            pathname: "/newProject",
+                            state: { bodyName: "Import" }
+                        });
                     }
                 }
             }
-          })
+          });
     };
 
     /**
@@ -186,28 +197,43 @@ class App extends Component {
             currentProject: name !== "Project" ? -1 : currentProject
         }));
         
-        switch(name) {
+        switch (name) {
             case "Help":
-                this.props.history.push({pathname: "/help", state: {bodyName: name}});
+                this.props.history.push({
+                    pathname: "/help",
+                    state: { bodyName: name }
+                });
                 break;
             case "Import":
-                this.props.history.push({pathname: "/newProject", state: {bodyName: name}});
+                this.props.history.push({
+                    pathname: "/newProject",
+                    state: { bodyName: name }
+                });
                 break;
             default: 
-                this.props.history.push({pathname: "/home", state: {bodyName: "Home"}});
+                this.props.history.push({
+                    pathname: "/home",
+                    state: { bodyName: "Home" }
+                });
                 break;
         }
-
     };
 
     onCurrentProjectChange = (index, tabName) => {
         const { projects } = this.state;
 
         if (tabName !== "" && tabNames.includes(tabName)) {
-            this.props.history.push({pathname: `/${projects[index].id}/${tabName}`, state: {bodyName: "Project", projectIndex: index}});
+            this.props.history.push({
+                pathname: `/${projects[index].id}/${tabName}`,
+                state: { bodyName: "Project", projectIndex: index }
+            });
         } else { 
-            this.props.history.push({pathname: `/${projects[index].id}/${tabNames[0]}`, state: {bodyName: "Project", projectIndex: index}});
+            this.props.history.push({
+                pathname: `/${projects[index].id}/${tabNames[0]}`,
+                state: { bodyName: "Project", projectIndex: index }
+            });
         }
+
         this.existsPath = `${projects[index].id}`;
       
         this.setState({
@@ -294,7 +320,10 @@ class App extends Component {
                     if (result != null && result.hasOwnProperty("id")
                         && result.hasOwnProperty("name")) {
 
-                        this.props.history.push({pathname: `/${result.id}`, state: {bodyName: "Project", projectIndex: this.state.projects.length}});
+                        this.props.history.push({
+                            pathname: `/${result.id}`,
+                            state: { bodyName: "Project", projectIndex: this.state.projects.length }
+                        });
                         this.existsPath = `${result.id}`;
                       
                         this.setState(({projects}) => ({
@@ -350,7 +379,10 @@ class App extends Component {
                     if (result != null && result.hasOwnProperty("id")
                         && result.hasOwnProperty("name")) {
                       
-                        this.props.history.push({pathname: `/${result.id}`, state: {bodyName: "Project", projectIndex: this.state.projects.length}});
+                        this.props.history.push({
+                            pathname: `/${result.id}`,
+                            state: { bodyName: "Project", projectIndex: this.state.projects.length }
+                        });
                         this.existsPath = `${result.id}`;
 
                         this.setState(({projects}) => ({
@@ -412,7 +444,10 @@ class App extends Component {
                 fetchProject(
                     pathParams, method, null, serverBase
                 ).then(() => {
-                    this.props.history.replace({pathname: `/newProject`, state: {bodyName: "Import"}});
+                    this.props.history.replace({
+                        pathname: `/newProject`,
+                        state: { bodyName: "Import" }
+                    });
                     const removedProject = projects[currentProject].name;
 
                     this.setState(({projects, currentProject}) => ({
@@ -529,25 +564,37 @@ class App extends Component {
         const urlSplitted = url.split('/');
         let projectFound = false; 
 
-        if(urlSplitted.length >= 4) {
+        if (urlSplitted.length >= 4) {
             const projectId = url.split('/')[3];
+
             for (let i = 0; i < projects.length; i++) {
                 if (projects[i].id === projectId) {
                     projectFound = true;
                     this.existsPath = `${projects[i].id}`;
-                    if(urlSplitted.length >= 5) {
+
+                    if (urlSplitted.length >= 5) {
                         const tabName = url.split('/')[4];
                         const { projects } = this.state;
 
                         if (tabName !== "" && tabNames.includes(tabName)) {
-                            this.props.history.replace({pathname: `/${projects[i].id}/${tabName}`, state: {bodyName: "Project", projectIndex: i}});
+                            this.props.history.replace({
+                                pathname: `/${projects[i].id}/${tabName}`,
+                                state: { bodyName: "Project", projectIndex: i }
+                            });
                         } else { 
-                            this.props.history.replace({pathname: `/${projects[i].id}/${tabNames[0]}`, state: {bodyName: "Project", projectIndex: i}});
+                            this.props.history.replace({
+                                pathname: `/${projects[i].id}/${tabNames[0]}`,
+                                state: { bodyName: "Project", projectIndex: i }
+                            });
                         }
                     }
                     else {
-                        this.props.history.replace({pathname: `/${projects[i].id}/${tabNames[0]}`, state: {bodyName: "Project", projectIndex: i}});
+                        this.props.history.replace({
+                            pathname: `/${projects[i].id}/${tabNames[0]}`,
+                            state: { bodyName: "Project", projectIndex: i }
+                        });
                     }
+
                     this.setState({
                         body: "Project",
                         currentProject: i
@@ -555,24 +602,36 @@ class App extends Component {
                 }
             }
             
-            if(!projectFound) {
-                switch(projectId) {
+            if (!projectFound) {
+                switch (projectId) {
                     case "help":
-                        this.props.history.replace({pathname: "/help", state: {bodyName: "Help"}});
+                        this.props.history.replace({
+                            pathname: "/help",
+                            state: {bodyName: "Help"}
+                        });
+
                         this.setState({
                             body: "Help",
                             currentProject: -1
                         })
                         break;
                     case "newProject":
-                        this.props.history.replace({pathname: "/newProject", state: {bodyName: "Import"}});
+                        this.props.history.replace({
+                            pathname: "/newProject",
+                            state: { bodyName: "Import" }
+                        });
+
                         this.setState({
                             body: "Import",
                             currentProject: -1
                         })
                         break;
                     default: 
-                        this.props.history.replace({pathname: "/home", state: {bodyName: "Home"}});
+                        this.props.history.replace({
+                            pathname: "/home",
+                            state: { bodyName: "Home" }
+                        });
+
                         this.setState({
                             body: "Home",
                             currentProject: -1
@@ -608,44 +667,35 @@ class App extends Component {
                 <Switch>
                 {
                     {
-                        "Help":
-                            <Route path={`/help`} 
-                                render={() =>
-                                    <Help
-                                        upperMargin={this.appBarRef.current ? this.appBarRef.current.offsetHeight : undefined}
-                                    />
-                                } 
-                            />,
-                        "Home":
-                            <Route path={`/home`} 
-                                render={() =>
-                                    <Home
-                                        goToHelp={() => this.onBodyChange("Help")}
-                                        goToNewProject={() => this.onBodyChange("Import")}
-                                        isDarkTheme={this.state.darkTheme}
-                                    />
-                                } 
-                            />,
-                        "Import": 
-                            <Route path={`/newProject`} 
-                                render={() =>
-                                    <Import onFilesAccepted={this.onFilesAccepted} />
-                                }
-                            />,
-                        "Project":
-                            <Route
-                                path={`/${this.existsPath}`}
-                                render={(routerProps) =>
-                                    <ProjectTabs
-                                        objectGlobalName={objectGlobalName}
-                                        onSnackbarOpen={this.onSnackbarOpen}
-                                        project={projects[currentProject]}
-                                        serverBase={serverBase}
-                                        updateProject={this.updateProject}
-                                        {...routerProps}
-                                    />
-                                }
-                            />
+                        "Help": <Route
+                            path={`/help`}
+                            render={() => <Help
+                                upperMargin={this.appBarRef.current ? this.appBarRef.current.offsetHeight : undefined}/>
+                            }
+                        />,
+                        "Home": <Route
+                            path={`/home`}
+                            render={() => <Home
+                                goToHelp={() => this.onBodyChange("Help")}
+                                goToNewProject={() => this.onBodyChange("Import")}
+                                isDarkTheme={this.state.darkTheme}/>
+                            }
+                        />,
+                        "Import": <Route
+                            path={`/newProject`}
+                            render={() => <Import onFilesAccepted={this.onFilesAccepted}/>}
+                        />,
+                        "Project": <Route
+                            path={`/${this.existsPath}`}
+                            render={(routerProps) => <ProjectTabs
+                                objectGlobalName={objectGlobalName}
+                                onSnackbarOpen={this.onSnackbarOpen}
+                                project={projects[currentProject]}
+                                serverBase={serverBase}
+                                updateProject={this.updateProject}
+                                {...routerProps}/>
+                            }
+                        />
                     }[this.state.body]
                 }
                 </Switch>
