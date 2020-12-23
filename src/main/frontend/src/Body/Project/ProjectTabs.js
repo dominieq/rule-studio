@@ -18,22 +18,24 @@ import { tabNames } from "../../Utils/Constants/TabsNamesInPath";
  * The Project section in RuLeStudio. Allows user to choose between tabs.
  * If necessary, displays information about outdated results shown in currently selected tab.
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onSnackbarOpen - Callback fired when the component request to display an error.
  * @param {Object} props.project - Current project.
  * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.updateProject - Callback fired when a part of current project was changed.
+ * @returns {React.PureComponent}
  */
-class ProjectTabs extends React.Component {
+class ProjectTabs extends React.PureComponent {
     constructor(props) {
         super(props);
 
         this.state = {
             informationTable: null,
             isUpdateNecessary: false,
+            refreshNeeded: false,
             loading: false,
             selected: 0,
             showAlert: Array(5).fill(false),
@@ -236,28 +238,6 @@ class ProjectTabs extends React.Component {
     };
 
     /**
-     * A component's lifecycle method. Fired before rendering to determine whether a component should update.
-     * <br>
-     * <br>
-     * Apart from making a shallow comparison between props and state,
-     * method compares the id of current project to the updated project.
-     * Component will update if the identities are different.
-     *
-     * @function
-     * @memberOf ProjectTabs
-     * @param {Object} nextProps - New props that will replace old props.
-     * @param {Object} nextState - New state that will replace old state
-     * @param {Object} nextContext - New context that will replace old context.
-     * @returns {boolean} - If <code>true</code> the component will update.
-     */
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-        const shallowComparison = this.props !== nextProps || this.state !== nextState;
-        const deepComparison = this.props.project.id !== nextProps.project.id;
-
-        return shallowComparison || deepComparison;
-    };
-
-    /**
      * A component's lifecycle method. Fired after a component was updated.
      * <br>
      * <br>
@@ -283,6 +263,10 @@ class ProjectTabs extends React.Component {
                     loading: true
                 }, () => {
                     this.updateProjectOnServer(projectId, informationTable, selected);
+                });
+            } else if (selected !== 0) {
+                this.setState({
+                    refreshNeeded: true
                 });
             }
 
@@ -350,7 +334,8 @@ class ProjectTabs extends React.Component {
     onDataChange = (informationTable, isUpdateNecessary) => {
         this.setState({
             informationTable: informationTable,
-            isUpdateNecessary: isUpdateNecessary
+            isUpdateNecessary: isUpdateNecessary,
+            refreshNeeded: false
         });
     };
 
@@ -455,6 +440,7 @@ class ProjectTabs extends React.Component {
         const {
             informationTable,
             loading,
+            refreshNeeded,
             selected,
             showAlert,
             showExternalRules,
@@ -535,6 +521,7 @@ class ProjectTabs extends React.Component {
                 <Switch>
                 {
                     {
+
                         0: <Route
                             path={`/${project.id}/${tabNames[0]}`}
                             render={() => <Data

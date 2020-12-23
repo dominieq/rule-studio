@@ -10,11 +10,11 @@ import Project from "../Utils/Classes/Project";
 import LoadingDelay from "../Utils/Feedback/LoadingDelay";
 import LoadingSnackbar from "../Utils/Feedback/LoadingSnackbar";
 import StyledAlert from "../Utils/Feedback/StyledAlert";
-import DeleteProjectDialog from "./Dialogs/DeleteProjectDialog";
-import ImportProjectDialog from "./Dialogs/ImportProjectDialog";
-import RenameProjectDialog from "./Dialogs/RenameProjectDialog";
-import SettingsProjectDialog from "./Dialogs/SettingsProjectDialog";
-import {DarkTheme, LightTheme} from "./Themes/Themes";
+import DeleteProjectDialog from "../Utils/Dialogs/DeleteProjectDialog";
+import ImportProjectDialog from "../Utils/Dialogs/ImportProjectDialog";
+import RenameProjectDialog from "../Utils/Dialogs/RenameProjectDialog";
+import SettingsProjectDialog from "../Utils/Dialogs/SettingsProjectDialog";
+import { DarkTheme, LightTheme } from "../Utils/Themes/Themes";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import {MuiThemeProvider} from "@material-ui/core/styles";
 import { Switch, Route } from 'react-router-dom';
@@ -165,14 +165,18 @@ class App extends Component {
      */
     updateProject = (project) => {
         this.setState(({projects}) => {
-            if (projects.length) {
-                let index;
+            if (projects.length > 0) {
+                let index = -1;
 
                 for (let i = 0; i < projects.length; i++) {
                     if (projects[i].id === project.id) {
                         index = i;
                         break;
                     }
+                }
+
+                if (index === -1) {
+                    return { projects: projects };
                 }
 
                 return {
@@ -351,13 +355,15 @@ class App extends Component {
         const pathParams = { projectId: projects[currentProject].id };
 
         if (currentProject >= 0) {
-            exportProject(pathParams, serverBase).catch(error => {
-                if (error.constructor.name !== "AlertError") {
-                    console.error(error);
-                    return;
-                }
-
-                this.setState({ alertProps: error });
+            this.setState({
+                loading: true,
+                loadingTitle: "Compressing project"
+            }, () => {
+                exportProject(pathParams, serverBase)
+                    .catch(this.onSnackbarOpen)
+                    .finally(() => {
+                        this.setState({ loading: false });
+                    });
             });
         }
     };

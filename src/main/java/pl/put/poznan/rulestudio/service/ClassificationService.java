@@ -8,10 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.put.poznan.rulestudio.enums.ClassifierType;
-import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulestudio.exception.*;
 import pl.put.poznan.rulestudio.model.*;
+import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenRuleResponse.ChosenRuleResponseBuilder;
@@ -20,6 +19,7 @@ import pl.put.poznan.rulestudio.model.response.OrdinalMisclassificationMatrixWit
 import pl.put.poznan.rulestudio.model.response.RuleMainPropertiesResponse.RuleMainPropertiesResponseBuilder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -41,14 +41,57 @@ public class ClassificationService {
         return projectClassification;
     }
 
-    private static RulesWithHttpParameters getRulesToClassify(Project project) {
-        if(project.getRules() == null) {
+    private static ProjectRules getRulesToClassify(Project project) {
+        if(project.getProjectRules() == null) {
             NoRulesException ex = new NoRulesException("There are no rules in this project. Calculate or upload rules to classify data.");
             logger.error(ex.getMessage());
             throw ex;
         }
 
-        return project.getRules();
+        return project.getProjectRules();
+    }
+
+    private static String[] createClassifiedDescriptiveAttributesPriority(Project project) {
+        ArrayList<String> classifiedDescriptiveAttributesPriorityArrayList = new ArrayList<>();
+        final ProjectClassification previousProjectClassification = project.getProjectClassification();
+        if (previousProjectClassification != null) {
+            classifiedDescriptiveAttributesPriorityArrayList.add(previousProjectClassification.getClassifiedDescriptiveAttributes().getCurrentAttributeName());
+        }
+        classifiedDescriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
+        return classifiedDescriptiveAttributesPriorityArrayList.toArray(new String[0]);
+    }
+
+    private static String[] createLearningDescriptiveAttributesPriority(Project project, ProjectRules projectRules) {
+        ArrayList<String> learningDescriptiveAttributesPriorityArrayList = new ArrayList<>();
+        final ProjectClassification previousProjectClassification = project.getProjectClassification();
+        if (previousProjectClassification != null) {
+            learningDescriptiveAttributesPriorityArrayList.add(previousProjectClassification.getLearningDescriptiveAttributes().getCurrentAttributeName());
+        }
+        if (projectRules.isCoveragePresent()) {
+            learningDescriptiveAttributesPriorityArrayList.add(projectRules.getDescriptiveAttributes().getCurrentAttributeName());
+        }
+        learningDescriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
+        return learningDescriptiveAttributesPriorityArrayList.toArray(new String[0]);
+    }
+
+    private void calculateClassificationInProject(Project project, ClassificationParameters classificationParameters) {
+        final ProjectClassification previousProjectClassification = project.getProjectClassification();
+        if((previousProjectClassification != null) && (!previousProjectClassification.isExternalData()) && (previousProjectClassification.isCurrentProjectData()) && (previousProjectClassification.isCurrentRuleSet()) && (previousProjectClassification.isCurrentLearningData()) && (previousProjectClassification.getClassificationParameters().equalsTo(classificationParameters))) {
+            logger.info("Classification is already calculated with given configuration, skipping current calculation.");
+            return;
+        }
+
+        final InformationTable informationTable = project.getInformationTable();
+        DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't reclassify.");
+        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't reclassify.");
+
+        final ProjectRules projectRules = getRulesToClassify(project);
+
+        final String[] classifiedDescriptiveAttributesPriority = createClassifiedDescriptiveAttributesPriority(project);
+        final String[] learningDescriptiveAttributesPriority = createLearningDescriptiveAttributesPriority(project, projectRules);
+
+        final ProjectClassification projectClassification = new ProjectClassification(projectRules, informationTable, classificationParameters, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, informationTable);
+        project.setProjectClassification(projectClassification);
     }
 
     public MainClassificationResponse getClassification(UUID id) {
@@ -63,24 +106,15 @@ public class ClassificationService {
         return mainClassificationResponse;
     }
 
-    public MainClassificationResponse putClassification(UUID id, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType) {
+    public MainClassificationResponse putClassification(UUID id, ClassificationParameters classificationParameters) {
         logger.info("Id:\t{}", id);
-        logger.info("ClassifierType:\t{}", classifierType);
-        logger.info("DefaultClassificationResultType:\t{}", defaultClassificationResultType);
+        logger.info("ClassificationParameters:\t{}", classificationParameters);
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final InformationTable informationTable = project.getInformationTable();
-        DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't reclassify.");
-        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't reclassify.");
+        calculateClassificationInProject(project, classificationParameters);
 
-        final RulesWithHttpParameters rulesWithHttpParameters = getRulesToClassify(project);
-
-        final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
-
-        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, informationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, informationTable);
-        project.setProjectClassification(projectClassification);
-
+        final ProjectClassification projectClassification = project.getProjectClassification();
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
         logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
         return mainClassificationResponse;
@@ -88,14 +122,12 @@ public class ClassificationService {
 
     public MainClassificationResponse putClassificationNewData(
             UUID id,
-            ClassifierType classifierType,
-            DefaultClassificationResultType defaultClassificationResultType,
+            ClassificationParameters classificationParameters,
             MultipartFile externalDataFile,
             Character separator,
             Boolean header) throws IOException {
         logger.info("Id:\t{}", id);
-        logger.info("ClassifierType:\t{}", classifierType);
-        logger.info("DefaultClassificationResultType:\t{}", defaultClassificationResultType);
+        logger.info("ClassificationParameters:\t{}", classificationParameters);
         logger.info("Data:\t{}\t{}", externalDataFile.getOriginalFilename(), externalDataFile.getContentType());
         logger.info("Separator:\t{}", separator);
         logger.info("Header:\t{}", header);
@@ -108,15 +140,16 @@ public class ClassificationService {
         final Attribute[] attributes = projectInformationTable.getAttributes();
         MetadataService.checkAttributes(attributes, "There is no metadata in project. Couldn't read classified data from file.");
 
-        final RulesWithHttpParameters rulesWithHttpParameters = getRulesToClassify(project);
+        final ProjectRules projectRules = getRulesToClassify(project);
 
         final InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, attributes, separator, header);
         DataService.checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
         DataService.checkNumberOfObjects(newInformationTable, "There are no objects in external data. Couldn't classify.");
 
-        final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
+        final String[] classifiedDescriptiveAttributesPriority = createClassifiedDescriptiveAttributesPriority(project);
+        final String[] learningDescriptiveAttributesPriority = createLearningDescriptiveAttributesPriority(project, projectRules);
 
-        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, newInformationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, projectInformationTable, externalDataFile.getOriginalFilename());
+        final ProjectClassification projectClassification = new ProjectClassification(projectRules, newInformationTable, classificationParameters, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, projectInformationTable, externalDataFile.getOriginalFilename());
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
@@ -124,10 +157,9 @@ public class ClassificationService {
         return mainClassificationResponse;
     }
 
-    public MainClassificationResponse postClassification(UUID id, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, String metadata, String data) throws IOException {
+    public MainClassificationResponse postClassification(UUID id, ClassificationParameters classificationParameters, String metadata, String data) throws IOException {
         logger.info("Id:\t{}", id);
-        logger.info("ClassifierType:\t{}", classifierType);
-        logger.info("DefaultClassificationResultType:\t{}", defaultClassificationResultType);
+        logger.info("ClassificationParameters:\t{}", classificationParameters);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
@@ -137,15 +169,9 @@ public class ClassificationService {
         final InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(informationTable);
 
-        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't reclassify.");
+        calculateClassificationInProject(project, classificationParameters);
 
-        final RulesWithHttpParameters rulesWithHttpParameters = getRulesToClassify(project);
-
-        final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
-
-        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, informationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, informationTable);
-        project.setProjectClassification(projectClassification);
-
+        final ProjectClassification projectClassification = project.getProjectClassification();
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
         logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
         return mainClassificationResponse;
@@ -153,16 +179,14 @@ public class ClassificationService {
 
     public MainClassificationResponse postClassificationNewData(
             UUID id,
-            ClassifierType classifierType,
-            DefaultClassificationResultType defaultClassificationResultType,
+            ClassificationParameters classificationParameters,
             String metadata,
             String data,
             MultipartFile externalDataFile,
             Character separator,
             Boolean header) throws IOException {
         logger.info("Id:\t{}", id);
-        logger.info("ClassifierType:\t{}", classifierType);
-        logger.info("DefaultClassificationResultType:\t{}", defaultClassificationResultType);
+        logger.info("ClassificationParameters:\t{}", classificationParameters);
         logger.info("Metadata:\t{}", metadata);
         logger.info("Data size:\t{} B", data.length());
         logger.debug("Data:\t{}", data);
@@ -175,15 +199,16 @@ public class ClassificationService {
         final InformationTable projectInformationTable = ProjectService.createInformationTableFromString(metadata, data);
         project.setInformationTable(projectInformationTable);
 
-        final RulesWithHttpParameters rulesWithHttpParameters = getRulesToClassify(project);
+        final ProjectRules projectRules = getRulesToClassify(project);
 
         final InformationTable newInformationTable = DataService.informationTableFromMultipartFileData(externalDataFile, projectInformationTable.getAttributes(), separator, header);
         DataService.checkInformationTable(newInformationTable, "There is no data in external file. Couldn't classify.");
         DataService.checkNumberOfObjects(newInformationTable, "There are no objects in external data. Couldn't classify.");
 
-        final DescriptiveAttributes projectDescriptiveAttributes = project.getDescriptiveAttributes();
+        final String[] classifiedDescriptiveAttributesPriority = createClassifiedDescriptiveAttributesPriority(project);
+        final String[] learningDescriptiveAttributesPriority = createLearningDescriptiveAttributesPriority(project, projectRules);
 
-        final ProjectClassification projectClassification = new ProjectClassification(rulesWithHttpParameters, newInformationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, projectInformationTable, externalDataFile.getOriginalFilename());
+        final ProjectClassification projectClassification = new ProjectClassification(projectRules, newInformationTable, classificationParameters, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, projectInformationTable, externalDataFile.getOriginalFilename());
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);

@@ -26,9 +26,9 @@ public class ValidityProjectContainer extends ValidityRulesContainer {
             this.dominanceConesValidity = null;
         }
 
-        final RulesWithHttpParameters rules = project.getRules();
-        if (rules != null) {
-            this.rulesValidity = new RulesValidity(rules);
+        final ProjectRules projectRules = project.getProjectRules();
+        if (projectRules != null) {
+            this.rulesValidity = new RulesValidity(projectRules);
         } else {
             this.rulesValidity = null;
         }
@@ -93,10 +93,10 @@ public class ValidityProjectContainer extends ValidityRulesContainer {
 
         private String[] errorMessages;
 
-        public RulesValidity(RulesWithHttpParameters rules) {
-            this.externalRules = rules.isExternalRules();
+        public RulesValidity(ProjectRules projectRules) {
+            this.externalRules = projectRules.isExternalRules();
 
-            this.errorMessages = rules.interpretFlags();
+            this.errorMessages = projectRules.interpretFlags();
             this.isCurrentData = (this.errorMessages == null);
         }
 

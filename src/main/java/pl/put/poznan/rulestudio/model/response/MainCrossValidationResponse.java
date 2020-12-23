@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.model.CrossValidation;
 import pl.put.poznan.rulestudio.model.parameters.CrossValidationParameters;
-import pl.put.poznan.rulestudio.model.parameters.CrossValidationParameters.CrossValidationParametersBuilder;
-import pl.put.poznan.rulestudio.model.response.ChosenCrossValidationFoldResponse.ChosenCrossValidationFoldResponseBuilder;
 
 public class MainCrossValidationResponse {
 
@@ -16,6 +14,8 @@ public class MainCrossValidationResponse {
 
     @JsonProperty("parameters")
     private CrossValidationParameters crossValidationParameters;
+
+    private String calculationsTime;
 
     private MainCrossValidationResponse() {
         //private constructor
@@ -30,11 +30,16 @@ public class MainCrossValidationResponse {
         return crossValidationParameters;
     }
 
+    public String getCalculationsTime() {
+        return calculationsTime;
+    }
+
     @Override
     public String toString() {
         return "MainCrossValidationResponse{" +
                 "isCurrentData=" + isCurrentData +
                 ", crossValidationParameters=" + crossValidationParameters +
+                ", calculationsTime='" + calculationsTime + '\'' +
                 '}';
     }
 
@@ -43,6 +48,7 @@ public class MainCrossValidationResponse {
 
         private Boolean isCurrentData;
         private CrossValidationParameters crossValidationParameters;
+        private String calculationsTime;
 
         public static MainCrossValidationResponseBuilder newInstance() {
             return new MainCrossValidationResponseBuilder();
@@ -58,11 +64,17 @@ public class MainCrossValidationResponse {
             return this;
         }
 
+        public MainCrossValidationResponseBuilder setCalculationsTime(String calculationsTime) {
+            this.calculationsTime = calculationsTime;
+            return this;
+        }
+
         public MainCrossValidationResponse build() {
             MainCrossValidationResponse mainCrossValidationResponse = new MainCrossValidationResponse();
 
             mainCrossValidationResponse.isCurrentData = this.isCurrentData;
             mainCrossValidationResponse.crossValidationParameters = this.crossValidationParameters;
+            mainCrossValidationResponse.calculationsTime = this.calculationsTime;
 
             return mainCrossValidationResponse;
         }
@@ -71,7 +83,8 @@ public class MainCrossValidationResponse {
             MainCrossValidationResponse mainCrossValidationResponse = new MainCrossValidationResponse();
 
             mainCrossValidationResponse.isCurrentData = crossValidation.isCurrentData();
-            mainCrossValidationResponse.crossValidationParameters = CrossValidationParametersBuilder.newInstance().build(crossValidation);
+            mainCrossValidationResponse.crossValidationParameters = crossValidation.getCrossValidationParameters();
+            mainCrossValidationResponse.calculationsTime = crossValidation.getCalculationsTime();
 
             return mainCrossValidationResponse;
         }

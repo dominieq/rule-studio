@@ -12,27 +12,27 @@ public class GlobalDescriptiveAttributesResponse extends DescriptiveAttributesRe
     public GlobalDescriptiveAttributesResponse(Project project) {
         super(project.getDescriptiveAttributes());
 
-        final DescriptiveAttributes globaDescriptiveAttributes = project.getDescriptiveAttributes();
+        final DescriptiveAttributes globalDescriptiveAttributes = project.getDescriptiveAttributes();
 
         DominanceCones dominanceCones = project.getDominanceCones();
         if (dominanceCones != null) {
-            if (!globaDescriptiveAttributes.hasEqualName(dominanceCones.getDescriptiveAttributes())) {
+            if (!globalDescriptiveAttributes.hasEqualName(dominanceCones.getDescriptiveAttributes())) {
                 this.isEverywhere = false;
                 return;
             }
         }
 
-        UnionsWithHttpParameters unions = project.getUnions();
-        if (unions != null) {
-            if (!globaDescriptiveAttributes.hasEqualName(unions.getDescriptiveAttributes())) {
+        ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
+        if (projectClassUnions != null) {
+            if (!globalDescriptiveAttributes.hasEqualName(projectClassUnions.getDescriptiveAttributes())) {
                 this.isEverywhere = false;
                 return;
             }
         }
 
-        RulesWithHttpParameters rules = project.getRules();
-        if (rules != null) {
-            if (!globaDescriptiveAttributes.hasEqualName(rules.getDescriptiveAttributes())) {
+        ProjectRules projectRules = project.getProjectRules();
+        if (projectRules != null) {
+            if (!globalDescriptiveAttributes.hasEqualName(projectRules.getDescriptiveAttributes())) {
                 this.isEverywhere = false;
                 return;
             }
@@ -40,12 +40,12 @@ public class GlobalDescriptiveAttributesResponse extends DescriptiveAttributesRe
 
         ProjectClassification projectClassification = project.getProjectClassification();
         if (projectClassification != null) {
-            if (!globaDescriptiveAttributes.hasEqualName(projectClassification.getClassifiedDescriptiveAttributes())) {
+            if (!globalDescriptiveAttributes.hasEqualName(projectClassification.getClassifiedDescriptiveAttributes())) {
                 this.isEverywhere = false;
                 return;
             }
 
-            if (!globaDescriptiveAttributes.hasEqualName(projectClassification.getLearningDescriptiveAttributes())) {
+            if (!globalDescriptiveAttributes.hasEqualName(projectClassification.getLearningDescriptiveAttributes())) {
                 this.isEverywhere = false;
                 return;
             }
@@ -53,7 +53,7 @@ public class GlobalDescriptiveAttributesResponse extends DescriptiveAttributesRe
 
         CrossValidation crossValidation = project.getCrossValidation();
         if (crossValidation != null) {
-            if (!globaDescriptiveAttributes.hasEqualName(crossValidation.getDescriptiveAttributes())) {
+            if (!globalDescriptiveAttributes.hasEqualName(crossValidation.getDescriptiveAttributes())) {
                 this.isEverywhere = false;
                 return;
             }

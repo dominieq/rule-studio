@@ -11,10 +11,7 @@ import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectsContainer;
 import pl.put.poznan.rulestudio.model.response.ProjectResponse;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.UUID;
 import java.util.zip.ZipInputStream;
 
@@ -52,22 +49,21 @@ public class ImportService {
             logger.info("Size after decompressing:\t{} B", baos.size());
 
             final InputStream is = new ByteArrayInputStream(baos.toByteArray());
-            final XStream xStream = new XStream();
-            project = (Project)xStream.fromXML(is);
+            project = readXml(is);
 
             logger.info("Successfully imported from zip file.");
-        } catch (RuntimeException eZip) {
+        } catch (RuntimeException | ClassNotFoundException eZip) {
             final String zipMessage = new StringBuilder("Failed to import from zip file:\t").append(eZip.getMessage()).toString();
             logger.error(zipMessage);
 
             try {
                 logger.info("Trying import project from xml file...");
 
-                final XStream xStream = new XStream();
-                project = (Project)xStream.fromXML(importFile.getInputStream());
+                final InputStream is = importFile.getInputStream();
+                project = readXml(is);
 
                 logger.info("Successfully imported from xml file.");
-            } catch (RuntimeException eXml) {
+            } catch (RuntimeException | ClassNotFoundException eXml) {
                 final String xmlMessage = new StringBuilder("Failed to import form xml file:\t").append(eXml.getMessage()).toString();
                 logger.error(xmlMessage);
 
@@ -92,5 +88,31 @@ public class ImportService {
         ProjectResponse projectResponse = new ProjectResponse(project);
         logger.debug(projectResponse.toString());
         return projectResponse;
+    }
+
+    private Project readXml(InputStream is) throws IOException, ClassNotFoundException {
+        String version;
+
+        final XStream xStream = new XStream();
+        ObjectInputStream ois = xStream.createObjectInputStream(is);
+
+        try {
+            version = (String)ois.readObject();
+        } catch (RuntimeException e) {
+            if (e.getMessage().equals("id")) {
+                final String errorMessage = "There is no version in uploaded file, import can't be performed safely.";
+                throw new RuntimeException(errorMessage);
+            } else {
+                throw e;
+            }
+        }
+
+        if(!ExportService.version.equals(version)) {
+            final String errorMessage = new StringBuilder("The version of the imported project (").append(version).append(") is not compatible with the version supported by application (").append(ExportService.version).append(").").toString();
+            throw new RuntimeException(errorMessage);
+        }
+
+        final Project project = (Project)ois.readObject();
+        return project;
     }
 }

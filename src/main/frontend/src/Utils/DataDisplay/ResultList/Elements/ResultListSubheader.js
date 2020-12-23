@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import CircleHelper from "../../../Feedback/CircleHelper";
-import { MoreSettingsIconButton } from "../../../Inputs/StyledButton";
+import { MoreSettingsIconButton } from "../../../Buttons";
 import ListSubheader from "@material-ui/core/ListSubheader";
 
 const useStyles = makeStyles(theme => ({

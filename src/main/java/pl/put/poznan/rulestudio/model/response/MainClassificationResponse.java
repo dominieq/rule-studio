@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.rulestudio.model.ProjectClassification;
 import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters;
-import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters.ClassificationParametersBuilder;
 import pl.put.poznan.rulestudio.model.response.ClassifiedObjectMainProperties.ClassifiedObjectMainPropertiesBuilder;
 
 import java.util.Arrays;
@@ -32,6 +31,8 @@ public class MainClassificationResponse {
 
     @JsonProperty("parameters")
     private ClassificationParameters classificationParameters;
+
+    private String calculationsTime;
 
     private MainClassificationResponse() {
         //private constructor
@@ -66,6 +67,10 @@ public class MainClassificationResponse {
         return classificationParameters;
     }
 
+    public String getCalculationsTime() {
+        return calculationsTime;
+    }
+
     @Override
     public String toString() {
         return "MainClassificationResponse{" +
@@ -76,6 +81,7 @@ public class MainClassificationResponse {
                 ", isCurrentData=" + isCurrentData +
                 ", errorMessages=" + Arrays.toString(errorMessages) +
                 ", classificationParameters=" + classificationParameters +
+                ", calculationsTime='" + calculationsTime + '\'' +
                 '}';
     }
 
@@ -89,6 +95,7 @@ public class MainClassificationResponse {
         private Boolean isCurrentData;
         private String[] errorMessages;
         private ClassificationParameters classificationParameters;
+        private String calculationsTime;
 
         public static MainClassificationResponseBuilder newInstance() {
             return new MainClassificationResponseBuilder();
@@ -129,6 +136,11 @@ public class MainClassificationResponse {
             return this;
         }
 
+        public MainClassificationResponseBuilder setCalculationsTime(String calculationsTime) {
+            this.calculationsTime = calculationsTime;
+            return this;
+        }
+
         public MainClassificationResponse build() {
             MainClassificationResponse mainClassificationResponse = new MainClassificationResponse();
 
@@ -138,6 +150,7 @@ public class MainClassificationResponse {
             mainClassificationResponse.externalDataFileName = this.externalDataFileName;
             mainClassificationResponse.isCurrentData = this.isCurrentData;
             mainClassificationResponse.classificationParameters = this.classificationParameters;
+            mainClassificationResponse.calculationsTime = this.calculationsTime;
 
             return mainClassificationResponse;
         }
@@ -161,7 +174,8 @@ public class MainClassificationResponse {
             mainClassificationResponse.errorMessages = projectClassification.interpretFlags();
             mainClassificationResponse.isCurrentData = (mainClassificationResponse.errorMessages == null);
 
-            mainClassificationResponse.classificationParameters = ClassificationParametersBuilder.newInstance().build(projectClassification);
+            mainClassificationResponse.classificationParameters = projectClassification.getClassificationParameters();
+            mainClassificationResponse.calculationsTime = projectClassification.getCalculationsTime();
 
             return mainClassificationResponse;
         }

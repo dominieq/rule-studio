@@ -20,7 +20,7 @@ import { withStyles, createStyles } from '@material-ui/core/styles';
 import { DraggableHeader } from 'react-data-grid-addons';
 import PropTypes from 'prop-types';
 import CustomLoadingIcon from './CustomLoadingIcon';
-import { StyledButton } from '../../../Utils/Inputs/StyledButton';
+import { StyledButton } from '../../../Utils/Buttons';
 import NumericFilter from './NumericFilter';
 import AttributesVirtualizedTable from './AttributesVirtualizedTable';
 import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
@@ -165,8 +165,8 @@ function RightClickContextMenu({
  * Presents the list of all objects (and attributes) from information table, allows to add, remove and edit them.
  *
  * @name Data
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props - Arguments received from the parent component
  * @param {Object} props.project - Holds data about the current project like id, name and everything associated with the project e.g. information table, unions, cones etc.
@@ -596,7 +596,7 @@ class DisplayData extends React.Component {
      * @memberOf Data
      */
     componentDidMount() {
-        if(this.props.informationTable == null) this.fetchDataFromServerOrParent(true, true);
+        if(this.props.informationTable == null || this.props.refreshNeeded) this.fetchDataFromServerOrParent(true, true);
         else this.fetchDataFromServerOrParent(false, true);
         this._isMounted = true;    
     }

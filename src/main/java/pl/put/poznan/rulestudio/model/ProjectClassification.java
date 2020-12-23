@@ -7,8 +7,7 @@ import org.rulelearn.data.SimpleDecision;
 import org.rulelearn.rules.Rule;
 import org.rulelearn.rules.RuleSetWithCharacteristics;
 import org.rulelearn.types.EvaluationField;
-import pl.put.poznan.rulestudio.enums.ClassifierType;
-import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
+import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,8 +17,7 @@ public class ProjectClassification extends AbstractClassification {
     private InformationTable classifiedInformationTable;
     private DescriptiveAttributes classifiedDescriptiveAttributes;
     private Decision[] orderOfDecisions;
-    private ClassifierType classifierType;
-    private DefaultClassificationResultType defaultClassificationResultType;
+    private ClassificationParameters classificationParameters;
     private String projectDataHash;
     private Boolean isCurrentProjectData;
     private String attributesHash;
@@ -31,32 +29,34 @@ public class ProjectClassification extends AbstractClassification {
     private InformationTable learningInformationTable;
     private DescriptiveAttributes learningDescriptiveAttributes;
     private Boolean isCurrentLearningData;
+    private String calculationsTime;
 
-    public ProjectClassification(RulesWithHttpParameters rulesWithHttpParameters, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, DescriptiveAttributes projectDescriptiveAttributes, InformationTable projectDataInformationTable) {
-        this(rulesWithHttpParameters, classifiedInformationTable, classifierType, defaultClassificationResultType, projectDescriptiveAttributes, projectDataInformationTable, null);
+    public ProjectClassification(ProjectRules projectRules, InformationTable classifiedInformationTable, ClassificationParameters classificationParameters, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable) {
+        this(projectRules, classifiedInformationTable, classificationParameters, classifiedDescriptiveAttributesPriority, learningDescriptiveAttributesPriority, projectDataInformationTable, null);
     }
 
-    public ProjectClassification(RulesWithHttpParameters rulesWithHttpParameters, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, DescriptiveAttributes projectDescriptiveAttributes, InformationTable projectDataInformationTable, String externalDataFileName) {
-        final RuleSetWithCharacteristics ruleSetWithCharacteristics = rulesWithHttpParameters.getRuleSet();
-        if(rulesWithHttpParameters.isCoveragePresent()) {
+    public ProjectClassification(ProjectRules projectRules, InformationTable classifiedInformationTable, ClassificationParameters classificationParameters, String[] classifiedDescriptiveAttributesPriority, String[] learningDescriptiveAttributesPriority, InformationTable projectDataInformationTable, String externalDataFileName) {
+        CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
+
+        final RuleSetWithCharacteristics ruleSetWithCharacteristics = projectRules.getRuleSet();
+        if(projectRules.isCoveragePresent()) {
             this.isOriginalLearningData = true;
-            this.learningInformationTable = rulesWithHttpParameters.getInformationTable();
-            this.learningDescriptiveAttributes = new DescriptiveAttributes(rulesWithHttpParameters.getDescriptiveAttributes());
-            this.isCurrentLearningData = rulesWithHttpParameters.isCurrentLearningData();
+            this.learningInformationTable = projectRules.getInformationTable();
+            this.isCurrentLearningData = projectRules.isCurrentLearningData();
         } else {
             this.isOriginalLearningData = false;
             this.learningInformationTable = projectDataInformationTable;
-            this.learningDescriptiveAttributes = new DescriptiveAttributes(projectDescriptiveAttributes);
             this.isCurrentLearningData = true;
         }
+        this.learningDescriptiveAttributes = new DescriptiveAttributes(this.learningInformationTable, learningDescriptiveAttributesPriority);
+
 
         orderOfDecisions = induceOrderedUniqueFullyDeterminedDecisions(ruleSetWithCharacteristics, classifiedInformationTable);
-        classify(this.learningInformationTable, classifiedInformationTable, classifierType, defaultClassificationResultType, ruleSetWithCharacteristics, orderOfDecisions);
+        classify(this.learningInformationTable, classifiedInformationTable, classificationParameters, ruleSetWithCharacteristics, orderOfDecisions);
 
         this.classifiedInformationTable = classifiedInformationTable;
-        this.classifiedDescriptiveAttributes = new DescriptiveAttributes(projectDescriptiveAttributes);
-        this.classifierType = classifierType;
-        this.defaultClassificationResultType = defaultClassificationResultType;
+        this.classifiedDescriptiveAttributes = new DescriptiveAttributes(classifiedInformationTable, classifiedDescriptiveAttributesPriority);
+        this.classificationParameters = classificationParameters;
 
         this.projectDataHash = projectDataInformationTable.getHash();
         this.isCurrentProjectData = true;
@@ -73,6 +73,9 @@ public class ProjectClassification extends AbstractClassification {
 
         this.ruleSet = ruleSetWithCharacteristics;
         this.isCurrentRuleSet = true;
+
+        calculationsStopWatch.stop();
+        this.calculationsTime = calculationsStopWatch.getReadableTime();
     }
 
     public InformationTable getClassifiedInformationTable() {
@@ -87,12 +90,8 @@ public class ProjectClassification extends AbstractClassification {
         return orderOfDecisions;
     }
 
-    public ClassifierType getClassifierType() {
-        return classifierType;
-    }
-
-    public DefaultClassificationResultType getDefaultClassificationResultType() {
-        return defaultClassificationResultType;
+    public ClassificationParameters getClassificationParameters() {
+        return classificationParameters;
     }
 
     public String getProjectDataHash() {
@@ -159,14 +158,17 @@ public class ProjectClassification extends AbstractClassification {
         isCurrentLearningData = currentLearningData;
     }
 
+    public String getCalculationsTime() {
+        return calculationsTime;
+    }
+
     @Override
     public String toString() {
         return "ProjectClassification{" +
                 "classifiedInformationTable=" + classifiedInformationTable +
                 ", classifiedDescriptiveAttributes=" + classifiedDescriptiveAttributes +
                 ", orderOfDecisions=" + Arrays.toString(orderOfDecisions) +
-                ", classifierType=" + classifierType +
-                ", defaultClassificationResultType=" + defaultClassificationResultType +
+                ", classificationParameters=" + classificationParameters +
                 ", projectDataHash='" + projectDataHash + '\'' +
                 ", isCurrentProjectData=" + isCurrentProjectData +
                 ", attributesHash='" + attributesHash + '\'' +
@@ -178,22 +180,25 @@ public class ProjectClassification extends AbstractClassification {
                 ", learningInformationTable=" + learningInformationTable +
                 ", learningDescriptiveAttributes=" + learningDescriptiveAttributes +
                 ", isCurrentLearningData=" + isCurrentLearningData +
+                ", calculationsTime='" + calculationsTime + '\'' +
                 "} " + super.toString();
     }
 
-    private static Decision[] induceOrderedUniqueFullyDeterminedDecisions(RuleSetWithCharacteristics ruleSetWithCharacteristics, InformationTable informationTable) {
+    private Decision[] induceOrderedUniqueFullyDeterminedDecisions(RuleSetWithCharacteristics ruleSetWithCharacteristics, InformationTable informationTable) {
         List<Decision> allDecisions = new ArrayList<>();
 
         Decision[] informationTableDecisions = informationTable.getOrderedUniqueFullyDeterminedDecisions();
         if(informationTableDecisions != null) {
             for(int i = 0; i < informationTableDecisions.length; i++) {
                 allDecisions.add(informationTableDecisions[i]);
+                logger.debug(String.format("%d:\tObject's decision:\t%s", i, allDecisions.get(allDecisions.size() - 1).toString()));
             }
         }
 
         for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
             Rule rule = ruleSetWithCharacteristics.getRule(i);
             allDecisions.add(new SimpleDecision(rule.getDecision().getLimitingEvaluation(), rule.getDecision().getAttributeWithContext().getAttributeIndex()));
+            logger.debug(String.format("%d:\tRule's decision:\t%s", informationTableDecisions.length + i, allDecisions.get(i).toString()));
         }
 
 
@@ -225,9 +230,11 @@ public class ProjectClassification extends AbstractClassification {
             }
         }
 
+        logger.debug(String.format("First decision:\t%d %s", startingIndex - 1, orderedUniqueFullyDeterminedDecisionsList.get(0).toString()));
         //iterate through objects and extract next unique fully-determined decisions, retaining respective order of comparable decisions
         for (int i = startingIndex; i < allDecisions.size(); i++) {
             candidateDecision = allDecisions.get(i);
+            logger.debug(String.format("%d\tcandidate %s", i, candidateDecision.toString()));
 
             //verify if candidate decision satisfies loop entry condition of being fully-determined
             if (candidateDecision.hasNoMissingEvaluation()) {
@@ -239,9 +246,12 @@ public class ProjectClassification extends AbstractClassification {
                     candidateDecisionEvaluationField = candidateDecision.getEvaluation(candidateDecision.getAttributeIndices().iterator().nextInt());
                     alreadyPresentDecisionEvaluationField = alreadyPresentDecision.getEvaluation(alreadyPresentDecision.getAttributeIndices().iterator().nextInt());
                     //candidate decision has identical evaluation field to compared decision from the list
+                    //if (candidateDecision.equals(alreadyPresentDecision)) {
+                    //if (candidateDecision == alreadyPresentDecision) {
                     if (candidateDecisionEvaluationField.equals(alreadyPresentDecisionEvaluationField)) {
                         //ignore candidate decision since it is already present in the list of decisions
                         iterate = false;
+                        logger.debug(String.format("%d\trejected", i));
                     }
                     //candidate decision is different than compared decision from the list
                     else {

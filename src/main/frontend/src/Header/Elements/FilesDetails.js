@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import CustomPopper from "../../Utils/Surfaces/CustomPopper";
 import CustomTooltip from "../../Utils/DataDisplay/CustomTooltip";
-import { StyledIconButton } from "../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../Utils/Buttons";
 import Popper from "@material-ui/core/Popper";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Grow from "@material-ui/core/Grow";

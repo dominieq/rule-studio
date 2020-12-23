@@ -7,6 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.put.poznan.rulestudio.enums.*;
+import pl.put.poznan.rulestudio.model.parameters.CrossValidationParameters;
+import pl.put.poznan.rulestudio.model.parameters.CrossValidationParametersImpl;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.service.CrossValidationService;
 
@@ -49,7 +51,8 @@ public class CrossValidationController {
             @RequestParam(name = "seed", defaultValue = "0") Long seed) {
         logger.info("Putting cross validation...");
 
-        final MainCrossValidationResponse result = crossValidationService.putCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, classifierType, defaultClassificationResultType, numberOfFolds, seed);
+        final CrossValidationParameters crossValidationParameters = new CrossValidationParametersImpl(typeOfUnions, consistencyThreshold, typeOfRules, classifierType, defaultClassificationResultType, numberOfFolds, seed);
+        final MainCrossValidationResponse result = crossValidationService.putCrossValidation(id, crossValidationParameters);
 
         return ResponseEntity.ok(result);
     }
@@ -68,7 +71,8 @@ public class CrossValidationController {
             @RequestParam(name = "data") String data) throws IOException {
         logger.info("Posting cross validation...");
 
-        final MainCrossValidationResponse result = crossValidationService.postCrossValidation(id, typeOfUnions, consistencyThreshold, typeOfRules, classifierType, defaultClassificationResultType, numberOfFolds, seed, metadata, data);
+        final CrossValidationParameters crossValidationParameters = new CrossValidationParametersImpl(typeOfUnions, consistencyThreshold, typeOfRules, classifierType, defaultClassificationResultType, numberOfFolds, seed);
+        final MainCrossValidationResponse result = crossValidationService.postCrossValidation(id, crossValidationParameters, metadata, data);
 
         return ResponseEntity.ok(result);
     }

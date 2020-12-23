@@ -28,6 +28,7 @@ public class ImposePreferenceOrderService {
 
         InformationTable informationTable = project.getInformationTable();
         DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't perform operation.");
+        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't perform operation.");
 
         informationTable = informationTable.imposePreferenceOrders(binarizeNominalAttributesWith3PlusValues);
 
@@ -46,9 +47,10 @@ public class ImposePreferenceOrderService {
 
         ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
-        final InformationTable informationTable = ProjectService
-                .createInformationTableFromString(metadata, data)
-                .imposePreferenceOrders(binarizeNominalAttributesWith3PlusValues);
+        InformationTable informationTable = ProjectService.createInformationTableFromString(metadata, data);
+        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't perform operation.");
+
+        informationTable = informationTable.imposePreferenceOrders(binarizeNominalAttributesWith3PlusValues);
 
         final InformationTableResponse informationTableResponse = new InformationTableResponse(informationTable);
         logger.debug(informationTableResponse.toString());

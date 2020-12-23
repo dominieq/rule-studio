@@ -7,9 +7,8 @@ import org.rulelearn.approximations.UnionWithSingleLimitingDecision;
 import org.rulelearn.approximations.UnionsWithSingleLimitingDecision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.put.poznan.rulestudio.model.UnionsWithHttpParameters;
+import pl.put.poznan.rulestudio.model.ProjectClassUnions;
 import pl.put.poznan.rulestudio.model.parameters.ClassUnionsParameters;
-import pl.put.poznan.rulestudio.model.parameters.ClassUnionsParameters.ClassUnionsParametersBuilder;
 import pl.put.poznan.rulestudio.model.response.ClassUnionMainProperties.ClassUnionMainPropertiesBuilder;
 
 import java.util.Arrays;
@@ -26,6 +25,8 @@ public class MainClassUnionsResponse {
 
     @JsonProperty("parameters")
     private ClassUnionsParameters classUnionsParameters;
+
+    private String calculationsTime;
 
     private MainClassUnionsResponse() {
         //private constructor
@@ -48,6 +49,10 @@ public class MainClassUnionsResponse {
         return classUnionsParameters;
     }
 
+    public String getCalculationsTime() {
+        return calculationsTime;
+    }
+
     @Override
     public String toString() {
         return "MainClassUnionsResponse{" +
@@ -55,6 +60,7 @@ public class MainClassUnionsResponse {
                 ", qualityOfApproximation=" + qualityOfApproximation +
                 ", isCurrentData=" + isCurrentData +
                 ", classUnionsParameters=" + classUnionsParameters +
+                ", calculationsTime='" + calculationsTime + '\'' +
                 '}';
     }
 
@@ -65,6 +71,7 @@ public class MainClassUnionsResponse {
         private Double qualityOfApproximation;
         private Boolean isCurrentData;
         private ClassUnionsParameters classUnionsParameters;
+        private String calculationsTime;
 
         public static MainClassUnionsResponseBuilder newInstance() {
             return new MainClassUnionsResponseBuilder();
@@ -90,6 +97,11 @@ public class MainClassUnionsResponse {
             return this;
         }
 
+        public MainClassUnionsResponseBuilder setCalculationsTime(String calculationsTime) {
+            this.calculationsTime = calculationsTime;
+            return this;
+        }
+
         public MainClassUnionsResponse build() {
             MainClassUnionsResponse mainClassUnionsResponse = new MainClassUnionsResponse();
 
@@ -97,12 +109,13 @@ public class MainClassUnionsResponse {
             mainClassUnionsResponse.qualityOfApproximation = this.qualityOfApproximation;
             mainClassUnionsResponse.isCurrentData = this.isCurrentData;
             mainClassUnionsResponse.classUnionsParameters = this.classUnionsParameters;
+            mainClassUnionsResponse.calculationsTime = this.calculationsTime;
 
             return mainClassUnionsResponse;
         }
 
-        public MainClassUnionsResponse build(UnionsWithHttpParameters unionsWithHttpParameters) {
-            final UnionsWithSingleLimitingDecision unions = unionsWithHttpParameters.getUnions();
+        public MainClassUnionsResponse build(ProjectClassUnions projectClassUnions) {
+            final UnionsWithSingleLimitingDecision unions = projectClassUnions.getUnions();
             MainClassUnionsResponse mainClassUnionsResponse = new MainClassUnionsResponse();
 
             final Union[] upwardUnions, downwardUnions;
@@ -121,9 +134,10 @@ public class MainClassUnionsResponse {
             }
 
             mainClassUnionsResponse.qualityOfApproximation = unions.getQualityOfApproximation();
-            mainClassUnionsResponse.isCurrentData = unionsWithHttpParameters.isCurrentData();
+            mainClassUnionsResponse.isCurrentData = projectClassUnions.isCurrentData();
 
-            mainClassUnionsResponse.classUnionsParameters = ClassUnionsParametersBuilder.newInstance().build(unionsWithHttpParameters);
+            mainClassUnionsResponse.classUnionsParameters = projectClassUnions.getClassUnionsParameters();
+            mainClassUnionsResponse.calculationsTime = projectClassUnions.getCalculationsTime();
 
             return mainClassUnionsResponse;
         }

@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import pl.put.poznan.rulestudio.enums.ConeType;
 import pl.put.poznan.rulestudio.exception.CalculationException;
 import pl.put.poznan.rulestudio.exception.EmptyResponseException;
-import pl.put.poznan.rulestudio.model.DescriptiveAttributes;
-import pl.put.poznan.rulestudio.model.DominanceCones;
-import pl.put.poznan.rulestudio.model.Project;
-import pl.put.poznan.rulestudio.model.ProjectsContainer;
+import pl.put.poznan.rulestudio.model.*;
 import pl.put.poznan.rulestudio.model.response.*;
 import pl.put.poznan.rulestudio.model.response.AttributeFieldsResponse.AttributeFieldsResponseBuilder;
 import pl.put.poznan.rulestudio.model.response.ChosenDominanceConeResponse.ChosenDominanceConeResponseBuilder;
@@ -20,6 +17,7 @@ import pl.put.poznan.rulestudio.model.response.MainDominanceConesResponse.MainDo
 import pl.put.poznan.rulestudio.model.response.ObjectsComparisonResponse.ObjectsComparisonResponseBuilder;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -31,25 +29,37 @@ public class DominanceConesService {
     ProjectsContainer projectsContainer;
 
     private void calculateDominanceCones(Project project) {
-        if(!project.isCurrentDominanceCones()) {
-            final InformationTable informationTable = project.getInformationTable();
-            DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate dominance cones.");
-            DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate dominance cones.");
-
-            DominanceCones dominanceCones = new DominanceCones();
-            try {
-                dominanceCones.calculateDCones(informationTable, project.getDescriptiveAttributes());
-            } catch (AttributeNotFoundException e) {
-                CalculationException ex = new CalculationException("Cannot calculate dominance cones if there are no active condition evaluation attributes.");
-                logger.error(ex.getMessage());
-                throw ex;
-            }
-
-            project.setDominanceCones(dominanceCones);
-            project.setCurrentDominanceCones(true);
-        } else {
+        final DominanceCones previousDominanceCones = project.getDominanceCones();
+        if((previousDominanceCones != null) && (previousDominanceCones.isCurrentData())) {
             logger.info("Dominance cones are already calculated with given configuration, skipping current calculation.");
+            return;
         }
+
+        CalculationsStopWatch calculationsStopWatch = new CalculationsStopWatch();
+
+        final InformationTable informationTable = project.getInformationTable();
+        DataService.checkInformationTable(informationTable, "There is no data in project. Couldn't calculate dominance cones.");
+        DataService.checkNumberOfObjects(informationTable, "There are no objects in project. Couldn't calculate dominance cones.");
+
+        ArrayList<String> descriptiveAttributesPriorityArrayList = new ArrayList<>();
+        if (previousDominanceCones != null) {
+            descriptiveAttributesPriorityArrayList.add(previousDominanceCones.getDescriptiveAttributes().getCurrentAttributeName());
+        }
+        descriptiveAttributesPriorityArrayList.add(project.getDescriptiveAttributes().getCurrentAttributeName());
+        final String[] descriptiveAttributesPriority = descriptiveAttributesPriorityArrayList.toArray(new String[0]);
+
+        DominanceCones dominanceCones = new DominanceCones();
+        try {
+            dominanceCones.calculateDCones(informationTable, descriptiveAttributesPriority);
+        } catch (AttributeNotFoundException e) {
+            CalculationException ex = new CalculationException("Cannot calculate dominance cones if there are no active condition evaluation attributes.");
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+        calculationsStopWatch.stop();
+        dominanceCones.setCalculationsTime(calculationsStopWatch.getReadableTime());
+
+        project.setDominanceCones(dominanceCones);
     }
 
     private DominanceCones getDominanceConesFromProject(Project project) {

@@ -20,6 +20,8 @@ public class ExportService {
 
     private static final Logger logger = LoggerFactory.getLogger(ExportService.class);
 
+    public static final String version = "1.0.0-rc.7";
+
     @Autowired
     ProjectsContainer projectsContainer;
 
@@ -30,7 +32,10 @@ public class ExportService {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final XStream xStream = new XStream();
-        xStream.toXML(project, baos);
+        ObjectOutputStream oos = xStream.createObjectOutputStream(baos);
+        oos.writeObject(version);
+        oos.writeObject(project);
+        oos.close();
 
         logger.info("Size before compressing:\t{} B", baos.size());
         logger.info("Compressing...");

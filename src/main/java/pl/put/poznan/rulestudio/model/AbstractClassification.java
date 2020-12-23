@@ -17,6 +17,7 @@ import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
 import pl.put.poznan.rulestudio.exception.IncompatibleLearningInformationTableException;
 import pl.put.poznan.rulestudio.exception.NoHashInRuleSetException;
 import pl.put.poznan.rulestudio.exception.WrongParameterException;
+import pl.put.poznan.rulestudio.model.parameters.ClassificationParameters;
 import pl.put.poznan.rulestudio.service.DataService;
 
 import java.util.Arrays;
@@ -141,13 +142,16 @@ public abstract class AbstractClassification {
         logger.info("Learning information table and rule set are compatible.");
     }
 
-    protected void classify(InformationTable learningInformationTable, InformationTable classifiedInformationTable, ClassifierType classifierType, DefaultClassificationResultType defaultClassificationResultType, RuleSetWithCharacteristics ruleSetWithCharacteristics, Decision[] orderOfDecisions) {
+    protected void classify(InformationTable learningInformationTable, InformationTable classifiedInformationTable, ClassificationParameters classificationParameters, RuleSetWithCharacteristics ruleSetWithCharacteristics, Decision[] orderOfDecisions) {
         if(logger.isDebugEnabled()) {
             logger.debug("RuleSet size = {}", ruleSetWithCharacteristics.size());
             for(int i = 0; i < ruleSetWithCharacteristics.size(); i++) {
                 logger.debug("\tRegula nr {}:\t{}", i, ruleSetWithCharacteristics.getRule(i));
             }
         }
+
+        final ClassifierType classifierType = classificationParameters.getClassifierType();
+        final DefaultClassificationResultType defaultClassificationResultType = classificationParameters.getDefaultClassificationResultType();
 
         SimpleClassificationResult simpleClassificationResult = null;
         SimpleEvaluatedClassificationResult simpleEvaluatedClassificationResult = null;
@@ -199,10 +203,25 @@ public abstract class AbstractClassification {
             }
         }
 
+
         Decision[] suggestedDecisions = new Decision[classificationResults.length];
         for(int i = 0; i < classificationResults.length; i++) {
             suggestedDecisions[i] = classificationResults[i].getSuggestedDecision();
         }
+
+        //replace suggestedDecisions objects received from classificationResults with equals decision objects from classifiedInformation
+        //it is passed to OrdinalMisclassificationMatrix and is correctly used when DATA objects aren't learning data set of current rules
+        Decision[] informationTableDecisions = classifiedInformationTable.getOrderedUniqueFullyDeterminedDecisions();
+        for (int i = 0; i < suggestedDecisions.length; i++) {
+            for (int j = 0; j < informationTableDecisions.length; j++) {
+                if (suggestedDecisions[i].equals(informationTableDecisions[j])) {
+                    logger.debug(String.format("%d suggested decision replaced on %d informationTable decision\t%s\t->\t%s", i, j, suggestedDecisions[i].toString(), informationTableDecisions[j].toString()));
+                    suggestedDecisions[i] = informationTableDecisions[j];
+                    break;
+                }
+            }
+        }
+
         ordinalMisclassificationMatrix = new OrdinalMisclassificationMatrix(orderOfDecisions, classifiedInformationTable.getDecisions(), suggestedDecisions);
     }
 }

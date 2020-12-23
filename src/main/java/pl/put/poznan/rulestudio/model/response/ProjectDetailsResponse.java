@@ -3,7 +3,7 @@ package pl.put.poznan.rulestudio.model.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import pl.put.poznan.rulestudio.model.Project;
 import pl.put.poznan.rulestudio.model.ProjectClassification;
-import pl.put.poznan.rulestudio.model.RulesWithHttpParameters;
+import pl.put.poznan.rulestudio.model.ProjectRules;
 
 public class ProjectDetailsResponse {
 
@@ -23,9 +23,9 @@ public class ProjectDetailsResponse {
         this.metadataFileName = project.getMetadataFileName();
         this.dataFileName = project.getDataFileName();
 
-        RulesWithHttpParameters rules = project.getRules();
-        if(rules != null) {
-            this.rulesFileName = rules.getRulesFileName();
+        ProjectRules projectRules = project.getProjectRules();
+        if(projectRules != null) {
+            this.rulesFileName = projectRules.getRulesFileName();
         }
 
         ProjectClassification projectClassification = project.getProjectClassification();

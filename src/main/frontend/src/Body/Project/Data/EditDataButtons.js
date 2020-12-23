@@ -4,7 +4,7 @@ import AddIcon from '@material-ui/icons/Add';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import EditIcon from '@material-ui/icons/Edit';
 import TransformIcon from '@material-ui/icons/Transform';
-import { StyledButton, StyledIconButton } from "../../../Utils/Inputs/StyledButton";
+import { StyledButton, StyledIconButton } from "../../../Utils/Buttons";
 import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
 import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';

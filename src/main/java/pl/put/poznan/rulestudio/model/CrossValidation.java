@@ -3,76 +3,49 @@ package pl.put.poznan.rulestudio.model;
 import org.rulelearn.data.Decision;
 import org.rulelearn.data.InformationTable;
 import org.rulelearn.validation.OrdinalMisclassificationMatrix;
-import pl.put.poznan.rulestudio.enums.ClassifierType;
-import pl.put.poznan.rulestudio.enums.DefaultClassificationResultType;
-import pl.put.poznan.rulestudio.enums.RuleType;
-import pl.put.poznan.rulestudio.enums.UnionType;
+import pl.put.poznan.rulestudio.model.parameters.CrossValidationParameters;
 
 import java.util.Arrays;
 
 public class CrossValidation {
-    private Integer numberOfFolds;
     private InformationTable informationTable;
     private CrossValidationSingleFold[] crossValidationSingleFolds;
     private Decision[] orderOfDecisions;
     private OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix;
     private OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix;
-    private UnionType typeOfUnions;
-    private Double consistencyThreshold;
-    private RuleType typeOfRules;
-    private ClassifierType classifierType;
-    private DefaultClassificationResultType defaultClassificationResultType;
-    private Long seed;
+    private CrossValidationParameters crossValidationParameters;
     private String dataHash;
     private Boolean isCurrentData;
     private DescriptiveAttributes descriptiveAttributes;
+    private String calculationsTime;
 
-    public CrossValidation(Integer numberOfFolds, CrossValidationSingleFold[] crossValidationSingleFolds, OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix, OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix) {
+    /*public CrossValidation(Integer numberOfFolds, CrossValidationSingleFold[] crossValidationSingleFolds, OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix, OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix) {
         this.numberOfFolds = numberOfFolds;
         this.crossValidationSingleFolds = crossValidationSingleFolds;
         this.meanOrdinalMisclassificationMatrix = meanOrdinalMisclassificationMatrix;
         this.sumOrdinalMisclassificationMatrix = sumOrdinalMisclassificationMatrix;
-    }
+    }*/
 
     public CrossValidation(
-            Integer numberOfFolds,
             InformationTable informationTable,
             CrossValidationSingleFold[] crossValidationSingleFolds,
             Decision[] orderOfDecisions,
             OrdinalMisclassificationMatrix meanOrdinalMisclassificationMatrix,
             OrdinalMisclassificationMatrix sumOrdinalMisclassificationMatrix,
-            UnionType typeOfUnions,
-            Double consistencyThreshold, RuleType typeOfRules,
-            ClassifierType classifierType,
-            DefaultClassificationResultType defaultClassificationResultType,
-            Long seed,
+            CrossValidationParameters crossValidationParameters,
             String dataHash,
-            DescriptiveAttributes descriptiveAttributes) {
+            String[] descriptiveAttributesPriority) {
 
-        this.numberOfFolds = numberOfFolds;
         this.informationTable = informationTable;
         this.crossValidationSingleFolds = crossValidationSingleFolds;
         this.orderOfDecisions = orderOfDecisions;
         this.meanOrdinalMisclassificationMatrix = meanOrdinalMisclassificationMatrix;
         this.sumOrdinalMisclassificationMatrix = sumOrdinalMisclassificationMatrix;
-        this.typeOfUnions = typeOfUnions;
-        this.consistencyThreshold = consistencyThreshold;
-        this.typeOfRules = typeOfRules;
-        this.classifierType = classifierType;
-        this.defaultClassificationResultType = defaultClassificationResultType;
-        this.seed = seed;
+        this.crossValidationParameters = crossValidationParameters;
         this.dataHash = dataHash;
-        this.descriptiveAttributes = descriptiveAttributes;
+        this.descriptiveAttributes = new DescriptiveAttributes(informationTable, descriptiveAttributesPriority);
 
         this.isCurrentData = true;
-    }
-
-    public Integer getNumberOfFolds() {
-        return numberOfFolds;
-    }
-
-    public void setNumberOfFolds(Integer numberOfFolds) {
-        this.numberOfFolds = numberOfFolds;
     }
 
     public InformationTable getInformationTable() {
@@ -115,52 +88,12 @@ public class CrossValidation {
         this.sumOrdinalMisclassificationMatrix = sumOrdinalMisclassificationMatrix;
     }
 
-    public UnionType getTypeOfUnions() {
-        return typeOfUnions;
+    public CrossValidationParameters getCrossValidationParameters() {
+        return crossValidationParameters;
     }
 
-    public void setTypeOfUnions(UnionType typeOfUnions) {
-        this.typeOfUnions = typeOfUnions;
-    }
-
-    public Double getConsistencyThreshold() {
-        return consistencyThreshold;
-    }
-
-    public void setConsistencyThreshold(Double consistencyThreshold) {
-        this.consistencyThreshold = consistencyThreshold;
-    }
-
-    public RuleType getTypeOfRules() {
-        return typeOfRules;
-    }
-
-    public void setTypeOfRules(RuleType typeOfRules) {
-        this.typeOfRules = typeOfRules;
-    }
-
-    public ClassifierType getClassifierType() {
-        return classifierType;
-    }
-
-    public void setClassifierType(ClassifierType classifierType) {
-        this.classifierType = classifierType;
-    }
-
-    public DefaultClassificationResultType getDefaultClassificationResultType() {
-        return defaultClassificationResultType;
-    }
-
-    public void setDefaultClassificationResultType(DefaultClassificationResultType defaultClassificationResultType) {
-        this.defaultClassificationResultType = defaultClassificationResultType;
-    }
-
-    public Long getSeed() {
-        return seed;
-    }
-
-    public void setSeed(Long seed) {
-        this.seed = seed;
+    public void setCrossValidationParameters(CrossValidationParameters crossValidationParameters) {
+        this.crossValidationParameters = crossValidationParameters;
     }
 
     public String getDataHash() {
@@ -187,24 +120,27 @@ public class CrossValidation {
         this.descriptiveAttributes = descriptiveAttributes;
     }
 
+    public String getCalculationsTime() {
+        return calculationsTime;
+    }
+
+    public void setCalculationsTime(String calculationsTime) {
+        this.calculationsTime = calculationsTime;
+    }
+
     @Override
     public String toString() {
         return "CrossValidation{" +
-                "numberOfFolds=" + numberOfFolds +
-                ", informationTable=" + informationTable +
+                "informationTable=" + informationTable +
                 ", crossValidationSingleFolds=" + Arrays.toString(crossValidationSingleFolds) +
                 ", orderOfDecisions=" + Arrays.toString(orderOfDecisions) +
                 ", meanOrdinalMisclassificationMatrix=" + meanOrdinalMisclassificationMatrix +
                 ", sumOrdinalMisclassificationMatrix=" + sumOrdinalMisclassificationMatrix +
-                ", typeOfUnions=" + typeOfUnions +
-                ", consistencyThreshold=" + consistencyThreshold +
-                ", typeOfRules=" + typeOfRules +
-                ", classifierType=" + classifierType +
-                ", defaultClassificationResultType=" + defaultClassificationResultType +
-                ", seed=" + seed +
+                ", crossValidationParameters=" + crossValidationParameters +
                 ", dataHash='" + dataHash + '\'' +
                 ", isCurrentData=" + isCurrentData +
                 ", descriptiveAttributes=" + descriptiveAttributes +
+                ", calculationsTime='" + calculationsTime + '\'' +
                 '}';
     }
 }
