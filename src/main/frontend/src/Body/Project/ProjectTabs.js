@@ -529,6 +529,7 @@ class ProjectTabs extends React.PureComponent {
                                 loading={loading}
                                 onDataChange={this.onDataChange}
                                 project={project}
+                                refreshNeeded={refreshNeeded}
                                 serverBase={serverBase}
                                 updateProject={this.props.updateProject}/>
                             }

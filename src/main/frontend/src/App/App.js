@@ -668,6 +668,7 @@ class App extends Component {
                         onSaveProject={this.onSaveProject}
                         onSnackbarOpen={this.onSnackbarOpen}
                         projects={["Select your project", ...projects]}
+                        serverBase={serverBase}
                     />
                 </Header>
                 <Switch>
