@@ -33,6 +33,7 @@ class App extends Component {
         this.state = {
             loading: false,
             loadingTitle: "",
+            deleting: false,
             body: "Home",
             currentProject: -1,
             projects: [],
@@ -442,7 +443,8 @@ class App extends Component {
         if (action && currentProject !== -1) {
             this.setState({
                 loading: true,
-                loadingTitle: "Deleting project"
+                loadingTitle: "Deleting project",
+                deleting: true
             }, () => {
                 const pathParams = { projectId: projects[currentProject].id };
                 const method = "DELETE";
@@ -472,7 +474,7 @@ class App extends Component {
                 }).catch(
                     this.onSnackbarOpen
                 ).finally(() => {
-                    this.setState({ loading: false });
+                    this.setState({ loading: false, deleting: false });
                 });
             });
         }
@@ -649,7 +651,7 @@ class App extends Component {
     };
 
     render() {
-        const { currentProject, projects, objectGlobalName, open, serverBase, alertProps } = this.state;
+        const { deleting, currentProject, projects, objectGlobalName, open, serverBase, alertProps } = this.state;
         const { deleteDialog, importDialog, renameDialog, settingsDialog } = open;
 
         return (
@@ -695,6 +697,7 @@ class App extends Component {
                         "Project": <Route
                             path={`/${this.existsPath}`}
                             render={(routerProps) => <ProjectTabs
+                                deleting={deleting}
                                 objectGlobalName={objectGlobalName}
                                 onSnackbarOpen={this.onSnackbarOpen}
                                 project={projects[currentProject]}

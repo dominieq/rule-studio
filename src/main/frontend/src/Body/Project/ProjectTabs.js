@@ -21,6 +21,7 @@ import { tabNames } from "../../Utils/Constants/TabsNamesInPath";
  * @constructor
  * @category Project
  * @param {Object} props
+ * @param {boolean} props.deleting - If <code>true</code> the project was requested to be deleted.
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onSnackbarOpen - Callback fired when the component request to display an error.
  * @param {Object} props.project - Current project.
@@ -291,9 +292,9 @@ class ProjectTabs extends React.PureComponent {
     componentWillUnmount() {
         this._isMounted = false;
 
-        const { project: { id: projectId }} = this.props;
+        const { deleting, project: { id: projectId }} = this.props;
         const { informationTable, isUpdateNecessary, selected } = this.state;
-        if (isUpdateNecessary && selected === 0) {
+        if (isUpdateNecessary && selected === 0 && !deleting) {
             this.updateProjectOnServer(projectId, informationTable, selected);
         }
     };
@@ -570,6 +571,7 @@ class ProjectTabs extends React.PureComponent {
 }
 
 ProjectTabs.propTypes = {
+    deleting: PropTypes.bool,
     objectGlobalName: PropTypes.string,
     onSnackbarOpen: PropTypes.func,
     project: PropTypes.object,
