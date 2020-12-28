@@ -9,6 +9,7 @@ const useStyles = makeStyles(theme=> ({
 }), {name: "filter"});
 
 /**
+ * <h3>Overview</h3>
  * Displays information that provided phrase gave no results.
  *
  * @constructor

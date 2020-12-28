@@ -15,7 +15,8 @@ import { Route, Switch } from 'react-router-dom';
 import { tabNames } from "../../Utils/Constants/TabsNamesInPath";
 
 /**
- * The Project section in RuLeStudio. Allows user to choose between tabs.
+ * <h3>Overview</h3>
+ * The Project section in RuLeStudio. Allows a user to choose between tabs.
  * If necessary, displays information about outdated results shown in currently selected tab.
  *
  * @constructor
@@ -47,6 +48,7 @@ class ProjectTabs extends React.PureComponent {
     }
 
     /**
+     * <h3>Overview</h3>
      * Updates alerts based on the response from server.
      *
      * @function
@@ -184,7 +186,10 @@ class ProjectTabs extends React.PureComponent {
     }
 
     /**
+     * <h3>Overview</h3>
      * Utilizes {@link fetchData} to perform an API call with POST method and information table in body.
+     *
+     * <h3>Goal</h3>
      * The goal of this function is to save user's changes made in information table.
      *
      * @function
@@ -226,7 +231,10 @@ class ProjectTabs extends React.PureComponent {
     };
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired once when component was mounted.
+     *
+     * <h3>Goal</h3>
      * Method calls {@link updateAlerts}.
      *
      * @function
@@ -239,13 +247,11 @@ class ProjectTabs extends React.PureComponent {
     };
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired after a component was updated.
-     * <br>
-     * <br>
-     * Method updates state's project settings if props settings have changed and the {@link Data} tab is selected.
-     * <br>
-     * <br>
-     * Apart from that, method checks if project was changed. If a new project was forwarded, method updates alerts
+     *
+     * <h3>Goal</h3>
+     * Checks if project was changed. If a new project was forwarded, method makes an API call to retrieve that project
      * and saves changes from old project if necessary.
      *
      * @function
@@ -283,7 +289,10 @@ class ProjectTabs extends React.PureComponent {
     };
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired when component was requested to be unmounted.
+     *
+     * <h3>Goal</h3>
      * If there were any unsaved changes, method calls {@link updateProjectOnServer}.
      *
      * @function
@@ -300,6 +309,7 @@ class ProjectTabs extends React.PureComponent {
     };
 
     /**
+     * <h3>Overview</h3>
      * Fired when a tab is changed. If user had unsaved changes in {@link Data} tab,
      * method calls {@link updateProjectOnServer} to save them on server.
      *
@@ -324,7 +334,8 @@ class ProjectTabs extends React.PureComponent {
     };
 
     /**
-     * Forwarded to the {@link Data} tab. Fired when an user makes changes in the information table.
+     * <h3>Overview</h3>
+     * Forwarded to the {@link Data} tab. Fired when a user makes changes in the information table.
      * Saves modified project in the component's state.
      *
      * @function
@@ -341,6 +352,7 @@ class ProjectTabs extends React.PureComponent {
     };
 
     /**
+     * <h3>Overview</h3>
      * Forwarded to all tabs. Fired when a tab receives information from the server that current results are outdated.
      *
      * @function
@@ -362,7 +374,8 @@ class ProjectTabs extends React.PureComponent {
     };
 
     /**
-     * Forwarded to the {@link Rules} tab. Fired when an user uploads rule set.
+     * <h3>Overview</h3>
+     * Forwarded to the {@link Rules} tab. Fired when a user uploads rule set.
      * Saves this information in the component's state.
      *
      * @function
@@ -376,7 +389,8 @@ class ProjectTabs extends React.PureComponent {
     };
 
     /**
-     * Forwarded to the {@link Rules} and {@link Classification} tabs. Fired when an  user uploads information table.
+     * <h3>Overview</h3>
+     * Forwarded to the {@link Rules} and {@link Classification} tabs. Fired when a user uploads information table.
      * Saves this information in the component's state.
      *
      * @function

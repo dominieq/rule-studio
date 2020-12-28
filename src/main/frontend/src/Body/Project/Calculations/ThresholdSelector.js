@@ -24,6 +24,7 @@ const tooltip = {
 };
 
 /**
+ * <h3>Overview</h3>
  * Presents threshold and allows user to choose on the slider or type new value.
  *
  * @name Threshold

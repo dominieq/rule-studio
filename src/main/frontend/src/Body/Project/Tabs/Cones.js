@@ -15,6 +15,7 @@ import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
 /**
+ * <h3>Overview</h3>
  * The dominance cones tab in RuLeStudio.
  * Presents the list of all objects from information table with details about their dominance cones.
  *
@@ -52,6 +53,7 @@ class Cones extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on cones to receive current copy of dominance cones from server.
      * Then, updates state and makes necessary changes in display.
      *
@@ -102,9 +104,10 @@ class Cones extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired once when component was mounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method calls {@link getData}.
      *
      * @function
@@ -117,12 +120,10 @@ class Cones extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired after a component was updated.
-     * <br>
-     * <br>
-     * If index option was changed, method sets object's names according to new value.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * If project was changed, method saves changes from previous project
      * and calls {@link getData} to receive the latest copy of dominance cones.
      *
@@ -139,6 +140,7 @@ class Cones extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired when component was requested to be unmounted.
      *
      * @function
@@ -149,6 +151,7 @@ class Cones extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on cones to generate new dominance cones from current information table.
      * Then, updates state and makes necessary changes in display.
      *
@@ -208,6 +211,7 @@ class Cones extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Filters items from {@link Cones}'s state.
      * Method uses {@link filterFunction} to filter items.
      *

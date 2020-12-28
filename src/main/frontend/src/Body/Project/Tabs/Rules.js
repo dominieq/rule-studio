@@ -29,6 +29,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import { mdiTextBox } from '@mdi/js';
 
 /**
+ * <h3>Overview</h3>
  * The rules tab in RuLeStudio.
  * Presents the list of all rules generated for information table from current project.
  *
@@ -78,6 +79,7 @@ class Rules extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on rules to receive current copy of rule set from server.
      * Then, updates state and makes necessary changes in display.
      *
@@ -149,9 +151,10 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired once when component was mounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method calls {@link getRules}.
      *
      * @function
@@ -164,9 +167,10 @@ class Rules extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired after a component was updated.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * If type of unions was changed to <code>monotonic</code> and consistency threshold is equal to 1,
      * method changes value of threshold to 0.
      * <br>
@@ -229,9 +233,10 @@ class Rules extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired when component was requested to be unmounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method saves changes from current project.
      *
      * @function
@@ -259,6 +264,7 @@ class Rules extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on rules to generate new rule set from current information table and parameters.
      * Then, updates state and makes necessary changes in display.
      *
@@ -344,6 +350,7 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on rules to upload user's rule set.
      * Then, updates states and makes necessary changes in display.
      *
@@ -420,6 +427,7 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Used when changes in {@link Rules} had an impact on results in {@link Unions} or {@link Classification}.
      * Updates classification and unions in current project, makes necessary changes in display.
      *
@@ -450,6 +458,7 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call to download current rules set in XML format.
      *
      * @function
@@ -465,6 +474,7 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call to download current rule set in TXT format.
      *
      * @function
@@ -528,6 +538,7 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Filters items from {@link Rules}' state and then sorts them if any order was declared.
      * Method uses {@link filterFunction} to filter items.
      *
@@ -582,6 +593,7 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Sorts provided items and saves results in {@link Rules}' state.
      * Method uses {@link simpleSort} function to sort items.
      *

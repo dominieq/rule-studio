@@ -14,6 +14,7 @@ const tooltip = {
 };
 
 /**
+ * <h3>Overview</h3>
  * Presents number of folds and allows user to type new value.
  *
  * @name NumberOfFolds

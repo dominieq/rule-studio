@@ -26,6 +26,7 @@ import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import {AttributesMenu} from "../../../Utils/Menus/AttributesMenu";
 
 /**
+ * <h3>Overview</h3>
  * The classification tab in RuLeStudio.
  * Presents the list of all object from information table with suggested classification based on generated rules.
  *
@@ -79,6 +80,7 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on classification to receive current copy of classification from server.
      * Then, updates state and makes necessary changes in display.
      *
@@ -144,9 +146,10 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired once when component was mounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method calls {@link getClassification}.
      *
      * @function
@@ -159,12 +162,10 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired after a component was updated.
-     * <br>
-     * <br>
-     * If index option was changed, method sets object's names according to new value.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * If project was changed, method saves changes from previous project
      * and calls {@link getClassification} to receive the latest copy of classification.
      *
@@ -193,9 +194,10 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired when component was requested to be unmounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method saves changes from current project.
      *
      * @function
@@ -218,6 +220,7 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on classification to classify objects from current project or uploaded objects
      * with selected parameters.
      * Then, updates state and makes necessary changes in display.
@@ -296,6 +299,7 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Calls {@link calculateClassification} to classify objects from current project.
      *
      * @function
@@ -311,6 +315,7 @@ class Classification extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Calls {@link calculateClassification} to classify objects from uploaded file.
      * If uploaded file is in CSV format, method opens {@link CSVDialog} to specify CSV attributes.
      *
@@ -341,6 +346,7 @@ class Classification extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Callback fired when {@link CSVDialog} requests to be closed.
      * If the user specified CSV attributes, method calls {@link calculateClassification} to
      * classify objects from uploaded file.
@@ -366,6 +372,7 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Callback fired when the user requests to download misclassification matrix.
      * Method makes an API call to download the resource.
      *
@@ -410,6 +417,7 @@ class Classification extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Filters items from {@link Classification}'s state.
      * Method uses {@link filterFunction} to filter items.
      *

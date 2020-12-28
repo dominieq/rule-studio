@@ -4,7 +4,9 @@ import Typography from "@material-ui/core/Typography";
 import styles from "../styles/Chapter.module.css";
 
 /**
- * Presents chapters from RuLeStudio's manual.
+ * <h3>Overview</h3>
+ * Presents chapters from RuLeStudio's manual with title.
+ * The title will be used as a reference to chapter's position.
  *
  * @constructor
  * @category Help

@@ -34,6 +34,7 @@ const CHAPTERS = [
 ];
 
 /**
+ * <h3>Overview</h3>
  * The Help section of RuLeStudio. Contains a formatted copy of manual.
  * The navigation drawer listens to scroll changes and highlights corresponding chapter titles.
  * Chapter titles in scrollable container are used as a reference to their positions.

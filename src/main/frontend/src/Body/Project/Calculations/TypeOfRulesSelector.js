@@ -15,6 +15,7 @@ const tooltip = {
 };
 
 /**
+ * <h3>Overview</h3>
  * Presents type of rules and allows user to choose between values.
  *
  * @name TypeOfRules
