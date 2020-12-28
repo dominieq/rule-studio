@@ -2,16 +2,15 @@ import React from "react";
 import PropTypes from "prop-types";
 
 /**
+ * <h3>Overview</h3>
  * Delays children of this component before they show up.
  *
- * @name Loading Delay
  * @constructor
  * @category Utils
  * @subcategory Feedback
- * @param props {Object}
- * @param props.children {React.ReactElement} - The content of the component that needs to be delayed.
- * @param [props.timeout=250] {number} - The time that needs to elapse before the children will be visible.
- * @returns {React.ReactElement} - The children of the component after timeout.
+ * @param {Object} props
+ * @param {React.ReactElement} props.children - The content of the component that needs to be delayed.
+ * @returns {React.PureComponent}
  */
 class LoadingDelay extends React.PureComponent {
     constructor(props) {
@@ -45,12 +44,7 @@ class LoadingDelay extends React.PureComponent {
 }
 
 LoadingDelay.propTypes = {
-    children: PropTypes.element.isRequired,
-    timeout: PropTypes.number,
-};
-
-LoadingDelay.defaultProps = {
-    timeout: 250
+    children: PropTypes.element.isRequired
 };
 
 export default LoadingDelay;

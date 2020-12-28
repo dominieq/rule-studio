@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import VirtualizedTable from "./VirtualizedTable";
 
 /**
- *  The {@link VirtualizedTable} element that presents traits of a selected item.
+ * <h3>Overview</h3>
+ * The {@link VirtualizedTable} element that presents traits of a selected item.
  *
  * @constructor
  * @category Utils

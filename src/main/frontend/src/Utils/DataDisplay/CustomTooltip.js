@@ -41,24 +41,27 @@ function DefaultWrapper(props, ref) {
 const WrapperForwardRef = React.forwardRef(DefaultWrapper);
 
 /**
+ * <h3>Overview</h3>
  * The Tooltip component from Material-UI library with custom styling.
+ * For full documentation check out Material-UI docs on
+ * <a href="https://material-ui.com/api/tooltip/" target="_blank">Tooltip</a>.
+ *
+ * <h3>Usage</h3>
  * There is a custom <code>Wrapper</code> element that can hold reference.
  * This composition enables you to forward children without the ability to hold ref to the Tooltip component.
- * For full documentation <a href="https://material-ui.com/api/tooltip/"> check out Material-UI docs</a>
  *
- * @name Custom Tooltip
  * @constructor
  * @category Utils
  * @subcategory Data Display
- * @param props {Object} - Any other props will be forwarded to the Tooltip component.
- * @param [props.classes] {Object} - Override or extend the styles applied to the component.
- * @param [props.className] {string} - The class name of the Wrapper element.
- * @param [props.disableGpu=true] {boolean} - If <code>true</code> GPU acceleration will be disabled. <br>
+ * @param {Object} props - Any other props will be forwarded to the Tooltip component.
+ * @param {Object} [props.classes] - Override or extend the styles applied to the component.
+ * @param {string} [props.className] - The class name of the Wrapper element.
+ * @param {boolean} [props.disableGpu=true] - If <code>true</code> GPU acceleration will be disabled. <br>
  *     Disable GPU acceleration to get unblurred tooltip text in Google Chrome.
- * @param [props.disableMaxWidth=false] {boolean} - If <code>true</code> <code>maxWidth</code> property will be set to "none".
- * @param [props.WrapperComponent=div] {React.ElementType} - The component used for the wrapper element.
- * @param [props.WrapperProps] {Object} - Props applied to the <code>Wrapper</code> element.
- * @returns {React.Component} The Tooltip component from Material-UI library.
+ * @param {boolean} [props.disableMaxWidth=false] - If <code>true</code> <code>maxWidth</code> property will be set to "none".
+ * @param {React.ElementType} [props.WrapperComponent=div] - The component used for the wrapper element.
+ * @param {Object} [props.WrapperProps] - Props applied to the <code>Wrapper</code> element.
+ * @returns {React.ReactElement}
  */
 function CustomTooltip(props) {
     const {

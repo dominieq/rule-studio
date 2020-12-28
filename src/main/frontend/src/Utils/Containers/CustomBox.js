@@ -22,21 +22,21 @@ const useStyles = makeStyles(theme => ({
 }), {name: "TabScroll"});
 
 /**
- * A component with built-in styles that you can choose with 'variant' prop.
- * The content is going to be displayed inside of a 'div' element.
- * You can apply special class name to the 'div' element (it customizes scrollbar if it's visible).
+ * <h3>Overview</h3>
+ * A container with four custom styles applied via <code>variant</code> property.
  *
- * @name Custom Box
+ * <h3>Usage</h3>
+ * In order to provide scrollbar with custom styling set <code>customScrollbar</code> property to <code>true</code>.
+ *
  * @constructor
  * @category Utils
  * @subcategory Containers
- * @param props {Object} Any other props will be forwarded to 'div' element.
- * @param props.children {React.ReactNode} The content of the component.
- * @param props.className {string} The class name of the component.
- * @param props.customScrollbar {boolean} If <code>true</code> a special class name
- * that styles scrollbar is going to be applied to 'div' element.
- * @param props.variant {string} A string value that determines what style is going to be applied to the component.
- * @returns {React.ReactElement} A 'div' element with content inside of it.
+ * @param {Object} props - Any other props will be forwarded to the root element.
+ * @param {React.ReactNode} props.children - The content of the component.
+ * @param {string} props.className - The class attribute of the root element.
+ * @param {boolean} props.customScrollbar - If <code>true</code> scrollbar will have custom styling.
+ * @param {"Body"|"Tab"|"TabBody"|"TabScrollable"} props.variant - The variant of the component.
+ * @returns {React.ReactElement}
  */
 function CustomBox(props) {
     const { className, customScrollbar, variant, ...other } =  props;

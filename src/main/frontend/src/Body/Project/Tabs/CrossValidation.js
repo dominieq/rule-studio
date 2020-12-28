@@ -34,6 +34,7 @@ import Sigma from "mdi-material-ui/Sigma";
 import {AttributesMenu} from "../../../Utils/Menus/AttributesMenu";
 
 /**
+ * <h3>Overview</h3>
  * The cross-validation tab in RuLeStudio.
  * Presents the outcome of cross-validation for information table from current project.
  *
@@ -97,6 +98,14 @@ class CrossValidation extends Component {
         this.upperBar = React.createRef();
     }
 
+    /**
+     * <h3>Overview</h3>
+     * Makes an API call on selected fold from cross-validation to receive it's current copy from server.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
     getFold = (foldIndex, finallyCallback) => {
         this.setState(({loading}) => ({
             loading: { ...loading, selectedFold: true }
@@ -145,6 +154,7 @@ class CrossValidation extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on cross-validation to receive current copy of cross-validation from server.
      * Then, updates state and makes necessary changes in display.
      *
@@ -207,9 +217,10 @@ class CrossValidation extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired once when component was mounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method calls {@link getCrossValidation}.
      *
      * @function
@@ -224,12 +235,10 @@ class CrossValidation extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired after a component was updated.
-     * <br>
-     * <br>
-     * If index option was changed, method sets object's names according to new value.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * If type of unions was changed to <code>monotonic</code> and consistency threshold is equal to 1,
      * method changes value of threshold to 0.
      * <br>
@@ -295,9 +304,10 @@ class CrossValidation extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired when component was requested to be unmounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method saves changes from current project.
      *
      * @function
@@ -323,6 +333,7 @@ class CrossValidation extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on cross-validation to cross-validate objects from current information table
      * with selected parameters.
      * Then, updates state and makes necessary changes in display.
@@ -405,6 +416,7 @@ class CrossValidation extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call to download specified misclassification matrix.
      *
      * @function
@@ -572,6 +584,7 @@ class CrossValidation extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Filters items from {@link CrossValidation}'s state.
      * Method uses {@link filterFunction} to filter items.
      *
@@ -652,7 +665,6 @@ class CrossValidation extends Component {
             loading,
             folds,
             foldData,
-            items,
             displayedItems,
             calculationsTime,
             open,

@@ -22,9 +22,9 @@ const useStyles = makeStyles({
 }, {name: "FileSelectZone"});
 
 /**
+ * <h3>Overview</h3>
  * A section used to upload a file.
  *
- * @name File Select Zone
  * @constructor
  * @category Import
  * @subcategory Elements

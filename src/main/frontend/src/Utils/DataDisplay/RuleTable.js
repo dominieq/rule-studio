@@ -52,6 +52,7 @@ const ruleToList = (rule) => {
 };
 
 /**
+ * <h3>Overview</h3>
  * An AutoSizer and List component from react-virtualized library with custom styling.
  * Used to display rule in an {@link ClassifiedObjectDialog}.
  * <br>
@@ -63,22 +64,22 @@ const ruleToList = (rule) => {
  * @constructor
  * @category Utils
  * @subcategory Data Display
- * @param props {Object}
- * @param [props.listRef] {Object} - Reference forwarded to the List component.
- * @param [props.rowHeight = 36] {number} - The height of the row in the List component.
- * @param props.rule {Object} - The selected rule.
- * @param props.rule.conditions {Object[]} - The conditions part of a selected rule.
- * @param props.rule.conditions[].toString {string} - Conditions as a single string.
- * @param props.rule.conditions[].attributeName {string} - The name of the evaluated attribute.
- * @param props.rule.conditions[].relationSymbol {string} - The relation symbol used to evaluate attribute
- * @param props.rule.conditions[].limitingEvaluation {number|string} - The value of limiting evaluation
- * @param props.rule.decisions {Object[][]} - The decisions part of a selected rule.
- * @param props.rule.decisions[][].toString {string} - Decisions as single string.
- * @param props.rule.decisions[][].attributeName {string} - The name of the evaluated attribute.
- * @param props.rule.decisions[][].relationSymbol {string} - The relation symbol used to evaluate attribute.
- * @param props.rule.decisions[][].limitingEvaluation {number|string} - The value of limiting evaluation.
- * @param props.rule.toString {string} - Rule as a single string.
- * @param props.rule.type {string} - The type of a rule.
+ * @param {Object} props
+ * @param {Object} [props.listRef] - Reference forwarded to the List component.
+ * @param {number} [props.rowHeight = 36] - The height of the row in the List component.
+ * @param {Object} props.rule - The selected rule.
+ * @param {Object[]} props.rule.conditions - The conditions part of a selected rule.
+ * @param {string} props.rule.conditions[].toString - Conditions as a single string.
+ * @param {string} props.rule.conditions[].attributeName - The name of the evaluated attribute.
+ * @param {string} props.rule.conditions[].relationSymbol - The relation symbol used to evaluate attribute
+ * @param {number|string} props.rule.conditions[].limitingEvaluation - The value of limiting evaluation
+ * @param {Object[][]} props.rule.decisions - The decisions part of a selected rule.
+ * @param {string} props.rule.decisions[][].toString - Decisions as single string.
+ * @param {string} props.rule.decisions[][].attributeName - The name of the evaluated attribute.
+ * @param {string} props.rule.decisions[][].relationSymbol - The relation symbol used to evaluate attribute.
+ * @param {number|string} props.rule.decisions[][].limitingEvaluation - The value of limiting evaluation.
+ * @param {string} props.rule.toString - Rule as a single string.
+ * @param {string} props.rule.type - The type of a rule.
  * @returns {React.ReactElement}
  */
 function RuleTable(props) {

@@ -1,6 +1,7 @@
 const exclude = ["value", "Deviation of value"];
 
 /**
+ * <h3>Overview</h3>
  * Creates a matrix item to display in {@link MatrixDialog}.
  *
  * @category Utils

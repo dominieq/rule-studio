@@ -33,8 +33,9 @@ const separators = [
 ];
 
 /**
+ * <h3>Overview</h3>
  * Allows user to choose properties for uploaded CSV file.
- * User can choose delimiter and check header.
+ * User can choose delimiter and check whether a file has a header.
  *
  * @constructor
  * @category Dialogs

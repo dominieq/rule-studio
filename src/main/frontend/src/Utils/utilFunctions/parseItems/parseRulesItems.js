@@ -1,6 +1,7 @@
 import { getRuleName } from "./parseElements";
 
 /**
+ * <h3>Overview</h3>
  * Converts server response to an array of items. Single item can be displayed in {@link RulesDialog}.
  * Uses {@link getRuleName} to obtain special name for an item.
  *

@@ -27,11 +27,14 @@ const useStyles = makeStyles(theme => ({
 }), {name: "NavigateButton"});
 
 /**
+ * <h3>Overview</h3>
  * An element that consists of a paragraph and a button wrapped around in a tooltip.
- * The purpose of this element is to display a sentence where the navigate button is a part of it
+ *
+ * <h3>Goal</h3>
+ * The goal of this element is to display a sentence where the navigate button is a part of it
  * and is navigating to something that was mentioned in the sentence.
  *
- * @class
+ * @constructor
  * @category Home
  * @subcategory Elements
  * @param {Object} props - Any other props will be forwarded to the {@link StyledButton} element.

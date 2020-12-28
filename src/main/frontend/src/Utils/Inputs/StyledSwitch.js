@@ -42,6 +42,7 @@ const switchStyles = makeStyles(theme => ({
 }), {name: "MuiSwitch"});
 
 /**
+ * <h3>Overview</h3>
  * The Switch component from Material-UI library with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/switch/" target="_blank">Switch</a>.
@@ -50,12 +51,11 @@ const switchStyles = makeStyles(theme => ({
  * <a href="https://material-ui.com/components/switches/#customized-switches" target="_blank">tutorial</a>
  * with some changes.
  *
- * @name Styled Switch
  * @constructor
  * @category Utils
  * @subcategory Inputs
- * @param props {Object} - Any other props will be forwarded to the Switch component.
- * @returns {React.ReactElement} - The Switch component from Material-UI library.
+ * @param {Object} props - Any other props will be forwarded to the Switch component.
+ * @returns {React.ReactElement}
  */
 export function StyledSwitch(props) {
     const {classes: propsClasses, ...other} = props;

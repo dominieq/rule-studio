@@ -40,9 +40,9 @@ Messages.propTypes = {
 };
 
 /**
+ * <h3>Overview</h3>
  * Used to signal that results shown in a particular tab are outdated.
  *
- * @name Outdated Data
  * @constructor
  * @category Utils
  * @subcategory Feedback

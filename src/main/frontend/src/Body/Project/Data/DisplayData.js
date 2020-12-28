@@ -161,10 +161,10 @@ function RightClickContextMenu({
 }
 
 /**
+ * <h3>Overview</h3>
  * The data tab in RuleStudio.
  * Presents the list of all objects (and attributes) from information table, allows to add, remove and edit them.
  *
- * @name Data
  * @constructor
  * @category Project
  * @subcategory Tabs

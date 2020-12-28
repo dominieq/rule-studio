@@ -2,6 +2,7 @@ import parseConditions from "./parseConditions";
 import parseDecisions from "./parseDecisions";
 
 /**
+ * <h3>Overview</h3>
  * Generates name for rules. Uses {@link parseDecisions} and {@link parseDecisions} to obtain decisions and conditions.
  *
  * @category Utils

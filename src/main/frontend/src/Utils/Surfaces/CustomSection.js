@@ -15,17 +15,19 @@ const useStyles = makeStyles({
 }, {name: "CustomSection"})
 
 /**
+ * <h3>Overview</h3>
  * The {@link StyledPaper} component customized as a section adjusting it's size to content.
+ *
+ * <h3>Usage</h3>
  * Styles applied to this component are different than in Material-UI.
  * "Root" class defines the size and padding of the section.
  *
- * @name Custom Section
  * @constructor
  * @category Utils
  * @subcategory Surfaces
- * @param props {Object} - Any other props will be forwarded to the {@link StyledPaper} component.
- * @param [props.classes] {Object} - Override or extend the styles applied to the component.
- * @returns {React.ReactElement} - The StyledPaper component customized as a section adjusting it's size to content.
+ * @param {Object} props - Any other props will be forwarded to the {@link StyledPaper} component.
+ * @param {Object} [props.classes] - Override or extend the styles applied to the component.
+ * @returns {React.ReactElement}
  */
 function CustomSection(props) {
     const { classes: propsClasses, className: propsClassName, ...other } = props;

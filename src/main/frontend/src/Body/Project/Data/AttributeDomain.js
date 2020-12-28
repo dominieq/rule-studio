@@ -17,8 +17,7 @@ const styles = ({
 });
 
 /**
- * @name Attribute Domain
- * @class
+ * @constructor
  * @category Utils
  * @subcategory Inputs
  * @param {Object} props

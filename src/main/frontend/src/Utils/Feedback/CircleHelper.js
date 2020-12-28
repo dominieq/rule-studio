@@ -65,20 +65,20 @@ const useStyles = makeStyles(theme => ({
 }), {name: "CircleHelper"});
 
 /**
- *  The component with a question mark inside.
- *  Tooltip with useful information shows up after clicking on it.
+ * <h3>Overview</h3>
+ * The component with a question mark inside.
+ * Tooltip with useful information shows up after clicking on it.
  *
- * @name Circle Helper
  * @constructor
  * @category Utils
  * @subcategory Feedback
- * @param props {Object}
- * @param [props.AvatarProps] {Object} - Props applied to the Avatar element.
- * @param [props.multiRow=true] {boolean} - If <code>true</code> tooltip content will be displayed in a column.
- * @param [props.size="small"] {"smaller"|"small"|"medium"|"big"} - The size of the component.
- * @param props.title {React.ReactNode} - The content of the tooltip.
- * @param [props.TooltipProps] {Object} - Props applied to the Tooltip element.
- * @param [props.WrapperProps] {Object} - Props applied to the Wrapper element.
+ * @param {Object} props
+ * @param {Object} [props.AvatarProps] - Props applied to the Avatar element.
+ * @param {boolean} [props.multiRow = true] - If <code>true</code> tooltip content will be displayed in a column.
+ * @param {"smaller"|"small"|"medium"|"big"} [props.size = "small"] - The size of the component.
+ * @param {React.ReactNode} props.title - The content of the tooltip.
+ * @param {Object} [props.TooltipProps] - Props applied to the Tooltip element.
+ * @param {Object} [props.WrapperProps] - Props applied to the Wrapper element.
  * @returns {React.ReactElement}
  *
  */

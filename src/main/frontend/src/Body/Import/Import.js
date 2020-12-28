@@ -13,13 +13,14 @@ import Collapse from "@material-ui/core/Collapse";
 import styles from "./styles/Import.module.css";
 
 /**
- * The Import section of RuLeStudio. Allows user to customise and create their project.
+ * <h3>Overview</h3>
+ * The Import section of RuLeStudio. Allows a user to customise and create their project.
  *
  * @constructor
  * @category Import
  * @param {Object} props
  * @param {function} props.onFilesAccepted - Callback fired when user accepts selection and requests to create project.
- * @return{React.Component}
+ * @return {React.Component}
  */
 class Import extends Component {
     constructor(props) {
@@ -64,6 +65,7 @@ class Import extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * If a file of the same type was already stored in the state, it is deleted.
      * Then, method checks if the uploaded file is a CSV file and changes state accordingly.
      * Eventually the file is stored in the state.
@@ -103,6 +105,7 @@ class Import extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Method removes file from the state.
      * Then, checks whether the deleted file was a CSV file and changes state accordingly.
      *

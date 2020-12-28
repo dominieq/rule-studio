@@ -13,6 +13,7 @@ import StyledCircularProgress from "../../Feedback/StyledCircularProgress";
 import { AttributesMenu } from "../../Menus/AttributesMenu";
 
 /**
+ * <h3>Overview</h3>
  * The fullscreen dialog with details of a selected rule.
  *
  * @constructor

@@ -1,4 +1,5 @@
 /**
+ * <h3>Overview</h3>
  * Retrieves parameters used to generate rules from server response.
  *
  * @category Utils

@@ -8,6 +8,7 @@ const RuleType = {
 };
 
 /**
+ * <h3>Overview</h3>
  * This is the numeric filter, which appears for the Integer and Real value type attributes.
  *
  * @constructor

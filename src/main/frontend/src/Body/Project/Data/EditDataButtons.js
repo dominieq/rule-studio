@@ -10,11 +10,11 @@ import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';
 
 /**
+ * <h3>Overview</h3>
  * These are buttons displayed above the grid (e.g. Add object, Delete selected etc.) except the filter button.
  *
- * @class
- * @category Utils
- * @subcategory Inputs
+ * @constructor
+ * @category Buttons
  * @param {Object} props
  * @param {string} props.whichDevice - One of [desktop, mobile]. If the device width is too small (look into css) then smaller buttons are displayed.
  * @param {function} props.insertRow - Method used to inserting the row after clicking the button.

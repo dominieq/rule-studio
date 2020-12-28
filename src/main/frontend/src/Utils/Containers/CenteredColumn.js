@@ -7,7 +7,11 @@ import PropTypes from "prop-types";
  * It takes all space given by a parent and centers the inner wrapper.
  * The inner wrapper element takes care of the height of a child. It takes all width given by an outer wrapper.
  *
- * @class
+ * <h3>Usage</h3>
+ * This component should have a single child - an AutoSizer from react-virtualized.
+ * In order to fully utilize this component's features, place it in an element that has 100% width and height.
+ *
+ * @constructor
  * @category Utils
  * @subcategory Containers
  * @param {Object} props

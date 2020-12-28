@@ -8,6 +8,17 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
+/**
+ * <h3>Overview</h3>
+ * Allows a user to choose and import a ZIP file with theirs project.
+ *
+ * @constructor
+ * @category Dialogs
+ * @param {Object} props
+ * @param {function} props.onImportProject - Callback fired when project was requested to be imported.
+ * @param {boolean} props.open - If <code>true</code> the Dialog is open.
+ * @returns {React.PureComponent}
+ */
 class ImportProjectDialog extends React.PureComponent {
     constructor(props) {
         super(props);

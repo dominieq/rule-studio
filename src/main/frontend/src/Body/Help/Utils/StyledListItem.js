@@ -27,11 +27,11 @@ const useStyles = makeStyles(theme => ({
 }), {name: "ChapterNav"});
 
 /**
+ * <h3>Overview</h3>
  * The ListItem component from Material-UI library with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/list-item/" target="_blank">ListItem</a>.
  *
- * @name Styled ListItem
  * @constructor
  * @category Help
  * @subcategory Utilities

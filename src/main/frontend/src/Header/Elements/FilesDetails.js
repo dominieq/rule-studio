@@ -33,7 +33,8 @@ const disableGPUOptions = {
 };
 
 /**
- * Presents files that are used in current project.
+ * <h3>Overview</h3>
+ * Presents files that were used to create current project.
  * Idea for a composition was taken from this
  * <a href="https://material-ui.com/components/button-group/#split-button" target="_blank">tutorial</a>.
  *
@@ -45,9 +46,9 @@ const disableGPUOptions = {
  * @param {function} props.onSnackbarOpen - Callback fired when the component requests to display an error.
  * @param {string} props.projectId - The identifier of a selected project.
  * @param {string} props.serverBase - The host and port in the URL of an API call.
- * @param {React.ElementType} - props.WrapperComponent - The HTML element that will be used as a Wrapper.
+ * @param {React.ElementType} props.WrapperComponent - The HTML element that will be used as a Wrapper.
  * @param {Object} props.WrapperProps - The props applied to the Wrapper element.
- * @returns{React.PureComponent}
+ * @returns {React.PureComponent}
  */
 class FilesDetails extends React.PureComponent {
     constructor(props) {

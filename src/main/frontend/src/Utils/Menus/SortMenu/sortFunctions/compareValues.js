@@ -1,9 +1,10 @@
 /**
+ * <h3>Overview</h3>
  * Compares property values from sorted objects.
  *
  * @memberOf SortMenu
- * @param key {string} - The value of a property from sorted objects.
- * @param [order="asc"] {"asc"|"desc"} - The order of sorting.
+ * @param {string} key - The value of a property from sorted objects.
+ * @param {"asc"|"desc"} [order="asc"] - The order of sorting.
  * @returns {function} - The function that compares objects.
  */
 function compareValues(key, order = "asc") {

@@ -42,6 +42,7 @@ const menuStyles = makeStyles(theme => ({
 }), {name: "CustomMenu"});
 
 /**
+ * <h3>Overview</h3>
  * The TextField component from Material-UI library with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/text-field/" target="_blank">TextField</a>.
@@ -49,19 +50,19 @@ const menuStyles = makeStyles(theme => ({
  * Style was take from this
  * <a href="https://material-ui.com/components/text-fields/#customized-inputs" target="_blank">tutorial</a>
  * with some changes.
- * <br>
- * Apart from normal behavior, you are able to customize label outside of the TextField.
+ *
+ * <h3>Usage</h3>
+ * You are able to customize label outside of the TextField.
  * There is also an option to disable some menu items in the Select component.
  *
- * @name Custom Text Field
  * @constructor
  * @category Utils
  * @subcategory Inputs
- * @param props {Object} - Any other props will be forwarded to TextField component.
- * @param [props.disabledChildren] {Array} - Disabled elements from the Select component.
- * @param [props.outsideLabel] {React.ReactNode} - Label placed outside of the TextField.
- * @param [props.OutsideLabelProps] {Object} - Props applied to the OutsideLabel element.
- * @returns {React.ReactElement} - The TextField component from Material-UI.
+ * @param {Object} props - Any other props will be forwarded to TextField component.
+ * @param {Array} [props.disabledChildren] - Disabled elements from the Select component.
+ * @param {React.ReactNode} [props.outsideLabel] - Label placed outside of the TextField.
+ * @param {Object} [props.OutsideLabelProps] - Props applied to the OutsideLabel element.
+ * @returns {React.ReactElement}
  */
 function CustomTextField(props) {
     const { disabledChildren, outsideLabel, OutsideLabelProps, ...TextFieldProps } = props;

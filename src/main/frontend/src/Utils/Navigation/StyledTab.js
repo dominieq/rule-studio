@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
 }), {name: "CustomTab"});
 
 /**
+ * <h3>Overview</h3>
  * The Tab component from Material-UI library with custom styling.
  * For full documentation check Material-UI docs on
  * <a href="https://material-ui.com/api/tab/" target="_blank">Tab</a>.

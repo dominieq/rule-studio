@@ -64,9 +64,10 @@ const menuStyles = makeStyles(theme => ({
 }), {name: "CustomMenu"});
 
 /**
+ * <h3>Overview</h3>
  * It is the drop down list used in adding or editing attribute.
  *
- * @class
+ * @constructor
  * @category Utils
  * @subcategory Inputs
  * @param {Object} props

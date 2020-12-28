@@ -1,4 +1,5 @@
 /**
+ * <h3>Overview</h3>
  * Wraps conditions in round brackets when necessary.
  * Joins conditions with logic AND.
  *

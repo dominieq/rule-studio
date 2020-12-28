@@ -1,4 +1,5 @@
 /**
+ * <h3>Overview</h3>
  * Returns appropriate relation symbol to compare values of attributes from two objects.
  *
  * @category Utils

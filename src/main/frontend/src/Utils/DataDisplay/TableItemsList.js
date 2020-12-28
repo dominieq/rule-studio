@@ -45,13 +45,14 @@ const listStyles = makeStyles(theme => ({
 }), {name: "TableItemsList"});
 
 /**
- *  An AutoSizer and List components from react-virtualized library with custom styling.
- *  Used to display items from an array from an item's tables property.
- *  <br>
- *  For full documentation check out react-virtualized docs on
- *  <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/AutoSizer.md" target="_blank">AutoSizer</a>
- *  and
- *  <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/List.md" target="_blank">List</a>.
+ * <h3>Overview</h3>
+ * An AutoSizer and List components from react-virtualized library with custom styling.
+ * Used to display items from an array from an item's tables property.
+ * <br>
+ * For full documentation check out react-virtualized docs on
+ * <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/AutoSizer.md" target="_blank">AutoSizer</a>
+ * and
+ * <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/List.md" target="_blank">List</a>.
  *
  * @constructor
  * @category Utils

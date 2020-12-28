@@ -46,6 +46,7 @@ const listStyles = makeStyles(theme => ({
 }), {name: "tables-list"});
 
 /**
+ * <h3>Overview</h3>
  * The List component and it's subcomponents from Material-UI library with custom styling.
  * Used to display tables from a selected item.
  * <br>
@@ -55,11 +56,11 @@ const listStyles = makeStyles(theme => ({
  * @constructor
  * @category Utils
  * @subcategory Data Display
- * @param props {Object}
- * @param props.headerText {string} - The header of the {@link TablesList}
- * @param props.onTableSelected {function} - Callback fired when a table is selected.
- * @param props.tableIndex {number} - The index of currently selected table.
- * @param props.tables {Object} - The tables property from a selected item.
+ * @param {Object} props
+ * @param {string} props.headerText - The header of the {@link TablesList}
+ * @param {function} props.onTableSelected - Callback fired when a table is selected.
+ * @param {number} props.tableIndex - The index of currently selected table.
+ * @param {Object} props.tables - The tables property from a selected item.
  * @returns {React.ReactElement}
  */
 function TablesList(props) {

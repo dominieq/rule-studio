@@ -3,6 +3,7 @@ import { getRelationSign } from "../../../Utils/utilFunctions/parseItems/parseDe
 const relationSigns = ["<=", ">="];
 
 /**
+ * <h3>Overview</h3>
  * Looks for at least one match in filter features.
  * When filterText contains more than one word, all of them have to be found in at least one filter feature.
  *

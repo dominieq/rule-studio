@@ -5,6 +5,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import Magnify from "mdi-material-ui/Magnify";
 
 /**
+ * <h3>Overview</h3>
  * The {@link CustomTextField} element with custom styling.
  * When user starts typing a timer is set for 300 milliseconds.
  * When the time is up, <code>onChange</code> function is fired with user's input as argument.

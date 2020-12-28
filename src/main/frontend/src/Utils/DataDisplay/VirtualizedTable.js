@@ -6,13 +6,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import { AutoSizer, Column, Table } from 'react-virtualized';
 
 /**
- * Estimates height of the VirtualizedTable for given data.
+ * <h3>Overview</h3>
+ * Estimates height of the {@link VirtualizedTable} for given data.
  *
  * @function
  * @category Utils
  * @subcategory Functions
- * @param data {Array} - An array of objects that is going to be displayed in {@link VirtualizedTable}.
- * @param [rowHeight=48] {number} - Height of a row from the table.
+ * @param {Array} data - An array of objects that is going to be displayed in {@link VirtualizedTable}.
+ * @param {number} [rowHeight = 48] - Height of a row from the table.
  * @returns {number} An estimated height of the table.
  */
 export const estimateTableHeight = (data, rowHeight = 48) => {
@@ -53,37 +54,38 @@ const tableStyles = makeStyles(theme => ({
 }), {name: "virtualized-table"});
 
 /**
- *  A Table component wrapped around in AutoSizer from react-virtualized library with custom styling.
- *  There are default <code>cellRenderer</code> and <code>headerRenderer</code> functions in this component.
- *  However, you can forward your own functions to replace them.
- *  For full documentation check out this react-virtualized docs on
- *  <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/Table.md">Table</a>,
- *  <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/AutoSizer.md">AutoSizer</a> and
- *  <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/Column.md">Column</a>.
+ * <h3>Overview</h3>
+ * A Table component wrapped around in AutoSizer from react-virtualized library with custom styling.
+ * There are default <code>cellRenderer</code> and <code>headerRenderer</code> functions in this component.
+ * However, you can forward your own functions to replace them.
+ * For full documentation check out this react-virtualized docs on
+ * <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/Table.md">Table</a>,
+ * <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/AutoSizer.md">AutoSizer</a> and
+ * <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/Column.md">Column</a>.
  *
- * @name Virtualized Table
  * @constructor
  * @category Utils
  * @subcategory Data Display
- * @param props {Object} - Any other props will be forwarded to the Table component.
- * @param [props.classes] {Object} - Override or extend the styles applied to the component.
- * @param props.columns {Object[]} - A data set that is going to be displayed in VirtualizedTable.
- * @returns {React.PureComponent} The Table component wrapped around in AutoSizer from react-virtualized library.
+ * @param {Object} props - Any other props will be forwarded to the Table component.
+ * @param {Object} [props.classes] - Override or extend the styles applied to the component.
+ * @param {Object[]} props.columns - A data set that is going to be displayed in VirtualizedTable.
+ * @returns {React.ReactElement}
  */
 function VirtualizedTable(props) {
     const { cellRenderer, classes, columns, rowHeight, headerRender, headerHeight, ...tableProps } = props;
     const tableClasses = {...tableStyles(), ...classes};
 
     /**
-     *  Default <code>cellRenderer</code> for <code>VirtualizedTable</code>.
-     *  It renders a {@link TextWithHoverTooltip}.
-     *  <br>
-     *  For full documentation check out react-virtualized docs on
-     *  <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/Column.md#cellrenderer">cellRenderer</a>
+     * <h3>Overview</h3>
+     * Default <code>cellRenderer</code> for <code>VirtualizedTable</code>.
+     * It renders a {@link TextWithHoverTooltip}.
+     * <br>
+     * For full documentation check out react-virtualized docs on
+     * <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/Column.md#cellrenderer">cellRenderer</a>
      *
      * @param cellData {*} - The content of a table cell.
      * @param dataKey {string} - The key property of a table cell.
-     * @returns {React.Component} {@link TextWithHoverTooltip}.
+     * @returns {React.ReactElement}
      */
     const cellRendererDefault = ({ cellData, dataKey }) => {
         return (
@@ -105,14 +107,15 @@ function VirtualizedTable(props) {
     };
 
     /**
+     * <h3>Overview</h3>
      * Default <code>headerRenderer</code> for <code>VirtualizedTable</code>.
      * It renders a {@link TextWithHoverTooltip}.
      * <br>
      * For full documentation check out react-virtualized docs on
      * <a href="https://github.com/bvaughn/react-virtualized/blob/master/docs/Column.md#headerrenderer">headerRenderer</a>
      *
-     * @param label {*} - The content of a header cell.
-     * @returns {React.Component} {@link TextWithHoverTooltip}
+     * @param {*} label - The content of a header cell.
+     * @returns {React.ReactElement}
      */
     const headerRendererDefault = ({ label }) => {
         return (

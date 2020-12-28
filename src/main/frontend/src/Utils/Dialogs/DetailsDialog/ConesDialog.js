@@ -10,6 +10,7 @@ import TablesList from "../../DataDisplay/TablesList";
 import StyledCircularProgress from "../../Feedback/StyledCircularProgress";
 
 /**
+ * <h3>Overview</h3>
  * The fullscreen dialog with details of dominance cones of a selected object.
  *
  * @constructor

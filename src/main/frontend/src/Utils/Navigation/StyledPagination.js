@@ -32,20 +32,21 @@ const paginationStyles = makeStyles({
 }, {name: "pagination"});
 
 /**
+ * <h3>Overview</h3>
  * The Pagination component from Material-UI library with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/pagination/" target="_blank">Pagination</a>.
- * <br>
+ *
+ * <h3>Usage</h3>
  * A position of the component determines whether a <code>margin-bottom</code> (<code>position='top'</code>)
  * or a <code>margin-top</code> (<code>position='bottom'</code>) attribute should be added.
  *
- * @name Styled Pagination
  * @constructor
  * @category Utils
  * @subcategory Navigation
- * @param props {Object} - Any other props will be forwarded the Pagination component.
- * @param props.position {('top'|'bottom')} - Specifies the position of the component.
- * @returns {React.ReactElement} - The Pagination component from Material-UI library.
+ * @param {Object} props - Any other props will be forwarded the Pagination component.
+ * @param {"top"|"bottom"} props.position - Specifies the position of the component.
+ * @returns {React.ReactElement}
  */
 function StyledPagination(props) {
     const { position, renderItem, ...other } = props;

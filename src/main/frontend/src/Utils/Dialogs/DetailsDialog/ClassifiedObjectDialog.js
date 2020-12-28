@@ -18,6 +18,7 @@ import CustomHeader from "../../Surfaces/CustomHeader";
 import ArrowBack from "@material-ui/icons/ArrowBack";
 
 /**
+ * <h3>Overview</h3>
  * The fullscreen dialog with details of a selected classified object.
  *
  * @constructor

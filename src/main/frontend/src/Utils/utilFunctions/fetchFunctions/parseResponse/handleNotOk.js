@@ -1,6 +1,7 @@
 import { AlertError } from "../../../Classes";
 
 /**
+ * <h3>Overview</h3>
  * Determines the severity of a thrown {@link AlertError}.
  * <br>
  * <br>

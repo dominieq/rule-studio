@@ -64,6 +64,7 @@ const useStyles = makeStyles({
 }, {name: "MultiRow"});
 
 /**
+ * <h3>Overview</h3>
  * Presents type of classifier and allows user to choose between values.
  *
  * @name TypeOfClassifier

@@ -44,9 +44,10 @@ const listStyles = makeStyles(theme => ({
 }), {name: "virtualized-list"});
 
 /**
+ * <h3>Overview</h3>
  * Displays list of attributes (enable to select) in the Edit attributes dialog.
  *
- * @class
+ * @constructor
  * @category Utils
  * @subcategory Data Display
  * @param {Object} props

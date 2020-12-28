@@ -17,9 +17,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 /**
+ * <h3>Overview</h3>
  * It is the notification (rectangle) that appears at the bottom center of the screen.
  *
- * @class
+ * @constructor
  * @category Utils
  * @subcategory Feedback
  * @param {Object} props

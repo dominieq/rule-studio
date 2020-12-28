@@ -42,6 +42,7 @@ const tooltipStyles = makeStyles({
 }, {name: "MultiRow"})
 
 /**
+ * <h3>Overview</h3>
  * Presents type of unions and allows user to choose between values.
  *
  * @name TypeOfUnions

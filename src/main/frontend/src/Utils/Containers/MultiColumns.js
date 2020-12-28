@@ -14,10 +14,14 @@ const useStyles = makeStyles({
 }, {name: "MultiColumns"});
 
 /**
+ * <h3>Overview</h3>
  * A component that is going to display an array of elements inside of a 'div'
  * and assign width property to each one of them.
  *
- * @class
+ * <h3>Usage</h3>
+ * Children have 90% of available width. Then each child gets (90% / number of columns) of width.
+ *
+ * @constructor
  * @category Utils
  * @subcategory Containers
  * @param {Object} props - Any other props will be forwarded to root element.

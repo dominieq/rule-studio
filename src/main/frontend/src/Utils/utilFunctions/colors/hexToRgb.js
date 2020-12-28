@@ -1,4 +1,5 @@
 /**
+ * <h3>Overview</h3>
  * Converts color in HEX to RGB and adds opacity.
  *
  * @category Utils

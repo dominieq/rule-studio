@@ -13,6 +13,7 @@ const tooltip = {
 };
 
 /**
+ * <h3>Overview</h3>
  * Presents seed and allows user to type or randomize new value.
  *
  * @name Seed
