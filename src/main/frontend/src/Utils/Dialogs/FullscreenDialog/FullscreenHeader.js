@@ -89,9 +89,12 @@ HeaderElement.propTypes = {
 };
 
 /**
- * A component that renders a vertically scrollable header.
- * This component should be used with a <code>{@link FullscreenDialog}</code> as a root node.
+ * <h3>Overview</h3>
+ * Vertically scrollable header with default close button.
  * You are able to define your own root node as well as icon and tooltip for <code>CloseButton</code>.
+ *
+ * <h3>Usage</h3>
+ * This component should be used with a <code>{@link FullscreenDialog}</code> as a root node.
  *
  * @constructor
  * @category Utils

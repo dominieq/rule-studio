@@ -56,8 +56,8 @@ function UpdateAlert(props, ref) {
 const UpdateAlertForwardRef = React.forwardRef(UpdateAlert);
 
 /**
- * Allows the user to choose index option in current project.
- * Index option determines what should be displayed as an object's name.
+ * <h3>Overview</h3>
+ * Allows a user to choose global object's visible name in current project.
  * If there are no description or identification attributes in current information table,
  * only default option is available.
  *

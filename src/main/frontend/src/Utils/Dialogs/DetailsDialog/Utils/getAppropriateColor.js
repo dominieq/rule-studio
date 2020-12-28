@@ -1,4 +1,5 @@
 /**
+ * <h3>Overview</h3>
  * Returns appropriate styling for given attribute.
  *
  * @category Utils

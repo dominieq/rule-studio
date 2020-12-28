@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Utils/utilFunctions/parseListItems/parseConesListItems.js</title>
+  <title> Utils/Dialogs/ImportProjectDialog.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -76,7 +76,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>Utils/utilFunctions/parseListItems/parseConesListItems.js</h1>
+                    <h1>Utils/Dialogs/ImportProjectDialog.js</h1>
                 </header>
                 
 
@@ -85,38 +85,114 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Converts items to list items that will be displayed in {@link ResultList}.
- *
- * @category Utils
- * @subcategory Functions
- * @param {Object[]} items - An array of items prepared by {@link parseConesItems}.
- * @returns {Object[]} - An array of list items displayed in {@link ResultList}.
- */
-function parseConesListItems(items) {
-    let listItems = [];
+            <pre class="prettyprint source linenums"><code>import React from "react";
+import PropTypes from "prop-types";
+import StyledDialogContent from "./StyledDialogContent";
+import { AcceptButton, CancelButton } from "../Buttons";
+import FileSelectZone from "../../Body/Import/Elements/FileSelectZone";
+import StyledPaper from "../Surfaces/StyledPaper";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
-    if (Array.isArray(items) &amp;&amp; items.length) {
-        for (let i = 0; i &lt; items.length; i++) {
-            listItems.push({
-                id: items[i].id,
-                header: items[i].name.toString(),
-                subheader: undefined,
-                content: undefined,
-                multiContent: Object.keys(items[i].traits).map(key => {
-                    return {
-                        title: `Number of objects in ${key.toLowerCase()}:`,
-                        subtitle: items[i].traits[key]
-                    }
-                })
-            });
-        }
+/**
+ * &lt;h3>Overview&lt;/h3>
+ * Allows a user to choose and import a ZIP file with theirs project.
+ *
+ * @constructor
+ * @category Dialogs
+ * @param {Object} props
+ * @param {function} props.onImportProject - Callback fired when project was requested to be imported.
+ * @param {boolean} props.open - If &lt;code>true&lt;/code> the Dialog is open.
+ * @returns {React.PureComponent}
+ */
+class ImportProjectDialog extends React.PureComponent {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            file: null
+        };
     }
 
-    return listItems;
+    onFileChange = (file) => {
+        if (file.hasOwnProperty("file")) {
+            this.setState({ file: file.file });
+        }
+    };
+
+    onFileDelete = () => {
+        this.setState({ file: null });
+    };
+
+    onAccept = () => {
+        const { file } = this.state;
+        this.props.onImportProject(file);
+    };
+
+    onCancel = () => {
+        this.props.onImportProject(null)
+    };
+
+    onEnterKeyPressed = (event) => {
+        const { file } = this.state;
+
+        if (event.which === 13 &amp;&amp; file != null) {
+            event.preventDefault();
+            this.props.onImportProject(file);
+        }
+    };
+
+    render() {
+        const { file } = this.state;
+        const { open } = this.props;
+
+        return (
+            &lt;Dialog
+                aria-labelledby={"import-project-dialog"}
+                maxWidth={false}
+                onBackdropClick={this.onCancel}
+                onEnter={this.onFileDelete}
+                onEscapeKeyDown={this.onCancel}
+                onKeyPress={this.onEnterKeyPressed}
+                open={open}
+                PaperComponent={StyledPaper}
+                PaperProps={file == null ? { style: { minWidth: "30%" }} : undefined}
+            >
+                &lt;DialogTitle id={"import-project-dialog"}>
+                    Open project
+                &lt;/DialogTitle>
+                &lt;StyledDialogContent>
+                    &lt;FileSelectZone
+                        accept={".zip"}
+                        id={"upload-project"}
+                        label={"Choose project file:"}
+                        onInputChange={this.onFileChange}
+                        onInputDelete={this.onFileDelete}
+                        title={"Upload project"}
+                        TooltipProps={{
+                            enterDelay: 500,
+                            enterNextDelay: 500,
+                            placement: "top"
+                        }}
+                        type={"project"}
+                    />
+                &lt;/StyledDialogContent>
+                &lt;DialogActions>
+                    &lt;CancelButton onClick={this.onCancel} />
+                    &lt;AcceptButton disabled={file == null} onClick={this.onAccept} />
+                &lt;/DialogActions>
+            &lt;/Dialog>
+        );
+    }
 }
 
-export default parseConesListItems;
+ImportProjectDialog.propTypes = {
+    onImportProject: PropTypes.func,
+    open: PropTypes.bool.isRequired
+};
+
+export default ImportProjectDialog;
 </code></pre>
         </article>
     </section>

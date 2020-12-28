@@ -17,6 +17,7 @@ const useStyles = makeStyles(theme => ({
 }), {name: "Delete"});
 
 /**
+ * <h3>Overview</h3>
  * Provides special styling for the project's name.
  *
  * @constructor
@@ -36,7 +37,8 @@ function ProjectName(props) {
 }
 
 /**
- * Allows the user to delete current project. The user has to type the project's name
+ * <h3>Overview</h3>
+ * Allows a user to delete current project. The user has to type the project's name
  * to prevent themselves from making hasty decisions.
  *
  * @constructor

@@ -1,5 +1,6 @@
 /**
- * Wraps decisions in round brackets then adds brackets when necessary.
+ * <h3>Overview</h3>
+ * Wraps decisions in round brackets then adds square brackets when necessary.
  * Joins decisions with logic AND then with logic OR.
  *
  * @category Utils

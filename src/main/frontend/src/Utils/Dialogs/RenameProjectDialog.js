@@ -10,7 +10,8 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import styles from "./styles/StyledContent.module.css";
 
 /**
- * Allows the user to change the name of the current project.
+ * <h3>Overview</h3>
+ * Allows a user to change the name of a current project.
  *
  * @constructor
  * @category Dialogs

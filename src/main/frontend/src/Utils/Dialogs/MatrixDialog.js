@@ -22,9 +22,10 @@ const StyledMenu = withStyles(theme => ({
 }), {name: "ContextMenu"})(props => <Menu {...props} />);
 
 /**
+ * <h3>Overview</h3>
  * Uses the {@link VirtualizedMatrix} and {@link VirtualizedTable} to display misclassification matrix.
+ * All tables are vertically centered. A context menu is going to pop up after right clicking on a matrix.
  * It's possible to hide deviations as sometimes they don't provide useful information.
- * All tables are going to be vertically centered. A context menu is going to pop up after right clicking on a matrix.
  *
  * @constructor
  * @category Dialogs
