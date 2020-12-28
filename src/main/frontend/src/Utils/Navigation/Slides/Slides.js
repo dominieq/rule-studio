@@ -3,12 +3,13 @@ import PropTypes from "prop-types";
 import styles from "./styles/Slides.module.css";
 
 /**
+ * <h3>Overview</h3>
  * Creates a horizontal sliding animation.
  *
  * @memberOf Slides
- * @param sliding {boolean} - If <code>true</code> the component will slide in given direction.
- * @param direction {('backward'|'forward')} - The direction of current slide.
- * @param duration {number} - The duration of a slide in milliseconds.
+ * @param {boolean} sliding - If <code>true</code> the component will slide in given direction.
+ * @param {"backward"|"forward"} direction - The direction of current slide.
+ * @param {number} duration - The duration of a slide in milliseconds.
  * @returns {Object} - The style object with horizontal transformation.
  */
 const getHorizontalTransition = (sliding, direction, duration) => {
@@ -20,12 +21,13 @@ const getHorizontalTransition = (sliding, direction, duration) => {
 };
 
 /**
+ * <h3>Overview</h3>
  * Creates a vertical sliding animation.
  *
  * @memberOf Slides
- * @param sliding {boolean} - If <code>true</code> the component will slide in given direction.
- * @param direction {('backward'|'forward')} - The direction of current slide.
- * @param duration {number} - The duration of a slide in milliseconds.
+ * @param {boolean} sliding - If <code>true</code> the component will slide in given direction.
+ * @param {"backward"|"forward"} direction - The direction of current slide.
+ * @param {number} duration - The duration of a slide in milliseconds.
  * @returns {Object} - The style object with vertical transformation.
  */
 const getVerticalTransition = (sliding, direction, duration) => {
@@ -37,13 +39,14 @@ const getVerticalTransition = (sliding, direction, duration) => {
 };
 
 /**
+ * <h3>Overview</h3>
  * Counts the flex order of currently processed slot.
  *
  * @memberOf Slides
- * @param index {number} - The id of currently processed slot.
- * @param value {number} - The id of currently selected slot.
- * @param count {number} - Number of slots.
- * @param reverse {boolean} - If <code>true</code> it means the component is sliding backwards.
+ * @param {number} index - The id of currently processed slot.
+ * @param {number} value - The id of currently selected slot.
+ * @param {number} count  - Number of slots.
+ * @param {boolean} reverse - If <code>true</code> it means the component is sliding backwards.
  * @returns {number} - The flex order of currently processed slot.
  */
 const getOrder = (index, value, count, reverse) => {
@@ -52,22 +55,26 @@ const getOrder = (index, value, count, reverse) => {
 };
 
 /**
- * A component that takes an array of containers and enables user to move between. The component provides a slide
- * animation when a change of view is requested. A programmer should provide the direction of a slide as well as an orientation.
+ * <h3>Overview</h3>
+ * A component that takes an array of containers and enables user to move between them. The component provides a slide
+ * animation when a change of view is requested.
+ *
+ * <h3>Usage</h3>
+ * A programmer should provide the direction of a slide as well as an orientation.
  * It is possible to have different orientations between two distinct slots.
  *
  * @constructor
  * @category Utils
  * @subcategory Navigation
- * @param props {Object}
- * @param [props.children] {React.ReactNode} - The content of the component.
- * @param props.direction {('backward'|'forward')} - The direction of current slide.
- * @param [props.duration=1000] {number} - The duration of a slide in milliseconds.
- * @param [props.getSlotStyle] {function} - Callback fired when component requests style for current slot.
- * @param [props.mountNeighboursOnly=true] {boolean} - If <code>true</code> only neighbouring slots will be rendered.
- * @param [props.orientation='horizontal'] {('horizontal'|'vertical')} - The orientation of current slide.
- * @param props.sliding {boolean} - If <code>true</code> the component will slide in given direction.
- * @param [props.value] {number} - The id of current slot.
+ * @param {Object} props
+ * @param {React.ReactNode} [props.children] - The content of the component.
+ * @param {"backward"|"forward"} props.direction - The direction of current slide.
+ * @param {number} [props.duration = 1000] - The duration of a slide in milliseconds.
+ * @param {function} [props.getSlotStyle] - Callback fired when component requests style for current slot.
+ * @param {boolean} [props.mountNeighboursOnly = true]  - If <code>true</code> only neighbouring slots will be rendered.
+ * @param {"horizontal"|"vertical"} [props.orientation='horizontal'] - The orientation of current slide.
+ * @param {boolean} props.sliding - If <code>true</code> the component will slide in given direction.
+ * @param {number} [props.value] - The id of current slot.
  * @returns {React.ReactElement}
  */
 function Slides(props) {

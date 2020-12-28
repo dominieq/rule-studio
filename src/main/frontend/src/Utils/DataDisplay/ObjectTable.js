@@ -4,15 +4,16 @@ import getAppropriateColor from "../Dialogs/DetailsDialog/Utils/getAppropriateCo
 import VirtualizedTable from "./VirtualizedTable";
 
 /**
+ * <h3>Overview</h3>
  * The {@link VirtualizedTable} element that presents attributes of an object.
  *
  * @constructor
  * @category Utils
  * @subcategory Data Display
  * @param {Object} props
- * @param {Object} props.attributes  - The array of attributes from information table.
- * @param {number} props.object  - An object selected from information table.
- * @param {string} props.objectHeader  - The name of a selected object.
+ * @param {Object} props.attributes - The array of attributes from information table.
+ * @param {number} props.object - An object selected from information table.
+ * @param {string} props.objectHeader - The name of a selected object.
  * @returns {React.ReactElement}
  */
 function ObjectTable(props) {

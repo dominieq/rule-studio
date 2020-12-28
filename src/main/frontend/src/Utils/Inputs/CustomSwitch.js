@@ -14,18 +14,18 @@ const labelStyles = makeStyles({
 });
 
 /**
+ * <h3>Overview</h3>
  * The FormControlLabel from Material-UI library with {@link StyledSwitch} as a control.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/form-control-label/" target="_blank">FormControlLabel</a>
  * and this
  * <a href="https://material-ui.com/components/switches/#switch-with-formcontrollabel" target="_blank">tutorial</a>.
  *
- * @name Custom Switch
  * @constructor
  * @category Utils
  * @subcategory Inputs
- * @param props {Object} - Any other props will be forwarded to the FormControlLabel component.
- * @returns {React.ReactElement} - The FormControlLabel from Material-UI library.
+ * @param {Object} props - Any other props will be forwarded to the FormControlLabel component.
+ * @returns {React.ReactElement}
  */
 function CustomSwitch(props) {
     const {classes: propsClasses, label, ...other} = props;

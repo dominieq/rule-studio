@@ -13,19 +13,21 @@ const useStyles = makeStyles(theme => ({
 }), {name: "CustomPopper"});
 
 /**
+ * <h3>Overview</h3>
  * The Paper component from Material-UI with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/paper/" target="_blank">Paper</a>.
+ *
+ * <h3>Usage</h3>
  * Styles applied to this component are different than in Material-UI.
  * "Popper" defines colors of the element.
  *
- * @name Custom Popper
  * @constructor
  * @category Utils
  * @subcategory Surfaces
- * @param props {Object} - Any other props will be forwarded to the Paper component.
- * @param [props.classes] {Object} - Override or extend the styles applied to the component.
- * @returns {React.ReactElement} - The Paper component from Material-UI library.
+ * @param {Object} props - Any other props will be forwarded to the Paper component.
+ * @param {Object} [props.classes] - Override or extend the styles applied to the component.
+ * @returns {React.ReactElement}
  */
 function CustomPopper(props) {
     const { classes: propsClasses, className: propsClassName, ...other } = props;

@@ -1,6 +1,7 @@
 import { conjugateContent } from "../parseItems/parseDetails";
 
 /**
+ * <h3>Overview</h3>
  * Converts items to list items that will be displayed in {@link ResultList}.
  *
  * @category Utils

@@ -2,6 +2,7 @@ import { responseBlob } from "../parseResponse";
 import { AlertError } from "../../../Classes";
 
 /**
+ * <h3>Overview</h3>
  * Downloads data from provided link.
  *
  * @category Utils

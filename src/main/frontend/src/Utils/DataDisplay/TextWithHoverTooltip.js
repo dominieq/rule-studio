@@ -27,25 +27,24 @@ const useStyles = makeStyles({
 }, {name: "HoverTooltip"});
 
 /**
+ * <h3>Overview</h3>
  * The {@link CustomTooltip} component with wrapper element that hides overly long content.
- * You can override default Typography element that wraps the text property by using the children property.
- * You can provide your own title (tooltip) for a component by using the tooltipTitle property.
  *
- * @name Text with Hover Tooltip
+ * <h3>Usage</h3>
+ * You can override default Typography element that wraps the text property via <code>children</code> property.
+ * You can provide your own tooltip for a component via <code>tooltipTitle</code> property.
+ *
  * @constructor
  * @category Utils
  * @subcategory Data Display
- * @param props {Object}
- * @param [props.children] {React.ReactNode} - The content of the component. <br>
- *     This property is optional and if present will override text property.
- * @param [props.roundNumbers=true] {boolean} - If <code>true</code> any numbers will have only 2 digits after decimal point.
- * @param props.text {React.ReactNode} - The content of the component. <br>
- *     The value from this property is transferred to the tooltip as well.
- * @param [props.TooltipProps] {Object} - Props applied to the {@link CustomTooltip} element.
- * @param [props.tooltipTitle] {React.ReactNode} - The title of the component. <br>
- *     This property is optional and if present will override text property.
- * @param [props.TypographyProps] {Object} - Props applied to the Typography component.
- * @returns {React.Component} {@link CustomTooltip}
+ * @param {Object} props
+ * @param {React.ReactNode} [props.children] - The content of the component.
+ * @param {boolean} [props.roundNumbers=true] - If <code>true</code> any numbers will have 2 digits after decimal point.
+ * @param {React.ReactNode} props.text - The content of the component and tooltip.
+ * @param {Object} [props.TooltipProps] - Props applied to the {@link CustomTooltip} element.
+ * @param {React.ReactNode} [props.tooltipTitle] - Optional title of the component.
+ * @param {Object} [props.TypographyProps] - Props applied to the Typography component.
+ * @returns {React.ReactElement}
  */
 function TextWithHoverTooltip(props) {
     const { children, roundNumbers, TooltipProps, tooltipTitle, TypographyProps } = props;

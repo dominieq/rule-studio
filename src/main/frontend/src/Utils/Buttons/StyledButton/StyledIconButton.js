@@ -24,6 +24,7 @@ const useStyles = makeStyles(theme => ({
 }), {name: "CustomIconButton"})
 
 /**
+ * <h3>Overview</h3>
  * The IconButton component from Material-UI library with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/icon-button/" target="_blank">IconButton</a>.
@@ -31,9 +32,9 @@ const useStyles = makeStyles(theme => ({
  * @constructor
  * @category Utils
  * @subcategory Inputs
- * @param props {Object} - Any other props will be forwarded to the IconButton component.
- * @param [props.ButtonRef] {Object} - The reference forwarded to the IconButton component.
- * @param [props.disablePadding = false] - If <code>true</code> the padding of the IconButton will be set to 0.
+ * @param {Object} props  - Any other props will be forwarded to the IconButton component.
+ * @param {Object} [props.ButtonRef]  - The reference forwarded to the IconButton component.
+ * @param {boolean} [props.disablePadding = false] - If <code>true</code> the padding of the IconButton will be set to 0.
  * @returns {React.ReactElement}
  */
 function StyledIconButton(props) {

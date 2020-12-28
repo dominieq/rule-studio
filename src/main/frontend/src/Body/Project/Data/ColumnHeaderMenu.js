@@ -11,17 +11,16 @@ const menuStyles = makeStyles(theme => ({
 }));
 
 /**
+ * <h3>Overview</h3>
  * Displays right click column header menu with available options
  *
- * @class
- * @category Utils
- * @subcategory Inputs
+ * @constructor
+ * @category Menus
  * @param {Object} props
  * @param {Array} props.items - These are options that are available to choose in the menu.
  * @param {function} props.handleClose - Method runs after selecting the option from the menu.
  * @param {Object} props.event - Represents an event that takes place in DOM tree.
- * @returns {React.ReactElement}
- * It is used to set the top left corner of the menu in the right place.
+ * @returns {React.ReactElement} It is used to set the top left corner of the menu in the right place.
  */
 function ColumnHeaderMenu(props) {
     const menuClasses = menuStyles();

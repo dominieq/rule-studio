@@ -1,7 +1,7 @@
 /**
- * The Project is a main entity in RuLeStudio application. It contains uploaded data (attributes and objects)
- * as well as results from calculations. Apart from that it also stores parameters that are used in calculations.
- * User settings are also stored inside project.
+ * <h3>Overview</h3>
+ * The Project is main entity in RuLeStudio application.
+ * Project stores parameters that are used in calculations, as well as user's settings.
  *
  * @constructor
  * @category Utils

@@ -63,16 +63,16 @@ const useStyles = makeStyles(theme => ({
 }), {name: "CustomButton"});
 
 /**
+ * <h3>Overview</h3>
  * The Button component from Material-UI library with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/button/" target="_blank">Button</a>.
  *
- * @name Styled Button
  * @constructor
  * @category Utils
  * @subcategory Inputs
- * @param props {Object} - Any other props will be forwarded to the Button component.
- * @param [props.ButtonRef] {Object} - The reference forwarded to the Button component.
+ * @param {Object} props - Any other props will be forwarded to the Button component.
+ * @param {Object} [props.ButtonRef] - The reference forwarded to the Button component.
  * @returns {React.ReactElement}
  */
 function StyledButton(props) {

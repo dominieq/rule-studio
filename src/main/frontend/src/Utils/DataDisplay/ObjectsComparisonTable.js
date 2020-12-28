@@ -5,7 +5,8 @@ import getAppropriateSign from "../Dialogs/DetailsDialog/Utils/getAppropriateSig
 import VirtualizedTable from "./VirtualizedTable";
 
 /**
- *  The {@link VirtualizedTable} element that presents a comparison of two objects.
+ * <h3>Overview</h3>
+ * The {@link VirtualizedTable} element that presents a comparison of two objects.
  *
  * @constructor
  * @category Utils

@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/form-label/" target="_blank">FormLabel</a>.
  *
- * @class
+ * @constructor
  * @category Utils
  * @subcategory Inputs
  * @param {Object} props - All props except classes are forwarded to the FormLabel component.

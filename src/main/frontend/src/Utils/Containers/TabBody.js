@@ -6,7 +6,8 @@ import { ResultList, ResultListSubheader } from "../DataDisplay/ResultList";
 import StyledCircularProgress from "../Feedback/StyledCircularProgress";
 
 /**
- * Utility that presents results from calculations in tabs.
+ * <h3>Overview</h3>
+ * Container that presents results from calculations in tabs.
  * Takes care of displaying progress circle when results are being generated.
  * Displays a message when user tried to filter result list but no matches were found.
  *

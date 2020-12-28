@@ -50,12 +50,10 @@ const virtualStyles = makeStyles(theme => ({
 
 /**
  * <h3>Overview</h3>
- * The Menu component that displays categories and orders to sort by.
- * Categories are stored inside a virtualized list.
+ * Displays categories and orders to sort by. Categories are stored inside a virtualized list.
  *
- * @class
- * @category Utils
- * @subcategory Menus
+ * @constructor
+ * @category Menus
  * @param {Object} props - Any other props will be forwarded to the Menu component.
  * @param {Object} [props.ContentProps] - Props applied to content elements.
  * @param {Object[]} [props.ContentProps.categories] - The array of categories to sort by.
@@ -68,7 +66,7 @@ const virtualStyles = makeStyles(theme => ({
  * @param {React.ReactNode} [props.ContentProps.RadioComponent] - The component used to render radio button elements.
  * @param {number|string} [props.ContentProps.rowHeight] - The height of a row in the virtualized radio button group.
  * @param {string} [props.ContentProps.value] - The currently selected category.
- * @returns {React.ReactElement} - The sort menu with order and categories displayed as radio button groups
+ * @returns {React.ReactElement}
  */
 function SortMenu(props) {
     const { anchorE1, ContentProps, ...other } = props;

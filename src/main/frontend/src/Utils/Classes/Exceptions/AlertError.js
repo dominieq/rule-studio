@@ -1,5 +1,6 @@
 /**
- * AlertError is and object that represents propTypes for StyledAlert.
+ * <h3>Overview</h3>
+ * AlertError is and object that represents propTypes for {@link StyledAlert}.
  * Thrown when an error occurs inside fetch functions.
  *
  * @constructor

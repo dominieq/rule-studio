@@ -10,9 +10,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 /**
+ * <h3>Overview</h3>
  * It is responsible for the loading circle icon
  *
- * @class
+ * @constructor
  * @category Utils
  * @subcategory Feedback
  * @param {Object} props

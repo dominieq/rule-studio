@@ -1,4 +1,5 @@
 /**
+ * <h3>Overview</h3>
  * Generates name for items displayed in {@link Cones}, {@link Classification} and {@link CrossValidation}.
  * Function takes user preferences into account. If an 'indexOption' property from project settings is equal to one of
  * description or identification attributes, a value associated with this attribute will be used as a name.
@@ -8,9 +9,9 @@
  *
  * @category Utils
  * @subcategory Functions
- * @param index - The index of an object in information table.
- * @param names - The array of object names received from server.
- * @param [defaultName = "Object"] - The default object name.
+ * @param {number} index - The index of an object in information table.
+ * @param {Array} names - The array of object names received from server.
+ * @param {string} [defaultName = "Object"] - The default object name.
  * @returns {Object} - An item's name as an object.
  */
 function getItemName(index, names, defaultName = "Object") {

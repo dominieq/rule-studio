@@ -4,6 +4,7 @@ import StyledTab from "./StyledTab";
 import { Link } from "react-router-dom";
 
 /**
+ * <h3>Overview</h3>
  * The {@link StyledTab} component with Link from react-router as root element.
  *
  * @constructor

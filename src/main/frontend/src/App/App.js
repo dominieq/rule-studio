@@ -21,10 +21,11 @@ import { Switch, Route } from 'react-router-dom';
 import { tabNames } from "../Utils/Constants/TabsNamesInPath";
 
 /**
+ * <h3>Overview</h3>
  * The main component that contains all other elements.
  * Provides two themes: dark and light.
  *
- * @class
+ * @constructor
  */
 class App extends Component {
     constructor(props) {
@@ -54,9 +55,10 @@ class App extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired once when component was mounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Makes an API call on projects to receive the latest list of all projects.
      * Then, updates states and makes necessary changes in display.
      *
@@ -157,6 +159,7 @@ class App extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Method is forwarded to the {@link ProjectTabs} and further to all tabs except {@link Data}.
      * Saves changes from provided project in the {@link App}'s state and updates index options.
      *
@@ -279,6 +282,7 @@ class App extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Method forwarded to the {@link Import} section.
      * Fired when user accepts their selection and requests to create project.
      * <br>
@@ -417,6 +421,7 @@ class App extends Component {
     }
     
     /**
+     * <h3>Overview</h3>
      * Callback fired when {@link SettingsProjectDialog} changed global visible object name.
      *
      * @function
@@ -429,6 +434,7 @@ class App extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Callback fired when {@link DeleteProjectDialog} requests to be closed.
      * If user confirmed the deletion, method proceeds to delete current project.
      * Then updates {@link App}'s state and closes dialog.
@@ -485,6 +491,7 @@ class App extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Callback fired when {@link RenameProjectDialog} requests to be closed.
      * If user provided new name and when the new name is unique, method proceeds to update project's name.
      * Then updates {@link App}'s state and closes dialog.
@@ -548,6 +555,7 @@ class App extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Checks whether a provided name is unique among other project's names.
      *
      * @function

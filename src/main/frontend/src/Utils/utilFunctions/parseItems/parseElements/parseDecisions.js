@@ -1,6 +1,7 @@
 import { getRelationSign } from "../parseDetails";
 
 /**
+ * <h3>Overview</h3>
  * Converts decisions from server response to decisions used in a rule name.
  *
  * @category Utils

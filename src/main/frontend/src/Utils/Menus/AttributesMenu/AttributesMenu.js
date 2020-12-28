@@ -20,10 +20,13 @@ const CustomMenu = withStyles( theme => ({
 }), {name: "AttributesMenu"})(props => <Menu {...props} />);
 
 /**
+ * <h3>Overview</h3>
+ * Allows a user to choose object's visible name. When mounted makes an API call
+ * to retrieve available names from server.
+ * When a user changes name, makes an API call to save selection.
  *
- * @class
- * @category Utils
- * @subcategory Menus
+ * @constructor
+ * @category Menus
  * @param {Object} props
  * @param {Object} props.ListProps - Props applied to the List element from react-virtualized.
  * @param {string} props.MuiMenuProps - Props applied to the Menu element from Material-UI.
@@ -38,7 +41,7 @@ const CustomMenu = withStyles( theme => ({
  * @param {Object} props.queryParams - The query parameters in the URL of an API call.
  * @param {number} props.queryParams.subject - The index of a subject that contains object names.
  * @param {string} props.queryParams.set - The name of the set that narrows down object names.
- * @returns {React.Component}
+ * @returns {React.PureComponent}
  */
 class AttributesMenu extends React.PureComponent {
     constructor(props) {
