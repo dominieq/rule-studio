@@ -25,6 +25,7 @@ const menuStyles = makeStyles(theme => ({
 }), {name: "ProjectMenu"});
 
 /**
+ * <h3>Overview</h3>
  * The middle part of the {@link Header} that allows user to perform actions on selected project such as:
  * <ul>
  *     <li>changing settings</li>
