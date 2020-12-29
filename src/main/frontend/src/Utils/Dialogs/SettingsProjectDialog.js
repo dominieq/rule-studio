@@ -241,14 +241,14 @@ class SettingsProjectDialog extends PureComponent {
                                     onClick: this.postDescriptiveAttributes
                                 }}
                                 onChange={this.onIndexOptionChange}
-                                outsideLabel={"Choose objects visible name"}
+                                outsideLabel={"Choose visible object name"}
                                 select={true}
                                 value={objectVisibleName}
                             >
                                 {attributes}
                             </CustomTextField>
                             <CircleHelper
-                                title={"Sets default names of objects."}
+                                title={"Changes visible object name globally."}
                                 TooltipProps={{
                                     placement: "top-end"
                                 }}
