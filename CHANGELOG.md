@@ -115,3 +115,32 @@
 - Bump frontend-maven-plugin version to 1.10.0
 - Bump node version to v12.16.3
 - Bump yarn version to v1.22.4
+
+## rc-4:
+#### Added
+- New button to show information about files used in a project.
+  File names will be displayed in a list below button.
+- Distinguish supporting objects in "indices of covered objects" list.  
+- Error is displayed when data from project isn't a valid training set for rules.
+
+#### Fixed
+- Change "example" to "object" in Data.
+
+#### Changed
+- Change font size in tooltips to "smaller".
+- Reorganize layout in "Cones", "Unions", "Rules", "Classification" & "CrossValidation".
+- Customize scrollbar in components mentioned above.  
+- Change endpoint for uploading rules.
+- Project will be updated when classifying external data file.
+- Better error handling in fetch functions.
+
+## rc-2:
+#### Added
+- Added more extensive tooltip on "Impose Preference" button.
+
+#### Removed
+- Turn off autoComplete in text fields when importing, deleting & renaming project.
+- Stop using JavaFX Pair class.
+
+#### Fixed:
+- Correct error messages sent to the client.
