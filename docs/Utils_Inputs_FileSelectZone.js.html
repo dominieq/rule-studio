@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> LoadingDelay</title>
+  <title> Utils/Inputs/FileSelectZone.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -73,257 +75,159 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Class</p>
-                    <h1>LoadingDelay</h1>
+                    <p>Source</p>
+                    <h1>Utils/Inputs/FileSelectZone.js</h1>
                 </header>
                 
 
 
 
-
-<section>
-
-<header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>LoadingDelay<span class="signature">(props)</span><span class="type-signature"> &rarr; {React.PureComponent}</span></h2>
-        
-            <div class="class-description"><h3>Overview</h3>
-Delays children of this component before they show up.</div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class='vertical-section'>
-                <div class="members">
-                    <div class="member">
-                        <div class=name>
-                            <span class="tag">Constructor</span>
-                        </div>
-                        
-
-
-    
-    <h4 class="name" id="LoadingDelay">
-        <a class="href-link" href="#LoadingDelay">#</a>
-        
-        <span class="code-name">
-            
-                new LoadingDelay<span class="signature">(props)</span><span class="type-signature"> &rarr; {React.PureComponent}</span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>props</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type">Object</span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-  
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>children</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type">React.ReactElement</span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"><p>The content of the component that needs to be delayed.</p></td>
-</tr>
-
-  
-
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="Utils_Feedback_LoadingDelay.js.html" class="button">View Source</a>
-            <span>
-                <a href="Utils_Feedback_LoadingDelay.js.html">Utils/Feedback/LoadingDelay.js</a>, <a href="Utils_Feedback_LoadingDelay.js.html#line15">line 15</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
-
-<div class="columns">
-    
-    
-    <div class='column is-5 has-text-left'>
-        <label>Type: </label>
-        
-<span class="param-type">React.PureComponent</span>
-
-
-    </div>
-    
-</div>
-
-                
-        </div>
-    </div>
-
-
-
-
-
-                    </div>
-                </div>
-            </div>
-        
-    
-    </div>
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { makeStyles } from "@material-ui/core/styles";
+import CustomTooltip from "../DataDisplay/CustomTooltip"
+import StyledFileChip from "../DataDisplay/StyledFileChip";
+import CustomUpload from "./CustomUpload";
+import { StyledIconButton } from "../Buttons";
+import Skeleton from "@material-ui/lab/Skeleton";
+import Typography from "@material-ui/core/Typography";
+import DeleteCircle from "mdi-material-ui/DeleteCircle"
+import FileUpload from "mdi-material-ui/FileUpload";
+import styles from "./styles/FileSelectZone.module.css";
+
+const useStyles = makeStyles({
+    multilineTooltip: {
+        display: "flex",
+        flexDirection: "column",
+        '&amp; > *:not(:first-child)': {
+            marginTop: "1em"
+        }
+    }
+}, {name: "FileSelectZone"});
+
+/**
+ * &lt;h3>Overview&lt;/h3>
+ * A section used to upload a file.
+ *
+ * @constructor
+ * @category Utils
+ * @subcategory Inputs
+ * @param {Object} props
+ * @param {string} [props.accept = ".json,.xml,.csv"] - Specifies what file types the user can pick from the file input dialog box.
+ * @param {Object} [props.ButtonProps] - Props applied to the {@link StyledIconButton} element.
+ * @param {string} props.id - The id attribute of the {@link CustomUpload} element.
+ * @param {string} props.label - The content of the {@link Typography} element.
+ * @param {Object} [props.LabelProps] - The props applied to the {@link Typography} element.
+ * @param {boolean} [props.multilineTooltip = false] - If &lt;code>true&lt;/code> tooltip will display text in multiple lines.
+ * @param {function} props.onInputChange - Callback fired when an input was changed.
+ * @param {function} props.onInputDelete - Callback fired when an input requests to be deleted.
+ * @param {React.ReactNode} props.title - The title property of the {@link CustomTooltip} element.
+ * @param {Object} [props.TooltipProps] - Props applied to the {@link CustomTooltip} element.
+ * @param {string} props.variant - The custom type of uploaded file.
+ * @param {Object} [props.UploadProps] - Props applied to the {@link CustomUpload} element.
+ * @returns {React.ReactElement}
+ */
+function FileSelectZone(props)  {
+    const [file, setFile] = useState(null);
+    const {
+        accept,
+        ButtonProps,
+        id,
+        label,
+        LabelProps,
+        multilineTooltip,
+        title,
+        TooltipProps,
+        type,
+        UploadProps
+    } = props;
+
+    const classes = useStyles();
+
+    const onInputChange = (event) => {
+        if (event.target.files.length !== 1) return;
+
+        const uploadedFile = event.target.files[0];
+
+        setFile(uploadedFile);
+        props.onInputChange({ file: uploadedFile, type: type });
+    };
+
+    const onInputDelete = () => {
+        props.onInputDelete({ file: file, type: type });
+        setFile(null);
+    };
+
+    return (
+        &lt;div className={styles.Root}>
+            &lt;Typography className={styles.Label} style={{ marginRight: 8 }} {...LabelProps}>
+                {label}
+            &lt;/Typography>
+            {file ?
+                &lt;StyledFileChip
+                    clickable={true}
+                    deleteIcon={&lt;DeleteCircle />}
+                    label={file.name}
+                    onDelete={onInputDelete}
+                    size={"small"}
+                />
+                :
+                &lt;Skeleton animation={"wave"} width={"100%"} />
+            }
+            &lt;CustomTooltip
+                arrow={true}
+                classes={multilineTooltip ? {tooltip: classes.tooltip} : undefined}
+                placement={"right"}
+                title={title}
+                {...TooltipProps}
+            >
+                &lt;CustomUpload
+                    accept={accept}
+                    id={id}
+                    onChange={onInputChange}
+                    {...UploadProps}
+                >
+                    &lt;StyledIconButton
+                        aria-label={id}
+                        color={"primary"}
+                        component={"span"}
+                        {...ButtonProps}
+                    >
+                        &lt;FileUpload/>
+                    &lt;/StyledIconButton>
+                &lt;/CustomUpload>
+            &lt;/CustomTooltip>
+        &lt;/div>
+    );
+}
+
+FileSelectZone.propTypes = {
+    accept: PropTypes.string,
+    ButtonProps: PropTypes.object,
+    id: PropTypes.string,
+    label: PropTypes.string.isRequired,
+    LabelProps: PropTypes.object,
+    multilineTooltip: PropTypes.bool,
+    onInputChange: PropTypes.func,
+    onInputDelete: PropTypes.func,
+    title: PropTypes.node.isRequired,
+    TooltipProps: PropTypes.object,
+    type: PropTypes.string.isRequired,
+    UploadProps: PropTypes.object
+};
+
+FileSelectZone.defaultProps = {
+    accept: ".json,.xml,.csv",
+    multilineTooltip: false
+};
+
+export default FileSelectZone;
+</code></pre>
+        </article>
+    </section>
 
 
 
