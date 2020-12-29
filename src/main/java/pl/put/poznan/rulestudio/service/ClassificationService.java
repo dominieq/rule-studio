@@ -102,7 +102,7 @@ public class ClassificationService {
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
-        logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
+        logger.debug(mainClassificationResponse.toString());
         return mainClassificationResponse;
     }
 
@@ -116,7 +116,7 @@ public class ClassificationService {
 
         final ProjectClassification projectClassification = project.getProjectClassification();
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
-        logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
+        logger.debug(mainClassificationResponse.toString());
         return mainClassificationResponse;
     }
 
@@ -153,7 +153,7 @@ public class ClassificationService {
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
-        logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
+        logger.debug(mainClassificationResponse.toString());
         return mainClassificationResponse;
     }
 
@@ -173,7 +173,7 @@ public class ClassificationService {
 
         final ProjectClassification projectClassification = project.getProjectClassification();
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
-        logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
+        logger.debug(mainClassificationResponse.toString());
         return mainClassificationResponse;
     }
 
@@ -212,7 +212,7 @@ public class ClassificationService {
         project.setProjectClassification(projectClassification);
 
         final MainClassificationResponse mainClassificationResponse = MainClassificationResponseBuilder.newInstance().build(projectClassification);
-        logger.debug("mainClassificationResponse:\t{}", mainClassificationResponse);
+        logger.debug(mainClassificationResponse.toString());
         return mainClassificationResponse;
     }
 
@@ -224,7 +224,7 @@ public class ClassificationService {
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
         final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassification.getClassifiedDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        logger.debug(descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
 
@@ -240,7 +240,7 @@ public class ClassificationService {
         classifiedDescriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
         final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassification.getClassifiedDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        logger.debug(descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
 
@@ -253,7 +253,7 @@ public class ClassificationService {
 
         final Integer descriptiveAttributeIndex = projectClassification.getClassifiedDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(projectClassification.getClassifiedInformationTable(), descriptiveAttributeIndex);
-        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        logger.debug(attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
 
@@ -280,7 +280,7 @@ public class ClassificationService {
         } else {
             chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectResponse(informationTable, objectIndex, indicesOfCoveringRules);
         }
-        logger.debug("chosenClassifiedObjectAbstractResponse:\t{}", chosenClassifiedObjectAbstractResponse);
+        logger.debug(chosenClassifiedObjectAbstractResponse.toString());
         return chosenClassifiedObjectAbstractResponse;
     }
 
@@ -295,7 +295,7 @@ public class ClassificationService {
         final RuleSetWithCharacteristics ruleSetWithCharacteristics = projectClassification.getRuleSet();
 
         final RuleMainPropertiesResponse ruleMainPropertiesResponse = RuleMainPropertiesResponseBuilder.newInstance().build(ruleSetWithCharacteristics, ruleIndex);
-        logger.debug("ruleMainPropertiesResponse:\t{}", ruleMainPropertiesResponse);
+        logger.debug(ruleMainPropertiesResponse.toString());
         return ruleMainPropertiesResponse;
     }
 
@@ -307,7 +307,7 @@ public class ClassificationService {
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
         final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassification.getLearningDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        logger.debug(descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
 
@@ -323,7 +323,7 @@ public class ClassificationService {
         learningDescriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
         final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassification.getLearningDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        logger.debug(descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
 
@@ -336,7 +336,7 @@ public class ClassificationService {
 
         final Integer descriptiveAttributeIndex = projectClassification.getLearningDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(projectClassification.getLearningInformationTable(), descriptiveAttributeIndex);
-        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        logger.debug(attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
 
@@ -353,7 +353,7 @@ public class ClassificationService {
         final String[] objectNames = projectClassification.getLearningDescriptiveAttributes().extractChosenObjectNames(projectClassification.getLearningInformationTable(), indices);
 
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
-        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        logger.debug(attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
 
@@ -366,7 +366,7 @@ public class ClassificationService {
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
         final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(projectClassification.getRuleSet(), ruleIndex, projectClassification.getLearningDescriptiveAttributes(), projectClassification.getLearningInformationTable());
-        logger.debug("chosenRuleResponse:\t{}", chosenRuleResponse);
+        logger.debug(chosenRuleResponse.toString());
         return chosenRuleResponse;
     }
 
@@ -385,7 +385,7 @@ public class ClassificationService {
         } else {
             objectAbstractResponse = new ObjectResponse(projectClassification.getLearningInformationTable(), objectIndex);
         }
-        logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
+        logger.debug(objectAbstractResponse.toString());
         return objectAbstractResponse;
     }
 
@@ -397,7 +397,7 @@ public class ClassificationService {
         final ProjectClassification projectClassification = getClassificationFromProject(project);
 
         final OrdinalMisclassificationMatrixWithoutDeviationResponse ordinalMisclassificationMatrixWithoutDeviationResponse = OrdinalMisclassificationMatrixWithoutDeviationResponseBuilder.newInstance().build(projectClassification.getOrdinalMisclassificationMatrix(), projectClassification.getOrderOfDecisions());
-        logger.debug("ordinalMisclassificationMatrixWithoutDeviationResponse:\t{}", ordinalMisclassificationMatrixWithoutDeviationResponse.toString());
+        logger.debug(ordinalMisclassificationMatrixWithoutDeviationResponse.toString());
         return ordinalMisclassificationMatrixWithoutDeviationResponse;
     }
 }

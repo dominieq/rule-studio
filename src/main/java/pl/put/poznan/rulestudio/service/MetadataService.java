@@ -146,7 +146,7 @@ public class MetadataService {
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         final GlobalDescriptiveAttributesResponse globalDescriptiveAttributesResponse = new GlobalDescriptiveAttributesResponse(project);
-        logger.debug("globalDescriptiveAttributesResponse:\t{}", globalDescriptiveAttributesResponse.toString());
+        logger.debug(globalDescriptiveAttributesResponse.toString());
         return globalDescriptiveAttributesResponse;
     }
 
@@ -162,7 +162,7 @@ public class MetadataService {
         updateDescriptiveAttributesAcrossProject(project, objectVisibleName);
 
         final GlobalDescriptiveAttributesResponse globalDescriptiveAttributesResponse = new GlobalDescriptiveAttributesResponse(project);
-        logger.debug("globalDescriptiveAttributesResponse:\t{}", globalDescriptiveAttributesResponse.toString());
+        logger.debug(globalDescriptiveAttributesResponse.toString());
         return globalDescriptiveAttributesResponse;
     }
 

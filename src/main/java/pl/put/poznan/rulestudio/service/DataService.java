@@ -318,7 +318,7 @@ public class DataService {
         } else {
             objectAbstractResponse = new ObjectResponse(informationTable, objectIndex);
         }
-        logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
+        logger.debug(objectAbstractResponse.toString());
         return objectAbstractResponse;
     }
 
@@ -333,7 +333,7 @@ public class DataService {
         checkInformationTable(informationTable, "There are no objects in project. Couldn't get any of them.");
 
         final ObjectsComparisonResponse objectsComparisonResponse = ObjectsComparisonResponseBuilder.newInstance().build(informationTable, firstObjectIndex, secondObjectIndex);
-        logger.debug("objectsComparisonResponse:\t{}", objectsComparisonResponse.toString());
+        logger.debug(objectsComparisonResponse.toString());
         return objectsComparisonResponse;
     }
 }

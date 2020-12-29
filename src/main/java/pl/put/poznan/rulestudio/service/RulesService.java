@@ -438,7 +438,7 @@ public class RulesService {
         }
 
         final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(projectRules);
-        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        logger.debug(mainRulesResponse.toString());
         return mainRulesResponse;
     }
 
@@ -452,7 +452,7 @@ public class RulesService {
 
         final ProjectRules projectRules = project.getProjectRules();
         final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(projectRules);
-        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        logger.debug(mainRulesResponse.toString());
         return mainRulesResponse;
     }
 
@@ -472,7 +472,7 @@ public class RulesService {
 
         final ProjectRules projectRules = project.getProjectRules();
         final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(projectRules);
-        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        logger.debug(mainRulesResponse.toString());
         return mainRulesResponse;
     }
 
@@ -484,7 +484,7 @@ public class RulesService {
         final ProjectRules projectRules = getRulesFromProject(project);
 
         final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectRules.getDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        logger.debug(descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
 
@@ -500,7 +500,7 @@ public class RulesService {
         descriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
         final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectRules.getDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        logger.debug(descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
 
@@ -513,7 +513,7 @@ public class RulesService {
 
         final Integer descriptiveAttributeIndex = projectRules.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(projectRules.getInformationTable(), descriptiveAttributeIndex);
-        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        logger.debug(attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
 
@@ -529,7 +529,7 @@ public class RulesService {
         final String[] objectNames = projectRules.getDescriptiveAttributes().extractChosenObjectNames(projectRules.getInformationTable(), indices);
 
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
-        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        logger.debug(attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
 
@@ -626,7 +626,7 @@ public class RulesService {
 
         final ProjectRules projectRules = project.getProjectRules();
         final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(projectRules);
-        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        logger.debug(mainRulesResponse.toString());
         return mainRulesResponse;
     }
 
@@ -646,7 +646,7 @@ public class RulesService {
 
         final ProjectRules projectRules = project.getProjectRules();
         final MainRulesResponse mainRulesResponse = MainRulesResponseBuilder.newInstance().build(projectRules);
-        logger.debug("mainRulesResponse:\t{}", mainRulesResponse.toString());
+        logger.debug(mainRulesResponse.toString());
         return mainRulesResponse;
     }
 
@@ -659,7 +659,7 @@ public class RulesService {
         final ProjectRules projectRules = getRulesFromProject(project);
 
         final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponseBuilder.newInstance().build(projectRules.getRuleSet(), ruleIndex, projectRules.getDescriptiveAttributes(), projectRules.getInformationTable());
-        logger.debug("chosenRuleResponse:\t{}", chosenRuleResponse.toString());
+        logger.debug(chosenRuleResponse.toString());
         return chosenRuleResponse;
     }
 
@@ -678,7 +678,7 @@ public class RulesService {
         } else {
             objectAbstractResponse = new ObjectResponse(projectRules.getInformationTable(), objectIndex);
         }
-        logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
+        logger.debug(objectAbstractResponse.toString());
         return objectAbstractResponse;
     }
 

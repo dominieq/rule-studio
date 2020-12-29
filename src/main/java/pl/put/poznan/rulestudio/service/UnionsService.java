@@ -156,7 +156,7 @@ public class UnionsService {
         final ProjectClassUnions projectClassUnions = getClassUnionsFromProject(project);
 
         final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(projectClassUnions);
-        logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
+        logger.debug(mainClassUnionsResponse.toString());
         return mainClassUnionsResponse;
     }
 
@@ -170,7 +170,7 @@ public class UnionsService {
 
         final ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
         final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(projectClassUnions);
-        logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
+        logger.debug(mainClassUnionsResponse.toString());
         return mainClassUnionsResponse;
     }
 
@@ -190,7 +190,7 @@ public class UnionsService {
 
         final ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
         final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(projectClassUnions);
-        logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
+        logger.debug(mainClassUnionsResponse.toString());
         return mainClassUnionsResponse;
     }
 
@@ -202,7 +202,7 @@ public class UnionsService {
         final ProjectClassUnions projectClassUnions = getClassUnionsFromProject(project);
 
         final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassUnions.getDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        logger.debug(descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
 
@@ -218,7 +218,7 @@ public class UnionsService {
         descriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
         final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassUnions.getDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        logger.debug(descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
 
@@ -231,7 +231,7 @@ public class UnionsService {
 
         final Integer descriptiveAttributeIndex = projectClassUnions.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(projectClassUnions.getInformationTable(), descriptiveAttributeIndex);
-        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        logger.debug(attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
 
@@ -249,7 +249,7 @@ public class UnionsService {
         final String[] objectNames = projectClassUnions.getDescriptiveAttributes().extractChosenObjectNames(projectClassUnions.getInformationTable(), indices);
 
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
-        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        logger.debug(attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
 
@@ -285,7 +285,7 @@ public class UnionsService {
         final Union chosenClassUnion = getClassUnionByIndex(projectClassUnions, classUnionIndex);
 
         final ChosenClassUnionResponse chosenClassUnionResponse = ChosenClassUnionResponseBuilder.newInstance().build(chosenClassUnion);
-        logger.debug("chosenClassUnionResponse:\t{}", chosenClassUnionResponse.toString());
+        logger.debug(chosenClassUnionResponse.toString());
         return chosenClassUnionResponse;
     }
 
@@ -301,7 +301,7 @@ public class UnionsService {
         final Union chosenClassUnion = getClassUnionByIndex(projectClassUnions, classUnionIndex);
 
         final ClassUnionArrayPropertyResponse classUnionArrayPropertyResponse = ClassUnionArrayPropertyResponseBuilder.newInstance().build(chosenClassUnion, classUnionArrayPropertyType, projectClassUnions.getDescriptiveAttributes(), projectClassUnions.getInformationTable());
-        logger.debug("classUnionArrayPropertyResponse:\t{}", classUnionArrayPropertyResponse.toString());
+        logger.debug(classUnionArrayPropertyResponse.toString());
         return classUnionArrayPropertyResponse;
     }
 
@@ -320,7 +320,7 @@ public class UnionsService {
         } else {
             objectAbstractResponse = new ObjectResponse(projectClassUnions.getInformationTable(), objectIndex);
         }
-        logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
+        logger.debug(objectAbstractResponse.toString());
         return objectAbstractResponse;
     }
 }

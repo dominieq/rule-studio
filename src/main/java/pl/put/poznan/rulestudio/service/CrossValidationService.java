@@ -171,7 +171,7 @@ public class CrossValidationService {
         final CrossValidation crossValidation = getCrossValidationFromProject(project);
 
         final MainCrossValidationResponse mainCrossValidationResponse = MainCrossValidationResponseBuilder.newInstance().build(crossValidation);
-        logger.debug("mainCrossValidationResponse:\t{}", mainCrossValidationResponse.toString());
+        logger.debug(mainCrossValidationResponse.toString());
         return mainCrossValidationResponse;
     }
 
@@ -185,7 +185,7 @@ public class CrossValidationService {
 
         final CrossValidation crossValidation = project.getCrossValidation();
         final MainCrossValidationResponse mainCrossValidationResponse = MainCrossValidationResponseBuilder.newInstance().build(crossValidation);
-        logger.debug("mainCrossValidationResponse:\t{}", mainCrossValidationResponse.toString());
+        logger.debug(mainCrossValidationResponse.toString());
         return mainCrossValidationResponse;
     }
 
@@ -205,7 +205,7 @@ public class CrossValidationService {
 
         final CrossValidation crossValidation = project.getCrossValidation();
         final MainCrossValidationResponse mainCrossValidationResponse = MainCrossValidationResponseBuilder.newInstance().build(crossValidation);
-        logger.debug("mainCrossValidationResponse:\t{}", mainCrossValidationResponse.toString());
+        logger.debug(mainCrossValidationResponse.toString());
         return mainCrossValidationResponse;
     }
 
@@ -217,7 +217,7 @@ public class CrossValidationService {
         final CrossValidation crossValidation = getCrossValidationFromProject(project);
 
         final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(crossValidation.getDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        logger.debug(descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
 
@@ -233,7 +233,7 @@ public class CrossValidationService {
         descriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
         final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(crossValidation.getDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        logger.debug(descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
 
@@ -246,7 +246,7 @@ public class CrossValidationService {
 
         final Integer descriptiveAttributeIndex = crossValidation.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(crossValidation.getInformationTable(), descriptiveAttributeIndex);
-        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        logger.debug(attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
 
@@ -263,7 +263,7 @@ public class CrossValidationService {
         final String[] objectNames = crossValidation.getDescriptiveAttributes().extractChosenObjectNames(crossValidation.getInformationTable(), indices);
 
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
-        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        logger.debug(attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
 
@@ -281,7 +281,7 @@ public class CrossValidationService {
         final String[] objectNames = crossValidation.getDescriptiveAttributes().extractChosenObjectNames(crossValidation.getInformationTable(), indices);
 
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
-        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        logger.debug(attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
 
@@ -294,7 +294,7 @@ public class CrossValidationService {
         final CrossValidation crossValidation = getCrossValidationFromProject(project);
 
         final ChosenCrossValidationFoldResponse chosenCrossValidationFoldResponse = ChosenCrossValidationFoldResponseBuilder.newInstance().build(crossValidation, foldIndex);
-        logger.debug("chosenCrossValidationFoldResponse:\t{}", chosenCrossValidationFoldResponse.toString());
+        logger.debug(chosenCrossValidationFoldResponse.toString());
         return chosenCrossValidationFoldResponse;
     }
 
@@ -325,7 +325,7 @@ public class CrossValidationService {
         } else {
             chosenClassifiedObjectAbstractResponse = new ChosenClassifiedObjectResponse(informationTable, generalObjectIndex, indicesOfCoveringRules);
         }
-        logger.debug("chosenClassifiedObjectAbstractResponse:\t{}", chosenClassifiedObjectAbstractResponse);
+        logger.debug(chosenClassifiedObjectAbstractResponse.toString());
         return chosenClassifiedObjectAbstractResponse;
     }
 
@@ -341,7 +341,7 @@ public class CrossValidationService {
         final CrossValidationSingleFold chosenFold = getChosenFoldFromCrossValidation(crossValidation, foldIndex);
 
         final RuleMainPropertiesResponse ruleMainPropertiesResponse = RuleMainPropertiesResponseBuilder.newInstance().build(chosenFold.getRuLeStudioRuleSet(), ruleIndex);
-        logger.debug("ruleMainPropertiesResponse:\t{}", ruleMainPropertiesResponse);
+        logger.debug(ruleMainPropertiesResponse.toString());
         return ruleMainPropertiesResponse;
     }
 
@@ -357,7 +357,7 @@ public class CrossValidationService {
         final CrossValidationSingleFold chosenFold = getChosenFoldFromCrossValidation(crossValidation, foldIndex);
 
         final ChosenRuleResponse chosenRuleResponse = ChosenRuleResponse.ChosenRuleResponseBuilder.newInstance().build(chosenFold.getRuLeStudioRuleSet(), ruleIndex, crossValidation.getDescriptiveAttributes(), crossValidation.getInformationTable());
-        logger.debug("chosenRuleResponse:\t{}", chosenRuleResponse);
+        logger.debug(chosenRuleResponse.toString());
         return chosenRuleResponse;
     }
 
@@ -376,7 +376,7 @@ public class CrossValidationService {
         } else {
             objectAbstractResponse = new ObjectResponse(crossValidation.getInformationTable(), objectIndex);
         }
-        logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
+        logger.debug(objectAbstractResponse.toString());
         return objectAbstractResponse;
     }
 
@@ -427,7 +427,7 @@ public class CrossValidationService {
                 throw ex;
         }
 
-        logger.debug("ordinalMisclassificationMatrixAbstractResponse:\t{}", ordinalMisclassificationMatrixAbstractResponse.toString());
+        logger.debug(ordinalMisclassificationMatrixAbstractResponse.toString());
         return ordinalMisclassificationMatrixAbstractResponse;
     }
 }
