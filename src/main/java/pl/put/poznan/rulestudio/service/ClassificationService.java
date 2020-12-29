@@ -95,7 +95,11 @@ public class ClassificationService {
     }
 
     public MainClassificationResponse getClassification(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -107,8 +111,12 @@ public class ClassificationService {
     }
 
     public MainClassificationResponse putClassification(UUID id, ClassificationParameters classificationParameters) {
-        logger.info("Id:\t{}", id);
-        logger.info("ClassificationParameters:\t{}", classificationParameters);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append(classificationParameters);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -126,11 +134,16 @@ public class ClassificationService {
             MultipartFile externalDataFile,
             Character separator,
             Boolean header) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("ClassificationParameters:\t{}", classificationParameters);
-        logger.info("Data:\t{}\t{}", externalDataFile.getOriginalFilename(), externalDataFile.getContentType());
-        logger.info("Separator:\t{}", separator);
-        logger.info("Header:\t{}", header);
+
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append(classificationParameters).append(", ");
+            sb.append("data={\"").append(externalDataFile.getOriginalFilename()).append("\", ").append(externalDataFile.getContentType()).append(", ").append(externalDataFile.getSize()).append("B}, ");
+            sb.append("separator=\"").append(separator).append("\", ");
+            sb.append("header=").append(header);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -158,11 +171,16 @@ public class ClassificationService {
     }
 
     public MainClassificationResponse postClassification(UUID id, ClassificationParameters classificationParameters, String metadata, String data) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("ClassificationParameters:\t{}", classificationParameters);
-        logger.info("Metadata:\t{}", metadata);
-        logger.info("Data size:\t{} B", data.length());
-        logger.debug("Data:\t{}", data);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append(classificationParameters).append(", ");
+            sb.append("metadataSize=").append(metadata.length()).append("B, ");
+            if (logger.isDebugEnabled()) sb.append("metadata=").append(metadata).append(", ");
+            sb.append("dataSize=").append(data.length()).append('B');
+            if (logger.isDebugEnabled()) sb.append(", ").append("data=").append(data);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -185,14 +203,20 @@ public class ClassificationService {
             MultipartFile externalDataFile,
             Character separator,
             Boolean header) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("ClassificationParameters:\t{}", classificationParameters);
-        logger.info("Metadata:\t{}", metadata);
-        logger.info("Data size:\t{} B", data.length());
-        logger.debug("Data:\t{}", data);
-        logger.info("ExternalDataFile:\t{}\t{}", externalDataFile.getOriginalFilename(), externalDataFile.getContentType());
-        logger.info("Separator:\t{}", separator);
-        logger.info("Header:\t{}", header);
+
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append(classificationParameters).append(", ");
+            sb.append("metadataSize=").append(metadata.length()).append("B, ");
+            if (logger.isDebugEnabled()) sb.append("metadata=").append(metadata).append(", ");
+            sb.append("dataSize=").append(data.length()).append("B, ");
+            if (logger.isDebugEnabled()) sb.append("data=").append(data).append(", ");
+            sb.append("externalData={\"").append(externalDataFile.getOriginalFilename()).append("\", ").append(externalDataFile.getContentType()).append(", ").append(externalDataFile.getSize()).append("B}, ");
+            sb.append("separator=\"").append(separator).append("\", ");
+            sb.append("header=").append(header);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -217,7 +241,11 @@ public class ClassificationService {
     }
 
     public DescriptiveAttributesResponse getDescriptiveAttributes(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -229,8 +257,12 @@ public class ClassificationService {
     }
 
     public DescriptiveAttributesResponse postDescriptiveAttributes(UUID id, String objectVisibleName) {
-        logger.info("Id:\t{}", id);
-        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectVisibleName=\"").append(objectVisibleName).append('\"');
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -245,7 +277,11 @@ public class ClassificationService {
     }
 
     public AttributeFieldsResponse getObjectNames(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -258,9 +294,13 @@ public class ClassificationService {
     }
 
     public ChosenClassifiedObjectAbstractResponse getChosenClassifiedObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("ClassifiedObjectIndex:\t{}", objectIndex);
-        logger.info("IsAttributes:\t{}", isAttributes);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectIndex=").append(objectIndex).append(", ");
+            sb.append("isAttributes=").append(isAttributes);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -285,8 +325,12 @@ public class ClassificationService {
     }
 
     public RuleMainPropertiesResponse getRule(UUID id, Integer ruleIndex) {
-        logger.info("Id:\t{}", id);
-        logger.info("RuleIndex:\t{}", ruleIndex);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("ruleIndex=").append(ruleIndex);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -300,7 +344,11 @@ public class ClassificationService {
     }
 
     public DescriptiveAttributesResponse getRulesDescriptiveAttributes(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -312,8 +360,12 @@ public class ClassificationService {
     }
 
     public DescriptiveAttributesResponse postRulesDescriptiveAttributes(UUID id, String objectVisibleName) {
-        logger.info("Id:\t{}", id);
-        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectVisibleName=\"").append(objectVisibleName).append('\"');
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -328,7 +380,11 @@ public class ClassificationService {
     }
 
     public AttributeFieldsResponse getRulesObjectNames(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -341,8 +397,12 @@ public class ClassificationService {
     }
 
     public AttributeFieldsResponse getRulesObjectNames(UUID id, Integer ruleIndex) {
-        logger.info("Id:\t{}", id);
-        logger.info("RuleIndex:\t{}", ruleIndex);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("ruleIndex=").append(ruleIndex);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -358,8 +418,12 @@ public class ClassificationService {
     }
 
     public ChosenRuleResponse getRuleCoveringObjects(UUID id, Integer ruleIndex) {
-        logger.info("Id:\t{}", id);
-        logger.info("RuleIndex:\t{}", ruleIndex);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("ruleIndex=").append(ruleIndex);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -371,9 +435,13 @@ public class ClassificationService {
     }
 
     public ObjectAbstractResponse getRulesObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("ObjectIndex:\t{}", objectIndex);
-        logger.info("IsAttributes:\t{}", isAttributes);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectIndex=").append(objectIndex).append(", ");
+            sb.append("isAttributes=").append(isAttributes);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -390,7 +458,11 @@ public class ClassificationService {
     }
 
     public OrdinalMisclassificationMatrixWithoutDeviationResponse getMisclassificationMatrix(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 

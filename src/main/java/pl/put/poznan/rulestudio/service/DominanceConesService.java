@@ -74,7 +74,11 @@ public class DominanceConesService {
     }
 
     public MainDominanceConesResponse getDominanceCones(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -86,7 +90,11 @@ public class DominanceConesService {
     }
 
     public MainDominanceConesResponse putDominanceCones(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -99,10 +107,15 @@ public class DominanceConesService {
     }
 
     public MainDominanceConesResponse postDominanceCones(UUID id, String metadata, String data) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("Metadata:\t{}", metadata);
-        logger.info("Data size:\t{} B", data.length());
-        logger.debug("Data:\t{}", data);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("metadataSize=").append(metadata.length()).append("B, ");
+            if (logger.isDebugEnabled()) sb.append("metadata=").append(metadata).append(", ");
+            sb.append("dataSize=").append(data.length()).append('B');
+            if (logger.isDebugEnabled()) sb.append(", ").append("data=").append(data);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -118,7 +131,11 @@ public class DominanceConesService {
     }
 
     public DescriptiveAttributesResponse getDescriptiveAttributes(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -130,8 +147,12 @@ public class DominanceConesService {
     }
 
     public DescriptiveAttributesResponse postDescriptiveAttributes(UUID id, String objectVisibleName) {
-        logger.info("Id:\t{}", id);
-        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectVisibleName=\"").append(objectVisibleName).append('\"');
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -146,7 +167,11 @@ public class DominanceConesService {
     }
 
     public AttributeFieldsResponse getObjectNames(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -159,9 +184,13 @@ public class DominanceConesService {
     }
 
     public ChosenDominanceConeResponse getChosenDominanceCone(UUID id, Integer objectIndex, ConeType coneType) {
-        logger.info("Id:\t{}", id);
-        logger.info("ObjectIndex:\t{}", objectIndex);
-        logger.info("ConeTyped:\t{}", coneType);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectIndex=").append(objectIndex).append(", ");
+            sb.append("coneType=").append(coneType);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -173,9 +202,13 @@ public class DominanceConesService {
     }
 
     public ObjectAbstractResponse getObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("ObjectIndex:\t{}", objectIndex);
-        logger.info("IsAttributes:\t{}", isAttributes);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectIndex=").append(objectIndex).append(", ");
+            sb.append("isAttributes=").append(isAttributes);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -192,9 +225,13 @@ public class DominanceConesService {
     }
 
     public ObjectsComparisonResponse getObjectsComparison(UUID id, Integer firstObjectIndex, Integer secondObjectIndex) {
-        logger.info("Id:\t" + id);
-        logger.info("firstObjectIndex:\t{}", firstObjectIndex);
-        logger.info("secondObjectIndex:\t{}", secondObjectIndex);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("firstObjectIndex=").append(firstObjectIndex).append(", ");
+            sb.append("secondObjectIndex=").append(secondObjectIndex);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 

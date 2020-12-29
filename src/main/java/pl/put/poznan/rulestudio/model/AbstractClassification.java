@@ -139,7 +139,7 @@ public abstract class AbstractClassification {
             throw ex;
         }
 
-        logger.info("Learning information table and rule set are compatible.");
+        logger.debug("Learning information table and rule set are compatible.");
     }
 
     protected void classify(InformationTable learningInformationTable, InformationTable classifiedInformationTable, ClassificationParameters classificationParameters, RuleSetWithCharacteristics ruleSetWithCharacteristics, Decision[] orderOfDecisions) {

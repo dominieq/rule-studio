@@ -26,7 +26,11 @@ public class ExportService {
     ProjectsContainer projectsContainer;
 
     public NamedResource getExport(UUID id) throws IOException {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 

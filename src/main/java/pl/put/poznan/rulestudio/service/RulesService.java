@@ -331,9 +331,13 @@ public class RulesService {
     }
 
     public MainRulesResponse getRules(UUID id, OrderByRuleCharacteristic orderBy, Boolean desc) {
-        logger.info("Id:\t{}", id);
-        logger.info("OrderBy:\t{}", orderBy);
-        logger.info("Desc:\t{}", desc);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("orderBy=").append(orderBy).append(", ");
+            sb.append("desc=").append(desc);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -443,8 +447,12 @@ public class RulesService {
     }
 
     public MainRulesResponse putRules(UUID id, RulesParameters rulesParameters) {
-        logger.info("Id:\t{}", id);
-        logger.info("RulesParameters:\t{}", rulesParameters);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append(rulesParameters);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -457,11 +465,16 @@ public class RulesService {
     }
 
     public MainRulesResponse postRules(UUID id, RulesParameters rulesParameters, String metadata, String data) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("RulesParameters:\t{}", rulesParameters);
-        logger.info("Metadata:\t{}", metadata);
-        logger.info("Data size:\t{} B", data.length());
-        logger.debug("Data:\t{}", data);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append(rulesParameters).append(", ");
+            sb.append("metadataSize=").append(metadata.length()).append("B, ");
+            if (logger.isDebugEnabled()) sb.append("metadata=").append(metadata).append(", ");
+            sb.append("dataSize=").append(data.length()).append('B');
+            if (logger.isDebugEnabled()) sb.append(", ").append("data=").append(data);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -477,7 +490,11 @@ public class RulesService {
     }
 
     public DescriptiveAttributesResponse getDescriptiveAttributes(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -489,8 +506,12 @@ public class RulesService {
     }
 
     public DescriptiveAttributesResponse postDescriptiveAttributes(UUID id, String objectVisibleName) {
-        logger.info("Id:\t{}", id);
-        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectVisibleName=\"").append(objectVisibleName).append('\"');
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -505,7 +526,11 @@ public class RulesService {
     }
 
     public AttributeFieldsResponse getObjectNames(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -518,8 +543,12 @@ public class RulesService {
     }
 
     public AttributeFieldsResponse getObjectNames(UUID id, Integer ruleIndex) {
-        logger.info("Id:\t{}", id);
-        logger.info("RuleIndex:\t{}", ruleIndex);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("ruleIndex=").append(ruleIndex);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -534,8 +563,12 @@ public class RulesService {
     }
 
     public NamedResource download(UUID id, RulesFormat rulesFormat) {
-        logger.info("Id:\t{}", id);
-        logger.info("RulesFormat:\t{}", rulesFormat);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("rulesFormat=").append(rulesFormat);
+            logger.info(sb.toString());
+        }
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -617,8 +650,12 @@ public class RulesService {
     }
 
     public MainRulesResponse putUploadRules(UUID id, MultipartFile rulesFile) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("rules={\"").append(rulesFile.getOriginalFilename()).append("\", ").append(rulesFile.getContentType()).append(", ").append(rulesFile.getSize()).append("B}");
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -631,11 +668,16 @@ public class RulesService {
     }
 
     public MainRulesResponse postUploadRules(UUID id, MultipartFile rulesFile, String metadata, String data) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
-        logger.info("Metadata:\t{}", metadata);
-        logger.info("Data size:\t{} B", data.length());
-        logger.debug("Data:\t{}", data);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("rules={\"").append(rulesFile.getOriginalFilename()).append("\", ").append(rulesFile.getContentType()).append(", ").append(rulesFile.getSize()).append("B}, ");
+            sb.append("metadataSize=").append(metadata.length()).append("B, ");
+            if (logger.isDebugEnabled()) sb.append("metadata=").append(metadata).append(", ");
+            sb.append("dataSize=").append(data.length()).append('B');
+            if (logger.isDebugEnabled()) sb.append(", ").append("data=").append(data);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -651,8 +693,12 @@ public class RulesService {
     }
 
     public ChosenRuleResponse getChosenRule(UUID id, Integer ruleIndex) {
-        logger.info("Id:\t{}", id);
-        logger.info("RuleIndex:\t{}", ruleIndex);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("ruleIndex=").append(ruleIndex);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -664,9 +710,13 @@ public class RulesService {
     }
 
     public ObjectAbstractResponse getObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("RuleIndex:\t{}", objectIndex);
-        logger.info("IsAttributes:\t{}", isAttributes);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectIndex=").append(objectIndex).append(", ");
+            sb.append("isAttributes=").append(isAttributes);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -683,7 +733,11 @@ public class RulesService {
     }
 
     public Boolean arePossibleRulesAllowed(UUID id)  {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 

@@ -24,7 +24,11 @@ public class ImportService {
     ProjectsContainer projectsContainer;
 
     public ProjectResponse postImport(MultipartFile importFile) throws IOException {
-        logger.info("ImportFile:\t{}\t{}", importFile.getOriginalFilename(), importFile.getContentType());
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("importFile={\"").append(importFile.getOriginalFilename()).append("\", ").append(importFile.getContentType()).append('}');
+            logger.info(sb.toString());
+        }
 
         Project project = null;
 

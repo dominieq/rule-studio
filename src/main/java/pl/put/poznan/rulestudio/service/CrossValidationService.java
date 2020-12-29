@@ -164,7 +164,11 @@ public class CrossValidationService {
     }
 
     public MainCrossValidationResponse getCrossValidation(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -176,8 +180,12 @@ public class CrossValidationService {
     }
 
     public MainCrossValidationResponse putCrossValidation(UUID id, CrossValidationParameters crossValidationParameters) {
-        logger.info("Id:\t{}", id);
-        logger.info("CrossValidationParameters:\t{}", crossValidationParameters);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append(crossValidationParameters);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -190,11 +198,16 @@ public class CrossValidationService {
     }
 
     public MainCrossValidationResponse postCrossValidation(UUID id, CrossValidationParameters crossValidationParameters, String metadata, String data) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("CrossValidationParameters:\t{}", crossValidationParameters);
-        logger.info("Metadata:\t{}", metadata);
-        logger.info("Data size:\t{} B", data.length());
-        logger.debug("Data:\t{}", data);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append(crossValidationParameters).append(", ");
+            sb.append("metadataSize=").append(metadata.length()).append("B, ");
+            if (logger.isDebugEnabled()) sb.append("metadata=").append(metadata).append(", ");
+            sb.append("dataSize=").append(data.length()).append('B');
+            if (logger.isDebugEnabled()) sb.append(", ").append("data=").append(data);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -210,7 +223,11 @@ public class CrossValidationService {
     }
 
     public DescriptiveAttributesResponse getDescriptiveAttributes(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -222,8 +239,12 @@ public class CrossValidationService {
     }
 
     public DescriptiveAttributesResponse postDescriptiveAttributes(UUID id, String objectVisibleName) {
-        logger.info("Id:\t{}", id);
-        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectVisibleName=\"").append(objectVisibleName).append('\"');
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -238,7 +259,11 @@ public class CrossValidationService {
     }
 
     public AttributeFieldsResponse getObjectNames(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -251,8 +276,12 @@ public class CrossValidationService {
     }
 
     public AttributeFieldsResponse getObjectNames(UUID id, Integer foldIndex) {
-        logger.info("Id:\t{}", id);
-        logger.info("FoldIndex:\t{}", foldIndex);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("foldIndex=").append(foldIndex);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -268,9 +297,13 @@ public class CrossValidationService {
     }
 
     public AttributeFieldsResponse getObjectNames(UUID id, Integer foldIndex, Integer ruleIndex) {
-        logger.info("Id:\t{}", id);
-        logger.info("FoldIndex:\t{}", foldIndex);
-        logger.info("RuleIndex:\t{}", ruleIndex);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("foldIndex=").append(foldIndex).append(", ");
+            sb.append("ruleIndex=").append(ruleIndex);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -286,8 +319,12 @@ public class CrossValidationService {
     }
 
     public ChosenCrossValidationFoldResponse getChosenCrossValidationFold(UUID id, Integer foldIndex) {
-        logger.info("Id:\t{}", id);
-        logger.info("FoldIndex:\t{}", foldIndex);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("foldIndex=").append(foldIndex);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -299,10 +336,14 @@ public class CrossValidationService {
     }
 
     public ChosenClassifiedObjectAbstractResponse getChosenClassifiedObject(UUID id, Integer foldIndex, Integer objectIndex, Boolean isAttributes) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("FoldIndex:\t{}", foldIndex);
-        logger.info("ClassifiedObjectIndex:\t{}", objectIndex);
-        logger.info("IsAttributes:\t{}", isAttributes);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("foldIndex=").append(foldIndex).append(", ");
+            sb.append("objectIndex=").append(objectIndex).append(", ");
+            sb.append("isAttributes=").append(isAttributes);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -330,9 +371,13 @@ public class CrossValidationService {
     }
 
     public RuleMainPropertiesResponse getRule(UUID id, Integer foldIndex, Integer ruleIndex) {
-        logger.info("Id:\t{}", id);
-        logger.info("FoldIndex:\t{}", foldIndex);
-        logger.info("RuleIndex:\t{}", ruleIndex);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("foldIndex=").append(foldIndex).append(", ");
+            sb.append("ruleIndex=").append(ruleIndex);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -346,9 +391,13 @@ public class CrossValidationService {
     }
 
     public ChosenRuleResponse getRuleCoveringObjects(UUID id, Integer foldIndex, Integer ruleIndex) {
-        logger.info("Id:\t{}", id);
-        logger.info("FoldIndex:\t{}", foldIndex);
-        logger.info("RuleIndex:\t{}", ruleIndex);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("foldIndex=").append(foldIndex).append(", ");
+            sb.append("ruleIndex=").append(ruleIndex);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -362,9 +411,13 @@ public class CrossValidationService {
     }
 
     public ObjectAbstractResponse getObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("ObjectIndex:\t{}", objectIndex);
-        logger.info("IsAttributes:\t{}", isAttributes);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectIndex=").append(objectIndex).append(", ");
+            sb.append("isAttributes=").append(isAttributes);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -381,9 +434,13 @@ public class CrossValidationService {
     }
 
     public OrdinalMisclassificationMatrixAbstractResponse getMisclassificationMatrix(UUID id, MisclassificationMatrixType typeOfMatrix, Integer numberOfFold) {
-        logger.info("Id:\t{}", id);
-        logger.info("TypeOfMatrix:\t{}", typeOfMatrix);
-        if(numberOfFold != null) logger.info("NumberOfFold:\t{}", numberOfFold);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("typeOfMatrix=").append(typeOfMatrix);
+            if(numberOfFold != null) sb.append(", ").append("numberOfFold=").append(numberOfFold);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 

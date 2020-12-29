@@ -74,9 +74,13 @@ public class MisclassificationMatrixService {
     }
 
     public OrdinalMisclassificationMatrixAbstractResponse getMisclassificationMatrix(UUID id, MisclassificationMatrixType typeOfMatrix, Integer numberOfFold) {
-        logger.info("Id:\t{}", id);
-        logger.info("TypeOfMatrix:\t{}", typeOfMatrix);
-        if(numberOfFold != null) logger.info("NumberOfFold:\t{}", numberOfFold);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("typeOfMatrix=").append(typeOfMatrix);
+            if(numberOfFold != null) sb.append(", ").append("numberOfFold=").append(numberOfFold);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -105,9 +109,13 @@ public class MisclassificationMatrixService {
     }
 
     public NamedResource download(UUID id, MisclassificationMatrixType typeOfMatrix, Integer numberOfFold) {
-        logger.info("Id:\t{}", id);
-        logger.info("TypeOfMatrix:\t{}", typeOfMatrix);
-        if(numberOfFold != null) logger.info("NumberOfFold:\t{}", numberOfFold);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("typeOfMatrix=").append(typeOfMatrix);
+            if(numberOfFold != null) sb.append(", ").append("numberOfFold=").append(numberOfFold);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 

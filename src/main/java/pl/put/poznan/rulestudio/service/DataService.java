@@ -159,7 +159,11 @@ public class DataService {
     }
 
     public InformationTableResponse getData(UUID id) throws IOException {
-        logger.info("Id:\t" + id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -173,9 +177,13 @@ public class DataService {
     }
 
     public InformationTableResponse putData(UUID id, String data) throws IOException {
-        logger.info("Id:\t" + id);
-        logger.info("Data size:\t{} B", data.length());
-        logger.debug("Data:\t" + data);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("dataSize=").append(data.length()).append('B');
+            if (logger.isDebugEnabled()) sb.append(", ").append("data=").append(data);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -192,11 +200,15 @@ public class DataService {
     }
 
     public ValidityProjectContainer postData(UUID id, String metadata, String data) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("Metadata size:\t{} B", metadata.length());
-        logger.debug("Metadata:\t{}", metadata);
-        logger.info("Data size:\t{} B", data.length());
-        logger.debug("Data:\t{}", data);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("metadataSize=").append(metadata.length()).append("B, ");
+            if (logger.isDebugEnabled()) sb.append("metadata=").append(metadata).append(", ");
+            sb.append("dataSize=").append(data.length()).append('B');
+            if (logger.isDebugEnabled()) sb.append(", ").append("data=").append(data);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -234,7 +246,11 @@ public class DataService {
 
     public NamedResource getDownloadJson(UUID id) throws IOException {
         logger.info("Downloading data in json format");
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -248,9 +264,13 @@ public class DataService {
 
     public NamedResource getDownloadCsv(UUID id, String separator, Boolean header) throws IOException {
         logger.info("Downloading data in csv format");
-        logger.info("Id:\t{}", id);
-        logger.info("Separator:\t{}", separator);
-        logger.info("Header:\t{}", header);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("separator=\"").append(separator).append("\", ");
+            sb.append("header=").append(header);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -264,11 +284,15 @@ public class DataService {
 
     public NamedResource putDownloadJson(UUID id, String metadata, String data) throws IOException {
         logger.info("Downloading data in json format");
-        logger.info("Id:\t{}", id);
-        logger.info("Metadata size:\t{} B", metadata.length());
-        logger.debug("Metadata:\t{}", metadata);
-        logger.info("Data size:\t{} B", data.length());
-        logger.debug("Data:\t{}", data);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("metadataSize=").append(metadata.length()).append("B, ");
+            if (logger.isDebugEnabled()) sb.append("metadata=").append(metadata).append(", ");
+            sb.append("dataSize=").append(data.length()).append('B');
+            if (logger.isDebugEnabled()) sb.append(", ").append("data=").append(data);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -283,13 +307,17 @@ public class DataService {
 
     public NamedResource putDownloadCsv(UUID id, String metadata, String data, String separator, Boolean header) throws IOException {
         logger.info("Downloading data in csv format");
-        logger.info("Id:\t{}", id);
-        logger.info("Metadata size:\t{} B", metadata.length());
-        logger.debug("Metadata:\t{}", metadata);
-        logger.info("Data size:\t{} B", data.length());
-        logger.debug("Data:\t{}", data);
-        logger.info("Separator:\t{}", separator);
-        logger.info("Header:\t{}", header);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("metadataSize=").append(metadata.length()).append("B, ");
+            if (logger.isDebugEnabled()) sb.append("metadata=").append(metadata).append(", ");
+            sb.append("dataSize=").append(data.length()).append("B, ");
+            if (logger.isDebugEnabled()) sb.append("data=").append(data).append(", ");
+            sb.append("separator=\"").append(separator).append("\", ");
+            sb.append("header=").append(header);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -303,9 +331,13 @@ public class DataService {
     }
 
     public ObjectAbstractResponse getObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
-        logger.info("Id:\t" + id);
-        logger.info("ObjectIndex:\t{}", objectIndex);
-        logger.info("IsAttributes:\t{}", isAttributes);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectIndex=").append(objectIndex).append(", ");
+            sb.append("isAttributes=").append(isAttributes);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -323,9 +355,13 @@ public class DataService {
     }
 
     public ObjectsComparisonResponse getObjectsComparison(UUID id, Integer firstObjectIndex, Integer secondObjectIndex) {
-        logger.info("Id:\t" + id);
-        logger.info("firstObjectIndex:\t{}", firstObjectIndex);
-        logger.info("secondObjectIndex:\t{}", secondObjectIndex);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("firstObjectIndex=").append(firstObjectIndex).append(", ");
+            sb.append("secondObjectIndex=").append(secondObjectIndex);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
