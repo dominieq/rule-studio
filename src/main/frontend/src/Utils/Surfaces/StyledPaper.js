@@ -1,6 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
+import { StyledPaperPropTypes } from "./propTypes";
 import { mergeClasses } from "../utilFunctions";
 import Paper from "@material-ui/core/Paper";
 
@@ -34,15 +34,6 @@ function StyledPaper(props) {
     );
 }
 
-StyledPaper.propTypes = {
-    children: PropTypes.node,
-    classes: PropTypes.object,
-    className: PropTypes.string,
-    component: PropTypes.elementType,
-    elevation: PropTypes.number,
-    paperRef: PropTypes.object,
-    square: PropTypes.bool,
-    variant: PropTypes.oneOf(["elevation", "outlined"]),
-};
+StyledPaper.propTypes = { ...StyledPaperPropTypes };
 
 export default StyledPaper;

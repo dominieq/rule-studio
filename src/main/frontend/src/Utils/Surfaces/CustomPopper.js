@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
+import { MuiPaperPropTypes } from "./propTypes";
 import { mergeClasses } from "../utilFunctions";
 import Paper from "@material-ui/core/Paper";
 
@@ -48,15 +49,11 @@ function CustomPopper(props) {
 }
 
 CustomPopper.propTypes = {
-    children: PropTypes.node,
+    ...MuiPaperPropTypes,
     classes: PropTypes.shape({
         Popper: PropTypes.any
     }),
-    className: PropTypes.string,
-    component: PropTypes.elementType,
-    elevation: PropTypes.number,
-    square: PropTypes.bool,
-    variant: PropTypes.oneOf(["elevation", "outlined"])
+    className: PropTypes.string
 };
 
 export default CustomPopper;

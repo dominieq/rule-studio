@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
+import { StyledPaperPropTypes } from "./propTypes";
 import { mergeClasses } from "../utilFunctions";
 import StyledPaper from "./StyledPaper";
 
@@ -49,16 +50,10 @@ function CustomSection(props) {
 }
 
 CustomSection.propTypes = {
-    children: PropTypes.node,
+    ...StyledPaperPropTypes,
     classes: PropTypes.shape({
         Root: PropTypes.any,
-    }),
-    className: PropTypes.string,
-    component: PropTypes.elementType,
-    elevation: PropTypes.number,
-    paperRef: PropTypes.object,
-    square: PropTypes.bool,
-    variant: PropTypes.oneOf(["elevation", "outlined"])
+    })
 };
 
 export default CustomSection;
