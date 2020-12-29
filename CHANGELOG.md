@@ -1,4 +1,4 @@
-## rc-8:
+## rc.8:
 #### Added
 - Implement react-router.
 - Display calculations time in ResultListSubheader.
@@ -21,7 +21,7 @@
 - Move TabBody to Containers.
 - Move Themes to Utils.
 
-## rc-7:
+## rc.7:
 #### Added
 - Extend documentation for fetch functions. 
 - Control descriptive attributes separately for each calculated resource.
@@ -45,7 +45,7 @@
 - Move all fetch functions to utils.
 - Bump XStream library to 1.4.14
 
-## rc-6:
+## rc.6:
 #### Added
 - Added Home page.
 - Added frontend documentation.
@@ -69,7 +69,7 @@
 - Create folder in utils to store fetch functions.
 - Bump ruleLearn version to 0.21.0
 
-## rc-5
+## rc.5
 #### Added
 - Added Help page.
 - Added slides component.
@@ -80,7 +80,6 @@
 - Information about the attribute activeness under the attribute name in Data.
 - Change attribute activeness via right click menu on the column header in Data.
 - Added timeout to search text field.
-- Enable ResultList to display CircleHelper
 - Added CircleHelper in ResultList in Cones and Rules.
 - Added CircleHelper to the left of upload buttons in Rules and Classification.
 - Remember button selection in Classification.
@@ -116,7 +115,7 @@
 - Bump node version to v12.16.3
 - Bump yarn version to v1.22.4
 
-## rc-4:
+## rc.4:
 #### Added
 - New button to show information about files used in a project.
   File names will be displayed in a list below button.
@@ -134,7 +133,43 @@
 - Project will be updated when classifying external data file.
 - Better error handling in fetch functions.
 
-## rc-2:
+## rc.3:
+#### Added
+- Allow a user to start application on ports different from 8080.
+- Display badge when sort params are different from original in Rules.
+- Add tooltips to calculate split button in Classification.
+- Use BigNumber to choose seed for Cross-validation.
+- Serialize and display certainty and original decision in Classification and Cross-validation.
+- Conjugate number of covering rules in Classification and Cross-validation.  
+- Added restrictions when choosing number of folds for Cross-validation.
+- Enable ResultList to display CircleHelper.
+- Add possibility to style rows in TableItemsList.  
+- Bold important info in helper tooltips in calculations.
+
+#### Fixed
+- Correct serialization of array with decision domain.
+- Rules are displayed according to sort params after calculations in Rules.
+- Correct grammar or linguistic mistakes in:
+  - calculate buttons in Unions, Rules and Cross-validation,
+  - helper tooltips in calculations in tabs mentioned above.
+- No more three dots when number has sufficient space in MatrixDialog.
+- Solve Firefox problems with scrollbar in SortMenu.  
+- Correct merging CSS classes in CircleHelper.
+
+#### Changed
+- Changed "item" to "object" in Cones.
+- Simplify serialization of EvaluationField in Union.
+- Move "Objects" to the beginning when serializing Unions.  
+- Upward unions will be displayed before downward unions.  
+- Exclude rule's type from sort menu in Rules.
+- Reorganize displaying rules in Rules.  
+- Changed "sum" to "accumulated" in Cross-validation.
+- Reorganize displaying items in ResultList.  
+- Changed "sorting direction" to "sorting order" in SortMenu.  
+- Changed "%09" to "\t" in CSVDialog.
+- Bump ruleLearn version to 0.21.0-rc.6
+
+## rc.2:
 #### Added
 - Added more extensive tooltip on "Impose Preference" button.
 
