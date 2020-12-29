@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { FileSelectZone } from "./Elements";
+import FileSelectZone from "../../Utils/Inputs/FileSelectZone";
 import CustomBox from "../../Utils/Containers/CustomBox";
 import CollapsibleDivider from "../../Utils/DataDisplay/CollapsibleDivider";
 import StyledDivider from "../../Utils/DataDisplay/StyledDivider";

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from "@material-ui/core/styles";
-import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip"
-import StyledFileChip from "../../../Utils/DataDisplay/StyledFileChip";
-import CustomUpload from "../../../Utils/Inputs/CustomUpload";
-import { StyledIconButton } from "../../../Utils/Buttons";
+import CustomTooltip from "../DataDisplay/CustomTooltip"
+import StyledFileChip from "../DataDisplay/StyledFileChip";
+import CustomUpload from "./CustomUpload";
+import { StyledIconButton } from "../Buttons";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Typography from "@material-ui/core/Typography";
 import DeleteCircle from "mdi-material-ui/DeleteCircle"
 import FileUpload from "mdi-material-ui/FileUpload";
-import styles from "../styles/FileSelectZone.module.css";
+import styles from "./styles/FileSelectZone.module.css";
 
 const useStyles = makeStyles({
     multilineTooltip: {
@@ -26,14 +26,21 @@ const useStyles = makeStyles({
  * A section used to upload a file.
  *
  * @constructor
- * @category Import
- * @subcategory Elements
+ * @category Utils
+ * @subcategory Inputs
  * @param {Object} props
- * @param {string} props.accept - Specifies what file types the user can pick from the file input dialog box.
+ * @param {string} [props.accept = ".json,.xml,.csv"] - Specifies what file types the user can pick from the file input dialog box.
+ * @param {Object} [props.ButtonProps] - Props applied to the {@link StyledIconButton} element.
+ * @param {string} props.id - The id attribute of the {@link CustomUpload} element.
+ * @param {string} props.label - The content of the {@link Typography} element.
+ * @param {Object} [props.LabelProps] - The props applied to the {@link Typography} element.
+ * @param {boolean} [props.multilineTooltip = false] - If <code>true</code> tooltip will display text in multiple lines.
  * @param {function} props.onInputChange - Callback fired when an input was changed.
  * @param {function} props.onInputDelete - Callback fired when an input requests to be deleted.
- * @param {React.ReactNode} props.title - The content of the tooltip.
- * @param {"metadata"|"data"|"rules"} props.variant - The type of data.
+ * @param {React.ReactNode} props.title - The title property of the {@link CustomTooltip} element.
+ * @param {Object} [props.TooltipProps] - Props applied to the {@link CustomTooltip} element.
+ * @param {string} props.variant - The custom type of uploaded file.
+ * @param {Object} [props.UploadProps] - Props applied to the {@link CustomUpload} element.
  * @returns {React.ReactElement}
  */
 function FileSelectZone(props)  {
