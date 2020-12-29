@@ -1,5 +1,6 @@
 import React from "react";
-import {makeStyles} from "@material-ui/core/styles";
+import PropTypes from "prop-types";
+import { makeStyles } from "@material-ui/core/styles";
 import Slider from "@material-ui/core/Slider";
 
 const useStyles = makeStyles(theme => ({
@@ -65,6 +66,35 @@ function StyledSlider(props) {
             }}
         />
     )
+}
+
+StyledSlider.propTypes = {
+    'aria-label': PropTypes.string,
+    'aria-labelledby': PropTypes.string,
+    'aria-valuetext': PropTypes.string,
+    classes: PropTypes.object,
+    color: PropTypes.oneOf(['primary', 'secondary']),
+    component: PropTypes.elementType,
+    defaultValue: PropTypes.oneOfType([ PropTypes.number, PropTypes.arrayOf(PropTypes.number) ]),
+    disabled: PropTypes.bool,
+    getAriaLabel: PropTypes.func,
+    getAriaValueText: PropTypes.func,
+    marks: PropTypes.oneOfType([ PropTypes.bool, PropTypes.array ]),
+    max: PropTypes.number,
+    min: PropTypes.number,
+    name: PropTypes.string,
+    onChange: PropTypes.func,
+    onChangeCommitted: PropTypes.func,
+    orientation: PropTypes.oneOf(['horizontal', 'vertical']),
+    scale: PropTypes.func,
+    step: PropTypes.number,
+    style: PropTypes.object,
+    ThumbComponent: PropTypes.elementType,
+    track: PropTypes.oneOf(["normal", false, "inverted"]),
+    value: PropTypes.oneOfType([ PropTypes.number, PropTypes.arrayOf(PropTypes.number) ]),
+    ValueLabelComponent: PropTypes.elementType,
+    valueLabelDisplay: PropTypes.oneOf(['on', 'auto', 'off']),
+    valueLabelFormat: PropTypes.oneOfType([ PropTypes.string, PropTypes.func ])
 }
 
 export default StyledSlider;

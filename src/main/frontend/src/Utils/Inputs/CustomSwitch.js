@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
+import { MuiFormControlLabelPropTypes, StyledSwitchPropTypes } from "./propTypes";
 import { mergeClasses } from "../utilFunctions";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import StyledSwitch from "./StyledSwitch";
@@ -24,28 +25,33 @@ const labelStyles = makeStyles({
  * @constructor
  * @category Utils
  * @subcategory Inputs
- * @param {Object} props - Any other props will be forwarded to the FormControlLabel component.
+ * @param {Object} props - Any other props will be forwarded to the {@link StyledSwitch} element.
+ * @param {string} props.label - The text to be used in an enclosing label element.
+ * @param {Object} props.labelClasses - Override or extend the styles applied to the {@link FormControlLabel} element.
+ * @param {Object} props.LabelProps - Props applied to the {@link FormControlLabel} element.
  * @returns {React.ReactElement}
  */
 function CustomSwitch(props) {
-    const {classes: propsClasses, label, ...other} = props;
-    let classes = labelStyles();
+    const { label, labelClasses, labelProps, ...other } = props;
 
-    if (propsClasses) classes = mergeClasses(classes, propsClasses);
+    let classes = labelStyles();
+    if (labelClasses) classes = mergeClasses(classes, labelClasses);
 
     return (
         <FormControlLabel
             classes={classes}
             control={<StyledSwitch {...other} />}
             label={label}
+            {...labelProps}
         />
     )
 }
 
 CustomSwitch.propTypes = {
     label: PropTypes.string,
-    checked: PropTypes.bool,
-    onChange: PropTypes.func,
+    labelClasses: PropTypes.object,
+    LabelProps: PropTypes.shape({ ...MuiFormControlLabelPropTypes }),
+    ...StyledSwitchPropTypes
 };
 
 export default CustomSwitch;
