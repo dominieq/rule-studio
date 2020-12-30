@@ -1,13 +1,15 @@
 ## rc.8:
 #### Added
 - Implement react-router.
-- Display calculations time in ResultListSubheader.
-- Enable reseting global object visible name in SettingsDialog.
-- Added loading snackbar when exporting project.  
-- Added changelog.
+- Measure calculations time on the server and display it in ResultListSubheader.
+- Enable resetting global object visible name in SettingsDialog.
+- Added loading snackbar when exporting project.
 
 #### Fixed
-- Refresh data after project's changed in different tab.
+- Prevent "No." column in Data from disappearing when creating empty project.
+- Refresh data after project's changed in a different tab.
+- Take into account changes in identification/descriptive fields of a data set.
+- Reassign descriptive attribute in a new calculation result.
 - Refresh main attributes menu after calculations.
 - Fixed sending data after project was deleted
 - Fixed crashing in classified details dialog when no covered objects.
@@ -15,11 +17,16 @@
 - Correct tooltip for rule in classified object details.
 
 #### Changed
+- Optimize omitting repetitions of identical calculations.
+- Tidy up logs in a server's console.
+- Change names of Java classes to more appropriate.  
 - Create Dialogs folder and move every Dialog to that folder.
 - Move SortMenu to Menus folder.
 - Create Buttons folder and move every Button to that folder.
 - Move TabBody to Containers.
 - Move Themes to Utils.
+- Bump XStream library version to 1.4.14
+- Bump project's export version to 1.0.0-rc.8
 
 ## rc.7:
 #### Added
