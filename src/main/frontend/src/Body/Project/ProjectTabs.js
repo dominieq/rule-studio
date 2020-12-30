@@ -196,14 +196,9 @@ class ProjectTabs extends React.Component {
      * @memberOf ProjectTabs
      * @param {string} projectId - The identifier of a selected project.
      * @param {Object} informationTable - The local copy of an information table that will be sent to server.
-     * @param {number} newValue - The index of currently selected tab.
+     * @param {function} [finallyCallback] - The callback fired in finally part of the fetch function.
      */
-    updateProjectOnServer = (projectId, informationTable, newValue) => {
-        if (informationTable == null) {
-            this.setState({ selected: newValue });
-            return;
-        }
-
+    updateProjectOnServer = (projectId, informationTable, finallyCallback) => {
         const pathParams = { projectId };
         const method = "POST";
         const body = new FormData();
@@ -219,15 +214,9 @@ class ProjectTabs extends React.Component {
             }
         }).catch(
             this.props.onSnackbarOpen
-        ).finally(() => {
-            if (this._isMounted) {
-                this.setState({
-                    isUpdateNecessary: false,
-                    loading: false,
-                    selected: newValue
-                });
-            }
-        });
+        ).finally(
+            finallyCallback
+        );
     };
 
     /**
@@ -273,7 +262,14 @@ class ProjectTabs extends React.Component {
                 this.setState({
                     loading: true
                 }, () => {
-                    this.updateProjectOnServer(projectId, informationTable, selected);
+                    this.updateProjectOnServer(projectId, informationTable, () => {
+                        if (this._isMounted) {
+                            this.setState({
+                                isUpdateNecessary: false,
+                                loading: false
+                            });
+                        }
+                    });
                 });
             } else if (selected !== 0) {
                 this.setState({
@@ -307,8 +303,15 @@ class ProjectTabs extends React.Component {
 
         const { deleting, project: { id: projectId }} = this.props;
         const { informationTable, isUpdateNecessary, selected } = this.state;
+
         if (isUpdateNecessary && selected === 0 && !deleting) {
-            this.updateProjectOnServer(projectId, informationTable, selected);
+            this.updateProjectOnServer(projectId, informationTable, () => {
+                if (this._isMounted) {
+                    this.setState({
+                        isUpdateNecessary: false
+                    });
+                }
+            });
         }
     };
 
@@ -326,15 +329,24 @@ class ProjectTabs extends React.Component {
         const { project: { id: projectId }} = this.props;
         const { informationTable, isUpdateNecessary, selected } = this.state;
 
-        if (isUpdateNecessary && selected === 0 && newValue !== 0) {
-            this.setState({
-                loading: true
-            }, () => {
-                this.updateProjectOnServer(projectId, informationTable, newValue);
-            });
-        } else {
-            this.setState({ selected: newValue });
-        }
+        this.setState({
+            selected: newValue
+        }, () => {
+            if (isUpdateNecessary && selected === 0 && newValue !== 0) {
+                this.setState({
+                    loading: true
+                }, () => {
+                    this.updateProjectOnServer(projectId, informationTable, () => {
+                        if (this._isMounted) {
+                            this.setState({
+                                isUpdateNecessary: false,
+                                loading: false
+                            });
+                        }
+                    });
+                });
+            }
+        });
     };
 
     /**
