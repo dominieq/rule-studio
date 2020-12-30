@@ -29,10 +29,11 @@ public class ProjectsController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectsResponse> getProjects() {
-        logger.info("Getting projects...");
+        logger.info("[START] Getting projects...");
 
         final ProjectsResponse result = projectsService.getProjects();
 
+        logger.info("[ END ] Getting projects is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -44,10 +45,11 @@ public class ProjectsController {
             @RequestParam(name = "rules", required = false) MultipartFile rulesFiles,
             @RequestParam(name = "separator", defaultValue = ",") Character separator,
             @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
-        logger.info("Creating project...");
+        logger.info("[START] Creating project...");
 
         final ProjectResponse result = projectsService.createProject(name, metadataFile, dataFle, rulesFiles, separator, header);
 
+        logger.info("[ END ] Creating project is done.");
         return ResponseEntity.ok(result);
     }
 }

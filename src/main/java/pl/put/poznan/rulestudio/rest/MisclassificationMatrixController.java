@@ -34,10 +34,11 @@ public class MisclassificationMatrixController {
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfMatrix") MisclassificationMatrixType typeOfMatrix,
             @RequestParam(name = "numberOfFold", required = false) Integer numberOfFold) {
-        logger.info("Getting misclassification matrix...");
+        logger.info("[START] Getting misclassification matrix...");
 
         final OrdinalMisclassificationMatrixAbstractResponse result = misclassificationMatrixService.getMisclassificationMatrix(id, typeOfMatrix, numberOfFold);
 
+        logger.info("[ END ] Getting misclassification matrix is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -46,13 +47,14 @@ public class MisclassificationMatrixController {
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfMatrix") MisclassificationMatrixType typeOfMatrix,
             @RequestParam(name = "numberOfFold", required = false) Integer numberOfFold) {
-        logger.info("Downloading misclassification matrix");
+        logger.info("[START] Downloading misclassification matrix...");
 
         final NamedResource namedResource = misclassificationMatrixService.download(id, typeOfMatrix, numberOfFold);
 
         final String filename = namedResource.getName();
         final Resource resource = namedResource.getResource();
 
+        logger.info("[ END ] Downloading misclassification matrix is done.");
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                 .body(resource);

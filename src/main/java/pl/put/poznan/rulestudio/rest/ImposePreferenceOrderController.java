@@ -30,10 +30,11 @@ public class ImposePreferenceOrderController {
     public ResponseEntity<InformationTableResponse> getImposePreferenceOrder(
             @PathVariable("id") UUID id,
             @RequestParam(name = "binarizeNominalAttributesWith3PlusValues") Boolean binarizeNominalAttributesWith3PlusValues) throws IOException {
-        logger.info("Getting impose preference order...");
+        logger.info("[START] Getting impose preference order...");
 
         final InformationTableResponse result = imposePreferenceOrderService.getImposePreferenceOrder(id, binarizeNominalAttributesWith3PlusValues);
 
+        logger.info("[ END ] Getting impose preference order is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -43,10 +44,11 @@ public class ImposePreferenceOrderController {
             @RequestParam(name = "binarizeNominalAttributesWith3PlusValues") Boolean binarizeNominalAttributesWith3PlusValues,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
-        logger.info("Posting impose preference order...");
+        logger.info("[START] Posting impose preference order...");
 
         final InformationTableResponse result = imposePreferenceOrderService.postImposePreferenceOrder(id, binarizeNominalAttributesWith3PlusValues, metadata, data);
 
+        logger.info("[ END ] Posting impose preference order is done.");
         return ResponseEntity.ok(result);
     }
 }
