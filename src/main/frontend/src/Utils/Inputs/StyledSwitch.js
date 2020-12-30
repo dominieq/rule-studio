@@ -1,6 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
+import { StyledSwitchPropTypes } from "./propTypes";
 import { mergeClasses } from "../utilFunctions";
 import Switch from "@material-ui/core/Switch";
 
@@ -58,9 +58,9 @@ const switchStyles = makeStyles(theme => ({
  * @returns {React.ReactElement}
  */
 export function StyledSwitch(props) {
-    const {classes: propsClasses, ...other} = props;
-    let classes = switchStyles();
+    const { classes: propsClasses, ...other } = props;
 
+    let classes = switchStyles();
     if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
@@ -78,14 +78,7 @@ export function StyledSwitch(props) {
     )
 }
 
-StyledSwitch.propTypes = {
-    checked: PropTypes.bool,
-    classes: PropTypes.object,
-    className: PropTypes.string,
-    disableRipple: PropTypes.bool,
-    onChange: PropTypes.func,
-    style: PropTypes.object,
-};
+StyledSwitch.propTypes = { ...StyledSwitchPropTypes };
 
 StyledSwitch.defaultProps = {
     disableRipple: true,

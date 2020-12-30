@@ -1,5 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
+import { MuiFormControlLabelPropTypes } from "./propTypes";
 import { withStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
@@ -28,16 +28,6 @@ const CustomControlLabel = withStyles(theme => ({
     <FormControlLabel labelPlacement={"start"} {...props} />
 ));
 
-CustomControlLabel.propTypes = {
-    checked: PropTypes.bool,
-    classes: PropTypes.object,
-    control: PropTypes.element.isRequired,
-    disabled: PropTypes.bool,
-    inputRef: PropTypes.object,
-    label: PropTypes.node,
-    labelPlacement: PropTypes.oneOf(["bottom", "end", "start", "top"]),
-    onChange: PropTypes.func,
-    value: PropTypes.any
-}
+CustomControlLabel.propTypes = { ...MuiFormControlLabelPropTypes }
 
 export default CustomControlLabel;
