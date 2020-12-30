@@ -20,7 +20,7 @@ public class ExportService {
 
     private static final Logger logger = LoggerFactory.getLogger(ExportService.class);
 
-    public static final String version = "1.0.0-rc.7";
+    public static final String version = "1.0.0-rc.8";
 
     @Autowired
     ProjectsContainer projectsContainer;

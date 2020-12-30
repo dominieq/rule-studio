@@ -8,7 +8,6 @@
 #### Fixed
 - Prevent "No." column in Data from disappearing when creating empty project.
 - Refresh data after project's changed in a different tab.
-- Take into account changes in identification/descriptive fields of a data set.
 - Reassign descriptive attribute in a new calculation result.
 - Refresh main attributes menu after calculations.
 - Fix sending data after project was deleted
@@ -25,7 +24,7 @@
 - Create Buttons folder and move every Button to that folder.
 - Move TabBody to Containers.
 - Move Themes to Utils.
-- Bump XStream library version to 1.4.14
+- Bump XStream library version to 1.4.15
 - Bump project's export version to 1.0.0-rc.8
 
 ## RuLeStudio-1.0.0-rc.7:
