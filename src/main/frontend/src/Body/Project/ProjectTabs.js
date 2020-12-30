@@ -30,7 +30,7 @@ import { tabNames } from "../../Utils/Constants/TabsNamesInPath";
  * @param {function} props.updateProject - Callback fired when a part of current project was changed.
  * @returns {React.PureComponent}
  */
-class ProjectTabs extends React.PureComponent {
+class ProjectTabs extends React.Component {
     constructor(props) {
         super(props);
 
@@ -196,14 +196,9 @@ class ProjectTabs extends React.PureComponent {
      * @memberOf ProjectTabs
      * @param {string} projectId - The identifier of a selected project.
      * @param {Object} informationTable - The local copy of an information table that will be sent to server.
-     * @param {number} newValue - The index of currently selected tab.
+     * @param {function} [finallyCallback] - The callback fired in finally part of the fetch function.
      */
-    updateProjectOnServer = (projectId, informationTable, newValue) => {
-        if (informationTable == null) {
-            this.setState({ selected: newValue });
-            return;
-        }
-
+    updateProjectOnServer = (projectId, informationTable, finallyCallback) => {
         const pathParams = { projectId };
         const method = "POST";
         const body = new FormData();
@@ -219,15 +214,9 @@ class ProjectTabs extends React.PureComponent {
             }
         }).catch(
             this.props.onSnackbarOpen
-        ).finally(() => {
-            if (this._isMounted) {
-                this.setState({
-                    isUpdateNecessary: false,
-                    loading: false,
-                    selected: newValue
-                });
-            }
-        });
+        ).finally(
+            finallyCallback
+        );
     };
 
     /**
@@ -245,6 +234,10 @@ class ProjectTabs extends React.PureComponent {
         this.getProject();
         this.activateTabUpToURL();
     };
+
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return this.props !== nextProps || this.state !== nextState;
+    }
 
     /**
      * <h3>Overview</h3>
@@ -269,7 +262,14 @@ class ProjectTabs extends React.PureComponent {
                 this.setState({
                     loading: true
                 }, () => {
-                    this.updateProjectOnServer(projectId, informationTable, selected);
+                    this.updateProjectOnServer(projectId, informationTable, () => {
+                        if (this._isMounted) {
+                            this.setState({
+                                isUpdateNecessary: false,
+                                loading: false
+                            });
+                        }
+                    });
                 });
             } else if (selected !== 0) {
                 this.setState({
@@ -303,8 +303,15 @@ class ProjectTabs extends React.PureComponent {
 
         const { deleting, project: { id: projectId }} = this.props;
         const { informationTable, isUpdateNecessary, selected } = this.state;
+
         if (isUpdateNecessary && selected === 0 && !deleting) {
-            this.updateProjectOnServer(projectId, informationTable, selected);
+            this.updateProjectOnServer(projectId, informationTable, () => {
+                if (this._isMounted) {
+                    this.setState({
+                        isUpdateNecessary: false
+                    });
+                }
+            });
         }
     };
 
@@ -322,15 +329,24 @@ class ProjectTabs extends React.PureComponent {
         const { project: { id: projectId }} = this.props;
         const { informationTable, isUpdateNecessary, selected } = this.state;
 
-        if (isUpdateNecessary && selected === 0 && newValue !== 0) {
-            this.setState({
-                loading: true
-            }, () => {
-                this.updateProjectOnServer(projectId, informationTable, newValue);
-            });
-        } else {
-            this.setState({ selected: newValue });
-        }
+        this.setState({
+            selected: newValue
+        }, () => {
+            if (isUpdateNecessary && selected === 0 && newValue !== 0) {
+                this.setState({
+                    loading: true
+                }, () => {
+                    this.updateProjectOnServer(projectId, informationTable, () => {
+                        if (this._isMounted) {
+                            this.setState({
+                                isUpdateNecessary: false,
+                                loading: false
+                            });
+                        }
+                    });
+                });
+            }
+        });
     };
 
     /**
