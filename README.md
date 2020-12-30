@@ -16,4 +16,13 @@ java -jar target\rulestudio-{latest_version}.jar
 This project is licensed under the Apache License, Version 2.0 - 
 see the [LICENSE](https://github.com/dominieq/rule-work/blob/master/LICENSE) file for details.
 ## Acknowledgements
-TODO
+- [ruleLearn library](https://github.com/ruleLearn/rulelearn) is the essential component of our project, 
+  providing necessary API for calculations.
+- The server was programmed in Java, using [SpringBoot framework](https://github.com/spring-projects/spring-boot).
+- The serialization of projects is possible thanks to [XStream library](https://github.com/x-stream/xstream).  
+- The client was programmed in JavaScript, using [React framework](https://github.com/facebook/react). 
+- On top of that, we used many useful libraries such as: 
+  - [Material-UI](https://github.com/mui-org/material-ui) for overall awe-inspiring style and ease in creating intuitive GUI.  
+  - [react-virtualized](https://github.com/bvaughn/react-virtualized) to efficiently display massive amounts of data. 
+  - [react-router](https://github.com/ReactTraining/react-router), [BigNumber](https://github.com/MikeMcl/bignumber.js).
+- We used [frontend-maven-plugin](https://github.com/eirslett/frontend-maven-plugin) to package our application to a single JAR file.
