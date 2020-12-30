@@ -149,20 +149,28 @@ public class UnionsService {
     }
 
     public MainClassUnionsResponse getUnions(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         final ProjectClassUnions projectClassUnions = getClassUnionsFromProject(project);
 
         final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(projectClassUnions);
-        logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
+        logger.debug(mainClassUnionsResponse.toString());
         return mainClassUnionsResponse;
     }
 
     public MainClassUnionsResponse putUnions(UUID id, ClassUnionsParameters classUnionsParameters) {
-        logger.info("Id:\t{}", id);
-        logger.info("ClassUnionsParameters:\t{}", classUnionsParameters);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append(classUnionsParameters);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -170,16 +178,21 @@ public class UnionsService {
 
         final ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
         final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(projectClassUnions);
-        logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
+        logger.debug(mainClassUnionsResponse.toString());
         return mainClassUnionsResponse;
     }
 
     public MainClassUnionsResponse postUnions(UUID id, ClassUnionsParameters classUnionsParameters, String metadata, String data) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("ClassUnionsParameters:\t{}", classUnionsParameters);
-        logger.info("Metadata:\t{}", metadata);
-        logger.info("Data size:\t{} B", data.length());
-        logger.debug("Data:\t{}", data);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append(classUnionsParameters).append(", ");
+            sb.append("metadataSize=").append(metadata.length()).append("B, ");
+            if (logger.isDebugEnabled()) sb.append("metadata=").append(metadata).append(", ");
+            sb.append("dataSize=").append(data.length()).append('B');
+            if (logger.isDebugEnabled()) sb.append(", ").append("data=").append(data);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -190,25 +203,33 @@ public class UnionsService {
 
         final ProjectClassUnions projectClassUnions = project.getProjectClassUnions();
         final MainClassUnionsResponse mainClassUnionsResponse = MainClassUnionsResponseBuilder.newInstance().build(projectClassUnions);
-        logger.debug("mainClassUnionsResponse:\t{}", mainClassUnionsResponse.toString());
+        logger.debug(mainClassUnionsResponse.toString());
         return mainClassUnionsResponse;
     }
 
     public DescriptiveAttributesResponse getDescriptiveAttributes(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         final ProjectClassUnions projectClassUnions = getClassUnionsFromProject(project);
 
         final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassUnions.getDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        logger.debug(descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
 
     public DescriptiveAttributesResponse postDescriptiveAttributes(UUID id, String objectVisibleName) {
-        logger.info("Id:\t{}", id);
-        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectVisibleName=\"").append(objectVisibleName).append('\"');
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -218,12 +239,16 @@ public class UnionsService {
         descriptiveAttributes.setCurrentAttribute(objectVisibleName);
 
         final DescriptiveAttributesResponse descriptiveAttributesResponse = new DescriptiveAttributesResponse(projectClassUnions.getDescriptiveAttributes());
-        logger.debug("descriptiveAttributesResponse:\t{}", descriptiveAttributesResponse.toString());
+        logger.debug(descriptiveAttributesResponse.toString());
         return descriptiveAttributesResponse;
     }
 
     public AttributeFieldsResponse getObjectNames(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -231,14 +256,18 @@ public class UnionsService {
 
         final Integer descriptiveAttributeIndex = projectClassUnions.getDescriptiveAttributes().getCurrentAttributeInformationTableIndex();
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().build(projectClassUnions.getInformationTable(), descriptiveAttributeIndex);
-        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        logger.debug(attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
 
     public AttributeFieldsResponse getObjectNames(UUID id, Integer classUnionIndex, ClassUnionArrayPropertyType classUnionArrayPropertyType) {
-        logger.info("Id:\t{}", id);
-        logger.info("ClassUnionIndex:\t{}", classUnionIndex);
-        logger.info("ClassUnionArrayPropertyType:\t{}", classUnionArrayPropertyType);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("classUnionIndex=").append(classUnionIndex).append(", ");
+            sb.append("classUnionArrayPropertyType=").append(classUnionArrayPropertyType);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -249,7 +278,7 @@ public class UnionsService {
         final String[] objectNames = projectClassUnions.getDescriptiveAttributes().extractChosenObjectNames(projectClassUnions.getInformationTable(), indices);
 
         final AttributeFieldsResponse attributeFieldsResponse = AttributeFieldsResponseBuilder.newInstance().setFields(objectNames).build();
-        logger.debug("attributeFieldsResponse:\t{}", attributeFieldsResponse.toString());
+        logger.debug(attributeFieldsResponse.toString());
         return attributeFieldsResponse;
     }
 
@@ -275,8 +304,12 @@ public class UnionsService {
     }
 
     public ChosenClassUnionResponse getChosenClassUnion(UUID id, Integer classUnionIndex) {
-        logger.info("Id:\t{}", id);
-        logger.info("ClassUnionIndex:\t{}", classUnionIndex);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("classUnionIndex=").append(classUnionIndex);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -285,14 +318,18 @@ public class UnionsService {
         final Union chosenClassUnion = getClassUnionByIndex(projectClassUnions, classUnionIndex);
 
         final ChosenClassUnionResponse chosenClassUnionResponse = ChosenClassUnionResponseBuilder.newInstance().build(chosenClassUnion);
-        logger.debug("chosenClassUnionResponse:\t{}", chosenClassUnionResponse.toString());
+        logger.debug(chosenClassUnionResponse.toString());
         return chosenClassUnionResponse;
     }
 
     public ClassUnionArrayPropertyResponse getClassUnionArrayProperty(UUID id, Integer classUnionIndex, ClassUnionArrayPropertyType classUnionArrayPropertyType) {
-        logger.info("Id:\t{}", id);
-        logger.info("ClassUnionIndex:\t{}", classUnionIndex);
-        logger.info("ClassUnionArrayPropertyType:\t{}", classUnionArrayPropertyType);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("classUnionIndex=").append(classUnionIndex).append(", ");
+            sb.append("classUnionArrayPropertyType=").append(classUnionArrayPropertyType);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -301,14 +338,18 @@ public class UnionsService {
         final Union chosenClassUnion = getClassUnionByIndex(projectClassUnions, classUnionIndex);
 
         final ClassUnionArrayPropertyResponse classUnionArrayPropertyResponse = ClassUnionArrayPropertyResponseBuilder.newInstance().build(chosenClassUnion, classUnionArrayPropertyType, projectClassUnions.getDescriptiveAttributes(), projectClassUnions.getInformationTable());
-        logger.debug("classUnionArrayPropertyResponse:\t{}", classUnionArrayPropertyResponse.toString());
+        logger.debug(classUnionArrayPropertyResponse.toString());
         return classUnionArrayPropertyResponse;
     }
 
     public ObjectAbstractResponse getObject(UUID id, Integer objectIndex, Boolean isAttributes) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("ObjectIndex:\t{}", objectIndex);
-        logger.info("IsAttributes:\t{}", isAttributes);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectIndex=").append(objectIndex).append(", ");
+            sb.append("isAttributes=").append(isAttributes);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -320,7 +361,7 @@ public class UnionsService {
         } else {
             objectAbstractResponse = new ObjectResponse(projectClassUnions.getInformationTable(), objectIndex);
         }
-        logger.debug("objectAbstractResponse:\t{}", objectAbstractResponse.toString());
+        logger.debug(objectAbstractResponse.toString());
         return objectAbstractResponse;
     }
 }

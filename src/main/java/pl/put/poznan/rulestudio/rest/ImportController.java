@@ -29,10 +29,11 @@ public class ImportController {
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectResponse> postImport(
             @RequestParam(name = "importFile") MultipartFile importFile) throws IOException {
-        logger.info("Posting import...");
+        logger.info("[START] Posting import...");
 
         final ProjectResponse result = importService.postImport(importFile);
 
+        logger.info("[ END ] Posting import is done.");
         return ResponseEntity.ok(result);
     }
 }

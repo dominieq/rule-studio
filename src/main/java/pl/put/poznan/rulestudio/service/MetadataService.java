@@ -69,7 +69,11 @@ public class MetadataService {
     }
 
     public AttributesResponse getMetadata(UUID id) throws IOException {
-        logger.info("Id:\t" + id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -82,9 +86,13 @@ public class MetadataService {
     }
 
     public InformationTableResponse putMetadata(UUID id, String metadata) throws IOException {
-        logger.info("Id:\t" + id);
-        logger.info("Metadata size:\t{} B", metadata.length());
-        logger.debug("Metadata:\t{}", metadata);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("metadataSize=").append(metadata.length()).append('B');
+            if (logger.isDebugEnabled()) sb.append(", ").append("metadata=").append(metadata);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -111,7 +119,11 @@ public class MetadataService {
     }
 
     public NamedResource getDownload(UUID id) throws IOException {
-        logger.info("Id:\t" + id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -124,9 +136,13 @@ public class MetadataService {
     }
 
     public NamedResource putDownload(UUID id, String metadata) throws IOException {
-        logger.info("Id:\t{}", id);
-        logger.info("Metadata size:\t{} B", metadata.length());
-        logger.debug("Metadata:\t{}", metadata);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("metadataSize=").append(metadata.length()).append('B');
+            if (logger.isDebugEnabled()) sb.append(", ").append("metadata=").append(metadata);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -141,18 +157,26 @@ public class MetadataService {
     }
 
     public GlobalDescriptiveAttributesResponse getGlobalDescriptiveAttributes(UUID id) {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
         final GlobalDescriptiveAttributesResponse globalDescriptiveAttributesResponse = new GlobalDescriptiveAttributesResponse(project);
-        logger.debug("globalDescriptiveAttributesResponse:\t{}", globalDescriptiveAttributesResponse.toString());
+        logger.debug(globalDescriptiveAttributesResponse.toString());
         return globalDescriptiveAttributesResponse;
     }
 
     public GlobalDescriptiveAttributesResponse postGlobalDescriptiveAttributes(UUID id, String objectVisibleName) {
-        logger.info("Id:\t{}", id);
-        logger.info("ObjectVisibleName:\t{}", objectVisibleName);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("objectVisibleName=\"").append(objectVisibleName).append('\"');
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -162,7 +186,7 @@ public class MetadataService {
         updateDescriptiveAttributesAcrossProject(project, objectVisibleName);
 
         final GlobalDescriptiveAttributesResponse globalDescriptiveAttributesResponse = new GlobalDescriptiveAttributesResponse(project);
-        logger.debug("globalDescriptiveAttributesResponse:\t{}", globalDescriptiveAttributesResponse.toString());
+        logger.debug(globalDescriptiveAttributesResponse.toString());
         return globalDescriptiveAttributesResponse;
     }
 

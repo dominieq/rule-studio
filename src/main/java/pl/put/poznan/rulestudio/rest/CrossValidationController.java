@@ -32,10 +32,11 @@ public class CrossValidationController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MainCrossValidationResponse> getCrossValidation(
             @PathVariable("id") UUID id) {
-        logger.info("Getting cross validation...");
+        logger.info("[START] Getting cross validation...");
 
         final MainCrossValidationResponse result = crossValidationService.getCrossValidation(id);
 
+        logger.info("[ END ] Getting cross validation is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -49,11 +50,12 @@ public class CrossValidationController {
             @RequestParam(name = "defaultClassificationResultType") DefaultClassificationResultType defaultClassificationResultType,
             @RequestParam(name = "numberOfFolds") Integer numberOfFolds,
             @RequestParam(name = "seed", defaultValue = "0") Long seed) {
-        logger.info("Putting cross validation...");
+        logger.info("[START] Putting cross validation...");
 
         final CrossValidationParameters crossValidationParameters = new CrossValidationParametersImpl(typeOfUnions, consistencyThreshold, typeOfRules, classifierType, defaultClassificationResultType, numberOfFolds, seed);
         final MainCrossValidationResponse result = crossValidationService.putCrossValidation(id, crossValidationParameters);
 
+        logger.info("[ END ] Putting cross validation is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -69,21 +71,23 @@ public class CrossValidationController {
             @RequestParam(name = "seed", defaultValue = "0") Long seed,
             @RequestParam(name = "metadata") String metadata,
             @RequestParam(name = "data") String data) throws IOException {
-        logger.info("Posting cross validation...");
+        logger.info("[START] Posting cross validation...");
 
         final CrossValidationParameters crossValidationParameters = new CrossValidationParametersImpl(typeOfUnions, consistencyThreshold, typeOfRules, classifierType, defaultClassificationResultType, numberOfFolds, seed);
         final MainCrossValidationResponse result = crossValidationService.postCrossValidation(id, crossValidationParameters, metadata, data);
 
+        logger.info("[ END ] Posting cross validation is done.");
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/descriptiveAttributes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DescriptiveAttributesResponse> getDescriptiveAttributes (
             @PathVariable("id") UUID id) {
-        logger.info("Getting descriptive attributes in cross validation...");
+        logger.info("[START] Getting descriptive attributes in cross validation...");
 
         final DescriptiveAttributesResponse result = crossValidationService.getDescriptiveAttributes(id);
 
+        logger.info("[ END ] Getting descriptive attributes in cross validation is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -91,10 +95,11 @@ public class CrossValidationController {
     public ResponseEntity<DescriptiveAttributesResponse> postDescriptiveAttributes(
             @PathVariable("id") UUID id,
             @RequestParam(name = "objectVisibleName", required = false) String objectVisibleName) {
-        logger.info("Posting descriptive attributes in cross validation...");
+        logger.info("[START] Posting descriptive attributes in cross validation...");
 
         final DescriptiveAttributesResponse result = crossValidationService.postDescriptiveAttributes(id, objectVisibleName);
 
+        logger.info("[ END ] Posting descriptive attributes in cross validation is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -103,7 +108,7 @@ public class CrossValidationController {
             @PathVariable("id") UUID id,
             @RequestParam(name = "subject", required = false) Integer foldIndex,
             @RequestParam(name = "set", required = false) Integer rulesIndex) {
-        logger.info("Getting object names in cross validation...");
+        logger.info("[START] Getting object names in cross validation...");
 
         AttributeFieldsResponse result;
         if((foldIndex != null) && (rulesIndex != null)) {
@@ -114,6 +119,7 @@ public class CrossValidationController {
             result = crossValidationService.getObjectNames(id);
         }
 
+        logger.info("[ END ] Getting object names in cross validation is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -121,10 +127,11 @@ public class CrossValidationController {
     public ResponseEntity<ChosenCrossValidationFoldResponse> getChosenCrossValidationFold(
             @PathVariable("id") UUID id,
             @PathVariable("foldIndex") Integer foldIndex) {
-        logger.info("Getting chosen cross validation fold...");
+        logger.info("[START] Getting chosen cross validation fold...");
 
         final ChosenCrossValidationFoldResponse result = crossValidationService.getChosenCrossValidationFold(id, foldIndex);
 
+        logger.info("[ END ] Getting chosen cross validation fold is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -134,10 +141,11 @@ public class CrossValidationController {
             @PathVariable("foldIndex") Integer foldIndex,
             @RequestParam("objectIndex") Integer objectIndex,
             @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
-        logger.info("Getting chosen classified object...");
+        logger.info("[START] Getting chosen classified object...");
 
         final ChosenClassifiedObjectAbstractResponse result = crossValidationService.getChosenClassifiedObject(id, foldIndex, objectIndex, isAttributes);
 
+        logger.info("[ END ] Getting chosen classified object is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -146,10 +154,11 @@ public class CrossValidationController {
             @PathVariable("id") UUID id,
             @PathVariable("foldIndex") Integer foldIndex,
             @PathVariable("ruleIndex") Integer ruleIndex) {
-        logger.info("Getting rule from cross validation...");
+        logger.info("[START] Getting rule from cross validation...");
 
         final RuleMainPropertiesResponse result = crossValidationService.getRule(id, foldIndex, ruleIndex);
 
+        logger.info("[ END ] Getting rule from cross validation is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -158,10 +167,11 @@ public class CrossValidationController {
             @PathVariable("id") UUID id,
             @PathVariable("foldIndex") Integer foldIndex,
             @PathVariable("ruleIndex") Integer ruleIndex) {
-        logger.info("Getting rule covering objects from cross validation...");
+        logger.info("[START] Getting rule covering objects from cross validation...");
 
         final ChosenRuleResponse result = crossValidationService.getRuleCoveringObjects(id, foldIndex, ruleIndex);
 
+        logger.info("[ END ] Getting rule covering objects from cross validation is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -170,10 +180,11 @@ public class CrossValidationController {
             @PathVariable("id") UUID id,
             @RequestParam("objectIndex") Integer objectIndex,
             @RequestParam(name = "isAttributes", defaultValue = "false") Boolean isAttributes) throws IOException {
-        logger.info("Getting object from cross validation...");
+        logger.info("[START] Getting object from cross validation...");
 
         final ObjectAbstractResponse result = crossValidationService.getObject(id, objectIndex, isAttributes);
 
+        logger.info("[ END ] Getting object from cross validation is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -182,10 +193,11 @@ public class CrossValidationController {
             @PathVariable("id") UUID id,
             @RequestParam(name = "typeOfMatrix") MisclassificationMatrixType typeOfMatrix,
             @RequestParam(name = "numberOfFold", required = false) Integer numberOfFold) {
-        logger.info("Getting misclassification matrix from cross validation...");
+        logger.info("[START] Getting misclassification matrix from cross validation...");
 
         final OrdinalMisclassificationMatrixAbstractResponse result = crossValidationService.getMisclassificationMatrix(id, typeOfMatrix, numberOfFold);
 
+        logger.info("[ END ] Getting misclassification matrix from cross validation is done.");
         return ResponseEntity.ok(result);
     }
 }
