@@ -3,6 +3,8 @@ Open source application that makes use of [ruleLearn library](https://github.com
 to put into action it's core functionalities and display them in user-friendly manner.
 
 ## Quick start
+**NOTE: You need to have Java (version at least 1.8) installed and available from command line!**
+
 Go to [releases](https://github.com/dominieq/rule-studio/releases) and choose your version of RuLeStudio. 
 The latest release should contain a manual and example data set.
 Once you've downloaded the application, run it by using the following command:
@@ -13,12 +15,15 @@ Then, open your browser and go to ``http://localhost:8080``.
 Check manual for helpful information and tips on how to make the best use of our application.
 
 ## Build application from scratch
+**NOTE: You need to have Maven (version at least 3.3.1) installed and available from command line!**
+
+**NOTE: Make sure path to your project does not contain any spaces or special characters!**
+
 To build application on your own, first download or copy 
 the source code and then go to the project folder and execute:
 ````
 mvn clean package
 ````
-**Make sure path to your project does not contain any spaces or special characters.**
 
 ## Documentation
 ### Frontend
