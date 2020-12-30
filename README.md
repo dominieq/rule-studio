@@ -1,12 +1,12 @@
 # RuLeStudio
 Open source application that makes use of [ruleLearn library](https://github.com/ruleLearn/rulelearn) 
 to put into action it's core functionalities and display them in user-friendly manner.
-## Getting Started
-To start application you need to go to project folder and execute:
+## Build application from scratch
+To build application on your own, first download or copy 
+the source code and then go to the project folder and execute:
 ````
-mvn clean install
-cd target
-java -jar rulestudio-{latest_version}.jar
+mvn clean package
+java -jar target\rulestudio-{latest_version}.jar
 ````
 **Make sure path to your project does not contain any spaces or special characters.**
 ## Documentation
