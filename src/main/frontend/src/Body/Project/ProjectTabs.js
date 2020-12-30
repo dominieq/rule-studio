@@ -30,7 +30,7 @@ import { tabNames } from "../../Utils/Constants/TabsNamesInPath";
  * @param {function} props.updateProject - Callback fired when a part of current project was changed.
  * @returns {React.PureComponent}
  */
-class ProjectTabs extends React.PureComponent {
+class ProjectTabs extends React.Component {
     constructor(props) {
         super(props);
 
@@ -245,6 +245,10 @@ class ProjectTabs extends React.PureComponent {
         this.getProject();
         this.activateTabUpToURL();
     };
+
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return this.props !== nextProps || this.state !== nextState;
+    }
 
     /**
      * <h3>Overview</h3>
