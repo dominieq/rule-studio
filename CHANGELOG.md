@@ -1,4 +1,4 @@
-## rc.8:
+## RuLeStudio-1.0.0-rc.8:
 #### Added
 - Implement react-router.
 - Measure calculations time on the server and display it in ResultListSubheader.
@@ -28,7 +28,7 @@
 - Bump XStream library version to 1.4.14
 - Bump project's export version to 1.0.0-rc.8
 
-## rc.7:
+## RuLeStudio-1.0.0-rc.7:
 #### Added
 - Extend documentation for fetch functions. 
 - Control descriptive attributes separately for each calculated resource.
@@ -52,7 +52,7 @@
 - Move all fetch functions to utils.
 - Bump XStream library to 1.4.14
 
-## rc.6:
+## RuLeStudio-1.0.0-rc.6:
 #### Added
 - Added Home page.
 - Added frontend documentation.
@@ -76,7 +76,7 @@
 - Create folder in utils to store fetch functions.
 - Bump ruleLearn version to 0.21.0
 
-## rc.5
+## RuLeStudio-1.0.0-rc.5
 #### Added
 - Added Help page.
 - Added slides component.
@@ -122,7 +122,7 @@
 - Bump node version to v12.16.3
 - Bump yarn version to v1.22.4
 
-## rc.4:
+## RuLeStudio-1.0.0-rc.4:
 #### Added
 - New button to show information about files used in a project.
   File names will be displayed in a list below button.
@@ -140,7 +140,7 @@
 - Project will be updated when classifying external data file.
 - Better error handling in fetch functions.
 
-## rc.3:
+## RuLeStudio-1.0.0-rc.3:
 #### Added
 - Allow a user to start application on ports different from 8080.
 - Display badge when sort params are different from original in Rules.
@@ -176,7 +176,7 @@
 - Changed "%09" to "\t" in CSVDialog.
 - Bump ruleLearn version to 0.21.0-rc.6
 
-## rc.2:
+## RuLeStudio-1.0.0-rc.2:
 #### Added
 - Added more extensive tooltip on "Impose Preference" button.
 
