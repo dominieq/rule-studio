@@ -95,6 +95,8 @@ import {
     Data,
     DeletingProject,
     DominanceCones,
+    ExportingProject,
+    ImportingProject,
     Navigating,
     ProjectFiles,
     ProjectSettings,
@@ -108,6 +110,8 @@ import styles from "./styles/Help.module.css";
 const CHAPTERS = [
     "Navigating",
     "Creating project",
+    "Importing project",
+    "Exporting project",
     "Renaming project",
     "Deleting project",
     "Project settings",
@@ -248,16 +252,18 @@ class Help extends React.PureComponent {
                     &lt;div aria-label={"text-container"} className={styles.Scrollable}>
                         &lt;Navigating chapterId={"chapter-1"} />
                         &lt;CreatingProject chapterId={"chapter-2"} />
-                        &lt;RenamingProject chapterId={"chapter-3"} />
-                        &lt;DeletingProject chapterId={"chapter-4"} />
-                        &lt;ProjectSettings chapterId={"chapter-5"} />
-                        &lt;ProjectFiles chapterId={"chapter-6"} />
-                        &lt;Data chapterId={"chapter-7"} />
-                        &lt;DominanceCones chapterId={"chapter-8"} />
-                        &lt;ClassUnions chapterId={"chapter-9"} />
-                        &lt;Rules chapterId={"chapter-10"} />
-                        &lt;Classification chapterId={"chapter-11"} />
-                        &lt;CrossValidation chapterId={"chapter-12"} />
+                        &lt;ImportingProject chapterId={"chapter-3"} />
+                        &lt;ExportingProject chapterId={"chapter-4"} />
+                        &lt;RenamingProject chapterId={"chapter-5"} />
+                        &lt;DeletingProject chapterId={"chapter-6"} />
+                        &lt;ProjectSettings chapterId={"chapter-7"} />
+                        &lt;ProjectFiles chapterId={"chapter-8"} />
+                        &lt;Data chapterId={"chapter-9"} />
+                        &lt;DominanceCones chapterId={"chapter-10"} />
+                        &lt;ClassUnions chapterId={"chapter-11"} />
+                        &lt;Rules chapterId={"chapter-12"} />
+                        &lt;Classification chapterId={"chapter-13"} />
+                        &lt;CrossValidation chapterId={"chapter-14"} />
                     &lt;/div>
                 &lt;/StyledScrollable>
                 &lt;StyledDrawer

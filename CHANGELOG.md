@@ -16,6 +16,7 @@
 - Correct tooltip for rule in classified object details.
 
 #### Changed
+- Update Help page with changes from User Guide.
 - Optimize omitting repetitions of identical calculations.
 - Tidy up logs in a server's console.
 - Change names of Java classes to more appropriate.  
