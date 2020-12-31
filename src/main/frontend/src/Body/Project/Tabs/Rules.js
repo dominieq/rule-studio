@@ -1,28 +1,27 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
+import { nonNullProperty } from "../../../Utils/utilFunctions";
 import { downloadRules, fetchRules } from "../../../Utils/utilFunctions/fetchFunctions";
 import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
 import { parseRulesItems } from  "../../../Utils/utilFunctions/parseItems";
 import { parseRulesListItems } from "../../../Utils/utilFunctions/parseListItems";
 import { parseRulesParams } from "../../../Utils/utilFunctions/parseParams";
-import TabBody from "../Utils/TabBody";
-import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterTextField from "../Utils/Filtering/FilterTextField";
-import CalculateButton from "../Utils/Buttons/CalculateButton";
-import SettingsButton from "../Utils/Buttons/SettingsButton";
-import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
-import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
-import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
+import TabBody from "../../../Utils/Containers/TabBody";
+import filterFunction from "../Filtering/FilterFunction";
+import FilterTextField from "../Filtering/FilterTextField";
+import { CalculateButton, SettingsButton, SortButton, StyledIconButton } from "../../../Utils/Buttons";
+import ThresholdSelector from "../Calculations/ThresholdSelector";
+import TypeOfUnionsSelector from "../Calculations/TypeOfUnionsSelector";
+import TypeOfRulesSelector from "../Calculations/TypeOfRulesSelector";
 import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
 import CircleHelper from "../../../Utils/Feedback/CircleHelper";
-import { RulesDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { RulesDialog } from "../../../Utils/Dialogs/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
-import { createCategories, simpleSort, SortButton, SortMenu } from "../../../Utils/Inputs/SortMenu";
+import { createCategories, simpleSort, SortMenu } from "../../../Utils/Menus/SortMenu";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
-import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import FileUpload from "mdi-material-ui/FileUpload";
@@ -30,11 +29,12 @@ import SaveIcon from "@material-ui/icons/Save";
 import { mdiTextBox } from '@mdi/js';
 
 /**
+ * <h3>Overview</h3>
  * The rules tab in RuLeStudio.
  * Presents the list of all rules generated for information table from current project.
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
@@ -61,6 +61,7 @@ class Rules extends Component {
                 typeOfRules: "certain",
                 typeOfUnions: "monotonic"
             },
+            parametersSaved: true,
             selectedItem: null,
             open: {
                 details: false,
@@ -78,6 +79,7 @@ class Rules extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on rules to receive current copy of rule set from server.
      * Then, updates state and makes necessary changes in display.
      *
@@ -149,9 +151,10 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired once when component was mounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method calls {@link getRules}.
      *
      * @function
@@ -164,9 +167,10 @@ class Rules extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired after a component was updated.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * If type of unions was changed to <code>monotonic</code> and consistency threshold is equal to 1,
      * method changes value of threshold to 0.
      * <br>
@@ -229,9 +233,10 @@ class Rules extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired when component was requested to be unmounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method saves changes from current project.
      *
      * @function
@@ -259,6 +264,7 @@ class Rules extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on rules to generate new rule set from current information table and parameters.
      * Then, updates state and makes necessary changes in display.
      *
@@ -344,6 +350,7 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on rules to upload user's rule set.
      * Then, updates states and makes necessary changes in display.
      *
@@ -420,6 +427,7 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Used when changes in {@link Rules} had an impact on results in {@link Unions} or {@link Classification}.
      * Updates classification and unions in current project, makes necessary changes in display.
      *
@@ -450,6 +458,7 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call to download current rules set in XML format.
      *
      * @function
@@ -465,6 +474,7 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call to download current rule set in TXT format.
      *
      * @function
@@ -528,6 +538,7 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Filters items from {@link Rules}' state and then sorts them if any order was declared.
      * Method uses {@link filterFunction} to filter items.
      *
@@ -582,6 +593,7 @@ class Rules extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Sorts provided items and saves results in {@link Rules}' state.
      * Method uses {@link simpleSort} function to sort items.
      *
@@ -625,7 +637,7 @@ class Rules extends Component {
     };
 
     render() {
-        const { loading, items, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
+        const { loading, items, data, displayedItems, parameters, selectedItem, open, sort, alertProps } = this.state;
         const { objectGlobalName, project: { id: projectId }, serverBase } = this.props;
 
         const resultsExists = Array.isArray(items) && Boolean(items.length);
@@ -721,15 +733,14 @@ class Rules extends Component {
                         </CustomTooltip>
                         <span style={{flexGrow: 1}} />
                         <SortButton
-                            ButtonProps={{
-                                "aria-controls": "rules-sort-menu",
-                                "aria-haspopup": true,
-                                "aria-label": "sort rules",
-                                disabled: !resultsExists || loading,
-                                onClick: this.onSortMenuOpen
-                            }}
+                            aria-controls={"rules-sort-menu"}
+                            aria-haspopup={true}
+                            aria-label={"sort-rules"}
+                            disabled={!resultsExists || loading}
+                            onClick={this.onSortMenuOpen}
                             invisible={sort.value === "id" && sort.order === "asc"}
                             tooltip={resultsExists ? "Sort rules" : "No content to sort"}
+                            tooltipId={"rules-sort-button-tooltip"}
                             TooltipProps={{
                                 WrapperProps: { style: { marginRight: "0.5rem" } }
                             }}
@@ -783,7 +794,12 @@ class Rules extends Component {
                         subheaderContent={[
                             {
                                 label: "Number of rules:",
-                                value: displayedItems && displayedItems.length
+                                value: Array.isArray(displayedItems) ? displayedItems.length : "-"
+                            },
+                            {
+                                label: "Calculated in:",
+                                value: nonNullProperty(data, "calculationsTime") ?
+                                    data.calculationsTime : "-"
                             }
                         ]}
                     />

@@ -4,7 +4,9 @@ import Typography from "@material-ui/core/Typography";
 import styles from "../styles/Image.module.css";
 
 /**
- * Represents a composition of three HTML tags: <code>figure</code>, <code>img</code> and <code>figcaption</code>.
+ * <h3>Overview</h3>
+ * Displays images from manual as
+ * a composition of three HTML tags: <code>figure</code>, <code>img</code> and <code>figcaption</code>.
  *
  * @constructor
  * @category Help

@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
+import { StyledPaperPropTypes } from "./propTypes";
 import { mergeClasses } from "../utilFunctions";
 import StyledPaper from "./StyledPaper";
 
@@ -15,17 +16,19 @@ const useStyles = makeStyles({
 }, {name: "CustomSection"})
 
 /**
+ * <h3>Overview</h3>
  * The {@link StyledPaper} component customized as a section adjusting it's size to content.
+ *
+ * <h3>Usage</h3>
  * Styles applied to this component are different than in Material-UI.
  * "Root" class defines the size and padding of the section.
  *
- * @name Custom Section
  * @constructor
  * @category Utils
  * @subcategory Surfaces
- * @param props {Object} - Any other props will be forwarded to the {@link StyledPaper} component.
- * @param [props.classes] {Object} - Override or extend the styles applied to the component.
- * @returns {React.ReactElement} - The StyledPaper component customized as a section adjusting it's size to content.
+ * @param {Object} props - Any other props will be forwarded to the {@link StyledPaper} component.
+ * @param {Object} [props.classes] - Override or extend the styles applied to the component.
+ * @returns {React.ReactElement}
  */
 function CustomSection(props) {
     const { classes: propsClasses, className: propsClassName, ...other } = props;
@@ -47,16 +50,10 @@ function CustomSection(props) {
 }
 
 CustomSection.propTypes = {
-    children: PropTypes.node,
+    ...StyledPaperPropTypes,
     classes: PropTypes.shape({
         Root: PropTypes.any,
-    }),
-    className: PropTypes.string,
-    component: PropTypes.elementType,
-    elevation: PropTypes.number,
-    paperRef: PropTypes.object,
-    square: PropTypes.bool,
-    variant: PropTypes.oneOf(["elevation", "outlined"])
+    })
 };
 
 export default CustomSection;

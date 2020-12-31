@@ -31,13 +31,14 @@ public class ExportController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<Resource> getExport(
             @PathVariable("id") UUID id) throws IOException {
-        logger.info("Getting export...");
+        logger.info("[START] Getting export...");
 
         final NamedResource namedResource = exportService.getExport(id);
 
         final String projectName = namedResource.getName();
         final Resource resource = namedResource.getResource();
 
+        logger.info("[ END ] Getting export is done.");
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + projectName + ".zip")
                 .body(resource);

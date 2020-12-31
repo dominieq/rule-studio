@@ -1,5 +1,6 @@
 import React from "react";
-import {makeStyles} from "@material-ui/core/styles";
+import PropTypes from "prop-types";
+import { makeStyles } from "@material-ui/core/styles";
 import Slider from "@material-ui/core/Slider";
 
 const useStyles = makeStyles(theme => ({
@@ -35,6 +36,7 @@ const useStyles = makeStyles(theme => ({
 }), {name: "MuiSlider"});
 
 /**
+ * <h3>Overview</h3>
  * The Slider component from Material-UI library with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/slider/" target="_blank">Slider</a>.
@@ -43,12 +45,11 @@ const useStyles = makeStyles(theme => ({
  * <a href="https://material-ui.com/components/slider/#customized-sliders" target="_blank">tutorial</a>
  * with some changes.
  *
- * @name Styled Slider
  * @constructor
  * @category Utils
  * @subcategory Inputs
- * @param props {Object} - Any other props will be forwarded to the Slider component.
- * @returns {React.ReactElement} - The Slider component from Material-UI library.
+ * @param {Object} props - Any other props will be forwarded to the Slider component.
+ * @returns {React.ReactElement}
  */
 function StyledSlider(props) {
     const {...other} = props;
@@ -65,6 +66,35 @@ function StyledSlider(props) {
             }}
         />
     )
+}
+
+StyledSlider.propTypes = {
+    'aria-label': PropTypes.string,
+    'aria-labelledby': PropTypes.string,
+    'aria-valuetext': PropTypes.string,
+    classes: PropTypes.object,
+    color: PropTypes.oneOf(['primary', 'secondary']),
+    component: PropTypes.elementType,
+    defaultValue: PropTypes.oneOfType([ PropTypes.number, PropTypes.arrayOf(PropTypes.number) ]),
+    disabled: PropTypes.bool,
+    getAriaLabel: PropTypes.func,
+    getAriaValueText: PropTypes.func,
+    marks: PropTypes.oneOfType([ PropTypes.bool, PropTypes.array ]),
+    max: PropTypes.number,
+    min: PropTypes.number,
+    name: PropTypes.string,
+    onChange: PropTypes.func,
+    onChangeCommitted: PropTypes.func,
+    orientation: PropTypes.oneOf(['horizontal', 'vertical']),
+    scale: PropTypes.func,
+    step: PropTypes.number,
+    style: PropTypes.object,
+    ThumbComponent: PropTypes.elementType,
+    track: PropTypes.oneOf(["normal", false, "inverted"]),
+    value: PropTypes.oneOfType([ PropTypes.number, PropTypes.arrayOf(PropTypes.number) ]),
+    ValueLabelComponent: PropTypes.elementType,
+    valueLabelDisplay: PropTypes.oneOf(['on', 'auto', 'off']),
+    valueLabelFormat: PropTypes.oneOfType([ PropTypes.string, PropTypes.func ])
 }
 
 export default StyledSlider;

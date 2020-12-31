@@ -1,0 +1,474 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Utils/Dialogs/DetailsDialog/RulesDialog.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="App.html">App</a></li></ul></div><div class="category"><h2>Buttons</h2><h3>Classes</h3><ul><li><a href="AcceptButton.html">AcceptButton</a></li><li><a href="CalculateButton.html">CalculateButton</a></li><li><a href="CancelButton.html">CancelButton</a></li><li><a href="IconLabelButtons.html">IconLabelButtons</a></li><li><a href="MatrixButton.html">MatrixButton</a></li><li><a href="MatrixDownloadButton.html">MatrixDownloadButton</a></li><li><a href="MatrixSwapButton.html">MatrixSwapButton</a></li><li><a href="MoreSettingsIconButton.html">MoreSettingsIconButton</a></li><li><a href="SettingsButton.html">SettingsButton</a></li><li><a href="SortButton.html">SortButton</a></li></ul></div><div class="category"><h2>Dialogs</h2><h3>Classes / Details Dialogs</h3><ul><li><a href="ClassifiedObjectDialog.html">ClassifiedObjectDialog</a></li><li><a href="ConesDialog.html">ConesDialog</a></li><li><a href="RulesDialog.html">RulesDialog</a></li><li><a href="UnionsDialog.html">UnionsDialog</a></li></ul><h3>Classes</h3><ul><li><a href="CSVDialog.html">CSVDialog</a></li><li><a href="DeleteProjectDialog.html">DeleteProjectDialog</a></li><li><a href="ImportProjectDialog.html">ImportProjectDialog</a></li><li><a href="MatrixDialog.html">MatrixDialog</a></li><li><a href="RenameProjectDialog.html">RenameProjectDialog</a></li><li><a href="SettingsProjectDialog.html">SettingsProjectDialog</a></li></ul></div><div class="category"><h2>Header</h2><h3>Classes / Elements</h3><ul><li><a href="FilesDetails.html">FilesDetails</a></li><li><a href="ProjectMenu.html">ProjectMenu</a></li></ul><h3>Classes</h3><ul><li><a href="Header.html">Header</a></li></ul></div><div class="category"><h2>Help</h2><h3>Classes / Elements</h3><ul><li><a href="Chapter.html">Chapter</a></li><li><a href="Image.html">Image</a></li></ul><h3>Classes</h3><ul><li><a href="Help.html">Help</a></li></ul><h3>Classes / Utilities</h3><ul><li><a href="StyledDrawer.html">StyledDrawer</a></li><li><a href="StyledListItem.html">StyledListItem</a></li><li><a href="StyledScrollable.html">StyledScrollable</a></li></ul></div><div class="category"><h2>Home</h2><h3>Classes / Elements</h3><ul><li><a href="Footer.html">Footer</a></li><li><a href="NavigateButton.html">NavigateButton</a></li></ul><h3>Classes</h3><ul><li><a href="Home.html">Home</a></li></ul></div><div class="category"><h2>Import</h2><h3>Classes</h3><ul><li><a href="Import.html">Import</a></li></ul></div><div class="category"><h2>Menus</h2><h3>Classes</h3><ul><li><a href="AttributesMenu.html">AttributesMenu</a></li><li><a href="ColumnHeaderMenu.html">ColumnHeaderMenu</a></li><li><a href="SortMenu.html">SortMenu</a></li></ul></div><div class="category"><h2>Project</h2><h3>Classes / Tabs</h3><ul><li><a href="Classification.html">Classification</a></li><li><a href="Cones.html">Cones</a></li><li><a href="CrossValidation.html">CrossValidation</a></li><li><a href="DisplayData.html">DisplayData</a></li><li><a href="Rules.html">Rules</a></li><li><a href="Unions.html">Unions</a></li></ul><h3>Classes / Calculations</h3><ul><li><a href="DefaultClassificationResult.html">DefaultClassificationResult</a></li><li><a href="NumberOfFolds.html">NumberOfFolds</a></li><li><a href="Seed.html">Seed</a></li><li><a href="Threshold.html">Threshold</a></li><li><a href="TypeOfClassifier.html">TypeOfClassifier</a></li><li><a href="TypeOfRules.html">TypeOfRules</a></li><li><a href="TypeOfUnions.html">TypeOfUnions</a></li></ul><h3>Classes / Filtering</h3><ul><li><a href="EditDataFilterButton.html">EditDataFilterButton</a></li><li><a href="FilterNoResults.html">FilterNoResults</a></li><li><a href="FilterTextField.html">FilterTextField</a></li><li><a href="NumericFilter.html">NumericFilter</a></li></ul><h3>Classes</h3><ul><li><a href="ProjectTabs.html">ProjectTabs</a></li></ul><h3>Global</h3><ul><li><a href="global.html#filterFunction">filterFunction</a></li></ul></div><div class="category"><h2>Utils</h2><h3>Classes / Feedback</h3><ul><li><a href="AlertBadge.html">AlertBadge</a></li><li><a href="CircleHelper.html">CircleHelper</a></li><li><a href="CustomizedSnackbars.html">CustomizedSnackbars</a></li><li><a href="CustomLoadingIcon.html">CustomLoadingIcon</a></li><li><a href="DotBadge.html">DotBadge</a></li><li><a href="ExternalFile.html">ExternalFile</a></li><li><a href="LoadingDelay.html">LoadingDelay</a></li><li><a href="LoadingSnackbar.html">LoadingSnackbar</a></li><li><a href="OutdatedData.html">OutdatedData</a></li><li><a href="StyledAlert.html">StyledAlert</a></li><li><a href="StyledCircularProgress.html">StyledCircularProgress</a></li></ul><h3>Classes / Classes</h3><ul><li><a href="AlertError.html">AlertError</a></li><li><a href="InvalidPathParamsException.html">InvalidPathParamsException</a></li><li><a href="Project.html">Project</a></li></ul><h3>Classes / Inputs</h3><ul><li><a href="AttributeDomain.html">AttributeDomain</a></li><li><a href="CustomButtonGroup.html">CustomButtonGroup</a></li><li><a href="CustomControlLabel.html">CustomControlLabel</a></li><li><a href="CustomFormLabel.html">CustomFormLabel</a></li><li><a href="CustomSwitch.html">CustomSwitch</a></li><li><a href="CustomTextField.html">CustomTextField</a></li><li><a href="CustomUpload.html">CustomUpload</a></li><li><a href="DropDownForAttributes.html">DropDownForAttributes</a></li><li><a href="FileSelectZone.html">FileSelectZone</a></li><li><a href="StyledButton.html">StyledButton</a></li><li><a href="StyledCheckbox.html">StyledCheckbox</a></li><li><a href="StyledIconButton.html">StyledIconButton</a></li><li><a href="StyledRadioButton.html">StyledRadioButton</a></li><li><a href="StyledSlider.html">StyledSlider</a></li><li><a href="StyledSwitch.html">StyledSwitch</a></li></ul><h3>Classes / Data Display</h3><ul><li><a href="AttributesVirtualizedTable.html">AttributesVirtualizedTable</a></li><li><a href="CollapsibleDivider.html">CollapsibleDivider</a></li><li><a href="ColouredTitle.html">ColouredTitle</a></li><li><a href="CustomTooltip.html">CustomTooltip</a></li><li><a href="ObjectsComparisonTable.html">ObjectsComparisonTable</a></li><li><a href="ObjectTable.html">ObjectTable</a></li><li><a href="RuleTable.html">RuleTable</a></li><li><a href="StyledDivider.html">StyledDivider</a></li><li><a href="StyledFileChip.html">StyledFileChip</a></li><li><a href="TableItemsList.html">TableItemsList</a></li><li><a href="TablesList.html">TablesList</a></li><li><a href="TextWithHoverTooltip.html">TextWithHoverTooltip</a></li><li><a href="TraitsTable.html">TraitsTable</a></li><li><a href="VirtualizedMatrix.html">VirtualizedMatrix</a></li><li><a href="VirtualizedTable.html">VirtualizedTable</a></li></ul><h3>Classes / Containers</h3><ul><li><a href="CenteredColumn.html">CenteredColumn</a></li><li><a href="CustomBox.html">CustomBox</a></li><li><a href="CustomDrawer.html">CustomDrawer</a></li><li><a href="MultiColumns.html">MultiColumns</a></li><li><a href="TabBody.html">TabBody</a></li></ul><h3>Classes / Surfaces</h3><ul><li><a href="CustomHeader.html">CustomHeader</a></li><li><a href="CustomPopper.html">CustomPopper</a></li><li><a href="CustomSection.html">CustomSection</a></li><li><a href="StyledPaper.html">StyledPaper</a></li></ul><h3>Classes / Dialogs</h3><ul><li><a href="DeleteProjectDialog-ProjectName.html">ProjectName</a></li><li><a href="FullscreenDialog.html">FullscreenDialog</a></li><li><a href="FullscreenHeader.html">FullscreenHeader</a></li><li><a href="StyledDialogContent.html">StyledDialogContent</a></li></ul><h3>Classes / Result List</h3><ul><li><a href="ResultList.html">ResultList</a></li><li><a href="ResultListItem.html">ResultListItem</a></li><li><a href="ResultListSubheader.html">ResultListSubheader</a></li></ul><h3>Classes / Navigation</h3><ul><li><a href="Slides.html">Slides</a></li><li><a href="StyledLinkTab.html">StyledLinkTab</a></li><li><a href="StyledPagination.html">StyledPagination</a></li><li><a href="StyledTab.html">StyledTab</a></li><li><a href="StyledTabs.html">StyledTabs</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addSubheaders">addSubheaders</a></li><li><a href="global.html#conjugateContent">conjugateContent</a></li><li><a href="global.html#downloadFunction">downloadFunction</a></li><li><a href="global.html#downloadMatrix">downloadMatrix</a></li><li><a href="global.html#downloadRules">downloadRules</a></li><li><a href="global.html#estimateMatrixHeight">estimateMatrixHeight</a></li><li><a href="global.html#estimateMatrixWidth">estimateMatrixWidth</a></li><li><a href="global.html#estimateTableHeight">estimateTableHeight</a></li><li><a href="global.html#exportProject">exportProject</a></li><li><a href="global.html#fetchClassification">fetchClassification</a></li><li><a href="global.html#fetchConeObjects">fetchConeObjects</a></li><li><a href="global.html#fetchCones">fetchCones</a></li><li><a href="global.html#fetchCrossValidation">fetchCrossValidation</a></li><li><a href="global.html#fetchData">fetchData</a></li><li><a href="global.html#fetchDescriptiveAttributes">fetchDescriptiveAttributes</a></li><li><a href="global.html#fetchFold">fetchFold</a></li><li><a href="global.html#fetchMatrix">fetchMatrix</a></li><li><a href="global.html#fetchObject">fetchObject</a></li><li><a href="global.html#fetchObjectNames">fetchObjectNames</a></li><li><a href="global.html#fetchProject">fetchProject</a></li><li><a href="global.html#fetchProjectDetails">fetchProjectDetails</a></li><li><a href="global.html#fetchProjects">fetchProjects</a></li><li><a href="global.html#fetchRule">fetchRule</a></li><li><a href="global.html#fetchRules">fetchRules</a></li><li><a href="global.html#fetchUnion">fetchUnion</a></li><li><a href="global.html#fetchUnions">fetchUnions</a></li><li><a href="global.html#getAppropriateColor">getAppropriateColor</a></li><li><a href="global.html#getAppropriateSign">getAppropriateSign</a></li><li><a href="global.html#getFixed">getFixed</a></li><li><a href="global.html#getItemName">getItemName</a></li><li><a href="global.html#getRelationSign">getRelationSign</a></li><li><a href="global.html#getRuleName">getRuleName</a></li><li><a href="global.html#getTitleConditions">getTitleConditions</a></li><li><a href="global.html#getTitleDecisions">getTitleDecisions</a></li><li><a href="global.html#handleNotOk">handleNotOk</a></li><li><a href="global.html#hexToRgb">hexToRgb</a></li><li><a href="global.html#importProject">importProject</a></li><li><a href="global.html#mergeClasses">mergeClasses</a></li><li><a href="global.html#nonNullProperty">nonNullProperty</a></li><li><a href="global.html#parseClassificationParams">parseClassificationParams</a></li><li><a href="global.html#parseClassifiedItems">parseClassifiedItems</a></li><li><a href="global.html#parseClassifiedListItems">parseClassifiedListItems</a></li><li><a href="global.html#parseConditions">parseConditions</a></li><li><a href="global.html#parseConesItems">parseConesItems</a></li><li><a href="global.html#parseConesListItems">parseConesListItems</a></li><li><a href="global.html#parseCrossValidationParams">parseCrossValidationParams</a></li><li><a href="global.html#parseDecisions">parseDecisions</a></li><li><a href="global.html#parseFormData">parseFormData</a></li><li><a href="global.html#parseMatrix">parseMatrix</a></li><li><a href="global.html#parseRulesItems">parseRulesItems</a></li><li><a href="global.html#parseRulesListItems">parseRulesListItems</a></li><li><a href="global.html#parseRulesParams">parseRulesParams</a></li><li><a href="global.html#parseUnionsItems">parseUnionsItems</a></li><li><a href="global.html#parseUnionsListItems">parseUnionsListItems</a></li><li><a href="global.html#responseBlob">responseBlob</a></li><li><a href="global.html#responseJson">responseJson</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>Utils/Dialogs/DetailsDialog/RulesDialog.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from "react";
+import PropTypes from "prop-types";
+import { getTitleConditions, getTitleDecisions } from "./Utils";
+import { fetchObject, fetchRule } from "../../utilFunctions/fetchFunctions";
+import { getItemName } from "../../utilFunctions/parseItems";
+import { MultiColumns } from "../../Containers";
+import ColouredTitle from "../../DataDisplay/ColouredTitle";
+import { FullscreenDialog, FullscreenHeader } from "../FullscreenDialog";
+import ObjectTable from "../../DataDisplay/ObjectTable";
+import TableItemsList from "../../DataDisplay/TableItemsList";
+import TraitsTable from "../../DataDisplay/TraitsTable";
+import StyledCircularProgress from "../../Feedback/StyledCircularProgress";
+import { AttributesMenu } from "../../Menus/AttributesMenu";
+
+/**
+ * &lt;h3>Overview&lt;/h3>
+ * The fullscreen dialog with details of a selected rule.
+ *
+ * @constructor
+ * @category Dialogs
+ * @subcategory Details Dialogs
+ * @param {Object} props - Any other props will be forwarded to the {@link FullscreenDialog} element.
+ * @param {Object} props.item - The selected rule with it's characteristics.
+ * @param {number} props.item.id - The id of a selected rule.
+ * @param {Object} props.item.name - The name of a selected rule.
+ * @param {Object[][]} props.item.name.decisions - The decision part of a rule
+ * @param {number|string} props.item.name.decisions[][].primary - The part of the decision coloured with primary colour.
+ * @param {number|string} props.item.name.decisions[][].secondary - The part of the decision coloured with secondary colour.
+ * @param {boolean} props.item.name.decisions[][].withBraces - If &lt;code>true&lt;/code> braces will be added to decision.
+ * @param {function} props.item.name.decisions[][].toString - Returns decision as a single string.
+ * @param {Object[]} props.item.name.conditions - The condition part of a rule.
+ * @param {number|string} props.item.name.conditions[].primary - The part of the condition coloured with primary colour.
+ * @param {number|string} props.item.name.conditions[].secondary - The part of the condition coloured with secondary colour.
+ * @param {function} props.item.name.conditions[].toString - Returns condition as a single string.
+ * @param {function} props.item.name.decisionsToString - Returns decisions as a single string concatenated with a logical AND and OR.
+ * @param {function} props.item.name.conditionsToString - Returns conditions as a single string concatenated with a logical AND.
+ * @param {function} props.item.name.toString - Returns concatenated output of &lt;code>decisionsToString&lt;/code> and &lt;code>conditionsToString&lt;/code>.
+ * @param {Object} props.item.traits - The characteristics of a selected rule in a key-value form.
+ * @param {string} [props.item.traits.Type]
+ * @param {function} props.item.toFilter - Returns rule in an easy to filter form.
+ * @param {function} props.item.toSort - Returns rule in an easy to sort form.
+ * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
+ * @param {function} props.onClose - Callback fired when the component requests to be closed.
+ * @param {function} props.onSnackbarOpen - Callback fired when the component requests to display an error.
+ * @param {boolean} props.open - If &lt;code>true&lt;/code> the Dialog is open.
+ * @param {string} props.projectId - The identifier of a selected project.
+ * @param {string} props.serverBase - The host in the URL of an API call.
+ * @returns {React.PureComponent}
+ */
+class RulesDialog extends React.PureComponent {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            loading: {
+                rule: false,
+                object: false
+            },
+            requestIndex: {
+                rule: 0,
+                object: 0
+            },
+            coveredObjects: [],
+            isSupportingObject: [],
+            objectNames: [],
+            object: null,
+            objectIndex: -1,
+            attributes: [],
+            attributesMenuEl: null
+        };
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+
+        const { item: { id }} = this.props;
+        this.getRule(id);
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.projectId !== this.props.projectId) {
+            this.setState({
+                coveredObject: [],
+                isSupportingObject: [],
+                objectNames: [],
+                object: null,
+                objectIndex: -1,
+                attributes: []
+            });
+
+            return;
+        }
+
+        if (prevProps.item.id !== this.props.item.id) {
+            this.setState({
+                coveredObject: [],
+                isSupportingObject: [],
+                object: null,
+                objectIndex: -1
+            }, () => this.getRule(this.props.item.id));
+        }
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    getRule = (ruleIndex) => {
+        let localRequestIndex = 0;
+
+        this.setState(({loading, requestIndex}) => {
+            localRequestIndex = requestIndex.rule;
+
+            return {
+                loading: { ...loading, rule: true },
+                requestIndex: { ...requestIndex, rule: localRequestIndex + 1 }
+            };
+        }, () => {
+            const { projectId, serverBase } = this.props;
+            const resource = "rules";
+            const pathParams = { projectId, ruleIndex };
+
+            fetchRule(
+                resource, pathParams, serverBase
+            ).then(result => {
+                if (this._isMounted &amp;&amp; result != null &amp;&amp; result.hasOwnProperty("indicesOfCoveredObjects")
+                    &amp;&amp; result.hasOwnProperty("isSupportingObject") &amp;&amp; result.hasOwnProperty("objectNames")) {
+
+                    this.setState(({requestIndex}) => {
+                        if (requestIndex.rule !== localRequestIndex + 1) {
+                            return { };
+                        }
+
+                        return {
+                            requestIndex: { ...requestIndex, rule: 0 },
+                            coveredObjects: result.indicesOfCoveredObjects,
+                            isSupportingObject: result.isSupportingObject,
+                            objectNames: result.objectNames
+                        };
+                    });
+                }
+            }).catch(exception => {
+                this.props.onSnackbarOpen(exception);
+            }).finally(() => {
+                if (this._isMounted) {
+                    this.setState(({loading}) => ({
+                        loading: { ...loading, rule: false }
+                    }));
+                }
+            });
+        });
+    }
+
+    getObject = (objectIndex, finallyCallback) => {
+        let localRequestIndex = 0;
+
+        this.setState(({loading, requestIndex}) => {
+            localRequestIndex = requestIndex.object;
+
+            return {
+                loading: { ...loading, object: true },
+                requestIndex: { ...requestIndex, object: localRequestIndex + 1 }
+            }
+        }, () => {
+            const { projectId, serverBase } = this.props;
+            const { attributes } = this.state;
+
+            const resource = "rules";
+            const pathParams = { projectId };
+            const queryParams = { objectIndex, isAttributes: attributes.length === 0 };
+
+            fetchObject(
+                resource, pathParams, queryParams, serverBase
+            ).then(result => {
+                if (this._isMounted &amp;&amp; result != null &amp;&amp; result.hasOwnProperty("value")) {
+                    this.setState(({requestIndex, attributes}) => {
+                        if (requestIndex.object !== localRequestIndex + 1) {
+                            return { };
+                        }
+
+                        return {
+                            requestIndex: { ...requestIndex, object: 0 },
+                            object: result.value,
+                            attributes: result.hasOwnProperty("attributes") ? result.attributes : attributes
+                        };
+                    });
+                }
+            }).catch(exception => {
+                this.props.onSnackbarOpen(exception);
+            }).finally(() => {
+                if (this._isMounted) {
+                    this.setState(({loading}) => ({
+                        loading: { ...loading, object: false }
+                    }), () => {
+                        if (typeof finallyCallback === "function") finallyCallback();
+                    });
+                }
+            });
+        });
+    }
+
+    onItemInTableSelected = (index) => {
+        const finallyCallback = () => this.setState({ objectIndex: index });
+        this.getObject(index, finallyCallback);
+    };
+
+    onAttributesMenuOpen = (event) => {
+        const currentTarget = event.currentTarget;
+
+        this.setState({
+            attributesMenuEl: currentTarget
+        });
+    }
+
+    onAttributesMenuClose = () => {
+        this.setState({
+            attributesMenuEl: null
+        });
+    }
+
+    onObjectNamesChange = (names) => {
+        this.setState({
+            objectNames: names
+        });
+    }
+
+    getRulesTitle = () => {
+        const { item } = this.props;
+
+        return (
+            &lt;ColouredTitle
+                text={[
+                    { primary: `Rule ${item.id + 1}: ` },
+                    ...getTitleDecisions(item.name.decisions),
+                    { secondary: "\u2190" },
+                    ...getTitleConditions(item.name.conditions)
+                ]}
+            />
+        );
+    };
+
+    getItemsStyle = (index) => {
+        const { coveredObjects, isSupportingObject } = this.state;
+
+        if (isSupportingObject[coveredObjects.indexOf(index)]) {
+            return { borderLeft: "4px solid green" };
+        } else {
+            return { borderLeft: "4px solid red" };
+        }
+    };
+
+    getName = (index) => {
+        const { coveredObjects, objectNames } = this.state;
+        return getItemName(coveredObjects.indexOf(index), objectNames).toString();
+    };
+
+    render() {
+        const { loading, coveredObjects, object, objectIndex, attributes, attributesMenuEl } = this.state;
+        const { item, objectGlobalName, projectId, serverBase, open } = this.props;
+
+        let displayedTraits = { ...item.traits };
+        delete displayedTraits["Type"];
+
+        return (
+            &lt;FullscreenDialog keepMounted={true} open={open} onClose={this.props.onClose}>
+                &lt;FullscreenHeader
+                    id={"rules-details-header"}
+                    onClose={this.props.onClose}
+                    title={this.getRulesTitle()}
+                />
+                &lt;MultiColumns>
+                    &lt;div id={"rules-traits"} style={{display: "flex", flexDirection: "column"}}>
+                        &lt;TraitsTable traits={displayedTraits} />
+                    &lt;/div>
+                    &lt;div id={"rules-table-content"} style={{display: "flex", flexDirection: "column", width: "20%"}}>
+                        {loading.rule &amp;&amp;
+                        &lt;StyledCircularProgress />
+                        }
+                        {!loading.rule &amp;&amp; coveredObjects != null &amp;&amp;
+                            &lt;TableItemsList
+                                getItemsStyle={this.getItemsStyle}
+                                getName={this.getName}
+                                headerText={"Covered objects"}
+                                itemIndex={objectIndex}
+                                onItemInTableSelected={this.onItemInTableSelected}
+                                onSettingsClick={this.onAttributesMenuOpen}
+                                table={coveredObjects}
+                            />
+                        }
+                    &lt;/div>
+                    &lt;div id={"rules-table-item"} style={{display: "flex", flexDirection: "column", width: "40%"}}>
+                        {loading.object &amp;&amp;
+                            &lt;StyledCircularProgress />
+                        }
+                        {!loading.object &amp;&amp; objectIndex > -1 &amp;&amp;
+                            &lt;ObjectTable
+                                attributes={attributes}
+                                object={object}
+                                objectHeader={this.getName(objectIndex)}
+                            />
+                        }
+                    &lt;/div>
+                &lt;/MultiColumns>
+                &lt;AttributesMenu
+                    ListProps={{
+                        id: "rules-details-desc-attributes-menu"
+                    }}
+                    MuiMenuProps={{
+                        anchorEl: attributesMenuEl,
+                        onClose: this.onAttributesMenuClose
+                    }}
+                    objectGlobalName={objectGlobalName}
+                    onObjectNamesChange={this.onObjectNamesChange}
+                    onSnackbarOpen={this.props.onSnackbarOpen}
+                    projectId={projectId}
+                    resource={"rules"}
+                    serverBase={serverBase}
+                    queryParams={{subject: item.id}}
+                />
+            &lt;/FullscreenDialog>
+        );
+    }
+}
+
+RulesDialog.propTypes = {
+    item: PropTypes.exact({
+        id: PropTypes.number,
+        name: PropTypes.exact({
+            decisions: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.shape({
+                primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+                secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+                toString: PropTypes.func,
+                withBraces: PropTypes.func,
+            }))),
+            conditions: PropTypes.arrayOf(PropTypes.shape({
+                primary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+                secondary: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+                toString: PropTypes.func,
+            })),
+            decisionsToString: PropTypes.func,
+            conditionsToString: PropTypes.func,
+            toString: PropTypes.func
+        }),
+        traits: PropTypes.shape({
+            "Type": PropTypes.string
+        }),
+        toFilter: PropTypes.func,
+        toSort: PropTypes.func,
+    }),
+    objectGlobalName: PropTypes.string,
+    onClose: PropTypes.func,
+    onSnackbarOpen: PropTypes.func,
+    open: PropTypes.bool.isRequired,
+    projectId: PropTypes.string,
+    serverBase: PropTypes.string
+};
+
+export default RulesDialog;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

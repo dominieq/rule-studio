@@ -42,12 +42,17 @@ public class ProjectsService {
             MultipartFile rulesFile,
             Character separator,
             Boolean header) throws IOException {
-        logger.info("Name:\t{}", name);
-        if(metadataFile != null)    logger.info("Metadata:\t{}\t{}", metadataFile.getOriginalFilename(), metadataFile.getContentType());
-        if(dataFile != null)        logger.info("Data:\t{}\t{}", dataFile.getOriginalFilename(), dataFile.getContentType());
-        if(rulesFile != null)       logger.info("Rules:\t{}\t{}", rulesFile.getOriginalFilename(), rulesFile.getContentType());
-        logger.info("Separator:\t{}", separator);
-        logger.info("Header:\t{}", header);
+
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("name=\"").append(name).append("\", ");
+            if (metadataFile != null) sb.append("metadata={\"").append(metadataFile.getOriginalFilename()).append("\", ").append(metadataFile.getContentType()).append(", ").append(metadataFile.getSize()).append("B}, ");
+            if (dataFile != null) sb.append("data={\"").append(dataFile.getOriginalFilename()).append("\", ").append(dataFile.getContentType()).append(", ").append(dataFile.getSize()).append("B}, ");
+            if (rulesFile != null) sb.append("rules={\"").append(rulesFile.getOriginalFilename()).append("\", ").append(rulesFile.getContentType()).append(", ").append(rulesFile.getSize()).append("B}, ");
+            sb.append("separator=\"").append(separator).append("\", ");
+            sb.append("header=").append(header);
+            logger.info(sb.toString());
+        }
 
         if(metadataFile == null) {
             final ProjectResponse projectResponse = new ProjectResponse(createEmptyProject(name));
@@ -73,7 +78,7 @@ public class ProjectsService {
         if(rulesFile != null) { //load rules from file
             final RuleSetWithCharacteristics ruleSetWithCharacteristics = RulesService.parseRules(rulesFile, attributes);
 
-            project.setRules(new RulesWithHttpParameters(ruleSetWithCharacteristics, rulesFile.getOriginalFilename(), attributes));
+            project.setProjectRules(new ProjectRules(ruleSetWithCharacteristics, rulesFile.getOriginalFilename(), attributes));
         }
 
 

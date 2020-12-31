@@ -12,25 +12,18 @@ public class Project {
     private InformationTable informationTable;
     private DescriptiveAttributes descriptiveAttributes;
     private DominanceCones dominanceCones;
-    private UnionsWithHttpParameters unions;
-    private RulesWithHttpParameters rules;
+    private ProjectClassUnions projectClassUnions;
+    private ProjectRules projectRules;
     private ProjectClassification projectClassification;
     private CrossValidation crossValidation;
     private String metadataFileName;
     private String dataFileName;
-
-    private boolean currentDominanceCones;
-    private boolean currentUnionsWithSingleLimitingDecision;
-    private boolean currentRules;
 
     public Project(String name) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.informationTable = null;
         this.descriptiveAttributes = new DescriptiveAttributes();
-        this.currentDominanceCones = false;
-        this.currentUnionsWithSingleLimitingDecision = false;
-        this.currentRules = false;
     }
 
     public Project(String name, InformationTable informationTable) {
@@ -38,9 +31,6 @@ public class Project {
         this.name = name;
         this.informationTable = informationTable;
         this.descriptiveAttributes = new DescriptiveAttributes(informationTable);
-        this.currentDominanceCones = false;
-        this.currentUnionsWithSingleLimitingDecision = false;
-        this.currentRules = false;
     }
 
     public UUID getId() {
@@ -65,9 +55,6 @@ public class Project {
 
     public void setInformationTable(InformationTable informationTable) {
         this.informationTable = informationTable;
-        this.setCurrentDominanceCones(false);
-        this.setCurrentUnionsWithSingleLimitingDecision(false);
-        this.setCurrentRules(false);
 
         String dataHash = informationTable.getHash();
         if(this.dominanceCones != null) {
@@ -77,29 +64,29 @@ public class Project {
                 dominanceCones.setCurrentData(false);
             }
         }
-        if(this.unions != null) {
-            if (unions.getDataHash().equals(dataHash)) {
-                unions.setCurrentData(true);
+        if(this.projectClassUnions != null) {
+            if (projectClassUnions.getDataHash().equals(dataHash)) {
+                projectClassUnions.setCurrentData(true);
             } else {
-                unions.setCurrentData(false);
+                projectClassUnions.setCurrentData(false);
             }
         }
-        if(this.rules != null) {
-            if (rules.isExternalRules()) {
+        if(this.projectRules != null) {
+            if (projectRules.isExternalRules()) {
                 final String attributesHash = new InformationTable(informationTable.getAttributes(), new ArrayList<>()).getHash();
-                if (rules.getAttributesHash().equals(attributesHash)) {
-                    rules.setCurrentAttributes(true);
+                if (projectRules.getAttributesHash().equals(attributesHash)) {
+                    projectRules.setCurrentAttributes(true);
                 } else {
-                    rules.setCurrentAttributes(false);
+                    projectRules.setCurrentAttributes(false);
                 }
             }
 
-            if (rules.getRuleSet().getLearningInformationTableHash() == null) {
-                rules.setCurrentLearningData(null);
-            } else if (rules.getRuleSet().getLearningInformationTableHash().equals(dataHash)) {
-                rules.setCurrentLearningData(true);
+            if (projectRules.getRuleSet().getLearningInformationTableHash() == null) {
+                projectRules.setCurrentLearningData(null);
+            } else if (projectRules.getRuleSet().getLearningInformationTableHash().equals(dataHash)) {
+                projectRules.setCurrentLearningData(true);
             } else {
-                rules.setCurrentLearningData(false);
+                projectRules.setCurrentLearningData(false);
             }
         }
         if(this.projectClassification != null) {
@@ -152,58 +139,34 @@ public class Project {
         this.dominanceCones = dominanceCones;
     }
 
-    public UnionsWithHttpParameters getUnions() {
-        return unions;
+    public ProjectClassUnions getProjectClassUnions() {
+        return projectClassUnions;
     }
 
-    public void setUnions(UnionsWithHttpParameters unions) {
-        this.unions = unions;
+    public void setProjectClassUnions(ProjectClassUnions projectClassUnions) {
+        this.projectClassUnions = projectClassUnions;
     }
 
-    public boolean isCurrentDominanceCones() {
-        return currentDominanceCones;
+    public ProjectRules getProjectRules() {
+        return projectRules;
     }
 
-    public void setCurrentDominanceCones(boolean currentDominanceCones) {
-        this.currentDominanceCones = currentDominanceCones;
-    }
+    public void setProjectRules(ProjectRules projectRules) {
+        this.projectRules = projectRules;
 
-    public boolean isCurrentUnionsWithSingleLimitingDecision() {
-        return currentUnionsWithSingleLimitingDecision;
-    }
-
-    public void setCurrentUnionsWithSingleLimitingDecision(boolean currentUnionsWithSingleLimitingDecision) {
-        this.currentUnionsWithSingleLimitingDecision = currentUnionsWithSingleLimitingDecision;
-    }
-
-    public boolean isCurrentRules() {
-        return currentRules;
-    }
-
-    public void setCurrentRules(boolean currentRules) {
-        this.currentRules = currentRules;
-    }
-
-    public RulesWithHttpParameters getRules() {
-        return rules;
-    }
-
-    public void setRules(RulesWithHttpParameters rules) {
-        this.rules = rules;
-
-        if (this.rules == null) {
+        if (this.projectRules == null) {
             if(this.projectClassification != null) {
                 this.projectClassification.setCurrentRuleSet(null);
             }
             return;
         }
 
-        if (this.rules.isExternalRules()) {
-            RulesService.checkCoverageOfUploadedRules(this.rules, this.informationTable, this.descriptiveAttributes);
+        if (this.projectRules.isExternalRules()) {
+            RulesService.checkCoverageOfUploadedRules(this.projectRules, this.informationTable, this.descriptiveAttributes);
         }
 
         if (this.projectClassification != null) {
-            if (this.projectClassification.getRuleSet().getHash().equals(this.rules.getRuleSet().getHash())) {
+            if (this.projectClassification.getRuleSet().getHash().equals(this.projectRules.getRuleSet().getHash())) {
                 this.projectClassification.setCurrentRuleSet(true);
             } else {
                 this.projectClassification.setCurrentRuleSet(false);
@@ -211,7 +174,7 @@ public class Project {
         }
 
         ValidityRulesContainer validityRulesContainer = new ValidityRulesContainer(this);
-        this.rules.setValidityRulesContainer(validityRulesContainer);
+        this.projectRules.setValidityRulesContainer(validityRulesContainer);
     }
 
     public ProjectClassification getProjectClassification() {
@@ -254,15 +217,12 @@ public class Project {
                 ", informationTable=" + informationTable +
                 ", descriptiveAttributes=" + descriptiveAttributes +
                 ", dominanceCones=" + dominanceCones +
-                ", unions=" + unions +
-                ", rules=" + rules +
+                ", projectClassUnions=" + projectClassUnions +
+                ", projectRules=" + projectRules +
                 ", projectClassification=" + projectClassification +
                 ", crossValidation=" + crossValidation +
                 ", metadataFileName='" + metadataFileName + '\'' +
                 ", dataFileName='" + dataFileName + '\'' +
-                ", currentDominanceCones=" + currentDominanceCones +
-                ", currentUnionsWithSingleLimitingDecision=" + currentUnionsWithSingleLimitingDecision +
-                ", currentRules=" + currentRules +
                 '}';
     }
 }

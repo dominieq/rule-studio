@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
 import CustomTooltip from "../Utils/DataDisplay/CustomTooltip";
-import { StyledButton, StyledIconButton } from "../Utils/Inputs/StyledButton";
+import { StyledButton, StyledIconButton } from "../Utils/Buttons";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import HomeIcon from "@material-ui/icons/Home";
@@ -17,14 +17,18 @@ const useStyles = makeStyles(theme => ({
 }), {name: "CustomAppBar"});
 
 /**
+ * <h3>Overview</h3>
  * The AppBar and Toolbar components from Material-UI with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/app-bar/" target="_blank">AppBar</a>
  * and
  * <a href="https://material-ui.com/api/toolbar/" target="_blank">Toolbar</a>.
  *
- * @category Header
+ * <h3>Usage</h3>
+ * {@link ProjectMenu} should be provided via the <code>children</code> property.
+ *
  * @constructor
+ * @category Header
  * @param {Object} props
  * @param {Object} props.appBarRef - A reference object forwarded to the AppBar component.
  * @param {React.ReactElement} props.children - Should be the {@link ProjectMenu} element.

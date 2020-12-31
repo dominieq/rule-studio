@@ -16,19 +16,19 @@ function MuiAlert(props) {
 }
 
 /**
+ * <h3>Overview</h3>
  * The Alert component wrapped around in Snackbar component from Material-UI library.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/alert/" target="_blank">Alert</a>
  * and
  * <a href="https://material-ui.com/api/snackbar/" target="_blank">Snackbar</a>.
  *
- * @name Styled Alert
  * @constructor
  * @category Utils
  * @subcategory Feedback
- * @param props {Object} - Any other props will be forwarded to the Alert component.
- * @param [props.message] {string} - The content of the component.
- * @param [props.snackbarProps] {Object} - Props applied to the Snackbar component.
+ * @param {Object} props - Any other props will be forwarded to the Alert component.
+ * @param {string} [props.message] - The content of the component.
+ * @param {Object} [props.snackbarProps] - Props applied to the Snackbar component.
  * @returns {React.ReactElement}
  */
 function StyledAlert(props) {

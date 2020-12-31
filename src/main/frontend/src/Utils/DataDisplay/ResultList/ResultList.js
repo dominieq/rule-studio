@@ -15,25 +15,31 @@ const StyledList = withStyles(theme=> ({
 }), {name: "ResultList"})(props => <List {...props} />);
 
 /**
+ * <h3>Overview</h3>
  * The component consists of three elements: upper and bottom Pagination and a List between them.
  * List and Pagination are components from Material-UI library with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/list/" target="_blank">List</a> and
  * <a href="https://material-ui.com/api/pagination/" target="_blank">Pagination</a>.
+ *
+ * <h3>Usage</h3>
  * There are max 50 items per page. When there are less then 5 elements on a page, upper pagination is hidden.
  *
- * @name Result List
  * @constructor
  * @category Utils
  * @subcategory Result List
- * @param props {Object} - Any other props will be forwarded to the List component.
- * @param [props.children] {Object[]} - The content of the component.
- * @param [props.children[].id] {number} - The id an entity.
- * @param [props.children[].header] {string} - The content of the header inside ListItem.
- * @param [props.children[].subheader] {string} - The content of the subheader inside ListItem.
- * @param [props.children[].multiContent] {Object[]} - An array of simple title-subtitle verses inside ListItem.
- * @param [props.onItemSelected] {function} - Callback fired when item from the list was selected.
- * @returns {React.ReactElement} The List component with upper and bottom Pagination from Material-UI library.
+ * @param {Object} props - Any other props will be forwarded to the List component.
+ * @param {Object[]} [props.children] - The content of the component.
+ * @param {number} [props.children[].id] - The identifier of an item.
+ * @param {string} [props.children[].header] - The content of the header inside ListItem.
+ * @param {string} [props.children[].subheader] - The content of the subheader inside ListItem.
+ * @param {Object[]} [props.children[].multiContent] - An array of simple title-subtitle verses inside ListItem.
+ * @param {number|string} [props.children[].multiContent.title] - The title of a verse inside ListItem.
+ * @param {number|string} [props.children[].multiContent.subtitle] - The subtitle of a verse inside ListItem.
+ * @param {number|string} [props.children[].caption] - The content of the caption inside ListItem.
+ * @param {number|string} [props.children[].subcaption] - The content of the subcaption inside ListItem.
+ * @param {function} [props.onItemSelected] - Callback fired when item from the list was selected.
+ * @returns {React.ReactElement}
  */
 class ResultList extends Component {
     constructor(props) {
@@ -125,10 +131,14 @@ class ResultList extends Component {
 ResultList.propTypes = {
     children: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.number,
-        header: PropTypes.string,
-        subheader: PropTypes.string,
-        content: PropTypes.string,
-        multiContent: PropTypes.arrayOf(PropTypes.object)
+        header: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        subheader: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        multiContent: PropTypes.arrayOf(PropTypes.shape({
+            title: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+            subtitle: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+        })),
+        caption: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        subcaption: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
     })),
     classes: PropTypes.object,
     component: PropTypes.elementType,

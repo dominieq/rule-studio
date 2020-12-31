@@ -8,6 +8,8 @@ import {
     Data,
     DeletingProject,
     DominanceCones,
+    ExportingProject,
+    ImportingProject,
     Navigating,
     ProjectFiles,
     ProjectSettings,
@@ -21,6 +23,8 @@ import styles from "./styles/Help.module.css";
 const CHAPTERS = [
     "Navigating",
     "Creating project",
+    "Importing project",
+    "Exporting project",
     "Renaming project",
     "Deleting project",
     "Project settings",
@@ -34,6 +38,7 @@ const CHAPTERS = [
 ];
 
 /**
+ * <h3>Overview</h3>
  * The Help section of RuLeStudio. Contains a formatted copy of manual.
  * The navigation drawer listens to scroll changes and highlights corresponding chapter titles.
  * Chapter titles in scrollable container are used as a reference to their positions.
@@ -160,16 +165,18 @@ class Help extends React.PureComponent {
                     <div aria-label={"text-container"} className={styles.Scrollable}>
                         <Navigating chapterId={"chapter-1"} />
                         <CreatingProject chapterId={"chapter-2"} />
-                        <RenamingProject chapterId={"chapter-3"} />
-                        <DeletingProject chapterId={"chapter-4"} />
-                        <ProjectSettings chapterId={"chapter-5"} />
-                        <ProjectFiles chapterId={"chapter-6"} />
-                        <Data chapterId={"chapter-7"} />
-                        <DominanceCones chapterId={"chapter-8"} />
-                        <ClassUnions chapterId={"chapter-9"} />
-                        <Rules chapterId={"chapter-10"} />
-                        <Classification chapterId={"chapter-11"} />
-                        <CrossValidation chapterId={"chapter-12"} />
+                        <ImportingProject chapterId={"chapter-3"} />
+                        <ExportingProject chapterId={"chapter-4"} />
+                        <RenamingProject chapterId={"chapter-5"} />
+                        <DeletingProject chapterId={"chapter-6"} />
+                        <ProjectSettings chapterId={"chapter-7"} />
+                        <ProjectFiles chapterId={"chapter-8"} />
+                        <Data chapterId={"chapter-9"} />
+                        <DominanceCones chapterId={"chapter-10"} />
+                        <ClassUnions chapterId={"chapter-11"} />
+                        <Rules chapterId={"chapter-12"} />
+                        <Classification chapterId={"chapter-13"} />
+                        <CrossValidation chapterId={"chapter-14"} />
                     </div>
                 </StyledScrollable>
                 <StyledDrawer

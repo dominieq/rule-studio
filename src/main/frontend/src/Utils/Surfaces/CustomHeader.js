@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
+import { StyledPaperPropTypes } from "./propTypes";
 import { mergeClasses } from "../utilFunctions";
 import StyledPaper from "./StyledPaper";
 
@@ -19,18 +20,20 @@ const useStyles = makeStyles(theme => ({
 }), {name: "CustomHeader"});
 
 /**
+ * <h3>Overview</h3>
  * The {@link StyledPaper} component customized as a sticky header.
+ *
+ * <h3>Usage</h3>
  * Styles applied to this component are different than in Material-UI.
  * "Root" class defines layout of elements inside of the header.
  * "Sticky" class defines the header as a sticky HTML element.
  *
- * @name Custom Header
  * @constructor
  * @category Utils
  * @subcategory Surfaces
- * @param props {Object} - Any other props will be forwarded to the {@link StyledPaper} component.
- * @param [props.classes] {Object} - Override or extend the styles applied to the component.
- * @returns {React.ReactElement} - The StyledPaper component customized as a sticky header.
+ * @param {Object} props - Any other props will be forwarded to the {@link StyledPaper} component.
+ * @param {Object} [props.classes] - Override or extend the styles applied to the component.
+ * @returns {React.ReactElement}
  */
 function CustomHeader(props) {
     const { classes: propsClasses, className: propsClassName, ...other } = props;
@@ -52,17 +55,11 @@ function CustomHeader(props) {
 }
 
 CustomHeader.propTypes = {
-    children: PropTypes.node,
+    ...StyledPaperPropTypes,
     classes: PropTypes.shape({
         Root: PropTypes.any,
         Sticky: PropTypes.any
-    }),
-    className: PropTypes.string,
-    component: PropTypes.elementType,
-    elevation: PropTypes.number,
-    paperRef: PropTypes.object,
-    square: PropTypes.bool,
-    variant: PropTypes.oneOf(["elevation", "outlined"])
+    })
 };
 
 export default CustomHeader;

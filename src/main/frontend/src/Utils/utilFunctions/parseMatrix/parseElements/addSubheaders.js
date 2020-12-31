@@ -1,4 +1,5 @@
 /**
+ * <h3>Overview</h3>
  * Adds subheaders to the first row and column of a provided matrix.
  *
  * @category Utils

@@ -1,6 +1,7 @@
 import handleNotOk from "./handleNotOk";
 
 /**
+ * <h3>Overview</h3>
  * Returns response from a server parsed to BLOB format.
  *
  * @category Utils

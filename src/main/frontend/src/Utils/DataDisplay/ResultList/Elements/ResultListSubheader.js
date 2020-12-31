@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import CircleHelper from "../../../Feedback/CircleHelper";
-import { MoreSettingsIconButton } from "../../../Inputs/StyledButton";
+import { MoreSettingsIconButton } from "../../../Buttons";
 import ListSubheader from "@material-ui/core/ListSubheader";
 
 const useStyles = makeStyles(theme => ({
@@ -52,25 +52,30 @@ const useStyles = makeStyles(theme => ({
 }), {name: "ResultListSubheader"});
 
 /**
+ * <h3>Overview</h3>
  * The ListSubheader component from Material-UI library with custom styling.
  * For full documentation check out Material-UI docs on
- * <a href="https://material-ui.com/api/list-subheader/" target="_blank">ListSubheader</a>
- *  The composition of ListSubheader in RuLeStudio is as follows. There is an array of simple label-value pairs.
- *  If set visible, there is a helper on the right side.
+ * <a href="https://material-ui.com/api/list-subheader/" target="_blank">ListSubheader</a>.
  *
- * @name Result List Subheader
+ * <h3>Goal</h3>
+ * The goal of this component is to display simple label-value pairs that contain secondary information.
+ *
+ * <h3>Usage</h3>
+ * In order to disable settings button or helper
+ * set <code>disableLeftGutter</code> or <code>disableRightGutter</code> to <code>true</code>
+ *
  * @constructor
  * @category Utils
  * @subcategory Result List
- * @param props {Object} - Any other props will be forwarded to the ListSubheader component.
- * @param [props.children] {Object[]} - The content of the component. An array of simple label-value pairs.
- * @param props.children[].label {string} - The content of the label inside a pair.
- * @param props.children[].value {number|string} - The content of the value inside a pair.
- * @param props.disableLeftGutter {boolean} - If <code>true</code> the content of left gutter will be visible.
- * @param props.disableRightGutter {boolean} - If <code>true</code> the content of right gutter will be visible.
- * @param props.helper {React.ReactNode} - The content of the helper.
- * @param props.onSettingsClick {function} - Callback fired when settings button was clicked on.
- * @returns {React.ReactElement} The ListSubheader component from Material-UI library.
+ * @param {Object} props - Any other props will be forwarded to the ListSubheader component.
+ * @param {Object[]} [props.children] - The content of the component. An array of simple label-value pairs.
+ * @param {string} props.children[].label - The content of the label inside a pair.
+ * @param {number|string} props.children[].value - The content of the value inside a pair.
+ * @param {boolean} props.disableLeftGutter - If <code>true</code> the content of left gutter will be visible.
+ * @param {boolean} props.disableRightGutter - If <code>true</code> the content of right gutter will be visible.
+ * @param {React.ReactNode} props.helper - The content of the helper.
+ * @param {function} props.onSettingsClick - Callback fired when settings button was clicked on.
+ * @returns {React.ReactElement}
  */
 function ResultListSubheader(props) {
     const { children, disableLeftGutter, disableRightGutter, helper, onSettingsClick, ...other } = props;

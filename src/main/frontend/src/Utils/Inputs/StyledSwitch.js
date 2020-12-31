@@ -1,6 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
+import { StyledSwitchPropTypes } from "./propTypes";
 import { mergeClasses } from "../utilFunctions";
 import Switch from "@material-ui/core/Switch";
 
@@ -42,6 +42,7 @@ const switchStyles = makeStyles(theme => ({
 }), {name: "MuiSwitch"});
 
 /**
+ * <h3>Overview</h3>
  * The Switch component from Material-UI library with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/switch/" target="_blank">Switch</a>.
@@ -50,17 +51,16 @@ const switchStyles = makeStyles(theme => ({
  * <a href="https://material-ui.com/components/switches/#customized-switches" target="_blank">tutorial</a>
  * with some changes.
  *
- * @name Styled Switch
  * @constructor
  * @category Utils
  * @subcategory Inputs
- * @param props {Object} - Any other props will be forwarded to the Switch component.
- * @returns {React.ReactElement} - The Switch component from Material-UI library.
+ * @param {Object} props - Any other props will be forwarded to the Switch component.
+ * @returns {React.ReactElement}
  */
 export function StyledSwitch(props) {
-    const {classes: propsClasses, ...other} = props;
-    let classes = switchStyles();
+    const { classes: propsClasses, ...other } = props;
 
+    let classes = switchStyles();
     if (propsClasses) classes = mergeClasses(classes, propsClasses);
 
     return (
@@ -78,14 +78,7 @@ export function StyledSwitch(props) {
     )
 }
 
-StyledSwitch.propTypes = {
-    checked: PropTypes.bool,
-    classes: PropTypes.object,
-    className: PropTypes.string,
-    disableRipple: PropTypes.bool,
-    onChange: PropTypes.func,
-    style: PropTypes.object,
-};
+StyledSwitch.propTypes = { ...StyledSwitchPropTypes };
 
 StyledSwitch.defaultProps = {
     disableRipple: true,

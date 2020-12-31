@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from "@material-ui/core/styles";
 import FilesDetails from "./FilesDetails";
 import CustomTooltip from "../../Utils/DataDisplay/CustomTooltip";
-import { StyledIconButton } from "../../Utils/Inputs/StyledButton";
+import { StyledIconButton } from "../../Utils/Buttons";
 import StyledDivider from "../../Utils/DataDisplay/StyledDivider";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -25,6 +25,7 @@ const menuStyles = makeStyles(theme => ({
 }), {name: "ProjectMenu"});
 
 /**
+ * <h3>Overview</h3>
  * The middle part of the {@link Header} that allows user to perform actions on selected project such as:
  * <ul>
  *     <li>changing settings</li>
@@ -62,7 +63,14 @@ function ProjectMenu(props) {
 
     const onMenuItemClick = (event, index) => {
         setAnchorE1(null);
-        props.onProjectClick(index);
+        const url = window.location.href.toString();
+        const urlSplitted = url.split('/');
+
+        if (urlSplitted.length >= 5) {
+            props.onProjectClick(index, url.split('/')[4]);
+        } else {
+            props.onProjectClick(index, "");
+        }
     };
 
     const onMenuClose = () => {

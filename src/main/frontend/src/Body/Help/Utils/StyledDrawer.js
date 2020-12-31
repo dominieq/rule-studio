@@ -3,11 +3,11 @@ import { withStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 
 /**
+ * <h3>Overview</h3>
  * The Drawer component from Material-UI library with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/drawer/" target="_blank">Drawer</a>.
  *
- * @name Styled Drawer
  * @constructor
  * @category Help
  * @subcategory Utilities

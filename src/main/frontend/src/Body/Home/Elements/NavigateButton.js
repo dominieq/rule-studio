@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
-import { StyledButton } from "../../../Utils/Inputs/StyledButton";
+import { StyledButton } from "../../../Utils/Buttons";
 import Typography from "@material-ui/core/Typography";
 import styles from "../styles/NavigateButton.module.css";
 
@@ -27,11 +27,14 @@ const useStyles = makeStyles(theme => ({
 }), {name: "NavigateButton"});
 
 /**
+ * <h3>Overview</h3>
  * An element that consists of a paragraph and a button wrapped around in a tooltip.
- * The purpose of this element is to display a sentence where the navigate button is a part of it
+ *
+ * <h3>Goal</h3>
+ * The goal of this element is to display a sentence where the navigate button is a part of it
  * and is navigating to something that was mentioned in the sentence.
  *
- * @class
+ * @constructor
  * @category Home
  * @subcategory Elements
  * @param {Object} props - Any other props will be forwarded to the {@link StyledButton} element.

@@ -1,4 +1,5 @@
 /**
+ * <h3>Overview</h3>
  * Prepares FormData that will be included in the body of an API call.
  *
  * @category Utils

@@ -15,26 +15,26 @@ function ClassUnions(props) {
             titleId={chapterId}
             content={
                 <React.Fragment>
-                    <Image src={fullTab} caption={"FIGURE 24: Class unions"} />
+                    <Image src={fullTab} caption={"FIGURE 28: Class unions"} />
                     <Typography>
                         The tab is empty when you visit it for the first time. In order to see class unions, 
                         click on the “CALCULATE” button. Before you click on this button, you can customize 
                         parameters used in calculations. If you wish to do that, click on the button with a cog icon.
-                        A drawer is going to slide into current tab from the left (Fig. 25). To customize consistency measure,
+                        A drawer is going to slide into current tab from the left (Fig. 29). To customize consistency measure,
                         click on the select menu and pick your value from the list. To choose consistency threshold,
                         write your number in the text field or use the slider. The concept of class unions and the description 
                         of parameters can be found in the user's guide.
                     </Typography>
-                    <Image src={settings} caption={"FIGURE 25: Parameters in “CLASS UNIONS”"} />
+                    <Image src={settings} caption={"FIGURE 29: Parameters in “CLASS UNIONS”"} />
                     <Typography>
                         If there are more than 50 class unions, pagination is displayed at the top and at the bottom of the page.
                         If there are less than 6 class unions on a page, the upper pagination is hidden. You can filter the result
                         list by using the “Search” input field. In order to filter unions, use one of the characteristics visible
                         on list items. For example, if you want to filter out class unions that have accuracy of approximation equal
                         to 0.5, you can type “accuracy 0.5”. It is possible to see the details of a class union. In order to do that,
-                        you have to click on one of the class unions from the result list. A new dialog is going to be displayed (Fig. 26).
+                        you have to click on one of the class unions from the result list. A new dialog is going to be displayed (Fig. 30).
                     </Typography>
-                    <Image src={unionsDetails} caption={"FIGURE 26: Union’s details"} />
+                    <Image src={unionsDetails} caption={"FIGURE 30: Union’s details"} />
                     <Typography>
                         There are two lists and two tables in this dialog. The list in the middle and the table in the bottom right 
                         corner aren’t visible when you enter this dialog for the first time. The list on the left contains collections
@@ -44,6 +44,10 @@ function ClassUnions(props) {
                         collection. You can also see the details of any of these objects if you click on it. Then, there is going 
                         to be displayed a table, in the bottom right corner, that depicts attributes of the selected object.
                     </Typography>
+                    <Typography>
+                        There is a button with three dots placed in the header of the middle list that allows
+                        you to change the default name for objects. The process was described in section about “Dominance cones”.
+                    </Typography>
                 </React.Fragment>
             }
         />
@@ -51,7 +55,7 @@ function ClassUnions(props) {
 }
 
 ClassUnions.propTypes = {
-    chapterId: PropTypes.string
+    chapterId: PropTypes.string.isRequired
 };
 
 export default ClassUnions;

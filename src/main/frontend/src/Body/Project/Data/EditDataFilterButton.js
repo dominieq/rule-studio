@@ -3,17 +3,15 @@ import SearchIcon from '@material-ui/icons/Search';
 import './EditDataButtons.css';
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import CustomTooltip from '../../../Utils/DataDisplay/CustomTooltip';
-import { StyledButton, StyledIconButton } from "../../../Utils/Inputs/StyledButton";
+import { StyledButton, StyledIconButton } from "../../../Utils/Buttons";
 
 /**
+ * <h3>Overview</h3>
  * This class generates Filter button and passes all the other buttons as children.
  *
- * @name Data Filter Button
  * @class
- * @category Utils
- * @subcategory Inputs
- * @category Tabs
- * @subcategory DataFilter
+ * @category Project
+ * @subcategory Filtering
  * @param {Object} props
  * @param {boolean} props.enableFilter - True if the filter is enabled, else false (here always true).
  * @param {function} props.onToggleFilter - Method used from the external library (react-data-grid).

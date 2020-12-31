@@ -44,7 +44,11 @@ public class ProjectService {
     }
 
     public ValidityProjectContainer getProject(UUID id) {
-        logger.info("Id:\t" + id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -59,17 +63,22 @@ public class ProjectService {
             MultipartFile dataFile,
             Character separator,
             Boolean header) throws IOException {
-        logger.info("Id:\t" + id);
-        if(metadataFile != null)    logger.info("Metadata:\t{}\t{}", metadataFile.getOriginalFilename(), metadataFile.getContentType());
-        if(dataFile != null)        logger.info("Data:\t{}\t{}", dataFile.getOriginalFilename(), dataFile.getContentType());
-        logger.info("Separator:\t{}", separator);
-        logger.info("Header:\t{}", header);
+
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            if (metadataFile != null) sb.append("metadata={\"").append(metadataFile.getOriginalFilename()).append("\", ").append(metadataFile.getContentType()).append(", ").append(metadataFile.getSize()).append("B}, ");
+            if (dataFile != null) sb.append("data={\"").append(dataFile.getOriginalFilename()).append("\", ").append(dataFile.getContentType()).append(", ").append(dataFile.getSize()).append("B}, ");
+            sb.append("separator=\"").append(separator).append("\", ");
+            sb.append("header=").append(header);
+            logger.info(sb.toString());
+        }
 
         Project project = getProjectFromProjectsContainer(projectsContainer, id);
 
         if((metadataFile == null) && (dataFile == null)) {
             project.setInformationTable(new InformationTable(new Attribute[0], new ArrayList<>()));
-            project.setRules(null);
+            project.setProjectRules(null);
 
             final ValidityProjectContainer validityProjectContainer = new ValidityProjectContainer(project);
             logger.debug(validityProjectContainer.toString());
@@ -83,7 +92,7 @@ public class ProjectService {
             attributes = MetadataService.attributesFromMultipartFileMetadata(metadataFile);
 
             informationTable = new InformationTable(attributes, new ArrayList<>());
-            project.setRules(null);
+            project.setProjectRules(null);
             project.setMetadataFileName(metadataFile.getOriginalFilename());
         }
 
@@ -102,8 +111,12 @@ public class ProjectService {
     }
 
     public ProjectResponse renameProject(UUID id, String name) {
-        logger.info("Id:\t" + id);
-        logger.info("Name:\t" + name);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id).append(", ");
+            sb.append("name=\"").append(name).append('\"');
+            logger.info(sb.toString());
+        }
 
         Project project = getProjectFromProjectsContainer(projectsContainer, id);
 
@@ -115,7 +128,11 @@ public class ProjectService {
     }
 
     public void deleteProject(UUID id) {
-        logger.info("Id:\t" + id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = projectsContainer.removeProject(id);
 
@@ -127,7 +144,11 @@ public class ProjectService {
     }
 
     public ProjectDetailsResponse getDetails(UUID id) {
-        logger.info("Id:\t" + id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = getProjectFromProjectsContainer(projectsContainer, id);
 

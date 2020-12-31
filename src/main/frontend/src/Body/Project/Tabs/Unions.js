@@ -1,29 +1,31 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
+import { nonNullProperty } from "../../../Utils/utilFunctions";
 import { fetchUnions } from "../../../Utils/utilFunctions/fetchFunctions";
 import { parseUnionsItems } from "../../../Utils/utilFunctions/parseItems";
 import { parseUnionsListItems } from "../../../Utils/utilFunctions/parseListItems";
-import TabBody from "../Utils/TabBody";
-import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterTextField from "../Utils/Filtering/FilterTextField";
-import CalculateButton from "../Utils/Buttons/CalculateButton";
-import SettingsButton from "../Utils/Buttons/SettingsButton";
-import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
-import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
+import TabBody from "../../../Utils/Containers/TabBody";
+import filterFunction from "../Filtering/FilterFunction";
+import FilterTextField from "../Filtering/FilterTextField";
+import CalculateButton from "../../../Utils/Buttons/CalculateButton";
+import SettingsButton from "../../../Utils/Buttons/SettingsButton";
+import TypeOfUnionsSelector from "../Calculations/TypeOfUnionsSelector";
+import ThresholdSelector from "../Calculations/ThresholdSelector";
 import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
-import { UnionsDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { UnionsDialog } from "../../../Utils/Dialogs/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
 /**
+ * <h3>Overview</h3>
  * The class unions tab in RuLeStudio.
  * Presents the list of all unions generated for the information table in current project
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
@@ -60,6 +62,7 @@ class Unions extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on unions to receive current copy of unions from server.
      * Then, updates state and makes necessary changes in display.
      *
@@ -120,9 +123,10 @@ class Unions extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired once when component was mounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method calls {@link getUnions}.
      *
      * @function
@@ -135,9 +139,10 @@ class Unions extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired after a component was updated.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * If type of unions was changed to <code>monotonic</code> and consistency threshold is equal to 1,
      * method changes value of threshold to 0.
      * <br>
@@ -184,9 +189,10 @@ class Unions extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired when component was requested to be unmounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method saves changes from current project.
      *
      * @function
@@ -207,6 +213,7 @@ class Unions extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on unions to generate new unions from current information table with specified parameters.
      * Then, updates state and makes necessary changes in display.
      *
@@ -313,6 +320,7 @@ class Unions extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Filters items from {@link Unions}' state.
      * Method uses {@link filterFunction} to filter items.
      *
@@ -408,11 +416,17 @@ class Unions extends Component {
                         subheaderContent={[
                             {
                                 label: "Number of unions:",
-                                value: displayedItems ? displayedItems.length : undefined
+                                value: Array.isArray(displayedItems) ? displayedItems.length : "-"
                             },
                             {
                                 label: "Quality of classification:",
-                                value: data ? data.qualityOfApproximation : undefined
+                                value: nonNullProperty(data, "qualityOfApproximation") ?
+                                    data.qualityOfApproximation : "-"
+                            },
+                            {
+                                label: "Calculated in:",
+                                value: nonNullProperty(data, "calculationsTime") ?
+                                    data.calculationsTime : "-"
                             }
                         ]}
                     />

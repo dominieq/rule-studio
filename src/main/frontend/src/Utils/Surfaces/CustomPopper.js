@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
+import { MuiPaperPropTypes } from "./propTypes";
 import { mergeClasses } from "../utilFunctions";
 import Paper from "@material-ui/core/Paper";
 
@@ -13,19 +14,21 @@ const useStyles = makeStyles(theme => ({
 }), {name: "CustomPopper"});
 
 /**
+ * <h3>Overview</h3>
  * The Paper component from Material-UI with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/paper/" target="_blank">Paper</a>.
+ *
+ * <h3>Usage</h3>
  * Styles applied to this component are different than in Material-UI.
  * "Popper" defines colors of the element.
  *
- * @name Custom Popper
  * @constructor
  * @category Utils
  * @subcategory Surfaces
- * @param props {Object} - Any other props will be forwarded to the Paper component.
- * @param [props.classes] {Object} - Override or extend the styles applied to the component.
- * @returns {React.ReactElement} - The Paper component from Material-UI library.
+ * @param {Object} props - Any other props will be forwarded to the Paper component.
+ * @param {Object} [props.classes] - Override or extend the styles applied to the component.
+ * @returns {React.ReactElement}
  */
 function CustomPopper(props) {
     const { classes: propsClasses, className: propsClassName, ...other } = props;
@@ -46,15 +49,11 @@ function CustomPopper(props) {
 }
 
 CustomPopper.propTypes = {
-    children: PropTypes.node,
+    ...MuiPaperPropTypes,
     classes: PropTypes.shape({
         Popper: PropTypes.any
     }),
-    className: PropTypes.string,
-    component: PropTypes.elementType,
-    elevation: PropTypes.number,
-    square: PropTypes.bool,
-    variant: PropTypes.oneOf(["elevation", "outlined"])
+    className: PropTypes.string
 };
 
 export default CustomPopper;

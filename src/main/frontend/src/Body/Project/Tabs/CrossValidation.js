@@ -1,35 +1,32 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import BigNumber from "bignumber.js";
+import { nonNullProperty } from "../../../Utils/utilFunctions";
 import { fetchCrossValidation, fetchFold, downloadMatrix } from "../../../Utils/utilFunctions/fetchFunctions";
 import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
 import { getItemName, parseClassifiedItems } from "../../../Utils/utilFunctions/parseItems";
 import { parseClassifiedListItems } from "../../../Utils/utilFunctions/parseListItems";
 import { parseCrossValidationParams } from "../../../Utils/utilFunctions/parseParams";
-import TabBody from "../Utils/TabBody";
-import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterTextField from "../Utils/Filtering/FilterTextField";
-import CalculateButton from "../Utils/Buttons/CalculateButton";
-import MatrixButton from "../Utils/Buttons/MatrixButton";
-import MatrixDownloadButton from "../Utils/Buttons/MatrixDownloadButton";
-import MatrixSwapButton from "../Utils/Buttons/MatrixSwapButton";
-import SettingsButton from "../Utils/Buttons/SettingsButton";
-import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
-import NumberOfFoldsSelector from "../Utils/Calculations/NumberOfFoldsSelector";
-import SeedSelector from "../Utils/Calculations/SeedSelector";
-import ThresholdSelector from "../Utils/Calculations/ThresholdSelector";
-import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
-import TypeOfRulesSelector from "../Utils/Calculations/TypeOfRulesSelector";
-import TypeOfUnionsSelector from "../Utils/Calculations/TypeOfUnionsSelector";
+import TabBody from "../../../Utils/Containers/TabBody";
+import filterFunction from "../Filtering/FilterFunction";
+import FilterTextField from "../Filtering/FilterTextField";
+import { CalculateButton, MatrixButton, MatrixDownloadButton, MatrixSwapButton,
+    SettingsButton, StyledIconButton } from "../../../Utils/Buttons";
+import DefaultClassificationResultSelector from "../Calculations/DefaultClassificationResultSelector";
+import NumberOfFoldsSelector from "../Calculations/NumberOfFoldsSelector";
+import SeedSelector from "../Calculations/SeedSelector";
+import ThresholdSelector from "../Calculations/ThresholdSelector";
+import TypeOfClassifierSelector from "../Calculations/TypeOfClassifierSelector";
+import TypeOfRulesSelector from "../Calculations/TypeOfRulesSelector";
+import TypeOfUnionsSelector from "../Calculations/TypeOfUnionsSelector";
 import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer"
-import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
+import MatrixDialog from "../../../Utils/Dialogs/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CustomTooltip from "../../../Utils/DataDisplay/CustomTooltip";
-import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { ClassifiedObjectDialog } from "../../../Utils/Dialogs/DetailsDialog";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomTextField from "../../../Utils/Inputs/CustomTextField";
-import { StyledIconButton } from "../../../Utils/Inputs/StyledButton";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -37,11 +34,12 @@ import Sigma from "mdi-material-ui/Sigma";
 import {AttributesMenu} from "../../../Utils/Menus/AttributesMenu";
 
 /**
+ * <h3>Overview</h3>
  * The cross-validation tab in RuLeStudio.
  * Presents the outcome of cross-validation for information table from current project.
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
@@ -65,6 +63,7 @@ class CrossValidation extends Component {
             foldData: null,
             items: null,
             displayedItems: [],
+            calculationsTime: "-",
             parameters: {
                 consistencyThreshold: 0,
                 defaultClassificationResultType: "majorityDecisionClass",
@@ -76,6 +75,7 @@ class CrossValidation extends Component {
             },
             parametersSaved: true,
             refreshNeeded: {
+                attributesMenu: false,
                 matrixMean: false,
                 matrixSum: false,
                 matrixFold: false
@@ -98,6 +98,14 @@ class CrossValidation extends Component {
         this.upperBar = React.createRef();
     }
 
+    /**
+     * <h3>Overview</h3>
+     * Makes an API call on selected fold from cross-validation to receive it's current copy from server.
+     * Then, updates state and makes necessary changes in display.
+     *
+     * @function
+     * @memberOf CrossValidation
+     */
     getFold = (foldIndex, finallyCallback) => {
         this.setState(({loading}) => ({
             loading: { ...loading, selectedFold: true }
@@ -146,6 +154,7 @@ class CrossValidation extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on cross-validation to receive current copy of cross-validation from server.
      * Then, updates state and makes necessary changes in display.
      *
@@ -167,8 +176,10 @@ class CrossValidation extends Component {
                 const folds = resultParams.hasOwnProperty("numberOfFolds") ?
                     this.generateFoldNames(resultParams.numberOfFolds) : [];
 
-                this.setState(({parameters, selected}) => ({
+                this.setState(({calculationsTime, parameters, selected}) => ({
                     folds: folds,
+                    calculationsTime: nonNullProperty(result, "calculationsTime") ?
+                        result.calculationsTime : calculationsTime,
                     parameters: { ...parameters, ...resultParams },
                     selected: { ...selected, foldIndex: foldIndex }
                 }), () => {
@@ -206,9 +217,10 @@ class CrossValidation extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired once when component was mounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method calls {@link getCrossValidation}.
      *
      * @function
@@ -223,12 +235,10 @@ class CrossValidation extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired after a component was updated.
-     * <br>
-     * <br>
-     * If index option was changed, method sets object's names according to new value.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * If type of unions was changed to <code>monotonic</code> and consistency threshold is equal to 1,
      * method changes value of threshold to 0.
      * <br>
@@ -294,9 +304,10 @@ class CrossValidation extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired when component was requested to be unmounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method saves changes from current project.
      *
      * @function
@@ -322,6 +333,7 @@ class CrossValidation extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on cross-validation to cross-validate objects from current information table
      * with selected parameters.
      * Then, updates state and makes necessary changes in display.
@@ -350,10 +362,13 @@ class CrossValidation extends Component {
                         this.generateFoldNames(resultParams.numberOfFolds) : [];
 
                     if (this._isMounted) {
-                        this.setState(({selected}) => ({
+                        this.setState(({calculationsTime, selected}) => ({
                             folds: folds,
+                            calculationsTime: nonNullProperty(result, "calculationsTime") ?
+                                result.calculationsTime : calculationsTime,
                             parametersSaved: true,
                             refreshNeeded: {
+                                attributesMenu: true,
                                 matrixMean: true,
                                 matrixSum: true,
                                 matrixFold: true
@@ -401,6 +416,7 @@ class CrossValidation extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call to download specified misclassification matrix.
      *
      * @function
@@ -568,6 +584,7 @@ class CrossValidation extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Filters items from {@link CrossValidation}'s state.
      * Method uses {@link filterFunction} to filter items.
      *
@@ -618,6 +635,12 @@ class CrossValidation extends Component {
         });
     };
 
+    onComponentRefresh = (target) => {
+        this.setState(({refreshNeeded}) => ({
+            refreshNeeded: { ...refreshNeeded, [target]: false }
+        }));
+    };
+
     onSnackbarOpen = (exception, setStateCallback) => {
         if (!(exception.hasOwnProperty("type") && exception.type === "AlertError")) {
             console.error(exception);
@@ -637,19 +660,13 @@ class CrossValidation extends Component {
         }
     };
 
-    onMatrixRefresh = (matrixType) => {
-        this.setState(({refreshNeeded}) => ({
-            refreshNeeded: { ...refreshNeeded, [matrixType]: false }
-        }));
-    };
-
     render() {
         const {
             loading,
             folds,
             foldData,
-            items,
             displayedItems,
+            calculationsTime,
             open,
             parameters,
             refreshNeeded,
@@ -754,7 +771,7 @@ class CrossValidation extends Component {
                                 <p id={"all-folds"} style={{margin: "0 16px 0 0", fontSize: "1.15rem"}}>All folds:</p>
                                 <MatrixButton
                                     onClick={() => this.toggleOpen("matrixMean")}
-                                    title={"Show mean ordinal misclassification matrix"}
+                                    tooltip={"Show mean ordinal misclassification matrix"}
                                 />
                                 <CustomTooltip title={"Show accumulated ordinal misclassification matrix"}>
                                     <StyledIconButton
@@ -788,7 +805,7 @@ class CrossValidation extends Component {
                                 <p id={"fold-colon"} style={{margin: "0 16px 0 4px", fontSize: "1.15rem"}}>:</p>
                                 <MatrixButton
                                     onClick={() => this.toggleOpen("matrixFold")}
-                                    title={`Open ordinal misclassification matrix for fold ${selected.foldIndex + 1}`}
+                                    tooltip={`Open ordinal misclassification matrix for fold ${selected.foldIndex + 1}`}
                                 />
                             </Fragment>
                         }
@@ -815,18 +832,22 @@ class CrossValidation extends Component {
                             },
                             {
                                 label: "Training objects:",
-                                value: foldData != null && foldData.hasOwnProperty("numberOfTrainingObjects") ?
-                                    foldData.numberOfTrainingObjects : "undefined"
+                                value: nonNullProperty(foldData, "numberOfTrainingObjects") ?
+                                    foldData.numberOfTrainingObjects : "-"
                             },
                             {
                                 label: "Rules:",
-                                value: foldData != null && foldData.hasOwnProperty("numberOfRules") ?
-                                    foldData.numberOfRules : "undefined"
+                                value: nonNullProperty(foldData, "numberOfRules") ?
+                                    foldData.numberOfRules : "-"
                             },
                             {
                                 label: "Test objects:",
-                                value: foldData != null && foldData.hasOwnProperty("numberOfTestObjects") ?
-                                    foldData.numberOfTestObjects : "undefined",
+                                value: nonNullProperty(foldData, "numberOfTestObjects") ?
+                                    foldData.numberOfTestObjects : "-",
+                            },
+                            {
+                                label: "Calculated in:",
+                                value: calculationsTime
                             }
                         ]}
                     />
@@ -847,7 +868,7 @@ class CrossValidation extends Component {
                     {folds != null &&
                         <MatrixDialog
                             onClose={() => this.toggleOpen("matrixMean")}
-                            onMatrixRefresh={() => this.onMatrixRefresh("matrixMean")}
+                            onMatrixRefresh={() => this.onComponentRefresh("matrixMean")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixMean}
                             projectId={projectId}
@@ -858,11 +879,11 @@ class CrossValidation extends Component {
                             title={
                                 <React.Fragment>
                                     <MatrixSwapButton
-                                        onSwap={() => this.swapMatrix("matrixMean", "matrixSum")}
+                                        onClick={() => this.swapMatrix("matrixMean", "matrixSum")}
                                         tooltip={"Go to accumulated ordinal misclassification matrix"}
                                     />
                                     <MatrixDownloadButton
-                                        onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
+                                        onClick={() => this.onSaveToFile({ typeOfMatrix: "crossValidationMean" })}
                                         tooltip={"Download mean matrix (txt)"}
                                     />
                                     <span aria-label={"mean matrix title"} style={{paddingLeft: 8}}>
@@ -876,7 +897,7 @@ class CrossValidation extends Component {
                     {folds != null &&
                         <MatrixDialog
                             onClose={() => this.toggleOpen("matrixSum")}
-                            onMatrixRefresh={() => this.onMatrixRefresh("matrixSum")}
+                            onMatrixRefresh={() => this.onComponentRefresh("matrixSum")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixSum}
                             projectId={projectId}
@@ -887,11 +908,11 @@ class CrossValidation extends Component {
                             title={
                                 <React.Fragment>
                                     <MatrixSwapButton
-                                        onSwap={() => this.swapMatrix("matrixSum", "matrixMean")}
+                                        onClick={() => this.swapMatrix("matrixSum", "matrixMean")}
                                         tooltip={"Go to mean ordinal misclassification matrix"}
                                     />
                                     <MatrixDownloadButton
-                                        onSave={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
+                                        onClick={() => this.onSaveToFile({ typeOfMatrix: "crossValidationSum" })}
                                         tooltip={"Download accumulated matrix (txt)"}
                                     />
                                     <span aria-label={"sum matrix title"} style={{paddingLeft: 8}}>
@@ -905,7 +926,7 @@ class CrossValidation extends Component {
                     {foldData != null &&
                         <MatrixDialog
                             onClose={() => this.toggleOpen("matrixFold")}
-                            onMatrixRefresh={() => this.onMatrixRefresh("matrixFold")}
+                            onMatrixRefresh={() => this.onComponentRefresh("matrixFold")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrixFold}
                             projectId={projectId}
@@ -921,7 +942,7 @@ class CrossValidation extends Component {
                             title={
                                 <React.Fragment>
                                     <MatrixDownloadButton
-                                        onSave={() => {
+                                        onClick={() => {
                                             this.onSaveToFile({
                                                 typeOfMatrix: "crossValidationFold",
                                                 numberOfFold: selected.foldIndex
@@ -940,24 +961,24 @@ class CrossValidation extends Component {
                             }}
                         />
                     }
-                    {Array.isArray(items) && items.length > 0 &&
-                        <AttributesMenu
-                            ListProps={{
-                                id: "cross-validation-main-desc-attr-menu"
-                            }}
-                            MuiMenuProps={{
-                                anchorEl: attributesMenuEl,
-                                onClose: this.onAttributesMenuClose
-                            }}
-                            objectGlobalName={objectGlobalName}
-                            onObjectNamesChange={this.onObjectNamesChange}
-                            onSnackbarOpen={this.onSnackbarOpen}
-                            projectId={projectId}
-                            resource={"crossValidation"}
-                            serverBase={serverBase}
-                            queryParams={{ subject: selected.foldIndex }}
-                        />
-                    }
+                    <AttributesMenu
+                        ListProps={{
+                            id: "cross-validation-main-desc-attr-menu"
+                        }}
+                        MuiMenuProps={{
+                            anchorEl: attributesMenuEl,
+                            onClose: this.onAttributesMenuClose
+                        }}
+                        objectGlobalName={objectGlobalName}
+                        onAttributesRefreshed={() => this.onComponentRefresh("attributesMenu")}
+                        onObjectNamesChange={this.onObjectNamesChange}
+                        onSnackbarOpen={this.onSnackbarOpen}
+                        projectId={projectId}
+                        refreshNeeded={refreshNeeded.attributesMenu}
+                        resource={"crossValidation"}
+                        serverBase={serverBase}
+                        queryParams={{ subject: selected.foldIndex }}
+                    />
                 </CustomBox>
                 <StyledAlert {...alertProps} onClose={this.onSnackbarClose} />
             </CustomBox>

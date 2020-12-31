@@ -1,24 +1,26 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
+import { nonNullProperty } from "../../../Utils/utilFunctions";
 import { fetchCones } from "../../../Utils/utilFunctions/fetchFunctions";
 import { getItemName, parseConesItems } from "../../../Utils/utilFunctions/parseItems"
 import { parseConesListItems } from "../../../Utils/utilFunctions/parseListItems";
-import TabBody from "../Utils/TabBody";
-import CalculateButton from "../Utils/Buttons/CalculateButton";
-import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterTextField from "../Utils/Filtering/FilterTextField";
+import TabBody from "../../../Utils/Containers/TabBody";
+import CalculateButton from "../../../Utils/Buttons/CalculateButton";
+import filterFunction from "../Filtering/FilterFunction";
+import FilterTextField from "../Filtering/FilterTextField";
 import CustomBox from "../../../Utils/Containers/CustomBox"
-import { ConesDialog } from "../../../Utils/Feedback/DetailsDialog";
+import { ConesDialog } from "../../../Utils/Dialogs/DetailsDialog";
 import { AttributesMenu } from "../../../Utils/Menus/AttributesMenu";
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 
 /**
+ * <h3>Overview</h3>
  * The dominance cones tab in RuLeStudio.
  * Presents the list of all objects from information table with details about their dominance cones.
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
@@ -38,6 +40,9 @@ class Cones extends Component {
             data: null,
             items: null,
             displayedItems: [],
+            refreshNeeded: {
+                attributesMenu: false
+            },
             selectedItem: null,
             openDetails: false,
             attributesMenuEl: null,
@@ -48,6 +53,7 @@ class Cones extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on cones to receive current copy of dominance cones from server.
      * Then, updates state and makes necessary changes in display.
      *
@@ -98,9 +104,10 @@ class Cones extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired once when component was mounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method calls {@link getData}.
      *
      * @function
@@ -113,12 +120,10 @@ class Cones extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired after a component was updated.
-     * <br>
-     * <br>
-     * If index option was changed, method sets object's names according to new value.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * If project was changed, method saves changes from previous project
      * and calls {@link getData} to receive the latest copy of dominance cones.
      *
@@ -135,6 +140,7 @@ class Cones extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired when component was requested to be unmounted.
      *
      * @function
@@ -145,6 +151,7 @@ class Cones extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on cones to generate new dominance cones from current information table.
      * Then, updates state and makes necessary changes in display.
      *
@@ -169,7 +176,10 @@ class Cones extends Component {
                         this.setState({
                             data: result,
                             items: items,
-                            displayedItems: items
+                            displayedItems: items,
+                            refreshNeeded: {
+                                attributesMenu: true
+                            }
                         });
                     }
 
@@ -201,6 +211,7 @@ class Cones extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Filters items from {@link Cones}'s state.
      * Method uses {@link filterFunction} to filter items.
      *
@@ -263,6 +274,12 @@ class Cones extends Component {
         }));
     }
 
+    onComponentRefreshed = (target) => {
+        this.setState(({refreshNeeded}) => ({
+            refreshNeeded: { ...refreshNeeded, [target]: false }
+        }));
+    }
+
     onSnackbarOpen = (exception, setStateCallback) => {
         if (!(exception.hasOwnProperty("type") && exception.type === "AlertError")) {
             console.error(exception);
@@ -283,7 +300,18 @@ class Cones extends Component {
     };
 
     render() {
-        const { loading, items, displayedItems, openDetails, selectedItem, attributesMenuEl, alertProps } = this.state;
+        const {
+            loading,
+            items,
+            data,
+            displayedItems,
+            refreshNeeded,
+            openDetails,
+            selectedItem,
+            attributesMenuEl,
+            alertProps
+        } = this.state;
+
         const { objectGlobalName ,project: { id: projectId }, serverBase } = this.props;
 
         return (
@@ -297,23 +325,23 @@ class Cones extends Component {
                     <span style={{flexGrow: 1}}/>
                     <FilterTextField onChange={this.onFilterChange} />
                 </CustomHeader>
-                {Array.isArray(items) && items.length > 0 && !loading &&
-                    <AttributesMenu
-                        ListProps={{
-                            id: "cones-main-desc-attribute-menu"
-                        }}
-                        MuiMenuProps={{
-                            anchorEl: attributesMenuEl,
-                            onClose: this.onAttributesMenuClose
-                        }}
-                        objectGlobalName={objectGlobalName}
-                        onObjectNamesChange={this.onObjectNamesChange}
-                        onSnackbarOpen={this.onSnackbarOpen}
-                        projectId={projectId}
-                        resource={"cones"}
-                        serverBase={serverBase}
-                    />
-                }
+                <AttributesMenu
+                    ListProps={{
+                        id: "cones-main-desc-attribute-menu"
+                    }}
+                    MuiMenuProps={{
+                        anchorEl: attributesMenuEl,
+                        onClose: this.onAttributesMenuClose
+                    }}
+                    objectGlobalName={objectGlobalName}
+                    onAttributesRefreshed={() => this.onComponentRefreshed("attributesMenu")}
+                    onObjectNamesChange={this.onObjectNamesChange}
+                    onSnackbarOpen={this.onSnackbarOpen}
+                    projectId={projectId}
+                    refreshNeeded={refreshNeeded.attributesMenu}
+                    resource={"cones"}
+                    serverBase={serverBase}
+                />
                 <TabBody
                     content={parseConesListItems(displayedItems)}
                     id={"cones-list"}
@@ -364,7 +392,12 @@ class Cones extends Component {
                     subheaderContent={[
                         {
                             label: "Number of objects:",
-                            value: displayedItems != null && displayedItems.length
+                            value: Array.isArray(displayedItems) ? displayedItems.length : "-"
+                        },
+                        {
+                            label: "Calculated in:",
+                            value: nonNullProperty(data, "calculationsTime") ?
+                                data.calculationsTime : "-"
                         }
                     ]}
                 />

@@ -1,4 +1,5 @@
 /**
+ * <h3>Overview</h3>
  * Formats number using either a fixed-point notation or an exponential notation.
  * The exponential notation is used if there are three or more zero digits after decimal point
  * and before a non-zero digit.

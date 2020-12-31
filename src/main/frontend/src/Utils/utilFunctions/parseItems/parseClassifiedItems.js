@@ -1,6 +1,7 @@
 import { getItemName } from "./parseElements";
 
 /**
+ * <h3>Overview</h3>
  * Converts server response to an array of items. Single item can be displayed in {@link ClassifiedObjectDialog}.
  * Uses {@link getItemName} as well as 'settings' to obtain special name for an item.
  *

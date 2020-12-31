@@ -1,6 +1,7 @@
 import { getRelationSign } from "../parseDetails";
 
 /**
+ * <h3>Overview</h3>
  * Converts conditions from server response to conditions used in a rule name.
  *
  * @category Utils

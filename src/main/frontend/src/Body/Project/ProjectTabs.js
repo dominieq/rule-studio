@@ -7,23 +7,28 @@ import Data from "./Data/DisplayData";
 import Rules from "./Tabs/Rules";
 import Unions from "./Tabs/Unions";
 import { fetchData, fetchProject } from "../../Utils/utilFunctions/fetchFunctions";
-import StyledTab from "../../Utils/Navigation/StyledTab";
+import StyledLinkTab from "../../Utils/Navigation/StyledLinkTab";
 import StyledTabs from "../../Utils/Navigation/StyledTabs";
 import ExternalFile from "../../Utils/Feedback/CustomIcons/ExternalFile";
 import OutdatedData from "../../Utils/Feedback/AlertBadge/Alerts/OutdatedData";
+import { Route, Switch } from 'react-router-dom';
+import { tabNames } from "../../Utils/Constants/TabsNamesInPath";
 
 /**
- * The Project section in RuLeStudio. Allows user to choose between tabs.
+ * <h3>Overview</h3>
+ * The Project section in RuLeStudio. Allows a user to choose between tabs.
  * If necessary, displays information about outdated results shown in currently selected tab.
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @param {Object} props
+ * @param {boolean} props.deleting - If <code>true</code> the project was requested to be deleted.
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
  * @param {function} props.onSnackbarOpen - Callback fired when the component request to display an error.
  * @param {Object} props.project - Current project.
  * @param {string} props.serverBase - The host and port in the URL of an API call.
  * @param {function} props.updateProject - Callback fired when a part of current project was changed.
+ * @returns {React.PureComponent}
  */
 class ProjectTabs extends React.Component {
     constructor(props) {
@@ -32,6 +37,7 @@ class ProjectTabs extends React.Component {
         this.state = {
             informationTable: null,
             isUpdateNecessary: false,
+            refreshNeeded: false,
             loading: false,
             selected: 0,
             showAlert: Array(5).fill(false),
@@ -42,6 +48,7 @@ class ProjectTabs extends React.Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Updates alerts based on the response from server.
      *
      * @function
@@ -179,21 +186,19 @@ class ProjectTabs extends React.Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Utilizes {@link fetchData} to perform an API call with POST method and information table in body.
+     *
+     * <h3>Goal</h3>
      * The goal of this function is to save user's changes made in information table.
      *
      * @function
      * @memberOf ProjectTabs
      * @param {string} projectId - The identifier of a selected project.
      * @param {Object} informationTable - The local copy of an information table that will be sent to server.
-     * @param {number} newValue - The index of currently selected tab.
+     * @param {function} [finallyCallback] - The callback fired in finally part of the fetch function.
      */
-    updateProjectOnServer = (projectId, informationTable, newValue) => {
-        if (informationTable == null) {
-            this.setState({ selected: newValue });
-            return;
-        }
-
+    updateProjectOnServer = (projectId, informationTable, finallyCallback) => {
         const pathParams = { projectId };
         const method = "POST";
         const body = new FormData();
@@ -209,19 +214,16 @@ class ProjectTabs extends React.Component {
             }
         }).catch(
             this.props.onSnackbarOpen
-        ).finally(() => {
-            if (this._isMounted) {
-                this.setState({
-                    isUpdateNecessary: false,
-                    loading: false,
-                    selected: newValue
-                });
-            }
-        });
+        ).finally(
+            finallyCallback
+        );
     };
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired once when component was mounted.
+     *
+     * <h3>Goal</h3>
      * Method calls {@link updateAlerts}.
      *
      * @function
@@ -229,39 +231,20 @@ class ProjectTabs extends React.Component {
      */
     componentDidMount() {
         this._isMounted = true;
-        this.getProject()
+        this.getProject();
+        this.activateTabUpToURL();
     };
 
-    /**
-     * A component's lifecycle method. Fired before rendering to determine whether a component should update.
-     * <br>
-     * <br>
-     * Apart from making a shallow comparison between props and state,
-     * method compares the id of current project to the updated project.
-     * Component will update if the identities are different.
-     *
-     * @function
-     * @memberOf ProjectTabs
-     * @param {Object} nextProps - New props that will replace old props.
-     * @param {Object} nextState - New state that will replace old state
-     * @param {Object} nextContext - New context that will replace old context.
-     * @returns {boolean} - If <code>true</code> the component will update.
-     */
     shouldComponentUpdate(nextProps, nextState, nextContext) {
-        const shallowComparison = this.props !== nextProps || this.state !== nextState;
-        const deepComparison = this.props.project.id !== nextProps.project.id;
-
-        return shallowComparison || deepComparison;
-    };
+        return this.props !== nextProps || this.state !== nextState;
+    }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired after a component was updated.
-     * <br>
-     * <br>
-     * Method updates state's project settings if props settings have changed and the {@link Data} tab is selected.
-     * <br>
-     * <br>
-     * Apart from that, method checks if project was changed. If a new project was forwarded, method updates alerts
+     *
+     * <h3>Goal</h3>
+     * Checks if project was changed. If a new project was forwarded, method makes an API call to retrieve that project
      * and saves changes from old project if necessary.
      *
      * @function
@@ -274,20 +257,42 @@ class ProjectTabs extends React.Component {
         if (prevProps.project.id !== this.props.project.id) {
             const { project: { id: projectId }} = prevProps;
             const { informationTable, isUpdateNecessary, selected } = this.state;
+          
             if (isUpdateNecessary && selected === 0) {
                 this.setState({
                     loading: true
                 }, () => {
-                    this.updateProjectOnServer(projectId, informationTable, selected);
+                    this.updateProjectOnServer(projectId, informationTable, () => {
+                        if (this._isMounted) {
+                            this.setState({
+                                isUpdateNecessary: false,
+                                loading: false
+                            });
+                        }
+                    });
+                });
+            } else if (selected !== 0) {
+                this.setState({
+                    refreshNeeded: true
                 });
             }
 
-            this.getProject()
+            this.getProject();
+            this.activateTabUpToURL();
+        }
+
+        if (this.props.history.action === "POP") {
+            if (prevProps.location !== this.props.location) {
+                this.activateTabUpToURL();
+            }
         }
     };
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired when component was requested to be unmounted.
+     *
+     * <h3>Goal</h3>
      * If there were any unsaved changes, method calls {@link updateProjectOnServer}.
      *
      * @function
@@ -296,14 +301,22 @@ class ProjectTabs extends React.Component {
     componentWillUnmount() {
         this._isMounted = false;
 
-        const { project: { id: projectId }} = this.props;
+        const { deleting, project: { id: projectId }} = this.props;
         const { informationTable, isUpdateNecessary, selected } = this.state;
-        if (isUpdateNecessary && selected === 0) {
-            this.updateProjectOnServer(projectId, informationTable, selected);
+
+        if (isUpdateNecessary && selected === 0 && !deleting) {
+            this.updateProjectOnServer(projectId, informationTable, () => {
+                if (this._isMounted) {
+                    this.setState({
+                        isUpdateNecessary: false
+                    });
+                }
+            });
         }
     };
 
     /**
+     * <h3>Overview</h3>
      * Fired when a tab is changed. If user had unsaved changes in {@link Data} tab,
      * method calls {@link updateProjectOnServer} to save them on server.
      *
@@ -316,19 +329,29 @@ class ProjectTabs extends React.Component {
         const { project: { id: projectId }} = this.props;
         const { informationTable, isUpdateNecessary, selected } = this.state;
 
-        if (isUpdateNecessary && selected === 0 && newValue !== 0) {
-            this.setState({
-                loading: true
-            }, () => {
-                this.updateProjectOnServer(projectId, informationTable, newValue);
-            });
-        } else {
-            this.setState({ selected: newValue });
-        }
+        this.setState({
+            selected: newValue
+        }, () => {
+            if (isUpdateNecessary && selected === 0 && newValue !== 0) {
+                this.setState({
+                    loading: true
+                }, () => {
+                    this.updateProjectOnServer(projectId, informationTable, () => {
+                        if (this._isMounted) {
+                            this.setState({
+                                isUpdateNecessary: false,
+                                loading: false
+                            });
+                        }
+                    });
+                });
+            }
+        });
     };
 
     /**
-     * Forwarded to the {@link Data} tab. Fired when an user makes changes in the information table.
+     * <h3>Overview</h3>
+     * Forwarded to the {@link Data} tab. Fired when a user makes changes in the information table.
      * Saves modified project in the component's state.
      *
      * @function
@@ -339,11 +362,13 @@ class ProjectTabs extends React.Component {
     onDataChange = (informationTable, isUpdateNecessary) => {
         this.setState({
             informationTable: informationTable,
-            isUpdateNecessary: isUpdateNecessary
+            isUpdateNecessary: isUpdateNecessary,
+            refreshNeeded: false
         });
     };
 
     /**
+     * <h3>Overview</h3>
      * Forwarded to all tabs. Fired when a tab receives information from the server that current results are outdated.
      *
      * @function
@@ -365,7 +390,8 @@ class ProjectTabs extends React.Component {
     };
 
     /**
-     * Forwarded to the {@link Rules} tab. Fired when an user uploads rule set.
+     * <h3>Overview</h3>
+     * Forwarded to the {@link Rules} tab. Fired when a user uploads rule set.
      * Saves this information in the component's state.
      *
      * @function
@@ -379,7 +405,8 @@ class ProjectTabs extends React.Component {
     };
 
     /**
-     * Forwarded to the {@link Rules} and {@link Classification} tabs. Fired when an  user uploads information table.
+     * <h3>Overview</h3>
+     * Forwarded to the {@link Rules} and {@link Classification} tabs. Fired when a user uploads information table.
      * Saves this information in the component's state.
      *
      * @function
@@ -406,10 +433,45 @@ class ProjectTabs extends React.Component {
         value: index
     });
 
+    activateTabUpToURL = () => {
+        const url = window.location.href.toString();
+        const urlSplitted = url.split('/');
+
+        if (urlSplitted.length < 5) {
+            this.props.history.replace({
+                pathname: `/${this.props.project.id}/${tabNames[0]}`,
+                state: { projectId: this.props.project.id }
+            });
+            this.onTabChange(null,0);
+        }
+        else {
+            switch (urlSplitted[4]) {
+                case tabNames[1]:
+                    this.onTabChange(null,1);
+                    break;
+                case tabNames[2]:
+                    this.onTabChange(null,2);
+                    break;
+                case tabNames[3]:
+                    this.onTabChange(null,3);
+                    break;
+                case tabNames[4]:
+                    this.onTabChange(null,4);
+                    break;
+                case tabNames[5]:
+                    this.onTabChange(null,5);
+                    break;
+                default:
+                    this.onTabChange(null,0);
+            }
+        }
+    };
+
     render() {
         const {
             informationTable,
             loading,
+            refreshNeeded,
             selected,
             showAlert,
             showExternalRules,
@@ -425,24 +487,32 @@ class ProjectTabs extends React.Component {
         return (
             <React.Fragment>
                 <StyledTabs aria-label={"project tabs"} onChange={this.onTabChange} value={selected}>
-                    <StyledTab label={"Data"} {...this.getTabProps(0)} />
-                    <StyledTab
+                    <StyledLinkTab
+                        label={"Data"}
+                        to={{pathname: `/${project.id}/${tabNames[0]}`, state: {projectId: project.id}}}
+                        {...this.getTabProps(0)}
+                    />
+                    <StyledLinkTab
                         label={
                             <OutdatedData invisible={!showAlert[0]} messages={alertMessages[0]}>
                                 Dominance cones
                             </OutdatedData>
                         }
+                        to={{pathname: `/${project.id}/${tabNames[1]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(1)}
+                        
                     />
-                    <StyledTab
+                    <StyledLinkTab
                         label={
                             <OutdatedData invisible={!showAlert[1]} messages={alertMessages[1]}>
                                 Class unions
                             </OutdatedData>
                         }
+                        to={{pathname: `/${project.id}/${tabNames[2]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(2)}
+                        
                     />
-                    <StyledTab
+                    <StyledLinkTab
                         icon={showExternalRules ?
                             <ExternalFile WrapperProps={{style: { marginBottom: 0, marginRight: 8}}} /> : null
                         }
@@ -451,9 +521,11 @@ class ProjectTabs extends React.Component {
                                 Rules
                             </OutdatedData>
                         }
+                        to={{pathname: `/${project.id}/${tabNames[3]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(3)}
+                        
                     />
-                    <StyledTab
+                    <StyledLinkTab
                         icon={showExternalData ?
                             <ExternalFile WrapperProps={{style: { marginBottom: 0, marginRight: 8}}} /> : null
                         }
@@ -462,48 +534,74 @@ class ProjectTabs extends React.Component {
                                 Classification
                             </OutdatedData>
                         }
+                        to={{pathname: `/${project.id}/${tabNames[4]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(4)}
+                        
                     />
-                    <StyledTab
+                    <StyledLinkTab
                         label={
                             <OutdatedData invisible={!showAlert[4]} messages={alertMessages[4]}>
                                 Cross-Validation
                             </OutdatedData>
                         }
+                        to={{pathname: `/${project.id}/${tabNames[5]}`, state: {projectId: project.id}}}
                         {...this.getTabProps(5)}
+                        
                     />
                 </StyledTabs>
+                <Switch>
                 {
                     {
-                        0: (
-                                <Data
-                                    informationTable={informationTable}
-                                    loading={loading}
-                                    onDataChange={this.onDataChange}
-                                    project={project}
-                                    serverBase={serverBase}
-                                    updateProject={this.props.updateProject}
-                                />
-                            ),
-                        1: <Cones {...this.getTabBodyProps(0)} />,
-                        2: <Unions {...this.getTabBodyProps(1)} />,
-                        3: (
-                                <Rules
-                                    onDataUploaded={this.onDataUploaded}
-                                    onRulesUploaded={this.onRulesUploaded}
-                                    {...this.getTabBodyProps(2)}
-                                />
-                            ),
-                        4: <Classification onDataUploaded={this.onDataUploaded} {...this.getTabBodyProps(3)} />,
-                        5: <CrossValidation {...this.getTabBodyProps(4)} />
+
+                        0: <Route
+                            path={`/${project.id}/${tabNames[0]}`}
+                            render={() => <Data
+                                informationTable={informationTable}
+                                loading={loading}
+                                onDataChange={this.onDataChange}
+                                project={project}
+                                refreshNeeded={refreshNeeded}
+                                serverBase={serverBase}
+                                updateProject={this.props.updateProject}/>
+                            }
+                        />,
+                        1: <Route
+                            path={`/${project.id}/${tabNames[1]}`}
+                            render={() => <Cones {...this.getTabBodyProps(0)} />}
+                        />,
+                        2: <Route
+                            path={`/${project.id}/${tabNames[2]}`}
+                            render={() => <Unions {...this.getTabBodyProps(1)} />}
+                        />,
+                        3: <Route
+                            path={`/${project.id}/${tabNames[3]}`}
+                            render={() => <Rules
+                                onDataUploaded={this.onDataUploaded}
+                                onRulesUploaded={this.onRulesUploaded}
+                                {...this.getTabBodyProps(2)}/>
+                            }
+                        />,
+                        4: <Route
+                            path={`/${project.id}/${tabNames[4]}`}
+                            render={() => <Classification
+                                onDataUploaded={this.onDataUploaded}
+                                {...this.getTabBodyProps(3)}/>
+                            }
+                        />,
+                        5: <Route
+                            path={`/${project.id}/${tabNames[5]}`}
+                            render={() => <CrossValidation {...this.getTabBodyProps(4)} />}
+                        />
                     }[selected]
                 }
+                </Switch>
             </React.Fragment>
         );
     }
 }
 
 ProjectTabs.propTypes = {
+    deleting: PropTypes.bool,
     objectGlobalName: PropTypes.string,
     onSnackbarOpen: PropTypes.func,
     project: PropTypes.object,

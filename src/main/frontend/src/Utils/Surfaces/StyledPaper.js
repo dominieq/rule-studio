@@ -1,6 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
+import { StyledPaperPropTypes } from "./propTypes";
 import { mergeClasses } from "../utilFunctions";
 import Paper from "@material-ui/core/Paper";
 
@@ -12,16 +12,16 @@ const useStyles = makeStyles(theme => ({
 }), {name: "StyledPaper"});
 
 /**
+ * <h3>Overview</h3>
  * The Paper component from Material-UI with custom styling.
  * For full documentation check out Material-UI docs on
  * <a href="https://material-ui.com/api/paper/" target="_blank">Paper</a>.
  *
- * @name Styled Paper
  * @constructor
  * @category Utils
  * @subcategory Surfaces
- * @param props {Object} - Any other props will be forwarded to the Paper component.
- * @returns {React.ReactElement} - The Paper component from Material-UI library.
+ * @param {Object} props - Any other props will be forwarded to the Paper component.
+ * @returns {React.ReactElement}
  */
 function StyledPaper(props) {
     const { classes: propsClasses, paperRef, ...other } = props;
@@ -34,15 +34,6 @@ function StyledPaper(props) {
     );
 }
 
-StyledPaper.propTypes = {
-    children: PropTypes.node,
-    classes: PropTypes.object,
-    className: PropTypes.string,
-    component: PropTypes.elementType,
-    elevation: PropTypes.number,
-    paperRef: PropTypes.object,
-    square: PropTypes.bool,
-    variant: PropTypes.oneOf(["elevation", "outlined"]),
-};
+StyledPaper.propTypes = { ...StyledPaperPropTypes };
 
 export default StyledPaper;

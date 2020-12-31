@@ -1,0 +1,18 @@
+.Content {
+    display: flex;
+    flex-direction: column;
+}
+
+.ContentRow {
+    align-items: center;
+    display: flex;
+}
+
+.Content > *:not(:first-child) {
+    margin-top: 0.5rem;
+}
+
+.Paper {
+    min-width: fit-content;
+    width: 25%;
+}

@@ -20,13 +20,17 @@ public class ExportService {
 
     private static final Logger logger = LoggerFactory.getLogger(ExportService.class);
 
-    public static final String version = "1.0.0-rc.7";
+    public static final String version = "1.0.0-rc.8";
 
     @Autowired
     ProjectsContainer projectsContainer;
 
     public NamedResource getExport(UUID id) throws IOException {
-        logger.info("Id:\t{}", id);
+        if (logger.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id=").append(id);
+            logger.info(sb.toString());
+        }
 
         final Project project = ProjectService.getProjectFromProjectsContainer(projectsContainer, id);
 

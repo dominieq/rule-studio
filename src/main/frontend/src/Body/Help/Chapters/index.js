@@ -5,6 +5,8 @@ export {default as CrossValidation} from "./CrossValidation";
 export {default as Data} from "./Data";
 export {default as DeletingProject} from "./DeletingProject";
 export {default as DominanceCones} from "./DominanceCones";
+export {default as ExportingProject} from "./ExportingProject";
+export {default as ImportingProject} from "./ImportingProject";
 export {default as Navigating} from "./Navigating";
 export {default as ProjectFiles} from "./ProjectFiles";
 export {default as ProjectSettings} from "./ProjectSettings";

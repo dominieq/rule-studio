@@ -1,26 +1,24 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { nonNullProperty } from "../../../Utils/utilFunctions";
 import { downloadMatrix, fetchClassification } from "../../../Utils/utilFunctions/fetchFunctions";
 import { parseFormData } from "../../../Utils/utilFunctions/fetchFunctions/parseFormData";
 import { getItemName, parseClassifiedItems } from "../../../Utils/utilFunctions/parseItems";
 import { parseClassifiedListItems } from "../../../Utils/utilFunctions/parseListItems";
 import { parseClassificationParams } from "../../../Utils/utilFunctions/parseParams";
-import TabBody from "../Utils/TabBody";
-import filterFunction from "../Utils/Filtering/FilterFunction";
-import FilterTextField from "../Utils/Filtering/FilterTextField";
-import CalculateButton from "../Utils/Buttons/CalculateButton";
-import MatrixButton from "../Utils/Buttons/MatrixButton";
-import MatrixDownloadButton from "../Utils/Buttons/MatrixDownloadButton";
-import SettingsButton from "../Utils/Buttons/SettingsButton";
-import DefaultClassificationResultSelector from "../Utils/Calculations/DefaultClassificationResultSelector";
-import TypeOfClassifierSelector from "../Utils/Calculations/TypeOfClassifierSelector";
+import TabBody from "../../../Utils/Containers/TabBody";
+import filterFunction from "../Filtering/FilterFunction";
+import FilterTextField from "../Filtering/FilterTextField";
+import DefaultClassificationResultSelector from "../Calculations/DefaultClassificationResultSelector";
+import TypeOfClassifierSelector from "../Calculations/TypeOfClassifierSelector";
+import { CalculateButton, MatrixButton, MatrixDownloadButton, SettingsButton } from "../../../Utils/Buttons";
 import CustomBox from "../../../Utils/Containers/CustomBox";
 import CustomDrawer from "../../../Utils/Containers/CustomDrawer";
-import { MatrixDialog } from "../../../Utils/DataDisplay/MatrixDialog";
+import MatrixDialog from "../../../Utils/Dialogs/MatrixDialog";
 import StyledDivider from "../../../Utils/DataDisplay/StyledDivider";
 import CircleHelper from "../../../Utils/Feedback/CircleHelper";
-import { CSVDialog } from "../../../Utils/Feedback/CSVDialog";
-import { ClassifiedObjectDialog } from "../../../Utils/Feedback/DetailsDialog"
+import CSVDialog from "../../../Utils/Dialogs/CSVDialog";
+import { ClassifiedObjectDialog } from "../../../Utils/Dialogs/DetailsDialog"
 import StyledAlert from "../../../Utils/Feedback/StyledAlert";
 import CustomButtonGroup from "../../../Utils/Inputs/CustomButtonGroup";
 import CustomUpload from "../../../Utils/Inputs/CustomUpload";
@@ -28,11 +26,12 @@ import CustomHeader from "../../../Utils/Surfaces/CustomHeader";
 import {AttributesMenu} from "../../../Utils/Menus/AttributesMenu";
 
 /**
+ * <h3>Overview</h3>
  * The classification tab in RuLeStudio.
  * Presents the list of all object from information table with suggested classification based on generated rules.
  *
- * @class
- * @category Tabs
+ * @constructor
+ * @category Project
  * @subcategory Tabs
  * @param {Object} props
  * @param {string} props.objectGlobalName - The global visible object name used by all tabs as reference.
@@ -59,7 +58,10 @@ class Classification extends Component {
                 classifierType: "SimpleRuleClassifier",
             },
             parametersSaved: true,
-            matrixRefreshNeeded: false,
+            refreshNeeded: {
+                attributesMenu: false,
+                matrix: false
+            },
             selected: {
                 item: null,
                 action: 0
@@ -78,6 +80,7 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on classification to receive current copy of classification from server.
      * Then, updates state and makes necessary changes in display.
      *
@@ -143,9 +146,10 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired once when component was mounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method calls {@link getClassification}.
      *
      * @function
@@ -158,12 +162,10 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired after a component was updated.
-     * <br>
-     * <br>
-     * If index option was changed, method sets object's names according to new value.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * If project was changed, method saves changes from previous project
      * and calls {@link getClassification} to receive the latest copy of classification.
      *
@@ -192,9 +194,10 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * A component's lifecycle method. Fired when component was requested to be unmounted.
-     * <br>
-     * <br>
+     *
+     * <h3>Goal</h3>
      * Method saves changes from current project.
      *
      * @function
@@ -217,6 +220,7 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Makes an API call on classification to classify objects from current project or uploaded objects
      * with selected parameters.
      * Then, updates state and makes necessary changes in display.
@@ -248,7 +252,10 @@ class Classification extends Component {
                             items: items,
                             displayedItems: items,
                             parametersSaved: true,
-                            matrixRefreshNeeded: true
+                            refreshNeeded: {
+                                attributesMenu: true,
+                                matrix: true
+                            }
                         });
                     }
 
@@ -292,6 +299,7 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Calls {@link calculateClassification} to classify objects from current project.
      *
      * @function
@@ -307,6 +315,7 @@ class Classification extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Calls {@link calculateClassification} to classify objects from uploaded file.
      * If uploaded file is in CSV format, method opens {@link CSVDialog} to specify CSV attributes.
      *
@@ -337,6 +346,7 @@ class Classification extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Callback fired when {@link CSVDialog} requests to be closed.
      * If the user specified CSV attributes, method calls {@link calculateClassification} to
      * classify objects from uploaded file.
@@ -362,6 +372,7 @@ class Classification extends Component {
     }
 
     /**
+     * <h3>Overview</h3>
      * Callback fired when the user requests to download misclassification matrix.
      * Method makes an API call to download the resource.
      *
@@ -406,6 +417,7 @@ class Classification extends Component {
     };
 
     /**
+     * <h3>Overview</h3>
      * Filters items from {@link Classification}'s state.
      * Method uses {@link filterFunction} to filter items.
      *
@@ -468,6 +480,12 @@ class Classification extends Component {
         });
     };
 
+    onComponentRefresh = (target) => {
+        this.setState(({refreshNeeded}) => ({
+            refreshNeeded: { ...refreshNeeded, [target]: false }
+        }));
+    };
+
     onSnackbarOpen = (exception, setStateCallback) => {
         if (!(exception.hasOwnProperty("type") && exception.type === "AlertError")) {
             console.error(exception);
@@ -487,12 +505,6 @@ class Classification extends Component {
         }
     };
 
-    onMatrixRefresh = () => {
-        this.setState({
-            matrixRefreshNeeded: false
-        });
-    };
-
     render() {
         const {
             loading,
@@ -500,7 +512,7 @@ class Classification extends Component {
             items,
             displayedItems,
             parameters,
-            matrixRefreshNeeded,
+            refreshNeeded,
             selected,
             open,
             attributesMenuEl,
@@ -575,7 +587,7 @@ class Classification extends Component {
                                 <StyledDivider margin={16} />
                                 <MatrixButton
                                     onClick={() => this.toggleOpen("matrix")}
-                                    title={"Show ordinal misclassification matrix and it's details"}
+                                    tooltip={"Show ordinal misclassification matrix and it's details"}
                                 />
                             </React.Fragment>
                         }
@@ -598,7 +610,12 @@ class Classification extends Component {
                         subheaderContent={[
                             {
                                 label: "Number of objects:",
-                                value: displayedItems && displayedItems.length,
+                                value: Array.isArray(displayedItems) ? displayedItems.length : "-"
+                            },
+                            {
+                                label: "Calculated in:",
+                                value: nonNullProperty(data, "calculationsTime") ?
+                                    data.calculationsTime : "-"
                             }
                         ]}
                     />
@@ -618,18 +635,18 @@ class Classification extends Component {
                     {Array.isArray(items) && items.length > 0 &&
                         <MatrixDialog
                             onClose={() => this.toggleOpen("matrix")}
-                            onMatrixRefresh={this.onMatrixRefresh}
+                            onMatrixRefresh={() => this.onComponentRefresh("matrix")}
                             onSnackbarOpen={this.onSnackbarOpen}
                             open={open.matrix}
                             projectId={projectId}
-                            refreshNeeded={matrixRefreshNeeded}
+                            refreshNeeded={refreshNeeded.matrix}
                             resource={"classification"}
                             saveMatrix={this.onSaveToFile}
                             serverBase={serverBase}
                             title={
                                 <React.Fragment>
                                     <MatrixDownloadButton
-                                        onSave={this.onSaveToFile}
+                                        onClick={this.onSaveToFile}
                                         tooltip={"Download matrix (txt)"}
                                     />
                                     <span aria-label={"matrix title"} style={{paddingLeft: 8}}>
@@ -648,9 +665,11 @@ class Classification extends Component {
                             onClose: this.onAttributesMenuClose
                         }}
                         objectGlobalName={objectGlobalName}
+                        onAttributesRefreshed={() => this.onComponentRefresh("attributesMenu")}
                         onObjectNamesChange={this.onObjectNamesChange}
                         onSnackbarOpen={this.onSnackbarOpen}
                         projectId={projectId}
+                        refreshNeeded={refreshNeeded.attributesMenu}
                         resource={"classification"}
                         serverBase={serverBase}
                     />

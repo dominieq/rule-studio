@@ -1,4 +1,5 @@
 /**
+ * <h3>Overview</h3>
  * Thrown when invalid path parameters are forwarded to fetch functions.
  *
  * @constructor

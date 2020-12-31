@@ -1,4 +1,5 @@
 /**
+ * <h3>Overview</h3>
  * Returns a unicode for a provided relation symbol.
  *
  * @category Utils

@@ -8,11 +8,12 @@ const RuleType = {
 };
 
 /**
+ * <h3>Overview</h3>
  * This is the numeric filter, which appears for the Integer and Real value type attributes.
  *
- * @class
- * @category Tabs
- * @subcategory Data Utils
+ * @constructor
+ * @category Project
+ * @subcategory Filtering
  * @param {Object} props - Object passed from the external library (react-data-grid).
  * @param {Object} props.column - The column on which filter was used.
  * @param {function} props.onChange - Method runs when there is some change in the filter field.

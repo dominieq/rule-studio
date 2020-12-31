@@ -24,7 +24,7 @@ function Data(props) {
                 titleId={chapterId}
                 content={
                     <React.Fragment>
-                        <Image src={fullTab} caption={"FIGURE 11: Data"} />
+                        <Image src={fullTab} caption={"FIGURE 14: Data"} />
                         <Typography component={'span'}>
                             Data tab is responsible for displaying objects (rows) and attributes (columns) loaded to the project.
                             If nothing was loaded, this is the place where you can create either attributes or objects, or both.
@@ -41,7 +41,7 @@ function Data(props) {
                             Specific Tab Description
                         </Typography>
                         <Typography> 1. Buttons </Typography>
-                        <Image src={buttons} caption={"FIGURE 12: Data buttons"} />
+                        <Image src={buttons} caption={"FIGURE 15: Data buttons"} />
                         <Typography component={'span'}>
                             From left to right:
                             <ol type="a">
@@ -59,18 +59,18 @@ function Data(props) {
                             </ol>
                             </Typography>
                         <Typography> 2. Columns headers </Typography>
-                        <Image src={columnsHeaders} caption={"FIGURE 13: Columns headers with filters"} />
+                        <Image src={columnsHeaders} caption={"FIGURE 16: Columns headers with filters"} />
                         <Typography>
-                            Figure 13 presents columns headers. Each header has meaningful color, which informs about the nature 
+                            Figure 16 presents columns headers. Each header has meaningful color, which informs about the nature
                             of the attribute. Gray color indicates an attribute which is inactive or its type is either identification or description.
                             Green color means that the attribute preference type is “gain”, while red one relates to “cost” preference type.
                             Blue color indicates that the attribute does not have a preference type (its preference type is “none”).
                             Columns are resizable and draggable. To resize the column, you need to drag the end of its header. 
                             To change the order of columns you need to drag and drop the header of the column. Left click on a header sorts rows 
                             in respective column – in such case, the arrow on the left of the column name represents sorting order.
-                            Right click on the header opens header context menu (Fig. 14).
+                            Right click on the header opens header context menu (Fig. 17).
                         </Typography>
-                        <Image src={headerContextMenu} caption={"FIGURE 14: Header context menu"} />
+                        <Image src={headerContextMenu} caption={"FIGURE 17: Header context menu"} />
                         <Typography>
                             This menu enables to change attribute from active to inactive, and vice versa, open the “Edit attributes” dialog,
                             or remove the attribute.
@@ -82,48 +82,50 @@ function Data(props) {
                             and entering a new value. Second one is entering new value by pressing keyboard keys. If the attribute is of enumeration type,
                             which has predefined domain elements, you can select the domain element by pressing the first letter of its name.
                             Third method employs copy-paste mode. By pressing the keyboard shortcut Ctrl + C, you copy the value of the highlighted
-                            cell and enter the copy-paste mode, which is indicated by dark blue background color of the cell (Fig. 15).
+                            cell and enter the copy-paste mode, which is indicated by dark blue background color of the cell (Fig. 18).
                             To paste the copied value, just press Ctrl + V in the target cell. To exit from the copy-paste mode, you need
                             to press Escape key on the keyboard.
                         </Typography>
-                        <Image src={copyPaste} caption={"FIGURE 15: Copy-paste mode"} />
+                        <Image src={copyPaste} caption={"FIGURE 18: Copy-paste mode"} />
                         <Typography>
-                            It is possible to modify multiple cells in the same column. To set the cells to the same value as selected cell, you need to 
-                            click on a square located in the bottom right corner of the cell and start dragging it upwards or downwards (Fig. 16).
-                            At the chosen position, release the drag. It is also possible to modify all the cells below the selected cell. To do that,
-                            you need to double click on the square used for dragging.
+                            It is possible to modify multiple cells in the same column. To set the cells to the same value as selected cell,
+                            you need to click on a square located in the bottom right corner of the cell and start dragging it upwards or downwards (Fig. 19).
+                            At the chosen position, release the drag. Moreover if you hold the Ctrl button while dragging,
+                            cells will be filled with consecutive numbers.
+                            It is also possible to modify all the cells below the selected cell with either holding Ctrl button or not.
+                            To do that, you need to double click on the square used for dragging.
                         </Typography>
-                        <Image src={dragCell} caption={"FIGURE 16: Dragging downwards"} />
+                        <Image src={dragCell} caption={"FIGURE 19: Dragging downwards"} />
                         <Typography>
-                            Similarly to the header context menu, there is a row context menu. To open the menu, right click on the cell (Fig. 17).
+                            Similarly to the header context menu, there is a row context menu. To open the menu, right click on the cell (Fig. 20).
                             The menu enables to remove the object presented in cell’s row, and add new object above or below current object.
                         </Typography>
-                        <Image src={rowContextMenu} caption={"FIGURE 17: Row context menu"} />
+                        <Image src={rowContextMenu} caption={"FIGURE 20: Row context menu"} />
                         <Typography component={"header"} paragraph={true} variant={"h6"}>
                             Add attribute
                         </Typography>
-                        <Image src={addAttribute} caption={"FIGURE 18: Add attribute dialog"} />
+                        <Image src={addAttribute} caption={"FIGURE 21: Add attribute dialog"} />
                         <Typography>
-                            To create a new attribute, you have to fill all the mandatory fields (marked by asterisk) in the “Add attribute” dialog (Fig. 18).
+                            To create a new attribute, you have to fill all the mandatory fields (marked by asterisk) in the “Add attribute” dialog (Fig. 21).
                             If the selected value type is “enumeration”, then additional button will appear to add domain elements, 
-                            like in the “Edit attributes” dialog (Fig. 19). After filling the fields, click “APPLY” to save changes and close the dialog.
+                            like in the “Edit attributes” dialog (Fig. 22). After filling the fields, click “APPLY” to save changes and close the dialog.
                             If you want to cancel the changes, press “Escape” key on the keyboard, “CANCEL” button visible in the dialog,
                             or click anywhere outside the dialog.
                         </Typography>
                         <Typography component={"header"} paragraph={true} variant={"h6"}>
                             Edit attributes
                         </Typography>
-                        <Image src={editAttributes} caption={"FIGURE 19: Edit attributes dialog"} />
+                        <Image src={editAttributes} caption={"FIGURE 22: Edit attributes dialog"} />
                         <Typography>
                             In order to edit an attribute, you have to select it from the “ATTRIBUTES” list. After selecting the attribute,
-                            all the attribute fields will appear (Fig. 19), and you can make desirable changes. After that, you have to click “APPLY” button
+                            all the attribute fields will appear (Fig. 22), and you can make desirable changes. After that, you have to click “APPLY” button
                             to save that changes and close the dialog. If you want to cancel the changes, press “Escape” key on the keyboard,
                             “CANCEL” button visible in the dialog, or click anywhere outside the dialog.
                         </Typography>
                         <Typography component={"header"} paragraph={true} variant={"h6"}>
                             Save to file
                         </Typography>
-                        <Image src={saveToFile} caption={"FIGURE 20: Save to file dialog"} />
+                        <Image src={saveToFile} caption={"FIGURE 23: Save to file dialog"} />
                         <Typography>
                             This dialog enables to save attributes (metadata) to JSON file and objects (data) to JSON or CSV file.
                             If the CSV file option is marked, then you can also choose the separator and indicate if the data should have the header row.
@@ -133,7 +135,7 @@ function Data(props) {
                         <Typography component={"header"} paragraph={true} variant={"h6"}>
                             Transform
                         </Typography>
-                        <Image src={transform} caption={"FIGURE 21: Impose preference orders dialog"} />
+                        <Image src={transform} caption={"FIGURE 24: Impose preference orders dialog"} />
                         <Typography>
                             This dialog enables to perform non-invasive transformation of the data (more details in user's guide).
                             For an ordinal classification problem (where decision attribute has “gain” or “cost” preference type),
@@ -151,7 +153,7 @@ function Data(props) {
 }
 
 Data.propTypes = {
-    chapterId: PropTypes.string
+    chapterId: PropTypes.string.isRequired
 };
 
 export default Data;

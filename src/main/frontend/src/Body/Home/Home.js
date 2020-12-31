@@ -7,13 +7,14 @@ import logoLight from "./resources/logo_transparent_light.png";
 import styles from "./styles/Home.module.css";
 
 /**
+ * <h3>Overview</h3>
  * The Home section in RuLeStudio. It consists of a main box and a footer.
  * There are two navigate buttons on both of sides of a logo.
  * The one on the left is navigating to the {@link Import} section.
  * On the other hand, the right one navigates to the {@link Help} section.
  * There is a list of authors in the footer as well as a button linking to GitHub repository.
  *
- * @class
+ * @constructor
  * @category Home
  * @param {Object} props
  * @param {function} props.goToHelp - Callback fired when user requests to go to the {@link Help} section.

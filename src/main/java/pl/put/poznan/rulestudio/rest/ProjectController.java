@@ -33,10 +33,11 @@ public class ProjectController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ValidityProjectContainer> getProject(
             @PathVariable("id") UUID id) {
-        logger.info("Getting project...");
+        logger.info("[START] Getting project...");
 
         final ValidityProjectContainer result = projectService.getProject(id);
 
+        logger.info("[ END ] Getting project is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -47,10 +48,11 @@ public class ProjectController {
             @RequestParam(name = "data", required = false) MultipartFile dataFle,
             @RequestParam(name = "separator", defaultValue = ",") Character separator,
             @RequestParam(name = "header", defaultValue = "false") Boolean header) throws IOException {
-        logger.info("Setting project...");
+        logger.info("[START] Setting project...");
 
         final ValidityProjectContainer result = projectService.setProject(id, metadataFile, dataFle, separator, header);
 
+        logger.info("[ END ] Setting project is done.");
         return ResponseEntity.ok(result);
     }
 
@@ -58,30 +60,33 @@ public class ProjectController {
     public ResponseEntity<ProjectResponse> renameProject(
             @PathVariable("id") UUID id,
             @RequestParam("name") String name) {
-        logger.info("Renaming project...");
+        logger.info("[START] Renaming project...");
 
         final ProjectResponse result = projectService.renameProject(id, name);
 
+        logger.info("[ END ] Renaming project is done.");
         return ResponseEntity.ok(result);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity deleteProject(
             @PathVariable("id") UUID id) {
-        logger.info("Deleting project...");
+        logger.info("[START] Deleting project...");
 
         projectService.deleteProject(id);
 
+        logger.info("[ END ] Deleting project is done.");
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "/details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectDetailsResponse> getDetails(
             @PathVariable("id") UUID id) {
-        logger.info("Getting project details...");
+        logger.info("[START] Getting project details...");
 
         final ProjectDetailsResponse projectDetailsResponse = projectService.getDetails(id);
 
+        logger.info("[ END ] Getting project details is done.");
         return ResponseEntity.ok(projectDetailsResponse);
     }
 }

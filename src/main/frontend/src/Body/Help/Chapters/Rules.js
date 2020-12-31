@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Chapter, Image } from "../Elements";
 import Typography from "@material-ui/core/Typography";
 import fullTab from "../resources/rules/full-tab.png";
-import ruleDetails from "../resources/rules/rule-details.jpg";
+import ruleDetails from "../resources/rules/rules-details.png";
 import settings from "../resources/rules/settings.png";
 import sort from "../resources/rules/sort.png";
 
@@ -16,27 +16,27 @@ function Rules(props) {
             titleId={chapterId}
             content={
                 <React.Fragment>
-                    <Image src={fullTab} caption={"FIGURE 27: Rules"} />
+                    <Image src={fullTab} caption={"FIGURE 31: Rules"} />
                     <Typography>
                         The tab is empty, when you visit it for the first time. In order to see rules, click on the “CALCULATE” button.
                         Before you click on this button, you can customize the parameters that are used in calculations.
-                        If you wish to do that, click on the button with cog icon. A drawer is going to slide into current tab from the left (Fig. 28).
+                        If you wish to do that, click on the button with cog icon. A drawer is going to slide into current tab from the left (Fig. 32).
                         To customize type of rules and consistency measure, click on the corresponding select menu and pick desirable value 
                         from the list. To choose consistency threshold, write a number in the text field or use the slider.
                         The concept of decision rules can be found in the user's guide.
                     </Typography>
-                    <Image src={settings} caption={"FIGURE 28: Parameters in “RULES”"} />
+                    <Image src={settings} caption={"FIGURE 32: Parameters in “RULES”"} />
                     <Typography>
                         If there are more than 50 rules, pagination is displayed at the top and at the bottom of the page.
                         If there are less than 6 rules on the page, the upper pagination is hidden. You can filter result 
                         list by using the “Search” field. In order to filter rules, use one of the characteristics visible 
                         on list items. For example, if you want to filter out rules that have strength equal to 1, you can 
                         type “strength 1”. You can sort the result list by rule’s characteristics. In order to do that, you
-                        should click on “Sort rules” icon. Then, a menu is going to appear below this icon (Fig. 29). 
+                        should click on “Sort rules” icon. Then, a menu is going to appear below this icon (Fig. 33).
                         It contains a list of rule’s characteristics and two sorting orders: ascending and descending.
                         Default values are shown in Fig. 29. Main rule characteristics are described in the user's guide.
                     </Typography>
-                    <Image src={sort} caption={"FIGURE 29: Sort menu in “RULES”"} />
+                    <Image src={sort} caption={"FIGURE 33: Sort menu in “RULES”"} />
                     <Typography>
                         In RuLeStudio, you can upload your own rule set. Click on “Upload file” button and select your file.
                         It should be a valid XML file that implements RuleML standard. Reading of this file is going to be executed
@@ -46,17 +46,23 @@ function Rules(props) {
                         rule set to XML or TXT file. In order to do that, click on “Save rules to RuleML” or “Save rules to TXT” button.
                         The current rule set is going to be automatically downloaded to your default download folder. It is possible 
                         to see details of any rule. In order to do that, you have to click on one of the rules from the result list. 
-                        A new dialog is going to be displayed (Fig. 30).
+                        A new dialog is going to be displayed (Fig. 34).
                     </Typography>
-                    <Image src={ruleDetails} caption={"FIGURE 30: Rule’s details"} />
+                    <Image src={ruleDetails} caption={"FIGURE 34: Rule’s details"} />
                     <Typography>
                         There are two tables and one list in this dialog. The table on the right isn’t visible when you enter this 
                         dialog for the first time. The table on the left contains characteristics of the selected rule. Furthermore,
                         the list in the middle consists of objects that are covered by a rule. Green left border means that the object
                         is covered by a rule and is a supporting object as well. Red left border means that the object is covered by a 
                         rule but it does not support the selected rule. In order to display object’s evaluations on the attributes, 
-                        you should click on an item from the list in the middle. Then, a table is going to appear on the right. 
-                        Note that the line presenting the selected rule is scrollable. Thus, when the rule doesn’t have enough space 
+                        you should click on an item from the list in the middle. Then, a table is going to appear on the right.
+                    </Typography>
+                    <Typography>
+                        There is a button with three dots placed in the header of the middle list that allows
+                        you to change the default name for objects. The process was described in section about “Dominance cones”.
+                    </Typography>
+                    <Typography>
+                        Note that the line presenting the selected rule is scrollable. Thus, when the rule doesn’t have enough space
                         and is partially hidden, you can hover over that line and scroll to the end.
                     </Typography>
                 </React.Fragment>
@@ -66,7 +72,7 @@ function Rules(props) {
 }
 
 Rules.propTypes = {
-    chapterId: PropTypes.string
+    chapterId: PropTypes.string.isRequired
 };
 
 export default Rules;
