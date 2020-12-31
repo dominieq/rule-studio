@@ -14,13 +14,14 @@ function RenamingProject(props) {
             content={
                 <React.Fragment>
                     <Typography>
-                        If you wish to rename your current project, click on “Rename project” button (Fig. 2). 
-                        A dialog is going to be displayed with an input field to correct or write a new project name (Fig. 7).
-                        You can accept new name by clicking on “Ok” button or by pressing “Enter”. You can cancel 
-                        this process by clicking on “Cancel” button, pressing “Escape” or clicking outside this dialog.
+                        If you wish to rename your current project, click on the “Rename project” button (Fig. 2).
+                        A dialog is going to be displayed with an input field to correct or write a new project name (Fig. 9).
+                        You can accept new name by clicking on the “Ok” button or by pressing “Enter”.
+                        You can cancel this process by clicking on the “Cancel” button, pressing “Escape”
+                        or clicking outside this dialog.
                         A warning is going to be displayed if you try to accept a name that already exists in RuLeStudio.
                     </Typography>
-                    <Image src={rename} caption={"FIGURE 7: Rename project dialog"} />
+                    <Image src={rename} caption={"FIGURE 9: Rename project dialog"} />
                 </React.Fragment>
             }
         />
@@ -28,7 +29,7 @@ function RenamingProject(props) {
 }
 
 RenamingProject.propTypes = {
-    chapterId: PropTypes.string
+    chapterId: PropTypes.string.isRequired
 };
 
 export default RenamingProject;

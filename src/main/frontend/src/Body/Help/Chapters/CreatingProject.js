@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 import { Chapter, Image } from "../Elements";
 import Typography from "@material-ui/core/Typography";
 import csvDialog from "../resources/new_project/csv-dialog.png";
-import full from "../resources/new_project/full.jpg";
-import middle from "../resources/new_project/middle.jpg";
-import start from "../resources/new_project/start.jpg";
+import full from "../resources/new_project/full.png";
+import middle from "../resources/new_project/middle.png";
+import start from "../resources/new_project/start.png";
 
 function CreatingProject(props) {
     const { chapterId } = props;
@@ -18,10 +18,10 @@ function CreatingProject(props) {
                 <React.Fragment>
                     <Image src={start} caption={"FIGURE 3: Empty “New project” page"} />
                     <Typography>
-                        After clicking on “New project” button, RuLeStudio displays a page where you can customize
+                        After clicking on the “New project” button, RuLeStudio displays a page where you can customize
                         name for your new project and upload files. Although it is easier to have a dataset ready 
                         for calculations, you don’t have to upload any files to create a project. You will have 
-                        the opportunity to add attributes and objects in the “DATA” tab. However, if you wish to add 
+                        an opportunity to add attributes and objects in the “DATA” tab. However, if you wish to add
                         files to your project click on the switch with “Create project with metadata” label.
                         New content will be displayed below this switch (Fig. 4).
                     </Typography>
@@ -53,7 +53,7 @@ function CreatingProject(props) {
 }
 
 CreatingProject.propTypes = {
-    chapterId: PropTypes.string
+    chapterId: PropTypes.string.isRequired
 };
 
 export default CreatingProject;
