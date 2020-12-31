@@ -15,10 +15,10 @@ function ProjectFiles(props) {
                 <React.Fragment>
                     <Typography>
                         You can take a look at the files that you used to create a project.
-                        Simply, click on “Files details” (Fig. 2). A popup list is going to be displayed
-                        below this button (Fig. 10).
+                        Simply, click on the “Files details” (Fig. 2). A popup list is going to be displayed
+                        below this button (Fig. 13).
                     </Typography>
-                    <Image src={filesList} caption={"FIGURE 10: Names of files used in a project"} />
+                    <Image src={filesList} caption={"FIGURE 13: Names of files used in a project"} />
                 </React.Fragment>
             }
         />
@@ -26,7 +26,7 @@ function ProjectFiles(props) {
 }
 
 ProjectFiles.propTypes = {
-    chapterId: PropTypes.string
+    chapterId: PropTypes.string.isRequired
 };
 
 export default ProjectFiles;

@@ -20,6 +20,7 @@ function Navigating(props) {
                         <ol>
                             <li> Home button - displays RuLeStudio's homepage. </li>
                             <li> New project button - shows a page where you can create a new project. </li>
+                            <li> Open project button - shows a dialog where you can import your project from a <i>ZIP</i> file.</li>
                             <li> Project menu - displays a menu list with your projects. </li>
                             <li> Help button - shows the summary of this manual. </li>
                             <li> Change colors button - changes palette from dark to light or the other way around. </li>
@@ -27,13 +28,14 @@ function Navigating(props) {
                     </Typography>
                     <Image src={appBarProject} caption={"FIGURE 2: App bar after selecting a project"} />
                     <Typography component={'span'}>
-                    New buttons appear after creating or selecting an existing project. From left to right:
-                    <ol>
-                        <li> Files details - displays a popup list with names of files used in the current project. </li>
-                        <li> Settings - displays a dialog with project settings. Currently, there is only one option. You are able to customize objects' names. </li>
-                        <li> Rename project - displays a dialog where you can alter current project's name. </li>
-                        <li> Delete project - displays a dialog with an input field to type project's name. Project will be deleted after confirmation. </li>
-                    </ol>
+                        New buttons appear after creating or selecting an existing project. From left to right:
+                        <ol>
+                            <li> Files details - displays a popup list with names of files used in the current project. </li>
+                            <li> Settings - displays a dialog with project settings. Currently, there is only one option. You are able to customize objects' names. </li>
+                            <li> Rename project - displays a dialog where you can alter current project's name. </li>
+                            <li> Export project - compresses project to a ZIP file and then downloads the file to your default download folder.</li>
+                            <li> Delete project - displays a dialog with an input field to type project's name. Project will be deleted after confirmation. </li>
+                        </ol>
                     </Typography>
                 </React.Fragment>
             }
@@ -42,7 +44,7 @@ function Navigating(props) {
 }
 
 Navigating.propTypes = {
-    chapterId: PropTypes.string
+    chapterId: PropTypes.string.isRequired
 };
 
 export default Navigating;
